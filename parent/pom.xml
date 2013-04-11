@@ -23,7 +23,6 @@
 	</repositories>
 
 	<properties>
-		<kasper.version>${project.version}</kasper.version>
 		<axon.version>2.0</axon.version>
 		<spring.core.version>3.1.2.RELEASE</spring.core.version>
 		<testng.version>6.7</testng.version>
@@ -101,67 +100,67 @@
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-core</artifactId>
-				<version>${kasper.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-core-command</artifactId>
-				<version>${kasper.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-core-query</artifactId>
-				<version>${kasper.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-core-domain</artifactId>
-				<version>${kasper.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-core-events</artifactId>
-				<version>${kasper.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-core-handle-commands</artifactId>
-				<version>${kasper.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-core-listen-events</artifactId>
-				<version>${kasper.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-platform</artifactId>
-				<version>${kasper.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-web</artifactId>
-				<version>${kasper.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-common</artifactId>
-				<version>${kasper.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-security</artifactId>
-				<version>${kasper.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-test</artifactId>
-				<version>${kasper.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-documentation</artifactId>
-				<version>${kasper.version}</version>
+				<version>${project.version}</version>
 			</dependency>
 
 			<!-- Third parties -->
