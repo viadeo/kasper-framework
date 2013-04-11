@@ -1,0 +1,6 @@
+  
+{{#if node.handler}}
+	<div class="well well-small">
+  		<h2><small>Handler :</small> <a class="klink" href="#{{node.handler.name}}">{{node.handler.label}}</a></h2>
+  	</div>
+{{/if}}

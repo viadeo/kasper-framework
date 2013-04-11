@@ -1,0 +1,10 @@
+
+- fuite mémoire ?
+- @XKasperDocumented(abstract="", link="", see=[XXX.class, YYY.class, ..])
+- résoudre le pb des relations avec classe abstraite.. ?
+
+- Graphes
+   -> modèle d'abstraction
+   -> builder
+   
+

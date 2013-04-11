@@ -1,0 +1,261 @@
+{
+  "count": 3,
+  "itemType": "domain",
+  "list": [
+    {
+      "commands": [],
+      "concepts": [{
+        "description": "The Application concept",
+        "label": "Application",
+        "name": "Application",
+        "type": "concept",
+        "typePlural": "concepts",
+        "url": "/domain/Applications/concept/Application"
+      }],
+      "description": "Applications domain",
+      "events": [],
+      "handlers": [],
+      "label": "Applications",
+      "listeners": [],
+      "name": "Applications",
+      "parent": {
+        "description": "Root Facebook domain",
+        "label": "Facebook",
+        "name": "Facebook",
+        "type": "domain",
+        "typePlural": "domains",
+        "url": "/domain/Facebook"
+      },
+      "prefix": "apps",
+      "relations": [
+        {
+          "description": "The created_by relation between Application and Member",
+          "label": "created_by",
+          "name": "Application_createdBy_Member",
+          "sourceConceptName": "Application",
+          "targetConceptName": "Member",
+          "type": "relation",
+          "typePlural": "relations",
+          "url": "/domain/Applications/relation/Application_createdBy_Member"
+        },
+        {
+          "description": "Tha Member is a big fan of this application",
+          "label": "fan_of",
+          "name": "Member_fanOf_Application",
+          "sourceConceptName": "Member",
+          "targetConceptName": "Application",
+          "type": "relation",
+          "typePlural": "relations",
+          "url": "/domain/Applications/relation/Member_fanOf_Application"
+        }
+      ],
+      "repositories": [
+        {
+          "description": "The repository for Member_fanOf_Application aggregates",
+          "label": "ApplicationMemberFansRepository",
+          "name": "ApplicationMemberFansRepository",
+          "type": "repository",
+          "typePlural": "repositories",
+          "url": "/domain/Applications/repository/ApplicationMemberFansRepository"
+        },
+        {
+          "description": "The applications repository",
+          "label": "ApplicationRepository",
+          "name": "ApplicationRepository",
+          "type": "repository",
+          "typePlural": "repositories",
+          "url": "/domain/Applications/repository/ApplicationRepository"
+        }
+      ],
+      "type": "domain",
+      "typePlural": "domains",
+      "url": "/domain/Applications"
+    },
+    {
+      "commands": [{
+        "description": "The AddConnectionToMember command",
+        "label": "AddConnectionToMember",
+        "name": "AddConnectionToMemberCommand",
+        "type": "command",
+        "typePlural": "commands",
+        "url": "/domain/Facebook/command/AddConnectionToMemberCommand"
+      }],
+      "concepts": [{
+        "description": "The Member concept",
+        "label": "FacebookMember",
+        "name": "Member",
+        "type": "concept",
+        "typePlural": "concepts",
+        "url": "/domain/Facebook/concept/Member"
+      }],
+      "description": "Root Facebook domain",
+      "events": [
+        {
+          "description": "The MemberCreated event",
+          "label": "MemberCreated",
+          "name": "MemberCreatedEvent",
+          "type": "event",
+          "typePlural": "events",
+          "url": "/domain/Facebook/event/MemberCreatedEvent"
+        },
+        {
+          "description": "The NewMemberConnection event",
+          "label": "NewMemberConnection",
+          "name": "NewMemberConnectionEvent",
+          "type": "event",
+          "typePlural": "events",
+          "url": "/domain/Facebook/event/NewMemberConnectionEvent"
+        }
+      ],
+      "handlers": [{
+        "description": "The handler for AddConnectionToMember commands",
+        "label": "AddConnectionToMemberHandler",
+        "name": "AddConnectionToMemberHandler",
+        "type": "handler",
+        "typePlural": "handlers",
+        "url": "/domain/Facebook/handler/AddConnectionToMemberHandler"
+      }],
+      "label": "Facebook",
+      "listeners": [{
+        "description": "The listener for MemberCreated events",
+        "label": "MemberCreatedEventListener",
+        "name": "MemberCreatedEventListener",
+        "type": "listener",
+        "typePlural": "listeners",
+        "url": "/domain/Facebook/listener/MemberCreatedEventListener"
+      }],
+      "name": "Facebook",
+      "parent": null,
+      "prefix": "fb",
+      "relations": [{
+        "description": "The connected_to relation between Member and Member",
+        "label": "connected_to",
+        "name": "Member_connectedTo_Member",
+        "sourceConceptName": "Member",
+        "targetConceptName": "Member",
+        "type": "relation",
+        "typePlural": "relations",
+        "url": "/domain/Facebook/relation/Member_connectedTo_Member"
+      }],
+      "repositories": [
+        {
+          "description": "The repository for Member_connectedTo_Member aggregates",
+          "label": "MemberConnectionsRepository",
+          "name": "MemberConnectionsRepository",
+          "type": "repository",
+          "typePlural": "repositories",
+          "url": "/domain/Facebook/repository/MemberConnectionsRepository"
+        },
+        {
+          "description": "The repository for Member aggregates",
+          "label": "MemberRepository",
+          "name": "MemberRepository",
+          "type": "repository",
+          "typePlural": "repositories",
+          "url": "/domain/Facebook/repository/MemberRepository"
+        }
+      ],
+      "type": "domain",
+      "typePlural": "domains",
+      "url": "/domain/Facebook"
+    },
+    {
+      "commands": [],
+      "concepts": [
+        {
+          "description": "The Media concept",
+          "label": "StatusMedia",
+          "name": "Media",
+          "type": "concept",
+          "typePlural": "concepts",
+          "url": "/domain/Timelines/concept/Media"
+        },
+        {
+          "description": "The Status concept",
+          "label": "TimelineStatus",
+          "name": "Status",
+          "type": "concept",
+          "typePlural": "concepts",
+          "url": "/domain/Timelines/concept/Status"
+        },
+        {
+          "description": "The Timeline concept",
+          "label": "MemberTimeline",
+          "name": "Timeline",
+          "type": "concept",
+          "typePlural": "concepts",
+          "url": "/domain/Timelines/concept/Timeline"
+        }
+      ],
+      "description": "",
+      "events": [],
+      "handlers": [],
+      "label": "Timelines",
+      "listeners": [],
+      "name": "Timelines",
+      "parent": {
+        "description": "Root Facebook domain",
+        "label": "Facebook",
+        "name": "Facebook",
+        "type": "domain",
+        "typePlural": "domains",
+        "url": "/domain/Facebook"
+      },
+      "prefix": "tm",
+      "relations": [
+        {
+          "description": "A status is attached to one timeline",
+          "label": "attached_to",
+          "name": "Status_attachedTo_Timeline",
+          "sourceConceptName": "Status",
+          "targetConceptName": "Timeline",
+          "type": "relation",
+          "typePlural": "relations",
+          "url": "/domain/Timelines/relation/Status_attachedTo_Timeline"
+        },
+        {
+          "description": "A status is published by a Member",
+          "label": "published_by",
+          "name": "Status_publishedBy_Member",
+          "sourceConceptName": "Status",
+          "targetConceptName": "Member",
+          "type": "relation",
+          "typePlural": "relations",
+          "url": "/domain/Timelines/relation/Status_publishedBy_Member"
+        },
+        {
+          "description": "The published_by relation between Timeline and Member",
+          "label": "published_by",
+          "name": "Timeline_ownedBy_Member",
+          "sourceConceptName": "Timeline",
+          "targetConceptName": "Member",
+          "type": "relation",
+          "typePlural": "relations",
+          "url": "/domain/Timelines/relation/Timeline_ownedBy_Member"
+        }
+      ],
+      "repositories": [
+        {
+          "description": "The repository for Status aggregates",
+          "label": "StatusRepository",
+          "name": "StatusRepository",
+          "type": "repository",
+          "typePlural": "repositories",
+          "url": "/domain/Timelines/repository/StatusRepository"
+        },
+        {
+          "description": "The repository for Timeline aggregates",
+          "label": "TimelineRepository",
+          "name": "TimelineRepository",
+          "type": "repository",
+          "typePlural": "repositories",
+          "url": "/domain/Timelines/repository/TimelineRepository"
+        }
+      ],
+      "type": "domain",
+      "typePlural": "domains",
+      "url": "/domain/Timelines"
+    }
+  ],
+  "type": "list"
+}

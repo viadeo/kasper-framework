@@ -1,0 +1,24 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//           Viadeo IT architecture <architecture@viadeoteam.com>
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
+
+parent                        => Kasper parent : generic configuration, dependency management
+kasper-client                 => Java client to access a Kasper platform
+kasper-core                   => Kasper core bootstrap
+kasper-core-domain            => Domain modeling : concepts/relations (entities), repositories
+kasper-core-command           => 
+kasper-core-events            => 
+kasper-core-handle-commands   => 
+kasper-core-listen-events     => 
+kasper-core-query             => 
+kasper-platform               => 
+kasper-test                   => 
+kasper-common                 => 
+kasper-documentation          => 
+kasper-security               => 
+kasper-web                    => 
+

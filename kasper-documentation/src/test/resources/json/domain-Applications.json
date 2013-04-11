@@ -1,0 +1,69 @@
+{
+  "commands": [],
+  "concepts": [{
+    "description": "The Application concept",
+    "label": "Application",
+    "name": "Application",
+    "type": "concept",
+    "typePlural": "concepts",
+    "url": "/domain/Applications/concept/Application"
+  }],
+  "description": "Applications domain",
+  "events": [],
+  "handlers": [],
+  "label": "Applications",
+  "listeners": [],
+  "name": "Applications",
+  "parent": {
+    "description": "Root Facebook domain",
+    "label": "Facebook",
+    "name": "Facebook",
+    "type": "domain",
+    "typePlural": "domains",
+    "url": "/domain/Facebook"
+  },
+  "prefix": "apps",
+  "relations": [
+    {
+      "description": "The created_by relation between Application and Member",
+      "label": "created_by",
+      "name": "Application_createdBy_Member",
+      "sourceConceptName": "Application",
+      "targetConceptName": "Member",
+      "type": "relation",
+      "typePlural": "relations",
+      "url": "/domain/Applications/relation/Application_createdBy_Member"
+    },
+    {
+      "description": "Tha Member is a big fan of this application",
+      "label": "fan_of",
+      "name": "Member_fanOf_Application",
+      "sourceConceptName": "Member",
+      "targetConceptName": "Application",
+      "type": "relation",
+      "typePlural": "relations",
+      "url": "/domain/Applications/relation/Member_fanOf_Application"
+    }
+  ],
+  "repositories": [
+    {
+      "description": "The repository for Member_fanOf_Application aggregates",
+      "label": "ApplicationMemberFansRepository",
+      "name": "ApplicationMemberFansRepository",
+      "type": "repository",
+      "typePlural": "repositories",
+      "url": "/domain/Applications/repository/ApplicationMemberFansRepository"
+    },
+    {
+      "description": "The applications repository",
+      "label": "ApplicationRepository",
+      "name": "ApplicationRepository",
+      "type": "repository",
+      "typePlural": "repositories",
+      "url": "/domain/Applications/repository/ApplicationRepository"
+    }
+  ],
+  "type": "domain",
+  "typePlural": "domains",
+  "url": "/domain/Applications"
+}

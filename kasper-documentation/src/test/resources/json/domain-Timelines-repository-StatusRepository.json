@@ -1,0 +1,24 @@
+{
+  "aggregate": {
+    "description": "The Status concept",
+    "label": "TimelineStatus",
+    "name": "Status",
+    "type": "concept",
+    "typePlural": "concepts",
+    "url": "/domain/Timelines/concept/Status"
+  },
+  "description": "The repository for Status aggregates",
+  "domain": {
+    "description": "",
+    "label": "Timelines",
+    "name": "Timelines",
+    "type": "domain",
+    "typePlural": "domains",
+    "url": "/domain/Timelines"
+  },
+  "label": "StatusRepository",
+  "name": "StatusRepository",
+  "type": "repository",
+  "typePlural": "repositories",
+  "url": "/domain/Timelines/repository/StatusRepository"
+}

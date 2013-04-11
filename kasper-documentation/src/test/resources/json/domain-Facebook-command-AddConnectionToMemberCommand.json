@@ -1,0 +1,25 @@
+{
+  "description": "The AddConnectionToMember command",
+  "domain": {
+    "description": "Root Facebook domain",
+    "label": "Facebook",
+    "name": "Facebook",
+    "type": "domain",
+    "typePlural": "domains",
+    "url": "/domain/Facebook"
+  },
+  "handler": {
+    "description": "The handler for AddConnectionToMember commands",
+    "label": "AddConnectionToMemberHandler",
+    "name": "AddConnectionToMemberHandler",
+    "type": "handler",
+    "typePlural": "handlers",
+    "url": "/domain/Facebook/handler/AddConnectionToMemberHandler"
+  },
+  "label": "AddConnectionToMember",
+  "name": "AddConnectionToMemberCommand",
+  "properties": [],
+  "type": "command",
+  "typePlural": "commands",
+  "url": "/domain/Facebook/command/AddConnectionToMemberCommand"
+}

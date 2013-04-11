@@ -1,0 +1,31 @@
+{
+  "aggregate": false,
+  "componentConcepts": null,
+  "componentRelations": null,
+  "description": "The Media concept",
+  "domain": {
+    "description": "",
+    "label": "Timelines",
+    "name": "Timelines",
+    "type": "domain",
+    "typePlural": "domains",
+    "url": "/domain/Timelines"
+  },
+  "label": "StatusMedia",
+  "name": "Media",
+  "parent": {
+    "description": "The Status concept",
+    "label": "TimelineStatus",
+    "name": "Status",
+    "type": "concept",
+    "typePlural": "concepts",
+    "url": "/domain/Timelines/concept/Status"
+  },
+  "properties": [],
+  "sourceEvents": [],
+  "sourceRelations": [],
+  "targetRelations": [],
+  "type": "concept",
+  "typePlural": "concepts",
+  "url": "/domain/Timelines/concept/Media"
+}

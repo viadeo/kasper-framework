@@ -1,0 +1,24 @@
+{
+  "aggregate": {
+    "description": "The Application concept",
+    "label": "Application",
+    "name": "Application",
+    "type": "concept",
+    "typePlural": "concepts",
+    "url": "/domain/Applications/concept/Application"
+  },
+  "description": "The applications repository",
+  "domain": {
+    "description": "Applications domain",
+    "label": "Applications",
+    "name": "Applications",
+    "type": "domain",
+    "typePlural": "domains",
+    "url": "/domain/Applications"
+  },
+  "label": "ApplicationRepository",
+  "name": "ApplicationRepository",
+  "type": "repository",
+  "typePlural": "repositories",
+  "url": "/domain/Applications/repository/ApplicationRepository"
+}

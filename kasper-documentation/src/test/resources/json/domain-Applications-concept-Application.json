@@ -1,0 +1,51 @@
+{
+  "aggregate": true,
+  "componentConcepts": [],
+  "componentRelations": [{
+    "description": "The created_by relation between Application and Member",
+    "label": "created_by",
+    "name": "Application_createdBy_Member",
+    "sourceConceptName": "Application",
+    "targetConceptName": "Member",
+    "type": "relation",
+    "typePlural": "relations",
+    "url": "/domain/Applications/relation/Application_createdBy_Member"
+  }],
+  "description": "The Application concept",
+  "domain": {
+    "description": "Applications domain",
+    "label": "Applications",
+    "name": "Applications",
+    "type": "domain",
+    "typePlural": "domains",
+    "url": "/domain/Applications"
+  },
+  "label": "Application",
+  "name": "Application",
+  "parent": null,
+  "properties": [],
+  "sourceEvents": [],
+  "sourceRelations": [{
+    "description": "The created_by relation between Application and Member",
+    "label": "created_by",
+    "name": "Application_createdBy_Member",
+    "sourceConceptName": "Application",
+    "targetConceptName": "Member",
+    "type": "relation",
+    "typePlural": "relations",
+    "url": "/domain/Applications/relation/Application_createdBy_Member"
+  }],
+  "targetRelations": [{
+    "description": "Tha Member is a big fan of this application",
+    "label": "fan_of",
+    "name": "Member_fanOf_Application",
+    "sourceConceptName": "Member",
+    "targetConceptName": "Application",
+    "type": "relation",
+    "typePlural": "relations",
+    "url": "/domain/Applications/relation/Member_fanOf_Application"
+  }],
+  "type": "concept",
+  "typePlural": "concepts",
+  "url": "/domain/Applications/concept/Application"
+}

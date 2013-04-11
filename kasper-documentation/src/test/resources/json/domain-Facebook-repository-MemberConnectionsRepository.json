@@ -1,0 +1,26 @@
+{
+  "aggregate": {
+    "description": "The connected_to relation between Member and Member",
+    "label": "connected_to",
+    "name": "Member_connectedTo_Member",
+    "sourceConceptName": "Member",
+    "targetConceptName": "Member",
+    "type": "relation",
+    "typePlural": "relations",
+    "url": "/domain/Facebook/relation/Member_connectedTo_Member"
+  },
+  "description": "The repository for Member_connectedTo_Member aggregates",
+  "domain": {
+    "description": "Root Facebook domain",
+    "label": "Facebook",
+    "name": "Facebook",
+    "type": "domain",
+    "typePlural": "domains",
+    "url": "/domain/Facebook"
+  },
+  "label": "MemberConnectionsRepository",
+  "name": "MemberConnectionsRepository",
+  "type": "repository",
+  "typePlural": "repositories",
+  "url": "/domain/Facebook/repository/MemberConnectionsRepository"
+}

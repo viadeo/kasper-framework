@@ -1,0 +1,52 @@
+{
+  "count": 2,
+  "itemType": "event",
+  "list": [
+    {
+      "action": "created",
+      "description": "The MemberCreated event",
+      "domain": {
+        "description": "Root Facebook domain",
+        "label": "Facebook",
+        "name": "Facebook",
+        "type": "domain",
+        "typePlural": "domains",
+        "url": "/domain/Facebook"
+      },
+      "label": "MemberCreated",
+      "listeners": [{
+        "description": "The listener for MemberCreated events",
+        "label": "MemberCreatedEventListener",
+        "name": "MemberCreatedEventListener",
+        "type": "listener",
+        "typePlural": "listeners",
+        "url": "/domain/Facebook/listener/MemberCreatedEventListener"
+      }],
+      "name": "MemberCreatedEvent",
+      "properties": [],
+      "type": "event",
+      "typePlural": "events",
+      "url": "/domain/Facebook/event/MemberCreatedEvent"
+    },
+    {
+      "action": "now_connected_to",
+      "description": "The NewMemberConnection event",
+      "domain": {
+        "description": "Root Facebook domain",
+        "label": "Facebook",
+        "name": "Facebook",
+        "type": "domain",
+        "typePlural": "domains",
+        "url": "/domain/Facebook"
+      },
+      "label": "NewMemberConnection",
+      "listeners": [],
+      "name": "NewMemberConnectionEvent",
+      "properties": [],
+      "type": "event",
+      "typePlural": "events",
+      "url": "/domain/Facebook/event/NewMemberConnectionEvent"
+    }
+  ],
+  "type": "list"
+}

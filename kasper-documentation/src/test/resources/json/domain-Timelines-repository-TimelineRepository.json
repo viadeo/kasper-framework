@@ -1,0 +1,24 @@
+{
+  "aggregate": {
+    "description": "The Timeline concept",
+    "label": "MemberTimeline",
+    "name": "Timeline",
+    "type": "concept",
+    "typePlural": "concepts",
+    "url": "/domain/Timelines/concept/Timeline"
+  },
+  "description": "The repository for Timeline aggregates",
+  "domain": {
+    "description": "",
+    "label": "Timelines",
+    "name": "Timelines",
+    "type": "domain",
+    "typePlural": "domains",
+    "url": "/domain/Timelines"
+  },
+  "label": "TimelineRepository",
+  "name": "TimelineRepository",
+  "type": "repository",
+  "typePlural": "repositories",
+  "url": "/domain/Timelines/repository/TimelineRepository"
+}

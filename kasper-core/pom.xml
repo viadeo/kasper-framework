@@ -1,0 +1,47 @@
+<!-- ==========================================================================
+-                  KASPER - Kasper is the treasure keeper
+-     www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+-
+-           Viadeo Framework for effective CQRS/DDD architecture
+=========================================================================== -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.viadeo.kasper</groupId>
+		<artifactId>kasper-parent</artifactId>
+		<version>0.0.1</version>
+		<relativePath>../parent</relativePath>
+	</parent>
+	<artifactId>kasper-core</artifactId>
+	<name>KASPER CORE</name>
+
+	<dependencies>
+		<dependency>
+			<groupId>com.viadeo.kasper</groupId>
+			<artifactId>kasper-common</artifactId>
+		</dependency>	
+		<dependency>
+			<groupId>com.viadeo.kasper</groupId>
+			<artifactId>kasper-core-command</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.viadeo.kasper</groupId>
+			<artifactId>kasper-core-query</artifactId>
+		</dependency>		
+		<dependency>
+			<groupId>com.viadeo.kasper</groupId>
+			<artifactId>kasper-core-handle-commands</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.viadeo.kasper</groupId>
+			<artifactId>kasper-core-listen-events</artifactId>
+		</dependency>			
+		<dependency>
+         	<groupId>org.reflections</groupId>
+         	<artifactId>reflections</artifactId>
+     	</dependency>		
+	</dependencies>
+
+</project>

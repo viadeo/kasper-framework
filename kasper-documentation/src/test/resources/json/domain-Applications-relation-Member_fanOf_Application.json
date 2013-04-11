@@ -1,0 +1,38 @@
+{
+  "aggregate": true,
+  "bidirectional": false,
+  "componentConcepts": [],
+  "componentRelations": [],
+  "description": "Tha Member is a big fan of this application",
+  "domain": {
+    "description": "Applications domain",
+    "label": "Applications",
+    "name": "Applications",
+    "type": "domain",
+    "typePlural": "domains",
+    "url": "/domain/Applications"
+  },
+  "label": "fan_of",
+  "name": "Member_fanOf_Application",
+  "parent": null,
+  "properties": [],
+  "sourceConcept": {
+    "description": "[Not resolved]",
+    "label": "Member",
+    "name": "Member",
+    "type": "concept",
+    "typePlural": "concepts",
+    "url": "/domain/Applications/concept/Member"
+  },
+  "targetConcept": {
+    "description": "The Application concept",
+    "label": "Application",
+    "name": "Application",
+    "type": "concept",
+    "typePlural": "concepts",
+    "url": "/domain/Applications/concept/Application"
+  },
+  "type": "relation",
+  "typePlural": "relations",
+  "url": "/domain/Applications/relation/Member_fanOf_Application"
+}

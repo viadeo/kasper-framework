@@ -1,0 +1,54 @@
+<!-- ==========================================================================
+-                  KASPER - Kasper is the treasure keeper
+-     www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+-
+-           Viadeo Framework for effective CQRS/DDD architecture
+=========================================================================== -->
+
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>com.viadeo.kasper</groupId>
+	<artifactId>kasper</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>KASPER</name>
+	<packaging>pom</packaging>
+
+	<modules>
+		<module>parent</module>
+		<module>kasper-core-domain</module>
+		<module>kasper-core-command</module>
+		<module>kasper-core-query</module>
+		<module>kasper-core-events</module>
+		<module>kasper-core-listen-events</module>
+		<module>kasper-core-handle-commands</module>
+		<module>kasper-core</module>
+		<module>kasper-platform</module>
+		<module>kasper-security</module>
+		<module>kasper-web</module>
+		<module>kasper-client</module>
+		<module>kasper-common</module>
+		<module>kasper-test</module>
+		<module>kasper-documentation</module>
+	</modules>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.7</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-install-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>		
+		</plugins>
+	</build>	
+</project>

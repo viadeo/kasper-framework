@@ -1,0 +1,21 @@
+Use Case :
+
+** Three Domains : "Facebook" contains "Timelines" and "Applications" domains
+
+** "Timelines" domain contains two concept aggregates : "Timeline" and "Status"
+   "Status" agregate contains a concept component "Media"
+   
+** "Applications" domain contains one concept aggregate : "Application"
+
+** Than the following relations can occur :
+
+- root relations :
+	Member <- connected_to -> Member
+	Member -- fan_of -> Application
+
+- component relations :
+	Application -- created_by -> Member
+	Timeline -- owned_by -> Member
+	Status -- attached_to -> Timeline
+	Status -- published_by -> Member
+

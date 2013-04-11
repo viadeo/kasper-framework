@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.1.xsd">
+		
+	<context:annotation-config />
+	<context:component-scan base-package="com.viadeo.kasper.doc"/>
+		
+	<bean id="kasperLibrary" class="com.viadeo.kasper.doc.KasperLibrary" />
+
+	<bean id="domainsDocumentationProcessor" class="com.viadeo.kasper.core.boot.DomainsDocumentationProcessor">
+		<property name="kasperLibrary" ref="kasperLibrary" />
+	</bean>		
+
+	<bean id="repositoriesDocumentationProcessor" class="com.viadeo.kasper.core.boot.RepositoriesDocumentationProcessor">
+		<property name="kasperLibrary" ref="kasperLibrary" />
+	</bean>		
+
+	<bean id="commandsDocumentationProcessor" class="com.viadeo.kasper.core.boot.CommandsDocumentationProcessor">
+		<property name="kasperLibrary" ref="kasperLibrary" />
+	</bean>	
+		
+	<bean id="eventsDocumentationProcessor" class="com.viadeo.kasper.core.boot.EventsDocumentationProcessor">
+		<property name="kasperLibrary" ref="kasperLibrary" />
+	</bean>			
+		
+	<bean id="conceptsDocumentationProcessor" class="com.viadeo.kasper.core.boot.ConceptsDocumentationProcessor">
+		<property name="kasperLibrary" ref="kasperLibrary" />
+	</bean>	
+	
+	<bean id="relationsDocumentationProcessor" class="com.viadeo.kasper.core.boot.RelationsDocumentationProcessor">
+		<property name="kasperLibrary" ref="kasperLibrary" />
+	</bean>	
+		
+	<bean id="listenersDocumentationProcessor" class="com.viadeo.kasper.core.boot.ListenersDocumentationProcessor">
+		<property name="kasperLibrary" ref="kasperLibrary" />
+	</bean>	
+	
+	<bean id="handlersDocumentationProcessor" class="com.viadeo.kasper.core.boot.HandlersDocumentationProcessor">
+		<property name="kasperLibrary" ref="kasperLibrary" />
+	</bean>	
+		
+</beans>
