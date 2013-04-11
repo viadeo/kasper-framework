@@ -9,7 +9,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.viadeo.kasper</groupId>
 	<artifactId>kasper</artifactId>
-	<version>0.0.1</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>KASPER</name>
 	<packaging>pom</packaging>
 
@@ -59,7 +59,7 @@
 
     <scm>
         <developerConnection>scm:git:git@github.com:viadeo/kasper-framework.git</developerConnection>
-      <tag>kasper-0.0.1</tag>
+      <tag>HEAD</tag>
   </scm>
 
 </project>
