@@ -10,6 +10,7 @@
 	<artifactId>kasper-parent</artifactId>
 	<name>KASPER PARENT</name>
     <version>0.0.1-SNAPSHOT</version>
+    <description>Kasper POM parent</description>
 
 	<packaging>pom</packaging>
 
@@ -31,6 +32,7 @@
 		<junit.version>4.10</junit.version>
 		<org.slf4j.version>1.7.1</org.slf4j.version>
 		<mockito.version>1.9.5</mockito.version>
+		<com.viadeo.mvn.proxy.deployurl>http://deploy.mvn.viadeo.com</com.viadeo.mvn.proxy.deployurl>
 	</properties>
 
 	<dependencies>
@@ -279,5 +281,17 @@
 		</plugins>
 	</build>
 
-	<description>Kasper POM parent</description>
+    <distributionManagement>
+        <repository>
+            <id>releases</id>
+            <name>viadeo-releases</name> 
+            <url>${com.viadeo.mvn.proxy.deployurl}/content/repositories/kasper-releases</url>
+        </repository>
+        <snapshotRepository>
+            <id>snapshots</id>
+            <name>viadeo-snapshots</name>
+            <url>${com.viadeo.mvn.proxy.deployurl}/content/repositories/kasper-snapshots</url>
+        </snapshotRepository>
+    </distributionManagement>
+
 </project>
