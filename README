@@ -9,7 +9,7 @@
 parent                        => Kasper parent : generic configuration, dependency management
 kasper-client                 => Java client to access a Kasper platform
 kasper-core                   => Kasper core bootstrap
-kasper-core-domain            => DDD: Domain modeling framework : concepts/relations (entities), repositories
+kasper-core-domain            => DDD: Domain modeling framework
 kasper-core-command           => CQRS: Command framework
 kasper-core-events            => CQRS: Events framework
 kasper-core-handle-commands   => CQRS: Commands handling
