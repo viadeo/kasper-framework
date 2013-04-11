@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>com.viadeo.kasper</groupId>
 		<artifactId>kasper-parent</artifactId>
-		<version>0.0.1</version>		
+		<version>0.0.1-SNAPSHOT</version>		
 		<relativePath>../parent</relativePath>
 	</parent>
 	<artifactId>kasper-core-handle-commands</artifactId>

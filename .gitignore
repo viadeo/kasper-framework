@@ -1,0 +1,6 @@
+**/target
+*.versionsBackup
+**/.settings
+**/.project
+**/.classpath
+.metadata
