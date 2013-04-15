@@ -22,8 +22,8 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 public final class DocumentedRelation extends DocumentedEntity {
 	private static final long serialVersionUID = -268234449433085371L;
 	
-	static public final String TYPE_NAME = "relation";
-	static public final String PLURAL_TYPE_NAME = "relations";
+	public static final String TYPE_NAME = "relation";
+	public static final String PLURAL_TYPE_NAME = "relations";
 	
 	private Boolean isBidirectional = false;
 	private String sourceConceptName = "unknown";
@@ -36,7 +36,7 @@ public final class DocumentedRelation extends DocumentedEntity {
 		
 		final XKasperRelation annotation = relationClazz.getAnnotation(XKasperRelation.class);
 		final XBidirectional biDirAnno = relationClazz.getAnnotation(XBidirectional.class);
-		final boolean isBidirectional = (null != biDirAnno);
+		final boolean annotatedBidirectional = (null != biDirAnno);
 		final String label = annotation.label();
 				
 		// Find if it's an aggregate ------------------------------------------
@@ -82,7 +82,7 @@ public final class DocumentedRelation extends DocumentedEntity {
 		this.setDescription(description);
 		this.setDomainName(domainName);
 		this.setIsAggregate(isAggregate);
-		this.setIsBidirectional(isBidirectional);
+		this.setIsBidirectional(annotatedBidirectional);
 		this.setSourceRootConcept(source);
 		this.setTargetRootConcept(target);
 		

@@ -15,7 +15,7 @@ import com.viadeo.kasper.test.applications.Applications;
 public class Application implements IRootConcept {
 	private static final long serialVersionUID = 7663957891087399105L;
 
-	final static public String NAME = "Application";
+	public static final String NAME = "Application";
 	
 	@Override
 	public IDomain getDomain() {

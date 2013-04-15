@@ -22,8 +22,8 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 public final class DocumentedRepository extends AbstractDocumentedDomainNode {
 	private static final long serialVersionUID = 2245288475776783601L;
 	
-	static public final String TYPE_NAME = "repository";
-	static public final String PLURAL_TYPE_NAME = "repositories";
+	public static final String TYPE_NAME = "repository";
+	public static final String PLURAL_TYPE_NAME = "repositories";
 	
 	private String aggregate = null;
 	

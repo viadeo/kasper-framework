@@ -18,8 +18,8 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 public final class DocumentedListener extends AbstractDocumentedDomainNode {
 	private static final long serialVersionUID = 2245288475776783601L;
 	
-	static public final String TYPE_NAME = "listener";
-	static public final String PLURAL_TYPE_NAME = "listeners";
+	public static final String TYPE_NAME = "listener";
+	public static final String PLURAL_TYPE_NAME = "listeners";
 	
 	private final String eventName;
 	

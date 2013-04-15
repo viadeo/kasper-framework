@@ -24,7 +24,7 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 public class FilteredQuery<DQO extends IQueryDQO<?>> implements IFilteredQuery<DQO> {
 
 	private static final long serialVersionUID = 7761845519876972683L;
-	final private static int PARAMETER_DQO_POSITION = 0;
+	private static final int PARAMETER_DQO_POSITION = 0;
 
 	private IQueryFilter<DQO> filter;
 

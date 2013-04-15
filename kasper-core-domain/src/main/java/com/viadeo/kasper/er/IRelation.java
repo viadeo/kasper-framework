@@ -7,7 +7,6 @@
 package com.viadeo.kasper.er;
 
 import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.ddd.IEntity;
 
 /**

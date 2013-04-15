@@ -18,7 +18,7 @@ public class DocumentedNode extends RetBase {
 	@JsonIgnore
 	private final KasperLibrary kasperLibrary;
 
-	final private String typePlural;
+	private final String typePlural;
 
 	private String className = null;
 	protected String label = null;
@@ -27,10 +27,10 @@ public class DocumentedNode extends RetBase {
 
 	// ------------------------------------------------------------------------
 
-	public final static String XML_PLURALTYPE = "pluralType";
-	public final static String XML_NAME = "name";
-	public final static String XML_DESCRIPTION = "description";
-	public final static String XML_PAGEURL = "path";
+	public static final String XML_PLURALTYPE = "pluralType";
+	public static final String XML_NAME = "name";
+	public static final String XML_DESCRIPTION = "description";
+	public static final String XML_PAGEURL = "path";
 
 	// ------------------------------------------------------------------------
 

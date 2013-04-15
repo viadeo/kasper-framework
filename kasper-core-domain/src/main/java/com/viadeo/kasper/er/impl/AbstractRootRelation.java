@@ -8,9 +8,7 @@ package com.viadeo.kasper.er.impl;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.ddd.IAggregateRoot;
 import com.viadeo.kasper.ddd.impl.AbstractAggregateRoot;
-import com.viadeo.kasper.er.IRelation;
 import com.viadeo.kasper.er.IRootConcept;
 import com.viadeo.kasper.er.IRootRelation;
 
@@ -36,11 +34,11 @@ public abstract class AbstractRootRelation<S extends IRootConcept, T extends IRo
 
 	// ------------------------------------------------------------------------
 
-	protected void setId(final IKasperID id, final IKasperID source_id, final IKasperID target_id) {
+	protected void setId(final IKasperID id, final IKasperID sourceId, final IKasperID targetId) {
 		super.setId(id);
 
-		this.sourceId = Preconditions.checkNotNull(source_id);
-		this.targetId = Preconditions.checkNotNull(target_id);
+		this.sourceId = Preconditions.checkNotNull(sourceId);
+		this.targetId = Preconditions.checkNotNull(targetId);
 	}
 
 	// ------------------------------------------------------------------------

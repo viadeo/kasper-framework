@@ -9,7 +9,6 @@ package com.viadeo.kasper.ddd.impl;
 import java.util.Set;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.ddd.IAggregateRoot;
 import com.viadeo.kasper.ddd.IEntity;
 import com.viadeo.kasper.ddd.IInternalDomain;

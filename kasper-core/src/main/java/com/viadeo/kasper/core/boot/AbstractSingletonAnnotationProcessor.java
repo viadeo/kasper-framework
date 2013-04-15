@@ -10,7 +10,6 @@ import java.lang.annotation.Annotation;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -71,13 +70,12 @@ public abstract class AbstractSingletonAnnotationProcessor<T extends Annotation,
 		this.process(clazz, instance);
 	}
 	
-	abstract protected void process(Class<?> clazz, I instance);
+	protected abstract void process(Class<?> clazz, I instance);
 	
 	// ------------------------------------------------------------------------
 	
 	@Override
-	public void setApplicationContext(final ApplicationContext context)
-			throws BeansException {
+	public void setApplicationContext(final ApplicationContext context) {
 		this.context = context;
 	}
 	

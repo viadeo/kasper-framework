@@ -8,7 +8,6 @@ package com.viadeo.kasper.er.impl;
 
 import com.viadeo.kasper.ddd.impl.AbstractComponentEntity;
 import com.viadeo.kasper.er.IComponentConcept;
-import com.viadeo.kasper.er.IConcept;
 import com.viadeo.kasper.er.IRootConcept;
 
 /**

@@ -42,7 +42,7 @@ public interface IValue extends Serializable {
 	 *
 	 * can be used to compare an IValue with a payload for instance
 	 */
-	boolean equals(Object _otherValue);
+	boolean equals(Object otherValue);
 	
 	/**
 	 * @return the value hashcode

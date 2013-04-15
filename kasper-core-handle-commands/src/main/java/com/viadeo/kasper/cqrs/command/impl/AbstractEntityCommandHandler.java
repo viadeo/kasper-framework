@@ -9,11 +9,9 @@ package com.viadeo.kasper.cqrs.command.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.cqrs.command.ICommand;
-import com.viadeo.kasper.cqrs.command.ICommandHandler;
 import com.viadeo.kasper.cqrs.command.IEntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandRuntimeException;
 import com.viadeo.kasper.ddd.IAggregateRoot;
-import com.viadeo.kasper.ddd.IEntity;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.event.exceptions.KasperEventRuntimeException;
 import com.viadeo.kasper.locators.IDomainLocator;
@@ -54,7 +52,7 @@ public abstract class AbstractEntityCommandHandler<C extends ICommand, AGR exten
 		}
 	}
 	@SuppressWarnings("rawtypes")
-	private transient final Consistent<?> consistent = new Consistent();
+	private final transient Consistent<?> consistent = new Consistent();
 	
 	// ------------------------------------------------------------------------
 

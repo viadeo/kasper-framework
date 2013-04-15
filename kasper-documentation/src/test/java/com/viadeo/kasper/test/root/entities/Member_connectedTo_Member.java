@@ -16,7 +16,7 @@ public class Member_connectedTo_Member implements IRootRelation<Member, Member> 
 	
 	private static final long serialVersionUID = 2799008865289493137L;
 
-	final static public String NAME = "connected_to";
+	public static final String NAME = "connected_to";
 	
 	@Override
 	public IKasperID getSourceIdentifier() {

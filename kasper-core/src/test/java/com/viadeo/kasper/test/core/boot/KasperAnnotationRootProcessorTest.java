@@ -17,7 +17,7 @@ public class KasperAnnotationRootProcessorTest extends TestCase {
 	
 	public static @interface XTestAnnotation { }
 	
-	public static interface TestInterface { }
+	public interface TestInterface { }
 	
 	@XTestAnnotation
 	public static final class TestClass implements TestInterface {	}	

@@ -23,7 +23,6 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -54,7 +53,7 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
  */
 public class AnnotationRootProcessor implements ApplicationContextAware {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(AnnotationRootProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationRootProcessor.class);
 
 	/** Only used if Spring context available in order to reuse injected processor instances */
 	private transient ApplicationContext context;
@@ -336,8 +335,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
 	 * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
 	 */
 	@Override
-	public void setApplicationContext(final ApplicationContext context)
-			throws BeansException {
+	public void setApplicationContext(final ApplicationContext context) {
 		this.context = context;
 	}
 

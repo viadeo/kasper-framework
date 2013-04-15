@@ -166,20 +166,20 @@ public abstract class AbstractRepository<AGR extends IAggregateRoot>
 	 * 
 	 * @return the (optional) aggregate
 	 */
-	abstract protected Optional<AGR> doLoad(final IKasperID aggregateIdentifier, final Long expectedVersion);
+	protected abstract Optional<AGR> doLoad(final IKasperID aggregateIdentifier, final Long expectedVersion);
 	
 	/**
 	 * saves a new (create) or existing (update) aggregate to the repository
 	 * 
 	 * @param aggregate the aggregate to be saved on the repository
 	 */
-	abstract protected void doSave(final AGR aggregate);
+	protected abstract void doSave(final AGR aggregate);
 	
 	/**
 	 * deletes (or mark as deleted) an existing aggregate from the repository
 	 * 
 	 * @param aggregate the aggregate to be deleted from the repository
 	 */
-	abstract protected void doDelete(final AGR aggregate);		
+	protected abstract void doDelete(final AGR aggregate);		
 	
 }

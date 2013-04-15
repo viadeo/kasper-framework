@@ -8,8 +8,6 @@ package com.viadeo.kasper.ddd;
 
 import org.axonframework.repository.Repository;
 
-import com.viadeo.kasper.IDomain;
-
 /**
  *
  * The base domain CQRS repository

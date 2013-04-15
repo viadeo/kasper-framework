@@ -10,7 +10,6 @@ import org.joda.time.DateTime;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.domain.IEntityEvent;
 import com.viadeo.kasper.event.impl.AbstractEvent;
 

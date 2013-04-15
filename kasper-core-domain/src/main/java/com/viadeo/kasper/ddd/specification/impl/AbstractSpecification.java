@@ -25,7 +25,7 @@ public abstract class AbstractSpecification<E extends IEntity> implements IEntit
 	 * Cache for all specifications annotation (if present)
 	 */
 	@SuppressWarnings("rawtypes")
-	static private final Map<Class<? extends AbstractSpecification>, XSpecification> ANNOTATIONS = Maps.newConcurrentMap();
+	private static final Map<Class<? extends AbstractSpecification>, XSpecification> ANNOTATIONS = Maps.newConcurrentMap();
 	
 	// ----------------------------------------------------------------------
 	

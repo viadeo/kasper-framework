@@ -30,8 +30,8 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 	@SuppressWarnings("serial")
 	@XKasperEvent(domain = TestDomain.class, action = "test")
 	public static class TestEvent extends AbstractConceptEvent {
-		public TestEvent(final IKasperID id_shortMessage, final DateTime creationDate) {
-			super(id_shortMessage, creationDate);
+		public TestEvent(final IKasperID idShortMessage, final DateTime creationDate) {
+			super(idShortMessage, creationDate);
 		}
 	}
 

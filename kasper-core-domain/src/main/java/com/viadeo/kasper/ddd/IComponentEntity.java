@@ -8,7 +8,6 @@ package com.viadeo.kasper.ddd;
 
 import org.axonframework.eventsourcing.EventSourcedEntity;
 
-import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.er.IRootConcept;
 
 /**

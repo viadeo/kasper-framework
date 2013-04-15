@@ -62,8 +62,8 @@ public class KasperRepositoryTest<ENTITY extends IAggregateRoot> implements IRep
 	public void setEventBus(final EventBus eventBus) {
 		if (EventSourcingRepository.class.isAssignableFrom(this.axonRepository.getClass())) {
 			@SuppressWarnings("rawtypes") // Safe
-			final EventSourcingRepository ESRepository = (EventSourcingRepository) this.axonRepository;
-			ESRepository.setEventBus(eventBus);
+			final EventSourcingRepository eventRepository = (EventSourcingRepository) this.axonRepository;
+			eventRepository.setEventBus(eventBus);
 		}
 	}
 
@@ -126,7 +126,7 @@ public class KasperRepositoryTest<ENTITY extends IAggregateRoot> implements IRep
 	 * @param repositoryClass the repository class to mock as
 	 * @return a mocked repository
 	 */
-	static public <E extends IAggregateRoot, R extends IRepository<E>> R mockAs(
+	public static <E extends IAggregateRoot, R extends IRepository<E>> R mockAs(
 			final FixtureConfiguration<E> fixture, final Class<R> repositoryClass) {
 		final KasperRepositoryTest<E> repository = new KasperRepositoryTest<E>(fixture); 		
 		return repository.asMockOf(repositoryClass);

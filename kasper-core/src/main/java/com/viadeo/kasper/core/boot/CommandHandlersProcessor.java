@@ -52,8 +52,8 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
 	 */
 	private static class CommandCastor<C extends ICommand> {
 
-		private transient final Class<? extends C> payload;
-		private transient final CommandHandler<? super C> handler;
+		private final transient Class<? extends C> payload;
+		private final transient CommandHandler<? super C> handler;
 
 		@SuppressWarnings("unchecked") // Safe by previous parent class typing
 		CommandCastor(final Class<?> bean, final CommandHandler<?> container) {

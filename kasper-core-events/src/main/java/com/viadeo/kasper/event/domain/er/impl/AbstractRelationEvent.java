@@ -10,7 +10,6 @@ import org.joda.time.DateTime;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.domain.er.IRelationEvent;
 import com.viadeo.kasper.event.domain.impl.AbstractEntityEvent;
 
@@ -33,11 +32,11 @@ public abstract class AbstractRelationEvent
 
 	// ------------------------------------------------------------------------
 
-	protected AbstractRelationEvent(final IKasperID id, final IKasperID source_id, final IKasperID target_id, final DateTime lastModificationDate) {
+	protected AbstractRelationEvent(final IKasperID id, final IKasperID sourceId, final IKasperID targetId, final DateTime lastModificationDate) {
 		super(id, lastModificationDate);
 
-		this.sourceId = Preconditions.checkNotNull(source_id);
-		this.targetId = Preconditions.checkNotNull(target_id);
+		this.sourceId = Preconditions.checkNotNull(sourceId);
+		this.targetId = Preconditions.checkNotNull(targetId);
 	}
 
 	// ------------------------------------------------------------------------

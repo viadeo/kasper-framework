@@ -7,7 +7,6 @@
 package com.viadeo.kasper.cqrs.query.filter.impl.simple;
 
 import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
-import com.viadeo.kasper.cqrs.query.filter.IQueryField;
 import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryField;
 
 /**

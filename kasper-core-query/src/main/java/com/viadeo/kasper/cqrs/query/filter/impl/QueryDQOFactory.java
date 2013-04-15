@@ -23,7 +23,7 @@ import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
  * 
  * @see IQueryDQO
  */
-public class QueryDQOFactory {
+public final class QueryDQOFactory {
 
 	private static final String ERROR_INSTANCE = "Unable to instanciate new DQO instance";
 	
@@ -46,7 +46,7 @@ public class QueryDQOFactory {
 	 * @return a cached DQO instance
 	 */
 	@SuppressWarnings("unchecked")
-	static public <DQO extends IQueryDQO<?>> DQO get(final Class<DQO> dqoClass) {
+	public static <DQO extends IQueryDQO<?>> DQO get(final Class<DQO> dqoClass) {
 
 		if (!QueryDQOFactory.dqoCache.containsKey(Preconditions
 				.checkNotNull(dqoClass))) {

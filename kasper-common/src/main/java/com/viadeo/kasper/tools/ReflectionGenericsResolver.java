@@ -44,7 +44,7 @@ public final class ReflectionGenericsResolver {
 	 * 
 	 */
 	@SuppressWarnings("rawtypes")
-	static public Optional<? extends Class> getParameterTypeFromClass(final Type runtimeType, final Type targetType,
+	public static Optional<? extends Class> getParameterTypeFromClass(final Type runtimeType, final Type targetType,
 			final Integer nbParameter) {
 
 		// Boot recursive process with an empty bindings maps
@@ -58,18 +58,18 @@ public final class ReflectionGenericsResolver {
 	/**
 	 * Get class from type, taking care of parameterized types
 	 *
-	 * @param _type a type or class to be resolved
+	 * @param type a type or class to be resolved
 	 * 
 	 * @return the (optional) class
 	 * 
 	 */
 	@SuppressWarnings("rawtypes")
-	public static final Optional<Class> getClass(final Type _type) {
+	public static Optional<Class> getClass(final Type type) {
 		final Optional<Class> ret;
-		if (_type instanceof Class) {
-			ret = Optional.of((Class) _type);
-		} else if (_type instanceof ParameterizedType) {
-			ret = ReflectionGenericsResolver.getClass(((ParameterizedType) _type).getRawType());
+		if (type instanceof Class) {
+			ret = Optional.of((Class) type);
+		} else if (type instanceof ParameterizedType) {
+			ret = ReflectionGenericsResolver.getClass(((ParameterizedType) type).getRawType());
 		} else {
 			ret = Optional.absent();
 		}
@@ -85,7 +85,7 @@ public final class ReflectionGenericsResolver {
 	 * @param bindings the bindings map to fill
 	 * 
 	 */
-	static private void fillBindingsFromClass(final Type classType, final Map<Type, Type> bindings) {
+	private static void fillBindingsFromClass(final Type classType, final Map<Type, Type> bindings) {
 		if (classType instanceof ParameterizedType) {
 			final Type[] paramTypes = ((ParameterizedType) classType).getActualTypeArguments();
 			final Class<?> rawClass = (Class<?>) ((ParameterizedType) classType).getRawType();
@@ -119,7 +119,7 @@ public final class ReflectionGenericsResolver {
 	 * 
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	static private Optional<Class> getParameterTypeFromClass(final Type runtimeType, final Type targetType,
+	private static Optional<Class> getParameterTypeFromClass(final Type runtimeType, final Type targetType,
 			final Integer nbParameter, final Map<Type, Type> bindings) {
 
 		final Optional<Class> runtimeClass = ReflectionGenericsResolver.getClass(runtimeType);

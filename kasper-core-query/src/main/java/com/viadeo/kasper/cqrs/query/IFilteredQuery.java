@@ -31,6 +31,6 @@ public interface IFilteredQuery<DQO extends IQueryDQO<?>> extends IQuery {
 	/**
 	 * @return a new DQO instance to be used for building a filter for this query
 	 */
-	public DQO dqo();
+	DQO dqo();
 
 }

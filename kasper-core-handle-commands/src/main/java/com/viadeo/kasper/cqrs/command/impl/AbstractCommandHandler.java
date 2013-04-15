@@ -26,7 +26,7 @@ import com.viadeo.kasper.exception.KasperRuntimeException;
 public abstract class AbstractCommandHandler<C extends ICommand> 
 		implements ICommandHandler<C> {
 
-	final private static Logger LOGGER = LoggerFactory.getLogger(AbstractCommandHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommandHandler.class);
 
 	// ------------------------------------------------------------------------
 	
@@ -37,8 +37,7 @@ public abstract class AbstractCommandHandler<C extends ICommand>
 	 */
 	@SuppressWarnings("deprecation") // Controlled use of KasperErrorCommandResult
 	@Override
-	public Object handle(final CommandMessage<C> message, final UnitOfWork uow)
-			throws Throwable {
+	public Object handle(final CommandMessage<C> message, final UnitOfWork uow) throws Throwable {
 		final ICommandMessage<C> kmessage = new KasperCommandMessage<C>(message);
 		CurrentContext.set(kmessage.getContext());
 

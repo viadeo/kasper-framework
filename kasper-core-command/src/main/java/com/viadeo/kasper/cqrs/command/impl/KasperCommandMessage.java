@@ -24,7 +24,7 @@ import com.viadeo.kasper.cqrs.command.ICommandMessage;
  * @param <C> Command
  */
 public class KasperCommandMessage<C extends ICommand> implements ICommandMessage<C> {
-	private final static Logger LOGGER = LoggerFactory.getLogger(KasperCommandMessage.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(KasperCommandMessage.class);
 
 	private static final long serialVersionUID = 5946300419038957372L;
 

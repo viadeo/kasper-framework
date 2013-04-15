@@ -7,7 +7,6 @@
 package com.viadeo.kasper.er;
 
 import com.viadeo.kasper.ddd.IAggregateRoot;
-import com.viadeo.kasper.ddd.IEntity;
 
 /**
  *

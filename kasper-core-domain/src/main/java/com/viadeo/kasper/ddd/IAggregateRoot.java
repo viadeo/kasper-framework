@@ -8,7 +8,6 @@ package com.viadeo.kasper.ddd;
 
 import org.axonframework.eventsourcing.EventSourcedAggregateRoot;
 
-import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.IKasperID;
 
 /**

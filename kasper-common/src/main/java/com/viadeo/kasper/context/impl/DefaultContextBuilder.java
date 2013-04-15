@@ -31,7 +31,7 @@ public class DefaultContextBuilder implements IDefaultContextBuilder {
 
 		private static final long serialVersionUID = -2357451589032314740L;
 		
-		static public final String DEFAULT_USER_LANG = "us";
+		public static final String DEFAULT_USER_LANG = "us";
 		
 		private IKasperID userId;
 		private String userLang;

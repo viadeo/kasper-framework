@@ -16,7 +16,7 @@ import com.viadeo.kasper.test.root.entities.Member;
 public class Application_createdBy_Member implements IComponentRelation<Application, Member> {
 	private static final long serialVersionUID = 5614663819769099928L;
 	
-	final static public String NAME = "created_by";
+	public static final String NAME = "created_by";
 
 	@Override
 	public IDomain getDomain() {

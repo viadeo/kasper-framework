@@ -61,16 +61,16 @@ public class SimpleQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comp
 			throw new KasperQueryRuntimeException(String.format("Field must be defined in %s", this.getClass().getName()));
 		}
 
-		final Optional<P> value = this.field.getFieldValue(dto);
+		final Optional<P> valueOpt = this.field.getFieldValue(dto);
 
-		if (!value.isPresent()) {
+		if (!valueOpt.isPresent()) {
 			// Note: Perhaps we will authorize null values comparisons later in
 			// some conditions
 			throw new KasperQueryRuntimeException(
 					"Trying to compare with null value from DTO");
 		}
 
-		return this.isSatisfiedBy(value.get());
+		return this.isSatisfiedBy(valueOpt.get());
 	}
 
 	// ------------------------------------------------------------------------

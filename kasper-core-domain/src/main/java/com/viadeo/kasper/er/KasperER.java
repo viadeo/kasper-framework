@@ -11,16 +11,18 @@ package com.viadeo.kasper.er;
  * Convenient class used to store common relation verbs and other E/R helpers
  * 
  */
-public class KasperER {
+public final class KasperER {
 
+	private KasperER() { /* singleton */ }
+	
 	/**
 	 * SOURCE is the child of TARGET
 	 */
-	static final public String child_of = "child_of";
+	public static final String child_of = "child_of";
 	
 	/**
 	 * SOURCE has been created by TARGET
 	 */
-	static final public String created_by = "created_by";
+	public static final String created_by = "created_by";
 	
 }

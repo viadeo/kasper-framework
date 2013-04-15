@@ -34,15 +34,13 @@ public class Facebook implements IInternalDomain {
 	}
 
 	@Override
-	public <E extends IAggregateRoot> IRepository<E> getEntityRepository(
-			E _entity) {
+	public <E extends IAggregateRoot> IRepository<E> getEntityRepository(E entity) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <E extends IAggregateRoot> IRepository<E> getEntityRepository(
-			Class<E> _entityClass) {
+	public <E extends IAggregateRoot> IRepository<E> getEntityRepository(Class<E> entityClass) {
 		// TODO Auto-generated method stub
 		return null;
 	}

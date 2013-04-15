@@ -11,7 +11,6 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.ddd.impl.AbstractComponentEntity;
 import com.viadeo.kasper.er.IComponentRelation;
-import com.viadeo.kasper.er.IRelation;
 import com.viadeo.kasper.er.IRootConcept;
 
 /**
@@ -34,9 +33,9 @@ public abstract class AbstractComponentRelation<S extends IRootConcept, T extend
 
 	// ------------------------------------------------------------------------
 
-	public void setId(final IKasperID source_id, final IKasperID target_id) {
-		this.sourceId = Preconditions.checkNotNull(source_id);
-		this.targetId = Preconditions.checkNotNull(target_id);
+	public void setId(final IKasperID sourceId, final IKasperID targetId) {
+		this.sourceId = Preconditions.checkNotNull(sourceId);
+		this.targetId = Preconditions.checkNotNull(targetId);
 	}
 
 	// ------------------------------------------------------------------------

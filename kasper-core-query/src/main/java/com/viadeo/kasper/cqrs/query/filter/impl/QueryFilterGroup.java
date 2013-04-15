@@ -61,11 +61,11 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 			}
 
 			for (final IQueryFilter<DQO> filter : this.filters) {
-				final boolean local_satisfied = filter.isSatisfiedBy(value);
-				if (this.operator.equals(Operator.AND) && !local_satisfied) {
+				final boolean localSatisfied = filter.isSatisfiedBy(value);
+				if (this.operator.equals(Operator.AND) && !localSatisfied) {
 					satisfied = false;
 					break;
-				} else if (this.operator.equals(Operator.OR) && local_satisfied) {
+				} else if (this.operator.equals(Operator.OR) && localSatisfied) {
 					satisfied = true;
 					break;
 				}

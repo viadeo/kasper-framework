@@ -8,6 +8,8 @@ package com.viadeo.kasper.event.impl;
 
 public final class EventBaseOntology {
 
+	private EventBaseOntology() { /* singleton */ }
+	
 	public static final String CREATED = "created";
 	public static final String UPDATED = "updated";
 	public static final String DELETED = "deleted";

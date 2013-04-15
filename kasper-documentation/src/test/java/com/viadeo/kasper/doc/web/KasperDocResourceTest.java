@@ -68,7 +68,7 @@ public class KasperDocResourceTest extends JerseyTest {
 	 * Use with cautious : check all outputs unless you'll introduce regressions in tests
 	 * Set to true for ONLY ONE LAUNCH if you are sure of what you're doing, then switch it back to false
 	 */
-	private final boolean UPDATE_TESTS = false;
+	private static final boolean UPDATE_TESTS = false;
 	
 	/**
 	 * The KasperLibrary instance to be used
@@ -183,7 +183,7 @@ public class KasperDocResourceTest extends JerseyTest {
 	        	throw e;
 	        	
 	        } catch (final AssertionError e) {
-	        	if (!this.UPDATE_TESTS) {
+	        	if (!UPDATE_TESTS) {
 	        		LOGGER.debug("*** RETURNED RESULT :");
 	        		LOGGER.debug(new JSONObject(responseMsg).toString(2));
 	        		LOGGER.info("\t--> ERROR");
@@ -191,7 +191,7 @@ public class KasperDocResourceTest extends JerseyTest {
 	        	}
 	        }
 	     
-	    	if (this.UPDATE_TESTS) {
+	    	if (UPDATE_TESTS) {
 	    		final URL url = ClassLoader.getSystemResource(jsonFilename);
 	    		final String filename = url.getFile().replaceAll("target/test-classes", "src/test/resources");
 	    		LOGGER.info("\t--> SAVE to " + filename);
