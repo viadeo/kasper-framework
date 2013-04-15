@@ -32,28 +32,28 @@ public class EventMatcher<E extends IEvent> extends BaseMatcher<E> {
      *
      * @param expected The expected object
      */
-    public EventMatcher(E expected) {
+    public EventMatcher(final E expected) {
         this.expected = expected;
     }
 
     @Override
-    public boolean matches(Object item) {
+    public boolean matches(final Object item) {
         return expected.getClass().isInstance(item) && matchesSafely(item);
     }
 
-    private boolean matchesSafely(Object actual) {
+    private boolean matchesSafely(final Object actual) {
         return expected.getClass().equals(actual.getClass())
                 && fieldsMatch(expected.getClass(), expected, actual);
     }
 
-    private boolean fieldsMatch(Class<?> aClass, Object expectedValue, Object actual) {
+    private boolean fieldsMatch(final Class<?> aClass, final Object expectedValue, final Object actual) {
         boolean match = true;
         
         for (Field field : aClass.getDeclaredFields()) {
             field.setAccessible(true);
             try {
-                Object expectedFieldValue = field.get(expectedValue);
-                Object actualFieldValue = field.get(actual);
+                final Object expectedFieldValue = field.get(expectedValue);
+                final Object actualFieldValue = field.get(actual);
                 if (expectedFieldValue != null && actualFieldValue != null && expectedFieldValue.getClass().isArray()) {
                     if (!Arrays.deepEquals(new Object[]{expectedFieldValue}, new Object[]{actualFieldValue})) {
                         failedField = field;
@@ -125,13 +125,13 @@ public class EventMatcher<E extends IEvent> extends BaseMatcher<E> {
     
     // ------------------------------------------------------------------------
     
-    private static final DateTime anyDate = new DateTime();
+    private static final DateTime ANYDATE = new DateTime();
     
     /**
      * @return a date wildcard
      */
     public static DateTime anyDate() {
-    	return anyDate;
+    	return ANYDATE;
     }
     
     // ------------------------------------------------------------------------

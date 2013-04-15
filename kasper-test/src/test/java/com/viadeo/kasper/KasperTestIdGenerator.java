@@ -6,7 +6,7 @@ import com.viadeo.kasper.IKasperID;
 
 public class KasperTestIdGenerator {
 
-	@SuppressWarnings("unchecked") // Delagated to client
+	@SuppressWarnings("unchecked") // Delegated to client
 	static public <I extends IKasperID> I get() {
 		final String uuid = IdentifierFactory.getInstance().generateIdentifier();
 		return (I) new KasperTestId(uuid);

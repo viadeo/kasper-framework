@@ -1,5 +1,9 @@
 package com.viadeo.kasper.test.cqrs.query.base;
 
+import junit.framework.Assert;
+import junit.framework.TestCase;
+
+import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -12,11 +16,10 @@ import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.impl.base.BaseFilterOperator;
 import com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryFilterElement;
 import com.viadeo.kasper.test.cqrs.query.StubbedDQTOS.DQOTest;
-import junit.framework.Assert;
-import junit.framework.TestCase;
 
 public class BaseQueryFilterElementTest extends TestCase {
 
+	@Test
 	public void testConstruct() {
 
 		new BaseQueryFilterElement<DQOTest, String>();
@@ -39,6 +42,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
+	@Test
 	public void testField() {
 		final BaseQueryFilterElement<DQOTest, String> eltFilter = new BaseQueryFilterElement<DQOTest, String>();
 		Assert.assertFalse(eltFilter.getField().isPresent());
@@ -58,6 +62,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
+	@Test
 	public void testOperator() {
 		final BaseQueryFilterElement<DQOTest, String> eltFilter = new BaseQueryFilterElement<DQOTest, String>();
 		Assert.assertFalse(eltFilter.getOperator().isPresent());
@@ -87,6 +92,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
+	@Test
 	public void testValue() {
 		final BaseQueryFilterElement<DQOTest, String> eltFilter = new BaseQueryFilterElement<DQOTest, String>();
 		Assert.assertFalse(eltFilter.getValue().isPresent());
@@ -103,6 +109,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
+	@Test
 	public void testValueHelpers() {
 		final BaseQueryFilterElement<DQOTest, String> eltFilter = new BaseQueryFilterElement<DQOTest, String>();
 
@@ -256,6 +263,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
+	@Test
 	public void testSatisfactionErrors() {
 
 		final BaseQueryFilterElement<dqofield, String> stringFilter = new BaseQueryFilterElement<dqofield, String>();
@@ -354,6 +362,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
+	@Test
 	public void testSatisfaction() {
 
 		final BaseQueryFilterElement<DQOTest, String> stringFilter = new BaseQueryFilterElement<DQOTest, String>();

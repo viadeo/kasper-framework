@@ -20,7 +20,7 @@ import com.viadeo.kasper.er.annotation.XKasperRelation;
  */
 public class RelationsDocumentationProcessor extends AbstractDocumentationProcessor<XKasperRelation, IRelation<?,?>> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(RelationsDocumentationProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RelationsDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ public class RelationsDocumentationProcessor extends AbstractDocumentationProces
 	@Override
 	@SuppressWarnings("unchecked")
 	public void process(final Class<?> relationClazz) {
-		this.LOGGER.info("Record on relation library : " + relationClazz.getName());
+		LOGGER.info("Record on relation library : " + relationClazz.getName());
 
 		//- Register the domain to the locator --------------------------------
 		getKasperLibrary().recordRelation((Class<? extends IRelation<?, ?>>) relationClazz);

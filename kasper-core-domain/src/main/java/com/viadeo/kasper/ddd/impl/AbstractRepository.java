@@ -107,7 +107,7 @@ public abstract class AbstractRepository<AGR extends IAggregateRoot>
 	 * @see org.axonframework.repository.Repository#load(java.lang.Object, java.lang.Long)
 	 */
 	@Override
-	public AGR load(Object aggregateIdentifier, Long expectedVersion) {
+	public AGR load(final Object aggregateIdentifier, final Long expectedVersion) {
 		return this.axonRepository.load(aggregateIdentifier, expectedVersion);
 	}
 
@@ -115,7 +115,7 @@ public abstract class AbstractRepository<AGR extends IAggregateRoot>
 	 * @see org.axonframework.repository.Repository#load(java.lang.Object)
 	 */
 	@Override
-	public AGR load(Object aggregateIdentifier) {
+	public AGR load(final Object aggregateIdentifier) {
 		return this.axonRepository.load(aggregateIdentifier);
 	}
 
@@ -123,7 +123,7 @@ public abstract class AbstractRepository<AGR extends IAggregateRoot>
 	 * @see org.axonframework.repository.Repository#add(org.axonframework.domain.AggregateRoot)
 	 */
 	@Override
-	public void add(AGR aggregate) {
+	public void add(final AGR aggregate) {
 		this.axonRepository.add(aggregate);
 	}	
 

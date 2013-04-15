@@ -82,11 +82,10 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterGroup#getFilters()
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public List<IQueryFilter<DQO>> getFilters() {
 		if (null == this.filters) {
-			@SuppressWarnings("unchecked")
-			final List<IQueryFilter<DQO>> empty = Collections.EMPTY_LIST;
-			return empty;
+			return Collections.EMPTY_LIST;
 		}
 		return Collections.unmodifiableList(this.filters);
 	}

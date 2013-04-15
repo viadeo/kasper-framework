@@ -31,16 +31,16 @@ public abstract class AbstractRootRelation<S extends IRootConcept, T extends IRo
 
 	private static final long serialVersionUID = 4719442806097449770L;
 
-	private IKasperID source_id;
-	private IKasperID target_id;
+	private IKasperID sourceId;
+	private IKasperID targetId;
 
 	// ------------------------------------------------------------------------
 
 	protected void setId(final IKasperID id, final IKasperID source_id, final IKasperID target_id) {
 		super.setId(id);
 
-		this.source_id = Preconditions.checkNotNull(source_id);
-		this.target_id = Preconditions.checkNotNull(target_id);
+		this.sourceId = Preconditions.checkNotNull(source_id);
+		this.targetId = Preconditions.checkNotNull(target_id);
 	}
 
 	// ------------------------------------------------------------------------
@@ -50,7 +50,7 @@ public abstract class AbstractRootRelation<S extends IRootConcept, T extends IRo
 	 */
 	@Override
 	public IKasperID getSourceIdentifier() {
-		return this.source_id;
+		return this.sourceId;
 	}
 
 	/**
@@ -58,7 +58,7 @@ public abstract class AbstractRootRelation<S extends IRootConcept, T extends IRo
 	 */
 	@Override
 	public IKasperID getTargetIdentifier() {
-		return this.target_id;
+		return this.targetId;
 	}
 
 	/**

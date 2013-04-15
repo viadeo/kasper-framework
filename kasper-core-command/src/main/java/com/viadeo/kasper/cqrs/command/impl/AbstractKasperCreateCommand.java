@@ -24,7 +24,7 @@ public abstract class AbstractKasperCreateCommand implements ICreateCommand {
 	// ------------------------------------------------------------------------
 
 	public AbstractKasperCreateCommand() {
-
+		// For serialization
 	}
 
 	public AbstractKasperCreateCommand(final IKasperID providedId) {

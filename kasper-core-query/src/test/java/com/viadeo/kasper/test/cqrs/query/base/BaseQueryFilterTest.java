@@ -3,6 +3,7 @@ package com.viadeo.kasper.test.cqrs.query.base;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
@@ -12,6 +13,7 @@ import com.viadeo.kasper.test.cqrs.query.StubbedDQTOS.DQOTest;
 
 public class BaseQueryFilterTest extends TestCase {
 
+	@Test
 	public void testOperators() {
 		@SuppressWarnings("unchecked")
 		final IQueryFilter<DQOTest> filter = Mockito

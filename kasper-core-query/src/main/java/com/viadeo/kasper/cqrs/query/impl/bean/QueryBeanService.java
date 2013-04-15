@@ -6,10 +6,11 @@ import com.viadeo.kasper.cqrs.query.IQueryDTO;
 import com.viadeo.kasper.cqrs.query.IQueryMessage;
 import com.viadeo.kasper.cqrs.query.IQueryService;
 
-public abstract class QueryBeanService<BEAN extends Serializable, DTO extends IQueryDTO> implements IQueryService<BeanQuery<BEAN>, DTO> {
+public abstract class QueryBeanService<BEAN extends Serializable, DTO extends IQueryDTO> 
+		implements IQueryService<BeanQuery<BEAN>, DTO> {
 
 	@Override
-	public DTO retrieve(IQueryMessage<BeanQuery<BEAN>> message) {
+	public DTO retrieve(final IQueryMessage<BeanQuery<BEAN>> message) {
 		final QueryBeanMessage<BEAN> beanMessage;
 		
 		if (QueryBeanMessage.class.isAssignableFrom(message.getClass())) {

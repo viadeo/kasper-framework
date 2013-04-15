@@ -19,7 +19,7 @@ import com.viadeo.kasper.event.impl.AbstractEventListener;
 
 public class PlatformPublishEventTest extends AbstractPlatformTests {
 
-	private static final ReentrantLock lock = new ReentrantLock();
+	private static final ReentrantLock LOCK = new ReentrantLock();
 	private static boolean received = false;
 
 	// ------------------------------------------------------------------------
@@ -40,7 +40,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 		@Override
 		public void handle(final IEventMessage<TestEvent> eventMessage) {
 			received = true;
-			lock.unlock();
+			LOCK.unlock();
 		}
 	}
 
@@ -52,12 +52,12 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 		final IEvent event = new TestEvent(id, new DateTime());
 		event.setContext(this.newContext());
 
-		lock.lock();
+		LOCK.lock();
 		this.getPlatform().publishEvent(event);		
-		lock.lock();
+		LOCK.lock();
 
 		assertTrue(received);
-		lock.unlock();
+		LOCK.unlock();
 	}
 
 }

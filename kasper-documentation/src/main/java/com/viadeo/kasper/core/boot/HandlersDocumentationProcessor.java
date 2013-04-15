@@ -20,7 +20,7 @@ import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
  */
 public class HandlersDocumentationProcessor extends AbstractDocumentationProcessor<XKasperCommandHandler, ICommandHandler<?>> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(HandlersDocumentationProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(HandlersDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ public class HandlersDocumentationProcessor extends AbstractDocumentationProcess
 	@Override
 	@SuppressWarnings("unchecked")
 	public void process(final Class<?> handlerClazz) {
-		this.LOGGER.info("Record on handler library : " + handlerClazz.getName());
+		LOGGER.info("Record on handler library : " + handlerClazz.getName());
 		
 		//- Register the handler to the locator -------------------------------
 		getKasperLibrary().recordHandler((Class<? extends ICommandHandler<?>>) handlerClazz);

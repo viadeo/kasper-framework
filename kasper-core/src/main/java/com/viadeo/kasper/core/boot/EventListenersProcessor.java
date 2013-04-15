@@ -24,12 +24,12 @@ import com.viadeo.kasper.event.annotation.XKasperEventListener;
  */
 public class EventListenersProcessor extends AbstractSingletonAnnotationProcessor<XKasperEventListener, EventListener> {
 
-	private Logger LOGGER = LoggerFactory.getLogger(EventListenersProcessor.class);	
+	private static final Logger LOGGER = LoggerFactory.getLogger(EventListenersProcessor.class);	
 	
 	/**
 	 * The event bus to register event listeners on
 	 */
-	private EventBus eventBus;
+	private transient EventBus eventBus;
 	
 	// ------------------------------------------------------------------------
 	

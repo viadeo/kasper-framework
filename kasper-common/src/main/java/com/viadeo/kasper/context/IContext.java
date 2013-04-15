@@ -26,7 +26,7 @@ public interface IContext extends Serializable  {
 	/**
 	 * The name of the context key when stored in meta data maps
 	 */
-	static public final String METANAME = "context";
+	String METANAME = "context";
 
 	/**
 	 * @return the associated ID of the current user

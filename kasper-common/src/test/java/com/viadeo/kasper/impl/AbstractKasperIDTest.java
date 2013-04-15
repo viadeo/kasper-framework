@@ -2,6 +2,8 @@ package com.viadeo.kasper.impl;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
+
 public class AbstractKasperIDTest extends TestCase {
 
 	private class TestID extends AbstractKasperID<Integer> {
@@ -14,6 +16,7 @@ public class AbstractKasperIDTest extends TestCase {
 	
 	// ------------------------------------------------------------------------
 	
+	@Test
 	public void testID() {
 		final TestID id1 = new TestID(42);
 		final TestID id2 = new TestID(42);
@@ -29,6 +32,7 @@ public class AbstractKasperIDTest extends TestCase {
 	
 	// ------------------------------------------------------------------------
 	
+	@Test
 	public void testHashCode() {
 		final TestID id1 = new TestID(42);
 		final TestID id2 = new TestID(42);
@@ -36,7 +40,7 @@ public class AbstractKasperIDTest extends TestCase {
 		
 		assertEquals(id1.hashCode(), id1.hashCode());
 		assertEquals(id1.hashCode(), id2.hashCode());
-		assertTrue(id1.hashCode() != id3.hashCode());		
+		assertNotSame(id1.hashCode(), id3.hashCode());		
 	}
 	
 }

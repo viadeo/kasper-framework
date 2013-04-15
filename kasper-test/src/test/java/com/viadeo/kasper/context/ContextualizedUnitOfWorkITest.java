@@ -119,16 +119,16 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 			AbstractRepository<ContextTestAGR> {
 		@Override
 		protected Optional<ContextTestAGR> doLoad(
-				IKasperID aggregateIdentifier, Long expectedVersion) {
+				final IKasperID aggregateIdentifier, final Long expectedVersion) {
 			StaticChecker.verify(CurrentContext.value().get());
 			return Optional.absent();
 		}
 		@Override
-		protected void doSave(ContextTestAGR aggregate) {
+		protected void doSave(final ContextTestAGR aggregate) {
 			StaticChecker.verify(CurrentContext.value().get());
 		}
 		@Override
-		protected void doDelete(ContextTestAGR aggregate) {
+		protected void doDelete(final ContextTestAGR aggregate) {
 		}
 	}
 

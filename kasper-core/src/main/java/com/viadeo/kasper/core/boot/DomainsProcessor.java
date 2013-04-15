@@ -24,12 +24,12 @@ import com.viadeo.kasper.locators.IDomainLocator;
  */
 public class DomainsProcessor extends AbstractSingletonAnnotationProcessor<XKasperDomain, IInternalDomain> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(DomainsProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DomainsProcessor.class);
 
 	/**
 	 * The domain locator to register domains on
 	 */
-	private IDomainLocator domainLocator;
+	private transient IDomainLocator domainLocator;
 
 	// ------------------------------------------------------------------------
 
@@ -41,7 +41,7 @@ public class DomainsProcessor extends AbstractSingletonAnnotationProcessor<XKasp
 	 */
 	@Override
 	public void process(final Class<?> domainClazz, final IInternalDomain domain) {
-		this.LOGGER.info("Record on domain locator : " + domainClazz.getName());
+		LOGGER.info("Record on domain locator : " + domainClazz.getName());
 
 		//- Register the domain to the locator --------------------------------
 		final XKasperDomain annotation = domainClazz.getAnnotation(XKasperDomain.class);
@@ -56,6 +56,6 @@ public class DomainsProcessor extends AbstractSingletonAnnotationProcessor<XKasp
 	public void setDomainLocator(final IDomainLocator domainLocator) {
 		this.domainLocator = Preconditions.checkNotNull(domainLocator);
 	}
-
+	
 }
 

@@ -10,6 +10,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.cqrs.command.IErrorCommandResult;
+import com.viadeo.kasper.exception.KasperException;
 
 /**
  *
@@ -22,25 +23,25 @@ public class KasperErrorCommandResult extends KasperCommandResult implements IEr
 	/**
 	 * (Optional) Error message (consider to expose it to end user)
 	 */
-	private final String message;
+	private final String errorMessage;
 	
 	/**
 	 * (Optional) exception that generated the error on command execution
 	 */
-	private final Exception exception;
+	private final Exception errorException;
 	
 	// ------------------------------------------------------------------------
 	
 	public KasperErrorCommandResult(final String message) {
 		super(Status.ERROR);
-		this.message = Preconditions.checkNotNull(message);
-		this.exception = null;
+		this.errorMessage = Preconditions.checkNotNull(message);
+		this.errorException = new KasperException();
 	}
 	
 	public KasperErrorCommandResult(final String message, final Exception exception) {
 		super(Status.ERROR);
-		this.message = Preconditions.checkNotNull(message);
-		this.exception = Preconditions.checkNotNull(exception);
+		this.errorMessage = Preconditions.checkNotNull(message);
+		this.errorException = Preconditions.checkNotNull(exception);
 	}	
 	
 	/**
@@ -50,8 +51,8 @@ public class KasperErrorCommandResult extends KasperCommandResult implements IEr
 	 */
 	public KasperErrorCommandResult(final Exception exception) {
 		super(Status.ERROR);
-		this.message = null;
-		this.exception = Preconditions.checkNotNull(exception);
+		this.errorMessage = "";
+		this.errorException = Preconditions.checkNotNull(exception);
 	}		
 
 	// ------------------------------------------------------------------------
@@ -61,7 +62,7 @@ public class KasperErrorCommandResult extends KasperCommandResult implements IEr
 	 */
 	@Override
 	public Optional<String> getErrorMessage() {
-		return Optional.fromNullable(this.message);
+		return Optional.fromNullable(this.errorMessage);
 	}
 
 	// ------------------------------------------------------------------------
@@ -71,7 +72,7 @@ public class KasperErrorCommandResult extends KasperCommandResult implements IEr
 	 */
 	@Override
 	public Optional<Exception> getErrorException() {
-		return Optional.fromNullable(this.exception);
+		return Optional.fromNullable(this.errorException);
 	}
 
 	// ------------------------------------------------------------------------
@@ -91,9 +92,9 @@ public class KasperErrorCommandResult extends KasperCommandResult implements IEr
 		
 		if (KasperErrorCommandResult.class.isAssignableFrom(otherResult.getClass())) {
 			final KasperErrorCommandResult other = (KasperErrorCommandResult) otherResult;
-			if ((null != other.message) && (null != this.message)) {
-				return this.message.equals(other.message) && super.equals(otherResult);
-			} if (other.message == this.message) {
+			if (!other.errorMessage.isEmpty() && !this.errorMessage.isEmpty()) {
+				return this.errorMessage.equals(other.errorMessage) && super.equals(otherResult);
+			} if (other.errorMessage.equals(this.errorMessage)) {
 				return super.equals(otherResult);
 			}
 		}
@@ -106,7 +107,7 @@ public class KasperErrorCommandResult extends KasperCommandResult implements IEr
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this.message, super.hashCode());
+		return Objects.hashCode(this.errorMessage, super.hashCode());
 	}	
 	
 }

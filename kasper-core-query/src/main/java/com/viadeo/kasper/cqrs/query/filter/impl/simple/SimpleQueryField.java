@@ -23,6 +23,6 @@ import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryField;
  * @see IQueryDQO
  */
 public class SimpleQueryField<P extends Comparable<P>, DQO extends IQueryDQO<DQO>>
-extends AbstractQueryField<P, DQO, SimpleQueryFilterElement<DQO,P>> {
+		extends AbstractQueryField<P, DQO, SimpleQueryFilterElement<DQO,P>> {
 
 }

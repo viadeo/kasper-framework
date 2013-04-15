@@ -29,7 +29,7 @@ public abstract class AbstractConceptEvent
 
 	// ------------------------------------------------------------------------
 	
-    protected AbstractConceptEvent() {}
+    protected AbstractConceptEvent() { /* For serialization */ }
 
 	protected AbstractConceptEvent(final IKasperID id, final DateTime lastModificationDate) {
 		super(id, lastModificationDate);

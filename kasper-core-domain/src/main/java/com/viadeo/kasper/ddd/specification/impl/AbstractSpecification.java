@@ -25,7 +25,7 @@ public abstract class AbstractSpecification<E extends IEntity> implements IEntit
 	 * Cache for all specifications annotation (if present)
 	 */
 	@SuppressWarnings("rawtypes")
-	static Map<Class<? extends AbstractSpecification>, XSpecification> annotations = Maps.newConcurrentMap();
+	static private final Map<Class<? extends AbstractSpecification>, XSpecification> ANNOTATIONS = Maps.newConcurrentMap();
 	
 	// ----------------------------------------------------------------------
 	
@@ -35,7 +35,7 @@ public abstract class AbstractSpecification<E extends IEntity> implements IEntit
 	@Override
 	public abstract boolean isSatisfiedBy(E entity);
 
-	public boolean isSatisfiedBy(E entity, ISpecificationErrorMessage errorMessage) {
+	public boolean isSatisfiedBy(final E entity, final ISpecificationErrorMessage errorMessage) {
 		Preconditions.checkNotNull(errorMessage);
 		final boolean isSatisfied = this.isSatisfiedBy(Preconditions.checkNotNull(entity));
 		
@@ -57,11 +57,11 @@ public abstract class AbstractSpecification<E extends IEntity> implements IEntit
 		final XSpecification annotation;
 		final String errorMessage;
 		
-		if (!AbstractSpecification.annotations.containsKey(this.getClass())) {
+		if (!AbstractSpecification.ANNOTATIONS.containsKey(this.getClass())) {
 			annotation = this.getClass().getAnnotation(XSpecification.class);
-			AbstractSpecification.annotations.put(this.getClass(), annotation);
+			AbstractSpecification.ANNOTATIONS.put(this.getClass(), annotation);
 		} else {
-			annotation = AbstractSpecification.annotations.get(this.getClass());
+			annotation = AbstractSpecification.ANNOTATIONS.get(this.getClass());
 		}
 		
 		if (null != annotation) {			 

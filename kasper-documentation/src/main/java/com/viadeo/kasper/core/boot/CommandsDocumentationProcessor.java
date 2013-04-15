@@ -19,7 +19,7 @@ import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
  */
 public class CommandsDocumentationProcessor extends AbstractDocumentationProcessor<XKasperCommand, ICommand> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(CommandsDocumentationProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommandsDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ public class CommandsDocumentationProcessor extends AbstractDocumentationProcess
 	@Override
 	@SuppressWarnings("unchecked")
 	public void process(final Class<?> commandClazz) {
-		this.LOGGER.info("Record on command library : " + commandClazz.getName());
+		LOGGER.info("Record on command library : " + commandClazz.getName());
 		
 		//- Register the domain to the locator --------------------------------
 		getKasperLibrary().recordCommand((Class<? extends ICommand>) commandClazz);

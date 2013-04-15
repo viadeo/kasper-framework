@@ -33,22 +33,24 @@ public class DefaultContextBuilder implements IDefaultContextBuilder {
 		
 		static public final String DEFAULT_USER_LANG = "us";
 		
-		private IKasperID id;
+		private IKasperID userId;
 		private String userLang;
 		
 		public DefaultContext() {
-			this.id = new DefaultKasperId(UUID.randomUUID());
+			super();
+			
+			this.userId = new DefaultKasperId(UUID.randomUUID());
 			this.userLang = DefaultContext.DEFAULT_USER_LANG;
 		}		
 		
 		@Override
 		public IKasperID getUserId() {
-			return this.id;
+			return this.userId;
 		}
 
 		@Override
 		public DefaultContext setUserId(final IKasperID userId) {
-			this.id = userId;
+			this.userId = userId;
 			return this;
 		}
 
@@ -79,12 +81,12 @@ public class DefaultContextBuilder implements IDefaultContextBuilder {
 			super(UUID.randomUUID());
 		}
 		
-		public DefaultKasperId(final UUID id) {
-			super(id);
+		public DefaultKasperId(final UUID userId) {
+			super(userId);
 		}
 		
-		public DefaultKasperId(final String id) {
-			super(UUID.fromString(id));
+		public DefaultKasperId(final String userId) {
+			super(UUID.fromString(userId));
 		}
 
 	}
@@ -93,8 +95,7 @@ public class DefaultContextBuilder implements IDefaultContextBuilder {
 
 	@Override
 	public IContext buildDefault() {
-		final IContext context = new DefaultContext();
-		return context;
+		return new DefaultContext();
 	}
 
 }

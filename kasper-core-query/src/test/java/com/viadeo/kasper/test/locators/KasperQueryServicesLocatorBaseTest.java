@@ -49,6 +49,7 @@ public class KasperQueryServicesLocatorBaseTest {
 	}
 
 	@Test
+	@SuppressWarnings("rawtypes")
 	public void getServiceFromQueryClass_emptyState() {
 		final Optional<IQueryService> registeredService = locator.getServiceFromQueryClass(TestQuery.class);
 		assertFalse(registeredService.isPresent());

@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event.impl;
 
-public class EventBaseOntology {
+public final class EventBaseOntology {
 
 	public static final String CREATED = "created";
 	public static final String UPDATED = "updated";

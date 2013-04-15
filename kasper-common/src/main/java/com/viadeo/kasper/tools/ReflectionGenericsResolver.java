@@ -22,8 +22,10 @@ import com.google.common.base.Optional;
  * Utility class used to retrieve types of parameterized classes
  *
  */
-public class ReflectionGenericsResolver {
+public final class ReflectionGenericsResolver {
 
+	private ReflectionGenericsResolver() { /* singleton */ }
+	
 	/**
 	 * @param runtimeType the runtime class to be analyzed
 	 * @param targetType the target type to resolve the runtimeType against
@@ -63,12 +65,15 @@ public class ReflectionGenericsResolver {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static final Optional<Class> getClass(final Type _type) {
+		final Optional<Class> ret;
 		if (_type instanceof Class) {
-			return Optional.of((Class) _type);
+			ret = Optional.of((Class) _type);
 		} else if (_type instanceof ParameterizedType) {
-			return ReflectionGenericsResolver.getClass(((ParameterizedType) _type).getRawType());
+			ret = ReflectionGenericsResolver.getClass(((ParameterizedType) _type).getRawType());
+		} else {
+			ret = Optional.absent();
 		}
-		return Optional.absent();
+		return ret;
 	}
 
 	// ------------------------------------------------------------------------

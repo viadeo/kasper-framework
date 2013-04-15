@@ -19,7 +19,7 @@ import com.viadeo.kasper.er.annotation.XKasperConcept;
  */
 public class ConceptsDocumentationProcessor extends AbstractDocumentationProcessor<XKasperConcept, IConcept> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(ConceptsDocumentationProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ConceptsDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ public class ConceptsDocumentationProcessor extends AbstractDocumentationProcess
 	@Override
 	@SuppressWarnings("unchecked")
 	public void process(final Class<?> conceptClazz) {
-		this.LOGGER.info("Record on concept library : " + conceptClazz.getName());
+		LOGGER.info("Record on concept library : " + conceptClazz.getName());
 		
 		//- Register the domain to the locator --------------------------------
 		getKasperLibrary().recordConcept((Class<? extends IConcept>) conceptClazz);

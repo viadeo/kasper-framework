@@ -9,7 +9,7 @@ public class QueryBeanMessage<BEAN extends Serializable> extends QueryMessage<Be
 
 	private static final long serialVersionUID = -1253624028822092359L;
 	
-	public QueryBeanMessage(IContext context, BeanQuery<BEAN> query) {
+	public QueryBeanMessage(final IContext context, final BeanQuery<BEAN> query) {
 		super(context, query);
 	}
 

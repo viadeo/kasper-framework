@@ -17,7 +17,7 @@ import javax.ws.rs.core.MediaType;
 import org.springframework.beans.factory.annotation.Configurable;
 
 import com.google.common.base.Optional;
-import com.sun.jersey.spi.inject.Inject;
+import com.sun.jersey.api.core.InjectParam;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.doc.nodes.AbstractDocumentedDomainNode;
 import com.viadeo.kasper.doc.nodes.DocumentedDomain;
@@ -30,7 +30,7 @@ public class KasperDocResource {
 
 	private static final String defaultUnspecified = "unspecified";
 	
-	@Inject
+	@InjectParam
 	private KasperLibrary kasperLibrary;
 	
 	// ------------------------------------------------------------------------
@@ -80,7 +80,8 @@ public class KasperDocResource {
 	@GET
 	@Path(DocumentedDomain.TYPE_NAME + "/{domainName}/{type}/{entityName}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String getEntity(@PathParam("domainName") String domainName, @PathParam("type") String type, @PathParam("entityName") String entityName) {
+	public String getEntity(final @PathParam("domainName") String domainName, final @PathParam("type") String type, final @PathParam("entityName") String entityName) {
+		String retDomainName = domainName;
 		if (null != domainName) {
 			if (null != entityName) {
 				final Optional<AbstractDocumentedDomainNode> entity = getKasperLibrary().getEntity(domainName, type, entityName);
@@ -90,9 +91,9 @@ public class KasperDocResource {
 			}
 			return new RetUnexistent(type, entityName).toJson();
 		} else {
-			domainName = defaultUnspecified;
+			retDomainName = defaultUnspecified;
 		}		
-		return new RetUnexistent(DocumentedDomain.TYPE_NAME, domainName).toJson();
+		return new RetUnexistent(DocumentedDomain.TYPE_NAME, retDomainName).toJson();
 	}	
 	
 	// ------------------------------------------------------------------------

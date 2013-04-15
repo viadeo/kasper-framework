@@ -27,6 +27,6 @@ public interface IComponentEntity<R extends IRootConcept>
 	/**
 	 * The position of the parent aggregate in generic parameters
 	 */
-	public static final int PARENT_ARGUMENT_POSITION = 0;
+	int PARENT_ARGUMENT_POSITION = 0;
 	
 }

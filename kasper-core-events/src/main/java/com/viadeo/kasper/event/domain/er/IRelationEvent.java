@@ -19,11 +19,11 @@ public interface IRelationEvent extends IEntityEvent {
 	/**
 	 * @return the source entity id associated with the relation concerned by this event
 	 */
-	public IKasperID getSourceId();
+	IKasperID getSourceId();
 
 	/**
 	 * @return the target entity id associated with the relation concerned by this event
 	 */
-	public IKasperID getTargetId();
+	IKasperID getTargetId();
 
 }

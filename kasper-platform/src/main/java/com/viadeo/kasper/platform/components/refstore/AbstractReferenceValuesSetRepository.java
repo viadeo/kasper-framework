@@ -12,9 +12,8 @@ import java.util.Set;
 
 import com.viadeo.kasper.ddd.values.IReferenceValue;
 
-abstract public class KasperReferenceValuesSetRepository<V extends IReferenceValue<? extends Serializable>> {
+abstract public class AbstractReferenceValuesSetRepository<V extends IReferenceValue<? extends Serializable>> {
 
-	@SuppressWarnings("unused")
-	private Set<? extends Serializable> values;
+	protected Set<? extends Serializable> values;
 	
 }

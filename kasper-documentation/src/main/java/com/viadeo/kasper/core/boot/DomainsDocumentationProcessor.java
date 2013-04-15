@@ -21,7 +21,7 @@ import com.viadeo.kasper.ddd.annotation.XKasperDomain;
  */
 public class DomainsDocumentationProcessor extends AbstractDocumentationProcessor<XKasperDomain, IInternalDomain> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(DomainsDocumentationProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DomainsDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------
 
@@ -34,7 +34,7 @@ public class DomainsDocumentationProcessor extends AbstractDocumentationProcesso
 	@Override
 	@SuppressWarnings("unchecked")
 	public void process(final Class<?> domainClazz) {
-		this.LOGGER.info("Record on domain library : " + domainClazz.getName());
+		LOGGER.info("Record on domain library : " + domainClazz.getName());
 
 		//- Register the domain to the locator --------------------------------
 		getKasperLibrary().recordDomain((Class<? extends IInternalDomain>) domainClazz);

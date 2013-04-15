@@ -55,7 +55,7 @@ public abstract class AbstractEventListener<E extends IEvent>
 	 */
 	@SuppressWarnings("unchecked") // Safe
 	@Override
-	public void handle(@SuppressWarnings("rawtypes") org.axonframework.domain.EventMessage eventMessage) {
+	public void handle(final @SuppressWarnings("rawtypes") org.axonframework.domain.EventMessage eventMessage) {
 		
 		if (!this.getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
 			return;
@@ -75,14 +75,14 @@ public abstract class AbstractEventListener<E extends IEvent>
 	/**
 	 * @param eventMessage the Kasper event message to handle
 	 */
-	public void handle(IEventMessage<E> eventMessage){
+	public void handle(final IEventMessage<E> eventMessage){
 		throw new UnsupportedOperationException();
 	}
 
 	/**
 	 * @param event the Kasper event to handle
 	 */
-	public void handle(E event){
+	public void handle(final E event){
 		throw new UnsupportedOperationException();
 	}
 	

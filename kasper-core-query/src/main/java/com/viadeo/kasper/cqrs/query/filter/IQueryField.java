@@ -23,17 +23,17 @@ public interface IQueryField<P, DQO extends IQueryDQO<?>, F extends IQueryFilter
 	/**
 	 * Generic parameter position of payload
 	 */
-	public static final int PARAMETER_PAYLOAD_POSITION = 0;
+	int PARAMETER_PAYLOAD_POSITION = 0;
 
 	/**
 	 * Generic parameter position of DQO
 	 */
-	public static final int PARAMETER_DQO_POSITION = 1;
+	int PARAMETER_DQO_POSITION = 1;
 
 	/**
 	 * Generic parameter position of filter
 	 */
-	public static final int PARAMETER_FILTER_POSITION = 2;
+	int PARAMETER_FILTER_POSITION = 2;
 
 	/**
 	 * @param dto

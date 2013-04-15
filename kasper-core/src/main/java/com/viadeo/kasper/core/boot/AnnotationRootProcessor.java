@@ -54,23 +54,23 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
  */
 public class AnnotationRootProcessor implements ApplicationContextAware {
 
-	private Logger LOGGER = LoggerFactory.getLogger(AnnotationRootProcessor.class);
+	private static Logger LOGGER = LoggerFactory.getLogger(AnnotationRootProcessor.class);
 
 	/** Only used if Spring context available in order to reuse injected processor instances */
-	private ApplicationContext context;
+	private transient ApplicationContext context;
 
 	/** Allow user to explicitly specify processor instances to use before boot */
-	private List<IAnnotationProcessor<?, ?>> userProcessors;
+	private transient List<IAnnotationProcessor<?, ?>> userProcessors;
 
 	/** User provided scan packages names */
-	private List<String> scanPrefixes;
+	private transient List<String> scanPrefixes;
 
 	/** If set, will not add its own package to scan prefixes */
-	private boolean doNotScanDefaultPrefix = false;
+	private transient boolean doNotScanDefaultPrefix = false;
 
 	/** Scanned processors */
-	private Map<Class<? extends Annotation>, List<IAnnotationProcessor<?, ?>>> processors;
-	private Map<IAnnotationProcessor<?, ?>, Class<?>> processorsInterface;
+	private transient Map<Class<? extends Annotation>, List<IAnnotationProcessor<?, ?>>> processors;
+	private transient Map<IAnnotationProcessor<?, ?>, Class<?>> processorsInterface;
 
 	/** Class-path reflection resolver */
 	private Reflections reflections;
@@ -303,7 +303,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
 		if (null == this.scanPrefixes) {
 			this.scanPrefixes = new ArrayList<String>();
 		}
-		this.scanPrefixes = Arrays.asList(scanPrefixes);
+		this.scanPrefixes = Arrays.asList(scanPrefixes.clone());
 	}
 
 	// -----

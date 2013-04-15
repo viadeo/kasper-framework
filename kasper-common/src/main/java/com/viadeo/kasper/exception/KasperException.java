@@ -10,6 +10,10 @@ package com.viadeo.kasper.exception;
 public class KasperException extends Exception {
 	private static final long serialVersionUID = 8283132692513219950L;
 
+	public KasperException() {
+		super();
+	}
+	
 	public KasperException(final String message, final Throwable e) {
 		super(message, e);
 	}

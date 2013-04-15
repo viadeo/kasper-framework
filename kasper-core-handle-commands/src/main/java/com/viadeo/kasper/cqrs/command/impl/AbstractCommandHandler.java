@@ -90,7 +90,7 @@ public abstract class AbstractCommandHandler<C extends ICommand>
 	 * @return the command result
 	 * @throws KasperEventException
 	 */
-	public ICommandResult handle(ICommandMessage<C> message, UnitOfWork uow) throws KasperEventException {
+	public ICommandResult handle(final ICommandMessage<C> message, final UnitOfWork uow) throws KasperEventException {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -99,7 +99,7 @@ public abstract class AbstractCommandHandler<C extends ICommand>
 	 * @return the command result
 	 * @throws KasperEventException
 	 */
-	public ICommandResult handle(ICommandMessage<C> message) throws KasperEventException {
+	public ICommandResult handle(final ICommandMessage<C> message) throws KasperEventException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -108,7 +108,7 @@ public abstract class AbstractCommandHandler<C extends ICommand>
 	 * @return
 	 * @throws KasperEventException
 	 */
-	public ICommandResult handle(C command) throws KasperEventException {
+	public ICommandResult handle(final C command) throws KasperEventException {
 		throw new UnsupportedOperationException();
 	}	
 	

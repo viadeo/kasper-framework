@@ -32,7 +32,7 @@ public abstract class AbstractEnclosingValue<PAYLOAD extends Serializable>
 		this.value = Preconditions.checkNotNull(value);
 	}
 	
-	public PAYLOAD get() {
+	public PAYLOAD getValue() {
 		return value;
 	}
 

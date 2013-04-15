@@ -10,19 +10,19 @@ public class ApplicationRepository implements IRepository<Application> {
 	public static final String DESCRIPTION = "The applications repository";
 	
 	@Override
-	public void add(Application arg0) {
+	public void add(final Application arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public Application load(Object arg0) {
+	public Application load(final Object arg0) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Application load(Object arg0, Long arg1) {
+	public Application load(final Object arg0, final Long arg1) {
 		// TODO Auto-generated method stub
 		return null;
 	}

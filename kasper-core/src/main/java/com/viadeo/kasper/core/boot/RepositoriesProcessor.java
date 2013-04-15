@@ -25,17 +25,17 @@ import com.viadeo.kasper.locators.IDomainLocator;
  */
 public class RepositoriesProcessor extends AbstractSingletonAnnotationProcessor<XKasperRepository, IRepository<?>> {
 
-	private Logger LOGGER = LoggerFactory.getLogger(RepositoriesProcessor.class);	
+	private static final Logger LOGGER = LoggerFactory.getLogger(RepositoriesProcessor.class);	
 	
 	/**
 	 * The domain locator to register repositories on
 	 */
-	private IDomainLocator domainLocator;
+	private transient IDomainLocator domainLocator;
 	
 	/**
 	 * The event bus to be injected on domain repositories (Axon dependency for event sourced aggregates)
 	 */
-	private EventBus eventBus;
+	private transient EventBus eventBus;
 	
 	// ------------------------------------------------------------------------
 	

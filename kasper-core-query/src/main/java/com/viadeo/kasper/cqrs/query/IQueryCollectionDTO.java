@@ -21,13 +21,13 @@ public interface IQueryCollectionDTO<DTO extends IQueryDTO> extends
 		IQueryDTO, Iterable<DTO> {
 
 	/** Generic parameter position for Data Transfer Object */
-	public static final int PARAMETER_DTO_POSITION = 0;
+	int PARAMETER_DTO_POSITION = 0;
 
 	/**
 	 * Constant that can be used in getTotal() to indicate an infinite number of
 	 * possible result elements
 	 */
-	public static final int INFINITE_TOTAL = -1;
+	int INFINITE_TOTAL = -1;
 
 	/** @return the number of elements of this (returned) collection */
 	int getSize();

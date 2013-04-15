@@ -25,7 +25,7 @@ import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryFilter;
  *            the managed payload type
  */
 public class BaseQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comparable<P>>
-extends AbstractQueryFilter<DQO> implements IQueryFilterElement<DQO, P> {
+		extends AbstractQueryFilter<DQO> implements IQueryFilterElement<DQO, P> {
 
 	private static final long serialVersionUID = -818497044226174978L;
 

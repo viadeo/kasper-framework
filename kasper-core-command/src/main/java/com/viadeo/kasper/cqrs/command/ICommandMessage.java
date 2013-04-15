@@ -28,6 +28,6 @@ public interface ICommandMessage<C extends ICommand> extends Serializable {
 	 * @return the enclosed command
 	 * @see ICommand
 	 */
-	public C getCommand();
+	C getCommand();
 
 }

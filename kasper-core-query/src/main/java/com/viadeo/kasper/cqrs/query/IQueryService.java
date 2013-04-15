@@ -23,12 +23,12 @@ public interface IQueryService<Q extends IQuery, DTO extends IQueryDTO> {
 	/**
 	 * Generic parameter position for Data Query Object
 	 */
-	public static final int PARAMETER_QUERY_POSITION = 0;
+	int PARAMETER_QUERY_POSITION = 0;
 
 	/**
 	 * Generic parameter position for Data Transfer Object
 	 */
-	public static final int PARAMETER_DTO_POSITION = 1;
+	int PARAMETER_DTO_POSITION = 1;
 
 	/**
 	 * Operates the service, retrieve a service DTO satisfying the submitted

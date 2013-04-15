@@ -19,12 +19,12 @@ import com.viadeo.kasper.platform.IPlatform;
 public class KasperPlatformBootListener implements ServletContextListener {
 
 	@Override
-	public void contextDestroyed(ServletContextEvent sce) {
+	public void contextDestroyed(final ServletContextEvent sce) {
 
 	}
 
 	@Override
-	public void contextInitialized(ServletContextEvent sce) {
+	public void contextInitialized(final ServletContextEvent sce) {
 		final ServletContext ctx = sce.getServletContext();
 		final WebApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ctx);
 		

@@ -24,6 +24,8 @@ public class NotSpecification<E extends IEntity> extends AbstractSpecification<E
 	// ----------------------------------------------------------------------
 
 	public NotSpecification(final IEntitySpecification<E> spec) {
+		super();
+		
 		this.spec = Preconditions.checkNotNull(spec);
 	}
 

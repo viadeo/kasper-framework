@@ -21,6 +21,6 @@ public interface ICommandHandler<C extends ICommand> extends CommandHandler<C> {
 	/**
 	 * Generic parameter position for the handled command
 	 */
-	static final int COMMAND_PARAMETER_POSITION = 0;
+	int COMMAND_PARAMETER_POSITION = 0;
 
 }

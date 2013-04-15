@@ -18,8 +18,8 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 public class DocumentedEntity extends AbstractDocumentedDomainNode {
 	private static final long serialVersionUID = -3336007269246172693L;
 	
-	static final String TYPE_NAME = "entity";
-	static final String PLURAL_TYPE_NAME = "entities";
+	static public final String TYPE_NAME = "entity";
+	static public String PLURAL_TYPE_NAME = "entities";
 	
 	private String parent = null;
 	private Boolean isAggregate = false;

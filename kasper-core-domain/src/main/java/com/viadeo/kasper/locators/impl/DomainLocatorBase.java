@@ -47,12 +47,12 @@ public class DomainLocatorBase implements IDomainLocator {
 	// ------------------------------------------------------------------------
 
 	/** Domain repositories  */
-	private final RepositoriesByAggregateCache entityRepositories;
+	private transient final RepositoriesByAggregateCache entityRepositories;
 
 	/** Domains */
-	private final DomainsPropertiesCache domains;
-	private final DomainByPropertyCache domainNames;
-	private final DomainByPropertyCache domainPrefixes;
+	private transient final DomainsPropertiesCache domains;
+	private transient final DomainByPropertyCache domainNames;
+	private transient final DomainByPropertyCache domainPrefixes;
 
 	// ------------------------------------------------------------------------
 
@@ -69,26 +69,24 @@ public class DomainLocatorBase implements IDomainLocator {
 	 * @see com.viadeo.kasper.locators.IDomainLocator#getDomainEntities(com.viadeo.kasper.IDomain)
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public <D extends IDomain> Set<? extends IEntity> getDomainEntities(final D _domain) {
 		Preconditions.checkNotNull(_domain);
 		// TODO Auto-generated method stub
 
-		@SuppressWarnings("unchecked")
-		final Set<? extends IEntity> empty = Collections.EMPTY_SET;
-		return empty;
+		return Collections.EMPTY_SET;
 	}
 
 	/**
 	 * @see com.viadeo.kasper.locators.IDomainLocator#getDomainEntities(java.lang.Class)
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public <D extends IDomain> Set<? extends IEntity> getDomainEntities(final Class<D> _domain) {
 		Preconditions.checkNotNull(_domain);
 		// TODO Auto-generated method stub
 
-		@SuppressWarnings("unchecked")
-		final Set<? extends IEntity> empty = Collections.EMPTY_SET;
-		return empty;
+		return Collections.EMPTY_SET;
 	}
 
 	/**
@@ -140,12 +138,11 @@ public class DomainLocatorBase implements IDomainLocator {
 	 * @see com.viadeo.kasper.locators.IDomainLocator#getEntityRepository(java.lang.Class)
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public <E extends IAggregateRoot> IRepository<E> getEntityRepository(final Class<E> _entityClass) {
 		Preconditions.checkNotNull(_entityClass);
 
-		@SuppressWarnings("unchecked") // Safe
-		final IRepository<E> repository = (IRepository<E>) this.entityRepositories.get(_entityClass);
-		return repository;
+		return (IRepository<E>) this.entityRepositories.get(_entityClass);
 	}
 
 	// ========================================================================

@@ -25,9 +25,7 @@ public abstract class AbstractContext implements IContext {
 	
 	// ------------------------------------------------------------------------
 	
-	protected AbstractContext() {
-		
-	}
+	protected AbstractContext() { /* abstract */ }
 	
 	@Override
 	public void setProperty(final String key, final Serializable value) {
@@ -39,18 +37,24 @@ public abstract class AbstractContext implements IContext {
 
 	@Override
 	public Optional<Serializable> getProperty(final String key) {
+		final Optional<Serializable> ret;
 		if (null == this.properties) {
-			return Optional.absent();
+			ret = Optional.absent();
+		} else {
+			ret = Optional.fromNullable(this.properties.get(key));
 		}
-		return Optional.fromNullable(this.properties.get(key));
+		return ret;
 	}
 
 	@Override
-	public boolean hasProperty(String key) {
+	public boolean hasProperty(final String key) {
+		final boolean ret;
 		if (null == this.properties) {
-			return false;
+			ret = false;
+		} else {
+			ret = this.properties.containsKey(key);
 		}
-		return this.properties.containsKey(key);
+		return ret;
 	}
 
 	@Override

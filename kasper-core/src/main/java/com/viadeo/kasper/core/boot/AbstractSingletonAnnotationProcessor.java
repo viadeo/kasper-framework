@@ -27,12 +27,12 @@ import com.viadeo.kasper.exception.KasperRuntimeException;
  */
 public abstract class AbstractSingletonAnnotationProcessor<T extends Annotation, I> implements IAnnotationProcessor<T,I>, ApplicationContextAware {
 
-	private static Logger LOGGER = LoggerFactory.getLogger(AbstractSingletonAnnotationProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractSingletonAnnotationProcessor.class);
 	
 	/** 
 	 * Only used if Spring context available in order to reuse injected processor instances 
 	 */
-	private ApplicationContext context;	
+	private transient ApplicationContext context;	
 
 	// ------------------------------------------------------------------------	
 	
@@ -71,7 +71,7 @@ public abstract class AbstractSingletonAnnotationProcessor<T extends Annotation,
 		this.process(clazz, instance);
 	}
 	
-	abstract void process(Class<?> clazz, I instance);
+	abstract protected void process(Class<?> clazz, I instance);
 	
 	// ------------------------------------------------------------------------
 	
