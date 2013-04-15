@@ -3,5 +3,7 @@
 **/.settings
 **/.project
 **/.classpath
+**/.pmd
+**/**/.pmd
 .metadata
 target
