@@ -258,8 +258,8 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
 						// PROCESSOR DELEGATION
 						try{
 							processor.process(clazz);
-						}catch (Exception e){
-							LOGGER.warn("Unexpected error during processor delegation, <class="+clazz.getName()+">: "+e.getCause());
+						} catch (Exception e) {
+							LOGGER.warn("Unexpected error during processor delegation, <class="+clazz.getName()+">: ", e);
 						}
 
 					} else {
