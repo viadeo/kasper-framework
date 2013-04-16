@@ -13,16 +13,21 @@
 	<name>KASPER</name>
 	<packaging>pom</packaging>
 
-    <properties>
-        <!-- SONAR properties -->
-        <sonar.host.url>http://hudson.smallbusiness.local/sonar/</sonar.host.url>
-        <sonar.jdbc.url>jdbc:mysql://hudson.smallbusiness.local:3306/sonar?useUnicode=true&amp;characterEncoding=utf8</sonar.jdbc.url>
-        <sonar.jdbc.driver>com.mysql.jdbc.Driver</sonar.jdbc.driver>
-        <sonar.jdbc.username>sonar</sonar.jdbc.username>
-        <sonar.jdbc.password>sonar</sonar.jdbc.password>
-        <sonar.dynamicAnalysis>true</sonar.dynamicAnalysis>
-        <sonar.java.coveragePlugin>cobertura</sonar.java.coveragePlugin>
-    </properties>
+    <profiles>
+        <profile>
+            <id>sonar</id>
+            <properties>
+                <!-- SONAR properties -->
+                <sonar.host.url>http://hudson.smallbusiness.local/sonar/</sonar.host.url>
+                <sonar.jdbc.url>jdbc:mysql://hudson.smallbusiness.local:3306/sonar?useUnicode=true&amp;characterEncoding=utf8</sonar.jdbc.url>
+                <sonar.jdbc.driver>com.mysql.jdbc.Driver</sonar.jdbc.driver>
+                <sonar.jdbc.username>sonar</sonar.jdbc.username>
+                <sonar.jdbc.password>sonar</sonar.jdbc.password>
+                <sonar.dynamicAnalysis>true</sonar.dynamicAnalysis>
+                <sonar.java.coveragePlugin>cobertura</sonar.java.coveragePlugin>
+            </properties>
+        </profile>
+    </profiles>
 
 	<modules>
 		<module>parent</module>
