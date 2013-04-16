@@ -3,5 +3,6 @@
 **/.settings
 **/.project
 **/.classpath
+**/.svn
 .metadata
 target
