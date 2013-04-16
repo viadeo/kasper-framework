@@ -186,7 +186,7 @@
 			<dependency>
 				<groupId>com.sun.jersey.jersey-test-framework</groupId>
 				<artifactId>jersey-test-framework-http</artifactId>
-				<version>1.16</version>
+				<version>${com.sun.jersey.version}</version>
 				<scope>test</scope>
             </dependency>
 			<dependency>
