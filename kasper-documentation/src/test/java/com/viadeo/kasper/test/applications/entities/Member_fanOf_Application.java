@@ -16,8 +16,8 @@ import com.viadeo.kasper.test.root.entities.Member;
 public class Member_fanOf_Application implements IRootRelation<Member, Application> {
 	private static final long serialVersionUID = -6384465229521499408L;
 	
-	final static public String NAME = "fan_of";
-	final static public String DESCRIPTION = "Tha Member is a big fan of this application";
+	public static final String NAME = "fan_of";
+	public static final String DESCRIPTION = "Tha Member is a big fan of this application";
 
 	@Override
 	public IKasperID getSourceIdentifier() {

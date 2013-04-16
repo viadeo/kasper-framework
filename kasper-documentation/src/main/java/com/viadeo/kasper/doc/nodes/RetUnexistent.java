@@ -9,7 +9,7 @@ package com.viadeo.kasper.doc.nodes;
 public class RetUnexistent extends RetError {
 	private static final long serialVersionUID = -9151268172766961974L;
 	
-	final private String name;
+	private final String name;
 	
 	// ------------------------------------------------------------------------
 	

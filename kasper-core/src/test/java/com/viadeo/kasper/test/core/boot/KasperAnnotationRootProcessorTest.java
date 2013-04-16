@@ -1,11 +1,13 @@
 package com.viadeo.kasper.test.core.boot;
 
-
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import junit.framework.TestCase;
 
-import com.viadeo.kasper.core.boot.IAnnotationProcessor;
+import org.junit.Test;
+
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
+import com.viadeo.kasper.core.boot.IAnnotationProcessor;
 
 public class KasperAnnotationRootProcessorTest extends TestCase {
 	
@@ -15,7 +17,7 @@ public class KasperAnnotationRootProcessorTest extends TestCase {
 	
 	public static @interface XTestAnnotation { }
 	
-	public static interface TestInterface { }
+	public interface TestInterface { }
 	
 	@XTestAnnotation
 	public static final class TestClass implements TestInterface {	}	
@@ -33,6 +35,7 @@ public class KasperAnnotationRootProcessorTest extends TestCase {
 	
 	// ------------------------------------------------------------------------
 	
+	@Test
 	public void testUserProcessorCall() {
 		final AnnotationRootProcessor rootProcessor = new AnnotationRootProcessor();
 		

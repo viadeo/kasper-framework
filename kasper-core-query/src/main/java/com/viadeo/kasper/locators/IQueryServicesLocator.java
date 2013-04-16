@@ -25,6 +25,7 @@ public interface IQueryServicesLocator {
 	 * @param queryClass the query class
 	 * @return a corresponding service instance
 	 */
+	@SuppressWarnings("rawtypes")
 	Optional<IQueryService> getServiceFromQueryClass(Class<? extends IQuery> queryClass);
 
 	/**
@@ -50,7 +51,6 @@ public interface IQueryServicesLocator {
 	 *
 	 * @return all the registered services
 	 */
-	@SuppressWarnings("rawtypes")
-	Collection<IQueryService> getServices();
+	Collection<IQueryService<?,?>> getServices();
 
 }

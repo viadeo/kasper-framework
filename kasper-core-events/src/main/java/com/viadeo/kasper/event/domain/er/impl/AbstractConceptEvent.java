@@ -9,7 +9,6 @@ package com.viadeo.kasper.event.domain.er.impl;
 import org.joda.time.DateTime;
 
 import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.domain.er.IConceptEvent;
 import com.viadeo.kasper.event.domain.impl.AbstractEntityEvent;
 
@@ -29,7 +28,7 @@ public abstract class AbstractConceptEvent
 
 	// ------------------------------------------------------------------------
 	
-    protected AbstractConceptEvent() {}
+    protected AbstractConceptEvent() { /* For serialization */ }
 
 	protected AbstractConceptEvent(final IKasperID id, final DateTime lastModificationDate) {
 		super(id, lastModificationDate);

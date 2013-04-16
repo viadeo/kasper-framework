@@ -23,12 +23,12 @@ import com.viadeo.kasper.locators.IQueryServicesLocator;
  */
 public class QueryServicesProcessor extends AbstractSingletonAnnotationProcessor<XKasperQueryService, IQueryService<?,?>> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(QueryServicesProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(QueryServicesProcessor.class);
 
 	/**
 	 * The locator to register query services on
 	 */
-	private IQueryServicesLocator queryServicesLocator;
+	private transient IQueryServicesLocator queryServicesLocator;
 
 	// ------------------------------------------------------------------------
 
@@ -40,7 +40,7 @@ public class QueryServicesProcessor extends AbstractSingletonAnnotationProcessor
 	 */
 	@Override
 	public void process(final Class<?> queryServiceClazz, final IQueryService<?,?> queryService) {
-		this.LOGGER.info("Record on query services locator : " + queryServiceClazz.getName());
+		LOGGER.info("Record on query services locator : " + queryServiceClazz.getName());
 
 		final String serviceName;
 		final XKasperQueryService annotation = queryServiceClazz.getAnnotation(XKasperQueryService.class);

@@ -23,8 +23,12 @@ import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
  * 
  * @see IQueryDQO
  */
-public class QueryDQOFactory {
+public final class QueryDQOFactory {
 
+	private static final String ERROR_INSTANCE = "Unable to instanciate new DQO instance";
+	
+	private QueryDQOFactory() { /* singleton */ }
+	
 	/**
 	 * the DQO cache
 	 */
@@ -41,7 +45,8 @@ public class QueryDQOFactory {
 	 * @param dqoClass
 	 * @return a cached DQO instance
 	 */
-	static <DQO extends IQueryDQO<?>> DQO get(final Class<DQO> dqoClass) {
+	@SuppressWarnings("unchecked")
+	public static <DQO extends IQueryDQO<?>> DQO get(final Class<DQO> dqoClass) {
 
 		if (!QueryDQOFactory.dqoCache.containsKey(Preconditions
 				.checkNotNull(dqoClass))) {
@@ -57,30 +62,21 @@ public class QueryDQOFactory {
 				QueryDQOFactory.dqoCache.put(dqoClass, newInstance);
 
 			} catch (final InstantiationException e) {
-				throw new KasperQueryRuntimeException(
-						"Unable to instanciate new DQO instance", e);
+				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e);
 			} catch (final IllegalAccessException e) {
-				throw new KasperQueryRuntimeException(
-						"Unable to instanciate new DQO instance", e);
+				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e);
 			} catch (final SecurityException e) {
-				throw new KasperQueryRuntimeException(
-						"Unable to instanciate new DQO instance", e);
+				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e);
 			} catch (final NoSuchMethodException e) {
-				throw new KasperQueryRuntimeException(
-						"Unable to instanciate new DQO instance", e);
+				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e);
 			} catch (final IllegalArgumentException e) {
-				throw new KasperQueryRuntimeException(
-						"Unable to instanciate new DQO instance", e);
+				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e);
 			} catch (final InvocationTargetException e) {
-				throw new KasperQueryRuntimeException(
-						"Unable to instanciate new DQO instance",
-						e.getTargetException());
+				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e.getTargetException());
 			}
 		}
 
-		@SuppressWarnings("unchecked") // Safe
-		final DQO dqo = (DQO) QueryDQOFactory.dqoCache.get(dqoClass);
-		return dqo;
+		return (DQO) QueryDQOFactory.dqoCache.get(dqoClass);
 	}
 
 }

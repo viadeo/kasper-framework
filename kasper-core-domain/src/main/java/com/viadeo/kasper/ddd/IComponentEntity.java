@@ -8,7 +8,6 @@ package com.viadeo.kasper.ddd;
 
 import org.axonframework.eventsourcing.EventSourcedEntity;
 
-import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.er.IRootConcept;
 
 /**
@@ -27,6 +26,6 @@ public interface IComponentEntity<R extends IRootConcept>
 	/**
 	 * The position of the parent aggregate in generic parameters
 	 */
-	public static final int PARENT_ARGUMENT_POSITION = 0;
+	int PARENT_ARGUMENT_POSITION = 0;
 	
 }

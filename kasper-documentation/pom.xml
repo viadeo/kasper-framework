@@ -75,6 +75,7 @@
 	    	
 	      <!-- For tomcat < 7.x, resources must be available at root for correct assembly copying -->	
 	      <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
 	        <artifactId>maven-resources-plugin</artifactId>
 	        <executions>
 	          <execution>

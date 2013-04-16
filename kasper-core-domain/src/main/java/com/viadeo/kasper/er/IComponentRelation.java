@@ -6,9 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.er;
 
-import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.ddd.IComponentEntity;
-import com.viadeo.kasper.ddd.IEntity;
 
 /**
  *

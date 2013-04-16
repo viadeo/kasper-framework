@@ -11,7 +11,6 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.ddd.impl.AbstractComponentEntity;
 import com.viadeo.kasper.er.IComponentRelation;
-import com.viadeo.kasper.er.IRelation;
 import com.viadeo.kasper.er.IRootConcept;
 
 /**
@@ -29,14 +28,14 @@ public abstract class AbstractComponentRelation<S extends IRootConcept, T extend
 
 	private static final long serialVersionUID = -5237849165883458840L;
 
-	private IKasperID source_id;
-	private IKasperID target_id;	
+	private IKasperID sourceId;
+	private IKasperID targetId;	
 
 	// ------------------------------------------------------------------------
 
-	public void setId(final IKasperID source_id, final IKasperID target_id) {
-		this.source_id = Preconditions.checkNotNull(source_id);
-		this.target_id = Preconditions.checkNotNull(target_id);
+	public void setId(final IKasperID sourceId, final IKasperID targetId) {
+		this.sourceId = Preconditions.checkNotNull(sourceId);
+		this.targetId = Preconditions.checkNotNull(targetId);
 	}
 
 	// ------------------------------------------------------------------------
@@ -46,7 +45,7 @@ public abstract class AbstractComponentRelation<S extends IRootConcept, T extend
 	 */
 	@Override
 	public IKasperID getSourceIdentifier() {
-		return this.source_id;
+		return this.sourceId;
 	}
 
 	/**
@@ -54,7 +53,7 @@ public abstract class AbstractComponentRelation<S extends IRootConcept, T extend
 	 */
 	@Override
 	public IKasperID getTargetIdentifier() {
-		return this.target_id;
+		return this.targetId;
 	}
 
 	/**
@@ -73,7 +72,7 @@ public abstract class AbstractComponentRelation<S extends IRootConcept, T extend
 	 */
 	@Override
 	public int hashCode() {
-		return Objects.hashCode(this.target_id, this.source_id);
+		return Objects.hashCode(this.targetId, this.sourceId);
 	}
 
 	/**
@@ -90,7 +89,7 @@ public abstract class AbstractComponentRelation<S extends IRootConcept, T extend
 		if (AbstractComponentRelation.class.isAssignableFrom(obj.getClass())) {
 			@SuppressWarnings("unchecked") // Safe
 			final AbstractComponentRelation<S,T> other = (AbstractComponentRelation<S,T>) obj;
-			return ((this.source_id.equals(other.getSourceIdentifier())) && (this.target_id.equals(other.getTargetIdentifier())));
+			return ((this.sourceId.equals(other.getSourceIdentifier())) && (this.targetId.equals(other.getTargetIdentifier())));
 		}
 		return false;
 	}

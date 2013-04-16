@@ -10,7 +10,6 @@ import org.joda.time.DateTime;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.domain.er.IRelationEvent;
 import com.viadeo.kasper.event.domain.impl.AbstractEntityEvent;
 
@@ -28,16 +27,16 @@ public abstract class AbstractRelationEvent
 
 	private static final long serialVersionUID = 2649090309164938753L;
 
-	private final IKasperID source_id;
-	private final IKasperID target_id;
+	private final IKasperID sourceId;
+	private final IKasperID targetId;
 
 	// ------------------------------------------------------------------------
 
-	protected AbstractRelationEvent(final IKasperID id, final IKasperID source_id, final IKasperID target_id, final DateTime lastModificationDate) {
+	protected AbstractRelationEvent(final IKasperID id, final IKasperID sourceId, final IKasperID targetId, final DateTime lastModificationDate) {
 		super(id, lastModificationDate);
 
-		this.source_id = Preconditions.checkNotNull(source_id);
-		this.target_id = Preconditions.checkNotNull(target_id);
+		this.sourceId = Preconditions.checkNotNull(sourceId);
+		this.targetId = Preconditions.checkNotNull(targetId);
 	}
 
 	// ------------------------------------------------------------------------
@@ -47,7 +46,7 @@ public abstract class AbstractRelationEvent
 	 */
 	@Override
 	public IKasperID getSourceId() {
-		return this.source_id;
+		return this.sourceId;
 	}
 
 	/**
@@ -55,7 +54,7 @@ public abstract class AbstractRelationEvent
 	 */
 	@Override
 	public IKasperID getTargetId() {
-		return this.target_id;
+		return this.targetId;
 	}
 
 }

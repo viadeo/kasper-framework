@@ -59,7 +59,7 @@
 
     <scm>
         <developerConnection>scm:git:git@github.com:viadeo/kasper-framework.git</developerConnection>
-      <tag>HEAD</tag>
-  </scm>
+        <tag>HEAD</tag>
+    </scm>
 
 </project>

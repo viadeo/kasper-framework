@@ -28,13 +28,13 @@ public abstract class AbstractEventListener<E extends IEvent>
 	
 	public AbstractEventListener() {
 		@SuppressWarnings("unchecked")
-		final Optional<Class<? extends IEvent>> eventClass = 
+		final Optional<Class<? extends IEvent>> eventClassOpt = 
 				(Optional<Class<? extends IEvent>>) 
 				ReflectionGenericsResolver.getParameterTypeFromClass(
 						this.getClass(), IEventListener.class, IEventListener.EVENT_PARAMETER_POSITION);
 		
-		if (eventClass.isPresent()) {
-			this.eventClass = eventClass.get();
+		if (eventClassOpt.isPresent()) {
+			this.eventClass = eventClassOpt.get();
 		} else {
 			throw new KasperRuntimeException("Unable to identify event class for " + this.getClass());
 		}
@@ -53,9 +53,9 @@ public abstract class AbstractEventListener<E extends IEvent>
 	 * 
 	 * @see org.axonframework.eventhandling.EventListener#handle(org.axonframework.domain.EventMessage)
 	 */
-	@SuppressWarnings("unchecked") // Safe
+	@SuppressWarnings({"unchecked", "rawtypes"}) // Safe
 	@Override
-	public void handle(@SuppressWarnings("rawtypes") org.axonframework.domain.EventMessage eventMessage) {
+	public void handle(final org.axonframework.domain.EventMessage eventMessage) {
 		
 		if (!this.getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
 			return;
@@ -75,14 +75,14 @@ public abstract class AbstractEventListener<E extends IEvent>
 	/**
 	 * @param eventMessage the Kasper event message to handle
 	 */
-	public void handle(IEventMessage<E> eventMessage){
+	public void handle(final IEventMessage<E> eventMessage){
 		throw new UnsupportedOperationException();
 	}
 
 	/**
 	 * @param event the Kasper event to handle
 	 */
-	public void handle(E event){
+	public void handle(final E event){
 		throw new UnsupportedOperationException();
 	}
 	

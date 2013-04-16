@@ -30,17 +30,17 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
  */
 public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcessor<XKasperCommandHandler, ICommandHandler<?>> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(CommandHandlersProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(CommandHandlersProcessor.class);
 
 	/**
 	 * The command bus to register on
 	 */
-	private CommandBus commandBus;
+	private transient CommandBus commandBus;
 
 	/**
 	 * The domain locator to be passed to command handlers
 	 */
-	private IDomainLocator domainLocator;
+	private transient IDomainLocator domainLocator;
 
 	// ------------------------------------------------------------------------
 
@@ -52,8 +52,8 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
 	 */
 	private static class CommandCastor<C extends ICommand> {
 
-		private final Class<? extends C> payload;
-		private final CommandHandler<? super C> handler;
+		private final transient Class<? extends C> payload;
+		private final transient CommandHandler<? super C> handler;
 
 		@SuppressWarnings("unchecked") // Safe by previous parent class typing
 		CommandCastor(final Class<?> bean, final CommandHandler<?> container) {
@@ -61,11 +61,11 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
 			this.handler = (CommandHandler<? super C>) container;
 		}
 
-		Class<? extends C> getBeanClass() {
+		public Class<? extends C> getBeanClass() {
 			return this.payload;
 		}
 
-		CommandHandler<? super C> getContainerClass() {
+		public CommandHandler<? super C> getContainerClass() {
 			return this.handler;
 		}
 	}
@@ -80,7 +80,7 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
 	 */
 	@Override
 	public void process(final Class<?> commandHandlerClazz, final ICommandHandler<?> commandHandler) {
-		this.LOGGER.info("Subscribe to command bus : " + commandHandlerClazz.getName());
+		LOGGER.info("Subscribe to command bus : " + commandHandlerClazz.getName());
 
 		if (AbstractEntityCommandHandler.class.isAssignableFrom(commandHandler.getClass())) {
 			((AbstractEntityCommandHandler<?, ?>) commandHandler).setDomainLocator(this.domainLocator);

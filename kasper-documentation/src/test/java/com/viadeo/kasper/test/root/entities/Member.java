@@ -35,7 +35,7 @@ public class Member implements IRootConcept {
 	}
 
 	@Override
-	public void setDomainLocator(IDomainLocator domainLocator) {
+	public void setDomainLocator(final IDomainLocator domainLocator) {
 		// TODO Auto-generated method stub
 
 	}
@@ -59,13 +59,13 @@ public class Member implements IRootConcept {
 	}
 
 	@Override
-	public void initializeState(DomainEventStream arg0) {
+	public void initializeState(final DomainEventStream arg0) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public void addEventRegistrationCallback(EventRegistrationCallback arg0) {
+	public void addEventRegistrationCallback(final EventRegistrationCallback arg0) {
 		// TODO Auto-generated method stub
 
 	}

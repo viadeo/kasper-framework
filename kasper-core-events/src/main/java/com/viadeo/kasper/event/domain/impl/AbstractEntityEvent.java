@@ -10,7 +10,6 @@ import org.joda.time.DateTime;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.domain.IEntityEvent;
 import com.viadeo.kasper.event.impl.AbstractEvent;
 
@@ -25,14 +24,14 @@ public abstract class AbstractEntityEvent extends AbstractEvent implements IEnti
 
 	private static final long serialVersionUID = -1948165707419476512L;
 
-	private IKasperID id;
+	private IKasperID entityId;
 	private DateTime lastEntityModificationDate;
 
 	// ------------------------------------------------------------------------
-    protected AbstractEntityEvent() {}
+    protected AbstractEntityEvent() { /* For serialization */ }
 
 	protected AbstractEntityEvent(final IKasperID id, final DateTime lastModificationDate) {
-		this.id = Preconditions.checkNotNull(id);
+		this.entityId = Preconditions.checkNotNull(id);
 		this.lastEntityModificationDate = Preconditions.checkNotNull(lastModificationDate);
 	}
 
@@ -43,7 +42,7 @@ public abstract class AbstractEntityEvent extends AbstractEvent implements IEnti
 	 */
 	@Override
 	public IKasperID getEntityId() {
-		return this.id;
+		return this.entityId;
 	}
 
 	// ------------------------------------------------------------------------

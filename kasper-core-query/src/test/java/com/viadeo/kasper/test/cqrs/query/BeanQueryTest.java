@@ -2,6 +2,11 @@ package com.viadeo.kasper.test.cqrs.query;
 
 import java.io.Serializable;
 
+import junit.framework.Assert;
+import junit.framework.TestCase;
+
+import org.junit.Test;
+
 import com.viadeo.kasper.context.IContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
@@ -9,8 +14,6 @@ import com.viadeo.kasper.cqrs.query.IQueryMessage;
 import com.viadeo.kasper.cqrs.query.IQueryService;
 import com.viadeo.kasper.cqrs.query.impl.QueryMessage;
 import com.viadeo.kasper.cqrs.query.impl.bean.BeanQuery;
-import junit.framework.Assert;
-import junit.framework.TestCase;
 
 public class BeanQueryTest extends TestCase {
 
@@ -54,6 +57,7 @@ public class BeanQueryTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
+	@Test
 	public void test() {
 
 		/* == GIVEN == */

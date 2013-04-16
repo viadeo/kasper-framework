@@ -1,5 +1,9 @@
 package com.viadeo.kasper.test.cqrs.query.base;
 
+import junit.framework.Assert;
+import junit.framework.TestCase;
+
+import org.junit.Test;
 import org.mockito.Mockito;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -12,11 +16,15 @@ import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.impl.base.BaseFilterOperator;
 import com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryFilterElement;
 import com.viadeo.kasper.test.cqrs.query.StubbedDQTOS.DQOTest;
-import junit.framework.Assert;
-import junit.framework.TestCase;
 
 public class BaseQueryFilterElementTest extends TestCase {
 
+	private static final int QUARANTE_DEUX = 42;
+	private static final int VINGT_QUATRE = 24;
+	private static final String VALUE = "value";
+	private static final String VALUE_LONG = "valuelong";
+	
+	@Test
 	public void testConstruct() {
 
 		new BaseQueryFilterElement<DQOTest, String>();
@@ -39,6 +47,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
+	@Test
 	public void testField() {
 		final BaseQueryFilterElement<DQOTest, String> eltFilter = new BaseQueryFilterElement<DQOTest, String>();
 		Assert.assertFalse(eltFilter.getField().isPresent());
@@ -58,6 +67,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
+	@Test
 	public void testOperator() {
 		final BaseQueryFilterElement<DQOTest, String> eltFilter = new BaseQueryFilterElement<DQOTest, String>();
 		Assert.assertFalse(eltFilter.getOperator().isPresent());
@@ -87,11 +97,12 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
+	@Test
 	public void testValue() {
 		final BaseQueryFilterElement<DQOTest, String> eltFilter = new BaseQueryFilterElement<DQOTest, String>();
 		Assert.assertFalse(eltFilter.getValue().isPresent());
 
-		Assert.assertEquals(eltFilter.value("value").getValue().get(), "value");
+		Assert.assertEquals(eltFilter.value(VALUE).getValue().get(), VALUE);
 
 		try {
 			eltFilter.value(null);
@@ -103,12 +114,13 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
+	@Test
 	public void testValueHelpers() {
 		final BaseQueryFilterElement<DQOTest, String> eltFilter = new BaseQueryFilterElement<DQOTest, String>();
 
 		// - EQUAL
-		Assert.assertEquals(eltFilter.equal("value").getOperator().get(), BaseFilterOperator.EQ);
-		Assert.assertEquals(eltFilter.equal("value").getValue().get(), "value");
+		Assert.assertEquals(eltFilter.equal(VALUE).getOperator().get(), BaseFilterOperator.EQ);
+		Assert.assertEquals(eltFilter.equal(VALUE).getValue().get(), VALUE);
 
 		try {
 			eltFilter.equal(null);
@@ -118,8 +130,8 @@ public class BaseQueryFilterElementTest extends TestCase {
 		}
 
 		// - NOTEQUAL
-		Assert.assertEquals(eltFilter.notEqual("value").getOperator().get(), BaseFilterOperator.NE);
-		Assert.assertEquals(eltFilter.notEqual("value").getValue().get(), "value");
+		Assert.assertEquals(eltFilter.notEqual(VALUE).getOperator().get(), BaseFilterOperator.NE);
+		Assert.assertEquals(eltFilter.notEqual(VALUE).getValue().get(), VALUE);
 
 		try {
 			eltFilter.notEqual(null);
@@ -129,8 +141,8 @@ public class BaseQueryFilterElementTest extends TestCase {
 		}
 
 		// - GREATERTHAN
-		Assert.assertEquals(eltFilter.greaterThan("value").getOperator().get(), BaseFilterOperator.GT);
-		Assert.assertEquals(eltFilter.greaterThan("value").getValue().get(), "value");
+		Assert.assertEquals(eltFilter.greaterThan(VALUE).getOperator().get(), BaseFilterOperator.GT);
+		Assert.assertEquals(eltFilter.greaterThan(VALUE).getValue().get(), VALUE);
 
 		try {
 			eltFilter.greaterThan(null);
@@ -140,8 +152,8 @@ public class BaseQueryFilterElementTest extends TestCase {
 		}
 
 		// - GREATERTHANOREQUALS
-		Assert.assertEquals(eltFilter.gtOrEqual("value").getOperator().get(), BaseFilterOperator.GE);
-		Assert.assertEquals(eltFilter.gtOrEqual("value").getValue().get(), "value");
+		Assert.assertEquals(eltFilter.gtOrEqual(VALUE).getOperator().get(), BaseFilterOperator.GE);
+		Assert.assertEquals(eltFilter.gtOrEqual(VALUE).getValue().get(), VALUE);
 
 		try {
 			eltFilter.gtOrEqual(null);
@@ -151,8 +163,8 @@ public class BaseQueryFilterElementTest extends TestCase {
 		}
 
 		// - LESSTHAN
-		Assert.assertEquals(eltFilter.lessThan("value").getOperator().get(), BaseFilterOperator.LT);
-		Assert.assertEquals(eltFilter.lessThan("value").getValue().get(), "value");
+		Assert.assertEquals(eltFilter.lessThan(VALUE).getOperator().get(), BaseFilterOperator.LT);
+		Assert.assertEquals(eltFilter.lessThan(VALUE).getValue().get(), VALUE);
 
 		try {
 			eltFilter.lessThan(null);
@@ -162,8 +174,8 @@ public class BaseQueryFilterElementTest extends TestCase {
 		}
 
 		// - LESSTHANOREQUALS
-		Assert.assertEquals(eltFilter.ltOrEqual("value").getOperator().get(), BaseFilterOperator.LE);
-		Assert.assertEquals(eltFilter.ltOrEqual("value").getValue().get(), "value");
+		Assert.assertEquals(eltFilter.ltOrEqual(VALUE).getOperator().get(), BaseFilterOperator.LE);
+		Assert.assertEquals(eltFilter.ltOrEqual(VALUE).getValue().get(), VALUE);
 
 		try {
 			eltFilter.ltOrEqual(null);
@@ -173,8 +185,8 @@ public class BaseQueryFilterElementTest extends TestCase {
 		}
 
 		// - CONTAINS
-		Assert.assertEquals(eltFilter.contains("value").getOperator().get(), BaseFilterOperator.CONTAINS);
-		Assert.assertEquals(eltFilter.contains("value").getValue().get(), "value");
+		Assert.assertEquals(eltFilter.contains(VALUE).getOperator().get(), BaseFilterOperator.CONTAINS);
+		Assert.assertEquals(eltFilter.contains(VALUE).getValue().get(), VALUE);
 
 		try {
 			eltFilter.contains(null);
@@ -184,8 +196,8 @@ public class BaseQueryFilterElementTest extends TestCase {
 		}
 
 		// - ENDSWITH
-		Assert.assertEquals(eltFilter.endsWith("value").getOperator().get(), BaseFilterOperator.ENDSWITH);
-		Assert.assertEquals(eltFilter.endsWith("value").getValue().get(), "value");
+		Assert.assertEquals(eltFilter.endsWith(VALUE).getOperator().get(), BaseFilterOperator.ENDSWITH);
+		Assert.assertEquals(eltFilter.endsWith(VALUE).getValue().get(), VALUE);
 
 		try {
 			eltFilter.endsWith(null);
@@ -195,8 +207,8 @@ public class BaseQueryFilterElementTest extends TestCase {
 		}
 
 		// - STARTSWITH
-		Assert.assertEquals(eltFilter.startsWith("value").getOperator().get(), BaseFilterOperator.STARTSWITH);
-		Assert.assertEquals(eltFilter.startsWith("value").getValue().get(), "value");
+		Assert.assertEquals(eltFilter.startsWith(VALUE).getOperator().get(), BaseFilterOperator.STARTSWITH);
+		Assert.assertEquals(eltFilter.startsWith(VALUE).getValue().get(), VALUE);
 
 		try {
 			eltFilter.startsWith(null);
@@ -256,6 +268,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
+	@Test
 	public void testSatisfactionErrors() {
 
 		final BaseQueryFilterElement<dqofield, String> stringFilter = new BaseQueryFilterElement<dqofield, String>();
@@ -289,7 +302,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 		// Operator has not been defined
 		try {
-			stringFilter.isSatisfiedBy("value");
+			stringFilter.isSatisfiedBy(VALUE);
 			Assert.fail();
 		} catch (final KasperQueryRuntimeException e) {
 			// Ignore
@@ -299,7 +312,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 		// Value has not been defined
 		try {
-			stringFilter.isSatisfiedBy("value");
+			stringFilter.isSatisfiedBy(VALUE);
 			Assert.fail();
 		} catch (final KasperQueryRuntimeException e) {
 			// Ignore
@@ -328,7 +341,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		// Trying to use string-only operators on non-string values
 		intFilter.field(dqo.intField).op(BaseFilterOperator.CONTAINS);
 		try {
-			intFilter.isSatisfiedBy(42);
+			intFilter.isSatisfiedBy(QUARANTE_DEUX);
 			Assert.fail();
 		} catch (final KasperQueryRuntimeException e) {
 			// Ignore
@@ -336,7 +349,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 		intFilter.field(dqo.intField).op(BaseFilterOperator.STARTSWITH);
 		try {
-			intFilter.isSatisfiedBy(42);
+			intFilter.isSatisfiedBy(QUARANTE_DEUX);
 			Assert.fail();
 		} catch (final KasperQueryRuntimeException e) {
 			// Ignore
@@ -344,7 +357,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 		intFilter.field(dqo.intField).op(BaseFilterOperator.ENDSWITH);
 		try {
-			intFilter.isSatisfiedBy(42);
+			intFilter.isSatisfiedBy(QUARANTE_DEUX);
 			Assert.fail();
 		} catch (final KasperQueryRuntimeException e) {
 			// Ignore
@@ -354,70 +367,71 @@ public class BaseQueryFilterElementTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
+	@Test
 	public void testSatisfaction() {
 
 		final BaseQueryFilterElement<DQOTest, String> stringFilter = new BaseQueryFilterElement<DQOTest, String>();
 		final BaseQueryFilterElement<DQOTest, Integer> intFilter = new BaseQueryFilterElement<DQOTest, Integer>();
 
-		Assert.assertTrue(stringFilter.equal("value").isSatisfiedBy("value"));
-		Assert.assertFalse(stringFilter.equal("value").isSatisfiedBy("anotherValue"));
+		Assert.assertTrue(stringFilter.equal(VALUE).isSatisfiedBy(VALUE));
+		Assert.assertFalse(stringFilter.equal(VALUE).isSatisfiedBy("anotherValue"));
 
-		Assert.assertTrue(intFilter.equal(42).isSatisfiedBy(42));
-		Assert.assertFalse(intFilter.equal(42).isSatisfiedBy(24));
+		Assert.assertTrue(intFilter.equal(QUARANTE_DEUX).isSatisfiedBy(QUARANTE_DEUX));
+		Assert.assertFalse(intFilter.equal(QUARANTE_DEUX).isSatisfiedBy(VINGT_QUATRE));
 
-		Assert.assertFalse(stringFilter.notEqual("value").isSatisfiedBy("value"));
-		Assert.assertTrue(stringFilter.notEqual("value").isSatisfiedBy("anotherValue"));
+		Assert.assertFalse(stringFilter.notEqual(VALUE).isSatisfiedBy(VALUE));
+		Assert.assertTrue(stringFilter.notEqual(VALUE).isSatisfiedBy("anotherValue"));
 
-		Assert.assertFalse(intFilter.notEqual(42).isSatisfiedBy(42));
-		Assert.assertTrue(intFilter.notEqual(42).isSatisfiedBy(24));
+		Assert.assertFalse(intFilter.notEqual(QUARANTE_DEUX).isSatisfiedBy(QUARANTE_DEUX));
+		Assert.assertTrue(intFilter.notEqual(QUARANTE_DEUX).isSatisfiedBy(VINGT_QUATRE));
 
-		Assert.assertTrue(stringFilter.lessThan("valuelong").isSatisfiedBy("value"));
-		Assert.assertFalse(stringFilter.lessThan("value").isSatisfiedBy("value"));
-		Assert.assertFalse(stringFilter.lessThan("value").isSatisfiedBy("valuelong"));
+		Assert.assertTrue(stringFilter.lessThan(VALUE_LONG).isSatisfiedBy(VALUE));
+		Assert.assertFalse(stringFilter.lessThan(VALUE).isSatisfiedBy(VALUE));
+		Assert.assertFalse(stringFilter.lessThan(VALUE).isSatisfiedBy(VALUE_LONG));
 
-		Assert.assertTrue(intFilter.lessThan(42).isSatisfiedBy(24));
-		Assert.assertFalse(intFilter.lessThan(24).isSatisfiedBy(42));
+		Assert.assertTrue(intFilter.lessThan(QUARANTE_DEUX).isSatisfiedBy(VINGT_QUATRE));
+		Assert.assertFalse(intFilter.lessThan(VINGT_QUATRE).isSatisfiedBy(QUARANTE_DEUX));
 
-		Assert.assertFalse(stringFilter.greaterThan("valuelong").isSatisfiedBy("value"));
-		Assert.assertFalse(stringFilter.greaterThan("value").isSatisfiedBy("value"));
-		Assert.assertTrue(stringFilter.greaterThan("value").isSatisfiedBy("valuelong"));
+		Assert.assertFalse(stringFilter.greaterThan(VALUE_LONG).isSatisfiedBy(VALUE));
+		Assert.assertFalse(stringFilter.greaterThan(VALUE).isSatisfiedBy(VALUE));
+		Assert.assertTrue(stringFilter.greaterThan(VALUE).isSatisfiedBy(VALUE_LONG));
 
-		Assert.assertFalse(intFilter.greaterThan(42).isSatisfiedBy(24));
-		Assert.assertTrue(intFilter.greaterThan(24).isSatisfiedBy(42));
+		Assert.assertFalse(intFilter.greaterThan(QUARANTE_DEUX).isSatisfiedBy(VINGT_QUATRE));
+		Assert.assertTrue(intFilter.greaterThan(VINGT_QUATRE).isSatisfiedBy(QUARANTE_DEUX));
 
-		Assert.assertTrue(stringFilter.gtOrEqual("value").isSatisfiedBy("value"));
-		Assert.assertTrue(stringFilter.gtOrEqual("value").isSatisfiedBy("valuelong"));
-		Assert.assertFalse(stringFilter.gtOrEqual("valuelong").isSatisfiedBy("value"));
+		Assert.assertTrue(stringFilter.gtOrEqual(VALUE).isSatisfiedBy(VALUE));
+		Assert.assertTrue(stringFilter.gtOrEqual(VALUE).isSatisfiedBy(VALUE_LONG));
+		Assert.assertFalse(stringFilter.gtOrEqual(VALUE_LONG).isSatisfiedBy(VALUE));
 
-		Assert.assertTrue(intFilter.gtOrEqual(24).isSatisfiedBy(24));
-		Assert.assertTrue(intFilter.gtOrEqual(24).isSatisfiedBy(42));
-		Assert.assertFalse(intFilter.gtOrEqual(42).isSatisfiedBy(24));
+		Assert.assertTrue(intFilter.gtOrEqual(VINGT_QUATRE).isSatisfiedBy(VINGT_QUATRE));
+		Assert.assertTrue(intFilter.gtOrEqual(VINGT_QUATRE).isSatisfiedBy(QUARANTE_DEUX));
+		Assert.assertFalse(intFilter.gtOrEqual(QUARANTE_DEUX).isSatisfiedBy(VINGT_QUATRE));
 
-		Assert.assertTrue(stringFilter.ltOrEqual("value").isSatisfiedBy("value"));
-		Assert.assertTrue(stringFilter.ltOrEqual("valuelong").isSatisfiedBy("value"));
-		Assert.assertFalse(stringFilter.ltOrEqual("value").isSatisfiedBy("valuelong"));
+		Assert.assertTrue(stringFilter.ltOrEqual(VALUE).isSatisfiedBy(VALUE));
+		Assert.assertTrue(stringFilter.ltOrEqual(VALUE_LONG).isSatisfiedBy(VALUE));
+		Assert.assertFalse(stringFilter.ltOrEqual(VALUE).isSatisfiedBy(VALUE_LONG));
 
-		Assert.assertTrue(intFilter.ltOrEqual(24).isSatisfiedBy(24));
-		Assert.assertTrue(intFilter.ltOrEqual(42).isSatisfiedBy(24));
-		Assert.assertFalse(intFilter.ltOrEqual(24).isSatisfiedBy(42));
+		Assert.assertTrue(intFilter.ltOrEqual(VINGT_QUATRE).isSatisfiedBy(VINGT_QUATRE));
+		Assert.assertTrue(intFilter.ltOrEqual(QUARANTE_DEUX).isSatisfiedBy(VINGT_QUATRE));
+		Assert.assertFalse(intFilter.ltOrEqual(VINGT_QUATRE).isSatisfiedBy(QUARANTE_DEUX));
 
-		Assert.assertTrue(stringFilter.contains("value").isSatisfiedBy("ending with value"));
-		Assert.assertTrue(stringFilter.contains("value").isSatisfiedBy("value starts"));
-		Assert.assertTrue(stringFilter.contains("value").isSatisfiedBy("value"));
-		Assert.assertTrue(stringFilter.contains("value").isSatisfiedBy("great value enclosed"));
-		Assert.assertFalse(stringFilter.contains("value").isSatisfiedBy("val"));
+		Assert.assertTrue(stringFilter.contains(VALUE).isSatisfiedBy("ending with " + VALUE));
+	Assert.assertTrue(stringFilter.contains(VALUE).isSatisfiedBy(VALUE + " starts"));
+		Assert.assertTrue(stringFilter.contains(VALUE).isSatisfiedBy(VALUE));
+		Assert.assertTrue(stringFilter.contains(VALUE).isSatisfiedBy("great "+VALUE+" enclosed"));
+		Assert.assertFalse(stringFilter.contains(VALUE).isSatisfiedBy("val"));
 
-		Assert.assertFalse(stringFilter.startsWith("value").isSatisfiedBy("ending with value"));
-		Assert.assertTrue(stringFilter.startsWith("value").isSatisfiedBy("value starts"));
-		Assert.assertTrue(stringFilter.startsWith("value").isSatisfiedBy("value"));
-		Assert.assertFalse(stringFilter.startsWith("value").isSatisfiedBy("great value enclosed"));
-		Assert.assertFalse(stringFilter.startsWith("value").isSatisfiedBy("val"));
+		Assert.assertFalse(stringFilter.startsWith(VALUE).isSatisfiedBy("ending with " + VALUE));
+		Assert.assertTrue(stringFilter.startsWith(VALUE).isSatisfiedBy(VALUE + " starts"));
+		Assert.assertTrue(stringFilter.startsWith(VALUE).isSatisfiedBy(VALUE));
+		Assert.assertFalse(stringFilter.startsWith(VALUE).isSatisfiedBy("great "+VALUE+" enclosed"));
+		Assert.assertFalse(stringFilter.startsWith(VALUE).isSatisfiedBy("val"));
 
-		Assert.assertTrue(stringFilter.endsWith("value").isSatisfiedBy("ending with value"));
-		Assert.assertFalse(stringFilter.endsWith("value").isSatisfiedBy("value starts"));
-		Assert.assertTrue(stringFilter.endsWith("value").isSatisfiedBy("value"));
-		Assert.assertFalse(stringFilter.endsWith("value").isSatisfiedBy("great value enclosed"));
-		Assert.assertFalse(stringFilter.endsWith("value").isSatisfiedBy("val"));
+		Assert.assertTrue(stringFilter.endsWith(VALUE).isSatisfiedBy("ending with "+VALUE));
+		Assert.assertFalse(stringFilter.endsWith(VALUE).isSatisfiedBy(VALUE + " starts"));
+		Assert.assertTrue(stringFilter.endsWith(VALUE).isSatisfiedBy(VALUE));
+		Assert.assertFalse(stringFilter.endsWith(VALUE).isSatisfiedBy("great "+VALUE+" enclosed"));
+		Assert.assertFalse(stringFilter.endsWith(VALUE).isSatisfiedBy("val"));
 	}
 
 }

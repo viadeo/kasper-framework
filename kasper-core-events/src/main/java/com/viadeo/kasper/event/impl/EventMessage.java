@@ -24,12 +24,12 @@ public class EventMessage<E extends IEvent> implements IEventMessage<E> {
 
 	private static final long serialVersionUID = -214545825521867826L;
 
-	private final org.axonframework.domain.EventMessage<E> decoredMessage;
+	private final org.axonframework.domain.EventMessage<E> axonMessage;
 
 	// ------------------------------------------------------------------------
 
 	public EventMessage(final org.axonframework.domain.EventMessage<E> eventMessage) {
-		this.decoredMessage = eventMessage;
+		this.axonMessage = eventMessage;
 	}
 
 	// ------------------------------------------------------------------------
@@ -39,8 +39,7 @@ public class EventMessage<E extends IEvent> implements IEventMessage<E> {
 	 */
 	@Override
 	public IContext getContext() {
-		final IContext context = (IContext) this.decoredMessage.getMetaData().get(IContext.METANAME);
-		return context;
+		return (IContext) this.axonMessage.getMetaData().get(IContext.METANAME);
 	}
 
 	/**
@@ -48,13 +47,13 @@ public class EventMessage<E extends IEvent> implements IEventMessage<E> {
 	 */
 	@Override
 	public E getEvent() {
-		return this.decoredMessage.getPayload();
+		return this.axonMessage.getPayload();
 	}
 
 	// ------------------------------------------------------------------------
 	
 	public org.axonframework.domain.EventMessage<E> getAxonMessage() {
-		return this.decoredMessage;
+		return this.axonMessage;
 	}
 	
 }

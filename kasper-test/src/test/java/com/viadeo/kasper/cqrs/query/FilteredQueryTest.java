@@ -5,9 +5,7 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.AbstractPlatformTests;
-import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.context.IContext;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
@@ -24,7 +22,7 @@ public class FilteredQueryTest extends AbstractPlatformTests {
 
 	private static final class TestDTO implements IQueryDTO {
 		private static final long serialVersionUID = -7571158053188747847L;
-		private String name;
+		private final String name;
 
 		TestDTO(final String name) {
 			this.name = name;

@@ -26,7 +26,7 @@ import com.viadeo.kasper.exception.KasperRuntimeException;
 public abstract class AbstractCommandHandler<C extends ICommand> 
 		implements ICommandHandler<C> {
 
-	final private static Logger LOGGER = LoggerFactory.getLogger(AbstractCommandHandler.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommandHandler.class);
 
 	// ------------------------------------------------------------------------
 	
@@ -37,8 +37,7 @@ public abstract class AbstractCommandHandler<C extends ICommand>
 	 */
 	@SuppressWarnings("deprecation") // Controlled use of KasperErrorCommandResult
 	@Override
-	public Object handle(final CommandMessage<C> message, final UnitOfWork uow)
-			throws Throwable {
+	public Object handle(final CommandMessage<C> message, final UnitOfWork uow) throws Throwable {
 		final ICommandMessage<C> kmessage = new KasperCommandMessage<C>(message);
 		CurrentContext.set(kmessage.getContext());
 
@@ -90,7 +89,7 @@ public abstract class AbstractCommandHandler<C extends ICommand>
 	 * @return the command result
 	 * @throws KasperEventException
 	 */
-	public ICommandResult handle(ICommandMessage<C> message, UnitOfWork uow) throws KasperEventException {
+	public ICommandResult handle(final ICommandMessage<C> message, final UnitOfWork uow) throws KasperEventException {
 		throw new UnsupportedOperationException();
 	}
 	
@@ -99,7 +98,7 @@ public abstract class AbstractCommandHandler<C extends ICommand>
 	 * @return the command result
 	 * @throws KasperEventException
 	 */
-	public ICommandResult handle(ICommandMessage<C> message) throws KasperEventException {
+	public ICommandResult handle(final ICommandMessage<C> message) throws KasperEventException {
 		throw new UnsupportedOperationException();
 	}
 
@@ -108,7 +107,7 @@ public abstract class AbstractCommandHandler<C extends ICommand>
 	 * @return
 	 * @throws KasperEventException
 	 */
-	public ICommandResult handle(C command) throws KasperEventException {
+	public ICommandResult handle(final C command) throws KasperEventException {
 		throw new UnsupportedOperationException();
 	}	
 	

@@ -55,7 +55,7 @@ public interface IQueryFilter<DQO extends IQueryDQO<?>> extends Serializable {
 	 * @return a new group filter with this filter set a a first component and
 	 *         the operator set to AND
 	 */
-	public IQueryFilterGroup<DQO> and();
+	IQueryFilterGroup<DQO> and();
 
 	/**
 	 * Compose a new group filter from this one
@@ -63,7 +63,7 @@ public interface IQueryFilter<DQO extends IQueryDQO<?>> extends Serializable {
 	 * @return a new group filter with this filter set a a first component and
 	 *         the operator set to OR
 	 */
-	public IQueryFilterGroup<DQO> or();
+	IQueryFilterGroup<DQO> or();
 
 	/**
 	 * Inverse this filter

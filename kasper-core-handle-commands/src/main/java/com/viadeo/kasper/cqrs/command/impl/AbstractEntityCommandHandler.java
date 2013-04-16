@@ -9,11 +9,9 @@ package com.viadeo.kasper.cqrs.command.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.cqrs.command.ICommand;
-import com.viadeo.kasper.cqrs.command.ICommandHandler;
 import com.viadeo.kasper.cqrs.command.IEntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandRuntimeException;
 import com.viadeo.kasper.ddd.IAggregateRoot;
-import com.viadeo.kasper.ddd.IEntity;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.event.exceptions.KasperEventRuntimeException;
 import com.viadeo.kasper.locators.IDomainLocator;
@@ -36,12 +34,12 @@ public abstract class AbstractEntityCommandHandler<C extends ICommand, AGR exten
 		extends AbstractCommandHandler<C> 
 		implements IEntityCommandHandler<C, AGR> {
 
-	private IDomainLocator domainLocator;
+	private transient IDomainLocator domainLocator;
 	
 	// Consistent data container for entity class and repository
 	private static final class Consistent<E extends IAggregateRoot> {
-		IRepository<E> repository;
-		Class<E> entityClass;
+		private IRepository<E> repository;
+		private Class<E> entityClass;
 		
 		@SuppressWarnings("unchecked")
 		void setEntityClass(final Class<?> entityClass) {
@@ -54,7 +52,7 @@ public abstract class AbstractEntityCommandHandler<C extends ICommand, AGR exten
 		}
 	}
 	@SuppressWarnings("rawtypes")
-	private final Consistent<?> consistent = new Consistent();
+	private final transient Consistent<?> consistent = new Consistent();
 	
 	// ------------------------------------------------------------------------
 
@@ -100,6 +98,7 @@ public abstract class AbstractEntityCommandHandler<C extends ICommand, AGR exten
 	 * @see com.viadeo.kasper.cqrs.command.IEntityCommandHandler#getRepository()
 	 */
 	@Override
+	@SuppressWarnings("unchecked")
 	public <R extends IRepository<AGR>> R getRepository() {
 		if (null == this.consistent.repository) {
 			if (null == this.domainLocator) {
@@ -107,9 +106,7 @@ public abstract class AbstractEntityCommandHandler<C extends ICommand, AGR exten
 			}
 			this.consistent.setRepository(this.domainLocator.getEntityRepository(this.consistent.entityClass));
 		}
-		@SuppressWarnings("unchecked") // To be ensured by client
-		final R repo = (R) this.consistent.repository;
-		return repo;
+		return (R) this.consistent.repository;
 	}
 
 }

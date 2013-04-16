@@ -24,12 +24,12 @@ public interface IAnnotationProcessor<T extends Annotation, I> {
 	/**
 	 * Generic parameter position for the annotation class
 	 */
-	static final int ANNOTYPE_PARAMETER_POSITION = 0;
+	int ANNOTYPE_PARAMETER_POSITION = 0;
 	
 	/**
 	 * Generic parameter position for the interface class
 	 */
-	static final int INTERFACE_PARAMETER_POSITION = 1;
+	int INTERFACE_PARAMETER_POSITION = 1;
 	
 	
 	/**

@@ -1,13 +1,16 @@
 package com.viadeo.kasper.test.cqrs.query;
 
+import junit.framework.Assert;
+import junit.framework.TestCase;
+
+import org.junit.Test;
+
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
 import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
 import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.impl.FilteredQuery;
 import com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryField;
-import junit.framework.Assert;
-import junit.framework.TestCase;
 
 public class FilteredQueryTest extends TestCase {
 
@@ -41,6 +44,7 @@ public class FilteredQueryTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
+	@Test
 	public void test() {
 
 		final QueryTest query = new QueryTest();

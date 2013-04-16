@@ -16,8 +16,8 @@ import com.viadeo.kasper.doc.KasperLibrary;
 public final class DocumentedDomain extends DocumentedNode {
 	private static final long serialVersionUID = 3888726543821083680L;
 	
-	static public final String TYPE_NAME = "domain";
-	static public final String PLURAL_TYPE_NAME = "domains";
+	public static final String TYPE_NAME = "domain";
+	public static final String PLURAL_TYPE_NAME = "domains";
 	
 	private String prefix;
 	private String parent;

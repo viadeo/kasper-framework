@@ -18,8 +18,8 @@ import com.viadeo.kasper.exception.KasperRuntimeException;
 public final class DocumentedEvent extends AbstractDocumentedDomainNode {
 	private static final long serialVersionUID = 6817858609739438236L;
 	
-	static public final String TYPE_NAME = "event";
-	static public final String PLURAL_TYPE_NAME = "events";
+	public static final String TYPE_NAME = "event";
+	public static final String PLURAL_TYPE_NAME = "events";
 	
 	private String action = "unknown";
 	
@@ -43,10 +43,10 @@ public final class DocumentedEvent extends AbstractDocumentedDomainNode {
 			description = String.format("The %s event", eventClazz.getSimpleName().replaceAll("Event", ""));
 		}
 		
-		final String action = annotation.action();
+		final String annotatedAction = annotation.action();
 		
 		// Set properties -----------------------------------------------------
-		this.setAction(action);
+		this.setAction(annotatedAction);
 		this.setName(eventClazz.getSimpleName());
 		this.setDescription(description);
 		this.setDomainName(domainName);		
@@ -68,7 +68,7 @@ public final class DocumentedEvent extends AbstractDocumentedDomainNode {
 	
 	// ------------------------------------------------------------------------
 	
-	static public String getDomainFromEventClass(final Class<?> eventClazz) {
+	public static String getDomainFromEventClass(final Class<?> eventClazz) {
 		final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
 		
 		if (null == annotation) {

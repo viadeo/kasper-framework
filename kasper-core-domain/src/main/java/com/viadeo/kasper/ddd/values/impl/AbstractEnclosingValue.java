@@ -32,7 +32,7 @@ public abstract class AbstractEnclosingValue<PAYLOAD extends Serializable>
 		this.value = Preconditions.checkNotNull(value);
 	}
 	
-	public PAYLOAD get() {
+	public PAYLOAD getValue() {
 		return value;
 	}
 
@@ -42,13 +42,13 @@ public abstract class AbstractEnclosingValue<PAYLOAD extends Serializable>
 	 * @see java.lang.Object#equals(java.lang.Object)
 	 */
 	@Override
-	public boolean equals(final Object _otherValue) {
-		if (this == Preconditions.checkNotNull(_otherValue)) {
+	public boolean equals(final Object otherValue) {
+		if (this == Preconditions.checkNotNull(otherValue)) {
 			return true;
 		}
-		if (this.getClass().isInstance(_otherValue)) {
+		if (this.getClass().isInstance(otherValue)) {
 			@SuppressWarnings("unchecked")
-			final AbstractEnclosingValue<PAYLOAD> other = (AbstractEnclosingValue<PAYLOAD>) _otherValue;
+			final AbstractEnclosingValue<PAYLOAD> other = (AbstractEnclosingValue<PAYLOAD>) otherValue;
 			return value.equals(other.value);
 		}
 		return false;

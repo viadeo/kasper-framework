@@ -6,9 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.er.impl;
 
-import com.viadeo.kasper.ddd.IAggregateRoot;
 import com.viadeo.kasper.ddd.impl.AbstractAggregateRoot;
-import com.viadeo.kasper.er.IConcept;
 import com.viadeo.kasper.er.IRootConcept;
 
 /**

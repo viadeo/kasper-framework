@@ -20,7 +20,7 @@ import com.viadeo.kasper.ddd.annotation.XKasperRepository;
  */
 public class RepositoriesDocumentationProcessor extends AbstractDocumentationProcessor<XKasperRepository, IRepository<?>> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(RepositoriesDocumentationProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(RepositoriesDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ public class RepositoriesDocumentationProcessor extends AbstractDocumentationPro
 	@Override
 	@SuppressWarnings("unchecked")
 	public void process(final Class<?> repositoryClazz) {
-		this.LOGGER.info("Record on repository library : " + repositoryClazz.getName());
+		LOGGER.info("Record on repository library : " + repositoryClazz.getName());
 		
 		//- Register the domain to the locator --------------------------------
 		getKasperLibrary().recordRepository((Class<? extends IRepository<?>>) repositoryClazz);

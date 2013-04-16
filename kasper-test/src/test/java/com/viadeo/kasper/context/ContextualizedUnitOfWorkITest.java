@@ -45,17 +45,17 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 	private static class StaticChecker {
 		private static Integer counter = 0;
 		private static IContext context;
-		static public void context(final IContext context) {
+		public static void context(final IContext context) {
 			StaticChecker.context = context;
 		}
-		static public void verify(final IContext context) {
+		public static void verify(final IContext context) {
 			counter++;
 			final boolean equals = context == StaticChecker.context;
 			if (!equals) {
 				fail(context + " != " + StaticChecker.context);
 			}
 		}
-		static public Integer getCounter() {
+		public static Integer getCounter() {
 			return counter;
 		}
 	}
@@ -63,13 +63,13 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 	// -- Test components -----------------------------------------------------
 
 	@XKasperDomain(label = "test domain", prefix = "ctx")
-	static public class ContextTestDomain extends AbstractDomain {}
+	public static class ContextTestDomain extends AbstractDomain {}
 
 	@XKasperCommand(domain = ContextTestDomain.class)
-	static public class ContextTestCommand implements ICommand {}
+	public static class ContextTestCommand implements ICommand {}
 
 	@XKasperCommandHandler
-	static public class ContextTestHandler extends
+	public static class ContextTestHandler extends
 			AbstractEntityCommandHandler<ContextTestCommand, ContextTestAGR> {
 		public ICommandResult handle(final ContextTestCommand command)
 				throws KasperEventException {
@@ -92,7 +92,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 	}
 
 	@XKasperEvent(action = "test", domain = ContextTestDomain.class)
-	static public class ContextTestEvent extends AbstractEntityEvent {
+	public static class ContextTestEvent extends AbstractEntityEvent {
 		private static final long serialVersionUID = 7017358308867238442L;
 		public ContextTestEvent(final IKasperID id) {
 			super(id, DateTime.now());
@@ -101,7 +101,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 	}
 
 	@XKasperConcept(domain = ContextTestDomain.class, label = "test agr")
-	static public class ContextTestAGR extends AbstractRootConcept {
+	public static class ContextTestAGR extends AbstractRootConcept {
 		public ContextTestAGR(final IKasperID id) {
 			StaticChecker.verify(CurrentContext.value().get());
 			apply(new ContextTestEvent(id));
@@ -115,20 +115,20 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 	}
 
 	@XKasperRepository
-	static public class ContextTestRepository extends
+	public static class ContextTestRepository extends
 			AbstractRepository<ContextTestAGR> {
 		@Override
 		protected Optional<ContextTestAGR> doLoad(
-				IKasperID aggregateIdentifier, Long expectedVersion) {
+				final IKasperID aggregateIdentifier, final Long expectedVersion) {
 			StaticChecker.verify(CurrentContext.value().get());
 			return Optional.absent();
 		}
 		@Override
-		protected void doSave(ContextTestAGR aggregate) {
+		protected void doSave(final ContextTestAGR aggregate) {
 			StaticChecker.verify(CurrentContext.value().get());
 		}
 		@Override
-		protected void doDelete(ContextTestAGR aggregate) {
+		protected void doDelete(final ContextTestAGR aggregate) {
 		}
 	}
 

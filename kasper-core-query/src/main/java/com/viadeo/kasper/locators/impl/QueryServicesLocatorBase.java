@@ -29,7 +29,7 @@ public class QueryServicesLocatorBase implements IQueryServicesLocator {
 	private final Map<Class<? extends IQueryService>, IQueryService> services = newHashMap();
 
 	/** Registered query classes and associated service instances */
-	private final Map<Class<? extends IQuery>, IQueryService> serviceQueryClasses = newHashMap();
+	private final Map<Class<? extends IQuery>, IQueryService<?,?>> serviceQueryClasses = newHashMap();
 
 	/** Registered services names and associated service instances */
 	@SuppressWarnings("rawtypes")
@@ -59,7 +59,7 @@ public class QueryServicesLocatorBase implements IQueryServicesLocator {
 			throw new KasperQueryRuntimeException("Unable to find query class for service " + service.getClass());
 		}
 
-		Class<? extends IQuery> queryClass = optQueryClass.get();
+		final Class<? extends IQuery> queryClass = optQueryClass.get();
 		if (this.serviceQueryClasses.containsKey(queryClass)) {
 			throw new KasperQueryRuntimeException("A service for the same query class is already registered : " + queryClass);
 		}
@@ -91,14 +91,14 @@ public class QueryServicesLocatorBase implements IQueryServicesLocator {
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public Optional<IQueryService> getServiceFromQueryClass(Class<? extends IQuery> queryClass) {
 		final IQueryService service = this.serviceQueryClasses.get(queryClass);
 		return Optional.fromNullable(service);
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Collection<IQueryService> getServices() {
+	public Collection<IQueryService<?, ?>> getServices() {
 		return Collections.unmodifiableCollection(this.serviceQueryClasses.values());
 	}
 

@@ -25,7 +25,7 @@ import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryFilter;
  *            the managed payload type
  */
 public class SimpleQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comparable<P>>
-extends AbstractQueryFilter<DQO> implements IQueryFilterElement<DQO, P> {
+		extends AbstractQueryFilter<DQO> implements IQueryFilterElement<DQO, P> {
 
 	private static final long serialVersionUID = -818497044226174978L;
 
@@ -61,16 +61,16 @@ extends AbstractQueryFilter<DQO> implements IQueryFilterElement<DQO, P> {
 			throw new KasperQueryRuntimeException(String.format("Field must be defined in %s", this.getClass().getName()));
 		}
 
-		final Optional<P> value = this.field.getFieldValue(dto);
+		final Optional<P> valueOpt = this.field.getFieldValue(dto);
 
-		if (!value.isPresent()) {
+		if (!valueOpt.isPresent()) {
 			// Note: Perhaps we will authorize null values comparisons later in
 			// some conditions
 			throw new KasperQueryRuntimeException(
 					"Trying to compare with null value from DTO");
 		}
 
-		return this.isSatisfiedBy(value.get());
+		return this.isSatisfiedBy(valueOpt.get());
 	}
 
 	// ------------------------------------------------------------------------

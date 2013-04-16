@@ -22,6 +22,8 @@ import com.viadeo.kasper.context.IContext;
  */
 public interface ICommandGateway {
 
+	int DEFAULT_TIMEOUT_SEC = 20;
+	
 	/**
 	 * Fire an forget
 	 */
@@ -35,13 +37,13 @@ public interface ICommandGateway {
 	/**
 	 * Wait for result
 	 */
-	@Timeout(value = 20, unit = TimeUnit.SECONDS)
+	@Timeout(value = DEFAULT_TIMEOUT_SEC, unit = TimeUnit.SECONDS)
 	ICommandResult sendCommandAndWaitForAResult(ICommand command, @MetaData(IContext.METANAME) IContext context);
 
 	/**
 	 * Wait for result and get exceptions
 	 */
-	@Timeout(value = 20, unit = TimeUnit.SECONDS)
+	@Timeout(value = DEFAULT_TIMEOUT_SEC, unit = TimeUnit.SECONDS)
 	ICommandResult sendCommandAndWaitForAResultWithException(ICommand command, @MetaData(IContext.METANAME) IContext context) throws TimeoutException, InterruptedException;
 
 	/**

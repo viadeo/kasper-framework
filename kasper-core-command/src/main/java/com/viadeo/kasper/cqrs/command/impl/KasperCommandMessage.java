@@ -24,21 +24,21 @@ import com.viadeo.kasper.cqrs.command.ICommandMessage;
  * @param <C> Command
  */
 public class KasperCommandMessage<C extends ICommand> implements ICommandMessage<C> {
-	private final static Logger LOGGER = LoggerFactory.getLogger(KasperCommandMessage.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(KasperCommandMessage.class);
 
 	private static final long serialVersionUID = 5946300419038957372L;
 
 	/**
 	 * Decored Axon command message
 	 */
-	final private CommandMessage<C> decoredMessage;
+	private final transient CommandMessage<C> decoredMessage;
 
 	/**
 	 * (Optional) default context builder, only used if required (no context available)
 	 * If absent a default implementation will be used
 	 */
 	@Autowired
-	private IDefaultContextBuilder defaultContextBuilder;
+	private transient IDefaultContextBuilder defaultContextBuilder;
 
 	// ------------------------------------------------------------------------
 
@@ -70,7 +70,7 @@ public class KasperCommandMessage<C extends ICommand> implements ICommandMessage
 				context = this.defaultContextBuilder.buildDefault();
 			} else {
 				KasperCommandMessage.LOGGER.warn("Defauting to base Kasper default context, no context has been provided and no Spring contextBuilder can be found ");
-				context = (new DefaultContextBuilder()).buildDefault();
+				context = new DefaultContextBuilder().buildDefault();
 			}
 		}
 

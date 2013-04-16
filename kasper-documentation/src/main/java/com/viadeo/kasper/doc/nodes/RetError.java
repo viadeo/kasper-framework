@@ -10,9 +10,9 @@ package com.viadeo.kasper.doc.nodes;
 public class RetError extends RetBase {
 	private static final long serialVersionUID = 8985310989912862924L;
 
-	final private String message;
+	private final String message;
 	
-	final private static String TYPE = "error";
+	private static final String TYPE = "error";
 	
 	// ------------------------------------------------------------------------
 	

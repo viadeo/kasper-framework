@@ -12,13 +12,13 @@ public class MemberCreatedEventListener implements IEventListener<MemberCreatedE
 	
 	@SuppressWarnings("rawtypes")
 	@Override
-	public void handle(EventMessage arg0) {
+	public void handle(final EventMessage arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void handle(IEventMessage<MemberCreatedEvent> eventMessage) {
+	public void handle(final IEventMessage<MemberCreatedEvent> eventMessage) {
 		// TODO Auto-generated method stub
 		
 	}

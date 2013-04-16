@@ -26,12 +26,12 @@ public interface IEntityCommandHandler<C extends ICommand, AGR extends IAggregat
 	/**
 	 * Generic parameter position for the handled command
 	 */
-	static final int COMMAND_PARAMETER_POSITION = 0;
+	int COMMAND_PARAMETER_POSITION = 0;
 	
 	/**
 	 * Generic parameter position for the handled entity
 	 */
-	static final int ENTITY_PARAMETER_POSITION = 1;
+	int ENTITY_PARAMETER_POSITION = 1;
 	
 	/**
 	 * @param repository the repository of the entity

@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.event.IEventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 
 /**
@@ -24,12 +23,12 @@ import com.viadeo.kasper.event.annotation.XKasperEventListener;
  */
 public class EventListenersProcessor extends AbstractSingletonAnnotationProcessor<XKasperEventListener, EventListener> {
 
-	private Logger LOGGER = LoggerFactory.getLogger(EventListenersProcessor.class);	
+	private static final Logger LOGGER = LoggerFactory.getLogger(EventListenersProcessor.class);	
 	
 	/**
 	 * The event bus to register event listeners on
 	 */
-	private EventBus eventBus;
+	private transient EventBus eventBus;
 	
 	// ------------------------------------------------------------------------
 	

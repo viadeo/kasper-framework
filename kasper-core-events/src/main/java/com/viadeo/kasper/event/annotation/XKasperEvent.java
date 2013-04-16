@@ -12,7 +12,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import com.viadeo.kasper.IDomain;
-import com.viadeo.kasper.event.IEvent;
 
 /**
  *

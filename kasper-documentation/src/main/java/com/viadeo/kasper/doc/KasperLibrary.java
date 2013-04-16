@@ -267,15 +267,15 @@ public class KasperLibrary {
 	// --
 	
 	public List<DocumentedConcept> getConceptComponents(final String domainName, final String agrName) {
-		return _getComponents(domainName, agrName, DocumentedConcept.TYPE_NAME);
+		return getComponents(domainName, agrName, DocumentedConcept.TYPE_NAME);
 	}
 
 	public List<DocumentedConcept> getRelationComponents(final String domainName, final String agrName) {
-		return _getComponents(domainName, agrName, DocumentedRelation.TYPE_NAME);
+		return getComponents(domainName, agrName, DocumentedRelation.TYPE_NAME);
 	}
 	
 	@SuppressWarnings("unchecked")
-	private <T extends DocumentedEntity> List<T> _getComponents(final String domainName, final String agrName, final String entityType) {
+	private <T extends DocumentedEntity> List<T> getComponents(final String domainName, final String agrName, final String entityType) {
 		if (this.aggregateComponents.containsKey(agrName)) {
 			final List<T> entities = Lists.newArrayList();
 			final List<String> entityNames = this.aggregateComponents.get(agrName);
@@ -464,9 +464,9 @@ public class KasperLibrary {
 		Preconditions.checkNotNull(entityClass);
 		
 		if (this.domainEntities.containsKey(entityClass)) {
-			final Map<String, ?> domainEntities = this.domainEntities.get(entityClass);
-			if (domainEntities.containsKey(domainName)) {
-				final Map<String, T> entities = (Map<String, T>) domainEntities.get(domainName);
+			final Map<String, ?> entityMap = this.domainEntities.get(entityClass);
+			if (entityMap.containsKey(domainName)) {
+				final Map<String, T> entities = (Map<String, T>) entityMap.get(domainName);
 				return (Optional<Map<String, T>>) Optional.of(Collections.unmodifiableMap(entities));
 			}
 		}

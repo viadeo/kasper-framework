@@ -22,7 +22,7 @@ public class KasperCommandResult implements ICommandResult {
 	/**
 	 * The current command status
 	 */
-	private Status status;
+	private final Status status;
 	
 	// ------------------------------------------------------------------------
 	

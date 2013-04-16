@@ -26,12 +26,12 @@ public interface IInternalDomain extends IDomain, IUbiquitousLanguageElement {
 	 * @param _entity 
 	 * @return the entity repository
 	 */
-	<E extends IAggregateRoot> IRepository<E> getEntityRepository(E _entity);
+	<E extends IAggregateRoot> IRepository<E> getEntityRepository(E entity);
 
 	/**
 	 * @param _entityClass the entity class for which to search the repository
 	 * @return the entity repository
 	 */
-	<E extends IAggregateRoot> IRepository<E> getEntityRepository(Class<E> _entityClass);
+	<E extends IAggregateRoot> IRepository<E> getEntityRepository(Class<E> entityClass);
 
 }

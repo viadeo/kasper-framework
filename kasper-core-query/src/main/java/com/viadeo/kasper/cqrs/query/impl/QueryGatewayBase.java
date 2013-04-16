@@ -32,7 +32,8 @@ public class QueryGatewayBase implements IQueryGateway {
 	// -----------------------------------------------------------------------
 
 	@Override
-	public <Q extends IQuery, DTO extends IQueryDTO> DTO retrieve(IContext context, Q query) throws KasperQueryException {
+	public <Q extends IQuery, DTO extends IQueryDTO> DTO retrieve(final IContext context, final Q query) 
+			throws KasperQueryException {
 		checkNotNull(context);
 		checkNotNull(query);
 

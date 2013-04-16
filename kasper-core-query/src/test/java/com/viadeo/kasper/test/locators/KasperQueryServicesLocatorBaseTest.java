@@ -43,13 +43,14 @@ public class KasperQueryServicesLocatorBaseTest {
 	}
 
 	@Test
-	public void getServices_emptyByDefault() {
+	public void getServicesEmptyByDefault() {
 		assertNotNull(locator.getServices());
 		assertEquals(locator.getServices().size(), 0);
 	}
 
 	@Test
-	public void getServiceFromQueryClass_emptyState() {
+	@SuppressWarnings("rawtypes")
+	public void getServiceFromQueryClassEmptyState() {
 		final Optional<IQueryService> registeredService = locator.getServiceFromQueryClass(TestQuery.class);
 		assertFalse(registeredService.isPresent());
 	}
@@ -70,9 +71,8 @@ public class KasperQueryServicesLocatorBaseTest {
 	public ExpectedException thrown = ExpectedException.none();
 
 	@Test
-	public void register_NullService() {
+	public void registerNullService() {
 		thrown.expect(NullPointerException.class);
-
 		locator.registerService("", null);
 	}
 

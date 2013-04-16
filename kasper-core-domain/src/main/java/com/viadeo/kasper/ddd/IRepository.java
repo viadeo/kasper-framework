@@ -8,8 +8,6 @@ package com.viadeo.kasper.ddd;
 
 import org.axonframework.repository.Repository;
 
-import com.viadeo.kasper.IDomain;
-
 /**
  *
  * The base domain CQRS repository
@@ -33,7 +31,7 @@ public interface IRepository<AGR extends IAggregateRoot> extends Repository<AGR>
 	/**
 	 * Generic parameter position of the AGR
 	 */
-	public static final int ENTITY_PARAMETER_POSITION = 0;
+	int ENTITY_PARAMETER_POSITION = 0;
 	
 	/**
 	 * Initialize repository

@@ -4,16 +4,18 @@ import org.axonframework.domain.IdentifierFactory;
 
 import com.viadeo.kasper.IKasperID;
 
-public class KasperTestIdGenerator {
+public final class KasperTestIdGenerator {
 
-	@SuppressWarnings("unchecked") // Delagated to client
-	static public <I extends IKasperID> I get() {
+	private KasperTestIdGenerator() { /* singleton */ }
+	
+	@SuppressWarnings("unchecked") // Delegated to client
+	public static <I extends IKasperID> I get() {
 		final String uuid = IdentifierFactory.getInstance().generateIdentifier();
 		return (I) new KasperTestId(uuid);
 	}
 
 	@SuppressWarnings("unchecked") // Delegated to client
-	static public <I extends IKasperID> I get(final String id) {
+	public static <I extends IKasperID> I get(final String id) {
 		return (I) new KasperTestId(id);
 	}
 

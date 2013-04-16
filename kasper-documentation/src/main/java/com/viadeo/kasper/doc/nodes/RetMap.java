@@ -12,9 +12,9 @@ import java.util.Map;
 public class RetMap extends RetBase {
 	private static final long serialVersionUID = -5808650563772119762L;
 
-	final private static String TYPE = "list";
+	private static final String TYPE = "list";
 	
-	final private Collection<? extends DocumentedNode> list;
+	private final Collection<? extends DocumentedNode> list;
 	
 	private String itemType = null;
 	

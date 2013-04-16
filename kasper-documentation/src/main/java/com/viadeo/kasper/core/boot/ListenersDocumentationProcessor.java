@@ -20,7 +20,7 @@ import com.viadeo.kasper.event.annotation.XKasperEventListener;
  */
 public class ListenersDocumentationProcessor extends AbstractDocumentationProcessor<XKasperEventListener, IEventListener<?>> {
 
-	private final Logger LOGGER = LoggerFactory.getLogger(ListenersDocumentationProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ListenersDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------
 
@@ -33,7 +33,7 @@ public class ListenersDocumentationProcessor extends AbstractDocumentationProces
 	@Override
 	@SuppressWarnings("unchecked")
 	public void process(final Class<?> listenerClazz) {
-		this.LOGGER.info("Record on listener library : " + listenerClazz.getName());
+		LOGGER.info("Record on listener library : " + listenerClazz.getName());
 		
 		//- Register the domain to the locator --------------------------------
 		getKasperLibrary().recordListener((Class<? extends IEventListener<?>>) listenerClazz);

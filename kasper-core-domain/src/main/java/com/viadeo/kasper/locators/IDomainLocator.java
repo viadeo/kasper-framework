@@ -40,7 +40,7 @@ public interface IDomainLocator {
 	 * @param _domain the domain
 	 * @return the domain prefix
 	 */
-	String getDomainPrefix(IDomain _domain);
+	String getDomainPrefix(IDomain domain);
 
 	/**
 	 * Return the name of a specified domain
@@ -48,7 +48,7 @@ public interface IDomainLocator {
 	 * @param _domain the domain
 	 * @return the domain name
 	 */
-	String getDomainName(IDomain _domain);
+	String getDomainName(IDomain domain);
 
 	/**
 	 * Search for a domain by name
@@ -79,7 +79,7 @@ public interface IDomainLocator {
 	 * @param _entity the entitiy to search for domain
 	 * @return the domain of the entity
 	 */
-	<D extends IDomain> D getEntityDomain(IEntity _entity);
+	<D extends IDomain> D getEntityDomain(IEntity entity);
 
 	/**
 	 * Return a set with all the entities of the specified domain
@@ -87,7 +87,7 @@ public interface IDomainLocator {
 	 * @param _domain the domain
 	 * @return a set with all entities related to this domain
 	 */
-	<D extends IDomain> Set<? extends IEntity> getDomainEntities(D _domain);
+	<D extends IDomain> Set<? extends IEntity> getDomainEntities(D domain);
 
 	/**
 	 * Return a set with all the entities of the specified domain class
@@ -95,7 +95,7 @@ public interface IDomainLocator {
 	 * @param _domain the domain class
 	 * @return a set with all entities related to this domain class
 	 */
-	<D extends IDomain> Set<? extends IEntity> getDomainEntities(Class<D> _domain);
+	<D extends IDomain> Set<? extends IEntity> getDomainEntities(Class<D> domain);
 
 
 	/**
@@ -111,7 +111,7 @@ public interface IDomainLocator {
 	 * @param _entity the entity
 	 * @return the repository responsible for storing this entity
 	 */
-	<E extends IAggregateRoot> IRepository<E> getEntityRepository(E _entity);
+	<E extends IAggregateRoot> IRepository<E> getEntityRepository(E entity);
 
 	/**
 	 * Get the repository for an entity class
@@ -119,6 +119,6 @@ public interface IDomainLocator {
 	 * @param _entityClass the entity class
 	 * @return the repository responsible for storing this class of entities
 	 */
-	<E extends IAggregateRoot> IRepository<E> getEntityRepository(Class<E> _entityClass);
+	<E extends IAggregateRoot> IRepository<E> getEntityRepository(Class<E> entityClass);
 
 }

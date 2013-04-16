@@ -15,7 +15,6 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.ddd.IComponentEntity;
-import com.viadeo.kasper.ddd.IEntity;
 import com.viadeo.kasper.er.IRootConcept;
 import com.viadeo.kasper.locators.IDomainLocator;
 

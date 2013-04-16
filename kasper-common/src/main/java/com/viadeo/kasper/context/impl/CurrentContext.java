@@ -13,19 +13,15 @@ import com.viadeo.kasper.context.IContext;
  * UnitOfWork decorator to handle context
  *
  */
-public class CurrentContext {
+public final class CurrentContext {
 
+	private CurrentContext() { /* singleton */ }
+	
 	private static final ThreadLocal < IContext > CONTEXT = new ThreadLocal<IContext>();
 	
 	// ------------------------------------------------------------------------
 	
-	public static Optional<IContext> value() {
-		final IContext context = CONTEXT.get();
-        
-		if (null == context) {
-        	return Optional.absent();
-        }
-        
+	public static Optional<IContext> value() {        
         return Optional.fromNullable(CONTEXT.get());
 	}
 	

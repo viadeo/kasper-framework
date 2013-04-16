@@ -7,7 +7,6 @@
 package com.viadeo.kasper.er;
 
 import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.ddd.IEntity;
 
 /**
@@ -26,12 +25,12 @@ public interface IRelation<S extends IRootConcept, T extends IRootConcept> exten
 	/**
 	 * The position of the source concept parameter
 	 */
-	public static final Integer SOURCE_PARAMETER_POSITION = 0;
+	Integer SOURCE_PARAMETER_POSITION = 0;
 	
 	/**
 	 * The position of the target concept parameter
 	 */
-	public static final Integer TARGET_PARAMETER_POSITION = 1;
+	Integer TARGET_PARAMETER_POSITION = 1;
 	
 	/**
 	 * @return the identifier of the relation's source entity

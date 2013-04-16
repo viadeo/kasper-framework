@@ -35,7 +35,7 @@ public class SpecificationErrorMessage implements ISpecificationErrorMessage {
 	 * @see com.viadeo.kasper.ddd.specification.ISpecificationErrorMessage#setMessage(java.lang.String)
 	 */
 	@Override
-	public void setMessage(String message) {
+	public void setMessage(final String message) {
 		this.message = Preconditions.checkNotNull(message);
 	}
 	

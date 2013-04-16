@@ -3,6 +3,7 @@ package com.viadeo.kasper.test.cqrs.query;
 import junit.framework.Assert;
 import junit.framework.TestCase;
 
+import org.junit.Test;
 import org.mockito.Mockito;
 
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
@@ -14,6 +15,7 @@ import com.viadeo.kasper.test.cqrs.query.StubbedDQTOS.DTOTest;
 
 public class QueryFilterGroupTest extends TestCase {
 
+	@Test
 	public void testConstructAndReset() {
 
 		final QueryFilterGroup<DQOTest> groupFilter = new QueryFilterGroup<DQOTest>();
@@ -44,6 +46,7 @@ public class QueryFilterGroupTest extends TestCase {
 		Assert.assertEquals(filter.getFilters().size(), 2);
 	}
 
+	@Test
 	public void testNull() {
 
 		final QueryFilterGroup<DQOTest> groupFilter = new QueryFilterGroup<DQOTest>();
@@ -75,6 +78,7 @@ public class QueryFilterGroupTest extends TestCase {
 		}
 	}
 
+	@Test
 	public void testBool() {
 
 		final QueryFilterGroup<DQOTest> groupFilter = new QueryFilterGroup<DQOTest>();

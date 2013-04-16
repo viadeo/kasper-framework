@@ -3,6 +3,11 @@
 **/.settings
 **/.project
 **/.classpath
+<<<<<<< HEAD
 **/.svn
+=======
+**/.pmd
+**/**/.pmd
+>>>>>>> cde8001c2785c4bbaa97bc5306c7ea42b684af08
 .metadata
 target

@@ -23,7 +23,6 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -54,23 +53,23 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
  */
 public class AnnotationRootProcessor implements ApplicationContextAware {
 
-	private Logger LOGGER = LoggerFactory.getLogger(AnnotationRootProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationRootProcessor.class);
 
 	/** Only used if Spring context available in order to reuse injected processor instances */
-	private ApplicationContext context;
+	private transient ApplicationContext context;
 
 	/** Allow user to explicitly specify processor instances to use before boot */
-	private List<IAnnotationProcessor<?, ?>> userProcessors;
+	private transient List<IAnnotationProcessor<?, ?>> userProcessors;
 
 	/** User provided scan packages names */
-	private List<String> scanPrefixes;
+	private transient List<String> scanPrefixes;
 
 	/** If set, will not add its own package to scan prefixes */
-	private boolean doNotScanDefaultPrefix = false;
+	private transient boolean doNotScanDefaultPrefix = false;
 
 	/** Scanned processors */
-	private Map<Class<? extends Annotation>, List<IAnnotationProcessor<?, ?>>> processors;
-	private Map<IAnnotationProcessor<?, ?>, Class<?>> processorsInterface;
+	private transient Map<Class<? extends Annotation>, List<IAnnotationProcessor<?, ?>>> processors;
+	private transient Map<IAnnotationProcessor<?, ?>, Class<?>> processorsInterface;
 
 	/** Class-path reflection resolver */
 	private Reflections reflections;
@@ -303,7 +302,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
 		if (null == this.scanPrefixes) {
 			this.scanPrefixes = new ArrayList<String>();
 		}
-		this.scanPrefixes = Arrays.asList(scanPrefixes);
+		this.scanPrefixes = Arrays.asList(scanPrefixes.clone());
 	}
 
 	// -----
@@ -336,8 +335,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
 	 * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
 	 */
 	@Override
-	public void setApplicationContext(final ApplicationContext context)
-			throws BeansException {
+	public void setApplicationContext(final ApplicationContext context) {
 		this.context = context;
 	}
 

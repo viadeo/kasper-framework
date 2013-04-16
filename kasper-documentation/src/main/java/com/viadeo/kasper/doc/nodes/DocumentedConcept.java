@@ -24,10 +24,10 @@ import com.viadeo.kasper.er.annotation.XKasperConcept;
 public final class DocumentedConcept extends DocumentedEntity {
 	private static final long serialVersionUID = 3750351443738850009L;
 	
-	static final public String TYPE_NAME = "concept";
-	static final public String PLURAL_TYPE_NAME = "concepts";
+	public static final String TYPE_NAME = "concept";
+	public static final String PLURAL_TYPE_NAME = "concepts";
 	
-	final private List<String> sourceEvents = Lists.newArrayList(); 
+	private final List<String> sourceEvents = Lists.newArrayList(); 
 	
 	// ------------------------------------------------------------------------
 	

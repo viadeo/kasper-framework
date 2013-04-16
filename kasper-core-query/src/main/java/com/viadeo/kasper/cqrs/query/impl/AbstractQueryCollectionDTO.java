@@ -20,7 +20,7 @@ public abstract class AbstractQueryCollectionDTO<DTO extends IQueryDTO> implemen
 
 	private final Collection<DTO> innerCollection;
 
-	protected AbstractQueryCollectionDTO(Collection<DTO> innerCollection) {
+	protected AbstractQueryCollectionDTO(final Collection<DTO> innerCollection) {
 		this.innerCollection = checkNotNull(innerCollection);
 	}
 

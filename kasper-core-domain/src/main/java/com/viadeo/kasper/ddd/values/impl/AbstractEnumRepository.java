@@ -26,8 +26,8 @@ public abstract class AbstractEnumRepository<ENUM extends Enum<?>>
 
 		private static final long serialVersionUID = 1794937696257943048L;
 
-		Value(final ENUM _value) {
-			super(_value);
+		Value(final ENUM value) {
+			super(value);
 		}
 
 		@Override
@@ -36,16 +36,16 @@ public abstract class AbstractEnumRepository<ENUM extends Enum<?>>
 		}
 
 		@Override
-		public boolean equals(final Object _otherValue) {
-			if (null == _otherValue) {
+		public boolean equals(final Object otherValue) {
+			if (null == otherValue) {
 				return false;
 			}
-			if (this == _otherValue) {
+			if (this == otherValue) {
 				return true;
 			}
-			if (this.getClass().isInstance(_otherValue)) {
+			if (this.getClass().isInstance(otherValue)) {
 				@SuppressWarnings("unchecked")
-				final Value other = (Value) _otherValue;
+				final Value other = (Value) otherValue;
 				return this.value.equals(other.value);
 			}
 			return false;
@@ -81,6 +81,6 @@ public abstract class AbstractEnumRepository<ENUM extends Enum<?>>
 	/**
 	 * @return the default value for this repository
 	 */
-	abstract protected ENUM getDefaultEnumValue();
+	protected abstract ENUM getDefaultEnumValue();
 
 }
