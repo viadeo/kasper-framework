@@ -62,12 +62,12 @@
 				<artifactId>maven-install-plugin</artifactId>
 				<version>2.4</version>
 				<configuration>
-					<skip>true</skip>
+				<skip>true</skip>
 				</configuration>
 			</plugin>		
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-release-plugin</artifactId>
+                <artifactId>maven-release-plugin</artifactId>
                 <version>2.4.1</version>
             </plugin>		
 		</plugins>

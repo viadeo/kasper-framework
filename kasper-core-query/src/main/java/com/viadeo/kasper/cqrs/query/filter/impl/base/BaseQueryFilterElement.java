@@ -27,7 +27,7 @@ import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryFilter;
 public class BaseQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comparable<P>>
 		extends AbstractQueryFilter<DQO> implements IQueryFilterElement<DQO, P> {
 
-	private static final long serialVersionUID = -818497044226174978L;
+	private static final long serialVersionUID = -818497044226142978L;
 
 	/** the filter field for DTO resolution */
 	private IQueryField<P, DQO, ? extends BaseQueryFilterElement<DQO, P>> field;
