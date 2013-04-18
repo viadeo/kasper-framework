@@ -18,7 +18,7 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 
 public final class DocumentedHandler extends AbstractDocumentedDomainNode {
-	private static final long serialVersionUID = 2245288475776783601L;
+	private static final long serialVersionUID = 2245288475776783642L;
 	
 	public static final String TYPE_NAME = "handler";
 	public static final String PLURAL_TYPE_NAME = "handlers";

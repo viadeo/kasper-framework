@@ -20,7 +20,7 @@ import com.viadeo.kasper.ddd.values.IValue;
 public abstract class AbstractEnclosingValue<PAYLOAD extends Serializable> 
 		implements IValue {
 
-	private static final long serialVersionUID = -2912518894544850152L;
+	private static final long serialVersionUID = -2912518894544854252L;
 
 	protected final PAYLOAD value;
 	

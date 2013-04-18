@@ -20,7 +20,7 @@ public class BeanQueryTest extends TestCase {
 	// ------------------------------------------------------------------------
 
 	private static final class DTOTest implements IQueryDTO {
-		private static final long serialVersionUID = -7571158053188747847L;
+		private static final long serialVersionUID = -7571158053188742847L;
 		private String name;
 
 		public DTOTest setName(final String name) {

@@ -17,7 +17,7 @@ public class FilteredQueryTest extends TestCase {
 	// ------------------------------------------------------------------------
 
 	private static final class DTOTest implements IQueryDTO {
-		private static final long serialVersionUID = -7571158053188747847L;
+		private static final long serialVersionUID = -7571158053188747427L;
 		@SuppressWarnings("unused")
 		private String name;
 
