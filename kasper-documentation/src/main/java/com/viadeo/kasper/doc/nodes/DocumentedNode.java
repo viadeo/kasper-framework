@@ -15,8 +15,7 @@ import com.viadeo.kasper.doc.KasperLibrary;
 public class DocumentedNode extends RetBase {
 	private static final long serialVersionUID = -2064570621327638305L;
 
-	@JsonIgnore
-	private final KasperLibrary kasperLibrary;
+	private final transient KasperLibrary kasperLibrary;
 
 	private final String typePlural;
 
