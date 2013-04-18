@@ -2,6 +2,8 @@
 *.versionsBackup
 **/.settings
 **/.project
+.settings
+.project
 **/.classpath
 **/.svn
 =======
