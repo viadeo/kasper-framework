@@ -20,7 +20,11 @@
 		<dependency>
 			<groupId>com.viadeo.kasper</groupId>
 			<artifactId>kasper-common</artifactId>
-		</dependency>	
+		</dependency>
+		<dependency>
+			<groupId>com.viadeo.kasper</groupId>
+			<artifactId>kasper-core-domain</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.viadeo.kasper</groupId>
 			<artifactId>kasper-core-command</artifactId>
