@@ -32,8 +32,12 @@ public final class DocumentedCommand extends AbstractDocumentedDomainNode {
 
 		final XKasperCommand annotation = commandClazz
 				.getAnnotation(XKasperCommand.class);
-		final Class<? extends IDomain> domain = annotation.domain();
+		
+		// FIXME: domain removed from annotation
+		/* final Class<? extends IDomain> domain = annotation.domain();
 		final String domainName = domain.getSimpleName();
+		*/
+		final String domainName = "undocumented";
 
 		// Get description ----------------------------------------------------
 		String description = annotation.description();

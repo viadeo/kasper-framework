@@ -65,7 +65,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 	@XKasperDomain(label = "test domain", prefix = "ctx")
 	public static class ContextTestDomain extends AbstractDomain {}
 
-	@XKasperCommand(domain = ContextTestDomain.class)
+	@XKasperCommand
 	public static class ContextTestCommand implements ICommand {}
 
 	@XKasperCommandHandler

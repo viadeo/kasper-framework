@@ -43,8 +43,12 @@ public final class DocumentedHandler extends AbstractDocumentedDomainNode {
 		
 		// Find associated domain ---------------------------------------------		
 		final XKasperCommand commandAnno = commandClazz.get().getAnnotation(XKasperCommand.class);
+		// FIXME: domain removed from annotation
+		/*
 		final Class<? extends IDomain> domain = commandAnno.domain();	
 		final String domainName = domain.getSimpleName();
+		*/
+		final String domainName = "undocumented";
 		
 		// Get description ----------------------------------------------------
 		final XKasperCommandHandler annotation = handlerClazz.getAnnotation(XKasperCommandHandler.class);
