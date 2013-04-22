@@ -31,12 +31,6 @@ public final class DocumentedCommand extends AbstractDocumentedDomainNode {
 
 		final XKasperCommand annotation = commandClazz
 				.getAnnotation(XKasperCommand.class);
-		
-		// FIXME: domain removed from annotation
-		/* final Class<? extends IDomain> domain = annotation.domain();
-		final String domainName = domain.getSimpleName();
-		*/
-		final String domainName = "undocumented";
 
 		// Get description ----------------------------------------------------
 		String description = annotation.description();
@@ -47,7 +41,6 @@ public final class DocumentedCommand extends AbstractDocumentedDomainNode {
 
 		// - Register the domain to the locator --------------------------------
 		this.setName(commandClazz.getSimpleName());
-		this.setDomainName(domainName);
 		this.setDescription(description);
 		this.properties = new DocumentedProperties(commandClazz);
 	}
@@ -65,8 +58,7 @@ public final class DocumentedCommand extends AbstractDocumentedDomainNode {
 
 	public DocumentedNode getHandler() {
 		final KasperLibrary kl = this.getKasperLibrary();
-		final Optional<DocumentedHandler> handler = kl.getHandlerForCommand(
-				getDomainName(), getName());
+		final Optional<DocumentedHandler> handler = kl.getHandlerForCommand(getName());
 
 		if (handler.isPresent()) {
 			return kl.getSimpleNodeFrom(handler.get());
@@ -80,5 +72,15 @@ public final class DocumentedCommand extends AbstractDocumentedDomainNode {
 	public DocumentedProperties getProperties() {
 		return this.properties;
 	}
+	
+	// ------------------------------------------------------------------------
+	
+	public DocumentedNode getDomain() {
+		final Optional<DocumentedHandler> handler = this.getKasperLibrary().getHandlerForCommand(this.getName());
+		if (handler.isPresent()) {
+			return new DocumentedNode(handler.get().getDomain());
+		}
+		return null;
+	}	
 
 }

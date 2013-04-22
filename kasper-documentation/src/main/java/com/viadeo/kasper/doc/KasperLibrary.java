@@ -67,6 +67,11 @@ public class KasperLibrary {
 	private final Map<Class<? extends AbstractDocumentedDomainNode>, Map<String, ?>> domainEntities;
 	
 	/**
+	 * Store commands (do not depend directly from a specific domain)
+	 */
+	private final Map<String, DocumentedCommand> commandEntities;
+	
+	/**
 	 * Stores the concepts involved in a relation, as source or target entities
 	 */
 	private final Map<String, List<DocumentedRelation>> sourceConceptRelations;
@@ -107,6 +112,7 @@ public class KasperLibrary {
 		this.eventListeners = Maps.newHashMap();
 		
 		this.domainEntities = Maps.newHashMap();
+		this.commandEntities = Maps.newHashMap();
 		
 		this.simpleTypes = Maps.newHashMap();
 		this.simpleTypes.put(DocumentedRepository.TYPE_NAME, DocumentedRepository.class);
@@ -189,20 +195,32 @@ public class KasperLibrary {
 	
 	public DocumentedCommand recordCommand(final Class<? extends ICommand> commandClazz) {		
 		final DocumentedCommand documentedCommand = new DocumentedCommand(this, commandClazz);		
-		recordElement(documentedCommand.getDomainName(), documentedCommand);
+		
+		this.commandEntities.put(documentedCommand.getName(), documentedCommand);
+		
 		return documentedCommand;
 	}		
 	
 	// --
 	
 	public Map<String, DocumentedCommand> getCommands(final String domainName) {
-		return getEntities(domainName, DocumentedCommand.class, false).get();
+		final Map<String, DocumentedHandler> handlers = getHandlers(domainName);
+		
+		final Map<String, DocumentedCommand> commands = Maps.newHashMap();
+		for (final DocumentedHandler handler : handlers.values()) {
+			final Optional<DocumentedCommand> command = getCommand(handler.getCommandName());
+			if (command.isPresent()) {
+				commands.put(command.get().getName(), command.get());
+			}
+		}
+		
+		return commands;
 	}		
 	
 	// --
 	
-	public Optional<DocumentedCommand> getCommand(final String domainName, final String commandName) {
-		return Optional.fromNullable(getEntities(domainName, DocumentedCommand.class, false).get().get(commandName));
+	public Optional<DocumentedCommand> getCommand(final String commandName) {
+		return Optional.fromNullable(commandEntities.get(commandName));
 	}
 	
 	// == EVENTS ==============================================================
@@ -429,14 +447,14 @@ public class KasperLibrary {
 	
 	// --
 	
-	public Optional<DocumentedHandler> getHandlerForCommand(final String domainName, final String commandName) {
+	public Optional<DocumentedHandler> getHandlerForCommand(final String commandName) {
 		return Optional.fromNullable(this.commandHandlers.get(commandName));
 	}
 	
 	// == Common generic methods ==============================================
 	// ========================================================================
 	
-	public <T extends AbstractDocumentedDomainNode> Optional<Map<String, T>> getEntities(final String domainName, final String entityPluralType) {
+	public <T extends DocumentedNode> Optional<Map<String, T>> getEntities(final String domainName, final String entityPluralType) {
 		Preconditions.checkNotNull(domainName);
 		Preconditions.checkNotNull(entityPluralType);
 		
@@ -447,19 +465,28 @@ public class KasperLibrary {
 			return Optional.absent();
 		}
 		
-		return getEntities(domainName, entityClass, true);
+		return getEntities(domainName, entityClass);
 	}
 	
 	// --
 	
-	public <T extends AbstractDocumentedDomainNode> Optional<Map<String, T>> getEntities(final String domainName, final Class<T> entityClass) {		
-		return getEntities(domainName, entityClass, true);
+	@SuppressWarnings("unchecked") // Safe
+	public <T extends DocumentedNode> Optional<Map<String, T>> getEntities(final String domainName, final Class<T> entityClass) {
+		final Optional<Map<String, T>> ret; 
+		
+		if (entityClass.equals(DocumentedCommand.class)) {
+			ret = Optional.of((Map<String, T>) getCommands(domainName));
+		} else {
+			ret = getEntities(domainName, entityClass, true);
+		}
+		
+		return ret;
 	}
 	
 	// --
 	
 	@SuppressWarnings("unchecked") // Checked
-	public <T extends AbstractDocumentedDomainNode> Optional<Map<String, T>> getEntities(final String domainName, final Class<T> entityClass, final boolean returnAbsent) {
+	public <T extends DocumentedNode> Optional<Map<String, T>> getEntities(final String domainName, final Class<T> entityClass, final boolean returnAbsent) {
 		Preconditions.checkNotNull(domainName);
 		Preconditions.checkNotNull(entityClass);
 		
@@ -493,7 +520,7 @@ public class KasperLibrary {
 	
 	// --
 	
-	public <T extends AbstractDocumentedDomainNode> Optional<T> getEntity(final String domainName, final Class<T> entityClass, final String entityName) {
+	public <T extends DocumentedNode> Optional<T> getEntity(final String domainName, final Class<T> entityClass, final String entityName) {
 		Preconditions.checkNotNull(domainName);
 		Preconditions.checkNotNull(entityClass);
 		Preconditions.checkNotNull(entityName);

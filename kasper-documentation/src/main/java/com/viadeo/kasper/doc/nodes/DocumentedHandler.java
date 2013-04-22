@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.command.ICommand;
 import com.viadeo.kasper.cqrs.command.ICommandHandler;
@@ -62,10 +63,10 @@ public final class DocumentedHandler extends AbstractDocumentedDomainNode {
 	
 	public DocumentedNode getCommand() {
 		final KasperLibrary kl = this.getKasperLibrary();
-		final Optional<DocumentedCommand> concept = kl.getCommand(this.getDomainName(), this.commandName);
+		final Optional<DocumentedCommand> command = kl.getCommand(this.commandName);
 		
-		if (concept.isPresent()) {
-			return kl.getSimpleNodeFrom( concept.get() ); 
+		if (command.isPresent()) {
+			return kl.getSimpleNodeFrom( command.get() ); 
 		}
 		
 		return new DocumentedCommand(getKasperLibrary())
@@ -75,4 +76,8 @@ public final class DocumentedHandler extends AbstractDocumentedDomainNode {
 			.toSimpleNode();
 	}
 	
+	@JsonIgnore
+	public String getCommandName(){
+		return this.commandName;
+	}
 }

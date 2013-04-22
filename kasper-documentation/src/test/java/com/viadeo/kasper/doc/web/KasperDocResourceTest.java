@@ -276,7 +276,7 @@ public class KasperDocResourceTest extends JerseyTest {
     		assertEquals(jsonAA.replaceAll("[\\s\\n]", ""), jsonBB.replaceAll("[\\s\\n]", ""));
     	} catch (final AssertionError e) {
     		LOGGER.debug("*** DIFF RESULT (RESPONSE vs EXPECTED) :");
-    		new StringLinesDiffer().output(jsonAA, jsonBB);
+    		new StringLinesDiffer().output(jsonBB, jsonAA);
     		throw e;
     	}
     }
