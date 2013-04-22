@@ -35,8 +35,6 @@
 		<module>kasper-core-command</module>
 		<module>kasper-core-query</module>
 		<module>kasper-core-events</module>
-		<module>kasper-core-listen-events</module>
-		<module>kasper-core-handle-commands</module>
 		<module>kasper-core</module>
 		<module>kasper-platform</module>
 		<module>kasper-security</module>

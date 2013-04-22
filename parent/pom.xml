@@ -101,16 +101,6 @@
 			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
-				<artifactId>kasper-core-handle-commands</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.viadeo.kasper</groupId>
-				<artifactId>kasper-core-listen-events</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-platform</artifactId>
 				<version>${project.version}</version>
 			</dependency>
