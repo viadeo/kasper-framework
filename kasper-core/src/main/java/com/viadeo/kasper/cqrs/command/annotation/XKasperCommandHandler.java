@@ -11,6 +11,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.viadeo.kasper.IDomain;
+
 /**
  *
  * Kasper Command Handler marker
@@ -25,4 +27,5 @@ public @interface XKasperCommandHandler {
 	 */
 	String description() default "";
 	
+	Class<? extends IDomain> domain();
 }

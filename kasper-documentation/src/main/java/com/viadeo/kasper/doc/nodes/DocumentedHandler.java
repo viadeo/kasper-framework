@@ -7,10 +7,8 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.cqrs.command.ICommand;
 import com.viadeo.kasper.cqrs.command.ICommandHandler;
-import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.exception.KasperRuntimeException;
@@ -30,7 +28,7 @@ public final class DocumentedHandler extends AbstractDocumentedDomainNode {
 	public DocumentedHandler(final KasperLibrary kl, final Class<? extends ICommandHandler<?>> handlerClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
-		// Extract event type from handler -----------------------------------
+		// Extract command type from handler ----------------------------------
 		@SuppressWarnings("unchecked") // Safe
 		final Optional<Class<? extends ICommand>> commandClazz =  
 				(Optional<Class<? extends ICommand>>) 
@@ -42,13 +40,8 @@ public final class DocumentedHandler extends AbstractDocumentedDomainNode {
 		}
 		
 		// Find associated domain ---------------------------------------------		
-		final XKasperCommand commandAnno = commandClazz.get().getAnnotation(XKasperCommand.class);
-		// FIXME: domain removed from annotation
-		/*
-		final Class<? extends IDomain> domain = commandAnno.domain();	
-		final String domainName = domain.getSimpleName();
-		*/
-		final String domainName = "undocumented";
+		final XKasperCommandHandler handlerAnno = handlerClazz.getAnnotation(XKasperCommandHandler.class);
+		final String domainName = handlerAnno.domain().getSimpleName();
 		
 		// Get description ----------------------------------------------------
 		final XKasperCommandHandler annotation = handlerClazz.getAnnotation(XKasperCommandHandler.class);

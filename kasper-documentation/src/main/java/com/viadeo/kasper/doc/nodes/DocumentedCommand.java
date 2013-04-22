@@ -7,7 +7,6 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.cqrs.command.ICommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.doc.KasperLibrary;

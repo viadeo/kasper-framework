@@ -68,7 +68,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 	@XKasperCommand
 	public static class ContextTestCommand implements ICommand {}
 
-	@XKasperCommandHandler
+	@XKasperCommandHandler(domain=ContextTestDomain.class)
 	public static class ContextTestHandler extends
 			AbstractEntityCommandHandler<ContextTestCommand, ContextTestAGR> {
 		public ICommandResult handle(final ContextTestCommand command)
