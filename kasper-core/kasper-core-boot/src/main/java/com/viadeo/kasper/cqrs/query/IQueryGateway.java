@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs.query;
 import com.viadeo.kasper.context.IContext;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 
-/** The Kasper query gateway, used to answer queries from the platform */
+/** The Kasper query gateway, used to answer queries from the kasper platform */
 public interface IQueryGateway {
 
 	/**
