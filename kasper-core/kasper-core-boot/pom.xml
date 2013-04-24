@@ -11,7 +11,7 @@
 		<groupId>com.viadeo.kasper</groupId>
 		<artifactId>kasper-core-parent</artifactId>
 		<version>0.0.2-SNAPSHOT</version>
-		<relativePath>../parent</relativePath>
+		<relativePath>../../parent</relativePath>
 	</parent>
 	<artifactId>kasper-core-boot</artifactId>
 	<name>KASPER CORE</name>
