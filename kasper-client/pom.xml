@@ -1,11 +1,10 @@
-<!-- ==========================================================================
--                  KASPER - Kasper is the treasure keeper
--     www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
--
--           Viadeo Framework for effective CQRS/DDD architecture
-=========================================================================== -->
+<!-- ========================================================================== 
+	- KASPER - Kasper is the treasure keeper - www.viadeo.com - mobile.viadeo.com 
+	- api.viadeo.com - dev.viadeo.com - - Viadeo Framework for effective CQRS/DDD 
+	architecture =========================================================================== -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.viadeo.kasper</groupId>
@@ -17,11 +16,28 @@
 	<name>KASPER CLIENT</name>
 
 	<dependencies>
+
 		<dependency>
 			<groupId>com.viadeo.kasper</groupId>
 			<artifactId>kasper-common</artifactId>
 		</dependency>
-		
+		<dependency>
+			<groupId>com.viadeo.kasper</groupId>
+			<artifactId>kasper-core-command</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.viadeo.kasper</groupId>
+			<artifactId>kasper-core-query</artifactId>
+		</dependency>
+
+		<dependency>
+			<groupId>com.sun.jersey</groupId>
+			<artifactId>jersey-client</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.jaxrs</groupId>
+			<artifactId>jackson-jaxrs-json-provider</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.datatype</groupId>
 			<artifactId>jackson-datatype-guava</artifactId>
@@ -37,6 +53,10 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.sun.jersey.jersey-test-framework</groupId>
+			<artifactId>jersey-test-framework-http</artifactId>
 		</dependency>
 	</dependencies>
 
