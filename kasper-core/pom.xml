@@ -8,7 +8,7 @@
         <groupId>com.viadeo.kasper</groupId>
         <artifactId>kasper-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
-        <relativePath>../../parent</relativePath>
+        <relativePath>../parent</relativePath>
     </parent>
 
     <artifactId>kasper-core</artifactId>
@@ -23,33 +23,33 @@
         <module>kasper-core-events</module>
     </modules>
 
-    <dependencies>    
-            <dependency>
-                <groupId>com.viadeo.kasper</groupId>
-                <artifactId>kasper-core-boot</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.viadeo.kasper</groupId>
-                <artifactId>kasper-core-domain</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.viadeo.kasper</groupId>
-                <artifactId>kasper-core-command</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.viadeo.kasper</groupId>
-                <artifactId>kasper-core-query</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.viadeo.kasper</groupId>
-                <artifactId>kasper-core-events</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-    </dependencies>
+<!--     <dependencies>     -->
+<!--             <dependency> -->
+<!--                 <groupId>com.viadeo.kasper</groupId> -->
+<!--                 <artifactId>kasper-core-boot</artifactId> -->
+<!--                 <version>${project.version}</version> -->
+<!--             </dependency> -->
+<!--             <dependency> -->
+<!--                 <groupId>com.viadeo.kasper</groupId> -->
+<!--                 <artifactId>kasper-core-domain</artifactId> -->
+<!--                 <version>${project.version}</version> -->
+<!--             </dependency> -->
+<!--             <dependency> -->
+<!--                 <groupId>com.viadeo.kasper</groupId> -->
+<!--                 <artifactId>kasper-core-command</artifactId> -->
+<!--                 <version>${project.version}</version> -->
+<!--             </dependency> -->
+<!--             <dependency> -->
+<!--                 <groupId>com.viadeo.kasper</groupId> -->
+<!--                 <artifactId>kasper-core-query</artifactId> -->
+<!--                 <version>${project.version}</version> -->
+<!--             </dependency> -->
+<!--             <dependency> -->
+<!--                 <groupId>com.viadeo.kasper</groupId> -->
+<!--                 <artifactId>kasper-core-events</artifactId> -->
+<!--                 <version>${project.version}</version> -->
+<!--             </dependency> -->
+<!--     </dependencies> -->
 
     <build>
         <pluginManagement>
