@@ -17,7 +17,7 @@ import com.viadeo.kasper.locators.IDomainLocator;
 
 /**
  *
- * Process Kasper domain services dynamic registration at platform boot
+ * Process Kasper domain services dynamic registration at kasper boot
  *
  * @see XKasperDomain
  */

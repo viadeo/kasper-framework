@@ -14,7 +14,7 @@ import com.viadeo.kasper.er.annotation.XKasperRelation;
 
 /**
  *
- * Process Kasper relation dynamic registration at platform boot
+ * Process Kasper relation dynamic registration at kasper boot
  *
  * @see XKasperRelation
  */

@@ -26,18 +26,19 @@ public abstract class AbstractPlatformTests {
 
 		if (null == context) {
 			System.setProperty("spring_files", "classpath*:config/spring/cache/spring-cache-*.xml");
-			context = new ClassPathXmlApplicationContext(new String[]{"spring/kasper-platform.xml"});
+			//context = new ClassPathXmlApplicationContext(new String[]{"spring/kasper/spring-kasper-platform.xml"});
+            context = new ClassPathXmlApplicationContext("spring/kasper-platform.xml");
 		}
 
 		if (null == staticPlatform) {
-			staticPlatform = context.getBean("platform", IPlatform.class);
+            staticPlatform = context.getBean(IPlatform.class);
 			staticPlatform.boot();
 		}
 
 		if (uniquePlatform) {
 			platform = staticPlatform;
 		} else {
-			platform = context.getBean("platform", IPlatform.class);
+			platform = context.getBean(IPlatform.class);
 			platform.boot();
 		}
 

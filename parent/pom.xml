@@ -27,7 +27,7 @@
 		<axon.version>2.0</axon.version>
 		<testng.version>6.7</testng.version>
 		<com.fasterxml.jackson.version>2.0.2</com.fasterxml.jackson.version>
-		<org.springframework.version>3.2.2.RELEASE</org.springframework.version>
+		<org.springframework.version>3.1.4.RELEASE</org.springframework.version>
 		<junit.version>4.10</junit.version>
 		<org.slf4j.version>1.7.1</org.slf4j.version>
 		<mockito.version>1.9.5</mockito.version>

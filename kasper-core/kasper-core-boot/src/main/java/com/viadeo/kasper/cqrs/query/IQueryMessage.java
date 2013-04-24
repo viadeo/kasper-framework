@@ -11,7 +11,7 @@ import java.io.Serializable;
 import com.viadeo.kasper.context.IContext;
 
 /**
- * The message used to vehiculate a query to the platform
+ * The message used to vehiculate a query to the kasper
  *
  * @param <Q> the encapsulated query class
  */

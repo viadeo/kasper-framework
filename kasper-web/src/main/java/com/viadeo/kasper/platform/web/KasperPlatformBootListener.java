@@ -32,10 +32,10 @@ public class KasperPlatformBootListener implements ServletContextListener {
 			throw new KasperRuntimeException("Unable to find Spring context !");
 		}
 		
-		final IPlatform platform = (IPlatform) springContext.getBean("platform");
+		final IPlatform platform = (IPlatform) springContext.getBean("kasper");
 		
 		if (null == platform) {
-			throw new KasperRuntimeException("No Kasper platform bean found in current Spring context !");
+			throw new KasperRuntimeException("No Kasper kasper bean found in current Spring context !");
 		}
 		
 		platform.boot();

@@ -1,49 +1,40 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:axon="http://www.axonframework.org/schema/core"
        xmlns:context="http://www.springframework.org/schema/context"
-	   xsi:schemaLocation="http://www.springframework.org/schema/beans
-		http://www.springframework.org/schema/beans/spring-beans-3.0.xsd
-		http://www.springframework.org/schema/context
-		http://www.springframework.org/schema/context/spring-context-3.0.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
 
 	<!-- ================ Spring Framework configuration ================== -->
-	
-	<context:annotation-config/>
-	
-	<bean id="lifecycleProcessor" class="org.springframework.context.support.DefaultLifecycleProcessor" />
-	<bean id="applicationEventMulticaster" class="org.springframework.context.event.SimpleApplicationEventMulticaster" />
-	
-	<!-- ================= AxonFramework configuration ==================== -->
+	<context:annotation-config />
 
-	<bean id="eventBus" class="com.viadeo.kasper.platform.components.eventbus.KasperHybridEventBus"/>
+	<!-- ================= AxonFramework configuration ==================== -->
+    <bean id="eventBus" class="com.viadeo.kasper.platform.components.eventbus.KasperHybridEventBus"/>
 	
+    <bean class="org.axonframework.eventhandling.annotation.AnnotationEventListenerBeanPostProcessor">
+        <property name="eventBus" ref="eventBus"/>
+    </bean>
+
+    <!-- Command bus -->
 	<bean id="commandBus" class="com.viadeo.kasper.platform.components.commandbus.KasperCommandBus"/>
-	
+
+	<!-- Command gateway -->
 	<bean id="commandGateway" class="org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean">
 		<property name="commandBus" ref="commandBus"/>
 		<property name="gatewayInterface" value="com.viadeo.kasper.cqrs.command.ICommandGateway" />
 	</bean>
-	
+
 	<!-- =================== Kasper default wiring ======================== -->
-	
+
 	<!--  Kasper locators -->
 	<bean id="domainLocator" class="com.viadeo.kasper.locators.impl.DomainLocatorBase" />
 	<bean id="queryServicesLocator" class="com.viadeo.kasper.locators.impl.QueryServicesLocatorBase" />
-	
+
 	<!--  Kasper annotation processors -->
 	<bean id="commandHandlersProcessor" class="com.viadeo.kasper.core.boot.CommandHandlersProcessor">
 		<property name="commandBus" ref="commandBus" />
 		<property name="domainLocator" ref="domainLocator" />
-	</bean>
-
-	<bean id="domainsProcessor" class="com.viadeo.kasper.core.boot.DomainsProcessor">
-		<property name="domainLocator" ref="domainLocator" />
-	</bean>
-
-	<bean id="eventListenersProcessor" class="com.viadeo.kasper.core.boot.EventListenersProcessor">
-		<property name="eventBus" ref="eventBus" />
 	</bean>
 
 	<bean id="repositoriesProcessor" class="com.viadeo.kasper.core.boot.RepositoriesProcessor">
@@ -51,25 +42,27 @@
 		<property name="eventBus" ref="eventBus" />
 	</bean>
 
+	<bean id="listenersProcessor" class="com.viadeo.kasper.core.boot.EventListenersProcessor">
+		<property name="eventBus" ref="eventBus" />
+	</bean>
+
 	<bean id="queryServicesProcessor" class="com.viadeo.kasper.core.boot.QueryServicesProcessor">
 		<property name="queryServicesLocator" ref="queryServicesLocator" />
 	</bean>
 
-	<bean id="rootProcessor" class="com.viadeo.kasper.core.boot.AnnotationRootProcessor">
-		<property name="scanPrefixes">
-			<list>
-				<value>com.viadeo.kasper</value>
-			</list>
-		</property>
-	</bean>	
-	
-	<!--  Kasper platform beans -->
-	
+	<bean id="domainsProcessor" class="com.viadeo.kasper.core.boot.DomainsProcessor">
+		<property name="domainLocator" ref="domainLocator" />
+	</bean>
+
+    <bean id="rootProcessor" class="com.viadeo.kasper.core.boot.AnnotationRootProcessor"/>
+
+	<!--  Kasper kasper beans -->
+
 	<bean id="queryGateway" class="com.viadeo.kasper.cqrs.query.impl.QueryGatewayBase">
 		<property name="queryServicesLocator" ref="queryServicesLocator" />
 	</bean>
-	
-	<bean id="platform" class="com.viadeo.kasper.platform.impl.KasperPlatform" autowire="byType">
+
+	<bean id="platform" class="com.viadeo.kasper.platform.impl.KasperPlatform">
 		<property name="commandGateway" ref="commandGateway"/>
 		<property name="queryGateway" ref="queryGateway"/>
 		<property name="rootProcessor" ref="rootProcessor"/>

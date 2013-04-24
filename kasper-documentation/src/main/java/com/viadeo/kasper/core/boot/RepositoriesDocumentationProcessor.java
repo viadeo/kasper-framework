@@ -14,7 +14,7 @@ import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 
 /**
  *
- * Process Kasper repository dynamic registration at platform boot
+ * Process Kasper repository dynamic registration at kasper boot
  *
  * @see XKasperRepository
  */

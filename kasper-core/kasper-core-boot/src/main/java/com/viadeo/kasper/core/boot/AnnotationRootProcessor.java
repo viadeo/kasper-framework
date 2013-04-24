@@ -102,24 +102,22 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
 		// Filter prefixes if requested ---------------------------------------
 		final Set<String> prefixes = new HashSet<String>();
 
+        if (!this.doNotScanDefaultPrefix) {
+            final String currentPackage = this.getClass().getPackage().getName();
+            prefixes.add(currentPackage);
+        }
+
 		if ((null != this.scanPrefixes) && (this.scanPrefixes.size() > 0)) {
 			prefixes.addAll(this.scanPrefixes);
+        }
 
-			if (!this.doNotScanDefaultPrefix) {
-				final String currentPackage = this.getClass().getPackage().getName();
-				prefixes.add(currentPackage);
-			}
+        final FilterBuilder filter = new FilterBuilder();
+        for (final String prefix : prefixes) {
+            filter.include(FilterBuilder.prefix(prefix));
+            configurationBuilder.addUrls(ClasspathHelper.forPackage(prefix));
+        }
 
-			final FilterBuilder filter = new FilterBuilder();
-			for (final String prefix : prefixes) {
-				filter.include(FilterBuilder.prefix(prefix));
-				configurationBuilder.addUrls(ClasspathHelper.forPackage(prefix));
-			}
-
-			configurationBuilder.filterInputsBy(filter);
-		} else {
-			configurationBuilder.setUrls(ClasspathHelper.forJavaClassPath());
-		}
+        configurationBuilder.filterInputsBy(filter);
 
 		// Scan for annotations and types hierarchy ---------------------------
 		configurationBuilder.setScanners(new TypeAnnotationsScanner(), new SubTypesScanner());

@@ -8,7 +8,7 @@
         <groupId>com.viadeo.kasper</groupId>
         <artifactId>kasper-parent</artifactId>
         <version>0.0.2-SNAPSHOT</version>
-        <relativePath>../../parent</relativePath>
+        <relativePath>../parent</relativePath>
     </parent>
 
     <artifactId>kasper-core</artifactId>

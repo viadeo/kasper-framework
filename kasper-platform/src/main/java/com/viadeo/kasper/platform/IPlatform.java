@@ -15,7 +15,7 @@ import com.viadeo.kasper.event.IEvent;
 
 /**
  *
- * The Kasper platform
+ * The Kasper kasper
  */
 public interface IPlatform {
 

@@ -5,6 +5,10 @@
 .settings
 .project
 .classpath
+*.iml
+*.iws
+.DS_Store
+.idea/
 **/.svn
 =======
 **/.pmd
