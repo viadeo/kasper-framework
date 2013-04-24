@@ -4,7 +4,7 @@
 **/.project
 .settings
 .project
-**/.classpath
+.classpath
 **/.svn
 =======
 **/.pmd
