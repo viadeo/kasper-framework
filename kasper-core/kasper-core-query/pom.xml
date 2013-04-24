@@ -9,9 +9,9 @@
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>com.viadeo.kasper</groupId>
-		<artifactId>kasper-parent</artifactId>
+		<artifactId>kasper-core-parent</artifactId>
 		<version>0.0.2-SNAPSHOT</version>
-		<relativePath>../../parent</relativePath>
+		<relativePath>../parent</relativePath>
 	</parent>
 	<artifactId>kasper-core-query</artifactId>
 	<name>KASPER CQRS : QUERY</name>

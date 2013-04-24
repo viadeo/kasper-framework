@@ -24,6 +24,7 @@
 	</repositories>
 
 	<properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<axon.version>2.0</axon.version>
 		<testng.version>6.7</testng.version>
 		<com.fasterxml.jackson.version>2.0.2</com.fasterxml.jackson.version>
@@ -82,11 +83,7 @@
 				<artifactId>kasper-client</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>com.viadeo.kasper</groupId>
-				<artifactId>kasper-core-boot</artifactId>
-				<version>${project.version}</version>
-			</dependency>
+
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-core-command</artifactId>
@@ -99,14 +96,10 @@
 			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
-				<artifactId>kasper-core-domain</artifactId>
+				<artifactId>kasper-core-boot</artifactId>
 				<version>${project.version}</version>
 			</dependency>
-			<dependency>
-				<groupId>com.viadeo.kasper</groupId>
-				<artifactId>kasper-core-events</artifactId>
-				<version>${project.version}</version>
-			</dependency>
+
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-platform</artifactId>

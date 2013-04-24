@@ -16,6 +16,7 @@
 	<name>KASPER CLIENT</name>
 
 	<dependencies>
+
 		<dependency>
 			<groupId>com.viadeo.kasper</groupId>
 			<artifactId>kasper-common</artifactId>
