@@ -5,7 +5,7 @@
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper.client;
+package com.viadeo.kasper.client.lib;
 
 import java.io.IOException;
 
@@ -19,14 +19,14 @@ import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
 import com.viadeo.kasper.cqrs.command.ICommandResult.Status;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
 
-final class KasperCommandResultDeserializer extends StdDeserializer<KasperCommandResult> {
+public final class KasperCommandResultDeserializer extends StdDeserializer<KasperCommandResult> {
     static final Logger LOGGER = LoggerFactory.getLogger(KasperCommandResultDeserializer.class);
     
     private static final String STATUS = "status";
     
     // ------------------------------------------------------------------------
     
-    KasperCommandResultDeserializer() {
+    public KasperCommandResultDeserializer() {
         super(KasperCommandResult.class);
     }
 

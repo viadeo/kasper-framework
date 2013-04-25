@@ -9,6 +9,10 @@ import javax.ws.rs.core.MultivaluedMap;
 import org.joda.time.DateTime;
 import org.junit.Test;
 import static org.junit.Assert.*;
+
+import com.viadeo.kasper.client.exceptions.KasperClientException;
+import com.viadeo.kasper.client.lib.QueryBuilder;
+import com.viadeo.kasper.client.lib.TypeAdapter;
 import com.viadeo.kasper.cqrs.query.IQuery;
 
 public class KasperClientQueryCreationTest {

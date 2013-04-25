@@ -5,18 +5,11 @@
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper.client;
+package com.viadeo.kasper.client.lib;
 
-/**
- * @param <T> the result type parameter
- */
-public interface ICallback<T> {
+
+public interface IQueryFactory {
     
-    /**
-     * Called when further operation is done
-     * 
-     * @param result the result to be processed
-     */
-    void done(T result);
+    <T> TypeAdapter<T> create(TypeToken<T> typeToken);
     
 }

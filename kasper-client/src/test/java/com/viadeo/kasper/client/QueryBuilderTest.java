@@ -7,6 +7,9 @@ package com.viadeo.kasper.client;
 import javax.ws.rs.core.MultivaluedMap;
 import org.junit.Before;
 import org.junit.Test;
+
+import com.viadeo.kasper.client.lib.QueryBuilder;
+
 import static org.junit.Assert.*;
 
 public class QueryBuilderTest {

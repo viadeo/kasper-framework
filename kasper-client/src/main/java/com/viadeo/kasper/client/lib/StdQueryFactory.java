@@ -5,7 +5,7 @@
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper.client;
+package com.viadeo.kasper.client.lib;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -21,9 +21,10 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
+import com.viadeo.kasper.client.exceptions.KasperClientException;
 import com.viadeo.kasper.cqrs.query.IQuery;
 
-class StdQueryFactory implements IQueryFactory {
+public class StdQueryFactory implements IQueryFactory {
     
     private static final String PREFIX_METHOD_IS = "is";
     private static final int PREFIX_METHOD_IS_LEN = 2;

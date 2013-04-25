@@ -5,7 +5,7 @@
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper.client;
+package com.viadeo.kasper.client.exceptions;
 
 import com.viadeo.kasper.exception.KasperRuntimeException;
 

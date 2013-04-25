@@ -5,7 +5,7 @@
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper.client;
+package com.viadeo.kasper.client.lib;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -118,7 +118,7 @@ public class QueryBuilder {
     
     // ------------------------------------------------------------------------
     
-    MultivaluedMap<String, String> build() {
+    public MultivaluedMap<String, String> build() {
         return new MultivaluedMapImpl(map);
     }
     

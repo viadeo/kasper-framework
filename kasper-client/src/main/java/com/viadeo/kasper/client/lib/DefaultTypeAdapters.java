@@ -5,7 +5,7 @@
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper.client;
+package com.viadeo.kasper.client.lib;
 
 import java.util.Collection;
 import java.util.Date;
@@ -21,7 +21,7 @@ public final class DefaultTypeAdapters {
     
     // ------------------------------------------------------------------------
     
-    static final TypeAdapter<Number> NUMBER_ADAPTER = new TypeAdapter<Number>() {
+    public static final TypeAdapter<Number> NUMBER_ADAPTER = new TypeAdapter<Number>() {
         @Override
         public void adapt(final Number value, final QueryBuilder builder) {
             builder.add(value.toString());
@@ -30,7 +30,7 @@ public final class DefaultTypeAdapters {
 
     // --
     
-    static final TypeAdapter<String> STRING_ADAPTER = new TypeAdapter<String>() {
+    public static final TypeAdapter<String> STRING_ADAPTER = new TypeAdapter<String>() {
         @Override
         public void adapt(final String value, final QueryBuilder builder) {
             builder.add(value);
@@ -39,7 +39,7 @@ public final class DefaultTypeAdapters {
 
     // --
     
-    static final TypeAdapter<Boolean> BOOLEAN_ADAPTER = new TypeAdapter<Boolean>() {
+    public static final TypeAdapter<Boolean> BOOLEAN_ADAPTER = new TypeAdapter<Boolean>() {
         @Override
         public void adapt(final Boolean value, final QueryBuilder builder) {
             builder.add(value.toString());
@@ -48,7 +48,7 @@ public final class DefaultTypeAdapters {
 
     // --
     
-    static final TypeAdapter<Date> DATE_ADAPTER = new TypeAdapter<Date>() {
+    public static final TypeAdapter<Date> DATE_ADAPTER = new TypeAdapter<Date>() {
         @Override
         public void adapt(final Date value, final QueryBuilder builder) {
             builder.add(String.valueOf(value.getTime()));
@@ -57,7 +57,7 @@ public final class DefaultTypeAdapters {
 
     // --
     
-    static final TypeAdapter<DateTime> DATETIME_ADAPTER = new TypeAdapter<DateTime>() {
+    public static final TypeAdapter<DateTime> DATETIME_ADAPTER = new TypeAdapter<DateTime>() {
         @Override
         public void adapt(final DateTime value, final QueryBuilder builder) {
             builder.add(String.valueOf(value.getMillis()));
@@ -66,7 +66,7 @@ public final class DefaultTypeAdapters {
 
     // --
     
-    static final ITypeAdapterFactory ARRAY_ADAPTER_FACTORY = new ITypeAdapterFactory() {
+    public static final ITypeAdapterFactory ARRAY_ADAPTER_FACTORY = new ITypeAdapterFactory() {
         @Override
         public <T> Optional<TypeAdapter<T>> create(final TypeToken<T> typeToken, final IQueryFactory adapterFactory) {
             final Class<?> rawClass = typeToken.getRawClass();
@@ -85,7 +85,7 @@ public final class DefaultTypeAdapters {
 
     // --
     
-    static final class ArrayAdapter<C> extends TypeAdapter<C[]> {
+    public static final class ArrayAdapter<C> extends TypeAdapter<C[]> {
         private final TypeAdapter<C> componentAdapter;
 
         public ArrayAdapter(final TypeAdapter<C> componentAdapter) {
@@ -102,7 +102,7 @@ public final class DefaultTypeAdapters {
 
     // --
     
-    static final ITypeAdapterFactory COLLECTION_ADAPTER_FACTORY = new ITypeAdapterFactory() {
+    public static final ITypeAdapterFactory COLLECTION_ADAPTER_FACTORY = new ITypeAdapterFactory() {
         @Override
         public <T> Optional<TypeAdapter<T>> create(final TypeToken<T> typeToken, final IQueryFactory adapterFactory) {
             final Class<?> rawClass = typeToken.getRawClass();
@@ -123,7 +123,7 @@ public final class DefaultTypeAdapters {
 
     // --
     
-    static final class CollectionAdapter<E> extends TypeAdapter<Collection<E>> {
+    public static final class CollectionAdapter<E> extends TypeAdapter<Collection<E>> {
         private final TypeAdapter<E> elementAdapter;
 
         CollectionAdapter(final TypeAdapter<E> elementAdapter) {

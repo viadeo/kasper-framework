@@ -10,6 +10,14 @@ import org.junit.Before;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import com.google.common.collect.ImmutableMap;
+import com.viadeo.kasper.client.lib.DefaultTypeAdapters;
+import com.viadeo.kasper.client.lib.IQueryFactory;
+import com.viadeo.kasper.client.lib.ITypeAdapterFactory;
+import com.viadeo.kasper.client.lib.QueryBuilder;
+import com.viadeo.kasper.client.lib.StdQueryFactory;
+import com.viadeo.kasper.client.lib.TypeAdapter;
+import com.viadeo.kasper.client.lib.TypeToken;
+import com.viadeo.kasper.client.lib.VisibilityFilter;
 import com.viadeo.kasper.cqrs.query.IQuery;
 
 public class TestStdQueryFactory {

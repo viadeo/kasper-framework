@@ -5,12 +5,14 @@
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper.client;
+package com.viadeo.kasper.client.lib;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+
+import com.viadeo.kasper.client.exceptions.KasperClientException;
 
 class PropertyAdapter extends TypeAdapter<Object> {
     

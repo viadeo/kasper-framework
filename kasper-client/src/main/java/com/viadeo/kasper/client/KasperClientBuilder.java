@@ -28,6 +28,14 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.sun.jersey.api.client.Client;
+import com.viadeo.kasper.client.exceptions.KasperClientException;
+import com.viadeo.kasper.client.lib.DefaultTypeAdapters;
+import com.viadeo.kasper.client.lib.IQueryFactory;
+import com.viadeo.kasper.client.lib.ITypeAdapterFactory;
+import com.viadeo.kasper.client.lib.KasperCommandResultDeserializer;
+import com.viadeo.kasper.client.lib.StdQueryFactory;
+import com.viadeo.kasper.client.lib.TypeAdapter;
+import com.viadeo.kasper.client.lib.VisibilityFilter;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
@@ -149,7 +157,7 @@ public class KasperClientBuilder {
     
     ObjectMapper defaultMapper() {
         final Module kasperClientModule = new SimpleModule()
-            .addDeserializer(KasperCommandResult.class,    new KasperCommandResultDeserializer());
+            .addDeserializer(KasperCommandResult.class, new KasperCommandResultDeserializer());
         
         return new ObjectMapper().configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, true)
                 .configure(MapperFeature.AUTO_DETECT_CREATORS, true)
