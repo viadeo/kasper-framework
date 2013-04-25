@@ -70,7 +70,7 @@ public class BeanQueryTest extends TestCase {
 		final TestQueryBean bean = new TestQueryBean(name);
 		final BeanQuery<TestQueryBean> queryBean = new BeanQuery<TestQueryBean>(bean);
 
-		// Built by gateway in kasper mode
+		// Built by gateway in platform mode
 		final IContext context = (new DefaultContextBuilder()).buildDefault();
 		final IQueryMessage<BeanQuery<TestQueryBean>> message =
 				new QueryMessage<BeanQuery<TestQueryBean>>(context, queryBean);

@@ -17,7 +17,7 @@ import com.viadeo.kasper.locators.IQueryServicesLocator;
 
 /**
  *
- * Process Kasper query services dynamic registration at kasper boot
+ * Process Kasper query services dynamic registration at kasper platform boot
  * 
  * @see XKasperQueryService
  */

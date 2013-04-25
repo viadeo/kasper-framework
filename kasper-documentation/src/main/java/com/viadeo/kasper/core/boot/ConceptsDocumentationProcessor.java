@@ -13,7 +13,7 @@ import com.viadeo.kasper.er.IConcept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 
 /**
- * Process Kasper concept dynamic registration at kasper boot
+ * Process Kasper concept dynamic registration at platform boot
  *
  * @see XKasperConcept
  */

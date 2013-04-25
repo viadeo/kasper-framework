@@ -13,7 +13,7 @@ import com.viadeo.kasper.cqrs.command.ICommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 
 /**
- * Process Kasper command dynamic registration at kasper boot
+ * Process Kasper command dynamic registration at platform boot
  *
  * @see XKasperCommand
  */

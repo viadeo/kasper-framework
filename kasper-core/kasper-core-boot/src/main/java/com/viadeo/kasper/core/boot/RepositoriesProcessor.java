@@ -19,7 +19,7 @@ import com.viadeo.kasper.locators.IDomainLocator;
 
 /**
  * 
- * Process Kasper repositories dynamic registration at kasper boot
+ * Process Kasper repositories dynamic registration at kasper platform boot
  *
  * @see XKasperRepository
  */

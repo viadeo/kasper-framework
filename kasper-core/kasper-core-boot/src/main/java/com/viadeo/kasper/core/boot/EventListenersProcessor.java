@@ -17,7 +17,7 @@ import com.viadeo.kasper.event.annotation.XKasperEventListener;
 
 /**
  *
- * Process Kasper event listeners dynamic registration at kasper boot
+ * Process Kasper event listeners dynamic registration at kasper platform boot
  *
  * @see XKasperEventListener
  */

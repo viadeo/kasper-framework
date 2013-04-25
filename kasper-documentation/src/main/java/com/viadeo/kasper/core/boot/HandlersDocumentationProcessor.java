@@ -14,7 +14,7 @@ import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 
 /**
  *
- * Process Kasper handler dynamic registration at kasper boot
+ * Process Kasper handler dynamic registration at platform boot
  *
  * @see XKasperListener
  */

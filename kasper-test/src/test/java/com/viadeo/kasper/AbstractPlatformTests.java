@@ -9,51 +9,50 @@ import com.viadeo.kasper.platform.IPlatform;
 
 public abstract class AbstractPlatformTests {
 
-	private static ApplicationContext context = null;
+    private static ApplicationContext context = null;
 
-	private static IPlatform staticPlatform = null;
-	private IPlatform platform = null;
+    private static IPlatform staticPlatform = null;
+    private IPlatform platform = null;
 
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 
-	public AbstractPlatformTests() {
-		this(true);
-	}
+    public AbstractPlatformTests() {
+        this(true);
+    }
 
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 
-	public AbstractPlatformTests(final boolean uniquePlatform) {
+    public AbstractPlatformTests(final boolean uniquePlatform) {
 
-		if (null == context) {
-			System.setProperty("spring_files", "classpath*:config/spring/cache/spring-cache-*.xml");
-			//context = new ClassPathXmlApplicationContext(new String[]{"spring/kasper/spring-kasper-platform.xml"});
-            context = new ClassPathXmlApplicationContext("spring/kasper-platform.xml");
-		}
+        if (null == context) {
+            System.setProperty("spring_files", "classpath*:config/spring/cache/spring-cache-*.xml");
+            context = new ClassPathXmlApplicationContext("spring/kasper/kasper-platform.xml");
+        }
 
-		if (null == staticPlatform) {
+        if (null == staticPlatform) {
             staticPlatform = context.getBean(IPlatform.class);
-			staticPlatform.boot();
-		}
+            staticPlatform.boot();
+        }
 
-		if (uniquePlatform) {
-			platform = staticPlatform;
-		} else {
-			platform = context.getBean(IPlatform.class);
-			platform.boot();
-		}
+        if (uniquePlatform) {
+            platform = staticPlatform;
+        } else {
+            platform = context.getBean(IPlatform.class);
+            platform.boot();
+        }
 
-	}
+    }
 
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 
-	protected IPlatform getPlatform() {
-		return this.platform;
-	}
+    protected IPlatform getPlatform() {
+        return this.platform;
+    }
 
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 
-	protected IContext newContext() {
-		return new DefaultContextBuilder().buildDefault();
-	}
+    protected IContext newContext() {
+        return new DefaultContextBuilder().buildDefault();
+    }
 
 }

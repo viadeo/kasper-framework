@@ -14,7 +14,7 @@ import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 
 /**
  *
- * Process Kasper domain dynamic registration at kasper boot
+ * Process Kasper domain dynamic registration at platform boot
  *
  * @see XKasperDomain
  */
