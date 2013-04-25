@@ -50,7 +50,7 @@ public class KasperClientQueryTest extends JerseyTest {
 
     public KasperClientQueryTest() throws MalformedURLException {
         super(new LowLevelAppDescriptor.Builder(new TestConfiguration()).contextPath("/kasper/query").build());
-        client = new KasperClient.Builder()
+        client = new KasperClientBuilder()
                 .client(client())
                 .queryBaseLocation(new URL("http://localhost:9998/kasper/query/"))
                 .create();
@@ -79,7 +79,7 @@ public class KasperClientQueryTest extends JerseyTest {
     public void testSendQueryAsyncCallback() throws MalformedURLException, InterruptedException, ExecutionException {
         final CountDownLatch latch = new CountDownLatch(1);
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
-        client.queryAsync(query, MemberDTO.class, new Callback<MemberDTO>() {
+        client.queryAsync(query, MemberDTO.class, new ICallback<MemberDTO>() {
             @Override
             public void done(MemberDTO object) {
                 checkRoundTrip(query, object);

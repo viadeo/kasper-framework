@@ -31,4 +31,8 @@ public class KasperRuntimeException extends RuntimeException {
 		super(e);
 	}
 
+	public KasperRuntimeException(final Throwable e) {
+		super(e);
+	}
+	
 }

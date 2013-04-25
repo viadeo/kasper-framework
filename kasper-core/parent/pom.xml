@@ -9,7 +9,6 @@
         <relativePath>../../parent</relativePath>
     </parent>
 
-	<groupId>com.viadeo.kasper</groupId>
 	<artifactId>kasper-core-parent</artifactId>
 	<name>KASPER CORE PARENT</name>
 	<packaging>pom</packaging>

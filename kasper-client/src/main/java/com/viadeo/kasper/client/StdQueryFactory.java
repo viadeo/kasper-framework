@@ -1,196 +1,184 @@
-/*
- * Copyright 2013 Viadeo.com
- */
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 
 package com.viadeo.kasper.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import java.lang.reflect.InvocationTargetException;
+
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.cqrs.query.IQuery;
 
-class StdQueryFactory implements QueryFactory {
-    private final ConcurrentHashMap<Type, TypeAdapter<?>> adapters;
-    private final List<TypeAdapterFactory> factories;
+class StdQueryFactory implements IQueryFactory {
+    
+    private static final String PREFIX_METHOD_IS = "is";
+    private static final int PREFIX_METHOD_IS_LEN = 2;
+    private static final String PREFIX_METHOD_GET = "get";
+    private static final int PREFIX_METHOD_GET_LEN = 3;
+    
+    private final ConcurrentMap<Type, TypeAdapter<?>> adapters;
+    private final List<ITypeAdapterFactory> factories;
 
     private final VisibilityFilter visibilityFilter;
-
-    public StdQueryFactory(Map<Type, ? extends TypeAdapter<?>> adapters, List<? extends TypeAdapterFactory> factories, VisibilityFilter visibilityFilter) {
+    
+    // ------------------------------------------------------------------------
+    
+    public StdQueryFactory(final Map<Type, ? extends TypeAdapter<?>> adapters, 
+            final List<? extends ITypeAdapterFactory> factories, 
+            final VisibilityFilter visibilityFilter) {
         this.visibilityFilter = checkNotNull(visibilityFilter);
-        this.factories = new ArrayList<TypeAdapterFactory>(checkNotNull(factories));
-        this.adapters = new ConcurrentHashMap<Type, TypeAdapter<?>>(checkNotNull(adapters));
+        this.factories = Lists.newArrayList(checkNotNull(factories));
+        
+        this.adapters = Maps.newConcurrentMap();
+        this.adapters.putAll(checkNotNull(adapters));
     }
 
-    @SuppressWarnings("unchecked")
-    // the library is providing typesafety through TypeToken and reflection
+    // ------------------------------------------------------------------------
+    
+    @SuppressWarnings("unchecked") // Safe: the library is providing type-safety 
+                                   // through TypeToken and reflection
     @Override
-    public <T> TypeAdapter<T> create(TypeToken<T> typeToken) {
-        // first lets check if a TypeAdapter is available for that class
+    public <T> TypeAdapter<T> create(final TypeToken<T> typeToken) {
+        
+        //- first lets check if a TypeAdapter is available for that class
         TypeAdapter<T> adapter = (TypeAdapter<T>) adapters.get(typeToken.getType());
-        if (adapter == null) {
-            for (TypeAdapterFactory factory : factories) {
-                if ((adapter = factory.create(typeToken, this)) != null) {
+        
+        if (null == adapter) {
+            for (final ITypeAdapterFactory factory : factories) {
+                final Optional<TypeAdapter<T>> adapterOpt = factory.create(typeToken, this);
+                if (adapterOpt.isPresent()) {
+                	adapter = adapterOpt.get();
                     break;
                 }
             }
 
-            if (adapter == null) {
+            if (null == adapter) {
                 if (!IQuery.class.isAssignableFrom(typeToken.getRawClass())) {
                     throw new KasperClientException("Could not find any valid TypeAdapter for type " + typeToken.getRawClass());
                 }
                 adapter = (TypeAdapter<T>) provideBeanQueryMapper((Class<IQuery>) typeToken.getRawClass());
             }
-            checkNotNull(adapter);
-            adapters.putIfAbsent(typeToken.getType(), adapter);
+            
+            adapters.putIfAbsent(typeToken.getType(), checkNotNull(adapter));
         }
 
         return adapter;
     }
 
-    private TypeAdapter<? extends IQuery> provideBeanQueryMapper(Class<? extends IQuery> queryClass) {
-        Set<PropertyAdapter> adapters = new HashSet<PropertyAdapter>();
+    // ------------------------------------------------------------------------
+    
+    private TypeAdapter<? extends IQuery> provideBeanQueryMapper(final Class<? extends IQuery> queryClass) {
+        final Set<PropertyAdapter> retAdapters = Sets.newHashSet();
+        
         // no need to look at interfaces as we are interested only in implementations
-        for (Class<?> superClass = queryClass; superClass != null && superClass != Object.class; superClass = superClass.getSuperclass()) {
-            Method[] methods = superClass.getDeclaredMethods();
-            for (Method m : methods) {
+        Class<?> superClass = queryClass;
+        while ((null != superClass) && !superClass.equals(Object.class)) {
+            final Method[] methods = superClass.getDeclaredMethods();
+            for (final Method m : methods) {
                 if (visibilityFilter.isVisible(m) && isAccessor(m)) {
                     @SuppressWarnings("unchecked")
-                    TypeToken<Object> propertyType = (TypeToken<Object>) TypeToken.typeFor(m.getGenericReturnType());
-                    TypeAdapter<Object> delegateAdapter = create(propertyType);
-                    if (delegateAdapter != null) {
-                        PropertyAdapter propertyAdapter = new PropertyAdapter(m, resolveName(m), delegateAdapter);
-                        if (!adapters.contains(propertyAdapter)) {
-                            adapters.add(propertyAdapter);
+                    final TypeToken<Object> propertyType = (TypeToken<Object>) TypeToken.typeFor(m.getGenericReturnType());
+                    final TypeAdapter<Object> delegateAdapter = create(propertyType);
+                    
+                    if (null != delegateAdapter) {
+                        final PropertyAdapter propertyAdapter = new PropertyAdapter(m, resolveName(m), delegateAdapter);
+                        if (!retAdapters.contains(propertyAdapter)) {
+                            retAdapters.add(propertyAdapter);
                         }
-                    }
-                    else {
+                    } else {
                         throw new KasperClientException("Complex Queries are not supported! " +
-                                "Please flatten your Pojo in order to contain only java literal properties or register custom a TypeAdapter.");
+                                "Please flatten your Pojo in order to contain only java literal " +
+                                "properties or register custom a TypeAdapter.");
                     }
                 }
             }
+            
+            superClass = superClass.getSuperclass();
         }
 
-        if (adapters.isEmpty()) {
+        if (retAdapters.isEmpty()) {
             throw new KasperClientException("No property has been discovered for query " + queryClass);
         }
 
-        return new BeanQueryMapper(adapters);
+        return new BeanQueryMapper(retAdapters);
     }
 
-    private String resolveName(Method method) {
-        String methodName = method.getName();
-        if (methodName.startsWith("is")) {
-            return firstCharToLowerCase(methodName.substring(2));
+    // ------------------------------------------------------------------------
+    
+    private String resolveName(final Method method) {
+        final String methodName = method.getName();
+        
+        if (methodName.startsWith(PREFIX_METHOD_IS)) {
+            return firstCharToLowerCase(methodName.substring(PREFIX_METHOD_IS_LEN));
         }
-        if (methodName.startsWith("get")) {
-            return firstCharToLowerCase(methodName.substring(3));
+        
+        if (methodName.startsWith(PREFIX_METHOD_GET)) {
+            return firstCharToLowerCase(methodName.substring(PREFIX_METHOD_GET_LEN));
         }
+        
         throw new IllegalStateException("Method must respect Java Bean conventions and start with is or get.");
     }
     
-    private String firstCharToLowerCase(String str) {
-        String newStr = str.substring(0, 1).toLowerCase();
-        if (str.length() > 1) 
+    // --
+    
+    private String firstCharToLowerCase(final String str) {
+        final String newStr = str.substring(0, 1).toLowerCase();
+        
+        if (str.length() > 1) { 
             return newStr + str.substring(1);
-        else return newStr;
+        } else {
+            return newStr;
+        }
     }
 
-    private boolean isAccessor(Method method) {
-        if (method.getName().startsWith("get") && method.getName().length() > 3 && method.getParameterTypes().length == 0) {
+    // --
+    
+    private boolean isAccessor(final Method method) {
+        
+        if (method.getName().startsWith(PREFIX_METHOD_GET) 
+                && (method.getName().length() > PREFIX_METHOD_GET_LEN) 
+                && method.getParameterTypes().length == 0) {
             return true;
         }
-        if (method.getName().startsWith("is") && method.getName().length() > 2 && method.getParameterTypes().length == 0) {
+        
+        if (method.getName().startsWith(PREFIX_METHOD_IS) 
+                && method.getName().length() > PREFIX_METHOD_IS_LEN 
+                && method.getParameterTypes().length == 0) {
             return true;
         }
+        
         return false;
     }
 
-    private class PropertyAdapter extends TypeAdapter<Object> {
-        private final Method accessor;
-        private final String name;
-        private final TypeAdapter<Object> adapter;
-
-        public PropertyAdapter(Method accessor, String name, TypeAdapter<Object> adapter) {
-            this.accessor = checkNotNull(accessor);
-            this.name = checkNotNull(name);
-            this.adapter = checkNotNull(adapter);
-        }
-
-        @Override
-        public void adapt(Object bean, QueryBuilder builder) {
-            try {
-                Object value = accessor.invoke(bean);
-                if (value != null) {
-                    builder.begin(name);
-                    adapter.adapt(value, builder);
-                }
-            }
-            catch (IllegalArgumentException e) {
-                throw _canNotGetPropertyValue(e);
-            }
-            catch (IllegalAccessException e) {
-                throw _canNotGetPropertyValue(e);
-            }
-            catch (InvocationTargetException e) {
-                throw _canNotGetPropertyValue(e);
-            }
-        }
-
-        private KasperClientException _canNotGetPropertyValue(Exception e) {
-            return new KasperClientException("Unable to get value of property " + name
-                    + " from bean " + accessor.getDeclaringClass(), e);
-        }
-
-        @Override
-        public int hashCode() {
-            return name.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object obj) {
-            if (this == obj) {
-                return true;
-            }
-            if (obj == null) {
-                return false;
-            }
-            if (getClass() != obj.getClass()) {
-                return false;
-            }
-            PropertyAdapter other = (PropertyAdapter) obj;
-            if (name == null) {
-                if (other.name != null) {
-                    return false;
-                }
-            }
-            else if (!name.equals(other.name)) {
-                return false;
-            }
-            return true;
-        }
-    }
-
+    // ------------------------------------------------------------------------
+    
     private class BeanQueryMapper extends TypeAdapter<IQuery> {
         private final Set<PropertyAdapter> adapters;
 
-        public BeanQueryMapper(Set<PropertyAdapter> adapters) {
+        public BeanQueryMapper(final Set<PropertyAdapter> adapters) {
             this.adapters = ImmutableSet.copyOf(adapters);
         }
 
         @Override
-        public void adapt(IQuery value, QueryBuilder builder) {
-            for (PropertyAdapter adapter : adapters) {
+        public void adapt(final IQuery value, final QueryBuilder builder) {
+            for (final PropertyAdapter adapter : adapters) {
                 adapter.adapt(value, builder);
             }
         }
     }
+    
 }

@@ -47,13 +47,13 @@ public class KasperClientCommandTest extends JerseyTest {
     public static class TestConfiguration extends DefaultResourceConfig {
         public TestConfiguration() {
             super(DummyResource.class);
-            getProviderSingletons().add(new JacksonJsonProvider(new KasperClient.Builder().defaultMapper()));
+            getProviderSingletons().add(new JacksonJsonProvider(new KasperClientBuilder().defaultMapper()));
         }
     }
 
     public KasperClientCommandTest() throws MalformedURLException {
         super(new LowLevelAppDescriptor.Builder(new TestConfiguration()).contextPath("/kasper/command").build());
-        client = new KasperClient.Builder()
+        client = new KasperClientBuilder()
                 .commandBaseLocation(new URL("http://localhost:9998/kasper/command/"))
                 .create();
     }
@@ -77,7 +77,7 @@ public class KasperClientCommandTest extends JerseyTest {
     public void testSendQueryAsyncCallback() throws MalformedURLException, InterruptedException, ExecutionException {
         final CountDownLatch latch = new CountDownLatch(1);
         final CreateMemberCommand command = new CreateMemberCommand(Status.OK);
-        client.sendAsync(command, new Callback<ICommandResult>() {
+        client.sendAsync(command, new ICallback<ICommandResult>() {
             @Override
             public void done(ICommandResult object) {
                 assertEquals(Status.OK, object.getStatus());

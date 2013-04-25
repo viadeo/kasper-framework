@@ -18,11 +18,11 @@ public final class KasperER {
 	/**
 	 * SOURCE is the child of TARGET
 	 */
-	public static final String child_of = "child_of";
+	public static final String childOf = "child_of";
 	
 	/**
 	 * SOURCE has been created by TARGET
 	 */
-	public static final String created_by = "created_by";
+	public static final String createdBy = "created_by";
 	
 }

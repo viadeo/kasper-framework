@@ -1,6 +1,9 @@
-/*
- * Copyright 2013 Viadeo.com
- */
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 
 package com.viadeo.kasper.client;
 
@@ -28,27 +31,33 @@ import java.lang.reflect.Modifier;
  * So the idea is to pass to the constructor all the Modifier.XXX modifiers that you want to be
  * filtered.
  * 
- * @author eugen
- * 
  */
 public final class VisibilityFilter {
+    
     /**
      * Modifier.TRANSIENT Modifier.NATIVE
      */
-    public final static VisibilityFilter DEFAULT = new VisibilityFilter(Modifier.TRANSIENT,
+    public static final VisibilityFilter DEFAULT = new VisibilityFilter(Modifier.TRANSIENT,
             Modifier.NATIVE, Modifier.STATIC, Modifier.ABSTRACT);
-    public final static VisibilityFilter ALL = new VisibilityFilter();
-    public final static VisibilityFilter PROTECTED = new VisibilityFilter(Modifier.TRANSIENT,
+    
+    public static final VisibilityFilter ALL = new VisibilityFilter();
+    
+    public static final VisibilityFilter PROTECTED = new VisibilityFilter(Modifier.TRANSIENT,
             Modifier.NATIVE, Modifier.STATIC, Modifier.PRIVATE, Modifier.ABSTRACT);
-    public final static VisibilityFilter PACKAGE_PUBLIC = new VisibilityFilter(Modifier.TRANSIENT,
+    
+    public static final VisibilityFilter PACKAGE_PUBLIC = new VisibilityFilter(Modifier.TRANSIENT,
             Modifier.NATIVE, Modifier.STATIC, Modifier.PRIVATE, Modifier.PROTECTED, Modifier.ABSTRACT);
 
-    private final static int JAVA_MODIFIERS = Modifier.PUBLIC | Modifier.PROTECTED
+    private static final int JAVA_MODIFIERS = Modifier.PUBLIC | Modifier.PROTECTED
             | Modifier.PRIVATE | Modifier.ABSTRACT | Modifier.STATIC | Modifier.FINAL
             | Modifier.TRANSIENT | Modifier.VOLATILE | Modifier.SYNCHRONIZED | Modifier.NATIVE
             | Modifier.STRICT | Modifier.INTERFACE;
 
+    // ------------------------------------------------------------------------
+    
     private int filter;
+    
+    // ------------------------------------------------------------------------
 
     /**
      * Creates a new VisibilityFilter with specified modifiers. You must use existing values from
@@ -56,25 +65,30 @@ public final class VisibilityFilter {
      * 
      * @param modifier all the modifiers you want to exclude.
      */
-    public VisibilityFilter(int... modifier) {
+    public VisibilityFilter(final int... modifier) {
         filter = 0;
-        for (int m : modifier) {
+        
+        for (final int m : modifier) {
 
             if ((m & JAVA_MODIFIERS) == 0) {
                 throw new IllegalArgumentException(
                         "One of the modifiers is not a standard java modifier.");
             }
+            
             filter = filter | m;
         }
     }
 
+    // ------------------------------------------------------------------------
+    
     /**
      * Checks whether this member is visible or not according to this filter.
      * 
      * @param member
      * @return
      */
-    public final boolean isVisible(Member member) {
-        return (member.getModifiers() & filter) == 0;
+    public boolean isVisible(final Member member) {
+        return ((member.getModifiers() & filter) == 0);
     }
+    
 }

@@ -46,8 +46,8 @@ public class TestStdQueryFactory {
     @Test
     public void testBeanQueryAdapterOutputWithPrimitiveIntAdapter() {
         TypeAdapter<SomeQuery> adapter = new StdQueryFactory(
-                ImmutableMap.<Type, TypeAdapter<?>> of(int.class, DefaultAdapters.numberAdapter),
-                new ArrayList<TypeAdapterFactory>(),
+                ImmutableMap.<Type, TypeAdapter<?>> of(int.class, DefaultTypeAdapters.NUMBER_ADAPTER),
+                new ArrayList<ITypeAdapterFactory>(),
                 VisibilityFilter.PACKAGE_PUBLIC).create(TypeToken.typeFor(SomeQuery.class));
         adapter.adapt(new SomeQuery(), builder);
         assertEquals("1", builder.first("dummy"));
@@ -58,10 +58,10 @@ public class TestStdQueryFactory {
 
     }
 
-    private QueryFactory createQueryFactory(TypeAdapter<SomeQuery> adapter) {
+    private IQueryFactory createQueryFactory(TypeAdapter<SomeQuery> adapter) {
         return new StdQueryFactory(
                 ImmutableMap.<Type, TypeAdapter<?>> of(SomeQuery.class, adapter),
-                new ArrayList<TypeAdapterFactory>(),
+                new ArrayList<ITypeAdapterFactory>(),
                 VisibilityFilter.PACKAGE_PUBLIC);
     }
 

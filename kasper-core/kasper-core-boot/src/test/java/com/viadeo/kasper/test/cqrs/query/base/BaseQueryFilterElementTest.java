@@ -226,8 +226,8 @@ public class BaseQueryFilterElementTest extends TestCase {
 	private static final class dtofield implements IQueryDTO {
 		private static final long serialVersionUID = 4000122334767301613L;
 
-		String stringField;
-		Integer intField;
+		private String stringField;
+		private Integer intField;
 
 	}
 

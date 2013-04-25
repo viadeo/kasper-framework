@@ -24,7 +24,7 @@ public class KasperClientQueryCreationTest {
 
     @Test
     public void testComplexPojosWithCustomAdapter() {
-        KasperClient client = new KasperClient.Builder().use(new TypeAdapter<SomePojo>() {
+        KasperClient client = new KasperClientBuilder().use(new TypeAdapter<SomePojo>() {
             @Override
             public void adapt(SomePojo value, QueryBuilder builder) {
                 builder.addSingle("somePojo", 2);
