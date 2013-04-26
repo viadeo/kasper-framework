@@ -30,7 +30,6 @@ public class QueryBuilderTest {
     
     @Test
     public void testSimpleValues() {
-    	
     	// Given
     	
     	// When
@@ -75,5 +74,18 @@ public class QueryBuilderTest {
         assertTrue(map.get("array").size() == 2);
         assertEquals("1", map.get("array").get(0));
         assertEquals("2", map.get("array").get(1));
+    }
+    
+    @Test public void testComposedCallsToBegin() {
+        // Given
+        
+        // When
+        final MultivaluedMap<String, String> map = builder.begin("14").add(1).begin("23").add(2).add(3).end().add(4).end().build();
+        
+        // Then
+        assertEquals("1", map.get("14").get(0));
+        assertEquals("4", map.get("14").get(1));
+        assertEquals("2", map.get("23").get(0));
+        assertEquals("3", map.get("23").get(1));
     }
 }

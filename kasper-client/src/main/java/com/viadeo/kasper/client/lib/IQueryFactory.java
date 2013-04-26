@@ -7,6 +7,7 @@
 
 package com.viadeo.kasper.client.lib;
 
+import com.google.common.reflect.TypeToken;
 
 public interface IQueryFactory {
     
