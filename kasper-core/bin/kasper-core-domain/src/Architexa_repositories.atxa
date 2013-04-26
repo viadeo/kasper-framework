@@ -1,0 +1,186 @@
+<,mglcel@mglcel.fr> <http://www.architexa.com/rdf/core#creator> "true" .
+
+@prefix atxa-rse-eclipse: <http://www.architexa.com/rdf/rse-eclipse#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix atxa-jdt-wkspc: <http://www.architexa.com/rdf/jdt-wkspc#> .
+@prefix atxa-core: <http://www.architexa.com/rdf/core#> .
+@prefix atxa: <http://www.architexa.com/rdf/> .
+@prefix atxa-jdt: <http://www.architexa.com/rdf/jdt#> .
+
+<http://www.architexa.com/rdf/rse-eclipse#src_slArchitexa_unrepositories.atxa> a atxa-core:reloFile .
+
+atxa:DetailNode atxa-core:detailLevel "0" .
+
+atxa-core:docRoot atxa-core:browseModel "com.architexa.diagrams.relo.jdt/com.architexa.diagrams.relo.jdt.browse.ClassStrucBrowseModel" ;
+	atxa-core:contains _:node17arq974px78666 .
+
+_:node17arq974px78666 a atxa-core:node ;
+	atxa-core:model <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.kasper.ddd> ;
+	atxa-core:posX "527" ;
+	atxa-core:posY "274" .
+
+<http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.kasper.ddd> atxa-core:contains <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.kasper.ddd$IKasperRepository> .
+
+_:node17arq974px78666 atxa-core:contains _:node17arq974px78667 .
+
+_:node17arq974px78667 a atxa-core:node ;
+	atxa-core:model <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.kasper.ddd$IKasperRepository> ;
+	atxa-core:posX "533" ;
+	atxa-core:posY "299" .
+
+atxa-core:docRoot atxa-core:contains _:node17arq974px78668 .
+
+_:node17arq974px78668 a atxa-core:node ;
+	atxa-core:model <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.kasper.ddd.impl> ;
+	atxa-core:posX "506" ;
+	atxa-core:posY "421" .
+
+<http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.kasper.ddd.impl> atxa-core:contains <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.kasper.ddd.impl$AbstractKasperRepository> .
+
+_:node17arq974px78668 atxa-core:contains _:node17arq974px78669 .
+
+_:node17arq974px78669 a atxa-core:node ;
+	atxa-core:model <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.kasper.ddd.impl$AbstractKasperRepository> ;
+	atxa-core:posX "512" ;
+	atxa-core:posY "446" .
+
+_:node17arq974px77141 a atxa-core:link ;
+	atxa-core:model atxa-jdt:inherits ;
+	rdf:subject _:node17arq974px78669 ;
+	rdf:object _:node17arq974px78667 ;
+	atxa-core:bendpoint _:node17arq974px78670 .
+
+_:node17arq974px78670 atxa-core:bpLocation "605,357" ;
+	atxa-core:bpIndex "0" .
+
+atxa-core:docRoot atxa-core:contains _:node17arq974px78671 .
+
+_:node17arq974px78671 a atxa-core:node ;
+	atxa-core:model <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.kasper.er> ;
+	atxa-core:posX "293" ;
+	atxa-core:posY "352" .
+
+<http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.kasper.er> atxa-core:contains <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.kasper.er$IKasperRelationRepository> , <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.kasper.er$IKasperConceptRepository> .
+
+_:node17arq974px78671 atxa-core:contains _:node17arq974px78672 .
+
+_:node17arq974px78672 a atxa-core:node ;
+	atxa-core:model <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.kasper.er$IKasperConceptRepository> ;
+	atxa-core:posX "299" ;
+	atxa-core:posY "378" .
+
+_:node17arq974px77166 a atxa-core:link ;
+	atxa-core:model atxa-jdt:inherits ;
+	rdf:subject _:node17arq974px78672 ;
+	rdf:object _:node17arq974px78667 ;
+	atxa-core:bendpoint _:node17arq974px78673 .
+
+_:node17arq974px78673 atxa-core:bpLocation "394,357" ;
+	atxa-core:bpIndex "0" .
+
+_:node17arq974px77166 atxa-core:bendpoint _:node17arq974px78674 .
+
+_:node17arq974px78674 atxa-core:bpLocation "605,357" ;
+	atxa-core:bpIndex "1" .
+
+_:node17arq974px78671 atxa-core:contains _:node17arq974px78675 .
+
+_:node17arq974px78675 a atxa-core:node ;
+	atxa-core:model <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.kasper.er$IKasperRelationRepository> ;
+	atxa-core:posX "711" ;
+	atxa-core:posY "377" .
+
+_:node17arq974px77182 a atxa-core:link ;
+	atxa-core:model atxa-jdt:inherits ;
+	rdf:subject _:node17arq974px78675 ;
+	rdf:object _:node17arq974px78667 ;
+	atxa-core:bendpoint _:node17arq974px78676 .
+
+_:node17arq974px78676 atxa-core:bpLocation "806,357" ;
+	atxa-core:bpIndex "0" .
+
+_:node17arq974px77182 atxa-core:bendpoint _:node17arq974px78677 .
+
+_:node17arq974px78677 atxa-core:bpLocation "605,357" ;
+	atxa-core:bpIndex "1" .
+
+atxa-core:docRoot atxa-core:contains _:node17arq974px78678 .
+
+_:node17arq974px78678 a atxa-core:node ;
+	atxa-core:model <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.platform.news.domain.mininews> ;
+	atxa-core:posX "310" ;
+	atxa-core:posY "674" .
+
+<http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.platform.news.domain.mininews> atxa-core:contains <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.platform.news.domain.mininews$MiniNewsRepository> .
+
+_:node17arq974px78678 atxa-core:contains _:node17arq974px78679 .
+
+_:node17arq974px78679 a atxa-core:node ;
+	atxa-core:model <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.platform.news.domain.mininews$MiniNewsRepository> ;
+	atxa-core:posX "316" ;
+	atxa-core:posY "699" .
+
+_:node17arq974px77384 a atxa-core:link ;
+	atxa-core:model atxa-jdt:inherits ;
+	rdf:subject _:node17arq974px78679 ;
+	rdf:object _:node17arq974px78672 ;
+	atxa-core:bendpoint _:node17arq974px78680 .
+
+_:node17arq974px78680 atxa-core:bpLocation "394,436" ;
+	atxa-core:bpIndex "0" .
+
+_:node17arq974px77468 a atxa-core:link ;
+	atxa-core:model atxa-jdt:inherits ;
+	rdf:subject _:node17arq974px78679 ;
+	rdf:object _:node17arq974px78681 ;
+	atxa-core:bendpoint _:node17arq974px78682 .
+
+_:node17arq974px78682 atxa-core:bpLocation "394,670" ;
+	atxa-core:bpIndex "0" .
+
+_:node17arq974px77468 atxa-core:bendpoint _:node17arq974px78683 .
+
+_:node17arq974px78683 atxa-core:bpLocation "605,670" ;
+	atxa-core:bpIndex "1" .
+
+atxa-core:docRoot atxa-core:contains _:node17arq974px78684 .
+
+_:node17arq974px78684 a atxa-core:node ;
+	atxa-core:model <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.platform.domain.repository> ;
+	atxa-core:posX "514" ;
+	atxa-core:posY "508" .
+
+<http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.platform.domain.repository> atxa-core:contains <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.platform.domain.repository$KViadeoRepository> , <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.platform.domain.repository$KViadeoRepositorySQL> .
+
+_:node17arq974px78684 atxa-core:contains _:node17arq974px78685 .
+
+_:node17arq974px78685 a atxa-core:node ;
+	atxa-core:model <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.platform.domain.repository$KViadeoRepository> ;
+	atxa-core:posX "531" ;
+	atxa-core:posY "533" .
+
+_:node17arq974px77502 a atxa-core:link ;
+	atxa-core:model atxa-jdt:inherits ;
+	rdf:subject _:node17arq974px78685 ;
+	rdf:object _:node17arq974px78669 ;
+	atxa-core:bendpoint _:node17arq974px78686 .
+
+_:node17arq974px78686 atxa-core:bpLocation "605,504" ;
+	atxa-core:bpIndex "0" .
+
+_:node17arq974px78684 atxa-core:contains _:node17arq974px78681 .
+
+_:node17arq974px78681 a atxa-core:node ;
+	atxa-core:model <http://www.architexa.com/rdf/jdt-wkspc#com.viadeo.platform.domain.repository$KViadeoRepositorySQL> ;
+	atxa-core:posX "520" ;
+	atxa-core:posY "612" .
+
+_:node17arq974px77503 a atxa-core:link ;
+	atxa-core:model atxa-jdt:inherits ;
+	rdf:subject _:node17arq974px78681 ;
+	rdf:object _:node17arq974px78685 ;
+	atxa-core:bendpoint _:node17arq974px78687 .
+
+_:node17arq974px78687 atxa-core:bpLocation "605,591" ;
+	atxa-core:bpIndex "0" .
+

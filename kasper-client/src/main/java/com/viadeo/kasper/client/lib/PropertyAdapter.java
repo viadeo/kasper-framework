@@ -36,10 +36,9 @@ class PropertyAdapter extends TypeAdapter<Object> {
     public void adapt(final Object bean, final QueryBuilder builder) {
         try {
             final Object value = accessor.invoke(bean);
-            if (null != value) {
-                builder.begin(name);
-                adapter.adapt(value, builder);
-            }
+            builder.begin(name);
+            adapter.adapt(value, builder);
+            builder.end();
         } catch (final IllegalArgumentException e) {
             throw cannotGetPropertyValue(e);
         } catch (final IllegalAccessException e) {
