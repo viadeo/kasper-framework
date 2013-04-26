@@ -1,6 +1,9 @@
-/*
- * Copyright 2013 Viadeo.com
- */
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 
 package com.viadeo.kasper.client;
 
@@ -21,13 +24,28 @@ import com.viadeo.kasper.client.lib.VisibilityFilter;
 import com.viadeo.kasper.cqrs.query.IQuery;
 
 public class TestStdQueryFactory {
+	
     private QueryBuilder builder;
 
+    // ------------------------------------------------------------------------
+    
+    class SomeQuery implements IQuery {
+        private static final long serialVersionUID = -6763165103363988454L;
+
+        public int getDummy() {
+            return 1;
+        }
+    }
+    
+	// ------------------------------------------------------------------------
+    
     @Before
     public void init() {
         builder = new QueryBuilder();
     }
 
+	// ------------------------------------------------------------------------
+    
     @Test
     public void testSkipNull() {
         create().skipNull().adapt(null, null);
@@ -40,30 +58,41 @@ public class TestStdQueryFactory {
 
     @Test
     public void testCustomQueryAdapterResolution() {
-        TypeAdapter<SomeQuery> adapter = create();
+        final TypeAdapter<SomeQuery> adapter = create();
         assertEquals(adapter, createQueryFactory(adapter).create(TypeToken.typeFor(SomeQuery.class)));
     }
 
     @Test
     public void testCustomQueryAdapterOutput() {
-        TypeAdapter<SomeQuery> adapter = create();
+    	
+    	// Given
+        final TypeAdapter<SomeQuery> adapter = create();
+        
+        // When
         createQueryFactory(adapter).create(TypeToken.typeFor(SomeQuery.class)).adapt(new SomeQuery(), builder);
+        
+        // Then
         assertEquals("bar", builder.first("foo"));
     }
 
     @Test
     public void testBeanQueryAdapterOutputWithPrimitiveIntAdapter() {
-        TypeAdapter<SomeQuery> adapter = new StdQueryFactory(
+    	// Given
+        final TypeAdapter<SomeQuery> adapter = new StdQueryFactory(
                 ImmutableMap.<Type, TypeAdapter<?>> of(int.class, DefaultTypeAdapters.NUMBER_ADAPTER),
                 new ArrayList<ITypeAdapterFactory>(),
                 VisibilityFilter.PACKAGE_PUBLIC).create(TypeToken.typeFor(SomeQuery.class));
+        
+        // When
         adapter.adapt(new SomeQuery(), builder);
+        
+        // Then
         assertEquals("1", builder.first("dummy"));
     }
 
     @Test
     public void testQueryFactoryOutputWithCollectionAdapter() {
-
+    	// TODO ?
     }
 
     private IQueryFactory createQueryFactory(TypeAdapter<SomeQuery> adapter) {
@@ -84,11 +113,4 @@ public class TestStdQueryFactory {
         };
     }
 
-    class SomeQuery implements IQuery {
-        private static final long serialVersionUID = -6763165103363988454L;
-
-        public int getDummy() {
-            return 1;
-        }
-    }
 }

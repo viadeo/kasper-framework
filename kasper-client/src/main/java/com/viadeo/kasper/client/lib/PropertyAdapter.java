@@ -26,6 +26,8 @@ class PropertyAdapter extends TypeAdapter<Object> {
         this.accessor = checkNotNull(accessor);
         this.name = checkNotNull(name);
         this.adapter = checkNotNull(adapter);
+        
+        this.accessor.setAccessible(true);
     }
 
     // ------------------------------------------------------------------------
