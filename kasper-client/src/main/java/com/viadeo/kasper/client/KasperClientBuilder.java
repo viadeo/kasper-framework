@@ -27,40 +27,40 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.Client;
 import com.viadeo.kasper.client.exceptions.KasperClientException;
 import com.viadeo.kasper.client.lib.DefaultTypeAdapters;
 import com.viadeo.kasper.client.lib.IQueryFactory;
+import com.viadeo.kasper.client.lib.ITypeAdapter;
 import com.viadeo.kasper.client.lib.ITypeAdapterFactory;
 import com.viadeo.kasper.client.lib.KasperCommandResultDeserializer;
 import com.viadeo.kasper.client.lib.StdQueryFactory;
-import com.viadeo.kasper.client.lib.TypeAdapter;
 import com.viadeo.kasper.client.lib.VisibilityFilter;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 public class KasperClientBuilder {
     static final Logger LOGGER = LoggerFactory.getLogger(KasperClientBuilder.class);
-    
+
     private Client client;
     private ObjectMapper mapper;
     private URL commandBaseLocation;
     private URL queryBaseLocation;
     private IQueryFactory queryFactory;
-    private Map<Type, TypeAdapter<?>> adapters = Maps.newHashMap();
-    private List<ITypeAdapterFactory> factories = Lists.newArrayList();
+    private Map<Type, ITypeAdapter<?>> adapters = Maps.newHashMap();
+    private List<ITypeAdapterFactory<?>> factories = Lists.newArrayList();
 
     // ------------------------------------------------------------------------
-    
+
     private static final String DEFAULT_COMMAND_URL = "http://kasper-platform/kasper/command";
-    
+
     private static final Class<?>[] NUMBER_ADAPTED_CLASSES = new Class<?>[] {
-        int.class, long.class, short.class, float.class, double.class,
-        Number.class, Integer.class, Long.class, Short.class, Float.class, Double.class
-   };
-    
+            int.class, long.class, short.class, float.class, double.class,
+            Number.class, Integer.class, Long.class, Short.class, Float.class, Double.class
+    };
+
     // ------------------------------------------------------------------------
-    
+
     public KasperClientBuilder use(final ObjectMapper mapper) {
         checkNotNull(mapper);
         this.mapper = mapper;
@@ -73,19 +73,21 @@ public class KasperClientBuilder {
         return this;
     }
 
-    public KasperClientBuilder use(final TypeAdapter<?> adapter) {
+    @SuppressWarnings("unchecked")
+    public KasperClientBuilder use(final ITypeAdapter<?> adapter) {
         checkNotNull(adapter);
-        adapters.put(ReflectionGenericsResolver.getParameterTypeFromClass(adapter.getClass(), TypeAdapter.class, 0).get(), adapter);
+        TypeToken<?> adapterForType = TypeToken.of(adapter.getClass()).getSupertype(ITypeAdapter.class).resolveType(ITypeAdapter.class.getTypeParameters()[0]);
+        adapters.put(adapterForType.getType(), (ITypeAdapter<Object>) adapter);
         return this;
     }
 
-    public KasperClientBuilder use(final ITypeAdapterFactory factory) {
+    public KasperClientBuilder use(final ITypeAdapterFactory<?> factory) {
         factories.add(checkNotNull(factory));
         return this;
     }
 
     // ------------------------------------------------------------------------    
-    
+
     public KasperClientBuilder queryBaseLocation(final URL url) {
         queryBaseLocation = checkNotNull(url);
         return this;
@@ -103,25 +105,25 @@ public class KasperClientBuilder {
     }
 
     // ------------------------------------------------------------------------
-    
+
     public KasperClient create() {
-        
+
         if (null == mapper) {
             mapper = defaultMapper();
         }
-        
+
         if (null == commandBaseLocation) {
             commandBaseLocation = createURL("http://kasper-platform/kasper/command");
         }
-        
+
         if (null == queryBaseLocation) {
             queryBaseLocation = createURL("http://kasper-platform/kasper/query");
         }
 
         for (final Class<?> numberAdaptedClass : NUMBER_ADAPTED_CLASSES) {
-        	adapters.put(numberAdaptedClass, DefaultTypeAdapters.NUMBER_ADAPTER);    
+            adapters.put(numberAdaptedClass, DefaultTypeAdapters.NUMBER_ADAPTER);
         }
-        
+
         adapters.put(String.class, DefaultTypeAdapters.STRING_ADAPTER);
         adapters.put(Boolean.class, DefaultTypeAdapters.BOOLEAN_ADAPTER);
         adapters.put(boolean.class, DefaultTypeAdapters.BOOLEAN_ADAPTER);
@@ -143,7 +145,7 @@ public class KasperClientBuilder {
     }
 
     // ------------------------------------------------------------------------
-    
+
     // FIXME: non-used parameter ?
     private URL createURL(final String url) {
         try {
@@ -154,11 +156,11 @@ public class KasperClientBuilder {
     }
 
     // ------------------------------------------------------------------------
-    
+
     ObjectMapper defaultMapper() {
         final Module kasperClientModule = new SimpleModule()
-            .addDeserializer(KasperCommandResult.class, new KasperCommandResultDeserializer());
-        
+                .addDeserializer(KasperCommandResult.class, new KasperCommandResultDeserializer());
+
         return new ObjectMapper().configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, true)
                 .configure(MapperFeature.AUTO_DETECT_CREATORS, true)
                 .configure(MapperFeature.AUTO_DETECT_FIELDS, true)
@@ -166,5 +168,5 @@ public class KasperClientBuilder {
                 .configure(MapperFeature.USE_ANNOTATIONS, true)
                 .registerModule(kasperClientModule);
     }
-    
+
 }

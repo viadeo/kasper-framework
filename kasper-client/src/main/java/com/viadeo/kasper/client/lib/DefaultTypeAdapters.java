@@ -13,69 +13,91 @@ import java.util.Date;
 import org.joda.time.DateTime;
 
 import com.google.common.base.Optional;
+import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 public final class DefaultTypeAdapters {
-    
-    private DefaultTypeAdapters() { /* singleton */ }
-    
+
+    private DefaultTypeAdapters() { /* singleton */
+    }
+
     // ------------------------------------------------------------------------
-    
-    public static final TypeAdapter<Number> NUMBER_ADAPTER = new TypeAdapter<Number>() {
+
+    public static final ITypeAdapter<Number> NUMBER_ADAPTER = new ITypeAdapter<Number>() {
         @Override
         public void adapt(final Number value, final QueryBuilder builder) {
-            builder.add(value.toString());
+            builder.add(value);
         }
-    }.skipNull();
+		@Override
+		public boolean skipNull() {
+			return true;
+		}
+    };
 
     // --
-    
-    public static final TypeAdapter<String> STRING_ADAPTER = new TypeAdapter<String>() {
+
+    public static final ITypeAdapter<String> STRING_ADAPTER = new ITypeAdapter<String>() {
         @Override
         public void adapt(final String value, final QueryBuilder builder) {
             builder.add(value);
         }
-    }.skipNull();
+		@Override
+		public boolean skipNull() {
+			return true;
+		}
+    };
 
     // --
-    
-    public static final TypeAdapter<Boolean> BOOLEAN_ADAPTER = new TypeAdapter<Boolean>() {
+
+    public static final ITypeAdapter<Boolean> BOOLEAN_ADAPTER = new ITypeAdapter<Boolean>() {
         @Override
         public void adapt(final Boolean value, final QueryBuilder builder) {
             builder.add(value.toString());
         }
-    }.skipNull();
+		@Override
+		public boolean skipNull() {
+			return true;
+		}
+    };
 
     // --
-    
-    public static final TypeAdapter<Date> DATE_ADAPTER = new TypeAdapter<Date>() {
+
+    public static final ITypeAdapter<Date> DATE_ADAPTER = new ITypeAdapter<Date>() {
         @Override
         public void adapt(final Date value, final QueryBuilder builder) {
             builder.add(String.valueOf(value.getTime()));
         }
-    }.skipNull();
+		@Override
+		public boolean skipNull() {
+			return true;
+		}
+    };
 
     // --
-    
-    public static final TypeAdapter<DateTime> DATETIME_ADAPTER = new TypeAdapter<DateTime>() {
+
+    public static final ITypeAdapter<DateTime> DATETIME_ADAPTER = new ITypeAdapter<DateTime>() {
         @Override
         public void adapt(final DateTime value, final QueryBuilder builder) {
             builder.add(String.valueOf(value.getMillis()));
         }
-    }.skipNull();
+		@Override
+		public boolean skipNull() {
+			return true;
+		}
+    };
 
     // --
-    
-    public static final ITypeAdapterFactory ARRAY_ADAPTER_FACTORY = new ITypeAdapterFactory() {
+
+    public static final ITypeAdapterFactory<Object> ARRAY_ADAPTER_FACTORY = new ITypeAdapterFactory<Object>() {
         @Override
-        public <T> Optional<TypeAdapter<T>> create(final TypeToken<T> typeToken, final IQueryFactory adapterFactory) {
-            final Class<?> rawClass = typeToken.getRawClass();
-            
+        public Optional<ITypeAdapter<Object>> create(final TypeToken<Object> typeToken, final IQueryFactory adapterFactory) {
+            final Class<?> rawClass = typeToken.getRawType();
+
             if (rawClass.isArray()) {
-                final TypeAdapter<?> elementAdapter = adapterFactory.create(TypeToken.typeFor(rawClass.getComponentType()));
-                
+                final ITypeAdapter<?> elementAdapter = adapterFactory.create(TypeToken.of(rawClass.getComponentType()));
+
                 @SuppressWarnings({ "unchecked", "rawtypes" })
-                final TypeAdapter<T> adapter = new ArrayAdapter(elementAdapter).skipNull();
+                final ITypeAdapter<Object> adapter = new ArrayAdapter(elementAdapter);
                 return Optional.fromNullable(adapter);
             }
 
@@ -84,36 +106,39 @@ public final class DefaultTypeAdapters {
     };
 
     // --
-    
-    public static final class ArrayAdapter<C> extends TypeAdapter<C[]> {
-        private final TypeAdapter<C> componentAdapter;
 
-        public ArrayAdapter(final TypeAdapter<C> componentAdapter) {
+    public static final class ArrayAdapter<C> implements ITypeAdapter<C[]> {
+        private final ITypeAdapter<C> componentAdapter;
+
+        public ArrayAdapter(final ITypeAdapter<C> componentAdapter) {
             this.componentAdapter = componentAdapter;
         }
-
         @Override
         public void adapt(final C[] value, final QueryBuilder builder) {
             for (final C component : value) {
                 componentAdapter.adapt(component, builder);
             }
         }
+		@Override
+		public boolean skipNull() {
+			return true;
+		}
     }
 
     // --
-    
-    public static final ITypeAdapterFactory COLLECTION_ADAPTER_FACTORY = new ITypeAdapterFactory() {
+
+    public static final ITypeAdapterFactory<Collection<?>> COLLECTION_ADAPTER_FACTORY = new ITypeAdapterFactory<Collection<?>>() {
         @Override
-        public <T> Optional<TypeAdapter<T>> create(final TypeToken<T> typeToken, final IQueryFactory adapterFactory) {
-            final Class<?> rawClass = typeToken.getRawClass();
-            
+        public Optional<ITypeAdapter<Collection<?>>> create(final TypeToken<Collection<?>> typeToken, final IQueryFactory adapterFactory) {
+            final Class<?> rawClass = typeToken.getRawType();
+
             if (Collection.class.isAssignableFrom(rawClass)) {
                 final Class<?> elementType = ReflectionGenericsResolver.getParameterTypeFromClass(typeToken.getType(), Collection.class, 0).get();
-                final TypeAdapter<?> elementAdapter = adapterFactory.create(TypeToken.typeFor(elementType));
-                
+                final ITypeAdapter<?> elementAdapter = adapterFactory.create(TypeToken.of(elementType));
+
                 @SuppressWarnings({ "unchecked", "rawtypes" })
-                final TypeAdapter<T> adapter = new CollectionAdapter(elementAdapter);
-                
+                final ITypeAdapter<Collection<?>> adapter = new CollectionAdapter(elementAdapter);
+
                 return Optional.fromNullable(adapter);
             }
 
@@ -122,20 +147,23 @@ public final class DefaultTypeAdapters {
     };
 
     // --
-    
-    public static final class CollectionAdapter<E> extends TypeAdapter<Collection<E>> {
-        private final TypeAdapter<E> elementAdapter;
 
-        CollectionAdapter(final TypeAdapter<E> elementAdapter) {
+    public static final class CollectionAdapter<E> implements ITypeAdapter<Collection<E>> {
+        private final ITypeAdapter<E> elementAdapter;
+
+        CollectionAdapter(final ITypeAdapter<E> elementAdapter) {
             this.elementAdapter = elementAdapter;
         }
-
         @Override
         public void adapt(final Collection<E> value, final QueryBuilder builder) {
             for (final E element : value) {
                 elementAdapter.adapt(element, builder);
             }
         }
+		@Override
+		public boolean skipNull() {
+			return true;
+		}
     }
-    
+
 }

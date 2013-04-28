@@ -17,8 +17,8 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 
 import com.viadeo.kasper.client.exceptions.KasperClientException;
+import com.viadeo.kasper.client.lib.ITypeAdapter;
 import com.viadeo.kasper.client.lib.QueryBuilder;
-import com.viadeo.kasper.client.lib.TypeAdapter;
 import com.viadeo.kasper.cqrs.query.IQuery;
 
 public class KasperClientQueryCreationTest {
@@ -156,12 +156,17 @@ public class KasperClientQueryCreationTest {
     public void testComplexPojosWithCustomAdapter() {
 
     	// Given
-        final KasperClient client = new KasperClientBuilder().use(new TypeAdapter<SomePojo>() {
+        final KasperClient client = new KasperClientBuilder().use(new ITypeAdapter<SomePojo>() {
             @Override
             public void adapt(final SomePojo value, final QueryBuilder builder) {
                 builder.addSingle("somePojo", 2);
                 builder.addSingle("otherProperty", true);
             }
+			@Override
+			public boolean skipNull() {
+				return true;
+			}
+            
         }).create();
         
         // When

@@ -8,25 +8,28 @@
 package com.viadeo.kasper.client;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.async.TypeListener;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.viadeo.kasper.client.exceptions.KasperClientException;
 import com.viadeo.kasper.client.lib.ICallback;
 import com.viadeo.kasper.client.lib.IQueryFactory;
+import com.viadeo.kasper.client.lib.ITypeAdapter;
 import com.viadeo.kasper.client.lib.QueryBuilder;
-import com.viadeo.kasper.client.lib.TypeAdapter;
-import com.viadeo.kasper.client.lib.TypeToken;
 import com.viadeo.kasper.cqrs.command.ICommand;
 import com.viadeo.kasper.cqrs.command.ICommandResult;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
@@ -164,7 +167,7 @@ public final class KasperClient {
     
     MultivaluedMap<String, String> prepareQueryParams(final IQuery query) {
         @SuppressWarnings("unchecked")
-        final TypeAdapter<IQuery> adapter = (TypeAdapter<IQuery>) queryFactory.create(TypeToken.typeFor(query.getClass()));
+        final ITypeAdapter<IQuery> adapter = (ITypeAdapter<IQuery>) queryFactory.create(TypeToken.of(query.getClass()));
 
         final QueryBuilder queryBuilder = new QueryBuilder();
         adapter.adapt(query, queryBuilder);

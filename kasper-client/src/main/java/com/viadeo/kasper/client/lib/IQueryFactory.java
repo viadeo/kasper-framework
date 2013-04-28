@@ -7,9 +7,10 @@
 
 package com.viadeo.kasper.client.lib;
 
+import com.google.common.reflect.TypeToken;
 
 public interface IQueryFactory {
     
-    <T> TypeAdapter<T> create(TypeToken<T> typeToken);
+    <T> ITypeAdapter<T> create(TypeToken<T> typeToken);
     
 }

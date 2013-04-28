@@ -14,15 +14,15 @@ import java.lang.reflect.Method;
 
 import com.viadeo.kasper.client.exceptions.KasperClientException;
 
-class PropertyAdapter extends TypeAdapter<Object> {
+class PropertyAdapter implements ITypeAdapter<Object> {
     
     private final Method accessor;
     private final String name;
-    private final TypeAdapter<Object> adapter;
+    private final ITypeAdapter<Object> adapter;
 
     // ------------------------------------------------------------------------
     
-    public PropertyAdapter(final Method accessor, final String name, final TypeAdapter<Object> adapter) {
+    public PropertyAdapter(final Method accessor, final String name, final ITypeAdapter<Object> adapter) {
         this.accessor = checkNotNull(accessor);
         this.name = checkNotNull(name);
         this.adapter = checkNotNull(adapter);
@@ -36,10 +36,9 @@ class PropertyAdapter extends TypeAdapter<Object> {
     public void adapt(final Object bean, final QueryBuilder builder) {
         try {
             final Object value = accessor.invoke(bean);
-            if (null != value) {
-                builder.begin(name);
-                adapter.adapt(value, builder);
-            }
+            builder.begin(name);
+            adapter.adapt(value, builder);
+            builder.end();
         } catch (final IllegalArgumentException e) {
             throw cannotGetPropertyValue(e);
         } catch (final IllegalAccessException e) {
@@ -86,5 +85,12 @@ class PropertyAdapter extends TypeAdapter<Object> {
         
         return true;
     }
+    
+    // ------------------------------------------------------------------------
+    
+	@Override
+	public boolean skipNull() {
+		return true;
+	}
     
 }
