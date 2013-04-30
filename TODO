@@ -1,6 +1,7 @@
 Urgent :
 ========
 
+- improve kasper queries documentation
 - revoir les nodes de kasper-doc, voir à utiliser les locators globaux ?
 - possibilité de virer les qques @Inject ou @Autowired qui traînent ?
 

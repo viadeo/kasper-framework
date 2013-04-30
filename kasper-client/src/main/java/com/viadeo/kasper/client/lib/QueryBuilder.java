@@ -52,8 +52,9 @@ public class QueryBuilder {
         if (has(name)) {
             throwDuplicate(name);
         }
-        if (actualName != null)
+        if (null != actualName) {
             names.push(actualName);
+        }
         actualName = name;
         return this;
     }
@@ -63,12 +64,14 @@ public class QueryBuilder {
      * @throws IllegalStateException if begin was not called before end.
      */
     public QueryBuilder end() {
-        if (actualName == null)
+        if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
-        if (!names.isEmpty())
+        }
+        if (!names.isEmpty()) {
             actualName = names.pop();
-        else
+        } else {
             actualName = null;
+        }
         return this;
     }
 
