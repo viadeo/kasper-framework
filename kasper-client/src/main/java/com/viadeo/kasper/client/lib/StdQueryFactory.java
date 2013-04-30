@@ -84,9 +84,7 @@ public class StdQueryFactory implements IQueryFactory {
                 adapter = (ITypeAdapter<T>) provideBeanQueryMapper((TypeToken<Class<? extends IQuery>>) typeToken);
             }
             checkNotNull(adapter);
-            if (adapter.skipNull()) {
-                adapter = new NullSafeTypeAdapter<T>(adapter);
-            }
+            adapter = new NullSafeTypeAdapter<T>(adapter);
             adapters.putIfAbsent(typeToken.getType(), adapter);
         }
 
@@ -194,9 +192,5 @@ public class StdQueryFactory implements IQueryFactory {
                 adapter.adapt(value, builder);
             }
         }
-		@Override
-		public boolean skipNull() {
-			return true;
-		}
     }
 }

@@ -23,9 +23,4 @@ public class NullSafeTypeAdapter<T> implements ITypeAdapter<T> {
             decoratedAdapter.adapt(value, builder);
         }
     }
-    
-	@Override
-	public boolean skipNull() {
-		return true;
-	}
 }

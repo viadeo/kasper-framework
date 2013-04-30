@@ -162,11 +162,6 @@ public class KasperClientQueryCreationTest {
                 builder.addSingle("somePojo", 2);
                 builder.addSingle("otherProperty", true);
             }
-			@Override
-			public boolean skipNull() {
-				return true;
-			}
-            
         }).create();
         
         // When
