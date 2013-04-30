@@ -156,10 +156,6 @@ public class TestStdQueryFactory {
                             builder.end();
                         }
                     }
-                    @Override
-        			public boolean skipNull() {
-        				return true;
-        			}
                 };
                 return Optional.of(adapter);
             }
@@ -197,10 +193,6 @@ public class TestStdQueryFactory {
                 }
                 builder.addSingle("foo", "bar");
             }
-            @Override
-			public boolean skipNull() {
-				return true;
-			}
         };
     }
 

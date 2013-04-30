@@ -12,7 +12,7 @@ package com.viadeo.kasper.client.lib;
  * Suppose for example you want to define some custom behavior for all instances of Lists of UUID.
  * Then you can just implement a custom TypeAdapter:
  * <pre>
- * class ListOfUUIDTypeAdapter implements TypeAdapter&lt;List&lt;UUID>> {
+ * class ListOfUUIDTypeAdapter implements ITypeAdapter&lt;List&lt;UUID>> {
  *       public void adapt(List&lt;UUID> listOfUUID, QueryBuilder builder) {
  *           // first lets give
  *           builder.begin("list_of_uuid");
@@ -41,10 +41,4 @@ package com.viadeo.kasper.client.lib;
 public interface ITypeAdapter<T> {
 
     void adapt(T value, QueryBuilder builder);
-
-    /**
-     * return false if you want to handle null values, else true.
-     */
-    boolean skipNull();
-
 }

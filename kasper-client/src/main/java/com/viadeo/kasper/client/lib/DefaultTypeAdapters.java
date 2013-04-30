@@ -28,10 +28,6 @@ public final class DefaultTypeAdapters {
         public void adapt(final Number value, final QueryBuilder builder) {
             builder.add(value);
         }
-		@Override
-		public boolean skipNull() {
-			return true;
-		}
     };
 
     // --
@@ -41,10 +37,6 @@ public final class DefaultTypeAdapters {
         public void adapt(final String value, final QueryBuilder builder) {
             builder.add(value);
         }
-		@Override
-		public boolean skipNull() {
-			return true;
-		}
     };
 
     // --
@@ -54,10 +46,6 @@ public final class DefaultTypeAdapters {
         public void adapt(final Boolean value, final QueryBuilder builder) {
             builder.add(value.toString());
         }
-		@Override
-		public boolean skipNull() {
-			return true;
-		}
     };
 
     // --
@@ -67,10 +55,6 @@ public final class DefaultTypeAdapters {
         public void adapt(final Date value, final QueryBuilder builder) {
             builder.add(String.valueOf(value.getTime()));
         }
-		@Override
-		public boolean skipNull() {
-			return true;
-		}
     };
 
     // --
@@ -80,10 +64,6 @@ public final class DefaultTypeAdapters {
         public void adapt(final DateTime value, final QueryBuilder builder) {
             builder.add(String.valueOf(value.getMillis()));
         }
-		@Override
-		public boolean skipNull() {
-			return true;
-		}
     };
 
     // --
@@ -119,10 +99,6 @@ public final class DefaultTypeAdapters {
                 componentAdapter.adapt(component, builder);
             }
         }
-		@Override
-		public boolean skipNull() {
-			return true;
-		}
     }
 
     // --
@@ -160,10 +136,6 @@ public final class DefaultTypeAdapters {
                 elementAdapter.adapt(element, builder);
             }
         }
-		@Override
-		public boolean skipNull() {
-			return true;
-		}
     }
 
 }

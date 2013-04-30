@@ -85,12 +85,4 @@ class PropertyAdapter implements ITypeAdapter<Object> {
         
         return true;
     }
-    
-    // ------------------------------------------------------------------------
-    
-	@Override
-	public boolean skipNull() {
-		return true;
-	}
-    
 }
