@@ -23,7 +23,7 @@ public final class DocumentedEvent extends AbstractDocumentedDomainNode {
 	
 	private String action = "unknown";
 	
-	private DocumentedProperties properties = null;
+	private DocumentedBean properties = null;
 	
 	// ------------------------------------------------------------------------
 	
@@ -50,7 +50,7 @@ public final class DocumentedEvent extends AbstractDocumentedDomainNode {
 		this.setName(eventClazz.getSimpleName());
 		this.setDescription(description);
 		this.setDomainName(domainName);		
-		this.properties = new DocumentedProperties(eventClazz);
+		this.properties = new DocumentedBean(eventClazz);
 	}	
 	
 	// ------------------------------------------------------------------------
@@ -98,7 +98,7 @@ public final class DocumentedEvent extends AbstractDocumentedDomainNode {
 	
 	// ------------------------------------------------------------------------
 	
-	public DocumentedProperties getProperties() {
+	public DocumentedBean getProperties() {
 		return this.properties;
 	}
 	

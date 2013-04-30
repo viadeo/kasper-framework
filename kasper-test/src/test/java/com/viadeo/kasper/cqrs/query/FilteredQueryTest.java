@@ -6,6 +6,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.viadeo.kasper.AbstractPlatformTests;
+import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.context.IContext;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
@@ -34,6 +35,17 @@ public class FilteredQueryTest extends AbstractPlatformTests {
 
 	}
 
+	private static final class TestDomain implements IDomain {
+		@Override
+		public String getPrefix() {
+			return "tst";
+		}
+		@Override
+		public String getName() {
+			return "test";
+		}
+	}
+	
 	// "*Field" classes are public (so there is no gain in testing accessibility here)
 	public static final class TestField<DQO extends IQueryDQO<DQO>>
 			extends BaseQueryField<String, DQO> {}
@@ -46,7 +58,7 @@ public class FilteredQueryTest extends AbstractPlatformTests {
 	private static final class TestQuery
 			extends FilteredQuery<TestDQO> {}
 
-	@XKasperQueryService(name = "TestService")
+	@XKasperQueryService(domain = TestDomain.class)
 	public static final class TestService
 			implements IQueryService<TestQuery, TestDTO> {
 		@Override

@@ -21,7 +21,7 @@
 		{{/if}}
 	{{/if}}
 
-	<a href="../doc{{node.url}}" target="_blank">[json]</a><h1>{{node.label}}</h1>
+	<a href="../kasper/doc{{node.url}}" target="_blank">[json]</a><h1>{{node.label}}</h1>
 	<small>{{node.description}}</small>
 </div>
 

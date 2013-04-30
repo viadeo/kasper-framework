@@ -11,6 +11,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import com.viadeo.kasper.IDomain;
+
 /**
  * 
  *         Query service marker
@@ -24,4 +26,5 @@ public @interface XKasperQueryService {
 	 */
 	String name() default "";
 
+	Class<? extends IDomain> domain();
 }

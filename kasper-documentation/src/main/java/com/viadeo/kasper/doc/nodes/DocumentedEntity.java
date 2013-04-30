@@ -24,7 +24,7 @@ public class DocumentedEntity extends AbstractDocumentedDomainNode {
 	private String parent = null;
 	private Boolean isAggregate = false;
 	
-	private DocumentedProperties properties = null;
+	private DocumentedBean properties = null;
 	
 	// ------------------------------------------------------------------------
 	
@@ -49,7 +49,7 @@ public class DocumentedEntity extends AbstractDocumentedDomainNode {
 	// ------------------------------------------------------------------------
 	
 	protected void fillProperties(final Class<? extends IEntity> entityClazz) {
-		this.properties = new DocumentedProperties(entityClazz);
+		this.properties = new DocumentedBean(entityClazz);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -101,7 +101,7 @@ public class DocumentedEntity extends AbstractDocumentedDomainNode {
 	
 	// ------------------------------------------------------------------------
 	
-	public DocumentedProperties getProperties() {
+	public DocumentedBean getProperties() {
 		return this.properties;
 	}
 	

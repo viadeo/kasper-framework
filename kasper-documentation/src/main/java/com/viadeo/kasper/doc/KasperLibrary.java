@@ -19,6 +19,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.cqrs.command.ICommand;
 import com.viadeo.kasper.cqrs.command.ICommandHandler;
+import com.viadeo.kasper.cqrs.query.IQueryService;
 import com.viadeo.kasper.ddd.IInternalDomain;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.doc.nodes.AbstractDocumentedDomainNode;
@@ -30,6 +31,7 @@ import com.viadeo.kasper.doc.nodes.DocumentedEvent;
 import com.viadeo.kasper.doc.nodes.DocumentedHandler;
 import com.viadeo.kasper.doc.nodes.DocumentedListener;
 import com.viadeo.kasper.doc.nodes.DocumentedNode;
+import com.viadeo.kasper.doc.nodes.DocumentedQueryService;
 import com.viadeo.kasper.doc.nodes.DocumentedRelation;
 import com.viadeo.kasper.doc.nodes.DocumentedRepository;
 import com.viadeo.kasper.doc.nodes.DocumentedSimpleRelation;
@@ -122,6 +124,7 @@ public class KasperLibrary {
 		this.simpleTypes.put(DocumentedRelation.TYPE_NAME, DocumentedRelation.class);
 		this.simpleTypes.put(DocumentedListener.TYPE_NAME, DocumentedListener.class);
 		this.simpleTypes.put(DocumentedHandler.TYPE_NAME, DocumentedHandler.class);
+		this.simpleTypes.put(DocumentedQueryService.TYPE_NAME, DocumentedQueryService.class);
 		
 		this.pluralTypes = Maps.newHashMap();
 		this.pluralTypes.put(DocumentedRepository.PLURAL_TYPE_NAME, DocumentedRepository.class);
@@ -131,6 +134,7 @@ public class KasperLibrary {
 		this.pluralTypes.put(DocumentedRelation.PLURAL_TYPE_NAME, DocumentedRelation.class);
 		this.pluralTypes.put(DocumentedListener.PLURAL_TYPE_NAME, DocumentedListener.class);
 		this.pluralTypes.put(DocumentedHandler.PLURAL_TYPE_NAME, DocumentedHandler.class);
+		this.pluralTypes.put(DocumentedQueryService.PLURAL_TYPE_NAME, DocumentedQueryService.class);
 	}
 	
 	// == DOMAINS =============================================================	
@@ -450,6 +454,28 @@ public class KasperLibrary {
 	public Optional<DocumentedHandler> getHandlerForCommand(final String commandName) {
 		return Optional.fromNullable(this.commandHandlers.get(commandName));
 	}
+
+	// == QUERY SERVICES ======================================================
+	// ========================================================================
+	
+	public DocumentedQueryService recordQueryService(final Class<? extends IQueryService<?,?>> queryServiceClazz) {		
+		final DocumentedQueryService documentedQueryService = new DocumentedQueryService(this, queryServiceClazz);		
+		recordElement(documentedQueryService.getDomainName(), documentedQueryService);
+		return documentedQueryService;
+	}		
+	
+	// --
+	
+	public Map<String, DocumentedQueryService> getQueryServices(final String domainName) {
+		return getEntities(domainName, DocumentedQueryService.class, false).get();
+	}		
+	
+	// --
+	
+	public Optional<DocumentedQueryService> getQueryService(final String domainName, final String queryServiceName) {
+		return Optional.fromNullable(getEntities(domainName, DocumentedQueryService.class, false).get().get(queryServiceName));
+	}
+
 	
 	// == Common generic methods ==============================================
 	// ========================================================================

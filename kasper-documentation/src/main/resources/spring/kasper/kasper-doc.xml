@@ -21,6 +21,10 @@
 	<bean id="commandsDocumentationProcessor" class="com.viadeo.kasper.core.boot.CommandsDocumentationProcessor">
 		<property name="kasperLibrary" ref="kasperLibrary" />
 	</bean>	
+
+	<bean id="queryServicesDocumentationProcessor" class="com.viadeo.kasper.core.boot.QueryServicesDocumentationProcessor">
+		<property name="kasperLibrary" ref="kasperLibrary" />
+	</bean>
 		
 	<bean id="eventsDocumentationProcessor" class="com.viadeo.kasper.core.boot.EventsDocumentationProcessor">
 		<property name="kasperLibrary" ref="kasperLibrary" />

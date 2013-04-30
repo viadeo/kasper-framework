@@ -97,10 +97,10 @@
 	              <goal>copy-resources</goal>
 	            </goals>
 	            <configuration>
-	              <outputDirectory>${basedir}/target/classes/kasper</outputDirectory>
+	              <outputDirectory>${basedir}/target/classes/doc</outputDirectory>
 	              <resources>          
 	                <resource>
-	                  <directory>src/main/resources/META-INF/resources/kasper</directory>
+	                  <directory>src/main/resources/META-INF/resources/doc</directory>
 	                  <filtering>false</filtering>
 	                </resource>
 	              </resources>              
