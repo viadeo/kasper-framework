@@ -11,7 +11,9 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.ServerSocket;
 import java.net.URL;
 import java.util.List;
 import java.util.concurrent.CountDownLatch;
@@ -25,6 +27,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
@@ -44,8 +47,10 @@ import com.viadeo.kasper.cqrs.query.IQueryDTO;
 
 public class KasperClientCommandTest extends JerseyTest {
 	
+    private static int port;
+    
     private KasperClient client;
-
+    
     //-------------------------------------------------------------------------
     
     public static class MemberDTO implements IQueryDTO {
@@ -96,6 +101,12 @@ public class KasperClientCommandTest extends JerseyTest {
         }
     }    
     
+    @BeforeClass public static void init() throws IOException {
+        ServerSocket socket = new ServerSocket(0);
+        port = socket.getLocalPort();
+        socket.close();
+    }
+    
     @Path(value = "/")
     public static class DummyResource {
         @Path("/CreateMember")
@@ -114,12 +125,17 @@ public class KasperClientCommandTest extends JerseyTest {
         }
     }
 
+    @Override
+    protected int getPort(int defaultPort) {
+        return port;
+    }
+    
     //-------------------------------------------------------------------------
     
     public KasperClientCommandTest() throws MalformedURLException {
         super(new LowLevelAppDescriptor.Builder(new TestConfiguration()).contextPath("/kasper/command").build());
         client = new KasperClientBuilder()
-                .commandBaseLocation(new URL("http://localhost:9998/kasper/command/"))
+                .commandBaseLocation(new URL("http://localhost:"+port+"/kasper/command/"))
                 .create();
     }
 
