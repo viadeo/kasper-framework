@@ -10,7 +10,8 @@ var getNode = function(node, callback) {
 		callback(node);
 	} else {
 		$.ajax({
-	    	url: "../doc" + node.url
+            // FIXME: static var !
+	    	url: "../kasper/doc" + node.url
 	    }).done(function ( data ) {
 
 	    	if (data.aggregate || data.aggregate === false) {

@@ -183,13 +183,15 @@
 
           // Loads the Kasper domains base definition
           $.ajax({
-            url: "../doc/domains"
+            // FIXME: static var!
+            url: "../kasper/doc/domains"
           }).done(function ( data ) {
 
               if (data.list) {
 
                 var childTypes = [ 'commands', 'concepts', 'relations', 'events',
-                                   'repositories', 'listeners', 'handlers' ];
+                                   'repositories', 'listeners', 'handlers',
+                                   'queryServices'];
 
                 $("#tree_domains").append("<ul id='tree_domains_list'></ul>");
 

@@ -24,7 +24,7 @@ import com.viadeo.kasper.doc.nodes.DocumentedDomain;
 import com.viadeo.kasper.doc.nodes.RetMap;
 import com.viadeo.kasper.doc.nodes.RetUnexistent;
 
-@Path("/")
+@Path("/doc")
 @Configurable
 public class KasperDocResource {
 

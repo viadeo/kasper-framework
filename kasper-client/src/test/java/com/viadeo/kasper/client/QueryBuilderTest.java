@@ -19,6 +19,10 @@ public class QueryBuilderTest {
 
 	private QueryBuilder builder;
 
+	private static final String KEY = "key";
+	private static final String VALUE = "value";
+	private static final String ARRAY = "array";
+	
 	// ------------------------------------------------------------------------
 	
     @Before
@@ -33,10 +37,10 @@ public class QueryBuilderTest {
     	// Given
     	
     	// When
-        builder.addSingle("key", "value");
+        builder.addSingle(KEY, VALUE);
         
         // Then
-        assertEquals("value", builder.first("key"));
+        assertEquals(VALUE, builder.first(KEY));
     }
 
     @Test
@@ -45,14 +49,14 @@ public class QueryBuilderTest {
     	// Given
     	
     	// When
-        builder.addSingle("key", "value").begin("array").add("1", "2").end();
+        builder.addSingle(KEY, VALUE).begin(ARRAY).add("1", "2").end();
         
         // Then
-        assertTrue(builder.hasSingle("key"));
-        assertEquals("value", builder.first("key"));
-        assertTrue(builder.values("array").size() == 2);
-        assertEquals("1", builder.values("array").get(0));
-        assertEquals("2", builder.values("array").get(1));
+        assertTrue(builder.hasSingle(KEY));
+        assertEquals(VALUE, builder.first(KEY));
+        assertTrue(builder.values(ARRAY).size() == 2);
+        assertEquals("1", builder.values(ARRAY).get(0));
+        assertEquals("2", builder.values(ARRAY).get(1));
     }
     
     @Test(expected=IllegalStateException.class)
@@ -66,14 +70,14 @@ public class QueryBuilderTest {
     	// Given
     	
     	// When
-        final MultivaluedMap<String, String> map = builder.addSingle("key", "value").begin("array").add("1", "2").end().build();
+        final MultivaluedMap<String, String> map = builder.addSingle(KEY, VALUE).begin(ARRAY).add("1", "2").end().build();
         
         // Then
-        assertTrue(map.get("key").size() == 1);
-        assertEquals("value", map.getFirst("key"));
-        assertTrue(map.get("array").size() == 2);
-        assertEquals("1", map.get("array").get(0));
-        assertEquals("2", map.get("array").get(1));
+        assertTrue(map.get(KEY).size() == 1);
+        assertEquals(VALUE, map.getFirst(KEY));
+        assertTrue(map.get(ARRAY).size() == 2);
+        assertEquals("1", map.get(ARRAY).get(0));
+        assertEquals("2", map.get(ARRAY).get(1));
     }
     
     @Test public void testComposedCallsToBegin() {

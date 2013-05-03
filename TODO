@@ -1,11 +1,8 @@
 Urgent :
 ========
 
-- Make kasper-core a pom multi-module with dependencies, rename kasper-core as kasper-core-boot
-    -> change (simplify) dependencies in kasper-platform to use this single module
-
-- Configurator Spring pour kasper ? Besoin d'un namespace ?
-- réel usage des locators (notament DomainLcoator) ?
+- improve kasper queries documentation
+- revoir les nodes de kasper-doc, voir à utiliser les locators globaux ?
 - possibilité de virer les qques @Inject ou @Autowired qui traînent ?
 
 Query :

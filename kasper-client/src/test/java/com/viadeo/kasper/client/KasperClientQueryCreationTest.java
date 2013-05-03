@@ -118,7 +118,7 @@ public class KasperClientQueryCreationTest {
         return new MoreComplexQuery(
                 "foo",
                 1,
-                new Integer(2),
+                Integer.valueOf(2),
                 true,
                 now,
                 new DateTime[] { dt, dt });

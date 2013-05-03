@@ -6,15 +6,20 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.ddd.values.annotation.XKasperValue;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
-public class DocumentedProperties extends ArrayList<DocumentedProperty> {
+public class DocumentedBean extends ArrayList<DocumentedProperty> {
 	private static final long serialVersionUID = 4149894288444871301L;
 
-	DocumentedProperties(final Class<?> componentClazz) {
+	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentedBean.class);
+	
+	DocumentedBean(final Class<?> componentClazz) {
 		final List<Field> properties = Lists.newArrayList();
 		getAllFields(properties, componentClazz);
 		
@@ -43,7 +48,13 @@ public class DocumentedProperties extends ArrayList<DocumentedProperty> {
 							ReflectionGenericsResolver.getParameterTypeFromClass(
 									classType, List.class, 0);
 					
-					type = optType.get().getSimpleName();
+					if (!optType.isPresent()) {
+						LOGGER.error(String.format("Unable to find list type for field %s in class %s", 
+								name, componentClazz.getSimpleName()));
+						type = "unknown";
+					} else {
+						type = optType.get().getSimpleName();
+					}
 					isList = true;
 					
 				} else if (Map.class.isAssignableFrom(classType)) {

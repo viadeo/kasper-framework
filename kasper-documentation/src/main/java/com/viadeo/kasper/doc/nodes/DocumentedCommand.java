@@ -17,7 +17,7 @@ public final class DocumentedCommand extends AbstractDocumentedDomainNode {
 	public static final String TYPE_NAME = "command";
 	public static final String PLURAL_TYPE_NAME = "commands";
 
-	private DocumentedProperties properties = null;
+	private DocumentedBean properties = null;
 
 	// ------------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ public final class DocumentedCommand extends AbstractDocumentedDomainNode {
 		// - Register the domain to the locator --------------------------------
 		this.setName(commandClazz.getSimpleName());
 		this.setDescription(description);
-		this.properties = new DocumentedProperties(commandClazz);
+		this.properties = new DocumentedBean(commandClazz);
 	}
 
 	// ------------------------------------------------------------------------
@@ -69,7 +69,7 @@ public final class DocumentedCommand extends AbstractDocumentedDomainNode {
 
 	// ------------------------------------------------------------------------
 
-	public DocumentedProperties getProperties() {
+	public DocumentedBean getProperties() {
 		return this.properties;
 	}
 	
