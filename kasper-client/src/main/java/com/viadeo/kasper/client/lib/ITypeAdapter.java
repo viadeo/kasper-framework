@@ -20,9 +20,6 @@ package com.viadeo.kasper.client.lib;
  *               builder.add(uuid.toString());
  *           builder.end();
  *       }
- *       public boolean skipNull() {
- *           return true;
- *       }
  *   }
  *   
  *   // now you only have to use KasperClientBuilder to configure your client in order to register your adapter.
