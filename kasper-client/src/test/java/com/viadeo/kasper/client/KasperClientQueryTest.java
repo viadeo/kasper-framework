@@ -119,7 +119,7 @@ public class KasperClientQueryTest extends JerseyTest {
         final List<Integer> actual = obtained.getIds();
         assertEquals(expected.size(), actual.size());
 
-        for (final int i = 0; i < expected.size(); i++) {
+        for (int i = 0; i < expected.size(); i++) {
             assertEquals(expected.get(i), actual.get(i));
         }
     }
