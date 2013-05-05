@@ -21,6 +21,7 @@ import javax.ws.rs.core.MultivaluedMap;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.async.TypeListener;
@@ -45,7 +46,8 @@ public final class KasperClient {
     private final Client client;
     private final URL commandBaseLocation;
     private final URL queryBaseLocation;
-    private final IQueryFactory queryFactory;
+    @VisibleForTesting
+    final IQueryFactory queryFactory;
 
     // ------------------------------------------------------------------------
     

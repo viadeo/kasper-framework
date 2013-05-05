@@ -14,7 +14,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -47,16 +47,17 @@ public class KasperClientBuilder {
     private URL commandBaseLocation;
     private URL queryBaseLocation;
     private IQueryFactory queryFactory;
-    private Map<Type, ITypeAdapter<?>> adapters = Maps.newHashMap();
+    private ConcurrentMap<Type, ITypeAdapter<?>> adapters = Maps.newConcurrentMap();
     private List<ITypeAdapterFactory<?>> factories = Lists.newArrayList();
 
     // ------------------------------------------------------------------------
 
     private static final String DEFAULT_COMMAND_URL = "http://kasper-platform/kasper/command";
-
+    private static final String DEFAULT_QUERY_URL = "http://kasper-platform/kasper/query";
+    
     private static final Class<?>[] NUMBER_ADAPTED_CLASSES = new Class<?>[] {
-            int.class, long.class, short.class, float.class, double.class,
-            Number.class, Integer.class, Long.class, Short.class, Float.class, Double.class
+        int.class, long.class, short.class, float.class, double.class,
+        Number.class, Integer.class, Long.class, Short.class, Float.class, Double.class
     };
 
     // ------------------------------------------------------------------------
@@ -113,22 +114,22 @@ public class KasperClientBuilder {
         }
 
         if (null == commandBaseLocation) {
-            commandBaseLocation = createURL("http://kasper-platform/kasper/command");
+            commandBaseLocation = createURL(DEFAULT_COMMAND_URL);
         }
 
         if (null == queryBaseLocation) {
-            queryBaseLocation = createURL("http://kasper-platform/kasper/query");
+            queryBaseLocation = createURL(DEFAULT_QUERY_URL);
         }
 
         for (final Class<?> numberAdaptedClass : NUMBER_ADAPTED_CLASSES) {
-            adapters.put(numberAdaptedClass, DefaultTypeAdapters.NUMBER_ADAPTER);
+            adapters.putIfAbsent(numberAdaptedClass, DefaultTypeAdapters.NUMBER_ADAPTER);
         }
 
-        adapters.put(String.class, DefaultTypeAdapters.STRING_ADAPTER);
-        adapters.put(Boolean.class, DefaultTypeAdapters.BOOLEAN_ADAPTER);
-        adapters.put(boolean.class, DefaultTypeAdapters.BOOLEAN_ADAPTER);
-        adapters.put(Date.class, DefaultTypeAdapters.DATE_ADAPTER);
-        adapters.put(DateTime.class, DefaultTypeAdapters.DATETIME_ADAPTER);
+        adapters.putIfAbsent(String.class, DefaultTypeAdapters.STRING_ADAPTER);
+        adapters.putIfAbsent(Boolean.class, DefaultTypeAdapters.BOOLEAN_ADAPTER);
+        adapters.putIfAbsent(boolean.class, DefaultTypeAdapters.BOOLEAN_ADAPTER);
+        adapters.putIfAbsent(Date.class, DefaultTypeAdapters.DATE_ADAPTER);
+        adapters.putIfAbsent(DateTime.class, DefaultTypeAdapters.DATETIME_ADAPTER);
 
         factories.add(DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY);
         factories.add(DefaultTypeAdapters.ARRAY_ADAPTER_FACTORY);
@@ -149,7 +150,7 @@ public class KasperClientBuilder {
     // FIXME: non-used parameter ?
     private URL createURL(final String url) {
         try {
-            return new URL(DEFAULT_COMMAND_URL);
+            return new URL(url);
         } catch (final MalformedURLException e) {
             throw new KasperClientException(e);
         }
