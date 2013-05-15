@@ -84,20 +84,15 @@
 			<!-- KASPER DEPENDENCIES -->
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
+				<artifactId>kasper-api</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-client</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
-			<dependency>
-				<groupId>com.viadeo.kasper</groupId>
-				<artifactId>kasper-core-command</artifactId>
-				<version>${project.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>com.viadeo.kasper</groupId>
-				<artifactId>kasper-core-query</artifactId>
-				<version>${project.version}</version>
-			</dependency>
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
 				<artifactId>kasper-core-boot</artifactId>
