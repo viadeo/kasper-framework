@@ -21,7 +21,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
@@ -31,10 +31,9 @@ import com.viadeo.kasper.client.lib.DefaultTypeAdapters;
 import com.viadeo.kasper.client.lib.IQueryFactory;
 import com.viadeo.kasper.client.lib.ITypeAdapter;
 import com.viadeo.kasper.client.lib.ITypeAdapterFactory;
-import com.viadeo.kasper.client.lib.KasperCommandResultDeserializer;
 import com.viadeo.kasper.client.lib.StdQueryFactory;
 import com.viadeo.kasper.client.lib.VisibilityFilter;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
+import com.viadeo.kasper.tools.ObjectMapperProvider;
 
 public class KasperClientBuilder {
     static final Logger LOGGER = LoggerFactory.getLogger(KasperClientBuilder.class);
@@ -156,16 +155,7 @@ public class KasperClientBuilder {
     // ------------------------------------------------------------------------
 
     ObjectMapper defaultMapper() {
-        final Module kasperClientModule = new SimpleModule()
-                .addDeserializer(KasperCommandResult.class, new KasperCommandResultDeserializer());
-
-        return new ObjectMapper().configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, true)
-                .configure(MapperFeature.AUTO_DETECT_CREATORS, true)
-                .configure(MapperFeature.AUTO_DETECT_FIELDS, true)
-                .configure(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS, true)
-                .configure(MapperFeature.USE_ANNOTATIONS, true)
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .registerModule(kasperClientModule);
+       return ObjectMapperProvider.instance.mapper();
     }
 
 }

@@ -22,6 +22,12 @@
 			<artifactId>kasper-platform</artifactId>
 		</dependency>
 		
+		<dependency>
+			<groupId>com.viadeo.kasper</groupId>
+			<artifactId>kasper-client</artifactId>
+			<scope>test</scope>
+		</dependency>
+		
 		<!-- External dependencies -->
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -30,7 +36,13 @@
         <dependency>
 	      	<groupId>org.springframework</groupId>
 	      	<artifactId>spring-web</artifactId>
-    	</dependency>		
+    	</dependency>
+		<dependency>
+			<groupId>org.eclipse.jetty</groupId>
+			<artifactId>test-jetty-servlet</artifactId>
+			<version>7.6.10.v20130312</version>
+			<scope>test</scope>
+		</dependency>		
     		
 	</dependencies>
 </project>
