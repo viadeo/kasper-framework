@@ -10,7 +10,7 @@
 	<parent>
 		<groupId>com.viadeo.kasper</groupId>
 		<artifactId>kasper-parent</artifactId>
-		<version>0.0.4</version>		
+		<version>0.0.5-SNAPSHOT</version>		
 		<relativePath>../parent</relativePath>
 	</parent>
 	<artifactId>kasper-api</artifactId>
