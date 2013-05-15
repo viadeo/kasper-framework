@@ -1,4 +1,0 @@
-- URGENT: replace
-	this.platform.getQueryGateway().retrieve(context, query);
-		by
-	this.platform.getQueryGateway().retrieve(GetPremiumMemberService.class, context, query);

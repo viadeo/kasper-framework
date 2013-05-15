@@ -7,49 +7,39 @@
     <parent>
         <groupId>com.viadeo.kasper</groupId>
         <artifactId>kasper-parent</artifactId>
-        <version>0.0.2</version>
+        <version>0.0.4</version>
         <relativePath>../parent</relativePath>
     </parent>
 
     <artifactId>kasper-core</artifactId>
     <name>KASPER CORE</name>
-    <packaging>pom</packaging>
-
-    <modules>
-        <module>parent</module>
-        <module>kasper-core-boot</module>
-        <module>kasper-core-domain</module>
-        <module>kasper-core-command</module>
-        <module>kasper-core-query</module>
-        <module>kasper-core-events</module>
-    </modules>
+    <packaging>jar</packaging>
 
      <dependencies>     
-         <dependency> 
-             <groupId>com.viadeo.kasper</groupId> 
-             <artifactId>kasper-core-boot</artifactId> 
-             <version>${project.version}</version> 
-         </dependency> 
-         <dependency> 
-             <groupId>com.viadeo.kasper</groupId> 
-             <artifactId>kasper-core-domain</artifactId> 
-             <version>${project.version}</version> 
-         </dependency> 
-         <dependency> 
-             <groupId>com.viadeo.kasper</groupId> 
-             <artifactId>kasper-core-command</artifactId> 
-             <version>${project.version}</version> 
-         </dependency> 
-         <dependency> 
-             <groupId>com.viadeo.kasper</groupId> 
-             <artifactId>kasper-core-query</artifactId> 
-             <version>${project.version}</version> 
-         </dependency> 
-         <dependency> 
-             <groupId>com.viadeo.kasper</groupId> 
-             <artifactId>kasper-core-events</artifactId> 
-             <version>${project.version}</version> 
-         </dependency> 
+         <dependency>
+			<groupId>com.viadeo.kasper</groupId>
+			<artifactId>kasper-api</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.viadeo.kasper</groupId>
+			<artifactId>kasper-common</artifactId>
+		</dependency>
+		<dependency>
+         	<groupId>org.reflections</groupId>
+         	<artifactId>reflections</artifactId>
+     	</dependency>
+     	<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.axonframework</groupId>
+			<artifactId>axon-core</artifactId>
+		</dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
     </dependencies> 
 
     <build>
