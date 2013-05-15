@@ -16,18 +16,14 @@
 	<name>KASPER CLIENT</name>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.viadeo.kasper</groupId>
+			<artifactId>kasper-api</artifactId>
+		</dependency>
 
 		<dependency>
 			<groupId>com.viadeo.kasper</groupId>
 			<artifactId>kasper-common</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.viadeo.kasper</groupId>
-			<artifactId>kasper-core-command</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.viadeo.kasper</groupId>
-			<artifactId>kasper-core-query</artifactId>
 		</dependency>
 
 		<dependency>
