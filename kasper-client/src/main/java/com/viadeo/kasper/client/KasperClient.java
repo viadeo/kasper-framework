@@ -89,7 +89,7 @@ public final class KasperClient {
 
 	public ICommandResult send(final ICommand command) {
 		checkNotNull(command);
-		ClientResponse response = client
+		final ClientResponse response = client
 				.resource(resolveCommandPath(command.getClass()))
 				.accept(MediaType.APPLICATION_JSON)
 				.type(MediaType.APPLICATION_JSON)
@@ -110,7 +110,7 @@ public final class KasperClient {
 		// we need to decorate the Future returned by jersey in order to handle
 		// exceptions and populate according to it the command result
 		return new Future<ICommandResult>() {
-			public boolean cancel(boolean mayInterruptIfRunning) {
+			public boolean cancel(final boolean mayInterruptIfRunning) {
 				return futureResponse.cancel(mayInterruptIfRunning);
 			}
 
@@ -127,7 +127,7 @@ public final class KasperClient {
 				return handleResponse(futureResponse.get());
 			}
 
-			public ICommandResult get(long timeout, TimeUnit unit)
+			public ICommandResult get(final long timeout, final TimeUnit unit)
 					throws InterruptedException, ExecutionException,
 					TimeoutException {
 				return handleResponse(futureResponse.get(timeout, unit));
@@ -156,8 +156,8 @@ public final class KasperClient {
 				}, command);
 	}
 
-	private ICommandResult handleResponse(ClientResponse response) {
-		Status status = response.getClientResponseStatus();
+	private ICommandResult handleResponse(final ClientResponse response) {
+		final Status status = response.getClientResponseStatus();
 		// handle errors
 		if (status.getStatusCode() == 200) {
 			return response.getEntity(KasperCommandResult.class);
@@ -173,10 +173,13 @@ public final class KasperClient {
 			final Class<T> mapTo) {
 		checkNotNull(query);
 		checkNotNull(mapTo);
-		return client.resource(resolveQueryPath(query.getClass()))
+		final ClientResponse response = client
+				.resource(resolveQueryPath(query.getClass()))
 				.queryParams(prepareQueryParams(query))
 				.accept(MediaType.APPLICATION_JSON)
-				.type(MediaType.APPLICATION_JSON).get(mapTo);
+				.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+		return handleQueryResponse(response, mapTo);
 	}
 
 	// --
@@ -187,10 +190,36 @@ public final class KasperClient {
 			final Class<T> mapTo) {
 		checkNotNull(query);
 		checkNotNull(mapTo);
-		return client.asyncResource(resolveQueryPath(query.getClass()))
+		final Future<ClientResponse> futureResponse = client
+				.asyncResource(resolveQueryPath(query.getClass()))
 				.queryParams(prepareQueryParams(query))
 				.accept(MediaType.APPLICATION_JSON)
-				.type(MediaType.APPLICATION_JSON).get(mapTo);
+				.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+
+		return new Future<T>() {
+			public boolean cancel(final boolean mayInterruptIfRunning) {
+				return futureResponse.cancel(mayInterruptIfRunning);
+			}
+
+			public boolean isCancelled() {
+				return futureResponse.isCancelled();
+			}
+
+			public boolean isDone() {
+				return futureResponse.isDone();
+			}
+
+			public T get() throws InterruptedException, ExecutionException {
+				return handleQueryResponse(futureResponse.get(), mapTo);
+			}
+
+			public T get(final long timeout, final TimeUnit unit)
+					throws InterruptedException, ExecutionException,
+					TimeoutException {
+				return handleQueryResponse(futureResponse.get(timeout, unit),
+						mapTo);
+			}
+		};
 	}
 
 	// --
@@ -203,17 +232,29 @@ public final class KasperClient {
 				.queryParams(prepareQueryParams(query))
 				.accept(MediaType.APPLICATION_JSON)
 				.type(MediaType.APPLICATION_JSON)
-				.get(new TypeListener<T>(mapTo) {
+				.get(new TypeListener<ClientResponse>(ClientResponse.class) {
 					@Override
-					public void onComplete(final Future<T> f)
+					public void onComplete(final Future<ClientResponse> f)
 							throws InterruptedException {
 						try {
-							callback.done(f.get());
+							callback.done(handleQueryResponse(f.get(), mapTo));
 						} catch (final ExecutionException e) {
 							throw new KasperClientException(e);
 						}
 					}
 				});
+	}
+
+	private <T extends IQueryDTO> T handleQueryResponse(
+			final ClientResponse response, final Class<T> mapTo) {
+		final Status status = response.getClientResponseStatus();
+		// handle errors
+		if (status.getStatusCode() == 200) {
+			return response.getEntity(mapTo);
+		} else
+			throw new KasperClientException("SERVER ERROR [status="
+					+ status.getStatusCode() + ", reason="
+					+ status.getReasonPhrase() + "]");
 	}
 
 	// --
