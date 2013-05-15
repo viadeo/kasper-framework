@@ -9,7 +9,7 @@
 	<groupId>com.viadeo.kasper</groupId>
 	<artifactId>kasper-parent</artifactId>
 	<name>KASPER PARENT</name>
-	<version>0.0.3-SNAPSHOT</version>
+	<version>0.0.4-SNAPSHOT</version>
 	<description>Kasper POM parent</description>
 
 	<packaging>pom</packaging>
