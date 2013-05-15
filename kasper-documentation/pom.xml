@@ -19,7 +19,7 @@
 		<!-- Kasper dependencies -->
 		<dependency>
 			<groupId>com.viadeo.kasper</groupId>
-			<artifactId>kasper-core-boot</artifactId>
+			<artifactId>kasper-core</artifactId>
 		</dependency>
 		<!-- External dependencies -->
 		<dependency>

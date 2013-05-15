@@ -24,7 +24,7 @@
 	</repositories>
 
 	<properties>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<axon.version>2.0</axon.version>
 		<testng.version>6.7</testng.version>
 		<com.fasterxml.jackson.version>2.0.2</com.fasterxml.jackson.version>
@@ -55,10 +55,10 @@
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+		</dependency>
 	</dependencies>
 
 	<dependencyManagement>
@@ -95,7 +95,7 @@
 
 			<dependency>
 				<groupId>com.viadeo.kasper</groupId>
-				<artifactId>kasper-core-boot</artifactId>
+				<artifactId>kasper-core</artifactId>
 				<version>${project.version}</version>
 			</dependency>
 
