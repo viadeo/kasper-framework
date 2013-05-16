@@ -19,6 +19,7 @@ import com.viadeo.kasper.cqrs.command.ICommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
 import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.locators.ICommandHandlersLocator;
 import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
@@ -41,6 +42,8 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
 	 * The domain locator to be passed to command handlers
 	 */
 	private transient IDomainLocator domainLocator;
+	
+	private transient ICommandHandlersLocator commandHandlersLocator;
 
 	// ------------------------------------------------------------------------
 
@@ -94,7 +97,9 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
 						ICommandHandler.class, ICommandHandler.COMMAND_PARAMETER_POSITION);
 
 		if (commandClass.isPresent()) {
-			
+		    // register this command handler for further use in kasper components
+		    commandHandlersLocator.registerHandler(commandHandler);
+            
 			//- Dynamic type command class and command handler for Axon -------
 			final CommandCastor<ICommand> castor =
 					new CommandCastor<ICommand>(commandClass.get(), commandHandler);
@@ -122,6 +127,10 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
 	public void setDomainLocator(final IDomainLocator domainLocator) {
 		this.domainLocator = Preconditions.checkNotNull(domainLocator);
 	}
+
+    public void setCommandHandlersLocator(ICommandHandlersLocator commandHandlersLocator) {
+        this.commandHandlersLocator = Preconditions.checkNotNull(commandHandlersLocator);
+    }
 
 }
 

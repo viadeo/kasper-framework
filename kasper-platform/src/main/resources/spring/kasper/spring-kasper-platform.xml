@@ -32,11 +32,13 @@
     <!--  Kasper locators -->
     <bean id="domainLocator" class="com.viadeo.kasper.locators.impl.DomainLocatorBase"/>
     <bean id="queryServicesLocator" class="com.viadeo.kasper.locators.impl.QueryServicesLocatorBase"/>
+    <bean id="commandHandlersLocator" class="com.viadeo.kasper.locators.impl.CommandHandlersLocatorBase" />
 
     <!--  Kasper annotation processors -->
     <bean id="commandHandlersProcessor" class="com.viadeo.kasper.core.boot.CommandHandlersProcessor">
         <property name="commandBus" ref="commandBus"/>
         <property name="domainLocator" ref="domainLocator"/>
+        <property name="commandHandlersLocator" ref="commandHandlersLocator"/>
     </bean>
 
     <bean id="repositoriesProcessor" class="com.viadeo.kasper.core.boot.RepositoriesProcessor">
