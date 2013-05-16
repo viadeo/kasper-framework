@@ -108,6 +108,12 @@ public class KasperErrorCommandResult extends KasperCommandResult implements IEr
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(this.errorMessage, super.hashCode());
+	}
+
+	@Override
+	public String toString() {
+		return "KasperErrorCommandResult [errorMessage=" + errorMessage
+				+ ", getStatus()=" + getStatus() + "]";
 	}	
 	
 }
