@@ -12,10 +12,8 @@ package com.viadeo.kasper.cqrs.query;
  */
 public interface IOrderedQuery extends IQuery {
 
-    /* Not used currently
 	public static enum ORDER {
 		ASC, DESC, NONE
 	}
-    */
 
 }
