@@ -95,7 +95,7 @@ public class KasperClientQueryTest extends JerseyTest {
 
     @Path(value = "/")
     public static class DummyResource {
-        @Path("/GetMember")
+        @Path("/getMember")
         @GET
         @Produces(MediaType.APPLICATION_JSON)
         public MemberDTO getMember(@QueryParam("memberName") final String memberName, @QueryParam("ids") final List<Integer> ids) {

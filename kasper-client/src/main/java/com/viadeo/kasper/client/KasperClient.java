@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.beans.Introspector;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -182,11 +183,11 @@ public final class KasperClient {
     // ------------------------------------------------------------------------
     
     private URI resolveCommandPath(final Class<? extends ICommand> commandClass) {
-        return resolvePath(commandBaseLocation, commandClass.getSimpleName().replaceFirst("Command", ""), commandClass);
+        return resolvePath(commandBaseLocation, Introspector.decapitalize(commandClass.getSimpleName().replaceFirst("Command", "")), commandClass);
     }
 
     private URI resolveQueryPath(final Class<? extends IQuery> queryClass) {
-        return resolvePath(queryBaseLocation, queryClass.getSimpleName().replaceFirst("Query", ""), queryClass);
+        return resolvePath(queryBaseLocation, Introspector.decapitalize(queryClass.getSimpleName().replaceFirst("Query", "")), queryClass);
     }
 
     private URI resolvePath(final URL basePath, final String path, final Class<?> clazz) {
