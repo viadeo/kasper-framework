@@ -22,3 +22,9 @@ kasper-documentation          => Automated documentation
 kasper-security               => Security framework
 kasper-web                    => Web exposition and helpers
 
+
+If you want to make changes in this framework, please :
+- Fork the project as a private repo
+- Make your changes in a separate branch
+- Rebase your branch on viadeo master
+- Submit a pull request

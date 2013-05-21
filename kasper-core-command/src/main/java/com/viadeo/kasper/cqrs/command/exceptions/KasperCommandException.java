@@ -13,7 +13,7 @@ import com.viadeo.kasper.exception.KasperException;
  * Base Kasper commmands exception
  */
 public class KasperCommandException extends KasperException {
-	private static final long serialVersionUID = 4333939739848393501L;
+	private static final long serialVersionUID = 4333942397848393501L;
 
 	public KasperCommandException(final String message, final Exception e) {
 		super(message, e);

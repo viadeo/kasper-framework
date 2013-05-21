@@ -11,7 +11,7 @@ import com.viadeo.kasper.exception.KasperException;
 
 public class KasperPlatformException extends KasperException {
 
-	private static final long serialVersionUID = -5911149302021595640L;
+	private static final long serialVersionUID = -5942149302021595640L;
 
 	public KasperPlatformException(String message, Exception e) {
 		super(message, e);

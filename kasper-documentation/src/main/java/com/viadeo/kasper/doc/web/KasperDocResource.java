@@ -38,24 +38,28 @@ public class KasperDocResource {
 	@GET
 	@Path(DocumentedDomain.PLURAL_TYPE_NAME)
 	@Produces(MediaType.APPLICATION_JSON)
-	public String getDomains() {
-		return new RetMap(getKasperLibrary().getDomains()).toJson();
+	public RetMap getDomains() {
+		return new RetMap(getKasperLibrary().getDomains());
 	}
 	
+	/*
+	 * Return Object so json provider implementation will look after the runtime type of the
+	 * the object, otherwise it would only serialize using fields from returned type.
+	 */
 	@GET
 	@Path(DocumentedDomain.TYPE_NAME + "/{domainName}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String getDomain(@PathParam("domainName") final String domainName) {
+	public Object getDomain(@PathParam("domainName") final String domainName) {
 		String retDomainName = domainName;
 		if (null != domainName) {
 			final Optional<DocumentedDomain> domain = getKasperLibrary().getDomainFromName(domainName);
 			if (domain.isPresent()) {
-				return domain.get().toJson();
+				return domain.get();
 			}
 		} else {
 			retDomainName = DEFAULT_UNSPECIFIED;
 		}		
-		return new RetUnexistent(DocumentedDomain.TYPE_NAME, retDomainName).toJson();
+		return new RetUnexistent(DocumentedDomain.TYPE_NAME, retDomainName);
 	}
 	
 	// ------------------------------------------------------------------------
@@ -63,18 +67,18 @@ public class KasperDocResource {
 	@GET
 	@Path(DocumentedDomain.TYPE_NAME + "/{domainName}/{type}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String getEntities(@PathParam("domainName") final String domainName, @PathParam("type") final String type) {
+	public Object getEntities(@PathParam("domainName") final String domainName, @PathParam("type") final String type) {
 		String retDomainName = domainName;
 		if (null != domainName) {
 			final Optional<Map<String, AbstractDocumentedDomainNode>> entities = getKasperLibrary().getEntities(domainName, type);
 			if (entities.isPresent()) {
-				return new RetMap(entities.get()).toJson();
+				return new RetMap(entities.get());
 			}
-			return new RetUnexistent("type", type).toJson();
+			return new RetUnexistent("type", type);
 		} else {
 			retDomainName = DEFAULT_UNSPECIFIED;
 		}		
-		return new RetUnexistent(DocumentedDomain.TYPE_NAME, retDomainName).toJson();
+		return new RetUnexistent(DocumentedDomain.TYPE_NAME, retDomainName);
 	}		
 	
 	// ------------------------------------------------------------------------
@@ -82,20 +86,20 @@ public class KasperDocResource {
 	@GET
 	@Path(DocumentedDomain.TYPE_NAME + "/{domainName}/{type}/{entityName}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public String getEntity(@PathParam("domainName") final String domainName, @PathParam("type") final String type, @PathParam("entityName") final String entityName) {
+	public Object getEntity(@PathParam("domainName") final String domainName, @PathParam("type") final String type, @PathParam("entityName") final String entityName) {
 		String retDomainName = domainName;
 		if (null != domainName) {
 			if (null != entityName) {
 				final Optional<AbstractDocumentedDomainNode> entity = getKasperLibrary().getEntity(domainName, type, entityName);
 				if (entity.isPresent()) {
-					return entity.get().toJson();
+					return entity.get();
 				}
 			}
-			return new RetUnexistent(type, entityName).toJson();
+			return new RetUnexistent(type, entityName);
 		} else {
 			retDomainName = DEFAULT_UNSPECIFIED;
 		}		
-		return new RetUnexistent(DocumentedDomain.TYPE_NAME, retDomainName).toJson();
+		return new RetUnexistent(DocumentedDomain.TYPE_NAME, retDomainName);
 	}	
 	
 	// ------------------------------------------------------------------------

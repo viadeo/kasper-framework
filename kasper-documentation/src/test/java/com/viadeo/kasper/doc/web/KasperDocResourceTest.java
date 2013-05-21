@@ -18,6 +18,7 @@ import javax.ws.rs.Path;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -31,6 +32,7 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.viadeo.kasper.core.boot.AbstractDocumentationProcessor;
@@ -44,6 +46,7 @@ import com.viadeo.kasper.core.boot.ListenersDocumentationProcessor;
 import com.viadeo.kasper.core.boot.RelationsDocumentationProcessor;
 import com.viadeo.kasper.core.boot.RepositoriesDocumentationProcessor;
 import com.viadeo.kasper.doc.KasperLibrary;
+import com.viadeo.kasper.doc.web.KasperDocumentationApp.ObjectMapperCustomResolver;
 
 import difflib.Delta;
 import difflib.DiffUtils;
@@ -108,6 +111,14 @@ public class KasperDocResourceTest extends JerseyTest {
 		
 	}
 	
+	static class TestConfiguration extends DefaultResourceConfig {
+		
+		public TestConfiguration() {
+			super(WrappedDocResource.class);
+			getProviderSingletons().add(new JacksonJsonProvider(new ObjectMapperCustomResolver().getContext(null)));
+		}
+	}
+	
 	// ------------------------------------------------------------------------
 	
 	/**
@@ -117,7 +128,7 @@ public class KasperDocResourceTest extends JerseyTest {
 	 * @throws Exception
 	 */
 	public KasperDocResourceTest() throws Exception {
-        super(new LowLevelAppDescriptor.Builder(WrappedDocResource.class).build());
+        super(new LowLevelAppDescriptor.Builder(new TestConfiguration()).contextPath("/").build());
         
         final AnnotationRootProcessor rootProcessor = new AnnotationRootProcessor();
 		
@@ -178,10 +189,9 @@ public class KasperDocResourceTest extends JerseyTest {
 	        	
 	        	assertJsonEquals(responseMsg, json);
 	        	
-	        } catch (final JSONException e) {	        	
+	        } catch (final JSONException e) {	 
 	        	LOGGER.info("\t--> ERROR");
 	        	throw e;
-	        	
 	        } catch (final AssertionError e) {
 	        	if (!UPDATE_TESTS) {
 	        		LOGGER.debug("*** RETURNED RESULT :");

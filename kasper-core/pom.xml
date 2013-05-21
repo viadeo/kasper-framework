@@ -20,7 +20,11 @@
 		<dependency>
 			<groupId>com.viadeo.kasper</groupId>
 			<artifactId>kasper-common</artifactId>
-		</dependency>	
+		</dependency>
+		<dependency>
+			<groupId>com.viadeo.kasper</groupId>
+			<artifactId>kasper-core-domain</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.viadeo.kasper</groupId>
 			<artifactId>kasper-core-command</artifactId>
@@ -40,7 +44,15 @@
 		<dependency>
          	<groupId>org.reflections</groupId>
          	<artifactId>reflections</artifactId>
-     	</dependency>		
+     	</dependency>
+     	<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-context</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.axonframework</groupId>
+			<artifactId>axon-core</artifactId>
+		</dependency>		
 	</dependencies>
 
 </project>
