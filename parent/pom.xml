@@ -9,7 +9,7 @@
 	<groupId>com.viadeo.kasper</groupId>
 	<artifactId>kasper-parent</artifactId>
 	<name>KASPER PARENT</name>
-	<version>0.0.6-SNAPSHOT</version>
+	<version>0.0.5-SNAPSHOT</version>
 	<description>Kasper POM parent</description>
 
 	<packaging>pom</packaging>
@@ -156,11 +156,6 @@
 				<artifactId>jackson-jaxrs-json-provider</artifactId>
 				<version>${com.fasterxml.jackson.version}</version>
 			</dependency>
-            <dependency>
-                <groupId>com.fasterxml.jackson.core</groupId>
-                <artifactId>jackson-annotations</artifactId>
-                <version>${com.fasterxml.jackson.version}</version>
-            </dependency>
 			<dependency>
 				<groupId>com.sun.jersey.jersey-test-framework</groupId>
 				<artifactId>jersey-test-framework-http</artifactId>
