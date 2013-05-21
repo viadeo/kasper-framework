@@ -16,14 +16,11 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
+import com.fasterxml.jackson.databind.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -167,6 +164,7 @@ public class KasperClientBuilder {
                 .configure(MapperFeature.AUTO_DETECT_FIELDS, true)
                 .configure(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS, true)
                 .configure(MapperFeature.USE_ANNOTATIONS, true)
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .registerModule(kasperClientModule);
     }
 
