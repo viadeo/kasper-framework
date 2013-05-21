@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>com.viadeo.kasper</groupId>
 		<artifactId>kasper-parent</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
+		<version>0.0.4.2</version>
 		<relativePath>../parent</relativePath>
 	</parent>
 	<artifactId>kasper-documentation</artifactId>
@@ -20,10 +20,6 @@
 		<dependency>
 			<groupId>com.viadeo.kasper</groupId>
 			<artifactId>kasper-core</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.viadeo.kasper</groupId>
-			<artifactId>kasper-core-command</artifactId>
 		</dependency>
 		<!-- External dependencies -->
 		<dependency>
@@ -101,10 +97,10 @@
 	              <goal>copy-resources</goal>
 	            </goals>
 	            <configuration>
-	              <outputDirectory>${basedir}/target/classes/kasper</outputDirectory>
+	              <outputDirectory>${basedir}/target/classes/doc</outputDirectory>
 	              <resources>          
 	                <resource>
-	                  <directory>src/main/resources/META-INF/resources/kasper</directory>
+	                  <directory>src/main/resources/META-INF/resources/doc</directory>
 	                  <filtering>false</filtering>
 	                </resource>
 	              </resources>              

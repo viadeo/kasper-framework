@@ -7,7 +7,6 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.cqrs.command.ICommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.doc.KasperLibrary;
@@ -18,7 +17,7 @@ public final class DocumentedCommand extends AbstractDocumentedDomainNode {
 	public static final String TYPE_NAME = "command";
 	public static final String PLURAL_TYPE_NAME = "commands";
 
-	private DocumentedProperties properties = null;
+	private DocumentedBean properties = null;
 
 	// ------------------------------------------------------------------------
 
@@ -32,8 +31,6 @@ public final class DocumentedCommand extends AbstractDocumentedDomainNode {
 
 		final XKasperCommand annotation = commandClazz
 				.getAnnotation(XKasperCommand.class);
-		final Class<? extends IDomain> domain = annotation.domain();
-		final String domainName = domain.getSimpleName();
 
 		// Get description ----------------------------------------------------
 		String description = annotation.description();
@@ -44,9 +41,8 @@ public final class DocumentedCommand extends AbstractDocumentedDomainNode {
 
 		// - Register the domain to the locator --------------------------------
 		this.setName(commandClazz.getSimpleName());
-		this.setDomainName(domainName);
 		this.setDescription(description);
-		this.properties = new DocumentedProperties(commandClazz);
+		this.properties = new DocumentedBean(commandClazz);
 	}
 
 	// ------------------------------------------------------------------------
@@ -62,8 +58,7 @@ public final class DocumentedCommand extends AbstractDocumentedDomainNode {
 
 	public DocumentedNode getHandler() {
 		final KasperLibrary kl = this.getKasperLibrary();
-		final Optional<DocumentedHandler> handler = kl.getHandlerForCommand(
-				getDomainName(), getName());
+		final Optional<DocumentedHandler> handler = kl.getHandlerForCommand(getName());
 
 		if (handler.isPresent()) {
 			return kl.getSimpleNodeFrom(handler.get());
@@ -74,8 +69,18 @@ public final class DocumentedCommand extends AbstractDocumentedDomainNode {
 
 	// ------------------------------------------------------------------------
 
-	public DocumentedProperties getProperties() {
+	public DocumentedBean getProperties() {
 		return this.properties;
 	}
+	
+	// ------------------------------------------------------------------------
+	
+	public DocumentedNode getDomain() {
+		final Optional<DocumentedHandler> handler = this.getKasperLibrary().getHandlerForCommand(this.getName());
+		if (handler.isPresent()) {
+			return new DocumentedNode(handler.get().getDomain());
+		}
+		return null;
+	}	
 
 }

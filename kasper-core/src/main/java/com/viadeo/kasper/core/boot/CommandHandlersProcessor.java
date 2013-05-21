@@ -24,7 +24,7 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 /**
  *
- * Process Kasper command handlers dynamic registration at platform boot
+ * Process Kasper command handlers dynamic registration at kasper platform boot
  *
  * @see XKasperCommandHandler
  */

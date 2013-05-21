@@ -1,0 +1,37 @@
+
+<ul class="breadcrumb">
+  <li><a class="klink" href="#">Home</a> <span class="divider">/</span></li>
+  {{#if node.domain}}
+  	<li><a class="klink" href="#{{node.domain.name}}">{{node.domain.name}}</a> <span class="divider">/</span></li>
+  {{/if}}
+  {{#if node.section}}
+  	<li>{{node.section}} <span class="divider">/</span></li>
+  {{/if}}
+  <li class="active">{{node.name}}</li>
+</ul>
+
+<div class="well well-small">
+	<span class="label lead">{{node.type}}</span>
+
+	{{#if node.entity}}
+		{{#if node.aggregate}}
+			<span class="label label-info">ROOT</span>
+		{{else}}
+			<span class="label label-info">COMPONENT</span>
+		{{/if}}
+	{{/if}}
+
+	<a href="../kasper/doc{{node.url}}" target="_blank">[json]</a><h1>{{node.label}}</h1>
+	<small>{{node.description}}</small>
+</div>
+
+{{#if node.properties}}
+	<div class="well well-small">
+		<h2>Properties</h2>
+		<ul>
+		{{#each node.properties}}
+			<li>{{this.name}} [{{#if this.isList}}List<{{/if}}{{this.type}}{{#if this.isList}}List<{{/if}}]</li>
+		{{/each}}
+		</ul>
+	</div>
+{{/if}}

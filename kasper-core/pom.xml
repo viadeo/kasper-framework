@@ -1,46 +1,29 @@
-<!-- ==========================================================================
--                  KASPER - Kasper is the treasure keeper
--     www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
--
--           Viadeo Framework for effective CQRS/DDD architecture
-=========================================================================== -->
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>com.viadeo.kasper</groupId>
-		<artifactId>kasper-parent</artifactId>
-		<version>0.0.2-SNAPSHOT</version>
-		<relativePath>../parent</relativePath>
-	</parent>
-	<artifactId>kasper-core</artifactId>
-	<name>KASPER CORE</name>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>com.viadeo.kasper</groupId>
+        <artifactId>kasper-parent</artifactId>
+        <version>0.0.4.2</version>
+        <relativePath>../parent</relativePath>
+    </parent>
 
-	<dependencies>
+    <artifactId>kasper-core</artifactId>
+    <name>KASPER CORE</name>
+    <packaging>jar</packaging>
+
+     <dependencies>     
+         <dependency>
+			<groupId>com.viadeo.kasper</groupId>
+			<artifactId>kasper-api</artifactId>
+		</dependency>
 		<dependency>
 			<groupId>com.viadeo.kasper</groupId>
 			<artifactId>kasper-common</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>com.viadeo.kasper</groupId>
-			<artifactId>kasper-core-domain</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.viadeo.kasper</groupId>
-			<artifactId>kasper-core-command</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.viadeo.kasper</groupId>
-			<artifactId>kasper-core-query</artifactId>
-		</dependency>		
-		<dependency>
-			<groupId>com.viadeo.kasper</groupId>
-			<artifactId>kasper-core-handle-commands</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.viadeo.kasper</groupId>
-			<artifactId>kasper-core-listen-events</artifactId>
-		</dependency>			
 		<dependency>
          	<groupId>org.reflections</groupId>
          	<artifactId>reflections</artifactId>
@@ -52,7 +35,35 @@
 		<dependency>
 			<groupId>org.axonframework</groupId>
 			<artifactId>axon-core</artifactId>
-		</dependency>		
-	</dependencies>
+		</dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+        </dependency>
+    </dependencies> 
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.7</version>
+                    <configuration>
+                        <skip>false</skip>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.4</version>
+                    <configuration>
+                        <skip>false</skip>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
 </project>
+

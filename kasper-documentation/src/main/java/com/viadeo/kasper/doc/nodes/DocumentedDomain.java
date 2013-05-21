@@ -58,7 +58,7 @@ public final class DocumentedDomain extends DocumentedNode {
 	
 	public Collection<DocumentedNode> getCommands() {
 		final KasperLibrary kl = this.getKasperLibrary();
-		return kl.simpleNodesFrom( kl.getCommands(getName()) ).values();
+		return kl.simpleNodesFrom( kl.getCommands( getName())).values();
 	}
 
 	public Collection<DocumentedNode> getConcepts() {
@@ -91,4 +91,8 @@ public final class DocumentedDomain extends DocumentedNode {
 		return kl.simpleNodesFrom( kl.getHandlers(getName()) ).values();
 	}
 	
+	public Collection<DocumentedNode> getQueryServices() {
+		final KasperLibrary kl = this.getKasperLibrary();
+		return kl.simpleNodesFrom( kl.getQueryServices(getName()) ).values();
+	}
 }

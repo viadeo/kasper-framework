@@ -18,27 +18,27 @@ import com.viadeo.kasper.platform.IPlatform;
 
 public class KasperPlatformBootListener implements ServletContextListener {
 
-	@Override
-	public void contextDestroyed(final ServletContextEvent sce) {
+    @Override
+    public void contextDestroyed(final ServletContextEvent sce) {
 
-	}
+    }
 
-	@Override
-	public void contextInitialized(final ServletContextEvent sce) {
-		final ServletContext ctx = sce.getServletContext();
-		final WebApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ctx);
-		
-		if (null == springContext) {
-			throw new KasperRuntimeException("Unable to find Spring context !");
-		}
-		
-		final IPlatform platform = (IPlatform) springContext.getBean("platform");
-		
-		if (null == platform) {
-			throw new KasperRuntimeException("No Kasper platform bean found in current Spring context !");
-		}
-		
-		platform.boot();
-	}
+    @Override
+    public void contextInitialized(final ServletContextEvent sce) {
+        final ServletContext ctx = sce.getServletContext();
+        final WebApplicationContext springContext = WebApplicationContextUtils.getWebApplicationContext(ctx);
+
+        if (null == springContext) {
+            throw new KasperRuntimeException("Unable to find Spring context !");
+        }
+
+        final IPlatform platform = springContext.getBean(IPlatform.class);
+
+        if (null == platform) {
+            throw new KasperRuntimeException("No Kasper kasper bean found in current Spring context !");
+        }
+
+        platform.boot();
+    }
 
 }

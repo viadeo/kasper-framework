@@ -1,5 +1,6 @@
 package com.viadeo.kasper.test.core.boot;
 
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import junit.framework.TestCase;
@@ -36,7 +37,7 @@ public class KasperAnnotationRootProcessorTest extends TestCase {
 	// ------------------------------------------------------------------------
 	
 	@Test
-	public void testUserProcessorCall() {
+	public void testShouldRunProcessOnNewRegisterProcessor() {
 		final AnnotationRootProcessor rootProcessor = new AnnotationRootProcessor();
 		
 		final TestProcessor realProcessor = new TestProcessor();
@@ -44,10 +45,26 @@ public class KasperAnnotationRootProcessorTest extends TestCase {
 		
 		rootProcessor.registerProcessor(processor);
 		rootProcessor.setDoNotScanDefaultPrefix(true);
-		
+		rootProcessor.addScanPrefix(this.getClass().getPackage().getName());
+
 		rootProcessor.boot();
 		
 		verify(processor).process(TestClass.class);
 	}
+
+    @Test
+    public void testShouldNotScanInPackageWithoutAnySetPrefix() {
+        final AnnotationRootProcessor rootProcessor = new AnnotationRootProcessor();
+
+        final TestProcessor realProcessor = new TestProcessor();
+        final IAnnotationProcessor<?,?> processor = spy(realProcessor);
+
+        rootProcessor.registerProcessor(processor);
+        rootProcessor.setDoNotScanDefaultPrefix(true);
+
+        rootProcessor.boot();
+
+        verify(processor,never()).process(TestClass.class);
+    }
 	
 }

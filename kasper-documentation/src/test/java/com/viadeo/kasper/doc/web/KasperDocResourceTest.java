@@ -18,7 +18,6 @@ import javax.ws.rs.Path;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -28,6 +27,7 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
@@ -43,10 +43,11 @@ import com.viadeo.kasper.core.boot.DomainsDocumentationProcessor;
 import com.viadeo.kasper.core.boot.EventsDocumentationProcessor;
 import com.viadeo.kasper.core.boot.HandlersDocumentationProcessor;
 import com.viadeo.kasper.core.boot.ListenersDocumentationProcessor;
+import com.viadeo.kasper.core.boot.QueryServicesDocumentationProcessor;
 import com.viadeo.kasper.core.boot.RelationsDocumentationProcessor;
 import com.viadeo.kasper.core.boot.RepositoriesDocumentationProcessor;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.doc.web.KasperDocumentationApp.ObjectMapperCustomResolver;
+import com.viadeo.kasper.doc.web.ObjectMapperCustomResolver;
 
 import difflib.Delta;
 import difflib.DiffUtils;
@@ -89,7 +90,8 @@ public class KasperDocResourceTest extends JerseyTest {
 		HandlersDocumentationProcessor.class,
 		ListenersDocumentationProcessor.class,
 		RelationsDocumentationProcessor.class,
-		RepositoriesDocumentationProcessor.class		
+		RepositoriesDocumentationProcessor.class,
+		QueryServicesDocumentationProcessor.class
 	};
 	
 	/**
@@ -276,7 +278,7 @@ public class KasperDocResourceTest extends JerseyTest {
     		assertEquals(jsonAA.replaceAll("[\\s\\n]", ""), jsonBB.replaceAll("[\\s\\n]", ""));
     	} catch (final AssertionError e) {
     		LOGGER.debug("*** DIFF RESULT (RESPONSE vs EXPECTED) :");
-    		new StringLinesDiffer().output(jsonAA, jsonBB);
+    		new StringLinesDiffer().output(jsonBB, jsonAA);
     		throw e;
     	}
     }

@@ -9,7 +9,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.viadeo.kasper</groupId>
 	<artifactId>kasper-framework</artifactId>
-	<version>0.0.2-SNAPSHOT</version>
+	<version>0.0.4.2</version>
 	<name>KASPER</name>
 	<packaging>pom</packaging>
 
@@ -31,12 +31,7 @@
 
 	<modules>
 		<module>parent</module>
-		<module>kasper-core-domain</module>
-		<module>kasper-core-command</module>
-		<module>kasper-core-query</module>
-		<module>kasper-core-events</module>
-		<module>kasper-core-listen-events</module>
-		<module>kasper-core-handle-commands</module>
+		<module>kasper-api</module>
 		<module>kasper-core</module>
 		<module>kasper-platform</module>
 		<module>kasper-security</module>

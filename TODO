@@ -1,8 +1,8 @@
 Urgent :
 ========
 
-- Configurator Spring pour kasper ? Besoin d'un namespace ?
-- réel usage des locators (notament DomainLcoator) ?
+- improve kasper queries documentation
+- revoir les nodes de kasper-doc, voir à utiliser les locators globaux ?
 - possibilité de virer les qques @Inject ou @Autowired qui traînent ?
 
 Query :

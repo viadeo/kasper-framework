@@ -4,7 +4,11 @@
 **/.project
 .settings
 .project
-**/.classpath
+.classpath
+*.iml
+*.iws
+.DS_Store
+.idea/
 **/.svn
 =======
 **/.pmd
