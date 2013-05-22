@@ -10,9 +10,9 @@
 .DS_Store
 .idea/
 **/.svn
-=======
 **/.pmd
 **/**/.pmd
 .metadata
 target
 Servers
+out
