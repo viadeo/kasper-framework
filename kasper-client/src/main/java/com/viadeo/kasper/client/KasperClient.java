@@ -41,7 +41,7 @@ import com.viadeo.kasper.cqrs.query.IQueryDTO;
 /**
  * The Kasper java client
  */
-public final class KasperClient {
+public class KasperClient {
     private static final KasperClient DEFAULT_KASPER_CLIENT = new KasperClientBuilder().create();
 
     private final Client client;
