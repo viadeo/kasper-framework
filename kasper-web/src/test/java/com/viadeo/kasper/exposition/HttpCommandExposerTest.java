@@ -24,7 +24,7 @@ import com.viadeo.kasper.ddd.impl.AbstractDomain;
 import com.viadeo.kasper.event.exceptions.KasperEventException;
 import com.viadeo.kasper.platform.web.KasperPlatformBootListener;
 
-public class PublisherTest {
+public class HttpCommandExposerTest {
 	private Server server;
 	private int port;
 	private KasperClient cli;
@@ -42,7 +42,7 @@ public class PublisherTest {
 				"classpath:spring/kasper/spring-kasper-platform.xml");
 		servletContext.addEventListener(new ContextLoaderListener());
 		servletContext.addEventListener(new KasperPlatformBootListener());
-		servletContext.addServlet(new ServletHolder(new HttpPublisher()),
+		servletContext.addServlet(new ServletHolder(new HttpCommandExposer()),
 				"/rootpath/*");
 
 		server.start();
