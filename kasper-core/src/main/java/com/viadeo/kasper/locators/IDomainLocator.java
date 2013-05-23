@@ -6,10 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.locators;
 
+import java.util.Collection;
 import java.util.Set;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.IDomain;
+import com.viadeo.kasper.cqrs.command.ICommand;
+import com.viadeo.kasper.cqrs.command.ICommandHandler;
 import com.viadeo.kasper.ddd.IAggregateRoot;
 import com.viadeo.kasper.ddd.IEntity;
 import com.viadeo.kasper.ddd.IInternalDomain;
@@ -24,6 +27,16 @@ import com.viadeo.kasper.ddd.IRepository;
  * 
  */
 public interface IDomainLocator {
+
+    /**
+     * Register a new commandHandler
+     */
+    void registerHandler(ICommandHandler<? extends ICommand> commandHandler);
+
+    /**
+     * Get all registered command handlers
+     */
+    Collection<ICommandHandler<? extends ICommand>> getHandlers();
 
 	/**
 	 * Register a new domain to the locator

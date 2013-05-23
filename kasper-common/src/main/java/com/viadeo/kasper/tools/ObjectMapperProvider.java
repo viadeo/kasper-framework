@@ -27,11 +27,13 @@ public class ObjectMapperProvider {
 		mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
 
-		final Module kasperClientModule = new SimpleModule().addDeserializer(
-				KasperCommandResult.class,
-				new KasperCommandResultDeserializer()).addDeserializer(
-				KasperErrorCommandResult.class,
-				new KasperErrorCommandResultDeserializer());
+		final Module kasperClientModule = new SimpleModule()
+				.addDeserializer(KasperCommandResult.class,
+						new KasperCommandResultDeserializer())
+				.addDeserializer(KasperErrorCommandResult.class,
+						new KasperErrorCommandResultDeserializer())
+				.addSerializer(new KasperErrorCommandResultSerializer())
+				.addSerializer(new KasperCommandResultSerializer());
 
 		mapper.registerModule(kasperClientModule).registerModule(
 				new GuavaModule());

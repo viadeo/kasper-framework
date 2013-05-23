@@ -27,20 +27,23 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
+import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.ClientResponse.Status;
 import com.sun.jersey.api.client.async.TypeListener;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.viadeo.kasper.client.exceptions.KasperClientException;
 import com.viadeo.kasper.client.lib.ICallback;
-import com.viadeo.kasper.client.lib.IQueryFactory;
-import com.viadeo.kasper.client.lib.ITypeAdapter;
-import com.viadeo.kasper.client.lib.QueryBuilder;
 import com.viadeo.kasper.cqrs.command.ICommand;
 import com.viadeo.kasper.cqrs.command.ICommandResult;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
 import com.viadeo.kasper.cqrs.command.impl.KasperErrorCommandResult;
 import com.viadeo.kasper.cqrs.query.IQuery;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
+import com.viadeo.kasper.query.exposition.IQueryFactory;
+import com.viadeo.kasper.query.exposition.ITypeAdapter;
+import com.viadeo.kasper.query.exposition.KasperQueryAdapterException;
+import com.viadeo.kasper.query.exposition.QueryBuilder;
 
 /**
  * The Kasper java client
@@ -171,6 +174,11 @@ public final class KasperClient {
 
 	public <T extends IQueryDTO> T query(final IQuery query,
 			final Class<T> mapTo) {
+		return query(query, TypeToken.of(mapTo));
+	}
+
+	public <T extends IQueryDTO> T query(final IQuery query,
+			final TypeToken<T> mapTo) {
 		checkNotNull(query);
 		checkNotNull(mapTo);
 		final ClientResponse response = client
@@ -184,10 +192,15 @@ public final class KasperClient {
 
 	// --
 
+	public <T extends IQueryDTO> Future<T> queryAsync(final IQuery query,
+			final Class<T> mapTo) {
+		return queryAsync(query, TypeToken.of(mapTo));
+	}
+
 	// FIXME should we also handle async in the platform side ?? Is it really
 	// useful?
 	public <T extends IQueryDTO> Future<T> queryAsync(final IQuery query,
-			final Class<T> mapTo) {
+			final TypeToken<T> mapTo) {
 		checkNotNull(query);
 		checkNotNull(mapTo);
 		final Future<ClientResponse> futureResponse = client
@@ -226,6 +239,11 @@ public final class KasperClient {
 
 	public <T extends IQueryDTO> void queryAsync(final IQuery query,
 			final Class<T> mapTo, final ICallback<T> callback) {
+		queryAsync(query, TypeToken.of(mapTo), callback);
+	}
+
+	public <T extends IQueryDTO> void queryAsync(final IQuery query,
+			final TypeToken<T> mapTo, final ICallback<T> callback) {
 		checkNotNull(query);
 		checkNotNull(mapTo);
 		client.asyncResource(resolveQueryPath(query.getClass()))
@@ -246,11 +264,11 @@ public final class KasperClient {
 	}
 
 	private <T extends IQueryDTO> T handleQueryResponse(
-			final ClientResponse response, final Class<T> mapTo) {
+			final ClientResponse response, final TypeToken<T> mapTo) {
 		final Status status = response.getClientResponseStatus();
 		// handle errors
 		if (status.getStatusCode() == 200) {
-			return response.getEntity(mapTo);
+			return response.getEntity(new GenericType<T>(mapTo.getType()));
 		} else
 			throw new KasperClientException("SERVER ERROR [status="
 					+ status.getStatusCode() + ", reason="
@@ -260,14 +278,19 @@ public final class KasperClient {
 	// --
 
 	MultivaluedMap<String, String> prepareQueryParams(final IQuery query) {
-		@SuppressWarnings("unchecked")
-		final ITypeAdapter<IQuery> adapter = (ITypeAdapter<IQuery>) queryFactory
-				.create(TypeToken.of(query.getClass()));
+		try {
+			@SuppressWarnings("unchecked")
+			final ITypeAdapter<IQuery> adapter = (ITypeAdapter<IQuery>) queryFactory
+					.create(TypeToken.of(query.getClass()));
 
-		final QueryBuilder queryBuilder = new QueryBuilder();
-		adapter.adapt(query, queryBuilder);
-
-		return queryBuilder.build();
+			final QueryBuilder queryBuilder = new QueryBuilder();
+			adapter.adapt(query, queryBuilder);
+			MultivaluedMap<String, String> map = new MultivaluedMapImpl();
+			map.putAll(queryBuilder.build());
+			return map;
+		} catch (KasperQueryAdapterException ex) {
+			throw new KasperClientException(ex);
+		}
 	}
 
 	// ------------------------------------------------------------------------
@@ -276,12 +299,12 @@ public final class KasperClient {
 
 	private URI resolveCommandPath(final Class<? extends ICommand> commandClass) {
 		return resolvePath(commandBaseLocation, commandClass.getSimpleName()
-				.replaceFirst("Command", ""), commandClass);
+				.replace("Command", ""), commandClass);
 	}
 
 	private URI resolveQueryPath(final Class<? extends IQuery> queryClass) {
 		return resolvePath(queryBaseLocation, queryClass.getSimpleName()
-				.replaceFirst("Query", ""), queryClass);
+				.replace("Query", ""), queryClass);
 	}
 
 	private URI resolvePath(final URL basePath, final String path,

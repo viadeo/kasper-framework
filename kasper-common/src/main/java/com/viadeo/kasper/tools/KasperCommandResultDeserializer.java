@@ -20,7 +20,9 @@ import com.viadeo.kasper.cqrs.command.ICommandResult.Status;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
 
 public final class KasperCommandResultDeserializer extends StdDeserializer<KasperCommandResult> {
-    static final Logger LOGGER = LoggerFactory.getLogger(KasperCommandResultDeserializer.class);
+	private static final long serialVersionUID = 5531546914770492090L;
+
+	static final Logger LOGGER = LoggerFactory.getLogger(KasperCommandResultDeserializer.class);
     
     private static final String STATUS = "status";
     

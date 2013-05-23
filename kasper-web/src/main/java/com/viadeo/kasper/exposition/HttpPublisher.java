@@ -32,7 +32,7 @@ import com.viadeo.kasper.cqrs.command.impl.KasperErrorCommandResult;
 import com.viadeo.kasper.cqrs.query.IQuery;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
 import com.viadeo.kasper.cqrs.query.IQueryService;
-import com.viadeo.kasper.locators.ICommandHandlersLocator;
+import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.locators.IQueryServicesLocator;
 import com.viadeo.kasper.platform.IPlatform;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
@@ -46,7 +46,7 @@ public final class HttpPublisher extends HttpServlet {
 	private final Map<String, Class<? extends IQuery>> exposedQueries = new HashMap<String, Class<? extends IQuery>>();
 	private final Map<String, Class<? extends ICommand>> exposedCommands = new HashMap<String, Class<? extends ICommand>>();
 	private IQueryServicesLocator queryServicesLocator;
-	private ICommandHandlersLocator commandHandlersLocator;
+	private IDomainLocator domainLocator;
 	private IPlatform platform;
 
 	public HttpPublisher() {
@@ -60,8 +60,7 @@ public final class HttpPublisher extends HttpServlet {
 		platform = checkNotNull(ctx.getBean(IPlatform.class));
 		queryServicesLocator = checkNotNull(ctx
 				.getBean(IQueryServicesLocator.class));
-		commandHandlersLocator = checkNotNull(ctx
-				.getBean(ICommandHandlersLocator.class));
+		domainLocator = checkNotNull(ctx.getBean(IDomainLocator.class));
 
 		// expose all registered queries and commands
 		for (IQueryService<? extends IQuery, ? extends IQueryDTO> queryService : queryServicesLocator
@@ -69,7 +68,7 @@ public final class HttpPublisher extends HttpServlet {
 			expose(queryService);
 		}
 
-		for (ICommandHandler<? extends ICommand> handler : commandHandlersLocator
+		for (ICommandHandler<? extends ICommand> handler : domainLocator
 				.getHandlers()) {
 			expose(handler);
 		}
@@ -130,8 +129,7 @@ public final class HttpPublisher extends HttpServlet {
 
 			ObjectReader reader = ObjectMapperProvider.instance.objectReader();
 			// parse the input stream to that command
-			parser = reader.getJsonFactory().createJsonParser(
-					req.getInputStream());
+			parser = reader.getFactory().createJsonParser(req.getInputStream());
 			ICommand command = reader.readValue(parser, commandClass);
 
 			// FIXME 1 use context from request
@@ -178,10 +176,18 @@ public final class HttpPublisher extends HttpServlet {
 	 * Will try to send an error by setting the right http status and writing a
 	 * json response in the body. If it fails there will be no json body.
 	 */
+	/*
+	 * we need to use setStatus because sendError commits the response,
+	 * preventing us from writing the respone as json it also forces response to
+	 * text/html.
+	 */
+	@SuppressWarnings("deprecation")
 	private void sendJsonError(HttpServletResponse response, int status,
 			String reason) throws JsonGenerationException,
 			JsonMappingException, IOException {
+		// set an error status and a message
 		response.setStatus(status, reason);
+		// write also into the body the result as json
 		ObjectMapperProvider.instance.objectWriter().writeValue(
 				response.getOutputStream(),
 				new KasperErrorCommandResult(reason));
@@ -194,7 +200,8 @@ public final class HttpPublisher extends HttpServlet {
 
 		try {
 			// try writing the response
-			reader.getJsonFactory().createJsonGenerator(resp.getOutputStream());
+			generator = reader.getFactory().createJsonGenerator(
+					resp.getOutputStream());
 			ObjectMapperProvider.instance.objectWriter().writeValue(generator,
 					result);
 			/*
@@ -218,18 +225,8 @@ public final class HttpPublisher extends HttpServlet {
 			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
 					"An error occured during the generation of the response.");
 		} finally {
-			/*
-			 * FIXME if ioexception here should we still send a json response?
-			 * Is it even possible if jackson already has written a part of it
-			 * and flushed?
-			 */
 			if (generator != null) {
 				generator.flush();
-				/*
-				 * FIXME check if jackson is closing the underlying
-				 * outputstream, we still must close it inorder to allow Jackson
-				 * to recycle its buffers
-				 */
 				generator.close();
 			}
 		}

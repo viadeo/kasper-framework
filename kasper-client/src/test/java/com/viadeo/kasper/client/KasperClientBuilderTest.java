@@ -11,8 +11,9 @@ import java.util.Date;
 import org.junit.Test;
 import static org.junit.Assert.*;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.client.lib.ITypeAdapter;
-import com.viadeo.kasper.client.lib.QueryBuilder;
+import com.viadeo.kasper.query.exposition.ITypeAdapter;
+import com.viadeo.kasper.query.exposition.QueryBuilder;
+import com.viadeo.kasper.query.exposition.QueryParser;
 
 public class KasperClientBuilderTest {
 
@@ -21,6 +22,11 @@ public class KasperClientBuilderTest {
         final ITypeAdapter<Date> expected = new ITypeAdapter<Date>() {
             public void adapt(final Date value, final QueryBuilder builder) {
                 // Empty
+            }
+            
+            @Override
+            public Date adapt(QueryParser parser) {
+            	return null;
             }
         };
         

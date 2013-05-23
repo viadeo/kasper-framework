@@ -5,7 +5,7 @@
 // Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper.client.lib;
+package com.viadeo.kasper.query.exposition;
 
 /**
  * A type adapter allows to define how to build a query for a particular type of objects.
@@ -37,5 +37,7 @@ package com.viadeo.kasper.client.lib;
  */
 public interface ITypeAdapter<T> {
 
-    void adapt(T value, QueryBuilder builder);
+    void adapt(final T value, final QueryBuilder builder);
+    
+    T adapt(final QueryParser parser);
 }

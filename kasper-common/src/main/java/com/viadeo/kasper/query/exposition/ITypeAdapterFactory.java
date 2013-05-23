@@ -5,7 +5,7 @@
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper.client.lib;
+package com.viadeo.kasper.query.exposition;
 
 import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
