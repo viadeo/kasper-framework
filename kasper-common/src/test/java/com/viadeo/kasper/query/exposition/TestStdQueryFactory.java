@@ -5,7 +5,7 @@
 // Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper.client;
+package com.viadeo.kasper.query.exposition;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -25,15 +25,15 @@ import org.junit.Test;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.client.lib.DefaultTypeAdapters;
-import com.viadeo.kasper.client.lib.IQueryFactory;
-import com.viadeo.kasper.client.lib.ITypeAdapter;
-import com.viadeo.kasper.client.lib.ITypeAdapterFactory;
-import com.viadeo.kasper.client.lib.NullSafeTypeAdapter;
-import com.viadeo.kasper.client.lib.QueryBuilder;
-import com.viadeo.kasper.client.lib.StdQueryFactory;
-import com.viadeo.kasper.client.lib.VisibilityFilter;
 import com.viadeo.kasper.cqrs.query.IQuery;
+import com.viadeo.kasper.query.exposition.DefaultTypeAdapters;
+import com.viadeo.kasper.query.exposition.IQueryFactory;
+import com.viadeo.kasper.query.exposition.ITypeAdapter;
+import com.viadeo.kasper.query.exposition.ITypeAdapterFactory;
+import com.viadeo.kasper.query.exposition.NullSafeTypeAdapter;
+import com.viadeo.kasper.query.exposition.QueryBuilder;
+import com.viadeo.kasper.query.exposition.StdQueryFactory;
+import com.viadeo.kasper.query.exposition.VisibilityFilter;
 
 public class TestStdQueryFactory {
 
@@ -41,11 +41,15 @@ public class TestStdQueryFactory {
 
     // ------------------------------------------------------------------------
 
-    class SomeQuery implements IQuery {
+    public static class SomeQuery implements IQuery {
         private static final long serialVersionUID = -6763165103363988454L;
 
         public int getDummy() {
             return 1;
+        }
+        
+        public void setDummy(int dummyInt) {
+        	
         }
     }
 
@@ -91,7 +95,7 @@ public class TestStdQueryFactory {
     public void testBeanQueryAdapterOutputWithPrimitiveIntAdapter() {
         // Given
         final ITypeAdapter<SomeQuery> adapter = new StdQueryFactory(
-                ImmutableMap.<Type, ITypeAdapter<?>> of(int.class, DefaultTypeAdapters.NUMBER_ADAPTER),
+                ImmutableMap.<Type, ITypeAdapter<?>> of(int.class, DefaultTypeAdapters.INT_ADAPTER),
                 new ArrayList<ITypeAdapterFactory<?>>(),
                 VisibilityFilter.PACKAGE_PUBLIC).create(TypeToken.of(SomeQuery.class));
 
@@ -156,6 +160,11 @@ public class TestStdQueryFactory {
                             builder.end();
                         }
                     }
+                    
+                    @Override
+                    public Map<String, List<DateTime>> adapt(QueryParser parser) {
+                    	return null;
+                    }
                 };
                 return Optional.of(adapter);
             }
@@ -193,10 +202,15 @@ public class TestStdQueryFactory {
                 }
                 builder.addSingle("foo", "bar");
             }
+            
+            @Override
+            public SomeQuery adapt(QueryParser parser) {
+            	return null;
+            }
         };
     }
 
-    class QueryWithMap implements IQuery {
+    public static class QueryWithMap implements IQuery {
         private static final long serialVersionUID = 1914912257262499643L;
         private final Map<String, List<DateTime>> mapOfDateTime;
 
@@ -209,7 +223,7 @@ public class TestStdQueryFactory {
         }
     }
 
-    class QueryOfDateTimeCollection implements IQuery {
+    public static class QueryOfDateTimeCollection implements IQuery {
         private static final long serialVersionUID = -6933354147082294343L;
 
         private final List<DateTime> listOfDateTime;

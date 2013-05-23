@@ -99,7 +99,7 @@ public class KasperClientCommandTest extends JerseyTest {
         public void setStatus(final Status status) {
             this.status = status;
         }
-    }    
+    }
     
     @BeforeClass public static void init() throws IOException {
         ServerSocket socket = new ServerSocket(0);
@@ -132,7 +132,7 @@ public class KasperClientCommandTest extends JerseyTest {
     
     //-------------------------------------------------------------------------
     
-    public KasperClientCommandTest() throws MalformedURLException {
+    public KasperClientCommandTest() throws IOException {
         super(new LowLevelAppDescriptor.Builder(new TestConfiguration()).contextPath("/kasper/command").build());
         client = new KasperClientBuilder()
                 .commandBaseLocation(new URL("http://localhost:"+port+"/kasper/command/"))

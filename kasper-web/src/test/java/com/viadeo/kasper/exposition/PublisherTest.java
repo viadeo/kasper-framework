@@ -6,11 +6,10 @@ import java.net.URL;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
-import org.eclipse.jetty.testing.HttpTester;
-import org.eclipse.jetty.testing.ServletTester;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
 import org.springframework.web.context.ContextLoaderListener;
 
 import com.viadeo.kasper.client.KasperClient;
@@ -24,21 +23,21 @@ import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
 import com.viadeo.kasper.ddd.impl.AbstractDomain;
 import com.viadeo.kasper.event.exceptions.KasperEventException;
 import com.viadeo.kasper.platform.web.KasperPlatformBootListener;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
 
 public class PublisherTest {
-	private ServletTester tester;
-	private HttpTester request;
 	private Server server;
 	private int port;
+	private KasperClient cli;
 
 	@Before
 	public void setUp() throws Exception {
 		server = new Server(0);
-		ServletContextHandler servletContext = new ServletContextHandler();
+		final ServletContextHandler servletContext = new ServletContextHandler();
 		servletContext.setContextPath("/");
 		server.setHandler(servletContext);
 
+		// ugly again :/ hard to test, hard to register a commandhandler for
+		// testing purpose etc...
 		servletContext.setInitParameter("contextConfigLocation",
 				"classpath:spring/kasper/spring-kasper-platform.xml");
 		servletContext.addEventListener(new ContextLoaderListener());
@@ -48,6 +47,9 @@ public class PublisherTest {
 
 		server.start();
 		port = server.getConnectors()[0].getLocalPort();
+
+		cli = new KasperClientBuilder().commandBaseLocation(
+				new URL("http://localhost:" + port + "/rootpath/")).create();
 	}
 
 	@After
@@ -57,31 +59,35 @@ public class PublisherTest {
 
 	@Test
 	public void testCommandNotFound() throws Exception {
-		KasperClient cli = new KasperClientBuilder().commandBaseLocation(
-				new URL("http://localhost:" + port + "/rootpath/DoesNotExist"))
-				.create();
+		// Given an unknown command
 		@SuppressWarnings("serial")
-		ICommandResult result = cli.send(new ICommand() {});
-		System.out.println("============\n"+result);
+		final ICommand unknownCommand = new ICommand() {
+		};
+
+		// When
+		final ICommandResult result = cli.send(unknownCommand);
+
+		// Then
+		assertEquals(Status.ERROR, result.getStatus());
+		assertNotNull(result.asError().getErrorMessage().orNull());
 	}
 
-//	@Test
+	@Test
 	public void testSuccessfulCommand() throws IOException, Exception {
-		// given valid input
-		HttpTester response = new HttpTester();
-		CreateAccountCommand command = new CreateAccountCommand();
+		// Given valid input
+		final CreateAccountCommand command = new CreateAccountCommand();
 		command.name = "foo bar";
-		String jsonRequest = ObjectMapperProvider.instance.objectWriter()
-				.writeValueAsString(command);
-		request.setContent(jsonRequest);
 
-		// when
-		System.out.println(response.parse(tester.getResponses(request
-				.generate())));
-		System.out.println(response.getContent());
+		// When
+		final ICommandResult result = cli.send(command);
+
+		// Then
+		assertEquals(Status.OK, result.getStatus());
+		assertEquals(command.name,
+				CreateAccountCommandHandler.createAccountCommandName);
 	}
 
-	static class CreateAccountCommand implements ICommand {
+	public static class CreateAccountCommand implements ICommand {
 		private static final long serialVersionUID = 674842094873929150L;
 		private String name;
 
@@ -95,16 +101,19 @@ public class PublisherTest {
 	}
 
 	@XKasperCommandHandler(domain = AccountDomain.class)
-	static class CreateAccountCommandHandler extends
+	public static class CreateAccountCommandHandler extends
 			AbstractCommandHandler<CreateAccountCommand> {
+		static String createAccountCommandName = null;
+
 		@Override
 		public ICommandResult handle(CreateAccountCommand command)
 				throws KasperEventException {
+			createAccountCommandName = command.getName();
 			return new KasperCommandResult(Status.OK);
 		}
 	}
 
-	static class AccountDomain extends AbstractDomain {
+	public static class AccountDomain extends AbstractDomain {
 
 	}
 }

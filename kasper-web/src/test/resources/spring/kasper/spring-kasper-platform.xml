@@ -32,7 +32,7 @@
     <!--  Kasper locators -->
     <bean id="domainLocator" class="com.viadeo.kasper.locators.impl.DomainLocatorBase"/>
     <bean id="queryServicesLocator" class="com.viadeo.kasper.locators.impl.QueryServicesLocatorBase"/>
-
+    
     <!--  Kasper annotation processors -->
     <bean id="commandHandlersProcessor" class="com.viadeo.kasper.core.boot.CommandHandlersProcessor">
         <property name="commandBus" ref="commandBus"/>
@@ -56,7 +56,9 @@
         <property name="domainLocator" ref="domainLocator"/>
     </bean>
 
-    <bean id="rootProcessor" class="com.viadeo.kasper.core.boot.AnnotationRootProcessor"/>
+    <bean id="rootProcessor" class="com.viadeo.kasper.core.boot.AnnotationRootProcessor" >
+    	<property name="scanPrefixes" value="com.viadeo.kasper.exposition"/>
+    </bean>
 
     <!--  Kasper platform beans -->
 
