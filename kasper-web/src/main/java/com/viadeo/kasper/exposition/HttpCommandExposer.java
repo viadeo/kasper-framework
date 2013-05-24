@@ -6,6 +6,21 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.beans.Introspector;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.context.WebApplicationContext;
+
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -257,7 +272,7 @@ public class HttpCommandExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 	
 	private String commandToPath(final Class<? super ICommand> exposedCommand) {
-		return exposedCommand.getSimpleName().replaceAll("Command", "");
+		return Introspector.decapitalize(exposedCommand.getSimpleName().replaceAll("Command", ""));
 	}
 
 }

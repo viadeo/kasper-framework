@@ -6,6 +6,24 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
+import java.beans.Introspector;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.web.context.WebApplicationContext;
+
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Maps;
@@ -252,7 +270,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
 	private String queryToPath(final Class<? super IQuery> exposedQuery) {
-		return exposedQuery.getSimpleName().replaceAll("Query", "");
+		return Introspector.decapitalize(exposedQuery.getSimpleName().replaceAll("Query", ""));
 	}
 
 }
