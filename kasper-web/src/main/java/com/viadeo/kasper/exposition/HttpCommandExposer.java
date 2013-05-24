@@ -84,7 +84,7 @@ public class HttpCommandExposer extends HttpExposer {
 		Class<? extends ICommand> commandClass = exposedCommands
 				.get(commandName);
 		if (commandClass == null) {
-			sendJsonError(resp, HttpServletResponse.SC_NOT_FOUND, "Command["
+			sendError(resp, HttpServletResponse.SC_NOT_FOUND, "Command["
 					+ commandName + "] not found.");
 			return;
 		}
@@ -95,7 +95,7 @@ public class HttpCommandExposer extends HttpExposer {
 
 		try {
 			if (!req.getContentType().startsWith("application/json")) {
-				sendJsonError(resp,
+				sendError(resp,
 						HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
 						"Accepting and producing only application/json");
 				return;
@@ -196,7 +196,7 @@ public class HttpCommandExposer extends HttpExposer {
 	 * text/html.
 	 */
 	@SuppressWarnings("deprecation")
-	protected void sendJsonError(HttpServletResponse response, int status,
+	protected void sendError(HttpServletResponse response, int status,
 			String reason) throws JsonGenerationException,
 			JsonMappingException, IOException {
 		LOGGER.error(reason);

@@ -15,6 +15,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 
+import static com.viadeo.kasper.query.exposition.NullSafeTypeAdapter.nullSafe;
+
 public class QueryFactoryBuilder {
 	private ConcurrentMap<Type, ITypeAdapter<?>> adapters = Maps
 			.newConcurrentMap();
@@ -29,7 +31,8 @@ public class QueryFactoryBuilder {
 		TypeToken<?> adapterForType = TypeToken.of(adapter.getClass())
 				.getSupertype(ITypeAdapter.class)
 				.resolveType(ITypeAdapter.class.getTypeParameters()[0]);
-		adapters.put(adapterForType.getType(), (ITypeAdapter<Object>) adapter);
+		adapters.put(adapterForType.getType(), new NullSafeTypeAdapter<Object>(
+				(ITypeAdapter<Object>) adapter));
 		return this;
 	}
 
@@ -47,23 +50,22 @@ public class QueryFactoryBuilder {
 		for (ITypeAdapter<?> adapter : loadDeclaredAdapters())
 			use(adapter);
 
-		adapters.putIfAbsent(int.class, DefaultTypeAdapters.INT_ADAPTER);
-		adapters.putIfAbsent(Integer.class, DefaultTypeAdapters.INT_ADAPTER);
-		adapters.putIfAbsent(long.class, DefaultTypeAdapters.Long_ADAPTER);
-		adapters.putIfAbsent(Long.class, DefaultTypeAdapters.Long_ADAPTER);
-		adapters.putIfAbsent(double.class, DefaultTypeAdapters.DOUBLE_ADAPTER);
-		adapters.putIfAbsent(Double.class, DefaultTypeAdapters.DOUBLE_ADAPTER);
-		adapters.putIfAbsent(float.class, DefaultTypeAdapters.FLOAT_ADAPTER);
-		adapters.putIfAbsent(Float.class, DefaultTypeAdapters.FLOAT_ADAPTER);
-		adapters.putIfAbsent(short.class, DefaultTypeAdapters.SHORT_ADAPTER);
-		adapters.putIfAbsent(Short.class, DefaultTypeAdapters.SHORT_ADAPTER);
-
-		adapters.putIfAbsent(String.class, DefaultTypeAdapters.STRING_ADAPTER);
-		adapters.putIfAbsent(Boolean.class, DefaultTypeAdapters.BOOLEAN_ADAPTER);
-		adapters.putIfAbsent(boolean.class, DefaultTypeAdapters.BOOLEAN_ADAPTER);
-		adapters.putIfAbsent(Date.class, DefaultTypeAdapters.DATE_ADAPTER);
-		adapters.putIfAbsent(DateTime.class,
-				DefaultTypeAdapters.DATETIME_ADAPTER);
+		adapters.putIfAbsent(int.class, nullSafe(DefaultTypeAdapters.INT_ADAPTER));
+		adapters.putIfAbsent(Integer.class, nullSafe(DefaultTypeAdapters.INT_ADAPTER));
+		adapters.putIfAbsent(long.class, nullSafe(DefaultTypeAdapters.Long_ADAPTER));
+		adapters.putIfAbsent(Long.class, nullSafe(DefaultTypeAdapters.Long_ADAPTER));
+		adapters.putIfAbsent(double.class, nullSafe(DefaultTypeAdapters.DOUBLE_ADAPTER));
+		adapters.putIfAbsent(Double.class, nullSafe(DefaultTypeAdapters.DOUBLE_ADAPTER));
+		adapters.putIfAbsent(float.class, nullSafe(DefaultTypeAdapters.FLOAT_ADAPTER));
+		adapters.putIfAbsent(Float.class, nullSafe(DefaultTypeAdapters.FLOAT_ADAPTER));
+		adapters.putIfAbsent(short.class, nullSafe(DefaultTypeAdapters.SHORT_ADAPTER));
+		adapters.putIfAbsent(Short.class, nullSafe(DefaultTypeAdapters.SHORT_ADAPTER));
+		
+		adapters.putIfAbsent(String.class, nullSafe(DefaultTypeAdapters.STRING_ADAPTER));
+		adapters.putIfAbsent(Boolean.class, nullSafe(DefaultTypeAdapters.BOOLEAN_ADAPTER));
+		adapters.putIfAbsent(boolean.class, nullSafe(DefaultTypeAdapters.BOOLEAN_ADAPTER));
+		adapters.putIfAbsent(Date.class, nullSafe(DefaultTypeAdapters.DATE_ADAPTER));
+		adapters.putIfAbsent(DateTime.class, nullSafe(DefaultTypeAdapters.DATETIME_ADAPTER));
 
 		factories.add(DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY);
 		factories.add(DefaultTypeAdapters.ARRAY_ADAPTER_FACTORY);
@@ -75,16 +77,17 @@ public class QueryFactoryBuilder {
 	@SuppressWarnings("rawtypes")
 	@VisibleForTesting
 	List<ITypeAdapter> loadDeclaredAdapters() {
-		ServiceLoader<ITypeAdapter> serviceLoader = ServiceLoader
-				.load(ITypeAdapter.class, ITypeAdapter.class.getClassLoader());
+		ServiceLoader<ITypeAdapter> serviceLoader = ServiceLoader.load(
+				ITypeAdapter.class, ITypeAdapter.class.getClassLoader());
 		return Lists.newArrayList(serviceLoader.iterator());
 	}
 
 	@SuppressWarnings("rawtypes")
 	@VisibleForTesting
 	List<ITypeAdapterFactory> loadDeclaredTypeAdapterFactory() {
-		ServiceLoader<ITypeAdapterFactory> serviceLoader = ServiceLoader
-				.load(ITypeAdapterFactory.class, ITypeAdapterFactory.class.getClassLoader());
+		ServiceLoader<ITypeAdapterFactory> serviceLoader = ServiceLoader.load(
+				ITypeAdapterFactory.class,
+				ITypeAdapterFactory.class.getClassLoader());
 		return Lists.newArrayList(serviceLoader.iterator());
 	}
 }
