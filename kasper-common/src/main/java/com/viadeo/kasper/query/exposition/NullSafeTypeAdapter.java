@@ -19,18 +19,27 @@ public class NullSafeTypeAdapter<T> implements ITypeAdapter<T> {
 		this.decoratedAdapter = decoratedAdapter;
 	}
 
+	public static <T> NullSafeTypeAdapter<T> nullSafe(ITypeAdapter<T> adapter) {
+		return new NullSafeTypeAdapter<T>(adapter);
+	}
+
 	@Override
 	public void adapt(final T value, final QueryBuilder builder) {
 		if (null != value) {
 			decoratedAdapter.adapt(value, builder);
-		}
+		} else
+			builder.singleNull();
 	}
 
 	@Override
 	public T adapt(QueryParser parser) {
-		if (parser.hasNext())
-			return decoratedAdapter.adapt(parser);
-		else
-			return null;
+		// FIXME I am not sure it is ok, null safe should also ensure people
+		// dont have to deal with pairs that have a key but no value, actually
+		// their adapt method would still be called...
+		return decoratedAdapter.adapt(parser);
+	}
+	
+	public ITypeAdapter<T> unwrap() {
+		return decoratedAdapter;
 	}
 }

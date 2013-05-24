@@ -64,7 +64,7 @@ public class TestStdQueryFactory {
 
     @Test
     public void testSkipNull() {
-        new NullSafeTypeAdapter<SomeQuery>(create()).adapt(null, null);
+        new NullSafeTypeAdapter<SomeQuery>(create()).adapt(null, new QueryBuilder());
     }
 
     @Test(expected = IllegalArgumentException.class)

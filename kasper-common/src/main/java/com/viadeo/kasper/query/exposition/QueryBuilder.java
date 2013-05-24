@@ -15,6 +15,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
 
+import static com.google.common.base.Preconditions.*;
+
 /**
  * Low level class allowing to build a query.
  * Suppose you want to have the following parameters into a query :
@@ -77,6 +79,7 @@ public class QueryBuilder {
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder begin(final String name) {
+    	checkNotNull(name);
         if (has(name)) {
             throwDuplicate(name);
         }
@@ -110,7 +113,9 @@ public class QueryBuilder {
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder addSingle(final String name, final String value) {
-        if (has(name)) {
+    	checkNotNull(name);
+    	checkNotNull(value);
+    	if (has(name)) {
             throwDuplicate(name);
         }
         map.putSingle(name, value);
@@ -122,6 +127,8 @@ public class QueryBuilder {
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder addSingle(final String name, final Number value) {
+    	checkNotNull(name);
+    	checkNotNull(value);
         if (has(name)) {
             throwDuplicate(name);
         }
@@ -129,11 +136,19 @@ public class QueryBuilder {
         return this;
     }
 
+    public QueryBuilder singleNull() {
+    	// lets just forbid nulls for the moment by removing them
+    	map.remove(actualName);
+    	return this;
+    }
+    
     /**
      * Writes a single pair name/value.
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder addSingle(final String name, final Boolean value) {
+    	checkNotNull(name);
+    	checkNotNull(value);
         if (has(name)) {
             throwDuplicate(name);
         }
@@ -146,6 +161,7 @@ public class QueryBuilder {
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder add(final Number value) {
+    	checkNotNull(value);
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
@@ -158,6 +174,7 @@ public class QueryBuilder {
      * @throws IllegalStateException if begin(name) was not called.
      */
     public QueryBuilder add(final Boolean value) {
+    	checkNotNull(value);
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
@@ -170,6 +187,7 @@ public class QueryBuilder {
      * @throws IllegalStateException if begin(name) was not called.
      */
     public QueryBuilder add(final String value) {
+    	checkNotNull(value);
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
@@ -182,6 +200,7 @@ public class QueryBuilder {
      * @throws IllegalStateException if begin(name) was not called.
      */
     public QueryBuilder add(final String... values) {
+    	checkNotNull(values);
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }

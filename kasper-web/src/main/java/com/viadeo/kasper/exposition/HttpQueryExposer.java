@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.context.WebApplicationContext;
 
+import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
@@ -57,7 +58,6 @@ public class HttpQueryExposer extends HttpExposer {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	// again can not use sendError
 	@Override
 	protected void doGet(final HttpServletRequest req,
@@ -88,17 +88,16 @@ public class HttpQueryExposer extends HttpExposer {
 				sendDTO(queryName, dto, resp);
 			}
 		} catch (Throwable t) {
-			LOGGER.error("Could not handle query[" + req.getRequestURI()
-					+ "] and parameters[" + req.getQueryString() + "]", t);
-			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-					"" + t.getMessage());
+			sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					"Could not handle query[" + req.getRequestURI()
+							+ "] and parameters[" + req.getQueryString() + "]",
+					resp, t);
 
 		}
 
 		resp.flushBuffer();
 	}
 
-	@SuppressWarnings("deprecation")
 	// we can not use send error as it will send text/html response.
 	protected IQuery parseQuery(final String queryName,
 			final HttpServletRequest req, final HttpServletResponse resp)
@@ -109,8 +108,8 @@ public class HttpQueryExposer extends HttpExposer {
 				.get(queryName);
 
 		if (queryClass == null) {
-			resp.setStatus(HttpServletResponse.SC_NOT_FOUND, "No such query["
-					+ queryName + "].");
+			sendError(HttpServletResponse.SC_NOT_FOUND, "No such query["
+					+ queryName + "].", resp, null);
 		} else {
 			final ITypeAdapter<? extends IQuery> adapter = queryAdapterFactory
 					.create(TypeToken.of(queryClass));
@@ -128,22 +127,21 @@ public class HttpQueryExposer extends HttpExposer {
 			try {
 				query = adapter.adapt(new QueryParser(queryParams));
 			} catch (Throwable t) {
-				String message = "Unable to parse Query[" + queryName
-						+ "] and parameters [" + req.getQueryString() + "].";
 				// OK lets catch any exception that could occur during
 				// deserialization and try to send back
-				LOGGER.error(message, t);
-				resp.setStatus(HttpServletResponse.SC_BAD_REQUEST, message);
+				sendError(HttpServletResponse.SC_BAD_REQUEST,
+						"Unable to parse Query[" + queryName
+								+ "] and parameters [" + req.getQueryString()
+								+ "].", resp, t);
 			}
 		}
 
 		return query;
 	}
 
-	@SuppressWarnings("deprecation")
 	// can not use sendError it is forcing response to text/html
 	protected IQueryDTO handleQuery(String queryName, IQuery query,
-			HttpServletResponse resp) {
+			HttpServletResponse resp) throws IOException {
 		IQueryDTO dto = null;
 		try {
 			// checking if the response has not been sent, if it is true this
@@ -153,30 +151,52 @@ public class HttpQueryExposer extends HttpExposer {
 		} catch (Throwable e) {
 			// it is ok to eat all kind of exceptions as they occur at parsing
 			// level so we know what approximatively failed.
-			String message = "ERROR Submiting query[" + queryName
-					+ "] to Kasper platform.";
-			LOGGER.error(message, e);
-			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-					message);
+			sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					"ERROR Submiting query[" + queryName
+							+ "] to Kasper platform.", resp, e);
 		}
 		return dto;
 	}
 
-	@SuppressWarnings("deprecation")
 	// can not use sendError it is forcing response to text/html
 	protected void sendDTO(String queryName, IQueryDTO dto,
-			HttpServletResponse resp) {
+			HttpServletResponse resp) throws IOException {
+		ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
 		try {
-			ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
 			writer.writeValue(resp.getOutputStream(), dto);
+			resp.setStatus(HttpServletResponse.SC_OK);
 		} catch (Throwable t) {
-			String message = "ERROR sending DTO["
-					+ dto.getClass().getSimpleName() + "] for query["
-					+ queryName + "].";
-			LOGGER.error(message, t);
-			resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-					message);
+			sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+					"ERROR sending DTO[" + dto.getClass().getSimpleName()
+							+ "] for query[" + queryName + "].", resp, t);
 		}
+	}
+
+	@SuppressWarnings("deprecation")
+	private void sendError(int status, String message,
+			HttpServletResponse resp, Throwable exception) throws IOException {
+		if (exception != null)
+			LOGGER.error(message, exception);
+		else
+			LOGGER.error(message);
+
+		resp.setStatus(status, message);
+
+		ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
+		JsonGenerator generator = writer.getJsonFactory().createGenerator(
+				resp.getOutputStream());
+
+		try {
+			generator.writeStartObject();
+			// FIXME for the moment lets just put the minimum here
+			generator.writeNumberField("code", status);
+			generator.writeStringField("reason", message);
+			generator.writeEndObject();
+		} finally {
+			generator.close();
+		}
+
+		resp.flushBuffer();
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -195,10 +215,5 @@ public class HttpQueryExposer extends HttpExposer {
 
 	private String queryToPath(final Class<? super IQuery> exposedQuery) {
 		return exposedQuery.getSimpleName().replaceAll("Query", "");
-	}
-
-	void setQueryServicesLocator(
-			final IQueryServicesLocator queryServicesLocator) {
-		this.queryServicesLocator = queryServicesLocator;
 	}
 }

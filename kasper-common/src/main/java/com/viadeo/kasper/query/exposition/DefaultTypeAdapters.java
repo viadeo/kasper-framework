@@ -155,9 +155,10 @@ public final class DefaultTypeAdapters {
 				final ITypeAdapter<?> elementAdapter = adapterFactory
 						.create(TypeToken.of(rawClass.getComponentType()));
 
-				@SuppressWarnings({ "unchecked", "rawtypes" })
+				@SuppressWarnings({ "unchecked" })
 				final ITypeAdapter<Object> adapter = new ArrayAdapter(
-						elementAdapter, rawClass.getComponentType());
+						(ITypeAdapter<Object>) elementAdapter,
+						rawClass.getComponentType());
 				return Optional.fromNullable(adapter);
 			}
 
@@ -167,25 +168,27 @@ public final class DefaultTypeAdapters {
 
 	// --
 
-	public static final class ArrayAdapter<C> implements ITypeAdapter<C[]> {
-		private final ITypeAdapter<C> componentAdapter;
-		private final Class<C> componentClass;
+	public static final class ArrayAdapter implements ITypeAdapter<Object> {
+		private final ITypeAdapter<Object> componentAdapter;
+		private final Class<?> componentClass;
 
-		public ArrayAdapter(final ITypeAdapter<C> componentAdapter,
-				final Class<C> componentClass) {
+		public ArrayAdapter(final ITypeAdapter<Object> componentAdapter,
+				final Class<?> componentClass) {
 			this.componentAdapter = componentAdapter;
 			this.componentClass = componentClass;
 		}
 
 		@Override
-		public void adapt(final C[] value, final QueryBuilder builder) {
-			for (final C component : value) {
-				componentAdapter.adapt(component, builder);
+		public void adapt(final Object array, final QueryBuilder builder) {
+			int len = Array.getLength(array);
+			for (int i = 0; i < len; i++) {
+				Object element = Array.get(array, i);
+				componentAdapter.adapt(element, builder);
 			}
 		}
 
 		@Override
-		public C[] adapt(QueryParser parser) {
+		public Object adapt(QueryParser parser) {
 			int size = 10;
 			Object array = Array.newInstance(componentClass, size);
 			int idx = 0;
@@ -199,7 +202,7 @@ public final class DefaultTypeAdapters {
 			if (idx < size) {
 				array = expandArray(array, idx, idx);
 			}
-			return null;
+			return array;
 		}
 
 		private Object expandArray(Object array, int len, int size) {
