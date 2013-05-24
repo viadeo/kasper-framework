@@ -109,7 +109,7 @@ public class KasperClientCommandTest extends JerseyTest {
     
     @Path(value = "/")
     public static class DummyResource {
-        @Path("/CreateMember")
+        @Path("/createMember")
         @PUT
         @Produces(MediaType.APPLICATION_JSON)
         @Consumes(MediaType.APPLICATION_JSON)

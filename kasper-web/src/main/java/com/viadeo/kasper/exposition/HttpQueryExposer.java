@@ -116,8 +116,7 @@ public class HttpQueryExposer extends HttpExposer {
 
 			final Map<String, List<String>> queryParams = new HashMap<String, List<String>>();
 
-			for (@SuppressWarnings("unchecked")
-			final Enumeration<String> keys = req.getParameterNames(); keys
+			for (final Enumeration<String> keys = req.getParameterNames(); keys
 					.hasMoreElements();) {
 				final String key = keys.nextElement();
 				queryParams

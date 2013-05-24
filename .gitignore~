@@ -10,7 +10,11 @@
 .DS_Store
 .idea/
 **/.svn
+<<<<<<< HEAD
 .pmd
+=======
+=======
+>>>>>>> 6e1ed4471229228230497e02473a807fafaed952
 **/.pmd
 **/**/.pmd
 .metadata
