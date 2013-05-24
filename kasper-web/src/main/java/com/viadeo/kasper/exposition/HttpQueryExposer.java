@@ -2,6 +2,7 @@ package com.viadeo.kasper.exposition;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.beans.Introspector;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Enumeration;
@@ -213,6 +214,6 @@ public class HttpQueryExposer extends HttpExposer {
 	}
 
 	private String queryToPath(final Class<? super IQuery> exposedQuery) {
-		return exposedQuery.getSimpleName().replaceAll("Query", "");
+		return Introspector.decapitalize(exposedQuery.getSimpleName().replaceAll("Query", ""));
 	}
 }

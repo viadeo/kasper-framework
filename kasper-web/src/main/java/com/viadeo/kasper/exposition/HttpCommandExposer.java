@@ -2,6 +2,7 @@ package com.viadeo.kasper.exposition;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.beans.Introspector;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -222,6 +223,6 @@ public class HttpCommandExposer extends HttpExposer {
 	}
 	
 	private String commandToPath(final Class<? super ICommand> exposedCommand) {
-		return exposedCommand.getSimpleName().replaceAll("Command", "");
+		return Introspector.decapitalize(exposedCommand.getSimpleName().replaceAll("Command", ""));
 	}
 }
