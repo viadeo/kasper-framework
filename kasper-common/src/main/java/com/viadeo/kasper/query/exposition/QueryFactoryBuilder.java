@@ -1,6 +1,16 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.query.exposition;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.reflect.TypeToken;
+import org.joda.time.DateTime;
 
 import java.lang.reflect.Type;
 import java.util.Date;
@@ -8,18 +18,11 @@ import java.util.List;
 import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentMap;
 
-import org.joda.time.DateTime;
-
-import com.google.common.annotations.VisibleForTesting;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.reflect.TypeToken;
-
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.query.exposition.NullSafeTypeAdapter.nullSafe;
 
 public class QueryFactoryBuilder {
-	private ConcurrentMap<Type, ITypeAdapter<?>> adapters = Maps
-			.newConcurrentMap();
+	private ConcurrentMap<Type, ITypeAdapter<?>> adapters = Maps.newConcurrentMap();
 	private List<ITypeAdapterFactory<?>> factories = Lists.newArrayList();
 	private VisibilityFilter visibilityFilter = VisibilityFilter.PACKAGE_PUBLIC;
 
@@ -28,11 +31,14 @@ public class QueryFactoryBuilder {
 	@SuppressWarnings("unchecked")
 	public QueryFactoryBuilder use(final ITypeAdapter<?> adapter) {
 		checkNotNull(adapter);
-		TypeToken<?> adapterForType = TypeToken.of(adapter.getClass())
+
+		final TypeToken<?> adapterForType = TypeToken.of(adapter.getClass())
 				.getSupertype(ITypeAdapter.class)
 				.resolveType(ITypeAdapter.class.getTypeParameters()[0]);
-		adapters.put(adapterForType.getType(), new NullSafeTypeAdapter<Object>(
+
+		adapters.put(adapterForType.getType(), new NullSafeTypeAdapter<>(
 				(ITypeAdapter<Object>) adapter));
+
 		return this;
 	}
 
@@ -41,14 +47,15 @@ public class QueryFactoryBuilder {
 		return this;
 	}
 
-	public QueryFactoryBuilder include(VisibilityFilter visibility) {
+	public QueryFactoryBuilder include(final VisibilityFilter visibility) {
 		this.visibilityFilter = checkNotNull(visibility);
 		return this;
 	}
 
 	public IQueryFactory create() {
-		for (ITypeAdapter<?> adapter : loadDeclaredAdapters())
+		for (ITypeAdapter<?> adapter : loadDeclaredAdapters()) {
 			use(adapter);
+        }
 
 		adapters.putIfAbsent(int.class, nullSafe(DefaultTypeAdapters.INT_ADAPTER));
 		adapters.putIfAbsent(Integer.class, nullSafe(DefaultTypeAdapters.INT_ADAPTER));
@@ -77,7 +84,7 @@ public class QueryFactoryBuilder {
 	@SuppressWarnings("rawtypes")
 	@VisibleForTesting
 	List<ITypeAdapter> loadDeclaredAdapters() {
-		ServiceLoader<ITypeAdapter> serviceLoader = ServiceLoader.load(
+		final ServiceLoader<ITypeAdapter> serviceLoader = ServiceLoader.load(
 				ITypeAdapter.class, ITypeAdapter.class.getClassLoader());
 		return Lists.newArrayList(serviceLoader.iterator());
 	}
@@ -85,9 +92,11 @@ public class QueryFactoryBuilder {
 	@SuppressWarnings("rawtypes")
 	@VisibleForTesting
 	List<ITypeAdapterFactory> loadDeclaredTypeAdapterFactory() {
-		ServiceLoader<ITypeAdapterFactory> serviceLoader = ServiceLoader.load(
+		final ServiceLoader<ITypeAdapterFactory> serviceLoader = ServiceLoader.load(
 				ITypeAdapterFactory.class,
 				ITypeAdapterFactory.class.getClassLoader());
+
 		return Lists.newArrayList(serviceLoader.iterator());
 	}
+
 }

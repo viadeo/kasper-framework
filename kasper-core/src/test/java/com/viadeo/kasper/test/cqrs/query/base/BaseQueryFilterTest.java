@@ -1,17 +1,14 @@
 package com.viadeo.kasper.test.cqrs.query.base;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilterGroup.Operator;
 import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryFilter;
 import com.viadeo.kasper.test.cqrs.query.StubbedDQTOS.DQOTest;
+import junit.framework.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
 
-public class BaseQueryFilterTest extends TestCase {
+public class BaseQueryFilterTest {
 
 	@Test
 	public void testOperators() {

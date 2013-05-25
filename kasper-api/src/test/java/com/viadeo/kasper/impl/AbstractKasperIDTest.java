@@ -1,7 +1,6 @@
 package com.viadeo.kasper.impl;
 
 import junit.framework.TestCase;
-
 import org.junit.Test;
 
 public class AbstractKasperIDTest extends TestCase {

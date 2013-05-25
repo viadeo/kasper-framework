@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import java.io.Serializable;
-
 import com.viadeo.kasper.context.IContext;
+
+import java.io.Serializable;
 
 /**
  *

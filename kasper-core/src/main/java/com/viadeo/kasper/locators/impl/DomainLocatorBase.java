@@ -6,14 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.locators.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IDomain;
@@ -27,6 +19,8 @@ import com.viadeo.kasper.ddd.exception.KasperDomainRuntimeException;
 import com.viadeo.kasper.ddd.impl.AbstractDomain;
 import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+
+import java.util.*;
 
 /**
  * 
@@ -52,7 +46,7 @@ public class DomainLocatorBase implements IDomainLocator {
 		private static final long serialVersionUID = 4967890441255351599L;
 	}
 	
-	private final List<ICommandHandler<? extends ICommand>> handlers = new ArrayList<ICommandHandler<? extends ICommand>>();
+	private final List<ICommandHandler<? extends ICommand>> handlers = new ArrayList<>();
     
 
 	// ------------------------------------------------------------------------
@@ -200,7 +194,7 @@ public class DomainLocatorBase implements IDomainLocator {
 																// link
 		}
 
-		final Map<String, String> domainData = new HashMap<String, String>();
+		final Map<String, String> domainData = new HashMap<>();
 		domainData.put("prefix", prefix); // FIXME: string as static class prop
 		domainData.put("name", name); // FIXME: string as static class prop
 		this.domains.put(domain, domainData);

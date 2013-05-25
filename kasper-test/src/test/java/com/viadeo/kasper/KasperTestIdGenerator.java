@@ -2,8 +2,6 @@ package com.viadeo.kasper;
 
 import org.axonframework.domain.IdentifierFactory;
 
-import com.viadeo.kasper.IKasperID;
-
 public final class KasperTestIdGenerator {
 
 	private KasperTestIdGenerator() { /* singleton */ }

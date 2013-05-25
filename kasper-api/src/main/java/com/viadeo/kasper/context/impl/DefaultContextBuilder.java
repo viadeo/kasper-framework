@@ -6,12 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.context.impl;
 
-import java.util.UUID;
-
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.context.IContext;
 import com.viadeo.kasper.context.IDefaultContextBuilder;
 import com.viadeo.kasper.impl.AbstractKasperID;
+
+import java.util.UUID;
 
 /**
  *

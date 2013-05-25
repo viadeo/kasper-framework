@@ -7,11 +7,6 @@
 
 package com.viadeo.kasper.core.boot;
 
-import org.axonframework.commandhandling.CommandBus;
-import org.axonframework.commandhandling.CommandHandler;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.cqrs.command.ICommand;
@@ -21,6 +16,10 @@ import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
 import com.viadeo.kasper.exception.KasperRuntimeException;
 import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.commandhandling.CommandHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -99,7 +98,7 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
             
 			//- Dynamic type command class and command handler for Axon -------
 			final CommandCastor<ICommand> castor =
-					new CommandCastor<ICommand>(commandClass.get(), commandHandler);
+					new CommandCastor<>(commandClass.get(), commandHandler);
 
 			//- Subscribe the handler to this command type (Axon) -------------
 			this.commandBus.subscribe(castor.getBeanClass().getName(), castor.getContainerClass());

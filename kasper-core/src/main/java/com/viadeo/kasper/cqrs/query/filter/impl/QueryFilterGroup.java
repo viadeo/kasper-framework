@@ -7,16 +7,16 @@
 
 package com.viadeo.kasper.cqrs.query.filter.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
 import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilterGroup;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * 
@@ -53,12 +53,7 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 
 		if (null != this.filters) {
 
-			boolean satisfied;
-			if (this.operator.equals(Operator.AND)) {
-				satisfied = true;
-			} else {
-				satisfied = false;
-			}
+			boolean satisfied = this.operator.equals(Operator.AND);
 
 			for (final IQueryFilter<DQO> filter : this.filters) {
 				final boolean localSatisfied = filter.isSatisfiedBy(value);
@@ -120,7 +115,7 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 		Preconditions.checkNotNull(filter);
 
 		if (null == this.filters) {
-			this.filters = new ArrayList<IQueryFilter<DQO>>();
+			this.filters = new ArrayList<>();
 		}
 
 		this.filters.add(filter);
@@ -131,7 +126,7 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	/**
 	 * @see
 	 *      com.viadeo.kasper.cqrs.query.IKasperQueryFilterGroup#filter(com.viadeo
-	 *      .kasper.cqrs.query.IKasperQueryFilter<DQO,DTO>[])
+	 *      .kasper.cqrs.query.IKasperQueryFilter<DQO>...)
 	 */
 	@Override
 	public QueryFilterGroup<DQO> filter(

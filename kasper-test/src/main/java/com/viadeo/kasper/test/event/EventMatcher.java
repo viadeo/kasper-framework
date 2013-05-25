@@ -1,15 +1,14 @@
 package com.viadeo.kasper.test.event;
 
-import java.lang.reflect.Field;
-import java.util.Arrays;
-
+import com.viadeo.kasper.event.IEvent;
 import org.axonframework.test.matchers.MatcherExecutionException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
 import org.joda.time.DateTime;
 
-import com.viadeo.kasper.event.IEvent;
+import java.lang.reflect.Field;
+import java.util.Arrays;
 
 /**
  * Matcher that will match an Object if all the fields on that Object contain values equal to the same field in the
@@ -138,7 +137,7 @@ public class EventMatcher<E extends IEvent> extends BaseMatcher<E> {
     
     @Factory
     public static <E extends IEvent> EventMatcher<E> equalToEvent(E expected) {
-        return new EventMatcher<E>(expected);
+        return new EventMatcher<>(expected);
     }
     
 }

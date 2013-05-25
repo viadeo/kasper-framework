@@ -6,8 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import java.lang.annotation.Annotation;
-
+import com.viadeo.kasper.exception.KasperRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -16,7 +15,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import com.viadeo.kasper.exception.KasperRuntimeException;
+import java.lang.annotation.Annotation;
 
 /**
  * @author mglcel
@@ -61,13 +60,11 @@ public abstract class AbstractSingletonAnnotationProcessor<T extends Annotation,
 				}
 			}
 			
-		} catch (final InstantiationException e) {
-			throw new KasperRuntimeException("Unable to create instance of " + clazz.getName(), e);
-		} catch (final IllegalAccessException e) {
+		} catch (final InstantiationException | IllegalAccessException e) {
 			throw new KasperRuntimeException("Unable to create instance of " + clazz.getName(), e);
 		}
-		
-		this.process(clazz, instance);
+
+        this.process(clazz, instance);
 	}
 	
 	protected abstract void process(Class<?> clazz, I instance);

@@ -4,18 +4,16 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.query.exposition;
-
-import java.util.List;
-import java.util.Map;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.viadeo.kasper.query.exposition.QueryBuilder;
+import java.util.List;
+import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class QueryBuilderTest {
 
@@ -94,4 +92,5 @@ public class QueryBuilderTest {
         assertEquals("2", map.get("23").get(0));
         assertEquals("3", map.get("23").get(1));
     }
+
 }

@@ -6,11 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.event.domain.er.impl;
 
-import org.joda.time.DateTime;
-
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.event.domain.er.IConceptEvent;
 import com.viadeo.kasper.event.domain.impl.AbstractEntityEvent;
+import org.joda.time.DateTime;
 
 /**
  *
@@ -18,7 +17,6 @@ import com.viadeo.kasper.event.domain.impl.AbstractEntityEvent;
  * 
  * @see AbstractEntityEvent
  * @see IConceptEvent
- * @see IEvent
  */
 public abstract class AbstractConceptEvent 
 		extends AbstractEntityEvent 

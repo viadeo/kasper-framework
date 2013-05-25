@@ -6,16 +6,15 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
-import org.axonframework.commandhandling.CommandMessage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.viadeo.kasper.context.IContext;
 import com.viadeo.kasper.context.IDefaultContextBuilder;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.command.ICommand;
 import com.viadeo.kasper.cqrs.command.ICommandMessage;
+import org.axonframework.commandhandling.CommandMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *

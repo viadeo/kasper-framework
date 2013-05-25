@@ -6,13 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.context.impl;
 
-import java.io.Serializable;
-import java.util.Collections;
-import java.util.Map;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.IContext;
+
+import java.io.Serializable;
+import java.util.Collections;
+import java.util.Map;
 
 /**
  * Simple implementation of a IContext
@@ -48,13 +48,7 @@ public abstract class AbstractContext implements IContext {
 
 	@Override
 	public boolean hasProperty(final String key) {
-		final boolean ret;
-		if (null == this.properties) {
-			ret = false;
-		} else {
-			ret = this.properties.containsKey(key);
-		}
-		return ret;
+        return (null != this.properties) && this.properties.containsKey(key);
 	}
 
 	@Override

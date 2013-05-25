@@ -7,29 +7,18 @@
 
 package com.viadeo.kasper.client;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.sun.jersey.api.client.Client;
+import com.viadeo.kasper.client.exceptions.KasperClientException;
+import com.viadeo.kasper.query.exposition.*;
+import com.viadeo.kasper.tools.ObjectMapperProvider;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import com.fasterxml.jackson.databind.*;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.sun.jersey.api.client.Client;
-import com.viadeo.kasper.client.exceptions.KasperClientException;
-import com.viadeo.kasper.query.exposition.IQueryFactory;
-import com.viadeo.kasper.query.exposition.ITypeAdapter;
-import com.viadeo.kasper.query.exposition.ITypeAdapterFactory;
-import com.viadeo.kasper.query.exposition.QueryFactoryBuilder;
-import com.viadeo.kasper.query.exposition.VisibilityFilter;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class KasperClientBuilder {
-	static final Logger LOGGER = LoggerFactory
-			.getLogger(KasperClientBuilder.class);
 
 	private Client client;
 	private ObjectMapper mapper;
@@ -84,7 +73,7 @@ public class KasperClientBuilder {
 		return this;
 	}
 
-	// maybe make it public?
+	// FIXME: maybe make it public?
 	KasperClientBuilder client(final Client client) {
 		this.client = checkNotNull(client);
 		return this;
@@ -106,7 +95,7 @@ public class KasperClientBuilder {
 			queryBaseLocation = createURL(DEFAULT_QUERY_URL);
 		}
 
-		if (queryFactory == null) {
+		if (null == queryFactory) {
 			queryFactory = qFactoryBuilder.create();
 		}
 
@@ -124,7 +113,9 @@ public class KasperClientBuilder {
 	// FIXME: non-used parameter ?
 	private URL createURL(final String url) {
 		try {
+
 			return new URL(url);
+
 		} catch (final MalformedURLException e) {
 			throw new KasperClientException(e);
 		}

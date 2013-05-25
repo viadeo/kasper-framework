@@ -1,15 +1,14 @@
 package com.viadeo.kasper.test.timelines.entities;
 
-import org.axonframework.domain.DomainEventMessage;
-import org.axonframework.eventsourcing.AbstractEventSourcedAggregateRoot;
-import org.joda.time.DateTime;
-
 import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.er.IComponentConcept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.test.timelines.Timelines;
+import org.axonframework.domain.DomainEventMessage;
+import org.axonframework.eventsourcing.AbstractEventSourcedAggregateRoot;
+import org.joda.time.DateTime;
 
 @XKasperConcept(domain = Timelines.class, label = Media.NAME)
 public class Media implements IComponentConcept<Status> {

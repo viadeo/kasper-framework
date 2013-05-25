@@ -1,10 +1,5 @@
 package com.viadeo.kasper.cqrs.query;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
 import com.viadeo.kasper.AbstractPlatformTests;
 import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.context.IContext;
@@ -15,6 +10,10 @@ import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
 import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.impl.FilteredQuery;
 import com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryField;
+import org.junit.Test;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 @SuppressWarnings("serial")
 public class FilteredQueryTest extends AbstractPlatformTests {

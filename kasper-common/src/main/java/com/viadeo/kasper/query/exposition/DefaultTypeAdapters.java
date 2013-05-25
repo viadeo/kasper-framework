@@ -7,17 +7,18 @@
 
 package com.viadeo.kasper.query.exposition;
 
+import com.google.common.base.Optional;
+import com.google.common.reflect.TypeToken;
+import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import org.joda.time.DateTime;
+
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
-import org.joda.time.DateTime;
-
-import com.google.common.base.Optional;
-import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import static java.lang.System.arraycopy;
 
 public final class DefaultTypeAdapters {
 
@@ -38,6 +39,8 @@ public final class DefaultTypeAdapters {
 		}
 	};
 
+    // --
+
 	public static final ITypeAdapter<Long> Long_ADAPTER = new ITypeAdapter<Long>() {
 		@Override
 		public void adapt(final Long value, final QueryBuilder builder) {
@@ -45,10 +48,12 @@ public final class DefaultTypeAdapters {
 		}
 
 		@Override
-		public Long adapt(QueryParser parser) {
+		public Long adapt(final QueryParser parser) {
 			return parser.longValue();
 		}
 	};
+
+    // --
 
 	public static final ITypeAdapter<Double> DOUBLE_ADAPTER = new ITypeAdapter<Double>() {
 		@Override
@@ -57,10 +62,12 @@ public final class DefaultTypeAdapters {
 		}
 
 		@Override
-		public Double adapt(QueryParser parser) {
+		public Double adapt(final QueryParser parser) {
 			return parser.doubleValue();
 		}
 	};
+
+    // --
 
 	public static final ITypeAdapter<Float> FLOAT_ADAPTER = new ITypeAdapter<Float>() {
 		@Override
@@ -69,10 +76,12 @@ public final class DefaultTypeAdapters {
 		}
 
 		@Override
-		public Float adapt(QueryParser parser) {
+		public Float adapt(final QueryParser parser) {
 			return Double.valueOf(parser.doubleValue()).floatValue();
 		}
 	};
+
+    // --
 
 	public static final ITypeAdapter<Short> SHORT_ADAPTER = new ITypeAdapter<Short>() {
 		@Override
@@ -81,7 +90,7 @@ public final class DefaultTypeAdapters {
 		}
 
 		@Override
-		public Short adapt(QueryParser parser) {
+		public Short adapt(final QueryParser parser) {
 			return Integer.valueOf(parser.intValue()).shortValue();
 		}
 	};
@@ -95,7 +104,7 @@ public final class DefaultTypeAdapters {
 		}
 
 		@Override
-		public String adapt(QueryParser parser) {
+		public String adapt(final QueryParser parser) {
 			return parser.value();
 		}
 	};
@@ -109,7 +118,7 @@ public final class DefaultTypeAdapters {
 		}
 
 		@Override
-		public Boolean adapt(QueryParser parser) {
+		public Boolean adapt(final QueryParser parser) {
 			return parser.booleanValue();
 		}
 	};
@@ -123,7 +132,7 @@ public final class DefaultTypeAdapters {
 		}
 
 		@Override
-		public Date adapt(QueryParser parser) {
+		public Date adapt(final QueryParser parser) {
 			return new Date(parser.longValue());
 		}
 	};
@@ -137,7 +146,7 @@ public final class DefaultTypeAdapters {
 		}
 
 		@Override
-		public DateTime adapt(QueryParser parser) {
+		public DateTime adapt(final QueryParser parser) {
 			return new DateTime(parser.longValue());
 		}
 	};
@@ -172,27 +181,28 @@ public final class DefaultTypeAdapters {
 		private final ITypeAdapter<Object> componentAdapter;
 		private final Class<?> componentClass;
 
-		public ArrayAdapter(final ITypeAdapter<Object> componentAdapter,
-				final Class<?> componentClass) {
+		public ArrayAdapter(final ITypeAdapter<Object> componentAdapter, final Class<?> componentClass) {
 			this.componentAdapter = componentAdapter;
 			this.componentClass = componentClass;
 		}
 
 		@Override
 		public void adapt(final Object array, final QueryBuilder builder) {
-			int len = Array.getLength(array);
+			final int len = Array.getLength(array);
+
 			for (int i = 0; i < len; i++) {
-				Object element = Array.get(array, i);
+				final Object element = Array.get(array, i);
 				componentAdapter.adapt(element, builder);
 			}
 		}
 
 		@Override
-		public Object adapt(QueryParser parser) {
+		public Object adapt(final QueryParser parser) {
 			int size = 10;
 			Object array = Array.newInstance(componentClass, size);
 			int idx = 0;
-			for (QueryParser nextParser : parser) {
+
+			for (final QueryParser nextParser : parser) {
 				if (idx >= size) {
 					size = size * 2 + 1;
 					array = expandArray(array, idx, size);
@@ -205,9 +215,9 @@ public final class DefaultTypeAdapters {
 			return array;
 		}
 
-		private Object expandArray(Object array, int len, int size) {
+		private Object expandArray(final Object array, final int len, final int size) {
 			Object tmpArray = Array.newInstance(componentClass, size);
-			System.arraycopy(array, 0, tmpArray, 0, len);
+			arraycopy(array, 0, tmpArray, 0, len);
 			return tmpArray;
 		}
 	}
@@ -222,6 +232,7 @@ public final class DefaultTypeAdapters {
 			final Class<?> rawClass = typeToken.getRawType();
 
 			if (Collection.class.isAssignableFrom(rawClass)) {
+
 				final Class<?> elementType = ReflectionGenericsResolver
 						.getParameterTypeFromClass(typeToken.getType(),
 								Collection.class, 0).get();
@@ -241,8 +252,7 @@ public final class DefaultTypeAdapters {
 
 	// --
 
-	public static final class CollectionAdapter<E> implements
-			ITypeAdapter<Collection<E>> {
+	public static final class CollectionAdapter<E> implements ITypeAdapter<Collection<E>> {
 		private final ITypeAdapter<E> elementAdapter;
 
 		CollectionAdapter(final ITypeAdapter<E> elementAdapter) {
@@ -256,27 +266,27 @@ public final class DefaultTypeAdapters {
 			}
 		}
 
-		public Collection<E> adapt(QueryParser parser) {
-			List<E> listOfE = new ArrayList<E>();
-			for (QueryParser next : parser)
+		public Collection<E> adapt(final QueryParser parser) {
+			final List<E> listOfE = new ArrayList<>();
+			for (final QueryParser next : parser) {
 				listOfE.add(elementAdapter.adapt(next));
+            }
 			return listOfE;
 		}
 	}
 
-	public static class EnumAdapter<T extends Enum<T>> implements
-			ITypeAdapter<T> {
+	public static class EnumAdapter<T extends Enum<T>> implements ITypeAdapter<T> {
 		private final Class<T> eClass;
 
-		public EnumAdapter(Class<T> eClass) {
+		public EnumAdapter(final Class<T> eClass) {
 			this.eClass = eClass;
 		}
 
-		public void adapt(T obj, QueryBuilder builder) {
+		public void adapt(final T obj, final QueryBuilder builder) {
 			builder.add(obj.name());
 		}
 
-		public T adapt(QueryParser parser) {
+		public T adapt(final QueryParser parser) {
 			return Enum.valueOf(eClass, parser.value());
 		}
 	}

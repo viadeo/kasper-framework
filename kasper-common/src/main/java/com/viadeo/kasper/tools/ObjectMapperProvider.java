@@ -1,11 +1,12 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.tools;
 
-import com.fasterxml.jackson.databind.MapperFeature;
-import com.fasterxml.jackson.databind.Module;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.ObjectWriter;
-import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
@@ -17,6 +18,8 @@ public class ObjectMapperProvider {
 	private final ObjectWriter writer;
 	private final ObjectReader reader;
 	private final ObjectMapper mapper;
+
+    // ------------------------------------------------------------------------
 
 	private ObjectMapperProvider() {
 		mapper = new ObjectMapper();

@@ -1,13 +1,12 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.query.exposition;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 public class QueryParser implements Iterable<QueryParser> {
 
@@ -15,19 +14,23 @@ public class QueryParser implements Iterable<QueryParser> {
 		private String _actualName;
 		private LinkedList<String> _actualValues;
 
-		public Scope(String _actualName, LinkedList<String> _actualValues) {
+		public Scope(final String _actualName, final LinkedList<String> _actualValues) {
 			this._actualName = _actualName;
 			this._actualValues = _actualValues;
 		}
 	}
 
-	private final Deque<Scope> _ctx = new ArrayDeque<Scope>();
+	private final Deque<Scope> _ctx = new ArrayDeque<>();
 	private final Map<String, List<String>> queryMap;
 	private String _actualValue;
 
+    // ------------------------------------------------------------------------
+
 	public QueryParser(final Map<String, List<String>> queryMap) {
-		this.queryMap = new HashMap<String, List<String>>(queryMap);
+		this.queryMap = new HashMap<>(queryMap);
 	}
+
+    // ------------------------------------------------------------------------
 
 	public boolean exists(final String key) {
 		return queryMap.containsKey(key);
@@ -35,21 +38,23 @@ public class QueryParser implements Iterable<QueryParser> {
 
 	public QueryParser begin(final String key) {
 		final List<String> values = queryMap.get(key);
-		if (values == null)
-			throw new NoSuchElementException("No value found for key[" + key
-					+ "].");
+
+		if (values == null){
+			throw new NoSuchElementException("No value found for key[" + key + "].");
+        }
 		if (values.size() == 1) {
 			_actualValue = values.get(0);
 		}
-		_ctx.push(new Scope(key, new LinkedList<String>(values)));
+		_ctx.push(new Scope(key, new LinkedList<>(values)));
 		queryMap.remove(key);
+
 		return this;
 	}
 
 	public QueryParser end() {
-		if (_ctx.isEmpty())
-			throw new IllegalStateException(
-					"Invalid call of end without calling begin.");
+		if (_ctx.isEmpty()){
+			throw new IllegalStateException("Invalid call of end without calling begin.");
+        }
 		_ctx.pop();
 		return this;
 	}
@@ -93,22 +98,26 @@ public class QueryParser implements Iterable<QueryParser> {
 	}
 
 	public QueryParser next() {
-		if (!hasNext())
+		if (!hasNext()) {
 			throw new NoSuchElementException();
+        }
 		if (!_ctx.isEmpty()) {
 			_actualValue = _ctx.peek()._actualValues.pop();
-		} else {
-			// no need to handle here iteration over key/values, as the access
-			// order does not matter
 		}
+		// else {
+			/*
+			 * no need to handle here iteration over key/values, as the access
+			 * order does not matter
+			 */
+		// }
 
 		return this;
 	}
 
 	private void _checkContextNotEmpty() {
-		if (_ctx.isEmpty())
-			throw new IllegalStateException(
-					"Call begin before trying to get a value.");
+		if (_ctx.isEmpty()) {
+			throw new IllegalStateException("Call begin before trying to get a value.");
+        }
 	}
 
 	@Override
@@ -130,4 +139,5 @@ public class QueryParser implements Iterable<QueryParser> {
 			}
 		};
 	}
+
 }

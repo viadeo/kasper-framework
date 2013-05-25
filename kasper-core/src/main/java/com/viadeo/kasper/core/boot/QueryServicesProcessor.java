@@ -7,13 +7,12 @@
 
 package com.viadeo.kasper.core.boot;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.cqrs.query.IQueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.locators.IQueryServicesLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *

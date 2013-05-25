@@ -6,17 +6,15 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.viadeo.kasper.event.IEventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * Process Kasper listener dynamic registration at platform boot
  *
- * @see XKasperListener
  */
 public class ListenersDocumentationProcessor extends AbstractDocumentationProcessor<XKasperEventListener, IEventListener<?>> {
 

@@ -7,27 +7,6 @@
 
 package com.viadeo.kasper.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.ServerSocket;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
@@ -37,6 +16,28 @@ import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
 import com.viadeo.kasper.client.lib.ICallback;
 import com.viadeo.kasper.cqrs.query.IQuery;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.ServerSocket;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 public class KasperClientQueryTest extends JerseyTest {
 
@@ -47,8 +48,11 @@ public class KasperClientQueryTest extends JerseyTest {
 
     public static class MemberDTO implements IQueryDTO {
         private static final long serialVersionUID = 271800729414361903L;
+
         private String memberName;
         private List<Integer> ids;
+
+        // --
 
         public MemberDTO() {
         }
@@ -57,6 +61,8 @@ public class KasperClientQueryTest extends JerseyTest {
             this.memberName = memberName;
             this.ids = ids;
         }
+
+        // --
 
         public String getMemberName() {
             return this.memberName;
@@ -77,6 +83,7 @@ public class KasperClientQueryTest extends JerseyTest {
 
     public static class GetMemberQuery implements IQuery {
         private static final long serialVersionUID = -2618953632539379331L;
+
         private final String memberName;
         private final List<Integer> ids;
 
@@ -94,6 +101,8 @@ public class KasperClientQueryTest extends JerseyTest {
         }
     }
 
+    // ------------------------------------------------------------------------
+
     @Path(value = "/")
     public static class DummyResource {
         @Path("/getMember")
@@ -106,7 +115,7 @@ public class KasperClientQueryTest extends JerseyTest {
     
     @BeforeClass
     public static void init() throws IOException {
-        ServerSocket socket = new ServerSocket(0);
+        final ServerSocket socket = new ServerSocket(0);
         port = socket.getLocalPort();
         socket.close();
     }
@@ -143,11 +152,8 @@ public class KasperClientQueryTest extends JerseyTest {
                 .create();
     }
 
-    /**
-     * {@inheritDoc}
-     */
     @Override
-    protected int getPort(int defaultPort) {
+    protected int getPort(final int defaultPort) {
         return port;
     }
 

@@ -7,13 +7,12 @@
 
 package com.viadeo.kasper.core.boot;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.ddd.IInternalDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.locators.IDomainLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -35,7 +34,6 @@ public class DomainsProcessor extends AbstractSingletonAnnotationProcessor<XKasp
 	/**
 	 * Process Kasper domain
 	 * 
-	 * @see IDomain
 	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override

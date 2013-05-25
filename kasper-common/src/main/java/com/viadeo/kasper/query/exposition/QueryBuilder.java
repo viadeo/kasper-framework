@@ -4,18 +4,11 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.query.exposition;
 
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.NoSuchElementException;
+import java.util.*;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Low level class allowing to build a query.
@@ -40,24 +33,26 @@ public class QueryBuilder {
      class MapOfLists extends HashMap<String, List<String>> {
 		private static final long serialVersionUID = -9221826712691674905L;
 
-		void putSingle(String key, String value) {    		
+		void putSingle(final String key, final String value) {
     		getAndPutIfAbsent(key).add(value);
     	}
 		
-		void add(String key, String value) {
+		void add(final String key, final String value) {
 			getAndPutIfAbsent(key).add(value);
 		}
 		
-		String first(String key) {
-			List<String> values = get(key);
-			if (values != null && values.size() > 0) return values.get(0);
+		String first(final String key) {
+			final List<String> values = get(key);
+			if ((null != values) && (values.size() > 0)) {
+                return values.get(0);
+            }
 			return null;
 		}
 		
 		List<String> getAndPutIfAbsent(final String key) {
     		List<String> values = get(key);
-    		if (values == null) {
-    			values = new ArrayList<String>();
+    		if (null == values) {
+    			values = new ArrayList<>();
     			put(key, values);
     		}
     		return values;
@@ -65,7 +60,7 @@ public class QueryBuilder {
     }
      
     private final MapOfLists map = new MapOfLists();
-    private final Deque<String> names = new ArrayDeque<String>();
+    private final Deque<String> names = new ArrayDeque<>();
     private String actualName;
 
     // ------------------------------------------------------------------------
@@ -115,10 +110,12 @@ public class QueryBuilder {
     public QueryBuilder addSingle(final String name, final String value) {
     	checkNotNull(name);
     	checkNotNull(value);
+
     	if (has(name)) {
             throwDuplicate(name);
         }
         map.putSingle(name, value);
+
         return this;
     }
 
@@ -129,10 +126,12 @@ public class QueryBuilder {
     public QueryBuilder addSingle(final String name, final Number value) {
     	checkNotNull(name);
     	checkNotNull(value);
+
         if (has(name)) {
             throwDuplicate(name);
         }
         map.putSingle(name, value.toString());
+
         return this;
     }
 
@@ -149,10 +148,12 @@ public class QueryBuilder {
     public QueryBuilder addSingle(final String name, final Boolean value) {
     	checkNotNull(name);
     	checkNotNull(value);
+
         if (has(name)) {
             throwDuplicate(name);
         }
         map.putSingle(name, value.toString());
+
         return this;
     }
 
@@ -162,10 +163,12 @@ public class QueryBuilder {
      */
     public QueryBuilder add(final Number value) {
     	checkNotNull(value);
+
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
         map.add(actualName, value.toString());
+
         return this;
     }
 
@@ -175,10 +178,12 @@ public class QueryBuilder {
      */
     public QueryBuilder add(final Boolean value) {
     	checkNotNull(value);
+
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
         map.add(actualName, value.toString());
+
         return this;
     }
 
@@ -188,10 +193,12 @@ public class QueryBuilder {
      */
     public QueryBuilder add(final String value) {
     	checkNotNull(value);
+
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
         map.add(actualName, value);
+
         return this;
     }
 
@@ -201,12 +208,14 @@ public class QueryBuilder {
      */
     public QueryBuilder add(final String... values) {
     	checkNotNull(values);
+
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
         for (final String value : values) {
             map.add(actualName, value);
         }
+
         return this;
     }
 
@@ -251,9 +260,10 @@ public class QueryBuilder {
     // ------------------------------------------------------------------------
 
     public Map<String, List<String>> build() {
-    	Map<String, List<String>> copyMap = new HashMap<String, List<String>>();
-    	for (Map.Entry<String, List<String>> e : map.entrySet())
-    		copyMap.put(e.getKey(), new ArrayList<String>(e.getValue()));
+    	final HashMap<String, List<String>> copyMap = new HashMap<>();
+    	for (final Map.Entry<String, List<String>> e : map.entrySet()) {
+    		copyMap.put(e.getKey(), new ArrayList<>(e.getValue()));
+        }
         return copyMap;
     }
 

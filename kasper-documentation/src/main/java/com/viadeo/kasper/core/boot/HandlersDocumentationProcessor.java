@@ -6,17 +6,15 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.viadeo.kasper.cqrs.command.ICommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * Process Kasper handler dynamic registration at platform boot
  *
- * @see XKasperListener
  */
 public class HandlersDocumentationProcessor extends AbstractDocumentationProcessor<XKasperCommandHandler, ICommandHandler<?>> {
 

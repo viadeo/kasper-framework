@@ -1,10 +1,8 @@
 package com.viadeo.kasper.context;
 
-import junit.framework.TestCase;
-
-import org.junit.Test;
-
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import junit.framework.TestCase;
+import org.junit.Test;
 
 public class KasperDefaultContextBuilderTest extends TestCase {
 

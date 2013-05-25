@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.impl;
 
-import com.google.common.base.Objects;
 import com.viadeo.kasper.cqrs.query.IQueryCollectionDTO;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
 

@@ -6,16 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.doc.web;
 
-import java.util.Map;
-
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import org.springframework.beans.factory.annotation.Configurable;
-
 import com.google.common.base.Optional;
 import com.sun.jersey.api.core.InjectParam;
 import com.viadeo.kasper.doc.KasperLibrary;
@@ -23,6 +13,14 @@ import com.viadeo.kasper.doc.nodes.AbstractDocumentedDomainNode;
 import com.viadeo.kasper.doc.nodes.DocumentedDomain;
 import com.viadeo.kasper.doc.nodes.RetMap;
 import com.viadeo.kasper.doc.nodes.RetUnexistent;
+import org.springframework.beans.factory.annotation.Configurable;
+
+import javax.ws.rs.GET;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.util.Map;
 
 @Path("/doc")
 @Configurable
@@ -69,6 +67,7 @@ public class KasperDocResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Object getEntities(@PathParam("domainName") final String domainName, @PathParam("type") final String type) {
 		String retDomainName = domainName;
+
 		if (null != domainName) {
 			final Optional<Map<String, AbstractDocumentedDomainNode>> entities = getKasperLibrary().getEntities(domainName, type);
 			if (entities.isPresent()) {
@@ -77,7 +76,8 @@ public class KasperDocResource {
 			return new RetUnexistent("type", type);
 		} else {
 			retDomainName = DEFAULT_UNSPECIFIED;
-		}		
+		}
+
 		return new RetUnexistent(DocumentedDomain.TYPE_NAME, retDomainName);
 	}		
 	

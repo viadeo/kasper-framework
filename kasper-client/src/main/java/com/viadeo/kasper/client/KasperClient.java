@@ -7,28 +7,14 @@
 
 package com.viadeo.kasper.client;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.ClientResponse.Status;
+import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.async.TypeListener;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -45,16 +31,29 @@ import com.viadeo.kasper.query.exposition.ITypeAdapter;
 import com.viadeo.kasper.query.exposition.KasperQueryAdapterException;
 import com.viadeo.kasper.query.exposition.QueryBuilder;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * The Kasper java client
  */
 public final class KasperClient {
-	private static final KasperClient DEFAULT_KASPER_CLIENT = new KasperClientBuilder()
-			.create();
+	private static final KasperClient DEFAULT_KASPER_CLIENT = new KasperClientBuilder().create();
 
 	private final Client client;
 	private final URL commandBaseLocation;
 	private final URL queryBaseLocation;
+
 	@VisibleForTesting
 	final IQueryFactory queryFactory;
 
@@ -67,8 +66,11 @@ public final class KasperClient {
 		this.queryFactory = DEFAULT_KASPER_CLIENT.queryFactory;
 	}
 
+    // --
+
 	KasperClient(final IQueryFactory queryFactory, final ObjectMapper mapper,
-			final URL commandBaseUrl, final URL queryBaseUrl) {
+	             final URL commandBaseUrl, final URL queryBaseUrl) {
+
 		final DefaultClientConfig cfg = new DefaultClientConfig();
 		cfg.getSingletons().add(new JacksonJsonProvider(mapper));
 
@@ -78,8 +80,11 @@ public final class KasperClient {
 		this.queryFactory = queryFactory;
 	}
 
+    // --
+
 	KasperClient(final IQueryFactory queryFactory, final Client client,
-			final URL commandBaseUrl, final URL queryBaseUrl) {
+			     final URL commandBaseUrl, final URL queryBaseUrl) {
+
 		this.client = client;
 		this.commandBaseLocation = commandBaseUrl;
 		this.queryBaseLocation = queryBaseUrl;
@@ -92,11 +97,13 @@ public final class KasperClient {
 
 	public ICommandResult send(final ICommand command) {
 		checkNotNull(command);
+
 		final ClientResponse response = client
 				.resource(resolveCommandPath(command.getClass()))
 				.accept(MediaType.APPLICATION_JSON)
 				.type(MediaType.APPLICATION_JSON)
 				.put(ClientResponse.class, command);
+
 		return handleResponse(response);
 	}
 
@@ -104,6 +111,7 @@ public final class KasperClient {
 
 	public Future<? extends ICommandResult> sendAsync(final ICommand command) {
 		checkNotNull(command);
+
 		final Future<ClientResponse> futureResponse = client
 				.asyncResource(resolveCommandPath(command.getClass()))
 				.accept(MediaType.APPLICATION_JSON)
@@ -131,8 +139,7 @@ public final class KasperClient {
 			}
 
 			public ICommandResult get(final long timeout, final TimeUnit unit)
-					throws InterruptedException, ExecutionException,
-					TimeoutException {
+					throws InterruptedException, ExecutionException, TimeoutException {
 				return handleResponse(futureResponse.get(timeout, unit));
 			}
 		};
@@ -141,8 +148,9 @@ public final class KasperClient {
 	// --
 
 	public void sendAsync(final ICommand command,
-			final ICallback<ICommandResult> callback) {
+			              final ICallback<ICommandResult> callback) {
 		checkNotNull(command);
+
 		client.asyncResource(resolveCommandPath(command.getClass()))
 				.accept(MediaType.APPLICATION_JSON)
 				.type(MediaType.APPLICATION_JSON)
@@ -161,6 +169,7 @@ public final class KasperClient {
 
 	private ICommandResult handleResponse(final ClientResponse response) {
 		final Status status = response.getClientResponseStatus();
+
 		// handle errors
 		if (status.getStatusCode() == 200) {
 			return response.getEntity(KasperCommandResult.class);
@@ -172,15 +181,14 @@ public final class KasperClient {
 	// QUERIES
 	// ------------------------------------------------------------------------
 
-	public <T extends IQueryDTO> T query(final IQuery query,
-			final Class<T> mapTo) {
+	public <T extends IQueryDTO> T query(final IQuery query, final Class<T> mapTo) {
 		return query(query, TypeToken.of(mapTo));
 	}
 
-	public <T extends IQueryDTO> T query(final IQuery query,
-			final TypeToken<T> mapTo) {
+	public <T extends IQueryDTO> T query(final IQuery query, final TypeToken<T> mapTo) {
 		checkNotNull(query);
 		checkNotNull(mapTo);
+
 		final ClientResponse response = client
 				.resource(resolveQueryPath(query.getClass()))
 				.queryParams(prepareQueryParams(query))
@@ -192,17 +200,18 @@ public final class KasperClient {
 
 	// --
 
-	public <T extends IQueryDTO> Future<T> queryAsync(final IQuery query,
-			final Class<T> mapTo) {
+	public <T extends IQueryDTO> Future<T> queryAsync(final IQuery query, final Class<T> mapTo) {
 		return queryAsync(query, TypeToken.of(mapTo));
 	}
 
-	// FIXME should we also handle async in the platform side ?? Is it really
-	// useful?
-	public <T extends IQueryDTO> Future<T> queryAsync(final IQuery query,
-			final TypeToken<T> mapTo) {
+	/*
+	 * FIXME should we also handle async in the platform side ?? Is it really
+	 * useful?
+	 */
+	public <T extends IQueryDTO> Future<T> queryAsync(final IQuery query, final TypeToken<T> mapTo) {
 		checkNotNull(query);
 		checkNotNull(mapTo);
+
 		final Future<ClientResponse> futureResponse = client
 				.asyncResource(resolveQueryPath(query.getClass()))
 				.queryParams(prepareQueryParams(query))
@@ -227,10 +236,8 @@ public final class KasperClient {
 			}
 
 			public T get(final long timeout, final TimeUnit unit)
-					throws InterruptedException, ExecutionException,
-					TimeoutException {
-				return handleQueryResponse(futureResponse.get(timeout, unit),
-						mapTo);
+					throws InterruptedException, ExecutionException, TimeoutException {
+				return handleQueryResponse(futureResponse.get(timeout, unit), mapTo);
 			}
 		};
 	}
@@ -238,14 +245,18 @@ public final class KasperClient {
 	// --
 
 	public <T extends IQueryDTO> void queryAsync(final IQuery query,
-			final Class<T> mapTo, final ICallback<T> callback) {
+			                                     final Class<T> mapTo,
+                                                 final ICallback<T> callback) {
+
 		queryAsync(query, TypeToken.of(mapTo), callback);
 	}
 
 	public <T extends IQueryDTO> void queryAsync(final IQuery query,
-			final TypeToken<T> mapTo, final ICallback<T> callback) {
+			                                     final TypeToken<T> mapTo,
+                                                 final ICallback<T> callback) {
 		checkNotNull(query);
 		checkNotNull(mapTo);
+
 		client.asyncResource(resolveQueryPath(query.getClass()))
 				.queryParams(prepareQueryParams(query))
 				.accept(MediaType.APPLICATION_JSON)
@@ -255,7 +266,9 @@ public final class KasperClient {
 					public void onComplete(final Future<ClientResponse> f)
 							throws InterruptedException {
 						try {
+
 							callback.done(handleQueryResponse(f.get(), mapTo));
+
 						} catch (final ExecutionException e) {
 							throw new KasperClientException(e);
 						}
@@ -263,16 +276,17 @@ public final class KasperClient {
 				});
 	}
 
-	private <T extends IQueryDTO> T handleQueryResponse(
-			final ClientResponse response, final TypeToken<T> mapTo) {
+	private <T extends IQueryDTO> T handleQueryResponse(final ClientResponse response, final TypeToken<T> mapTo) {
 		final Status status = response.getClientResponseStatus();
+
 		// handle errors
 		if (status.getStatusCode() == 200) {
 			return response.getEntity(new GenericType<T>(mapTo.getType()));
-		} else
+		} else {
 			throw new KasperClientException("SERVER ERROR [status="
 					+ status.getStatusCode() + ", reason="
 					+ status.getReasonPhrase() + "]");
+        }
 	}
 
 	// --
@@ -285,9 +299,12 @@ public final class KasperClient {
 
 			final QueryBuilder queryBuilder = new QueryBuilder();
 			adapter.adapt(query, queryBuilder);
-			MultivaluedMap<String, String> map = new MultivaluedMapImpl();
+
+			final MultivaluedMap<String, String> map = new MultivaluedMapImpl();
 			map.putAll(queryBuilder.build());
+
 			return map;
+
 		} catch (KasperQueryAdapterException ex) {
 			throw new KasperClientException(ex);
 		}
@@ -307,23 +324,20 @@ public final class KasperClient {
 				.replace("Query", ""), queryClass);
 	}
 
-	private URI resolvePath(final URL basePath, final String path,
-			final Class<?> clazz) {
+	private URI resolvePath(final URL basePath, final String path, final Class<?> clazz) {
 		try {
+
 			return new URL(basePath, path).toURI();
-		} catch (final MalformedURLException e) {
-			throw cannotConstructURI(clazz, e);
-		} catch (final URISyntaxException e) {
+
+		} catch (final MalformedURLException | URISyntaxException e) {
 			throw cannotConstructURI(clazz, e);
 		}
-	}
+    }
 
 	// ------------------------------------------------------------------------
 
-	private KasperClientException cannotConstructURI(final Class<?> clazz,
-			final Exception e) {
-		return new KasperClientException(
-				"Could not construct resource url for " + clazz, e);
+	private KasperClientException cannotConstructURI(final Class<?> clazz, final Exception e) {
+		return new KasperClientException("Could not construct resource url for " + clazz, e);
 	}
 
 }

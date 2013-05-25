@@ -6,12 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.doc.web;
 
-import javax.ws.rs.ext.ContextResolver;
-import javax.ws.rs.ext.Provider;
-
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+
+import javax.ws.rs.ext.ContextResolver;
+import javax.ws.rs.ext.Provider;
 
 @Provider
 public class ObjectMapperCustomResolver implements ContextResolver<ObjectMapper> {

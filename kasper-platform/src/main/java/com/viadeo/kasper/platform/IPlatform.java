@@ -6,12 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.platform;
 
-import org.axonframework.eventhandling.EventBus;
-
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
 import com.viadeo.kasper.cqrs.command.ICommandGateway;
 import com.viadeo.kasper.cqrs.query.IQueryGateway;
 import com.viadeo.kasper.event.IEvent;
+import org.axonframework.eventhandling.EventBus;
 
 /**
  *

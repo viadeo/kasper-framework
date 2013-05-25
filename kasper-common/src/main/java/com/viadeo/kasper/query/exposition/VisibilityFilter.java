@@ -4,7 +4,6 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.query.exposition;
 
 import java.lang.reflect.Member;
@@ -83,9 +82,6 @@ public final class VisibilityFilter {
     
     /**
      * Checks whether this member is visible or not according to this filter.
-     * 
-     * @param member
-     * @return
      */
     public boolean isVisible(final Member member) {
         return ((member.getModifiers() & filter) == 0);

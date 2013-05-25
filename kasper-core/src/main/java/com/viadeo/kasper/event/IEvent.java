@@ -6,10 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.event;
 
-import java.io.Serializable;
-
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.IContext;
+
+import java.io.Serializable;
 
 /**
  *

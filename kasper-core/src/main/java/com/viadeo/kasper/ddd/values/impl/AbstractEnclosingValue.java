@@ -6,10 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.values.impl;
 
-import java.io.Serializable;
-
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.ddd.values.IValue;
+
+import java.io.Serializable;
 
 /**
  *

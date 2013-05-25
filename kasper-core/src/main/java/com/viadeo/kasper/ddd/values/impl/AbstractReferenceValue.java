@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.values.impl;
 
-import java.io.Serializable;
-
 import com.viadeo.kasper.ddd.values.IReferenceValue;
+
+import java.io.Serializable;
 
 /**
  *

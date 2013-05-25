@@ -1,15 +1,14 @@
 package com.viadeo.kasper.test.applications.entities;
 
-import org.axonframework.domain.DomainEventStream;
-import org.axonframework.domain.EventRegistrationCallback;
-import org.joda.time.DateTime;
-
 import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.er.IRootConcept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.test.applications.Applications;
+import org.axonframework.domain.DomainEventStream;
+import org.axonframework.domain.EventRegistrationCallback;
+import org.joda.time.DateTime;
 
 @XKasperConcept(domain = Applications.class, label = Application.NAME)
 public class Application implements IRootConcept {

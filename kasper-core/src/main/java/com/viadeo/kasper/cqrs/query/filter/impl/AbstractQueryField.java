@@ -7,8 +7,6 @@
 
 package com.viadeo.kasper.cqrs.query.filter.impl;
 
-import java.lang.reflect.Field;
-
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -18,6 +16,8 @@ import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.IQueryField;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+
+import java.lang.reflect.Field;
 
 /**
  * 
@@ -86,11 +86,7 @@ public abstract class AbstractQueryField<P, DQO extends IQueryDQO<DQO>, F extend
 				final P value = (P) dtoField.get(dto);
 				return Optional.fromNullable(value);
 
-			} catch (final IllegalArgumentException e) {
-				throw new KasperQueryRuntimeException(String.format(
-						"Can't access field %s of DTO type %s",
-						dtoField.getName(), dto.getClass().getName()), e);
-			} catch (final IllegalAccessException e) {
+			} catch (final IllegalArgumentException | IllegalAccessException e) {
 				throw new KasperQueryRuntimeException(String.format(
 						"Can't access field %s of DTO type %s",
 						dtoField.getName(), dto.getClass().getName()), e);
@@ -137,12 +133,10 @@ public abstract class AbstractQueryField<P, DQO extends IQueryDQO<DQO>, F extend
 			final F filter = this.filterClass.newInstance();
 			filter.field(this);
 			return filter;
-		} catch (final InstantiationException e) {
-			throw new KasperQueryRuntimeException("Unable to instantiate a new " + this.filterClass.getClass(), e);
-		} catch (final IllegalAccessException e) {
+		} catch (final InstantiationException | IllegalAccessException e) {
 			throw new KasperQueryRuntimeException("Unable to instantiate a new " + this.filterClass.getClass(), e);
 		}
-	}
+    }
 
 	// ------------------------------------------------------------------------
 

@@ -4,36 +4,20 @@
 //
 // Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.query.exposition;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.joda.time.DateTime;
-import org.junit.Before;
-import org.junit.Test;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.cqrs.query.IQuery;
-import com.viadeo.kasper.query.exposition.DefaultTypeAdapters;
-import com.viadeo.kasper.query.exposition.IQueryFactory;
-import com.viadeo.kasper.query.exposition.ITypeAdapter;
-import com.viadeo.kasper.query.exposition.ITypeAdapterFactory;
-import com.viadeo.kasper.query.exposition.NullSafeTypeAdapter;
-import com.viadeo.kasper.query.exposition.QueryBuilder;
-import com.viadeo.kasper.query.exposition.StdQueryFactory;
-import com.viadeo.kasper.query.exposition.VisibilityFilter;
+import org.joda.time.DateTime;
+import org.junit.Before;
+import org.junit.Test;
+
+import java.lang.reflect.Type;
+import java.util.*;
+
+import static org.junit.Assert.*;
 
 public class TestStdQueryFactory {
 
@@ -44,13 +28,8 @@ public class TestStdQueryFactory {
     public static class SomeQuery implements IQuery {
         private static final long serialVersionUID = -6763165103363988454L;
 
-        public int getDummy() {
-            return 1;
-        }
-        
-        public void setDummy(int dummyInt) {
-        	
-        }
+        public int getDummy() { return 1; }
+        public void setDummy(final int dummyInt) { }
     }
 
     // ------------------------------------------------------------------------
@@ -64,7 +43,7 @@ public class TestStdQueryFactory {
 
     @Test
     public void testSkipNull() {
-        new NullSafeTypeAdapter<SomeQuery>(create()).adapt(null, new QueryBuilder());
+        new NullSafeTypeAdapter<>(create()).adapt(null, new QueryBuilder());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -93,6 +72,7 @@ public class TestStdQueryFactory {
 
     @Test
     public void testBeanQueryAdapterOutputWithPrimitiveIntAdapter() {
+
         // Given
         final ITypeAdapter<SomeQuery> adapter = new StdQueryFactory(
                 ImmutableMap.<Type, ITypeAdapter<?>> of(int.class, DefaultTypeAdapters.INT_ADAPTER),
@@ -108,6 +88,7 @@ public class TestStdQueryFactory {
 
     @Test
     public void testQueryFactoryOutputWithCollectionAdapter() {
+
         // Given
         final DateTime firstDate = new DateTime();
         final DateTime secondDate = new DateTime();
@@ -124,6 +105,7 @@ public class TestStdQueryFactory {
 
     @Test
     public void testCustomTypeAdapterFactoryWithDeepGenerics() {
+
         // Given
         final String key1 = "key1";
         final String key2 = "key2";
@@ -172,8 +154,8 @@ public class TestStdQueryFactory {
     }
 
     private IQueryFactory createQueryFactory(final Object... queryFactoryParameters) {
-        final Map<Type, ITypeAdapter<?>> adaptersMap = new HashMap<Type, ITypeAdapter<?>>();
-        final List<ITypeAdapterFactory<?>> factories = new ArrayList<ITypeAdapterFactory<?>>();
+        final Map<Type, ITypeAdapter<?>> adaptersMap = new HashMap<>();
+        final List<ITypeAdapterFactory<?>> factories = new ArrayList<>();
         
         for (final Object parameter : queryFactoryParameters) {
             if (parameter instanceof ITypeAdapter) {
@@ -204,7 +186,7 @@ public class TestStdQueryFactory {
             }
             
             @Override
-            public SomeQuery adapt(QueryParser parser) {
+            public SomeQuery adapt(final QueryParser parser) {
             	return null;
             }
         };
@@ -236,4 +218,5 @@ public class TestStdQueryFactory {
             return this.listOfDateTime;
         }
     }
+
 }

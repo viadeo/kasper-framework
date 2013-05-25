@@ -6,13 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.doc;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.springframework.stereotype.Component;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -22,23 +15,17 @@ import com.viadeo.kasper.cqrs.command.ICommandHandler;
 import com.viadeo.kasper.cqrs.query.IQueryService;
 import com.viadeo.kasper.ddd.IInternalDomain;
 import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.doc.nodes.AbstractDocumentedDomainNode;
-import com.viadeo.kasper.doc.nodes.DocumentedCommand;
-import com.viadeo.kasper.doc.nodes.DocumentedConcept;
-import com.viadeo.kasper.doc.nodes.DocumentedDomain;
-import com.viadeo.kasper.doc.nodes.DocumentedEntity;
-import com.viadeo.kasper.doc.nodes.DocumentedEvent;
-import com.viadeo.kasper.doc.nodes.DocumentedHandler;
-import com.viadeo.kasper.doc.nodes.DocumentedListener;
-import com.viadeo.kasper.doc.nodes.DocumentedNode;
-import com.viadeo.kasper.doc.nodes.DocumentedQueryService;
-import com.viadeo.kasper.doc.nodes.DocumentedRelation;
-import com.viadeo.kasper.doc.nodes.DocumentedRepository;
-import com.viadeo.kasper.doc.nodes.DocumentedSimpleRelation;
+import com.viadeo.kasper.doc.nodes.*;
 import com.viadeo.kasper.er.IConcept;
 import com.viadeo.kasper.er.IRelation;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.IEventListener;
+import org.springframework.stereotype.Component;
+
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 /**
  * Kasper autodoc library
@@ -161,7 +148,7 @@ public class KasperLibrary {
 		Preconditions.checkNotNull(domainName);
 		
 		if (this.domainNames.containsKey(domainName)) {
-			return Optional.of((DocumentedDomain) this.domainNames.get(domainName));
+			return Optional.of(this.domainNames.get(domainName));
 		}
 		
 		return Optional.absent();
@@ -173,7 +160,7 @@ public class KasperLibrary {
 		Preconditions.checkNotNull(domainPrefix);
 		
 		if (this.domainPrefixes.containsKey(domainPrefix)) {
-			return Optional.of((DocumentedDomain) this.domainPrefixes.get(domainPrefix));
+			return Optional.of(this.domainPrefixes.get(domainPrefix));
 		}
 		
 		return Optional.absent();
@@ -303,7 +290,7 @@ public class KasperLibrary {
 			final List<String> entityNames = this.aggregateComponents.get(agrName);
 			for (final String name : entityNames) {
 				final Optional<T> entity;
-				if (entityType == DocumentedConcept.TYPE_NAME) {
+				if (entityType.equals(DocumentedConcept.TYPE_NAME)) {
 					entity = (Optional<T>) getConcept(domainName, name);
 				} else {
 					entity = (Optional<T>) getRelation(domainName, name);
@@ -520,7 +507,7 @@ public class KasperLibrary {
 			final Map<String, ?> entityMap = this.domainEntities.get(entityClass);
 			if (entityMap.containsKey(domainName)) {
 				final Map<String, T> entities = (Map<String, T>) entityMap.get(domainName);
-				return (Optional<Map<String, T>>) Optional.of(Collections.unmodifiableMap(entities));
+				return Optional.of(Collections.unmodifiableMap(entities));
 			}
 		}
 		

@@ -1,9 +1,5 @@
 package com.viadeo.kasper.test.timelines.entities;
 
-import org.axonframework.domain.DomainEventMessage;
-import org.axonframework.eventsourcing.AbstractEventSourcedAggregateRoot;
-import org.joda.time.DateTime;
-
 import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.er.IComponentRelation;
@@ -11,6 +7,9 @@ import com.viadeo.kasper.er.annotation.XKasperRelation;
 import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.test.root.entities.Member;
 import com.viadeo.kasper.test.timelines.Timelines;
+import org.axonframework.domain.DomainEventMessage;
+import org.axonframework.eventsourcing.AbstractEventSourcedAggregateRoot;
+import org.joda.time.DateTime;
 
 @XKasperRelation(domain = Timelines.class, label = Status_publishedBy_Member.NAME, description = Status_publishedBy_Member.DESCRIPTION)
 public class Status_publishedBy_Member implements IComponentRelation<Status, Member> {

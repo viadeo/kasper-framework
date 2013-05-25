@@ -1,9 +1,5 @@
 package com.viadeo.kasper.test.applications.entities;
 
-import org.axonframework.domain.DomainEventMessage;
-import org.axonframework.eventsourcing.AbstractEventSourcedAggregateRoot;
-import org.joda.time.DateTime;
-
 import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.er.IComponentRelation;
@@ -11,6 +7,9 @@ import com.viadeo.kasper.er.annotation.XKasperRelation;
 import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.test.applications.Applications;
 import com.viadeo.kasper.test.root.entities.Member;
+import org.axonframework.domain.DomainEventMessage;
+import org.axonframework.eventsourcing.AbstractEventSourcedAggregateRoot;
+import org.joda.time.DateTime;
 
 @XKasperRelation(domain = Applications.class, label = Application_createdBy_Member.NAME)
 public class Application_createdBy_Member implements IComponentRelation<Application, Member> {

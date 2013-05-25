@@ -6,12 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.annotation;
 
+import com.viadeo.kasper.cqrs.query.IQuery;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import com.viadeo.kasper.cqrs.query.IQuery;
 
 /**
  * 

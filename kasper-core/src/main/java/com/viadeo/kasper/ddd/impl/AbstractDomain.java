@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.impl;
 
-import java.util.Set;
-
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.ddd.IAggregateRoot;
 import com.viadeo.kasper.ddd.IEntity;
@@ -15,13 +13,13 @@ import com.viadeo.kasper.ddd.IInternalDomain;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.locators.IDomainLocator;
 
+import java.util.Set;
+
 /**
  *
  * Base Kasper domain implementation
  *
- * @param <D> Domain
- * 
- * @see IDomain
+ * @see IInternalDomain
  */
 public abstract class AbstractDomain implements IInternalDomain {
 	private IDomainLocator domainLocator;
@@ -64,7 +62,7 @@ public abstract class AbstractDomain implements IInternalDomain {
 
 	@Override
 	public Set<? extends IEntity> getDomainEntities() {
-		return (Set<? extends IEntity>) this.domainLocator.getDomainEntities(this.getClass());
+		return this.domainLocator.getDomainEntities(this.getClass());
 	}
 
 }

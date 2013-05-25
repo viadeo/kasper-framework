@@ -1,4 +1,16 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.query.exposition;
+
+import com.google.common.collect.ImmutableMap;
+import com.google.common.reflect.TypeToken;
+import com.viadeo.kasper.cqrs.query.IQuery;
+import org.junit.Before;
+import org.junit.Test;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;
@@ -6,13 +18,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
-import static org.junit.Assert.*;
-
-import com.google.common.collect.ImmutableMap;
-import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.cqrs.query.IQuery;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 public class TestStdQueryFactoryDeser {
 	private StdQueryFactory factory;
@@ -20,7 +27,7 @@ public class TestStdQueryFactoryDeser {
 	@SuppressWarnings("unchecked")
 	@Before
 	public void setUp() {
-		Map<Type, ITypeAdapter<?>> adapters = new HashMap<Type, ITypeAdapter<?>>();
+		final Map<Type, ITypeAdapter<?>> adapters = new HashMap<>();
 		adapters.put(String.class, DefaultTypeAdapters.STRING_ADAPTER);
 		adapters.put(int.class, DefaultTypeAdapters.INT_ADAPTER);
 
@@ -31,14 +38,17 @@ public class TestStdQueryFactoryDeser {
 
 	@Test
 	public void testSimpleQueryDeserialization() {
-		ITypeAdapter<SimpleQuery> adapter = factory.create(TypeToken
-				.of(SimpleQuery.class));
 
-		Map<String, List<String>> given = ImmutableMap.of("name",
+        // Given
+		final ITypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
+		final Map<String, List<String>> given = ImmutableMap.of("name",
 				Arrays.asList("foo"), "age", Arrays.asList("1"), "list",
 				Arrays.asList("bar", "barfoo", "foobar"));
 
-		SimpleQuery query = adapter.adapt(new QueryParser(given));
+        // When
+		final SimpleQuery query = adapter.adapt(new QueryParser(given));
+
+        // Then
 		assertEquals("foo", query.name);
 		assertEquals(1, query.age);
 		assertEquals(Arrays.asList("bar", "barfoo", "foobar"), query.list);
@@ -46,14 +56,19 @@ public class TestStdQueryFactoryDeser {
 
 	@Test
 	public void testComposedQuery() {
-		Map<String, List<String>> given = ImmutableMap.of("field",
+
+        // Given
+		final Map<String, List<String>> given = ImmutableMap.of("field",
 				Arrays.asList("someValue"), "name", Arrays.asList("foo"),
 				"age", Arrays.asList("1"), "list",
 				Arrays.asList("bar", "barfoo", "foobar"));
-		ITypeAdapter<ComposedQuery> adapter = factory.create(TypeToken
+		final ITypeAdapter<ComposedQuery> adapter = factory.create(TypeToken
 				.of(ComposedQuery.class));
 
-		ComposedQuery query = adapter.adapt(new QueryParser(given));
+        // When
+		final ComposedQuery query = adapter.adapt(new QueryParser(given));
+
+        // Then
 		assertEquals("someValue", query.field);
 		assertEquals("foo", query.query.name);
 		assertEquals(1, query.query.age);
@@ -62,17 +77,22 @@ public class TestStdQueryFactoryDeser {
 
 	@Test
 	public void testDeserializeWithMissingAndAdditionalFields() {
-		ITypeAdapter<SimpleQuery> adapter = factory.create(TypeToken
-				.of(SimpleQuery.class));
 
+        // Given
+		final ITypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
+
+        // When
 		SimpleQuery query = adapter.adapt(new QueryParser(ImmutableMap.of(
 				"field", Arrays.asList("someValue"), "name",
 				Arrays.asList("foo"))));
 
+        // Then
 		assertEquals("foo", query.name);
 		assertNull(query.list);
 		assertEquals(0, query.age);
 	}
+
+    // ------------------------------------------------------------------------
 
 	public static class ComposedQuery implements IQuery {
 		private static final long serialVersionUID = 5434689745780198187L;
@@ -80,7 +100,7 @@ public class TestStdQueryFactoryDeser {
 		private SimpleQuery query;
 		private String field;
 
-		public ComposedQuery(SimpleQuery query, String field) {
+		public ComposedQuery(final SimpleQuery query, final String field) {
 			this.query = query;
 			this.field = field;
 		}
@@ -89,7 +109,7 @@ public class TestStdQueryFactoryDeser {
 			return query;
 		}
 
-		public void setQuery(SimpleQuery query) {
+		public void setQuery(final SimpleQuery query) {
 			this.query = query;
 		}
 
@@ -97,10 +117,13 @@ public class TestStdQueryFactoryDeser {
 			return field;
 		}
 
-		public void setField(String field) {
+		public void setField(final String field) {
 			this.field = field;
 		}
+
 	}
+
+    // ------------------------------------------------------------------------
 
 	public static class SimpleQuery implements IQuery {
 		private static final long serialVersionUID = 2101539230768491786L;
@@ -109,7 +132,7 @@ public class TestStdQueryFactoryDeser {
 		private final int age;
 		private final List<String> list;
 
-		public SimpleQuery(String name, int age, List<String> list) {
+		public SimpleQuery(final String name, final int age, final List<String> list) {
 			this.name = name;
 			this.age = age;
 			this.list = list;
@@ -127,4 +150,5 @@ public class TestStdQueryFactoryDeser {
 			return list;
 		}
 	}
+
 }

@@ -6,13 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.ddd;
 
-import java.io.Serializable;
-
-import org.joda.time.DateTime;
-
 import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.locators.IDomainLocator;
+import org.joda.time.DateTime;
+
+import java.io.Serializable;
 
 /**
  *

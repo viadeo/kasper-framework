@@ -1,17 +1,14 @@
 package com.viadeo.kasper.test.cqrs.query;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
 import com.viadeo.kasper.cqrs.query.filter.impl.QueryFilterNot;
 import com.viadeo.kasper.test.cqrs.query.StubbedDQTOS.DQOTest;
 import com.viadeo.kasper.test.cqrs.query.StubbedDQTOS.DTOTest;
+import junit.framework.Assert;
+import org.junit.Test;
+import org.mockito.Mockito;
 
-public class QueryFilterNotTest extends TestCase {
+public class QueryFilterNotTest {
 
 	@Test
 	public void testNot() {
@@ -20,8 +17,7 @@ public class QueryFilterNotTest extends TestCase {
 		.mock(IQueryFilter.class);
 		final DTOTest dto = Mockito.mock(DTOTest.class);
 
-		final QueryFilterNot<DQOTest> notFilter = new QueryFilterNot<DQOTest>(
-				filter);
+		final QueryFilterNot<DQOTest> notFilter = new QueryFilterNot<>(filter);
 
 		Mockito.when(filter.isSatisfiedBy(dto)).thenReturn(true);
 
@@ -39,7 +35,7 @@ public class QueryFilterNotTest extends TestCase {
 	public void testConstructNull() {
 		try {
 			@SuppressWarnings("unused")
-			final QueryFilterNot<DQOTest> notFilter = new QueryFilterNot<DQOTest>(
+			final QueryFilterNot<DQOTest> notFilter = new QueryFilterNot<>(
 					null);
 			Assert.fail();
 		} catch (final NullPointerException e) {

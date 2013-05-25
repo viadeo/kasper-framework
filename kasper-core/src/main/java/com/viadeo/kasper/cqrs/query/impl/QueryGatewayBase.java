@@ -6,21 +6,16 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.impl;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.IContext;
-import com.viadeo.kasper.cqrs.query.IQuery;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
-import com.viadeo.kasper.cqrs.query.IQueryGateway;
-import com.viadeo.kasper.cqrs.query.IQueryMessage;
-import com.viadeo.kasper.cqrs.query.IQueryService;
+import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
 import com.viadeo.kasper.locators.IQueryServicesLocator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /** The Kasper gateway base implementation */
 public class QueryGatewayBase implements IQueryGateway {
@@ -43,7 +38,8 @@ public class QueryGatewayBase implements IQueryGateway {
 		final Optional<IQueryService> service = queryServicesLocator.getServiceFromQueryClass(query.getClass());
 
 		if (!service.isPresent()) {
-			throw new KasperQueryRuntimeException("Unable to find the service implementing query class " + query.getClass());
+			throw new KasperQueryRuntimeException(
+                    "Unable to find the service implementing query class " + query.getClass());
 		}
 
 		QueryGatewayBase.LOGGER.info("Call service " + service.get().getClass().getSimpleName());
@@ -52,8 +48,7 @@ public class QueryGatewayBase implements IQueryGateway {
 		final IQueryMessage message = new QueryMessage(context, query);
 
 		@SuppressWarnings("unchecked") // Caller must ensure
-		final DTO dto = (DTO) service.get().retrieve(message);
-
+        final DTO dto = (DTO) service.get().retrieve(message);
 		return dto;
 	}
 

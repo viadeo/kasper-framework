@@ -1,12 +1,5 @@
 package com.viadeo.kasper.event;
 
-import static org.junit.Assert.assertTrue;
-
-import java.util.concurrent.locks.ReentrantLock;
-
-import org.joda.time.DateTime;
-import org.junit.Test;
-
 import com.viadeo.kasper.AbstractPlatformTests;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.KasperTestIdGenerator;
@@ -16,6 +9,12 @@ import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.event.domain.er.impl.AbstractConceptEvent;
 import com.viadeo.kasper.event.impl.AbstractEventListener;
+import org.joda.time.DateTime;
+import org.junit.Test;
+
+import java.util.concurrent.locks.ReentrantLock;
+
+import static org.junit.Assert.assertTrue;
 
 public class PlatformPublishEventTest extends AbstractPlatformTests {
 

@@ -7,20 +7,18 @@
 
 package com.viadeo.kasper.client;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.Date;
-
-import javax.ws.rs.core.MultivaluedMap;
-
-import org.joda.time.DateTime;
-import org.junit.Test;
-
 import com.viadeo.kasper.client.exceptions.KasperClientException;
 import com.viadeo.kasper.cqrs.query.IQuery;
 import com.viadeo.kasper.query.exposition.ITypeAdapter;
 import com.viadeo.kasper.query.exposition.QueryBuilder;
 import com.viadeo.kasper.query.exposition.QueryParser;
+import org.joda.time.DateTime;
+import org.junit.Test;
+
+import javax.ws.rs.core.MultivaluedMap;
+import java.util.Date;
+
+import static org.junit.Assert.assertEquals;
 
 public class KasperClientQueryCreationTest {
 
@@ -81,6 +79,7 @@ public class KasperClientQueryCreationTest {
 				final Integer aInteger, final boolean aPrimitiveBoolean,
 				final Date aDate, final DateTime[] multipleDates) {
 			super();
+
 			this.aStr = aStr;
 			this.aPrimitiveInt = aPrimitiveInt;
 			this.aInteger = aInteger;
@@ -117,21 +116,17 @@ public class KasperClientQueryCreationTest {
 	// ------------------------------------------------------------------------
 
 	private MoreComplexQuery prepareMoreComplexQueryBean() {
-		return new MoreComplexQuery("foo", 1, Integer.valueOf(2), true, now,
-				new DateTime[] { dt, dt });
+		return new MoreComplexQuery("foo", 1, 2, true, now, new DateTime[] { dt, dt });
 	}
 
-	private void assertMoreComplexQueryContent(
-			MultivaluedMap<String, String> queryParams) {
+	private void assertMoreComplexQueryContent(final MultivaluedMap<String, String> queryParams) {
 		assertEquals("foo", queryParams.getFirst("aStr"));
 		assertEquals("1", queryParams.getFirst("aPrimitiveInt"));
 		assertEquals("2", queryParams.getFirst("aInteger"));
 		assertEquals("true", queryParams.getFirst("aPrimitiveBoolean"));
 		assertEquals("" + now.getTime(), queryParams.getFirst("aDate"));
-		assertEquals("" + dt.getMillis(),
-				queryParams.get("multipleDates").get(0));
-		assertEquals("" + dt.getMillis(),
-				queryParams.get("multipleDates").get(0));
+		assertEquals("" + dt.getMillis(), queryParams.get("multipleDates").get(0));
+		assertEquals("" + dt.getMillis(), queryParams.get("multipleDates").get(0));
 	}
 
 	// ------------------------------------------------------------------------
@@ -160,13 +155,13 @@ public class KasperClientQueryCreationTest {
 				new ITypeAdapter<SomePojo>() {
 					@Override
 					public void adapt(final SomePojo value,
-							final QueryBuilder builder) {
+							          final QueryBuilder builder) {
 						builder.addSingle("somePojo", 2);
 						builder.addSingle("otherProperty", true);
 					}
 
 					@Override
-					public SomePojo adapt(QueryParser parser) {
+					public SomePojo adapt(final QueryParser parser) {
 						return null;
 					}
 				}).create();
@@ -194,12 +189,10 @@ public class KasperClientQueryCreationTest {
 
 		// Given
 		final KasperClient client = new KasperClient();
-		final CombinedQuery query = new CombinedQuery(
-				prepareMoreComplexQueryBean());
+		final CombinedQuery query = new CombinedQuery(prepareMoreComplexQueryBean());
 
 		// When
-		final MultivaluedMap<String, String> map = client
-				.prepareQueryParams(query);
+		final MultivaluedMap<String, String> map = client.prepareQueryParams(query);
 
 		// Then
 		assertMoreComplexQueryContent(map);
@@ -215,8 +208,7 @@ public class KasperClientQueryCreationTest {
 		final MoreComplexQuery query = prepareMoreComplexQueryBean();
 
 		// When
-		final MultivaluedMap<String, String> map = client
-				.prepareQueryParams(query);
+		final MultivaluedMap<String, String> map = client.prepareQueryParams(query);
 
 		// Then
 		assertMoreComplexQueryContent(map);

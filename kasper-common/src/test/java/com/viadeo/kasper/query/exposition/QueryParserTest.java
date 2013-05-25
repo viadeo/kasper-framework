@@ -1,16 +1,23 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.query.exposition;
+
+import com.google.common.collect.ImmutableMap;
+import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.NoSuchElementException;
 
-import org.junit.Test;
 import static org.junit.Assert.*;
 
-import com.google.common.collect.ImmutableMap;
-
 public class QueryParserTest {
+
 	@Test
 	public void testExists() {
 		final QueryParser parser = new QueryParser(ImmutableMap.of("someKey",
@@ -26,8 +33,8 @@ public class QueryParserTest {
 		final QueryParser parser = new QueryParser(ImmutableMap.of("someKey",
 				expected));
 
-		final List<String> values = new ArrayList<String>();
-		for (QueryParser next : parser.begin("someKey")) {
+		final List<String> values = new ArrayList<>();
+		for (final QueryParser next : parser.begin("someKey")) {
 			values.add(next.value());
 		}
 		assertEquals("someKey", parser.name());
@@ -37,7 +44,8 @@ public class QueryParserTest {
 		assertEquals(expected, values);
 	}
 
-	@Test(expected=NoSuchElementException.class) public void testNoSuchElementException() {
+	@Test(expected=NoSuchElementException.class)
+    public void testNoSuchElementException() {
 		final QueryParser parser = new QueryParser(ImmutableMap.of("someKey", Arrays.asList("foobar")));
 		
 		assertTrue(parser.hasNext());
@@ -54,9 +62,10 @@ public class QueryParserTest {
 		parser.next();
 	}
 	
-	@Test(expected=IllegalStateException.class) public void testIllegalCallEndWithoutBegin() {
+	@Test(expected=IllegalStateException.class)
+    public void testIllegalCallEndWithoutBegin() {
 		final QueryParser parser = new QueryParser(ImmutableMap.of("someKey", Arrays.asList("foobar")));
-		
 		parser.end();
 	}
+
 }

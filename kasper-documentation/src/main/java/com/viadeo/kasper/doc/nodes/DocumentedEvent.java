@@ -6,13 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
-import java.util.Collection;
-
 import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.exception.KasperRuntimeException;
+
+import java.util.Collection;
 
 
 public final class DocumentedEvent extends AbstractDocumentedDomainNode {
