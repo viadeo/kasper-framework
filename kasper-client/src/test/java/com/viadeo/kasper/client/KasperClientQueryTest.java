@@ -24,6 +24,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -102,7 +103,7 @@ public class KasperClientQueryTest extends JerseyTest {
             return new MemberDTO(memberName, ids);
         }
     }
-
+    
     @BeforeClass
     public static void init() throws IOException {
         ServerSocket socket = new ServerSocket(0);
@@ -133,20 +134,21 @@ public class KasperClientQueryTest extends JerseyTest {
         }
     }
 
+    public KasperClientQueryTest() throws IOException {
+        super(new LowLevelAppDescriptor.Builder(new TestConfiguration()).contextPath("/kasper/query").build());
+        
+        client = new KasperClientBuilder()
+                .client(client())
+                .queryBaseLocation(new URL("http://localhost:" + port + "/kasper/query/"))
+                .create();
+    }
+
     /**
      * {@inheritDoc}
      */
     @Override
     protected int getPort(int defaultPort) {
         return port;
-    }
-
-    public KasperClientQueryTest() throws MalformedURLException {
-        super(new LowLevelAppDescriptor.Builder(new TestConfiguration()).contextPath("/kasper/query").build());
-        client = new KasperClientBuilder()
-                .client(client())
-                .queryBaseLocation(new URL("http://localhost:" + port + "/kasper/query/"))
-                .create();
     }
 
     @Override
@@ -200,7 +202,7 @@ public class KasperClientQueryTest extends JerseyTest {
         client.queryAsync(query, MemberDTO.class, callback);
 
         // Then
-        latch.await(30, TimeUnit.SECONDS);
+        latch.await(5, TimeUnit.SECONDS);
         verify(callback).done(result.capture());
         checkRoundTrip(query, result.getValue());
     }

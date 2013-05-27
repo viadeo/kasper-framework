@@ -5,13 +5,15 @@
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper.client;
+package com.viadeo.kasper.query.exposition;
 
-import javax.ws.rs.core.MultivaluedMap;
+import java.util.List;
+import java.util.Map;
+
 import org.junit.Before;
 import org.junit.Test;
 
-import com.viadeo.kasper.client.lib.QueryBuilder;
+import com.viadeo.kasper.query.exposition.QueryBuilder;
 
 import static org.junit.Assert.*;
 
@@ -70,11 +72,11 @@ public class QueryBuilderTest {
     	// Given
     	
     	// When
-        final MultivaluedMap<String, String> map = builder.addSingle(KEY, VALUE).begin(ARRAY).add("1", "2").end().build();
+        final Map<String, List<String>> map = builder.addSingle(KEY, VALUE).begin(ARRAY).add("1", "2").end().build();
         
         // Then
         assertTrue(map.get(KEY).size() == 1);
-        assertEquals(VALUE, map.getFirst(KEY));
+        assertEquals(VALUE, map.get(KEY).get(0));
         assertTrue(map.get(ARRAY).size() == 2);
         assertEquals("1", map.get(ARRAY).get(0));
         assertEquals("2", map.get(ARRAY).get(1));
@@ -84,7 +86,7 @@ public class QueryBuilderTest {
         // Given
         
         // When
-        final MultivaluedMap<String, String> map = builder.begin("14").add(1).begin("23").add(2).add(3).end().add(4).end().build();
+        final Map<String, List<String>> map = builder.begin("14").add(1).begin("23").add(2).add(3).end().add(4).end().build();
         
         // Then
         assertEquals("1", map.get("14").get(0));

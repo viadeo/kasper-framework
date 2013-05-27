@@ -5,14 +5,17 @@
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper.client.lib;
+package com.viadeo.kasper.query.exposition;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.NoSuchElementException;
-import javax.ws.rs.core.MultivaluedMap;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
+
+import static com.google.common.base.Preconditions.*;
 
 /**
  * Low level class allowing to build a query.
@@ -34,7 +37,34 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
  */
 public class QueryBuilder {
 
-    private final MultivaluedMap<String, String> map = new MultivaluedMapImpl();
+     class MapOfLists extends HashMap<String, List<String>> {
+		private static final long serialVersionUID = -9221826712691674905L;
+
+		void putSingle(String key, String value) {    		
+    		getAndPutIfAbsent(key).add(value);
+    	}
+		
+		void add(String key, String value) {
+			getAndPutIfAbsent(key).add(value);
+		}
+		
+		String first(String key) {
+			List<String> values = get(key);
+			if (values != null && values.size() > 0) return values.get(0);
+			return null;
+		}
+		
+		List<String> getAndPutIfAbsent(final String key) {
+    		List<String> values = get(key);
+    		if (values == null) {
+    			values = new ArrayList<String>();
+    			put(key, values);
+    		}
+    		return values;
+		}
+    }
+     
+    private final MapOfLists map = new MapOfLists();
     private final Deque<String> names = new ArrayDeque<String>();
     private String actualName;
 
@@ -49,6 +79,7 @@ public class QueryBuilder {
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder begin(final String name) {
+    	checkNotNull(name);
         if (has(name)) {
             throwDuplicate(name);
         }
@@ -82,7 +113,9 @@ public class QueryBuilder {
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder addSingle(final String name, final String value) {
-        if (has(name)) {
+    	checkNotNull(name);
+    	checkNotNull(value);
+    	if (has(name)) {
             throwDuplicate(name);
         }
         map.putSingle(name, value);
@@ -94,6 +127,8 @@ public class QueryBuilder {
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder addSingle(final String name, final Number value) {
+    	checkNotNull(name);
+    	checkNotNull(value);
         if (has(name)) {
             throwDuplicate(name);
         }
@@ -101,11 +136,19 @@ public class QueryBuilder {
         return this;
     }
 
+    public QueryBuilder singleNull() {
+    	// lets just forbid nulls for the moment by removing them
+    	map.remove(actualName);
+    	return this;
+    }
+    
     /**
      * Writes a single pair name/value.
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder addSingle(final String name, final Boolean value) {
+    	checkNotNull(name);
+    	checkNotNull(value);
         if (has(name)) {
             throwDuplicate(name);
         }
@@ -118,6 +161,7 @@ public class QueryBuilder {
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder add(final Number value) {
+    	checkNotNull(value);
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
@@ -130,6 +174,7 @@ public class QueryBuilder {
      * @throws IllegalStateException if begin(name) was not called.
      */
     public QueryBuilder add(final Boolean value) {
+    	checkNotNull(value);
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
@@ -142,6 +187,7 @@ public class QueryBuilder {
      * @throws IllegalStateException if begin(name) was not called.
      */
     public QueryBuilder add(final String value) {
+    	checkNotNull(value);
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
@@ -154,6 +200,7 @@ public class QueryBuilder {
      * @throws IllegalStateException if begin(name) was not called.
      */
     public QueryBuilder add(final String... values) {
+    	checkNotNull(values);
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
@@ -187,7 +234,7 @@ public class QueryBuilder {
         if (!map.containsKey(name)) {
             throw new NoSuchElementException();
         }
-        return map.getFirst(name);
+        return map.first(name);
     }
 
     /**
@@ -203,8 +250,11 @@ public class QueryBuilder {
 
     // ------------------------------------------------------------------------
 
-    public MultivaluedMap<String, String> build() {
-        return new MultivaluedMapImpl(map);
+    public Map<String, List<String>> build() {
+    	Map<String, List<String>> copyMap = new HashMap<String, List<String>>();
+    	for (Map.Entry<String, List<String>> e : map.entrySet())
+    		copyMap.put(e.getKey(), new ArrayList<String>(e.getValue()));
+        return copyMap;
     }
 
     // ------------------------------------------------------------------------

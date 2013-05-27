@@ -27,7 +27,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<axon.version>2.0</axon.version>
 		<testng.version>6.7</testng.version>
-		<com.fasterxml.jackson.version>2.0.2</com.fasterxml.jackson.version>
+		<com.fasterxml.jackson.version>2.1.2</com.fasterxml.jackson.version>
 		<org.springframework.version>3.1.4.RELEASE</org.springframework.version>
 		<junit.version>4.10</junit.version>
 		<org.slf4j.version>1.7.1</org.slf4j.version>
@@ -164,8 +164,8 @@
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
-				<artifactId>servlet-api</artifactId>
-				<version>2.5</version>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>3.0.1</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
@@ -272,6 +272,17 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<links>
+						<link>http://docs.guava-libraries.googlecode.com/git/javadoc/</link>
+						<link>http://docs.oracle.com/javase/1.6.0/docs/api/</link>
+					</links>
+					<version>true</version>
+					<show>protected</show>
+					<encoding>UTF-8</encoding>
+					<docencoding>UTF-8</docencoding>
+					<charset>UTF-8</charset>
+				</configuration>
 			</plugin>
 		</plugins>
 		<pluginManagement>

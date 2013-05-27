@@ -6,14 +6,19 @@
 // ============================================================================
 package com.viadeo.kasper.locators.impl;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IDomain;
+import com.viadeo.kasper.cqrs.command.ICommand;
+import com.viadeo.kasper.cqrs.command.ICommandHandler;
 import com.viadeo.kasper.ddd.IAggregateRoot;
 import com.viadeo.kasper.ddd.IEntity;
 import com.viadeo.kasper.ddd.IInternalDomain;
@@ -24,29 +29,35 @@ import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 /**
- *
+ * 
  * Base implementation for domain locator
- *
+ * 
  */
 public class DomainLocatorBase implements IDomainLocator {
 
-	//- Convenient Cache types ------------------------------------------------
+	// - Convenient Cache types ------------------------------------------------
 
-	private static final class RepositoriesByAggregateCache extends HashMap<Class<? extends IAggregateRoot>, IRepository<?>> {
+	private static final class RepositoriesByAggregateCache extends
+			HashMap<Class<? extends IAggregateRoot>, IRepository<?>> {
 		private static final long serialVersionUID = 4713909577649004213L;
 	}
 
-	private static final class DomainsPropertiesCache extends HashMap<IDomain, Map<String, String>> {
+	private static final class DomainsPropertiesCache extends
+			HashMap<IDomain, Map<String, String>> {
 		private static final long serialVersionUID = -145508661436546886L;
 	}
 
-	private static final class DomainByPropertyCache extends HashMap<String, IDomain> {
+	private static final class DomainByPropertyCache extends
+			HashMap<String, IDomain> {
 		private static final long serialVersionUID = 4967890441255351599L;
 	}
+	
+	private final List<ICommandHandler<? extends ICommand>> handlers = new ArrayList<ICommandHandler<? extends ICommand>>();
+    
 
 	// ------------------------------------------------------------------------
 
-	/** Domain repositories  */
+	/** Domain repositories */
 	private final transient RepositoriesByAggregateCache entityRepositories;
 
 	/** Domains */
@@ -65,12 +76,24 @@ public class DomainLocatorBase implements IDomainLocator {
 
 	// ------------------------------------------------------------------------
 
+	@Override
+	public void registerHandler(
+			ICommandHandler<? extends ICommand> commandHandler) {
+		handlers.add(commandHandler);
+	}
+
+	@Override
+	public Collection<ICommandHandler<? extends ICommand>> getHandlers() {
+		return Collections.unmodifiableCollection(handlers);
+	}
+
 	/**
 	 * @see com.viadeo.kasper.locators.IDomainLocator#getDomainEntities(com.viadeo.kasper.IDomain)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <D extends IDomain> Set<? extends IEntity> getDomainEntities(final D domain) {
+	public <D extends IDomain> Set<? extends IEntity> getDomainEntities(
+			final D domain) {
 		Preconditions.checkNotNull(domain);
 		// TODO Auto-generated method stub
 
@@ -82,7 +105,8 @@ public class DomainLocatorBase implements IDomainLocator {
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <D extends IDomain> Set<? extends IEntity> getDomainEntities(final Class<D> domain) {
+	public <D extends IDomain> Set<? extends IEntity> getDomainEntities(
+			final Class<D> domain) {
 		Preconditions.checkNotNull(domain);
 		// TODO Auto-generated method stub
 
@@ -96,7 +120,9 @@ public class DomainLocatorBase implements IDomainLocator {
 	public <D extends IDomain> D getEntityDomain(final IEntity entity) {
 		Preconditions.checkNotNull(entity);
 		// TODO Auto-generated method stub
-		throw new KasperDomainRuntimeException("Entity has no registered domain : " + entity.getClass().getName());
+		throw new KasperDomainRuntimeException(
+				"Entity has no registered domain : "
+						+ entity.getClass().getName());
 	}
 
 	// ========================================================================
@@ -108,14 +134,17 @@ public class DomainLocatorBase implements IDomainLocator {
 	public void registerRepository(final IRepository<?> repository) {
 		Preconditions.checkNotNull(repository);
 
-		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends IAggregateRoot>> entity = 
-				(Optional<Class<? extends IAggregateRoot>>) 
-					ReflectionGenericsResolver.getParameterTypeFromClass(repository.getClass(),
-							IRepository.class, IRepository.ENTITY_PARAMETER_POSITION);
+		@SuppressWarnings("unchecked")
+		// Safe
+		final Optional<Class<? extends IAggregateRoot>> entity = (Optional<Class<? extends IAggregateRoot>>) ReflectionGenericsResolver
+				.getParameterTypeFromClass(repository.getClass(),
+						IRepository.class,
+						IRepository.ENTITY_PARAMETER_POSITION);
 
 		if (!entity.isPresent()) {
-			throw new KasperDomainRuntimeException("Entity type cannot be determined for " + repository.getClass().getName());
+			throw new KasperDomainRuntimeException(
+					"Entity type cannot be determined for "
+							+ repository.getClass().getName());
 		}
 
 		this.entityRepositories.put(entity.get(), repository);
@@ -126,20 +155,22 @@ public class DomainLocatorBase implements IDomainLocator {
 	/**
 	 * @see com.viadeo.kasper.locators.IDomainLocator#getEntityRepository(com.viadeo.kasper.ddd.IAggregateRoot)
 	 */
-	@SuppressWarnings("unchecked") // Safe
+	@SuppressWarnings("unchecked")
+	// Safe
 	@Override
-	public <E extends IAggregateRoot> IRepository<E> getEntityRepository(final E entity) {
+	public <E extends IAggregateRoot> IRepository<E> getEntityRepository(
+			final E entity) {
 		Preconditions.checkNotNull(entity);
 		return (IRepository<E>) this.entityRepositories.get(entity.getClass());
 	}
-
 
 	/**
 	 * @see com.viadeo.kasper.locators.IDomainLocator#getEntityRepository(java.lang.Class)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public <E extends IAggregateRoot> IRepository<E> getEntityRepository(final Class<E> entityClass) {
+	public <E extends IAggregateRoot> IRepository<E> getEntityRepository(
+			final Class<E> entityClass) {
 		Preconditions.checkNotNull(entityClass);
 
 		return (IRepository<E>) this.entityRepositories.get(entityClass);
@@ -148,20 +179,25 @@ public class DomainLocatorBase implements IDomainLocator {
 	// ========================================================================
 
 	/**
-	 * @see com.viadeo.kasper.locators.IDomainLocator#registerDomain(com.viadeo.kasper.IDomain, java.lang.String, java.lang.String)
+	 * @see com.viadeo.kasper.locators.IDomainLocator#registerDomain(com.viadeo.kasper.IDomain,
+	 *      java.lang.String, java.lang.String)
 	 */
 	@Override
-	public void registerDomain(final IInternalDomain domain, final String name, final String prefix) {
+	public void registerDomain(final IInternalDomain domain, final String name,
+			final String prefix) {
 		Preconditions.checkNotNull(domain);
 		Preconditions.checkNotNull(name);
 		Preconditions.checkNotNull(prefix);
 
 		if (name.isEmpty() || prefix.isEmpty()) {
-			throw new KasperDomainRuntimeException("Domain name and prefix must not be empty for domain" + domain.getClass().getSimpleName());
+			throw new KasperDomainRuntimeException(
+					"Domain name and prefix must not be empty for domain"
+							+ domain.getClass().getSimpleName());
 		}
 
 		if (AbstractDomain.class.isAssignableFrom(domain.getClass())) {
-			((AbstractDomain) domain).setDomainLocator(this); // Create locator link
+			((AbstractDomain) domain).setDomainLocator(this); // Create locator
+																// link
 		}
 
 		final Map<String, String> domainData = new HashMap<String, String>();
@@ -206,7 +242,8 @@ public class DomainLocatorBase implements IDomainLocator {
 		if (this.domains.containsKey(domain.getClass())) {
 			return this.domains.get(domain.getClass()).get("prefix");
 		}
-		throw new KasperDomainRuntimeException("Domain has not been recorded : " + domain.getClass().getName());
+		throw new KasperDomainRuntimeException(
+				"Domain has not been recorded : " + domain.getClass().getName());
 	}
 
 	/**
@@ -218,7 +255,8 @@ public class DomainLocatorBase implements IDomainLocator {
 		if (this.domains.containsKey(domain.getClass())) {
 			return this.domains.get(domain.getClass()).get("name");
 		}
-		throw new KasperDomainRuntimeException("Domain has not been recorded : " + domain.getClass().getName());
+		throw new KasperDomainRuntimeException(
+				"Domain has not been recorded : " + domain.getClass().getName());
 	}
 
 	/**
@@ -226,7 +264,7 @@ public class DomainLocatorBase implements IDomainLocator {
 	 */
 	@Override
 	public Set<IDomain> getDomains() {
-		return Collections.unmodifiableSet(this.domains.keySet()); 
+		return Collections.unmodifiableSet(this.domains.keySet());
 	}
 
 }

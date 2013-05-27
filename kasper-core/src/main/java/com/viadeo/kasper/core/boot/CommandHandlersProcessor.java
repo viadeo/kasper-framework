@@ -94,7 +94,9 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
 						ICommandHandler.class, ICommandHandler.COMMAND_PARAMETER_POSITION);
 
 		if (commandClass.isPresent()) {
-			
+		    // register this command handler for further use in kasper components
+			domainLocator.registerHandler(commandHandler);
+            
 			//- Dynamic type command class and command handler for Axon -------
 			final CommandCastor<ICommand> castor =
 					new CommandCastor<ICommand>(commandClass.get(), commandHandler);
