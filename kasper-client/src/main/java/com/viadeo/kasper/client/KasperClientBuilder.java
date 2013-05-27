@@ -18,6 +18,13 @@ import java.net.URL;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+
+/**
+ * This builder must be used if you want to change KasperClient configuration. By default all queries will be sent to
+ * {@value #DEFAULT_QUERY_URL} url and commands to {@value #DEFAULT_COMMAND_URL}. <br/>
+ * Queries can have attributes of primitive types, arrays, collections and some date types (including jodatime). If some
+ * type is missing just open an issue and it will be added.
+ */
 public class KasperClientBuilder {
 
 	private Client client;
@@ -34,6 +41,18 @@ public class KasperClientBuilder {
 
 	// ------------------------------------------------------------------------
 
+    /**
+     * Registers an adapter for its parameterized type for query ser/deser. Registration of adapters should be done in
+     * domain api projects as they are shared between server and clients. To allow adapters discovery prefer using java
+     * service loader mechanism. Create a file named com.viadeo.kasper.query.exposition.ITypeAdapter under
+     * META-INF/services and put inside the name of your adapters. They will be automatically discovered by the
+     * KasperClient.
+     *
+     * @param mapper to register for query serialization/deserialization.
+     * @return a reference to this builder.
+     *
+     * @see ITypeAdapter
+     */
 	public KasperClientBuilder use(final ObjectMapper mapper) {
 		checkNotNull(mapper);
 		this.mapper = mapper;
@@ -51,6 +70,9 @@ public class KasperClientBuilder {
 		return this;
 	}
 
+    /**
+     * @see #use(ITypeAdapter)
+     */
 	public KasperClientBuilder use(final ITypeAdapterFactory<?> factory) {
 		qFactoryBuilder.use(factory);
 		return this;
@@ -58,11 +80,19 @@ public class KasperClientBuilder {
 
 	// ------------------------------------------------------------------------
 
-	public KasperClientBuilder queryBaseLocation(final URL url) {
+    /**
+     * @param url of the base path to use for query submission.
+     * @return a reference to this builder.
+     */
+    public KasperClientBuilder queryBaseLocation(final URL url) {
 		queryBaseLocation = checkNotNull(url);
 		return this;
 	}
 
+    /**
+     * @param url of the base path to use for commands submission.
+     * @return a reference to this builder.
+     */
 	public KasperClientBuilder commandBaseLocation(final URL url) {
 		commandBaseLocation = checkNotNull(url);
 		return this;
@@ -81,6 +111,9 @@ public class KasperClientBuilder {
 
 	// ------------------------------------------------------------------------
 
+    /**
+     * @return a instance of a new KasperClient for that configuration.
+     */
 	public KasperClient create() {
 
 		if (null == mapper) {

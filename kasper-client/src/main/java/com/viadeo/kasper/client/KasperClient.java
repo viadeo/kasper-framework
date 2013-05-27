@@ -45,7 +45,60 @@ import java.util.concurrent.TimeoutException;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * The Kasper java client
+ * <p>
+ * KasperClient allows to submit commands and queries to a remote kasper platform. It actually wraps all the logic of
+ * communication, errors and resources location resolution.
+ * </p>
+ * <p>
+ * Instances of <strong>KasperClient are thread safe and should be reused</strong> as internally some caching is done in
+ * order to improve performances (mainly to avoid java introspection overhead).
+ * </p>
+ * <p>
+ * <strong>Usage</strong><br />
+ * KasperClient supports synchronous and asynchronous requests. Sending asynchronous requests can be done by asking for
+ * a java Future or by passing a {@link ICallback callback} argument. For example submitting a command asynchronously
+ * with a callback (we will use here a client with its default configuration). <br/>
+ * Command and query methods can throw KasperClientException, which are unchecked exceptions in order to avoid
+ * boilerplate code.
+ * 
+ * <pre>
+ *      KasperClient client = new KasperClient();
+ *      
+ *      client.sendAsync(someCommand, new ICallback&lt;ICommandResult&gt;() {
+ *          public void done(ICommandResult result) {
+ *              // do something smart with my result
+ *          }
+ *      });
+ *      
+ *      // or using a future
+ *      
+ *      Future&lt;ICommandResult&gt; futureCommandResult = client.sendAsync(someCommand);
+ *      
+ *      // do some other work while the command is being processed
+ *      ...
+ *      
+ *      // block until the result is obtained
+ *      ICommandResult commandResult = futureCommandResult.get();
+ * </pre>
+ * 
+ * Using a similar pattern you can submit a query.
+ * </p>
+ * <p>
+ * <strong>Customization</strong><br />
+ * To customize a KasperClient instance you can use the {@link KasperClientBuilder}, implementing the builder pattern in
+ * order to allow a fluent and intuitive construction of KasperClient instances.
+ * </p>
+ * <p>
+ * <strong>Important notes</strong><br />
+ * <ul>
+ * <li>Query implementations must be composed only of simple types (serialized to litterals), if you need a complex
+ * query or some type used in your query is not supported you should ask the team responsible of maintaining the kasper
+ * platform to implement a custom {@link ITypeAdapter} for that specific type.</li>
+ * <li>At the moment the DTO to which the result should be mapped is free, but take care it must match the resulting
+ * stream. This will probably change in the future by making IQuery parameterized with a DTO. Thus query methods
+ * signature could change.</li>
+ * </ul>
+ * </p>
  */
 public final class KasperClient {
 	private static final KasperClient DEFAULT_KASPER_CLIENT = new KasperClientBuilder().create();
@@ -59,6 +112,9 @@ public final class KasperClient {
 
 	// ------------------------------------------------------------------------
 
+    /**
+     * Creates a new KasperClient instance using the default {@link KasperClientBuilder} configuration.
+     */
 	public KasperClient() {
 		this.client = DEFAULT_KASPER_CLIENT.client;
 		this.commandBaseLocation = DEFAULT_KASPER_CLIENT.commandBaseLocation;
@@ -95,7 +151,16 @@ public final class KasperClient {
 	// COMMANDS
 	// ------------------------------------------------------------------------
 
-	public ICommandResult send(final ICommand command) {
+    /**
+     * Sends a command and waits until a result is returned.
+     *
+     * @param command to submit
+     * @return the command result, indicating if the command has been processed successfully or not (in that case you
+     * can get the error message from the command).
+     * @throws KasperClientException if something went wrong.
+     * @see ICommandResult
+     */
+    public ICommandResult send(final ICommand command) {
 		checkNotNull(command);
 
 		final ClientResponse response = client
@@ -109,6 +174,14 @@ public final class KasperClient {
 
 	// --
 
+    /**
+     * Sends a command and returns immediately a future allowing to retrieve the result later.
+     *
+     * @param command to submit
+     * @return a Future allowing to retrieve the result later.
+     * @throws KasperClientException if something went wrong.
+     * @see ICommandResult
+     */
 	public Future<? extends ICommandResult> sendAsync(final ICommand command) {
 		checkNotNull(command);
 
@@ -147,6 +220,15 @@ public final class KasperClient {
 
 	// --
 
+    /**
+     * Sends a command and returns immediately, when the response is ready the callback will be called with the obtained
+     * ICommandResult as parameter.
+     *
+     * @param command to submit
+     * @param callback to call when the response is ready.
+     * @throws KasperClientException if something went wrong.
+     * @see ICommandResult
+     */
 	public void sendAsync(final ICommand command,
 			              final ICallback<ICommandResult> callback) {
 		checkNotNull(command);
@@ -181,10 +263,35 @@ public final class KasperClient {
 	// QUERIES
 	// ------------------------------------------------------------------------
 
+    /**
+     * Send a query and maps the result to a DTO.
+     *
+     * @param query to submit.
+     * @param mapTo DTO class to which we want to map the result.
+     * @return an instance of the DTO for this query.
+     * @throws KasperClientException if something went wrong.
+     */
 	public <T extends IQueryDTO> T query(final IQuery query, final Class<T> mapTo) {
 		return query(query, TypeToken.of(mapTo));
 	}
 
+    /**
+     * Send a query and maps the result to a DTO. Here we use guavas TypeToken allowing to define a generic type. This
+     * is useful if you want to map the result to a IQueryCollectionDTO. <br/>
+     * <p>
+     * Type tokens are used like that:
+     * <pre>
+     *  SomeCollectionDTO&lt;SomeDTO> someDTOCollection = client.query(someQuery, new TypeToken&lt;SomeCollectionDTO&lt;SomeDTO>>());
+     * </pre>
+     * If you are not familiar with the concept of TypeTokens you can read <a
+     * href="http://gafter.blogspot.fr/2006/12/super-type-tokens.html">this blog post</a> who explains a bit more in
+     * details what it is about.
+     * </p>
+     * @param query to submit.
+     * @param mapTo DTO class to which we want to map the result.
+     * @return an instance of the DTO for this query.
+     * @throws KasperClientException if something went wrong.
+     */
 	public <T extends IQueryDTO> T query(final IQuery query, final TypeToken<T> mapTo) {
 		checkNotNull(query);
 		checkNotNull(mapTo);
@@ -200,14 +307,18 @@ public final class KasperClient {
 
 	// --
 
+
 	public <T extends IQueryDTO> Future<T> queryAsync(final IQuery query, final Class<T> mapTo) {
 		return queryAsync(query, TypeToken.of(mapTo));
 	}
 
-	/*
+	/**
 	 * FIXME should we also handle async in the platform side ?? Is it really
 	 * useful?
-	 */
+	 *
+     * @see KasperClient#query(IQuery, Class)
+     * @see KasperClient#sendAsync(ICommand)
+     */
 	public <T extends IQueryDTO> Future<T> queryAsync(final IQuery query, final TypeToken<T> mapTo) {
 		checkNotNull(query);
 		checkNotNull(mapTo);
@@ -244,6 +355,10 @@ public final class KasperClient {
 
 	// --
 
+    /**
+     * @see KasperClient#query(IQuery, Class)
+     * @see KasperClient#sendAsync(ICommand, ICallback)
+     */
 	public <T extends IQueryDTO> void queryAsync(final IQuery query,
 			                                     final Class<T> mapTo,
                                                  final ICallback<T> callback) {
@@ -251,6 +366,10 @@ public final class KasperClient {
 		queryAsync(query, TypeToken.of(mapTo), callback);
 	}
 
+    /**
+     * @see KasperClient#query(IQuery, Class)
+     * @see KasperClient#sendAsync(ICommand, ICallback)
+     */
 	public <T extends IQueryDTO> void queryAsync(final IQuery query,
 			                                     final TypeToken<T> mapTo,
                                                  final ICallback<T> callback) {
