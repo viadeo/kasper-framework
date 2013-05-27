@@ -1,31 +1,75 @@
 package com.viadeo.kasper.exposition;
 
+import com.viadeo.kasper.locators.IDomainLocator;
+import com.viadeo.kasper.locators.IQueryServicesLocator;
+import com.viadeo.kasper.platform.IPlatform;
 import com.yammer.dropwizard.Bundle;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
 
+import static com.google.common.base.Preconditions.*;
+
 public class HttpExpositionBundle implements Bundle {
-	private final String queryUrlPattern;
-	private final String commandUrlPattern;
+    private final IPlatform platform;
+    private final IQueryServicesLocator queryServiceLocator;
+    private final IDomainLocator domainLocator;
+    private final String queryUrlPattern;
+    private final String commandUrlPattern;
 
-	public HttpExpositionBundle() {
-		this("/query/*", "/command/*");
-	}
+    public HttpExpositionBundle(IPlatform platform, IQueryServicesLocator queryServiceLocator,
+            IDomainLocator domainLocator, String queryUrlPattern, String commandUrlPattern) {
+        this.platform = platform;
+        this.queryServiceLocator = queryServiceLocator;
+        this.domainLocator = domainLocator;
+        this.queryUrlPattern = queryUrlPattern;
+        this.commandUrlPattern = commandUrlPattern;
+    }
 
-	public HttpExpositionBundle(String queryUrlPattern, String commandUrlPattern) {
-		super();
-		this.queryUrlPattern = queryUrlPattern;
-		this.commandUrlPattern = commandUrlPattern;
-	}
+    @Override
+    public void initialize(Bootstrap<?> bootstrap) {
+    }
 
-	@Override
-	public void initialize(Bootstrap<?> bootstrap) {
-	}
+    @Override
+    public void run(Environment environment) {
+        environment.addServlet(new HttpQueryExposer(platform, queryServiceLocator), queryUrlPattern);
+        environment.addServlet(new HttpCommandExposer(platform, domainLocator), commandUrlPattern);
+    }
 
-	@Override
-	public void run(Environment environment) {
-		environment.addServlet(HttpQueryExposer.class, queryUrlPattern);
-		environment.addServlet(HttpCommandExposer.class, commandUrlPattern);
-	}
+    public static class Builder {
+        private IPlatform platform;
+        private IQueryServicesLocator queryServiceLocator;
+        private IDomainLocator domainLocator;
+        private String queryUrlPattern;
+        private String commandUrlPattern;
 
+        public Builder use(final IPlatform platform) {
+            this.platform = platform;
+            return this;
+        }
+
+        public Builder use(final IQueryServicesLocator queryServiceLocator) {
+            this.queryServiceLocator = queryServiceLocator;
+            return this;
+        }
+
+        public Builder use(final IDomainLocator domainLocator) {
+            this.domainLocator = domainLocator;
+            return this;
+        }
+
+        public Builder queryPath(String path) {
+            this.queryUrlPattern = path;
+            return this;
+        }
+
+        public Builder commandPath(String path) {
+            this.commandUrlPattern = path;
+            return this;
+        }
+
+        public HttpExpositionBundle create() {
+            return new HttpExpositionBundle(checkNotNull(platform), checkNotNull(queryServiceLocator),
+                    checkNotNull(domainLocator), checkNotNull(queryUrlPattern), checkNotNull(commandUrlPattern));
+        }
+    }
 }

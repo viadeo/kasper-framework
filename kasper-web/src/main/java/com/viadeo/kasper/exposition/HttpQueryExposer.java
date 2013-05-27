@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.context.WebApplicationContext;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -44,19 +43,18 @@ public class HttpQueryExposer extends HttpExposer {
 	private IQueryFactory queryAdapterFactory = new QueryFactoryBuilder()
 			.create();
 
-	public HttpQueryExposer() {
+	public HttpQueryExposer(final IPlatform platform, final IQueryServicesLocator queryLocator) {
+	    super(platform);
+	    this.queryServicesLocator = queryLocator;
 	}
-
+	
 	@Override
-	protected void configure(IPlatform platform, WebApplicationContext context) {
-		queryServicesLocator = checkNotNull(context
-				.getBean(IQueryServicesLocator.class));
-
-		// expose all registered queries and commands
-		for (IQueryService<? extends IQuery, ? extends IQueryDTO> queryService : queryServicesLocator
-				.getServices()) {
-			expose(queryService);
-		}
+	public void init() throws ServletException {
+	 // expose all registered queries and commands
+        for (final IQueryService<? extends IQuery, ? extends IQueryDTO> queryService : queryServicesLocator
+                .getServices()) {
+            expose(queryService);
+        }
 	}
 
 	// again can not use sendError

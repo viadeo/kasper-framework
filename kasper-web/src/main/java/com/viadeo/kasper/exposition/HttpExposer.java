@@ -2,12 +2,8 @@ package com.viadeo.kasper.exposition;
 
 import java.util.Map;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import static com.google.common.base.Preconditions.*;
 
@@ -18,24 +14,12 @@ public abstract class HttpExposer extends HttpServlet {
 
 	private IPlatform platform;
 
-	protected HttpExposer() {
+	protected HttpExposer(final IPlatform platform) {
+	    this.platform = platform;
 	}
-
-	@Override
-	public final void init(ServletConfig config) throws ServletException {
-		// ugly :/
-		WebApplicationContext context = checkNotNull(WebApplicationContextUtils
-				.getWebApplicationContext(config.getServletContext()));
-		platform = checkNotNull(context.getBean(IPlatform.class));
-
-		configure(platform, context);
-	}
-
-	protected abstract void configure(IPlatform platform,
-			WebApplicationContext context);
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void _putKey(final String key, final Class newValue,
+	protected final void _putKey(final String key, final Class newValue,
 			final Map mapping) {
 		final Class<?> value = (Class<?>) mapping.get(key);
 		if (value != null)
@@ -44,7 +28,7 @@ public abstract class HttpExposer extends HttpServlet {
 		mapping.put(key, newValue);
 	}
 
-	protected String resourceName(String uri) {
+	protected final String resourceName(String uri) {
 		checkNotNull(uri);
 		int idx = uri.lastIndexOf('/');
 		if (idx > -1) {
@@ -54,7 +38,7 @@ public abstract class HttpExposer extends HttpServlet {
 		}
 	}
 
-	protected IPlatform platform() {
+	protected final IPlatform platform() {
 		return platform;
 	}
 }
