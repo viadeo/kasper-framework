@@ -27,12 +27,13 @@ public class KasperPlatform implements IPlatform {
 	protected AnnotationRootProcessor rootProcessor;
 	protected EventBus eventBus;
 	private volatile Boolean _booted = false;
+    private final Boolean sync = true;
 
 	// ------------------------------------------------------------------------
 
 	@Override
 	public void boot() {
-	    synchronized (_booted) {
+	    synchronized (sync) {
 	        if (!_booted) {
 	            this.rootProcessor.boot();
 	            _booted = true;
