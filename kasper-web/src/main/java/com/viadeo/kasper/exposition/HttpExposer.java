@@ -7,12 +7,7 @@
 package com.viadeo.kasper.exposition;
 
 import com.viadeo.kasper.platform.IPlatform;
-import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import java.util.Map;
 
@@ -23,29 +18,13 @@ public abstract class HttpExposer extends HttpServlet {
 
 	private IPlatform platform;
 
-    // ------------------------------------------------------------------------
-
-	protected HttpExposer() { }
-
-    // ------------------------------------------------------------------------
-
-	@Override
-	public final void init(final ServletConfig config) throws ServletException {
-		// ugly :/
-        final ServletContext context = config.getServletContext();
-        final WebApplicationContext wcontext = WebApplicationContextUtils.getWebApplicationContext(context);
-
-		platform = checkNotNull(wcontext.getBean(IPlatform.class));
-
-		configure(platform, wcontext);
+	protected HttpExposer(final IPlatform platform) {
+	    this.platform = platform;
 	}
 
-	protected abstract void configure(IPlatform platform, WebApplicationContext context);
-
-    // ------------------------------------------------------------------------
-
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected void putKey(final String key, final Class newValue, final Map mapping) {
+	protected final void putKey(final String key, final Class newValue,
+			final Map mapping) {
 		final Class<?> value = (Class<?>) mapping.get(key);
 
 		if (value != null) {
@@ -56,9 +35,7 @@ public abstract class HttpExposer extends HttpServlet {
 		mapping.put(key, newValue);
 	}
 
-    // ------------------------------------------------------------------------
-
-	protected String resourceName(final String uri) {
+	protected final String resourceName(String uri) {
 		checkNotNull(uri);
 
 		final int idx = uri.lastIndexOf('/');
@@ -69,9 +46,7 @@ public abstract class HttpExposer extends HttpServlet {
 		}
 	}
 
-    // ------------------------------------------------------------------------
-
-	protected IPlatform platform() {
+	protected final IPlatform platform() {
 		return platform;
 	}
 

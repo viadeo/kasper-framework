@@ -8,7 +8,10 @@ import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
 import com.viadeo.kasper.ddd.impl.AbstractDomain;
 import com.viadeo.kasper.event.exceptions.KasperEventException;
+import com.viadeo.kasper.locators.IDomainLocator;
+import com.viadeo.kasper.platform.IPlatform;
 import org.junit.Test;
+import org.springframework.context.ApplicationContext;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -16,7 +19,11 @@ import static org.junit.Assert.assertNotNull;
 public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExposer> {
 	
 	public HttpCommandExposerTest() {
-		super(HttpCommandExposer.class);
+	}
+	
+	@Override
+	protected HttpCommandExposer createExposer(ApplicationContext ctx) {
+	    return new HttpCommandExposer(ctx.getBean(IPlatform.class), ctx.getBean(IDomainLocator.class));
 	}
 
     // ------------------------------------------------------------------------

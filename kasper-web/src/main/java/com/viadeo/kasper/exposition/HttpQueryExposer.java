@@ -6,24 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.beans.Introspector;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.web.context.WebApplicationContext;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Maps;
@@ -41,11 +23,11 @@ import com.viadeo.kasper.query.exposition.QueryParser;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.beans.Introspector;
 import java.io.IOException;
 import java.util.*;
 
@@ -62,20 +44,18 @@ public class HttpQueryExposer extends HttpExposer {
 	private IQueryServicesLocator queryServicesLocator;
 	private IQueryFactory queryAdapterFactory = new QueryFactoryBuilder().create();
 
-    // ------------------------------------------------------------------------
-
-	public HttpQueryExposer() { }
-
-    // ------------------------------------------------------------------------
-
+	public HttpQueryExposer(final IPlatform platform, final IQueryServicesLocator queryLocator) {
+	    super(platform);
+	    this.queryServicesLocator = queryLocator;
+	}
+	
 	@Override
-	protected void configure(final IPlatform platform, final WebApplicationContext context) {
-		queryServicesLocator = checkNotNull(context.getBean(IQueryServicesLocator.class));
-
-		// expose all registered queries and commands
-		for (final IQueryService<? extends IQuery, ? extends IQueryDTO> queryService : queryServicesLocator.getServices()) {
-			expose(queryService);
-		}
+	public void init() throws ServletException {
+	    // expose all registered queries and commands
+        for (final IQueryService<? extends IQuery, ? extends IQueryDTO> queryService : queryServicesLocator
+                .getServices()) {
+            expose(queryService);
+        }
 	}
 
     // ------------------------------------------------------------------------

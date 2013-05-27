@@ -26,12 +26,18 @@ public class KasperPlatform implements IPlatform {
 	protected IQueryGateway queryGateway;
 	protected AnnotationRootProcessor rootProcessor;
 	protected EventBus eventBus;
+	private volatile Boolean _booted = false;
 
 	// ------------------------------------------------------------------------
 
 	@Override
 	public void boot() {
-		this.rootProcessor.boot();
+	    synchronized (_booted) {
+	        if (!_booted) {
+	            this.rootProcessor.boot();
+	            _booted = true;
+	        }
+        }
 	}
 
 	@Override
