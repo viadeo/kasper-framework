@@ -33,6 +33,7 @@ import com.viadeo.kasper.query.exposition.QueryBuilder;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import java.beans.Introspector;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -300,7 +301,8 @@ public final class KasperClient {
 				.resource(resolveQueryPath(query.getClass()))
 				.queryParams(prepareQueryParams(query))
 				.accept(MediaType.APPLICATION_JSON)
-				.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+				.type(MediaType.APPLICATION_JSON)
+                .get(ClientResponse.class);
 
 		return handleQueryResponse(response, mapTo);
 	}
@@ -327,7 +329,8 @@ public final class KasperClient {
 				.asyncResource(resolveQueryPath(query.getClass()))
 				.queryParams(prepareQueryParams(query))
 				.accept(MediaType.APPLICATION_JSON)
-				.type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+				.type(MediaType.APPLICATION_JSON)
+                .get(ClientResponse.class);
 
 		return new Future<T>() {
 			public boolean cancel(final boolean mayInterruptIfRunning) {
@@ -434,13 +437,13 @@ public final class KasperClient {
 	// ------------------------------------------------------------------------
 
 	private URI resolveCommandPath(final Class<? extends ICommand> commandClass) {
-		return resolvePath(commandBaseLocation, commandClass.getSimpleName()
-				.replace("Command", ""), commandClass);
+        final String className = commandClass.getSimpleName().replace("Command", "");
+		return resolvePath(commandBaseLocation, Introspector.decapitalize(className), commandClass);
 	}
 
 	private URI resolveQueryPath(final Class<? extends IQuery> queryClass) {
-		return resolvePath(queryBaseLocation, queryClass.getSimpleName()
-				.replace("Query", ""), queryClass);
+        final String className = queryClass.getSimpleName().replace("Query", "");
+		return resolvePath(queryBaseLocation, Introspector.decapitalize(className), queryClass);
 	}
 
 	private URI resolvePath(final URL basePath, final String path, final Class<?> clazz) {

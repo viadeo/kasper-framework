@@ -9,6 +9,7 @@ package com.viadeo.kasper.exposition;
 import com.viadeo.kasper.platform.IPlatform;
 
 import javax.servlet.http.HttpServlet;
+import java.beans.Introspector;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -38,12 +39,16 @@ public abstract class HttpExposer extends HttpServlet {
 	protected final String resourceName(String uri) {
 		checkNotNull(uri);
 
+        final String resName;
+
 		final int idx = uri.lastIndexOf('/');
 		if (-1 < idx) {
-			return uri.substring(idx + 1);
+			resName = uri.substring(idx + 1);
 		} else {
-			return uri;
+			resName = uri;
 		}
+
+        return Introspector.decapitalize(resName);
 	}
 
 	protected final IPlatform platform() {
