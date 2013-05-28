@@ -1,4 +1,6 @@
 **/target
+**/bin
+*.*~
 *.versionsBackup
 **/.settings
 **/.project
