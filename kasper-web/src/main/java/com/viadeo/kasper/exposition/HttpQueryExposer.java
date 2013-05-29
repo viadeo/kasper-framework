@@ -38,8 +38,6 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpQueryExposer.class);
-
     private final Map<String, Class<? extends IQuery>> exposedQueries = Maps.newHashMap();
     private IQueryServicesLocator queryServicesLocator;
     private IQueryFactory queryAdapterFactory = new QueryFactoryBuilder().create();
@@ -187,35 +185,6 @@ public class HttpQueryExposer extends HttpExposer {
             sendError(SC_INTERNAL_SERVER_ERROR, "ERROR sending DTO[" + dto.getClass().getSimpleName() + "] for query["
                     + queryName + "].", resp, t);
         }
-    }
-
-    // ------------------------------------------------------------------------
-
-    @SuppressWarnings("deprecation")
-    private void sendError(final int status, final String message, final HttpServletResponse resp,
-            final Throwable exception) throws IOException {
-
-        if (exception != null) {
-            LOGGER.error(message, exception);
-        } else {
-            LOGGER.error(message);
-        }
-
-        resp.setStatus(status, message);
-
-        final ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
-
-        try (final JsonGenerator generator = writer.getJsonFactory().createGenerator(resp.getOutputStream())) {
-
-            generator.writeStartObject();
-            // FIXME for the moment lets just put the minimum here
-            generator.writeNumberField("code", status);
-            generator.writeStringField("reason", message);
-            generator.writeEndObject();
-
-        }
-
-        resp.flushBuffer();
     }
 
     // ------------------------------------------------------------------------
