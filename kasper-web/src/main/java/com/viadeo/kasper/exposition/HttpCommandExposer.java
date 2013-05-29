@@ -37,8 +37,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class HttpCommandExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(HttpCommandExposer.class);
-
     private final Map<String, Class<? extends ICommand>> exposedCommands = new HashMap<>();
     private IDomainLocator domainLocator;
 
@@ -61,8 +59,8 @@ public class HttpCommandExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @Override
-    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) 
-            throws ServletException, IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
+            IOException {
 
         handleCommand(req, resp);
 
@@ -72,8 +70,8 @@ public class HttpCommandExposer extends HttpExposer {
     }
 
     @Override
-    protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) 
-            throws ServletException, IOException {
+    protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
+            IOException {
 
         handleCommand(req, resp);
 
@@ -84,8 +82,7 @@ public class HttpCommandExposer extends HttpExposer {
 
     // ------------------------------------------------------------------------
 
-    private void handleCommand(final HttpServletRequest req, final HttpServletResponse resp) 
-            throws IOException {
+    private void handleCommand(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
 
         // always respond with a json stream (even if empty)
         resp.setContentType("application/json; charset=utf-8");
@@ -108,7 +105,7 @@ public class HttpCommandExposer extends HttpExposer {
 
             if (!req.getContentType().startsWith("application/json")) {
                 sendError(resp, HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
-                          "Accepting and producing only application/json");
+                        "Accepting and producing only application/json");
                 return;
             }
 
@@ -158,8 +155,7 @@ public class HttpCommandExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     protected void sendResponse(final ICommandResult result, final HttpServletResponse resp,
-                                final Class<? extends ICommand> commandClass)
-            throws IOException {
+            final Class<? extends ICommand> commandClass) throws IOException {
 
         ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
         JsonGenerator generator = null;
@@ -205,8 +201,7 @@ public class HttpCommandExposer extends HttpExposer {
      * text/html.
      */
     @SuppressWarnings("deprecation")
-    protected void sendError(HttpServletResponse response, int status, String reason) throws
-            IOException {
+    protected void sendError(HttpServletResponse response, int status, String reason) throws IOException {
         LOGGER.error(reason);
         // set an error status and a message
         response.setStatus(status, reason);
