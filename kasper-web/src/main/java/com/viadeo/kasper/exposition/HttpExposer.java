@@ -29,6 +29,8 @@ public abstract class HttpExposer extends HttpServlet {
 	        
 	private IPlatform platform;
 
+    // ------------------------------------------------------------------------
+
 	protected HttpExposer(final IPlatform platform) {
 	    this.platform = platform;
 	}
@@ -62,12 +64,13 @@ public abstract class HttpExposer extends HttpServlet {
         resp.flushBuffer();
     }
 
+    // ------------------------------------------------------------------------
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected final void putKey(final String key, final Class newValue,
-			final Map mapping) {
+	protected final void putKey(final String key, final Class newValue, final Map mapping) {
 		final Class<?> value = (Class<?>) mapping.get(key);
 
-		if (value != null) {
+		if (null != value) {
 			throw new IllegalArgumentException("Duplicate entry for name="
 					+ key + ", existing value is " + value.getName());
         }
@@ -75,7 +78,9 @@ public abstract class HttpExposer extends HttpServlet {
 		mapping.put(key, newValue);
 	}
 
-	protected final String resourceName(String uri) {
+    // ------------------------------------------------------------------------
+
+	protected final String resourceName(final String uri) {
 		checkNotNull(uri);
 
         final String resName;
@@ -89,6 +94,8 @@ public abstract class HttpExposer extends HttpServlet {
 
         return Introspector.decapitalize(resName);
 	}
+
+    // ------------------------------------------------------------------------
 
 	protected final IPlatform platform() {
 		return platform;

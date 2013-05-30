@@ -22,8 +22,7 @@ import java.io.IOException;
 public class KasperErrorCommandResultDeserializer extends StdDeserializer<KasperErrorCommandResult> {
 	
 	private static final long serialVersionUID = -3933078791498408546L;
-	private static final Logger LOGGER = LoggerFactory
-			.getLogger(KasperCommandResultDeserializer.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(KasperCommandResultDeserializer.class);
 	private static final String MESSAGE = "errorMessage";
 
     // ------------------------------------------------------------------------
@@ -45,8 +44,7 @@ public class KasperErrorCommandResultDeserializer extends StdDeserializer<Kasper
 			jp.nextToken();
 
 			if (MESSAGE.equals(name)) {
-				errorMessage = jp.readValueAs(new TypeReference<Optional<String>>() {
-                });
+				errorMessage = jp.readValueAs(new TypeReference<Optional<String>>() { });
 			} else {
 				LOGGER.warn("Unknown property when default mapping DTO");
 				// FIXME do we just ignore unknown properties or take some action?

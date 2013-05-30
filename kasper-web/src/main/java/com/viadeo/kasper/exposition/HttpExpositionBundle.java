@@ -22,6 +22,8 @@ public class HttpExpositionBundle implements Bundle {
     private final String queryUrlPattern;
     private final String commandUrlPattern;
 
+    // ------------------------------------------------------------------------
+
     public HttpExpositionBundle(IPlatform platform, IQueryServicesLocator queryServiceLocator,
             IDomainLocator domainLocator, String queryUrlPattern, String commandUrlPattern) {
         this.platform = platform;
@@ -31,15 +33,18 @@ public class HttpExpositionBundle implements Bundle {
         this.commandUrlPattern = commandUrlPattern;
     }
 
-    @Override
-    public void initialize(Bootstrap<?> bootstrap) {
-    }
+    // ------------------------------------------------------------------------
 
     @Override
-    public void run(Environment environment) {
+    public void initialize(final Bootstrap<?> bootstrap) { }
+
+    @Override
+    public void run(final Environment environment) {
         environment.addServlet(new HttpQueryExposer(platform, queryServiceLocator), queryUrlPattern);
         environment.addServlet(new HttpCommandExposer(platform, domainLocator), commandUrlPattern);
     }
+
+    // ------------------------------------------------------------------------
 
     public static class Builder {
         private IPlatform platform;
@@ -63,12 +68,12 @@ public class HttpExpositionBundle implements Bundle {
             return this;
         }
 
-        public Builder queryPath(String path) {
+        public Builder queryPath(final String path) {
             this.queryUrlPattern = path;
             return this;
         }
 
-        public Builder commandPath(String path) {
+        public Builder commandPath(final String path) {
             this.commandUrlPattern = path;
             return this;
         }
@@ -78,4 +83,5 @@ public class HttpExpositionBundle implements Bundle {
                     checkNotNull(domainLocator), checkNotNull(queryUrlPattern), checkNotNull(commandUrlPattern));
         }
     }
+
 }

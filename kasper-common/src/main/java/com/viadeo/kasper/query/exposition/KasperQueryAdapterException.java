@@ -20,4 +20,5 @@ public class KasperQueryAdapterException extends RuntimeException {
 	public KasperQueryAdapterException(final Throwable cause) {
 		super(cause);
 	}
+
 }

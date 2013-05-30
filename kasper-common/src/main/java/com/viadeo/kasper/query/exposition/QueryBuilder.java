@@ -283,7 +283,8 @@ public class QueryBuilder {
      * @return a uri pointing to the specified path and with actual query as query string.
      */
     public URI build(URI path) {
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
+
         for (final Iterator<Entry<String, List<String>>> it = map.entrySet().iterator(); it.hasNext();) {
             final Entry<String, List<String>> entry = it.next();
             for (final Iterator<String> valueIt = entry.getValue().iterator(); valueIt.hasNext();) {
@@ -294,10 +295,11 @@ public class QueryBuilder {
             if (it.hasNext())
                 sb.append('&');
         }
+
         try {
             return new URI(path.getScheme(), path.getUserInfo(), path.getHost(), path.getPort(), path.getPath(),
-                    sb.toString(), path.getFragment());
-        } catch (URISyntaxException e) {
+                           sb.toString(), path.getFragment());
+        } catch (final URISyntaxException e) {
             throw new KasperQueryAdapterException("Could not create query.", e);
         }
     }

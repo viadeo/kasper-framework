@@ -40,4 +40,5 @@ public interface ITypeAdapter<T> {
     void adapt(T value, QueryBuilder builder);
     
     T adapt(QueryParser parser);
+
 }

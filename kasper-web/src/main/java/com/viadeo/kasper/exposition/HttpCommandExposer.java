@@ -92,13 +92,12 @@ public class HttpCommandExposer extends HttpExposer {
 
         // locate corresponding command class
         Class<? extends ICommand> commandClass = exposedCommands.get(commandName);
-        if (commandClass == null) {
+        if (null == commandClass) {
             sendError(resp, HttpServletResponse.SC_NOT_FOUND, "Command[" + commandName + "] not found.");
             return;
         }
 
         ICommandResult result = null;
-
         JsonParser parser = null;
 
         try {
@@ -109,7 +108,7 @@ public class HttpCommandExposer extends HttpExposer {
                 return;
             }
 
-            ObjectReader reader = ObjectMapperProvider.instance.objectReader();
+            final ObjectReader reader = ObjectMapperProvider.instance.objectReader();
 
             // parse the input stream to that command, no utility method for inputstream+type??
             parser = reader.getFactory().createJsonParser(req.getInputStream());
@@ -148,8 +147,9 @@ public class HttpCommandExposer extends HttpExposer {
 
         // if the result is null this means that we handled the error previously
         // so nothing can be done anymore
-        if (result != null)
+        if (result != null) {
             sendResponse(result, resp, commandClass);
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -157,10 +157,11 @@ public class HttpCommandExposer extends HttpExposer {
     protected void sendResponse(final ICommandResult result, final HttpServletResponse resp,
             final Class<? extends ICommand> commandClass) throws IOException {
 
-        ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
+        final ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
         JsonGenerator generator = null;
 
         try {
+
             // try writing the response
             generator = writer.getJsonFactory().createJsonGenerator(resp.getOutputStream());
             writer.writeValue(generator, result);
@@ -170,13 +171,14 @@ public class HttpCommandExposer extends HttpExposer {
              * now
              */
             resp.setStatus(HttpServletResponse.SC_OK);
-        } catch (JsonGenerationException e) {
+
+        } catch (final JsonGenerationException e) {
             LOGGER.error("Error outputing command result to json for command [" + commandClass.getName()
                     + "] and result [" + result + "]", e);
-        } catch (JsonMappingException e) {
+        } catch (final JsonMappingException e) {
             LOGGER.error("Error mapping command result to json for command [" + commandClass.getName()
                     + "] and result [" + result + "]", e);
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOGGER.error("Error outputing command result to json for command [" + commandClass.getName()
                     + "] and result [" + result + "]", e);
             resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
@@ -206,9 +208,11 @@ public class HttpCommandExposer extends HttpExposer {
         // set an error status and a message
         response.setStatus(status, reason);
         // write also into the body the result as json
-        ObjectMapperProvider.instance.objectWriter().writeValue(response.getOutputStream(),
-                new KasperErrorCommandResult(reason));
+        ObjectMapperProvider.instance.objectWriter()
+                .writeValue(response.getOutputStream(), new KasperErrorCommandResult(reason));
     }
+
+    // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
     HttpExposer expose(final ICommandHandler<? extends ICommand> commandHandler) {
@@ -220,6 +224,8 @@ public class HttpCommandExposer extends HttpExposer {
         putKey(commandToPath(commandClass), commandClass, exposedCommands);
         return this;
     }
+
+    // ------------------------------------------------------------------------
 
     private String commandToPath(final Class<? super ICommand> exposedCommand) {
         return Introspector.decapitalize(exposedCommand.getSimpleName().replaceAll("Command", ""));

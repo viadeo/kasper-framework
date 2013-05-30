@@ -68,16 +68,6 @@ class PropertyAdapter {
 		}
     }
 
-	public void mutate(final Object bean, final Object value) {
-		try {
-
-			mutator.invoke(bean, value);
-
-		} catch (final IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-            throw cannotSetPropertyValue(bean, e);
-        }
-	}
-
 	public Object adapt(final QueryParser parser) {
 		final Class<?> rawClass = typeToken.getRawType();
 
@@ -108,6 +98,16 @@ class PropertyAdapter {
 		} else {
 			return null;
 		}
+	}
+
+    public void mutate(final Object bean, final Object value) {
+		try {
+
+			mutator.invoke(bean, value);
+
+		} catch (final IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+            throw cannotSetPropertyValue(bean, e);
+        }
 	}
 
 	// ------------------------------------------------------------------------

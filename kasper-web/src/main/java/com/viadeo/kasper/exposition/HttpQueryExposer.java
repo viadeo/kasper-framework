@@ -42,6 +42,8 @@ public class HttpQueryExposer extends HttpExposer {
     private IQueryServicesLocator queryServicesLocator;
     private IQueryFactory queryAdapterFactory = new QueryFactoryBuilder().create();
 
+    // ------------------------------------------------------------------------
+
     public HttpQueryExposer(final IPlatform platform, final IQueryServicesLocator queryLocator) {
         super(platform);
         this.queryServicesLocator = queryLocator;
@@ -76,7 +78,6 @@ public class HttpQueryExposer extends HttpExposer {
          */
         try {
             final String queryName = resourceName(req.getRequestURI());
-
             final IQuery query = parseQuery(queryName, req, resp);
 
             IQueryDTO dto = null;
@@ -114,7 +115,6 @@ public class HttpQueryExposer extends HttpExposer {
         } else {
 
             final ITypeAdapter<? extends IQuery> adapter = queryAdapterFactory.create(TypeToken.of(queryClass));
-
             final Map<String, List<String>> queryParams = new HashMap<>();
 
             final Enumeration<String> keys = req.getParameterNames();

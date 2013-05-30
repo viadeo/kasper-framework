@@ -12,4 +12,5 @@ import com.google.common.reflect.TypeToken;
 public interface IQueryFactory {
 
 	<T> ITypeAdapter<T> create(TypeToken<T> typeToken);
+
 }

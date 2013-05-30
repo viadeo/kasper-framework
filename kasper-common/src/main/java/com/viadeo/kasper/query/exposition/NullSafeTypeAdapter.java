@@ -14,6 +14,8 @@ package com.viadeo.kasper.query.exposition;
 public class NullSafeTypeAdapter<T> implements ITypeAdapter<T> {
 	private final ITypeAdapter<T> decoratedAdapter;
 
+    // ------------------------------------------------------------------------
+
 	public NullSafeTypeAdapter(final ITypeAdapter<T> decoratedAdapter) {
 		this.decoratedAdapter = decoratedAdapter;
 	}
@@ -21,6 +23,8 @@ public class NullSafeTypeAdapter<T> implements ITypeAdapter<T> {
 	public static <T> NullSafeTypeAdapter<T> nullSafe(final ITypeAdapter<T> adapter) {
 		return new NullSafeTypeAdapter<>(adapter);
 	}
+
+    // ------------------------------------------------------------------------
 
 	@Override
 	public void adapt(final T value, final QueryBuilder builder) {
@@ -40,8 +44,11 @@ public class NullSafeTypeAdapter<T> implements ITypeAdapter<T> {
 		 */
 		return decoratedAdapter.adapt(parser);
 	}
-	
+
+    // ------------------------------------------------------------------------
+
 	public ITypeAdapter<T> unwrap() {
 		return decoratedAdapter;
 	}
+
 }
