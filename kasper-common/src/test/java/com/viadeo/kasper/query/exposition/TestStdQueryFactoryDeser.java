@@ -24,7 +24,6 @@ import static org.junit.Assert.assertNull;
 public class TestStdQueryFactoryDeser {
 	private StdQueryFactory factory;
 
-	@SuppressWarnings("unchecked")
 	@Before
 	public void setUp() {
 		final Map<Type, ITypeAdapter<?>> adapters = new HashMap<>();

@@ -29,6 +29,7 @@ public class ObjectMapperProvider {
 		mapper.configure(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS, true);
 		mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
 		mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
 		final Module kasperClientModule = new SimpleModule()
 				.addDeserializer(KasperCommandResult.class,

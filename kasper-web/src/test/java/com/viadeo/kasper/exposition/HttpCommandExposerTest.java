@@ -61,9 +61,26 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 
     // ------------------------------------------------------------------------
 
+	@Test
+    public void testExceptionCommand() throws Exception {
+        // Given valid input
+        final CreateAccountCommand command = new CreateAccountCommand();
+        command.name = "foo bar";
+        command.throwException = true;
+
+        // When
+        final ICommandResult result = client().send(command);
+
+        // Then
+        assertEquals(Status.ERROR, result.getStatus());
+    }
+
+    // ------------------------------------------------------------------------
+	
 	public static class CreateAccountCommand implements ICommand {
 		private static final long serialVersionUID = 674842094873929150L;
 		private String name;
+		private boolean throwException;
 
 		public String getName() {
 			return name;
@@ -72,6 +89,14 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 		public void setName(String name) {
 			this.name = name;
 		}
+
+        public boolean isThrowException() {
+            return throwException;
+        }
+
+        public void setThrowException(boolean throwException) {
+            this.throwException = throwException;
+        }
 	}
 
     // ------------------------------------------------------------------------
@@ -82,6 +107,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 
 		@Override
 		public ICommandResult handle(final CreateAccountCommand command) throws KasperEventException {
+		    if (command.isThrowException()) throw new KasperEventException("Something bad happened!");
 			createAccountCommandName = command.getName();
 			return new KasperCommandResult(Status.OK);
 		}
