@@ -2,11 +2,15 @@ package com.viadeo.kasper.db.jdbc;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.db.Operation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Scanner;
 
 
 public class SQLParser {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SQLParser.class);
 
     public static SQLQuery parse(String sql) {
         Preconditions.checkNotNull(sql); // fast fail
@@ -35,8 +39,14 @@ public class SQLParser {
             // easy case
             query.setOperation(Operation.WRITE);
             query.setTableName(scanner.next());
+        } else if( "DELETE".equalsIgnoreCase(op)) {
+            query.setOperation(Operation.WRITE);
+            // go to FROM clause
+                scanner.next();
+            String table = scanner.next();
+            query.setTableName(table.trim());
         } else {
-            // TODO DELETE
+            LOGGER.error("Error during parsing query:\n{}",sql);
         }
         scanner.close();
         return query;
