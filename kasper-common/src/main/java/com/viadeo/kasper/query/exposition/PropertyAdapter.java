@@ -90,11 +90,8 @@ class PropertyAdapter {
 			final Object value = adapter.adapt(parser);
 			parser.end();
 			return value;
-
 		} else if (rawClass.isPrimitive()) {
-
 			return DEFAULT_VALUES_FOR_PRIMITIVES.get(rawClass);
-
 		} else {
 			return null;
 		}
