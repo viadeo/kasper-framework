@@ -6,15 +6,26 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition;
 
+import java.util.HashMap;
+import java.util.List;
+
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.cqrs.query.IQuery;
 import org.junit.Test;
 
-import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.*;
 
 public class TestTypeAdapterRoundTrips {
 
 	private IQueryFactory factory = new QueryFactoryBuilder().create();
+	
+	@Test public void testQueryWithDefaultValues() {
+	    final ITypeAdapter<QueryWithDefaultValue> adapter = factory.create(TypeToken.of(QueryWithDefaultValue.class));
+	    
+	    QueryWithDefaultValue query = adapter.adapt(new QueryParser(new HashMap<String, List<String>>()));
+	    
+	    assertEquals(10, query.getValue());
+	}
 	
 	@Test
     public void testQueryWithPrimitiveArray() {
@@ -35,6 +46,20 @@ public class TestTypeAdapterRoundTrips {
 
     // ------------------------------------------------------------------------
 
+	public static class QueryWithDefaultValue implements IQuery {
+        private static final long serialVersionUID = 6077221562941902221L;
+        
+        private int value = 10;
+
+        public int getValue() {
+            return value;
+        }
+
+        public void setValue(int value) {
+            this.value = value;
+        }
+	}
+	
 	public static class PrimitiveArrayQuery implements IQuery {
 		private static final long serialVersionUID = 1604748331409564661L;
 		

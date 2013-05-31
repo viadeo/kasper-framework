@@ -19,7 +19,7 @@
 
 	<dependencies>
 
-        <!-- Kasper dependencies -->
+		<!-- Kasper dependencies -->
 		<dependency>
 			<groupId>com.viadeo.kasper</groupId>
 			<artifactId>kasper-api</artifactId>
@@ -29,7 +29,7 @@
 			<artifactId>kasper-common</artifactId>
 		</dependency>
 
-        <!-- Third-party dependencies -->
+		<!-- Third-party dependencies -->
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-client</artifactId>
