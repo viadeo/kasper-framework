@@ -51,7 +51,7 @@ public class KasperClientCommandTest extends JerseyTest {
     //-------------------------------------------------------------------------
     
     public static class MemberDTO implements IQueryDTO {
-        private static final long serialVersionUID = 271800729414361903L;
+        private static final long serialVersionUID = 271804229442342903L;
 
         private String memberName;
         private List<Integer> ids;
@@ -85,7 +85,7 @@ public class KasperClientCommandTest extends JerseyTest {
     }
 
     public static class CreateMemberCommand implements ICommand {
-        private static final long serialVersionUID = -2618953632539379331L;
+        private static final long serialVersionUID = -2618953642539379331L;
         private Status status;
 
         public CreateMemberCommand() {}

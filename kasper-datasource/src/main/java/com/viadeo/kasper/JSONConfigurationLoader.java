@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -7,7 +13,6 @@ import com.fasterxml.jackson.databind.SerializationFeature;
 
 import java.io.File;
 import java.io.IOException;
-
 
 public class JSONConfigurationLoader {
 
@@ -24,6 +29,8 @@ public class JSONConfigurationLoader {
         JSON_OBJECT_MAPPER.configure(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES, true);
     }
 
+    // ------------------------------------------------------------------------
+
     public static <T> T load(final File path, final Class<T> clazz) {
         try {
             return JSON_OBJECT_MAPPER.readValue(path, clazz);
@@ -32,10 +39,8 @@ public class JSONConfigurationLoader {
         }
     }
 
-    public static File getFile(String filename) throws IOException {
-        return ViadeoResourcesUtils.getFileOrStream(filename);
+    public static File getFile(final String filename) throws IOException {
+        return ResourcesUtils.getFileOrStream(filename);
     }
-
-
 
 }

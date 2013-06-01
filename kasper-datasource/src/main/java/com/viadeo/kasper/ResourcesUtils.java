@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper;
 
 import org.slf4j.Logger;
@@ -7,9 +13,9 @@ import org.springframework.util.ResourceUtils;
 import java.io.*;
 import java.net.URL;
 
-public class ViadeoResourcesUtils {
+public class ResourcesUtils {
 	/** The logger of this class. */
-	static final Logger LOGGER = LoggerFactory.getLogger(ViadeoResourcesUtils.class);
+	static final Logger LOGGER = LoggerFactory.getLogger(ResourcesUtils.class);
 
 	public static File getFileOrStream(String resource) throws IOException {
 		URL url = ResourceUtils.getURL(resource);

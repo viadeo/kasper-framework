@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.db.util;
 
 
@@ -9,22 +15,37 @@ public class SqlTest {
 
     @Test
     public void inWithObjectShouldStringSeparatedByComma() {
-        String expected = "1,2,3,4,5,6";
-        String result = Sql.in(1,2,3,4,5,6);
+        // Given
+        final String expected = "1,2,3,4,5,6";
+
+        // When
+        final String result = Sql.in(1,2,3,4,5,6);
+
+        // Then
         assertEquals(expected,result);
     }
 
     @Test
     public void inWithObjectShouldNotTakeNullsParameters() {
-        String expected = "test,tata";
-        String result = Sql.in("test",null,"tata");
+        // Given
+        final String expected = "test,tata";
+
+        // When
+        final String result = Sql.in("test",null,"tata");
+
+        // Then
         assertEquals(expected,result);
     }
 
     @Test
     public void inWithObjectShouldStringSeparatedByCommaWithoutSpace() {
-        String expected = "test,toto,tata";
-        String result = Sql.in("test ","toto"," tata ");
+        // Given
+        final String expected = "test,toto,tata";
+
+        // When
+        final String result = Sql.in("test ","toto"," tata ");
+
+        // Then
         assertEquals(expected,result);
     }
 

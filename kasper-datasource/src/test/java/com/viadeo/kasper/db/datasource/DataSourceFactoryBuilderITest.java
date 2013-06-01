@@ -1,5 +1,10 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.db.datasource;
-
 
 import com.viadeo.kasper.db.Operation;
 import org.junit.Ignore;
@@ -20,40 +25,56 @@ public class DataSourceFactoryBuilderITest {
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowExceptiononNullFirstParameter() {
-        DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(null,dispatcherFile);
-        DataSourceFactory dsf = builder.buildDatasourceFactory();
+        // Given
+        final DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(null,dispatcherFile);
+
+        // When
+        final DataSourceFactory dsf = builder.buildDatasourceFactory();
+
+        // Then
         fail(); // should stop before
     }
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowExceptiononNullSecondParameter() {
-        DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile,null);
-        DataSourceFactory dsf = builder.buildDatasourceFactory();
+        // Given
+        final DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile,null);
+
+        // When
+        final DataSourceFactory dsf = builder.buildDatasourceFactory();
+
+        // Then
         fail(); // should stop before
     }
 
     @Test
     public void shouldRetrieveReadDatasourceForMembers() throws IOException {
-        DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile,dispatcherFile);
-        // load datasources
-        DataSourceFactory dsf = builder.buildDatasourceFactory();
-        Map<String, DataSource> dataSourceMap = dsf.getDataSourcesMap();
-        DataSource ds =  dsf.getDatasource("member", Operation.READ);
+        // Given
+        final DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile,dispatcherFile);
+        final DataSourceFactory dsf = builder.buildDatasourceFactory();
+        final Map<String, DataSource> dataSourceMap = dsf.getDataSourcesMap();
+
+        // When
+        final DataSource ds =  dsf.getDatasource("member", Operation.READ);
+
+        // Then
         assertNotNull(ds);
         assertEquals(dataSourceMap.get("viadeo-balanced"), ds);
     }
 
     @Test
     public void shouldRetrieveWriteDatasourceForMembers() throws IOException {
+        // Given
+        final DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile,dispatcherFile);
+        final DataSourceFactory dsf = builder.buildDatasourceFactory();
+        final Map<String, DataSource> dataSourceMap = dsf.getDataSourcesMap();
 
-        DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile,dispatcherFile);
-        // load datasources
-        DataSourceFactory dsf = builder.buildDatasourceFactory();
-        Map<String, DataSource> dataSourceMap = dsf.getDataSourcesMap();
-        DataSource ds =  dsf.getDatasource("member", Operation.WRITE);
+        // When
+        final DataSource ds =  dsf.getDatasource("member", Operation.WRITE);
+
+        // Then
         assertNotNull(ds);
         assertEquals(dataSourceMap.get("viadeo"), ds);
     }
-
 
 }

@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.db.datasource;
 
 import com.google.common.base.Strings;
@@ -8,7 +14,7 @@ import javax.sql.DataSource;
 public class DBCPDataSourceBuilder implements DataSourceBuilder {
 
 	@Override
-	public DataSource build(DataSourceSetting dbSetting) {
+	public DataSource build(final DataSourceSetting dbSetting) {
 		
 		final BasicDataSource ds = new BasicDataSource();
 		ds.setUsername(dbSetting.getUserName());
@@ -16,22 +22,22 @@ public class DBCPDataSourceBuilder implements DataSourceBuilder {
 		ds.setDriverClassName(dbSetting.getDriverClassName());
 		ds.setUrl(dbSetting.getUrl());
 
-		if (dbSetting.getMaxIdle() != null) {
+		if (null != dbSetting.getMaxIdle()) {
 			ds.setMaxIdle(dbSetting.getMaxIdle());
 		}
-		if (dbSetting.getMaxActive() != null) {
+		if (null != dbSetting.getMaxActive()) {
 			ds.setMaxActive(dbSetting.getMaxActive());
 		}
-		if (dbSetting.getMaxWait() != null) {
+		if (null != dbSetting.getMaxWait()) {
 			ds.setMaxWait(dbSetting.getMaxWait());
 		}
-		if (dbSetting.getMinEvictableIdleTimeMillis() != null) {
+		if (null != dbSetting.getMinEvictableIdleTimeMillis()) {
 			ds.setMinEvictableIdleTimeMillis(dbSetting.getMinEvictableIdleTimeMillis());
 		}
-		if (dbSetting.getTestWhileIdle() != null) {
+		if (null != dbSetting.getTestWhileIdle()) {
 			ds.setTestWhileIdle(dbSetting.getTestWhileIdle());
 		}
-		if (dbSetting.getTimeBetweenEvictionRunsMillis() != null) {
+		if (null != dbSetting.getTimeBetweenEvictionRunsMillis()) {
 			ds.setTimeBetweenEvictionRunsMillis(dbSetting.getTimeBetweenEvictionRunsMillis());
 		}
 
@@ -39,19 +45,19 @@ public class DBCPDataSourceBuilder implements DataSourceBuilder {
 			ds.setValidationQuery(dbSetting.getValidationQuery());
 		}
 
-		if (dbSetting.getTestOnBorrow() != null) {
+		if (null != dbSetting.getTestOnBorrow()) {
 			ds.setTestOnBorrow(dbSetting.getTestOnBorrow());
 		}
 
-		if (dbSetting.getTestOnReturn() != null) {
+		if (null != dbSetting.getTestOnReturn()) {
 			ds.setTestOnReturn(dbSetting.getTestOnReturn());
 		}
 
         /*
 		JMXHelper.registerObject(ds, getFullUrl().replace(':', '-').replace('=', '-').replace('?', '-').replace('/', '-'),
 				"com.viadeo.dao.datasource");
-
         */
+
 		return ds;
 	}
 

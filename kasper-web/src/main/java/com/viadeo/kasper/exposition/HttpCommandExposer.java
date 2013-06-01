@@ -35,7 +35,7 @@ import java.util.Map;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class HttpCommandExposer extends HttpExposer {
-    private static final long serialVersionUID = 8448984922303895624L;
+    private static final long serialVersionUID = 8444284922303895624L;
 
     private final Map<String, Class<? extends ICommand>> exposedCommands = new HashMap<>();
     private IDomainLocator domainLocator;

@@ -32,7 +32,7 @@ public class FilteredQueryTest extends TestCase {
 	}
 
 	private static final class DQOTest extends AbstractQueryDQO<DQOTest> {
-		private static final long serialVersionUID = 5709183469621265829L;
+		private static final long serialVersionUID = 5709183469621265842L;
 		public FieldTest<DQOTest> name;
 	}
 

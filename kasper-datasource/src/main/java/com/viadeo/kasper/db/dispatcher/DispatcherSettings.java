@@ -1,6 +1,9 @@
-/*
- * Copyright 2010 Viadeo.com
- */
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.db.dispatcher;
 
 import java.util.LinkedHashSet;
@@ -13,6 +16,8 @@ public final class DispatcherSettings {
 	private LinkedHashSet<Dsn> dsns;
 
 	private Dsn networkDsn;
+
+    // ------------------------------------------------------------------------
 
 	/**
 	 * Gets the balanced dsn.
@@ -59,6 +64,8 @@ public final class DispatcherSettings {
 		this.balancedDsn = balancedDsn;
 	}
 
+    // ------------------------------------------------------------------------
+
 	/**
 	 * Sets the default dsn.
 	 * 
@@ -85,4 +92,5 @@ public final class DispatcherSettings {
 	public void setNetworkDsn(final Dsn networkDsn) {
 		this.networkDsn = networkDsn;
 	}
+
 }

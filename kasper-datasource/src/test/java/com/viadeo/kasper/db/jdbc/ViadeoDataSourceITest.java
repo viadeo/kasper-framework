@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.db.jdbc;
 
 
@@ -16,28 +22,48 @@ public class ViadeoDataSourceITest {
 
     @Test
     public void testInit() throws SQLException {
-        String dsFile = "classpath:datasources.json", dispatcherFile = "classpath:dispatcher.json";
-        
-        DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile, dispatcherFile);
-        ViadeoDataSource dataSource = new ViadeoDataSource(builder);
+        // Given
+        final String dsFile = "classpath:datasources.json", dispatcherFile = "classpath:dispatcher.json";
+        final DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile, dispatcherFile);
+
+        // When
+        final DataSource dataSource = new DataSource(builder);
+
+        // Then
         assertNotNull(dataSource);
         dataSource.getConnection();
     }
 
     @Test
     public void testFind() throws SQLException {
-        String dsFile = "classpath:datasources.json", dispatcherFile = "classpath:dispatcher.json";
-        DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile, dispatcherFile);
-        ViadeoDataSource dataSource = new ViadeoDataSource(builder);
+        // Given
+        final String dsFile = "classpath:datasources.json", dispatcherFile = "classpath:dispatcher.json";
+        final DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile, dispatcherFile);
+
+        // When
+        DataSource dataSource = new DataSource(builder);
+
+        // Then
         assertNotNull(dataSource);
-        Connection connection =  dataSource.getConnection();
+
+        // Given
+        final Connection connection =  dataSource.getConnection();
         connection.getMetaData();
-        String sql = "select * from Member";
-        PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        ResultSet resultSet = preparedStatement.executeQuery();
+        final String sql = "select * from Member";
+        final PreparedStatement preparedStatement = connection.prepareStatement(sql);
+
+        // When
+        final ResultSet resultSet = preparedStatement.executeQuery();
+
+        // Then
         assertNotNull(resultSet);
-        ResultSetMetaData metaData = resultSet.getMetaData();
+
+        // When
+        final ResultSetMetaData metaData = resultSet.getMetaData();
+
+        // Then
         assertNotNull(metaData);
+
         int nbColumn = metaData.getColumnCount();
         String message = "| %s : %s ";
         while(resultSet.next()) {
@@ -54,26 +80,46 @@ public class ViadeoDataSourceITest {
 
     @Test
     public void testTwoOperationsBeforePrepareStatement() throws SQLException {
-        String dsFile = "classpath:datasources.json", dispatcherFile = "classpath:dispatcher.json";
-        DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile, dispatcherFile);
-        ViadeoDataSource dataSource = new ViadeoDataSource(builder);
+        // Given
+        final String dsFile = "classpath:datasources.json", dispatcherFile = "classpath:dispatcher.json";
+        final DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile, dispatcherFile);
+
+        // When
+        final DataSource dataSource = new DataSource(builder);
+
+        // Then
         assertNotNull(dataSource);
-        Connection connection =  dataSource.getConnection();
+
+        // When
+        final Connection connection =  dataSource.getConnection();
         connection.getMetaData();
         connection.setClientInfo("client.info", "Viadeo");
-        String sql = "select * from Action";
+
+        final String sql = "select * from Action";
         PreparedStatement preparedStatement = connection.prepareStatement(sql);
-        ResultSet resultSet = preparedStatement.executeQuery();
+
+        // When
+        final ResultSet resultSet = preparedStatement.executeQuery();
+
+        // Then
         assertNotNull(resultSet);
-        ResultSetMetaData metaData = resultSet.getMetaData();
+
+        // When
+        final ResultSetMetaData metaData = resultSet.getMetaData();
+
+        // Then
         assertNotNull(metaData);
-        Properties prop = connection.getClientInfo();
-        String value = (String)prop.get("client.info");
+
+        // When
+        final Properties prop = connection.getClientInfo();
+        final String value = (String) prop.get("client.info");
+
+        // Then
         assertNotSame("Viadeo", value);
+
         resultSet.close();
         preparedStatement.close();
         connection.close();
     }
-
 
 }

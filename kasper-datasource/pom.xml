@@ -16,6 +16,13 @@
 
     <dependencies>
 
+        <!-- Kasper dependencies -->
+        <dependency>
+            <groupId>com.viadeo.kasper</groupId>
+            <artifactId>kasper-api</artifactId>
+        </dependency>
+
+        <!-- Third-party dependencies -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-core</artifactId>
@@ -30,7 +37,6 @@
 	        <artifactId>slf4j-log4j12</artifactId>
             <optional>true</optional>
 	    </dependency>
-	    
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>

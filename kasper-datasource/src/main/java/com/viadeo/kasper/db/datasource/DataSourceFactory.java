@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.db.datasource;
 
 import com.viadeo.kasper.db.Operation;
@@ -47,4 +53,5 @@ public interface DataSourceFactory {
      * @return Map key: table name, value: Dsn
      */
     Map<String, Dsn> getDsnsMap();
+
 }

@@ -1,7 +1,9 @@
-/*
- * Copyright 2010 Viadeo.com
- */
-
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.db.dispatcher;
 
 import org.slf4j.Logger;
@@ -17,67 +19,7 @@ public final class Dsn {
 	private String tableName;
     private String className;
 
-	/**
-	 * Instantiates a new dsn.
-	 */
-	public Dsn() {
-		super();
-	}
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#hashCode()
-	 * 
-	 * The key must be only the regular expression or the table name regular expression. 
-	 * The read and write Datasource must not be part of the key
-	 * to avoid having more than one entry for the same regular expression (table name or class name)
-	 */
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		// take string value of regular expression. the compiled version of variable is different
-		result = prime * result;
-		// Take the string (upper case) version of the variable, not the compiled regular expression
-		result = prime * result + ((tableName == null) ? 0 : tableName.toString().hashCode());
-		return result;
-	}
-
-
-	/* (non-Javadoc)
-	 * @see java.lang.Object#equals(java.lang.Object)
-	 * The key must be only the regular expression or the table name regular expression. 
-	 * The read and write Datasource must not be part of the key
-	 * to avoid having more than one entry for the same regular expression (table name or class name)
-	 * So the equals method must take into account only regexpr (table name or class name)
-	 */
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		Dsn other = (Dsn) obj;
-
-		if (tableName == null) {
-			if (other.tableName != null) {
-				return false;
-			}
-		} else if (tableName.toString().equals(other.tableName.toString())) {
-			if (LOGGER.isTraceEnabled()) {
-				LOGGER.trace("Found existing element in configuration " + other.tableName.toString());
-			}
-			return true;
-		} else {
-			return false;
-		}
-
-		return true;
-	}
+    // ------------------------------------------------------------------------
 
     public String getRead() {
         return read;
@@ -87,6 +29,7 @@ public final class Dsn {
         return write;
     }
 
+    // ------------------------------------------------------------------------
 
 	/**
 	 * Sets the always read on.
@@ -148,7 +91,72 @@ public final class Dsn {
 		write = dsn;
 	}
 
+	/**
+	 * Gets the always read on.
+	 * 
+	 * @return the always read on
+	 */
+	Boolean getAlwaysReadOn() {
+		return alwaysReadOn;
+	}
+
+    // ------------------------------------------------------------------------
+
 	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 *
+	 * The key must be only the regular expression or the table name regular expression.
+	 * The read and write Datasource must not be part of the key
+	 * to avoid having more than one entry for the same regular expression (table name or class name)
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		// take string value of regular expression. the compiled version of variable is different
+		result = prime * result;
+		// Take the string (upper case) version of the variable, not the compiled regular expression
+		result = prime * result + ((tableName == null) ? 0 : tableName.toString().hashCode());
+		return result;
+	}
+
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 * The key must be only the regular expression or the table name regular expression.
+	 * The read and write Datasource must not be part of the key
+	 * to avoid having more than one entry for the same regular expression (table name or class name)
+	 * So the equals method must take into account only regexpr (table name or class name)
+	 */
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (null == obj) {
+			return false;
+		}
+		if (!getClass().equals(obj.getClass())) {
+			return false;
+		}
+
+		final Dsn other = (Dsn) obj;
+
+		if (null == tableName) {
+			if (null != other.tableName) {
+				return false;
+			}
+		} else if (tableName.toString().equals(other.tableName.toString())) {
+			LOGGER.trace("Found existing element in configuration " + other.tableName.toString());
+			return true;
+		} else {
+			return false;
+		}
+
+		return true;
+	}
+
+    	/* (non-Javadoc)
 	 * @see java.lang.Object#toString()
 	 */
 	@Override
@@ -165,15 +173,6 @@ public final class Dsn {
 		}
 		sb.append("}");
 		return sb.toString();
-	}
-
-	/**
-	 * Gets the always read on.
-	 * 
-	 * @return the always read on
-	 */
-	Boolean getAlwaysReadOn() {
-		return alwaysReadOn;
 	}
 
 }

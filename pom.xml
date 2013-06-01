@@ -40,6 +40,7 @@
 		<module>kasper-common</module>
 		<module>kasper-test</module>
 		<module>kasper-documentation</module>
+        <module>kasper-datasource</module>
 	</modules>
 
 	<build>

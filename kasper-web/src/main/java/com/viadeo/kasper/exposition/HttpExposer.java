@@ -24,7 +24,7 @@ import java.util.Map;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class HttpExposer extends HttpServlet {
-	private static final long serialVersionUID = 8448984922303895624L;
+	private static final long serialVersionUID = 8448984922303895424L;
 	protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 	        
 	private IPlatform platform;

@@ -1,6 +1,9 @@
-/*
- * Copyright 2010 Viadeo.com
- */
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.db.datasource;
 
 import java.util.regex.Matcher;
@@ -8,6 +11,7 @@ import java.util.regex.Pattern;
 
 
 public final class DataSourceSetting {
+
 	// Mandatory
 	private String driverClassName;
 	private String password;
@@ -24,8 +28,11 @@ public final class DataSourceSetting {
 	private Boolean testOnBorrow=true;
 	private Boolean testOnReturn=false;
 	private Long timeBetweenEvictionRunsMillis=300000L;
+
 	// Optional without default value
 	private String option;
+
+    // ------------------------------------------------------------------------
 
 	/**
 	 * Sets the driver class name.
@@ -114,28 +121,31 @@ public final class DataSourceSetting {
 	/**
 	 * @param testOnBorrow the testOnBorrow to set
 	 */
-	public void setTestOnBorrow(Boolean testOnBorrow) {
+	public void setTestOnBorrow(final Boolean testOnBorrow) {
 		this.testOnBorrow = testOnBorrow;
 	}
 
 	/**
 	 * @param testOnReturn the testOnReturn to set
 	 */
-	public void setTestOnReturn(Boolean testOnReturn) {
+	public void setTestOnReturn(final Boolean testOnReturn) {
 		this.testOnReturn = testOnReturn;
 	}
 
 	/**
 	 * @param validationQuery the validationQuery to set
 	 */
-	public void setValidationQuery(String validationQuery) {
+	public void setValidationQuery(final String validationQuery) {
 		this.validationQuery = validationQuery;
 	}
 
-	private String getFullUrl(String jdbcUrl) {
-		if (jdbcUrl.indexOf('?') > 0 || option == null || option.length() == 0) {
+    // ------------------------------------------------------------------------
+
+	private String getFullUrl(final String jdbcUrl) {
+		if ((jdbcUrl.indexOf('?') > 0) || (null == option) || (0 == option.length())) {
 			return jdbcUrl;
 		}
+
 		// incompatible
 		final StringBuilder sb = new StringBuilder(jdbcUrl).append('?');
 		if (option.indexOf("utf8") >= 0 || option.indexOf("utf-8") >= 0) {
@@ -151,26 +161,9 @@ public final class DataSourceSetting {
 		return sb.toString();
 	}
 
-	private static final Pattern EL_VAR_PATTERN = Pattern.compile("\\$\\{([a-zA-Z.\\-_0-9]+)\\}");
-
-	public final static String replaceELVariables(final String str) {
-		final StringBuffer sbuff = new StringBuffer();
-		final Matcher matcher = EL_VAR_PATTERN.matcher(str);
-		while (matcher.find()) {
-			final String prop = System.getProperty(matcher.group(1));
-			if (prop != null) {
-				matcher.appendReplacement(sbuff, Matcher.quoteReplacement(prop));
-			}
-		}
-		matcher.appendTail(sbuff);
-		return sbuff.toString();
-	}
-
-	
 	public Integer getMaxActive() {
 		return maxActive;
 	}
-
 
 	public Integer getMaxIdle() {
 		return maxIdle;
@@ -224,7 +217,24 @@ public final class DataSourceSetting {
 	public String getOption() {
 		return option;
 	}
-	
-	
+
+    // ------------------------------------------------------------------------
+
+	private static final Pattern EL_VAR_PATTERN = Pattern.compile("\\$\\{([a-zA-Z.\\-_0-9]+)\\}");
+
+	public final static String replaceELVariables(final String str) {
+		final StringBuffer sbuff = new StringBuffer();
+		final Matcher matcher = EL_VAR_PATTERN.matcher(str);
+
+		while (matcher.find()) {
+			final String prop = System.getProperty(matcher.group(1));
+			if (null != prop) {
+				matcher.appendReplacement(sbuff, Matcher.quoteReplacement(prop));
+			}
+		}
+
+		matcher.appendTail(sbuff);
+		return sbuff.toString();
+	}
 
 }

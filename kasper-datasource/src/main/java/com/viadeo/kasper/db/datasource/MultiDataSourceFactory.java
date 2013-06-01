@@ -1,5 +1,10 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.db.datasource;
-
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -14,6 +19,7 @@ import javax.sql.DataSource;
 import java.util.Map;
 
 public class MultiDataSourceFactory implements DataSourceFactory {
+  	private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceFactory.class);
 
     // Map containing key: database alias, value: javax.sql.Datasource
     private Map<String, DataSource> dataSourceMap;
@@ -23,7 +29,7 @@ public class MultiDataSourceFactory implements DataSourceFactory {
 
     private DispatcherSettings dispatcherSettings;
 
-	Logger log= LoggerFactory.getLogger(DataSourceFactory.class);
+    // ------------------------------------------------------------------------
 
     /**
      * Create a container for all the datasource and expose utilities
@@ -32,16 +38,19 @@ public class MultiDataSourceFactory implements DataSourceFactory {
      * @param dispatcherSettings
      * @throws NullPointerException if any parameter is null
      */
-    MultiDataSourceFactory(Map<String, DataSource> dataSourceMap, DispatcherSettings dispatcherSettings) {
+    MultiDataSourceFactory(final Map<String, DataSource> dataSourceMap, final DispatcherSettings dispatcherSettings) {
+
         // throws NPE if any parameter is null
         this.dataSourceMap = Preconditions.checkNotNull(dataSourceMap);
         this.dispatcherSettings = Preconditions.checkNotNull(dispatcherSettings);
+
         // contruct map containing the tablenames and the dsn
-        for (Dsn dsn : dispatcherSettings.getDsns()) {
+        for (final Dsn dsn : dispatcherSettings.getDsns()) {
             dsnMap.put(dsn.getTableName().toLowerCase(), dsn);
         }
     }
 
+    // ------------------------------------------------------------------------
 
     @Override
     public DataSource getBalancedDatasource() {
@@ -50,13 +59,19 @@ public class MultiDataSourceFactory implements DataSourceFactory {
     }
 
     @Override
-    public DataSource getDatasource(String tableName, Operation access) {
+    public DataSource getDatasource(final String tableName, final Operation access) {
 
-        if (tableName == null) throw new IllegalArgumentException("tableName is mandatory");
-        if (access == null) throw new IllegalArgumentException("access is mandatory");
+        if (null == tableName) {
+            throw new IllegalArgumentException("tableName is mandatory");
+        }
+
+        if (null == access) {
+            throw new IllegalArgumentException("access is mandatory");
+        }
 
         String dsName = null;
-        Dsn dsn = findDsn(tableName);
+
+        final Dsn dsn = findDsn(tableName);
         switch (access) {
             case READ:
             	// Use slave, not writable
@@ -70,10 +85,12 @@ public class MultiDataSourceFactory implements DataSourceFactory {
             	// By default, use master, writable
                 dsName = dsn.getWrite();
         }
-        DataSource ds = dataSourceMap.get(dsName);
-        if (ds == null) {
-			log.error("Datasource {} not found in datasource configuration file", dsName);
+
+        final DataSource ds = dataSourceMap.get(dsName);
+        if (null == ds) {
+			LOGGER.error("Datasource {} not found in datasource configuration file", dsName);
         }
+
         return ds;
     }
 
@@ -84,9 +101,9 @@ public class MultiDataSourceFactory implements DataSourceFactory {
 		
     }
 
-    private Dsn findDsn(String tableName) {
+    private Dsn findDsn(final String tableName) {
         Dsn result = dsnMap.get(tableName.toLowerCase());
-        if (result == null) {
+        if (null == result) {
             result = dispatcherSettings.getDefaultDsn();
         }
         return result;
@@ -95,7 +112,7 @@ public class MultiDataSourceFactory implements DataSourceFactory {
 
 	@Override
 	public DataSource getDefaultDatasource() {
-		String name = dispatcherSettings.getDefaultDsn().getWrite();
+		final String name = dispatcherSettings.getDefaultDsn().getWrite();
         return dataSourceMap.get(name);
 	}
 
@@ -114,6 +131,5 @@ public class MultiDataSourceFactory implements DataSourceFactory {
     public Map<String, Dsn> getDsnsMap() {
         return ImmutableMap.copyOf(dsnMap);
     }
-
 
 }
