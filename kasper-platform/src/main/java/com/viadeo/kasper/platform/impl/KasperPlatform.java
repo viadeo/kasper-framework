@@ -7,11 +7,6 @@
 
 package com.viadeo.kasper.platform.impl;
 
-import java.util.Map;
-
-import org.axonframework.domain.GenericEventMessage;
-import org.axonframework.eventhandling.EventBus;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.IContext;
@@ -20,6 +15,10 @@ import com.viadeo.kasper.cqrs.command.ICommandGateway;
 import com.viadeo.kasper.cqrs.query.IQueryGateway;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.platform.IPlatform;
+import org.axonframework.domain.GenericEventMessage;
+import org.axonframework.eventhandling.EventBus;
+
+import java.util.Map;
 
 public class KasperPlatform implements IPlatform {
 
@@ -27,12 +26,19 @@ public class KasperPlatform implements IPlatform {
 	protected IQueryGateway queryGateway;
 	protected AnnotationRootProcessor rootProcessor;
 	protected EventBus eventBus;
+	private volatile Boolean _booted = false;
+    private final Boolean sync = true;
 
 	// ------------------------------------------------------------------------
 
 	@Override
 	public void boot() {
-		this.rootProcessor.boot();
+	    synchronized (sync) {
+	        if (!_booted) {
+	            this.rootProcessor.boot();
+	            _booted = true;
+	        }
+        }
 	}
 
 	@Override
@@ -59,7 +65,7 @@ public class KasperPlatform implements IPlatform {
 		metaData.put(IContext.METANAME, Preconditions.checkNotNull(context));
 
 		final GenericEventMessage<IEvent> eventMessageAxon = 
-				new GenericEventMessage<IEvent>(event, metaData);
+				new GenericEventMessage<>(event, metaData);
 
 		this.eventBus.publish(eventMessageAxon);
 	}

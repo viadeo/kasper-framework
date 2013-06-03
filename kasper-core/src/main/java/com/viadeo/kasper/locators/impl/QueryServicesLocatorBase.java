@@ -7,19 +7,19 @@
 
 package com.viadeo.kasper.locators.impl;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-import static com.google.common.collect.Maps.newHashMap;
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-
 import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.query.IQuery;
 import com.viadeo.kasper.cqrs.query.IQueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
 import com.viadeo.kasper.locators.IQueryServicesLocator;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.collect.Maps.newHashMap;
 
 /** Base implementation for query services locator */
 public class QueryServicesLocatorBase implements IQueryServicesLocator {

@@ -6,14 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.specification.impl;
 
-import java.util.Map;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.ddd.IEntity;
 import com.viadeo.kasper.ddd.specification.IEntitySpecification;
 import com.viadeo.kasper.ddd.specification.ISpecificationErrorMessage;
 import com.viadeo.kasper.ddd.specification.annotation.XSpecification;
+
+import java.util.Map;
 
 /**
  *
@@ -85,16 +85,17 @@ public abstract class AbstractSpecification<E extends IEntity> implements IEntit
 
 	@Override
 	public IEntitySpecification<E> and(final IEntitySpecification<E> specification) {
-		return new AndSpecification<E>(this, Preconditions.checkNotNull(specification));
+		return new AndSpecification<>(this, Preconditions.checkNotNull(specification));
 	}
 
 	@Override
 	public IEntitySpecification<E> or(final IEntitySpecification<E> specification) {
-		return new OrSpecification<E>(this, Preconditions.checkNotNull(specification));
+		return new OrSpecification<>(this, Preconditions.checkNotNull(specification));
 	}
 
 	@Override
 	public IEntitySpecification<E> not(final IEntitySpecification<E> specification) {
-		return new NotSpecification<E>(Preconditions.checkNotNull(specification));
+		return new NotSpecification<>(Preconditions.checkNotNull(specification));
 	}
+
 }

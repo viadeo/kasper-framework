@@ -7,15 +7,14 @@
 
 package com.viadeo.kasper.core.boot;
 
-import org.axonframework.eventhandling.EventBus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.ddd.impl.AbstractRepository;
 import com.viadeo.kasper.locators.IDomainLocator;
+import org.axonframework.eventhandling.EventBus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * 
@@ -77,4 +76,3 @@ public class RepositoriesProcessor extends AbstractSingletonAnnotationProcessor<
 	
 }
 
-	

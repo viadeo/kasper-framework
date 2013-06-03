@@ -6,9 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.event.domain;
 
-import org.joda.time.DateTime;
-
 import com.viadeo.kasper.IKasperID;
+import org.joda.time.DateTime;
 
 /**
  *

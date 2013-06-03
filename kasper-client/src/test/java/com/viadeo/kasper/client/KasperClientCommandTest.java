@@ -7,30 +7,6 @@
 
 package com.viadeo.kasper.client;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-
-import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.ServerSocket;
-import java.net.URL;
-import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-
-import javax.ws.rs.Consumes;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
-
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.mockito.ArgumentCaptor;
-
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
@@ -43,20 +19,44 @@ import com.viadeo.kasper.cqrs.command.ICommandResult;
 import com.viadeo.kasper.cqrs.command.ICommandResult.Status;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+
+import javax.ws.rs.Consumes;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.ServerSocket;
+import java.net.URL;
+import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 
 
 public class KasperClientCommandTest extends JerseyTest {
 	
     private static int port;
-    
     private KasperClient client;
     
     //-------------------------------------------------------------------------
     
     public static class MemberDTO implements IQueryDTO {
-        private static final long serialVersionUID = 271800729414361903L;
+        private static final long serialVersionUID = 271804229442342903L;
+
         private String memberName;
         private List<Integer> ids;
+
+        // --
 
         public MemberDTO() { }
 
@@ -64,6 +64,8 @@ public class KasperClientCommandTest extends JerseyTest {
             this.memberName = memberName;
             this.ids = ids;
         }
+
+        // --
 
         public String getMemberName() {
             return this.memberName;
@@ -83,7 +85,7 @@ public class KasperClientCommandTest extends JerseyTest {
     }
 
     public static class CreateMemberCommand implements ICommand {
-        private static final long serialVersionUID = -2618953632539379331L;
+        private static final long serialVersionUID = -2618953642539379331L;
         private Status status;
 
         public CreateMemberCommand() {}
@@ -99,8 +101,10 @@ public class KasperClientCommandTest extends JerseyTest {
         public void setStatus(final Status status) {
             this.status = status;
         }
-    }    
-    
+    }
+
+    // ------------------------------------------------------------------------
+
     @BeforeClass public static void init() throws IOException {
         ServerSocket socket = new ServerSocket(0);
         port = socket.getLocalPort();
@@ -132,7 +136,7 @@ public class KasperClientCommandTest extends JerseyTest {
     
     //-------------------------------------------------------------------------
     
-    public KasperClientCommandTest() throws MalformedURLException {
+    public KasperClientCommandTest() throws IOException {
         super(new LowLevelAppDescriptor.Builder(new TestConfiguration()).contextPath("/kasper/command").build());
         client = new KasperClientBuilder()
                 .commandBaseLocation(new URL("http://localhost:"+port+"/kasper/command/"))

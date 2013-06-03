@@ -9,7 +9,7 @@
 	<groupId>com.viadeo.kasper</groupId>
 	<artifactId>kasper-parent</artifactId>
 	<name>KASPER PARENT</name>
-	<version>0.0.4.2</version>
+	<version>0.0.5</version>
 	<description>Kasper POM parent</description>
 
 	<packaging>pom</packaging>
@@ -27,14 +27,16 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<axon.version>2.0</axon.version>
 		<testng.version>6.7</testng.version>
-		<com.fasterxml.jackson.version>2.0.2</com.fasterxml.jackson.version>
+		<com.fasterxml.jackson.version>2.1.2</com.fasterxml.jackson.version>
 		<org.springframework.version>3.1.4.RELEASE</org.springframework.version>
 		<junit.version>4.10</junit.version>
 		<org.slf4j.version>1.7.1</org.slf4j.version>
 		<mockito.version>1.9.5</mockito.version>
 		<com.sun.jersey.version>1.16</com.sun.jersey.version>
 		<com.viadeo.mvn.proxy.deployurl>http://deploy.mvn.viadeo.com</com.viadeo.mvn.proxy.deployurl>
-	</properties>
+        <commons-dbcp.version>1.4</commons-dbcp.version>
+        <mysql-connector-java.version>5.1.24</mysql-connector-java.version>
+    </properties>
 
 	<dependencies>
 		<dependency>
@@ -164,8 +166,8 @@
 			</dependency>
 			<dependency>
 				<groupId>javax.servlet</groupId>
-				<artifactId>servlet-api</artifactId>
-				<version>2.5</version>
+				<artifactId>javax.servlet-api</artifactId>
+				<version>3.0.1</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
@@ -205,11 +207,21 @@
 				<version>${mockito.version}</version>
 				<scope>test</scope>
 			</dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${org.slf4j.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
 				<version>${org.slf4j.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>
@@ -231,6 +243,17 @@
 				<version>1.2.1</version>
 			</dependency>
 
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql-connector-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-dbcp</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>${commons-dbcp.version}</version>
+            </dependency>
+
 		</dependencies>
 	</dependencyManagement>
 
@@ -244,8 +267,8 @@
 				<configuration>
 					<showDeprecation>false</showDeprecation>
 					<showWarnings>false</showWarnings>
-					<source>1.6</source>
-					<target>1.6</target>
+					<source>1.7</source>
+					<target>1.7</target>
 					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
@@ -272,6 +295,17 @@
 						</goals>
 					</execution>
 				</executions>
+				<configuration>
+					<links>
+						<link>http://docs.guava-libraries.googlecode.com/git/javadoc/</link>
+						<link>http://docs.oracle.com/javase/1.6.0/docs/api/</link>
+					</links>
+					<version>true</version>
+					<show>protected</show>
+					<encoding>UTF-8</encoding>
+					<docencoding>UTF-8</docencoding>
+					<charset>UTF-8</charset>
+				</configuration>
 			</plugin>
 		</plugins>
 		<pluginManagement>

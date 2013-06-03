@@ -1,16 +1,5 @@
 package com.viadeo.kasper.context;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
-
-import org.axonframework.eventhandling.annotation.EventHandler;
-import org.axonframework.repository.AggregateNotFoundException;
-import org.joda.time.DateTime;
-import org.junit.Test;
-
 import com.google.common.base.Optional;
 import com.viadeo.kasper.AbstractPlatformTests;
 import com.viadeo.kasper.IKasperID;
@@ -34,6 +23,16 @@ import com.viadeo.kasper.er.impl.AbstractRootConcept;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.domain.impl.AbstractEntityEvent;
 import com.viadeo.kasper.event.exceptions.KasperEventException;
+import org.axonframework.eventhandling.annotation.EventHandler;
+import org.axonframework.repository.AggregateNotFoundException;
+import org.joda.time.DateTime;
+import org.junit.Test;
+
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 @SuppressWarnings("serial")
 public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {

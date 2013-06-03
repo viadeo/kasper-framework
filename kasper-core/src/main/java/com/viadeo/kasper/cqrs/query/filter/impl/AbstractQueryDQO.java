@@ -7,14 +7,14 @@
 
 package com.viadeo.kasper.cqrs.query.filter.impl;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-
 import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
 import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.IQueryField;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 
 /**
  *
@@ -68,12 +68,10 @@ public abstract class AbstractQueryDQO<DQO extends AbstractQueryDQO<DQO>> implem
 					this.configureField(field, newField);
 					field.set(this, newField);
 
-				} catch (final InstantiationException e) {
-					throw new KasperQueryRuntimeException(String.format("Unable to instanciate field %s on DQO %s", field.getName(), thisClass.getSimpleName()), e);
-				} catch (final IllegalAccessException e) {
+				} catch (final InstantiationException | IllegalAccessException e) {
 					throw new KasperQueryRuntimeException(String.format("Unable to instanciate field %s on DQO %s", field.getName(), thisClass.getSimpleName()), e);
 				}
-			}
+            }
 		}
 	}
 

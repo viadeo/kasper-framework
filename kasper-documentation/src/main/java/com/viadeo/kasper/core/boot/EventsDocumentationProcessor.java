@@ -6,11 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *

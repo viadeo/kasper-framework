@@ -6,14 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.filter.impl;
 
+import com.google.common.base.Preconditions;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
+import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
+
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.google.common.base.Preconditions;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
-import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
 
 /**
  * 
@@ -34,7 +34,7 @@ public final class QueryDQOFactory {
 	 */
 	private static Map<Class<? extends IQueryDQO<?>>, IQueryDQO<?>> dqoCache;
 	static {
-		QueryDQOFactory.dqoCache = new ConcurrentHashMap<Class<? extends IQueryDQO<?>>, IQueryDQO<?>>();
+		QueryDQOFactory.dqoCache = new ConcurrentHashMap<>();
 	}
 
 	// ------------------------------------------------------------------------
@@ -61,15 +61,9 @@ public final class QueryDQOFactory {
 				newInstance.init();
 				QueryDQOFactory.dqoCache.put(dqoClass, newInstance);
 
-			} catch (final InstantiationException e) {
-				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e);
-			} catch (final IllegalAccessException e) {
-				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e);
-			} catch (final SecurityException e) {
-				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e);
-			} catch (final NoSuchMethodException e) {
-				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e);
-			} catch (final IllegalArgumentException e) {
+			} catch (final InstantiationException | IllegalAccessException |
+                           SecurityException | NoSuchMethodException |
+                           IllegalArgumentException e) {
 				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e);
 			} catch (final InvocationTargetException e) {
 				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e.getTargetException());

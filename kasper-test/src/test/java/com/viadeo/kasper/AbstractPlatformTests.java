@@ -1,11 +1,10 @@
 package com.viadeo.kasper;
 
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
-
 import com.viadeo.kasper.context.IContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.platform.IPlatform;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public abstract class AbstractPlatformTests {
 

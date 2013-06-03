@@ -7,6 +7,8 @@
 
 package com.viadeo.kasper.cqrs.query;
 
+import java.util.Collection;
+
 /**
  * 
  *         Data transfer object enclosing a collection result. The DTO represent
@@ -30,6 +32,9 @@ public interface IQueryCollectionDTO<DTO extends IQueryDTO> extends
 	int INFINITE_TOTAL = -1;
 
 	/** @return the number of elements of this (returned) collection */
-	int getSize();
+	int getCount();
+
+    /** @return the list of DTO elements */
+    Collection<DTO> getList();
 
 }

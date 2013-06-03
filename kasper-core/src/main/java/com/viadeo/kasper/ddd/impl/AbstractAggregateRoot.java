@@ -6,24 +6,21 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.impl;
 
-import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
-import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.ddd.IAggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.locators.IDomainLocator;
+import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
+import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * Base AGR implementation
  *
- * @param <D> Domain
- * 
  * @see IAggregateRoot
  * @see IDomain
  */
@@ -52,11 +49,8 @@ public abstract class AbstractAggregateRoot
 	// ========================================================================
 
 	public <E extends IAggregateRoot> IRepository<E> getRepository() {
-        @SuppressWarnings("unchecked") // Safe
-		final IRepository<E> repo = (IRepository<E>) 
-			this.getDomainLocator().getEntityRepository(this.getClass());
-
-        return repo;
+        return (IRepository<E>)
+            this.getDomainLocator().getEntityRepository(this.getClass());
 	}
 	
 	// ========================================================================	

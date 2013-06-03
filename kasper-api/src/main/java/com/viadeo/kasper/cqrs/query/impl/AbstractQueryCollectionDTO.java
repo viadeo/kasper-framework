@@ -6,36 +6,81 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.impl;
 
-import static com.google.common.base.Preconditions.checkNotNull;
+import com.google.common.base.Objects;
+import com.viadeo.kasper.cqrs.query.IQueryCollectionDTO;
+import com.viadeo.kasper.cqrs.query.IQueryDTO;
 
 import java.util.Collection;
 import java.util.Iterator;
 
-import com.viadeo.kasper.cqrs.query.IQueryCollectionDTO;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class AbstractQueryCollectionDTO<DTO extends IQueryDTO> implements IQueryCollectionDTO<DTO> {
 
 	private static final long serialVersionUID = 5181041546682941845L;
 
-	private final Collection<DTO> innerCollection;
+	private Collection<DTO> innerCollection;
+
+    // ------------------------------------------------------------------------
+
+    protected AbstractQueryCollectionDTO() {
+        /* Jackson */
+    }
 
 	protected AbstractQueryCollectionDTO(final Collection<DTO> innerCollection) {
 		this.innerCollection = checkNotNull(innerCollection);
 	}
+
+    // ------------------------------------------------------------------------
 
 	@Override
 	public Iterator<DTO> iterator() {
 		return this.innerCollection.iterator();
 	}
 
+    // ------------------------------------------------------------------------
+
 	@Override
-	public int getSize() {
+	public int getCount() {
 		return this.innerCollection.size();
 	}
 
-	protected Collection<DTO> list() {
+    @Override
+	public Collection<DTO> getList() {
 		return this.innerCollection;
 	}
+
+    public void setList(final Collection<DTO> innerCollection) {
+        this.innerCollection = innerCollection;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final AbstractQueryCollectionDTO that = (AbstractQueryCollectionDTO) o;
+        return Objects.equal(this.innerCollection, that.innerCollection);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(
+                innerCollection
+        );
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("innerCollection", innerCollection)
+                .toString();
+    }
 
 }

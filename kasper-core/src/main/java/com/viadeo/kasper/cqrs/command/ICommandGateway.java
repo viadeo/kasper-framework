@@ -6,14 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
+import com.viadeo.kasper.context.IContext;
 import org.axonframework.commandhandling.gateway.Timeout;
 import org.axonframework.common.annotation.MetaData;
 
-import com.viadeo.kasper.context.IContext;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /**
  *

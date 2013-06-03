@@ -6,27 +6,25 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.impl;
 
-import org.axonframework.eventsourcing.annotation.AbstractAnnotatedEntity;
-import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
-import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.ddd.IComponentEntity;
 import com.viadeo.kasper.er.IRootConcept;
 import com.viadeo.kasper.locators.IDomainLocator;
+import org.axonframework.eventsourcing.annotation.AbstractAnnotatedEntity;
+import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
+import org.joda.time.DateTime;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * Base Component entity implementation
  *
- * @param <D> Domain
+ * @param <R> Root Concept
  * 
  * @see IComponentEntity
  * @see IDomain
- * @see IEntity
  */
 public abstract class AbstractComponentEntity<R extends IRootConcept> 
 		extends AbstractAnnotatedEntity 

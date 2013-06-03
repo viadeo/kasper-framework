@@ -6,11 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.viadeo.kasper.ddd.IInternalDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,7 +26,6 @@ public class DomainsDocumentationProcessor extends AbstractDocumentationProcesso
 	/**
 	 * Process Kasper domain
 	 * 
-	 * @see IDomain
 	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override

@@ -4,18 +4,13 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.tools;
+
+import com.google.common.base.Optional;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import com.google.common.base.Optional;
+import java.util.*;
 
 /**
  *
@@ -44,12 +39,12 @@ public final class ReflectionGenericsResolver {
 	 * 
 	 */
 	@SuppressWarnings("rawtypes")
-	public static Optional<? extends Class> getParameterTypeFromClass(final Type runtimeType, final Type targetType,
-			final Integer nbParameter) {
-
+	public static Optional<? extends Class> getParameterTypeFromClass(final Type runtimeType,
+                                                                      final Type targetType,
+			                                                          final Integer nbParameter) {
 		// Boot recursive process with an empty bindings maps
-		return ReflectionGenericsResolver.getParameterTypeFromClass(
-				runtimeType, targetType, nbParameter, new HashMap<Type, Type>());
+		return getParameterTypeFromClass(
+                runtimeType, targetType, nbParameter, new HashMap<Type, Type>());
 
 	}
 
@@ -66,13 +61,15 @@ public final class ReflectionGenericsResolver {
 	@SuppressWarnings("rawtypes")
 	public static Optional<Class> getClass(final Type type) {
 		final Optional<Class> ret;
+
 		if (type instanceof Class) {
 			ret = Optional.of((Class) type);
 		} else if (type instanceof ParameterizedType) {
-			ret = ReflectionGenericsResolver.getClass(((ParameterizedType) type).getRawType());
+			ret = getClass(((ParameterizedType) type).getRawType());
 		} else {
 			ret = Optional.absent();
 		}
+
 		return ret;
 	}
 
@@ -87,15 +84,16 @@ public final class ReflectionGenericsResolver {
 	 */
 	private static void fillBindingsFromClass(final Type classType, final Map<Type, Type> bindings) {
 		if (classType instanceof ParameterizedType) {
+
 			final Type[] paramTypes = ((ParameterizedType) classType).getActualTypeArguments();
 			final Class<?> rawClass = (Class<?>) ((ParameterizedType) classType).getRawType();
 			final Type[] rawTypes = rawClass.getTypeParameters();
 
 			int i = 0;
 			for (final Type rawType : rawTypes) {
-				if (!ReflectionGenericsResolver.getClass(rawType).isPresent()) {
+				if (!getClass(rawType).isPresent()) {
 					Type bindType = paramTypes[i];
-					if (!ReflectionGenericsResolver.getClass(bindType).isPresent()) {
+					if (!getClass(bindType).isPresent()) {
 						bindType = bindings.get(bindType);
 					}
 					bindings.put(rawType, bindType);
@@ -119,11 +117,13 @@ public final class ReflectionGenericsResolver {
 	 * 
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private static Optional<Class> getParameterTypeFromClass(final Type runtimeType, final Type targetType,
-			final Integer nbParameter, final Map<Type, Type> bindings) {
+	private static Optional<Class> getParameterTypeFromClass(final Type runtimeType,
+                                                             final Type targetType,
+			                                                 final Integer nbParameter,
+                                                             final Map<Type, Type> bindings) {
 
-		final Optional<Class> runtimeClass = ReflectionGenericsResolver.getClass(runtimeType);
-		final Optional<Class> targetClass = ReflectionGenericsResolver.getClass(targetType);
+		final Optional<Class> runtimeClass = getClass(runtimeType);
+		final Optional<Class> targetClass = getClass(targetType);
 
 		if (!runtimeClass.isPresent() || !targetClass.isPresent()) {
 			return Optional.absent();
@@ -134,22 +134,23 @@ public final class ReflectionGenericsResolver {
 		}
 
 		// First step : directly accessible information ---------------------------
-		ReflectionGenericsResolver.fillBindingsFromClass(runtimeType, bindings);
+		fillBindingsFromClass(runtimeType, bindings);
 
 		final Type[] types = runtimeClass.get().getGenericInterfaces();
-		final List<Type> currentTypes = new ArrayList<Type>();
+
+		final List<Type> currentTypes = new ArrayList<>();
 		currentTypes.add(runtimeType);
 		currentTypes.addAll(Arrays.asList(types));
 
 		for (final Type type : currentTypes) {
-			if (ReflectionGenericsResolver.getClass(type).equals(targetClass) && ParameterizedType.class.isAssignableFrom(type.getClass())) {
+			if (getClass(type).equals(targetClass) && ParameterizedType.class.isAssignableFrom(type.getClass())) {
 				final ParameterizedType pt = (ParameterizedType) type;
 				final Type[] parameters = pt.getActualTypeArguments();
 				final Type parameter = parameters[nbParameter];
 
-				Optional<Class> retClass = ReflectionGenericsResolver.getClass(parameter);
+				Optional<Class> retClass = getClass(parameter);
 				if (!retClass.isPresent()) {
-					retClass = ReflectionGenericsResolver.getClass(bindings.get(parameter));
+					retClass = getClass(bindings.get(parameter));
 				}
 
 				return retClass;
@@ -159,16 +160,17 @@ public final class ReflectionGenericsResolver {
 		// Second step : parent and implemented interfaces ------------------------
 		final Type parent = runtimeClass.get().getGenericSuperclass();
 		final Type[] interfaces = runtimeClass.get().getGenericInterfaces();
-		final List<Type> proposalTypes = new ArrayList<Type>();
+
+		final List<Type> proposalTypes = new ArrayList<>();
 		proposalTypes.add(parent);
 		proposalTypes.addAll(Arrays.asList(interfaces));
 
 		for (final Type proposalType : proposalTypes) {
 			if (null != proposalType) {
-				ReflectionGenericsResolver.fillBindingsFromClass(proposalType, bindings);
+				fillBindingsFromClass(proposalType, bindings);
 
 				final Optional<Class> retClass =
-						ReflectionGenericsResolver.getParameterTypeFromClass(proposalType, targetType, nbParameter,	bindings);
+						getParameterTypeFromClass(proposalType, targetType, nbParameter, bindings);
 
 				if (retClass.isPresent()) {
 					return retClass;

@@ -6,11 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
-import javax.xml.bind.annotation.XmlTransient;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.doc.KasperLibrary;
+
+import javax.xml.bind.annotation.XmlTransient;
 
 public class DocumentedNode extends RetBase {
 	private static final long serialVersionUID = -2064570621327638305L;

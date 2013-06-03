@@ -1,10 +1,8 @@
 package com.viadeo.kasper.test.ddd;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-
+import com.viadeo.kasper.ddd.IAggregateRoot;
+import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.ddd.impl.AbstractRepository;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventsourcing.EventSourcingRepository;
 import org.axonframework.repository.Repository;
@@ -12,13 +10,11 @@ import org.axonframework.test.FixtureConfiguration;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
-import com.viadeo.kasper.ddd.IAggregateRoot;
-import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.ddd.impl.AbstractRepository;
+import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.*;
 
 /**
  *
- * @param <D> Domain
  * @param <ENTITY> Aggregate Root
  */
 public class KasperRepositoryTest<ENTITY extends IAggregateRoot> implements IRepository<ENTITY>, Repository<ENTITY> {
@@ -80,7 +76,7 @@ public class KasperRepositoryTest<ENTITY extends IAggregateRoot> implements IRep
 		when(mocked.load(any(), any(Long.class))).then(
 				new Answer<ENTITY>() {
 					public ENTITY answer(InvocationOnMock invocation) {
-						final Object aggregateIdentifier = (Object) invocation.getArguments()[0];
+						final Object aggregateIdentifier = invocation.getArguments()[0];
 						final Long expectedVersion = (Long) invocation.getArguments()[1];
 			            return that.load(aggregateIdentifier, expectedVersion);
 			         }				
@@ -90,7 +86,7 @@ public class KasperRepositoryTest<ENTITY extends IAggregateRoot> implements IRep
 		when(mocked.load(any())).then(
 				new Answer<ENTITY>() {
 					public ENTITY answer(InvocationOnMock invocation) {
-						final Object aggregateIdentifier = (Object) invocation.getArguments()[0];
+						final Object aggregateIdentifier = invocation.getArguments()[0];
 			            return that.load(aggregateIdentifier);
 			         }				
 				}
@@ -128,7 +124,7 @@ public class KasperRepositoryTest<ENTITY extends IAggregateRoot> implements IRep
 	 */
 	public static <E extends IAggregateRoot, R extends IRepository<E>> R mockAs(
 			final FixtureConfiguration<E> fixture, final Class<R> repositoryClass) {
-		final KasperRepositoryTest<E> repository = new KasperRepositoryTest<E>(fixture); 		
+		final KasperRepositoryTest<E> repository = new KasperRepositoryTest<>(fixture);
 		return repository.asMockOf(repositoryClass);
 	}
 	

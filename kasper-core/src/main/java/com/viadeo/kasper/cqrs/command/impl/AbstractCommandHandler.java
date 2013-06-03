@@ -6,11 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
-import org.axonframework.commandhandling.CommandMessage;
-import org.axonframework.unitofwork.UnitOfWork;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.viadeo.kasper.context.impl.CurrentContext;
 import com.viadeo.kasper.cqrs.command.ICommand;
 import com.viadeo.kasper.cqrs.command.ICommandHandler;
@@ -18,6 +13,10 @@ import com.viadeo.kasper.cqrs.command.ICommandMessage;
 import com.viadeo.kasper.cqrs.command.ICommandResult;
 import com.viadeo.kasper.event.exceptions.KasperEventException;
 import com.viadeo.kasper.exception.KasperRuntimeException;
+import org.axonframework.commandhandling.CommandMessage;
+import org.axonframework.unitofwork.UnitOfWork;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -38,7 +37,7 @@ public abstract class AbstractCommandHandler<C extends ICommand>
 	@SuppressWarnings("deprecation") // Controlled use of KasperErrorCommandResult
 	@Override
 	public Object handle(final CommandMessage<C> message, final UnitOfWork uow) throws Throwable {
-		final ICommandMessage<C> kmessage = new KasperCommandMessage<C>(message);
+		final ICommandMessage<C> kmessage = new KasperCommandMessage<>(message);
 		CurrentContext.set(kmessage.getContext());
 
 		AbstractCommandHandler.LOGGER.debug("Handle command " + message.getPayload().getClass().getSimpleName());
@@ -51,7 +50,7 @@ public abstract class AbstractCommandHandler<C extends ICommand>
 				try {
 					ret = this.handle(kmessage, uow);
 				} catch (final UnsupportedOperationException e2) {
-					ret = this.handle((C) message.getPayload());
+					ret = this.handle(message.getPayload());
 				}
 			}
 		} catch (final KasperRuntimeException e) {
@@ -104,7 +103,6 @@ public abstract class AbstractCommandHandler<C extends ICommand>
 
 	/**
 	 * @param command The command to handle
-	 * @return
 	 * @throws KasperEventException
 	 */
 	public ICommandResult handle(final C command) throws KasperEventException {

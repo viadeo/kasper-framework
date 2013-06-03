@@ -6,18 +6,17 @@
 // ============================================================================
 package com.viadeo.kasper.event.annotation;
 
+import com.viadeo.kasper.IDomain;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import com.viadeo.kasper.IDomain;
-
 /**
  *
  * Kasper Event marker
  *
- * @see IEvent
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

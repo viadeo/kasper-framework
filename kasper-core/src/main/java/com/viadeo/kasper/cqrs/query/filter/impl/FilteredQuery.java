@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.filter.impl;
 
-import java.net.URL;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.cqrs.query.IFilteredQuery;
@@ -15,6 +13,8 @@ import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
 import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+
+import java.net.URL;
 
 /**
  * Kasper filtered query base implementation

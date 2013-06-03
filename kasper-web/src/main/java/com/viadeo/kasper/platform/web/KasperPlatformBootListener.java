@@ -6,21 +6,20 @@
 // ============================================================================
 package com.viadeo.kasper.platform.web;
 
-import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
-
+import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.platform.IPlatform;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 
-import com.viadeo.kasper.exception.KasperRuntimeException;
-import com.viadeo.kasper.platform.IPlatform;
+import javax.servlet.ServletContext;
+import javax.servlet.ServletContextEvent;
+import javax.servlet.ServletContextListener;
 
 public class KasperPlatformBootListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(final ServletContextEvent sce) {
-
+        /* do nothing */
     }
 
     @Override

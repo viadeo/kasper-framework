@@ -6,12 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
-import java.util.Collection;
-
 import com.google.common.base.Optional;
 import com.viadeo.kasper.ddd.IInternalDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.doc.KasperLibrary;
+
+import java.util.Collection;
 
 public final class DocumentedDomain extends DocumentedNode {
 	private static final long serialVersionUID = 3888726543821083680L;

@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
-import java.io.Serializable;
-
 import com.viadeo.kasper.context.IContext;
+
+import java.io.Serializable;
 
 /**
  * The message used to pass a query to the kasper platform

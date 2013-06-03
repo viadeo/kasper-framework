@@ -6,14 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
-import java.util.Collection;
-
 import com.google.common.base.Optional;
 import com.viadeo.kasper.ddd.IComponentEntity;
 import com.viadeo.kasper.ddd.IEntity;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.er.IRootConcept;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+
+import java.util.Collection;
 
 public class DocumentedEntity extends AbstractDocumentedDomainNode {
 	private static final long serialVersionUID = -3336007269246172693L;

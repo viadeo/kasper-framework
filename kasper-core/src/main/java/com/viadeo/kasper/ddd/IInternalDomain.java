@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.ddd;
 
-import java.util.Set;
-
 import com.viadeo.kasper.IDomain;
+
+import java.util.Set;
 
 /**
  *
@@ -23,13 +23,13 @@ public interface IInternalDomain extends IDomain, IUbiquitousLanguageElement {
 	Set<? extends IEntity> getDomainEntities();
 
 	/**
-	 * @param _entity 
+	 * @param entity
 	 * @return the entity repository
 	 */
 	<E extends IAggregateRoot> IRepository<E> getEntityRepository(E entity);
 
 	/**
-	 * @param _entityClass the entity class for which to search the repository
+	 * @param entityClass the entity class for which to search the repository
 	 * @return the entity repository
 	 */
 	<E extends IAggregateRoot> IRepository<E> getEntityRepository(Class<E> entityClass);

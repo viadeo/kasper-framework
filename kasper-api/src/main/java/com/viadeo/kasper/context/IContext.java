@@ -7,18 +7,15 @@
 
 package com.viadeo.kasper.context;
 
-import java.io.Serializable;
-import java.util.Map;
-
 import com.google.common.base.Optional;
 import com.viadeo.kasper.IKasperID;
+
+import java.io.Serializable;
+import java.util.Map;
 
 /**
  *
  * Execution context for commands, events & Queries
- *
- * @see IKasperAgentContext
- * @see IKasperIdentityContext
  *
  */
 public interface IContext extends Serializable  {
@@ -36,7 +33,7 @@ public interface IContext extends Serializable  {
 	
 	/**
 	 * @param userId the associated ID of the current user
-	 * @return the current {@link IKasperIdentityContext} instance
+	 * @return the current {@link IContext} instance
 	 */
 	IContext setUserId(IKasperID userId);
 	
@@ -54,7 +51,7 @@ public interface IContext extends Serializable  {
 	 * Sets a new context property
 	 * 
 	 * @param key the property name
-	 * @param Value the property value
+	 * @param value the property value
 	 */
 	void setProperty(String key, Serializable value);
 	

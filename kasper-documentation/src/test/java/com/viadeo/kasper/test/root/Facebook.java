@@ -1,12 +1,12 @@
 package com.viadeo.kasper.test.root;
 
-import java.util.Set;
-
 import com.viadeo.kasper.ddd.IAggregateRoot;
 import com.viadeo.kasper.ddd.IEntity;
 import com.viadeo.kasper.ddd.IInternalDomain;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
+
+import java.util.Set;
 
 @XKasperDomain(prefix=Facebook.PREFIX, label=Facebook.NAME, description=Facebook.DESCRIPTION)
 public class Facebook implements IInternalDomain {

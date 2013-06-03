@@ -6,10 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.impl;
 
-import org.axonframework.eventhandling.EventBus;
-import org.axonframework.repository.AggregateNotFoundException;
-import org.axonframework.repository.Repository;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IKasperID;
@@ -18,6 +14,9 @@ import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.exception.KasperDomainRepositoryRuntimeException;
 import com.viadeo.kasper.ddd.exception.KasperDomainRuntimeException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import org.axonframework.eventhandling.EventBus;
+import org.axonframework.repository.AggregateNotFoundException;
+import org.axonframework.repository.Repository;
 
 /** 
  * 
@@ -29,7 +28,6 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
  * So we store an implementation of Axon Repository, binding its abstract methods to ours
  * and sending Repository interface calls to it
  *
- * @param <D> Domain
  * @param <AGR> Aggregate Root
  */
 public abstract class AbstractRepository<AGR extends IAggregateRoot> 
@@ -66,7 +64,7 @@ public abstract class AbstractRepository<AGR extends IAggregateRoot>
 			this.kasperRepository.doDelete(aggregate);			
 		}
 		
-	};
+	}
 	
 	private AxonRepository axonRepository; 
 	
@@ -92,9 +90,6 @@ public abstract class AbstractRepository<AGR extends IAggregateRoot>
 	
 	// ------------------------------------------------------------------------
 	
-	/**
-	 * @see com.viadeo.kasper.ddd.IRepository#setEventBus(org.axonframework.eventhandling.EventBus)
-	 */
 	public void setEventBus(final EventBus eventBus) {
 		this.axonRepository.setEventBus(Preconditions.checkNotNull(eventBus));
 	}

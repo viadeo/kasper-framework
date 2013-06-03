@@ -6,9 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.ddd;
 
-import org.axonframework.eventsourcing.EventSourcedAggregateRoot;
-
 import com.viadeo.kasper.IKasperID;
+import org.axonframework.eventsourcing.EventSourcedAggregateRoot;
 
 /**
  *
@@ -29,7 +28,6 @@ import com.viadeo.kasper.IKasperID;
  *
  * 
  * @see IEntity
- * @see IDomain
  */
 public interface IAggregateRoot extends EventSourcedAggregateRoot<IKasperID>, IEntity {
 

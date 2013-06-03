@@ -6,14 +6,17 @@
 // ============================================================================
 package com.viadeo.kasper.locators;
 
-import java.util.Set;
-
 import com.google.common.base.Optional;
 import com.viadeo.kasper.IDomain;
+import com.viadeo.kasper.cqrs.command.ICommand;
+import com.viadeo.kasper.cqrs.command.ICommandHandler;
 import com.viadeo.kasper.ddd.IAggregateRoot;
 import com.viadeo.kasper.ddd.IEntity;
 import com.viadeo.kasper.ddd.IInternalDomain;
 import com.viadeo.kasper.ddd.IRepository;
+
+import java.util.Collection;
+import java.util.Set;
 
 /**
  *
@@ -24,6 +27,16 @@ import com.viadeo.kasper.ddd.IRepository;
  * 
  */
 public interface IDomainLocator {
+
+    /**
+     * Register a new commandHandler
+     */
+    void registerHandler(ICommandHandler<? extends ICommand> commandHandler);
+
+    /**
+     * Get all registered command handlers
+     */
+    Collection<ICommandHandler<? extends ICommand>> getHandlers();
 
 	/**
 	 * Register a new domain to the locator
@@ -37,7 +50,7 @@ public interface IDomainLocator {
 	/**
 	 * Return the prefix of a specified domain
 	 * 
-	 * @param _domain the domain
+	 * @param domain the domain
 	 * @return the domain prefix
 	 */
 	String getDomainPrefix(IDomain domain);
@@ -45,7 +58,7 @@ public interface IDomainLocator {
 	/**
 	 * Return the name of a specified domain
 	 * 
-	 * @param _domain the domain
+	 * @param domain the domain
 	 * @return the domain name
 	 */
 	String getDomainName(IDomain domain);
@@ -76,7 +89,7 @@ public interface IDomainLocator {
 	/**
 	 * Return the domain related to the specified entity
 	 * 
-	 * @param _entity the entitiy to search for domain
+	 * @param entity the entitiy to search for domain
 	 * @return the domain of the entity
 	 */
 	<D extends IDomain> D getEntityDomain(IEntity entity);
@@ -84,7 +97,7 @@ public interface IDomainLocator {
 	/**
 	 * Return a set with all the entities of the specified domain
 	 * 
-	 * @param _domain the domain
+	 * @param domain the domain
 	 * @return a set with all entities related to this domain
 	 */
 	<D extends IDomain> Set<? extends IEntity> getDomainEntities(D domain);
@@ -92,7 +105,7 @@ public interface IDomainLocator {
 	/**
 	 * Return a set with all the entities of the specified domain class
 	 * 
-	 * @param _domain the domain class
+	 * @param domain the domain class
 	 * @return a set with all entities related to this domain class
 	 */
 	<D extends IDomain> Set<? extends IEntity> getDomainEntities(Class<D> domain);
@@ -108,7 +121,7 @@ public interface IDomainLocator {
 	/**
 	 * Get the repository for an entity
 	 * 
-	 * @param _entity the entity
+	 * @param entity the entity
 	 * @return the repository responsible for storing this entity
 	 */
 	<E extends IAggregateRoot> IRepository<E> getEntityRepository(E entity);
@@ -116,7 +129,7 @@ public interface IDomainLocator {
 	/**
 	 * Get the repository for an entity class
 	 * 
-	 * @param _entityClass the entity class
+	 * @param entityClass the entity class
 	 * @return the repository responsible for storing this class of entities
 	 */
 	<E extends IAggregateRoot> IRepository<E> getEntityRepository(Class<E> entityClass);

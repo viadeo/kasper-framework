@@ -6,11 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.viadeo.kasper.cqrs.command.ICommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Process Kasper command dynamic registration at platform boot

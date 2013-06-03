@@ -7,13 +7,12 @@
 
 package com.viadeo.kasper.core.boot;
 
+import com.google.common.base.Preconditions;
+import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventhandling.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import com.google.common.base.Preconditions;
-import com.viadeo.kasper.event.annotation.XKasperEventListener;
 
 /**
  *
@@ -35,7 +34,7 @@ public class EventListenersProcessor extends AbstractSingletonAnnotationProcesso
 	/**
 	 * Process Kasper event listener
 	 * 
-	 * @see IEventListener
+	 * @see EventListener
 	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
@@ -57,4 +56,3 @@ public class EventListenersProcessor extends AbstractSingletonAnnotationProcesso
 	
 }
 
-	

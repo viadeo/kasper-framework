@@ -1,14 +1,11 @@
 package com.viadeo.kasper.test.core.boot;
 
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.verify;
-import junit.framework.TestCase;
-
-import org.junit.Test;
-
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
 import com.viadeo.kasper.core.boot.IAnnotationProcessor;
+import junit.framework.TestCase;
+import org.junit.Test;
+
+import static org.mockito.Mockito.*;
 
 public class KasperAnnotationRootProcessorTest extends TestCase {
 	

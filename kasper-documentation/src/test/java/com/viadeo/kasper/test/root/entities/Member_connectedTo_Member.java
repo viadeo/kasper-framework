@@ -1,15 +1,14 @@
 package com.viadeo.kasper.test.root.entities;
 
-import org.axonframework.domain.DomainEventStream;
-import org.axonframework.domain.EventRegistrationCallback;
-import org.joda.time.DateTime;
-
 import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.er.IRootRelation;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
 import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.test.root.Facebook;
+import org.axonframework.domain.DomainEventStream;
+import org.axonframework.domain.EventRegistrationCallback;
+import org.joda.time.DateTime;
 
 @XKasperRelation(domain = Facebook.class, label = Member_connectedTo_Member.NAME)
 public class Member_connectedTo_Member implements IRootRelation<Member, Member> {

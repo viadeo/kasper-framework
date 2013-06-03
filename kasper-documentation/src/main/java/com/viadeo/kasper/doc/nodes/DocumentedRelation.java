@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
-import java.util.StringTokenizer;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.IDomain;
@@ -18,6 +16,8 @@ import com.viadeo.kasper.er.IRootConcept;
 import com.viadeo.kasper.er.annotation.XBidirectional;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+
+import java.util.StringTokenizer;
 
 public final class DocumentedRelation extends DocumentedEntity {
 	private static final long serialVersionUID = -268234449433085371L;

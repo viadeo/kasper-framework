@@ -1,4 +1,6 @@
 **/target
+**/bin
+*.*~
 *.versionsBackup
 **/.settings
 **/.project
@@ -10,9 +12,10 @@
 .DS_Store
 .idea/
 **/.svn
-=======
+.pmd
 **/.pmd
 **/**/.pmd
 .metadata
 target
 Servers
+out

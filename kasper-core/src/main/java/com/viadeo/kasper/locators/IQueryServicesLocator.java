@@ -7,11 +7,11 @@
 
 package com.viadeo.kasper.locators;
 
-import java.util.Collection;
-
 import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.query.IQuery;
 import com.viadeo.kasper.cqrs.query.IQueryService;
+
+import java.util.Collection;
 
 /** The Kasper query services locator */
 public interface IQueryServicesLocator {

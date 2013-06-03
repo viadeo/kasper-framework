@@ -1,10 +1,5 @@
 package com.viadeo.kasper.test.root.entities;
 
-import org.axonframework.domain.DomainEventStream;
-import org.axonframework.domain.EventRegistrationCallback;
-import org.axonframework.eventhandling.annotation.EventHandler;
-import org.joda.time.DateTime;
-
 import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.er.IRootConcept;
@@ -12,6 +7,10 @@ import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.test.root.Facebook;
 import com.viadeo.kasper.test.root.events.MemberCreatedEvent;
+import org.axonframework.domain.DomainEventStream;
+import org.axonframework.domain.EventRegistrationCallback;
+import org.axonframework.eventhandling.annotation.EventHandler;
+import org.joda.time.DateTime;
 
 @XKasperConcept(domain = Facebook.class, label = Member.NAME)
 public class Member implements IRootConcept {

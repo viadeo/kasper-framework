@@ -6,9 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.ddd;
 
-import org.axonframework.eventsourcing.EventSourcedEntity;
-
 import com.viadeo.kasper.er.IRootConcept;
+import org.axonframework.eventsourcing.EventSourcedEntity;
 
 /**
  *
@@ -16,7 +15,6 @@ import com.viadeo.kasper.er.IRootConcept;
  * This kind of entity is used as a component of a parent aggregate
  * 
  * @see IEntity
- * @see IDomain
  *
  * @param <R> the parent concept root
  */

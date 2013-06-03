@@ -1,21 +1,18 @@
 package com.viadeo.kasper.doc.web;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.regex.Pattern;
-
-import javax.ws.rs.Path;
-
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.common.base.Charsets;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Lists;
+import com.sun.jersey.api.client.WebResource;
+import com.sun.jersey.api.core.DefaultResourceConfig;
+import com.sun.jersey.test.framework.JerseyTest;
+import com.sun.jersey.test.framework.LowLevelAppDescriptor;
+import com.viadeo.kasper.core.boot.*;
+import com.viadeo.kasper.doc.KasperLibrary;
+import difflib.Delta;
+import difflib.DiffUtils;
+import difflib.Patch;
 import org.apache.commons.io.IOUtils;
 import org.apache.log4j.Logger;
 import org.json.JSONException;
@@ -27,31 +24,20 @@ import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import com.google.common.base.Charsets;
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.api.core.DefaultResourceConfig;
-import com.sun.jersey.test.framework.JerseyTest;
-import com.sun.jersey.test.framework.LowLevelAppDescriptor;
-import com.viadeo.kasper.core.boot.AbstractDocumentationProcessor;
-import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
-import com.viadeo.kasper.core.boot.CommandsDocumentationProcessor;
-import com.viadeo.kasper.core.boot.ConceptsDocumentationProcessor;
-import com.viadeo.kasper.core.boot.DomainsDocumentationProcessor;
-import com.viadeo.kasper.core.boot.EventsDocumentationProcessor;
-import com.viadeo.kasper.core.boot.HandlersDocumentationProcessor;
-import com.viadeo.kasper.core.boot.ListenersDocumentationProcessor;
-import com.viadeo.kasper.core.boot.QueryServicesDocumentationProcessor;
-import com.viadeo.kasper.core.boot.RelationsDocumentationProcessor;
-import com.viadeo.kasper.core.boot.RepositoriesDocumentationProcessor;
-import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.doc.web.ObjectMapperCustomResolver;
+import javax.ws.rs.Path;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import java.util.regex.Pattern;
 
-import difflib.Delta;
-import difflib.DiffUtils;
-import difflib.Patch;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 
 /**
  * This class manage with automated testing of KasperDocumentation HTTP/JSON endpoints

@@ -1,24 +1,22 @@
 package com.viadeo.kasper.test.cqrs.query;
 
-import junit.framework.Assert;
-import junit.framework.TestCase;
-
-import org.junit.Test;
-import org.mockito.Mockito;
-
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilterGroup.Operator;
 import com.viadeo.kasper.cqrs.query.filter.impl.QueryFilterGroup;
 import com.viadeo.kasper.test.cqrs.query.StubbedDQTOS.DQOTest;
 import com.viadeo.kasper.test.cqrs.query.StubbedDQTOS.DTOTest;
+import junit.framework.Assert;
+import junit.framework.TestCase;
+import org.junit.Test;
+import org.mockito.Mockito;
 
 public class QueryFilterGroupTest extends TestCase {
 
 	@Test
 	public void testConstructAndReset() {
 
-		final QueryFilterGroup<DQOTest> groupFilter = new QueryFilterGroup<DQOTest>();
+		final QueryFilterGroup<DQOTest> groupFilter = new QueryFilterGroup<>();
 
 		Assert.assertEquals(groupFilter.getOperator(), Operator.AND);
 		Assert.assertEquals(groupFilter.getFilters().size(), 0);
@@ -49,7 +47,7 @@ public class QueryFilterGroupTest extends TestCase {
 	@Test
 	public void testNull() {
 
-		final QueryFilterGroup<DQOTest> groupFilter = new QueryFilterGroup<DQOTest>();
+		final QueryFilterGroup<DQOTest> groupFilter = new QueryFilterGroup<>();
 
 		final DTOTest dto = Mockito.mock(DTOTest.class);
 		try {
@@ -81,7 +79,7 @@ public class QueryFilterGroupTest extends TestCase {
 	@Test
 	public void testBool() {
 
-		final QueryFilterGroup<DQOTest> groupFilter = new QueryFilterGroup<DQOTest>();
+		final QueryFilterGroup<DQOTest> groupFilter = new QueryFilterGroup<>();
 		final DTOTest dqto = Mockito.mock(DTOTest.class);
 
 		@SuppressWarnings("unchecked")

@@ -1,18 +1,18 @@
 package com.viadeo.kasper.doc.nodes;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.ddd.values.annotation.XKasperValue;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
 
 public class DocumentedBean extends ArrayList<DocumentedProperty> {
 	private static final long serialVersionUID = 4149894288444871301L;
@@ -81,9 +81,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 	// ------------------------------------------------------------------------
 	
 	private static List<Field> getAllFields(final List<Field> fields, final Class<?> type) {
-	    for (final Field field: type.getDeclaredFields()) {
-	        fields.add(field);
-	    }
+        Collections.addAll(fields, type.getDeclaredFields());
 
 	    if (type.getSuperclass() != null) {
 	        getAllFields(fields, type.getSuperclass());

@@ -7,10 +7,10 @@
 
 package com.viadeo.kasper.platform.components.refstore;
 
+import com.viadeo.kasper.ddd.values.IReferenceValue;
+
 import java.io.Serializable;
 import java.util.Set;
-
-import com.viadeo.kasper.ddd.values.IReferenceValue;
 
 public abstract class AbstractReferenceValuesSetRepository<V extends IReferenceValue<? extends Serializable>> {
 

@@ -9,7 +9,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.viadeo.kasper</groupId>
 	<artifactId>kasper-framework</artifactId>
-	<version>0.0.4.2</version>
+	<version>0.0.5</version>
 	<name>KASPER</name>
 	<packaging>pom</packaging>
 
@@ -40,6 +40,7 @@
 		<module>kasper-common</module>
 		<module>kasper-test</module>
 		<module>kasper-documentation</module>
+        <module>kasper-datasource</module>
 	</modules>
 
 	<build>

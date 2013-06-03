@@ -7,9 +7,9 @@
 
 package com.viadeo.kasper.cqrs.query.filter;
 
-import java.io.Serializable;
-
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
+
+import java.io.Serializable;
 
 /**
  * 

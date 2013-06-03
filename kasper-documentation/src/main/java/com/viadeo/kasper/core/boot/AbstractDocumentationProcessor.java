@@ -6,10 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import java.lang.annotation.Annotation;
-
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.doc.KasperLibrary;
+
+import java.lang.annotation.Annotation;
 
 public abstract class AbstractDocumentationProcessor<T extends Annotation, I> implements IAnnotationProcessor<T, I> {
 

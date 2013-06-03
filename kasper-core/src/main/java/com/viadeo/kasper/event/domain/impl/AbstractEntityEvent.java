@@ -6,19 +6,17 @@
 // ============================================================================
 package com.viadeo.kasper.event.domain.impl;
 
-import org.joda.time.DateTime;
-
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.event.domain.IEntityEvent;
 import com.viadeo.kasper.event.impl.AbstractEvent;
+import org.joda.time.DateTime;
 
 /**
  *
  * Base implementation for entity events
  *
  * @see IEntityEvent
- * @see IEvent
  */
 public abstract class AbstractEntityEvent extends AbstractEvent implements IEntityEvent {
 

@@ -1,15 +1,14 @@
 package com.viadeo.kasper.test.timelines.entities;
 
-import org.axonframework.domain.DomainEventStream;
-import org.axonframework.domain.EventRegistrationCallback;
-import org.joda.time.DateTime;
-
 import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.er.IRootConcept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.test.timelines.Timelines;
+import org.axonframework.domain.DomainEventStream;
+import org.axonframework.domain.EventRegistrationCallback;
+import org.joda.time.DateTime;
 
 @XKasperConcept(domain = Timelines.class, label = Status.NAME)
 public class Status implements IRootConcept {

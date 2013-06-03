@@ -6,15 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
+import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
@@ -29,11 +25,9 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
-import com.viadeo.kasper.exception.KasperRuntimeException;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Modifier;
+import java.util.*;
 
 /**
  * Responsible for booting all Kasper annotation processors
@@ -94,7 +88,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
 
     public AnnotationRootProcessor(final String[] prefixes) {
         if (Preconditions.checkNotNull(prefixes).length > 0) {
-            this.scanPrefixes = new ArrayList<String>();
+            this.scanPrefixes = new ArrayList<>();
             this.scanPrefixes.addAll(Arrays.asList(prefixes));
         }
     }
@@ -112,7 +106,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
         final ConfigurationBuilder configurationBuilder = new ConfigurationBuilder();
 
         // Filter prefixes if requested ---------------------------------------
-        final Set<String> prefixes = new HashSet<String>();
+        final Set<String> prefixes = new HashSet<>();
 
         if (!this.doNotScanDefaultPrefix) {
             final String currentPackage = this.getClass().getPackage().getName();
@@ -297,7 +291,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
         Preconditions.checkNotNull(processor);
 
         if (null == this.userProcessors) {
-            this.userProcessors = new ArrayList<IAnnotationProcessor<?, ?>>();
+            this.userProcessors = new ArrayList<>();
         }
 
         this.userProcessors.add(processor);
@@ -314,7 +308,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
         Preconditions.checkNotNull(scanPrefixes);
 
         if (null == this.scanPrefixes) {
-            this.scanPrefixes = new ArrayList<String>();
+            this.scanPrefixes = new ArrayList<>();
         }
         this.scanPrefixes = Arrays.asList(scanPrefixes.clone());
     }
@@ -326,7 +320,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
      */
     public void addScanPrefix(final String scanPrefix) {
         if (null == this.scanPrefixes) {
-            this.scanPrefixes = new ArrayList<String>();
+            this.scanPrefixes = new ArrayList<>();
         }
         this.scanPrefixes.add(scanPrefix);
     }

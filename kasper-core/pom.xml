@@ -7,7 +7,7 @@
     <parent>
         <groupId>com.viadeo.kasper</groupId>
         <artifactId>kasper-parent</artifactId>
-        <version>0.0.4.2</version>
+        <version>0.0.5</version>
         <relativePath>../parent</relativePath>
     </parent>
 
@@ -36,11 +36,7 @@
 			<groupId>org.axonframework</groupId>
 			<artifactId>axon-core</artifactId>
 		</dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-log4j12</artifactId>
-        </dependency>
-    </dependencies> 
+    </dependencies>
 
     <build>
         <pluginManagement>
