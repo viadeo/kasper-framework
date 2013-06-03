@@ -18,7 +18,7 @@ import static org.junit.Assert.*;
 
 // integration test
 @Ignore
-public class ViadeoDataSourceITest {
+public class DataSourceITest {
 
     @Test
     public void testInit() throws SQLException {
