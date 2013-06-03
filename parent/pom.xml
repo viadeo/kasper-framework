@@ -34,7 +34,9 @@
 		<mockito.version>1.9.5</mockito.version>
 		<com.sun.jersey.version>1.16</com.sun.jersey.version>
 		<com.viadeo.mvn.proxy.deployurl>http://deploy.mvn.viadeo.com</com.viadeo.mvn.proxy.deployurl>
-	</properties>
+        <commons-dbcp.version>1.4</commons-dbcp.version>
+        <mysql-connector-java.version>5.1.24</mysql-connector-java.version>
+    </properties>
 
 	<dependencies>
 		<dependency>
@@ -205,11 +207,21 @@
 				<version>${mockito.version}</version>
 				<scope>test</scope>
 			</dependency>
+            <dependency>
+                <groupId>org.slf4j</groupId>
+                <artifactId>slf4j-api</artifactId>
+                <version>${org.slf4j.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-log4j12</artifactId>
 				<version>${org.slf4j.version}</version>
 			</dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-core</artifactId>
+                <version>${org.springframework.version}</version>
+            </dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>
@@ -230,6 +242,17 @@
 				<artifactId>diffutils</artifactId>
 				<version>1.2.1</version>
 			</dependency>
+
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql-connector-java.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>commons-dbcp</groupId>
+                <artifactId>commons-dbcp</artifactId>
+                <version>${commons-dbcp.version}</version>
+            </dependency>
 
 		</dependencies>
 	</dependencyManagement>
