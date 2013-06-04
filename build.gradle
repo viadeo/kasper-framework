@@ -66,6 +66,25 @@ subprojects {
   tasks.withType(Test) { systemProperty "file.encoding", "UTF-8"  }
   tasks.withType(Compile) { options.encoding = "UTF-8" }
 
+  // Adding javadoc and sources jars, it is really nice to have! --------------  
+  // custom tasks for creating source jar 
+  task sourcesJar(type: Jar, dependsOn:classes) {     
+	classifier = 'sources'     
+	from sourceSets.main.allSource 
+  }
+  
+  // custom tasks for creating javadoc jar   
+  task javadocJar(type: Jar, dependsOn:javadoc) {      
+    classifier = 'javadoc'     
+    from javadoc.destinationDir 
+  }
+  
+  // add the jars as artifacts
+  artifacts {      
+    archives sourcesJar      
+    archives javadocJar
+  }
+
   // Maven repositories deployment configuration ------------------------------
   uploadArchives {
       repositories.mavenDeployer {
