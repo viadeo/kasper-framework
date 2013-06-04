@@ -36,14 +36,20 @@ public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
 
     private final Map<String, Class<? extends IQuery>> exposedQueries = Maps.newHashMap();
-    private IQueryServicesLocator queryServicesLocator;
-    private IQueryFactory queryAdapterFactory = new QueryFactoryBuilder().create();
+    private final IQueryServicesLocator queryServicesLocator;
+    private final IQueryFactory queryAdapterFactory;
 
     // ------------------------------------------------------------------------
 
     public HttpQueryExposer(final IPlatform platform, final IQueryServicesLocator queryLocator) {
+        this(platform, queryLocator, new QueryFactoryBuilder().create());
+    }
+
+    public HttpQueryExposer(IPlatform platform, IQueryServicesLocator queryServicesLocator,
+            IQueryFactory queryAdapterFactory) {
         super(platform);
-        this.queryServicesLocator = queryLocator;
+        this.queryServicesLocator = queryServicesLocator;
+        this.queryAdapterFactory = queryAdapterFactory;
     }
 
     @Override
