@@ -43,7 +43,7 @@ public class TestTypeAdapterRoundTrips {
         // Then
 		assertArrayEquals(expected.array, actual.array);
 	}
-
+	
     // ------------------------------------------------------------------------
 
 	public static class QueryWithDefaultValue implements IQuery {
