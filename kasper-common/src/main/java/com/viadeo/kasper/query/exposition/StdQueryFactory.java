@@ -10,6 +10,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.ObjectArrays;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.thoughtworks.paranamer.*;
@@ -50,20 +51,28 @@ public class StdQueryFactory implements IQueryFactory {
     };
 
     private final ConcurrentMap<Type, ITypeAdapter<?>> adapters;
+    private final Map<Type, BeanAdapter<?>> beanAdapters;
     private final List<ITypeAdapterFactory<?>> factories;
 
     private final VisibilityFilter visibilityFilter;
-    private final Paranamer paranamer = new CachingParanamer(new AdaptiveParanamer(new AnnotationParanamer(
-            new DefaultParanamer()), new BytecodeReadingParanamer()));
+    private final Paranamer paranamer = new CachingParanamer(
+                                          new AdaptiveParanamer(
+                                            new AnnotationParanamer(new DefaultParanamer()), 
+                                            new BytecodeReadingParanamer()
+                                          )
+                                        );
 
     // ------------------------------------------------------------------------
 
     public StdQueryFactory(final Map<Type, ITypeAdapter<?>> adapters,
-                           final List<? extends ITypeAdapterFactory<?>> factories,
+                           final Map<Type, BeanAdapter<?>> beanAdapters,
+                           final List<? extends ITypeAdapterFactory<?>> factories, 
                            final VisibilityFilter visibilityFilter) {
 
         this.visibilityFilter = checkNotNull(visibilityFilter);
         this.factories = Lists.newArrayList(checkNotNull(factories));
+        
+        this.beanAdapters = Maps.newHashMap(checkNotNull(beanAdapters));
 
         this.adapters = Maps.newConcurrentMap();
         this.adapters.putAll(checkNotNull(adapters));
@@ -211,11 +220,36 @@ public class StdQueryFactory implements IQueryFactory {
     private PropertyAdapter createPropertyAdapter(final Method mutator, final Method accessor, final String name,
             final TypeToken<Object> propertyType) {
 
-        final ITypeAdapter<Object> delegateAdapter = create(propertyType);
-
+        // for the moment lets mix accessor and mutator annotations as things must be symetric, latter if we need to
+        // support more complex cases we will change things
+        final Annotation[] propertyAnnotations;
+        
+        // Need to check for null if the property does not have a mutator but uses the ctr.
+        // We could do it differently but its fine like that for the moment
+        // I prefer avoiding to add more and more classes until we really need it
+        // deleting code is harder than writing!
+        if (mutator == null) propertyAnnotations = accessor.getAnnotations();
+        else propertyAnnotations =  ObjectArrays.concat(mutator.getAnnotations(), accessor.getAnnotations(), Annotation.class);
+        
+        final BeanProperty property = new BeanProperty(name, accessor.getDeclaringClass(), propertyAnnotations, propertyType);
+        
+        final boolean handleName;
+        final ITypeAdapter<Object> delegateAdapter;
+        
+        @SuppressWarnings("unchecked") // type safety guaranteed by the lib
+        final BeanAdapter<Object> beanAdapter = (BeanAdapter<Object>) beanAdapters.get(property.getTypeToken().getType());
+        
+        if (beanAdapter == null) {
+            handleName = true;
+            delegateAdapter = create(propertyType);
+        } else {
+            handleName = false;
+            delegateAdapter = new NullSafeTypeAdapter<>(new DecoratedBeanAdapter<>(property, beanAdapter));
+        }
+       
         if (null != delegateAdapter) {
 
-            return new PropertyAdapter(propertyType, accessor, mutator, name, delegateAdapter);
+            return new PropertyAdapter(property, accessor, mutator, delegateAdapter, handleName);
 
         } else {
             throw new KasperQueryAdapterException("Complex Queries are not supported! "
@@ -223,7 +257,7 @@ public class StdQueryFactory implements IQueryFactory {
                     + "properties or register custom a TypeAdapter.");
         }
     }
-
+    
     // ------------------------------------------------------------------------
 
     private BeanConstructor resolveBeanConstructor(final Class<?> forClass) {
@@ -370,7 +404,7 @@ public class StdQueryFactory implements IQueryFactory {
                 * if it doesn't we should not override it in case of setters 
                 * (for the ctr we have no choice as we can't pass null to primitive args)
                 * */
-                final boolean exists = parser.exists(adapter.getName());
+                final boolean exists = adapter.existsInQuery(parser);
                 final Object value = adapter.adapt(parser);
                 final BeanConstructorProperty ctrParam = queryCtr.parameters.get(adapter.getName());
 
@@ -446,6 +480,28 @@ public class StdQueryFactory implements IQueryFactory {
             this.annotations = annotations;
             this.name = name;
             this.type = type;
+        }
+    }
+
+    // in fact it is a beanadapter adapted to ITypeAdapter, but naming it AdaptedBeanAdapter 
+    // would sound lolish...(a la spring) :p, this class allows us benefit from what has been done for TypeAdapters
+    static class DecoratedBeanAdapter<T> implements ITypeAdapter<T> {
+        private final BeanProperty property;
+        private final BeanAdapter<T> adapter;
+
+        public DecoratedBeanAdapter(BeanProperty property, BeanAdapter<T> adapter) {
+            this.property = property;
+            this.adapter = adapter;
+        }
+
+        @Override
+        public void adapt(T value, QueryBuilder builder) {
+            adapter.adapt(value, builder, property);
+        }
+
+        @Override
+        public T adapt(QueryParser parser) {
+            return adapter.adapt(parser, property);
         }
     }
 

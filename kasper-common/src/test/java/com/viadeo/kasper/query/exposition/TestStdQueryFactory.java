@@ -76,6 +76,7 @@ public class TestStdQueryFactory {
         // Given
         final ITypeAdapter<SomeQuery> adapter = new StdQueryFactory(
                 ImmutableMap.<Type, ITypeAdapter<?>> of(int.class, DefaultTypeAdapters.INT_ADAPTER),
+                ImmutableMap.<Type, BeanAdapter<?>> of(),
                 new ArrayList<ITypeAdapterFactory<?>>(),
                 VisibilityFilter.PACKAGE_PUBLIC).create(TypeToken.of(SomeQuery.class));
 
@@ -171,6 +172,7 @@ public class TestStdQueryFactory {
         
         return new StdQueryFactory(
                 adaptersMap,
+                ImmutableMap.<Type, BeanAdapter<?>> of(),
                 factories,
                 VisibilityFilter.PACKAGE_PUBLIC);
     }
