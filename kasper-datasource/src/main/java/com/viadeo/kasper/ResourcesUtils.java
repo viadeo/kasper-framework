@@ -8,7 +8,8 @@ package com.viadeo.kasper;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.ResourceUtils;
+
+import com.google.common.base.Strings;
 
 import java.io.*;
 import java.net.URL;
@@ -17,21 +18,33 @@ public class ResourcesUtils {
 	/** The logger of this class. */
 	static final Logger LOGGER = LoggerFactory.getLogger(ResourcesUtils.class);
 
-	public static File getFileOrStream(String resource) throws IOException {
-		URL url = ResourceUtils.getURL(resource);
-		if (ResourceUtils.isFileURL(url)) {
-			return ResourceUtils.getFile(url);
-		}
-		// Check if resource in not on the file system, but inside a jar file
-		if (ResourceUtils.isJarURL(url)) {
+	// let checked exception to let caller to decide what to do, ignoring error or throwing runtime exception
+	
+	public File getFile(String resourceName) throws IOException  {
+		// Try opening resource
+		// Convert resourceName in URL mode
+		Strings.isNullOrEmpty(resourceName);
 
+		URL url = this.getClass().getClassLoader().getResource(resourceName);
+		if (url == null) {
+			throw new IOException("Unknown file or resource : Can't read " + resourceName);
+		}
+		String protocol = url.getProtocol();
+		if (protocol.equals("file")) {
+			return new File(url.getFile());
+		}
+		// Else load stream (http, jar, ...);
+		try {
 			return getFileFromStream(url);
+		} catch (IOException e) {
+			// convert Exception type to removed catched exception
+			throw new IOException(e);
 		}
-		// Unknown case
-		throw new IOException("Unknown protocol:Can't handle " + resource);
+		
 	}
+	
 
-	private static File getFileFromStream(URL url) throws IOException {
+	private File getFileFromStream(URL url) throws IOException {
 
 		// Create a File object on file system to be able to use Viadeo library which currently accept only File resource as parameter
 		// If the file creation sentence is after the inputStream creation, need to explicitely close inputStream in a try-catch statment
