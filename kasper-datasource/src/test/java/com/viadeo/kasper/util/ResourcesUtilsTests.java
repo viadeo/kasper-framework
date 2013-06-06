@@ -10,8 +10,11 @@ package com.viadeo.kasper.util;
 import java.io.File;
 import java.io.IOException;
 
+import junit.framework.Assert;
+
+
+
 import org.junit.Test;
-import org.springframework.util.Assert;
 
 import com.viadeo.kasper.ResourcesUtils;
 
@@ -27,8 +30,8 @@ public class ResourcesUtilsTests {
         File file = res.getFile("dispatcher.json");
 
         // Then
-        Assert.notNull(file);
-        Assert.isTrue(file.exists());
+        Assert.assertNotNull(file);
+        Assert.assertTrue(file.exists());
     }
 
     @Test  // : Currently disabled, need to add a jar file
@@ -41,8 +44,8 @@ public class ResourcesUtilsTests {
         File file = res.getFile("testpool.jocl");
 
         // Then
-        Assert.notNull(file);
-        Assert.isTrue(file.exists());
+        Assert.assertNotNull(file);
+        Assert.assertTrue(file.exists());
     }
 
     @Test  // : Currently disabled, need to add a jar file
@@ -55,8 +58,8 @@ public class ResourcesUtilsTests {
         File file = res.getFile("com/kasper/file.json");
 
         // Then
-        Assert.notNull(file);
-        Assert.isTrue(file.exists());
+        Assert.assertNotNull(file);
+        Assert.assertTrue(file.exists());
     }
 
     @Test (expected=IOException.class)
@@ -70,6 +73,6 @@ public class ResourcesUtilsTests {
 
         // Then
         // Expect IOException
-        Assert.isNull(file);
+        Assert.assertNull(file);
     }
 }
