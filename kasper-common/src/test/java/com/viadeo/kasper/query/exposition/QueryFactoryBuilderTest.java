@@ -14,7 +14,7 @@ public class QueryFactoryBuilderTest {
 
 	@Test
 	public void testTypeAdapterServiceLoading() {
-		for (final ITypeAdapter<?> adapter : new QueryFactoryBuilder().loadDeclaredAdapters()) {
+		for (final ITypeAdapter<?> adapter : new QueryFactoryBuilder().loadServices(ITypeAdapter.class)) {
 			if (MyTestAdapter.class.equals(adapter.getClass())) {
 				return;
             }
