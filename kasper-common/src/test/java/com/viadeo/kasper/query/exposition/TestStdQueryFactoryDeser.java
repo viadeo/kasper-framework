@@ -18,6 +18,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.Assert.*;
 
@@ -93,13 +94,17 @@ public class TestStdQueryFactoryDeser {
         final ITypeAdapter<BaseQuery> adapter = factory.create(TypeToken.of(BaseQuery.class));
 
         // When
-        final BaseQuery q = adapter.adapt(new QueryParser(ImmutableMap.of("list_foo", Arrays.asList("bar"))));
+        ConcurrentHashMap<String, List<String>> m = new ConcurrentHashMap<>();
+        m.put("list_foo", Arrays.asList("bar", "foo"));
+        m.put("boos", Arrays.asList("bar", "foo"));
+        final BaseQuery q = adapter.adapt(new QueryParser(m));
 
         // Then
         assertNotNull(q.list);
-        assertTrue(q.list.size() == 1);
+        assertTrue(q.list.size() == 2);
         assertEquals("foo", q.list.get(0).key);
         assertEquals("bar", q.list.get(0).value);
+        assertEquals("foo", q.list.get(1).value);
     }
 
     // ------------------------------------------------------------------------
@@ -148,8 +153,8 @@ public class TestStdQueryFactoryDeser {
             final List<SomeBean> list = new ArrayList<>();
             for (String name : parser.names()) {
                 if (name.startsWith(prefix)) {
-                    parser.begin(name);
-                    list.add(new SomeBean(name.replace(prefix, ""), parser.value()));
+                    for (QueryParser next : parser.begin(name))
+                        list.add(new SomeBean(name.replace(prefix, ""), next.value()));
                     parser.end();
                 }
             }

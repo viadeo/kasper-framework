@@ -31,6 +31,11 @@ public class QueryParserTest {
         final QueryParser parser = new QueryParser(ImmutableMap.of("someKey", Arrays.asList("foo", "bar")));
 
         assertTrue(parser.names().contains("someKey"));
+        
+        for (String name : parser.names()) {
+            assertEquals("foo", parser.begin(name).value());
+            parser.end();
+        }
     }
 
     @Test

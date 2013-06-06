@@ -59,8 +59,20 @@ public class QueryParser implements Iterable<QueryParser> {
         return this;
     }
 
+    /**
+     * Actually when calling begin(xx) and end() key/values are consumed. So if you call names() and then consume some
+     * pairs, this name will not be available anymore in the query, but the returned Set will still contain it. So use
+     * it with care.
+     * 
+     * @return the names remaining in the query.
+     */
     public Set<String> names() {
-        return queryMap.keySet();
+        /* FIXME this avoids concurrent modif exceptions, because you can consume
+         * query key/values while iterating over names.
+         * However by copying the names like that we allow the user to reiterate
+         * on them but it might actually point names don't exist anymore (consumed previously)
+         */
+        return new LinkedHashSet<>(queryMap.keySet());
     }
 
     public String name() {
