@@ -11,10 +11,14 @@ import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.QueryGatewayBase;
 import com.viadeo.kasper.locators.IQueryServicesLocator;
 import org.junit.Test;
+import org.mockito.Matchers;
+import org.mockito.Mockito;
 
+import java.io.FileNotFoundException;
+
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class QueryGatewayBaseUTest {
 
@@ -23,8 +27,8 @@ public class QueryGatewayBaseUTest {
 
     public class ServiceWhichRaiseException implements IQueryService<ServiceWhichRaiseExceptionQuery, TestDTO> {
         @Override
-        public TestDTO retrieve(final IQueryMessage<ServiceWhichRaiseExceptionQuery> message) throws KasperQueryException {
-            throw new KasperQueryException("Exception in the service implementation");
+        public TestDTO retrieve(final IQueryMessage<ServiceWhichRaiseExceptionQuery> message) throws Exception {
+            return null;
         }
     }
 
@@ -46,11 +50,13 @@ public class QueryGatewayBaseUTest {
     }
 
     @Test
-    public void retrieve_shouldWrapAnyException_InKasperException() throws KasperQueryException {
+    public void retrieve_should_WrapAnyException_InKasperException() throws Exception {
 
         // Given - a_service_which_raise_exception;
+        ServiceWhichRaiseException service = Mockito.spy(new ServiceWhichRaiseException());
+        doThrow(new FileNotFoundException("Exception in the service implementation")).when(service).retrieve(Matchers.<IQueryMessage<ServiceWhichRaiseExceptionQuery>>any());
+
         IQuery query = new ServiceWhichRaiseExceptionQuery();
-        ServiceWhichRaiseException service = new ServiceWhichRaiseException();
         QueryGatewayBase queryGateway = getQueryGatewayForQueryAndService(query, service);
 
         // When
@@ -59,14 +65,45 @@ public class QueryGatewayBaseUTest {
             fail("Should raise a KasperQueryException");
         }
         // Then
-        catch (KasperQueryException e) {
-            // OK. Expected KasperQueryException
+        catch (Exception e) {
+            if (e instanceof KasperQueryException) {
+                // OK. Expected a KasperQueryException
+                // Verify that root exception is correctly wrapped
+                assertEquals(FileNotFoundException.class, e.getCause().getClass());
+            }
+            else {
+                fail("Should only raise a KasperQueryException, not a " + e.getClass().getName());
+            }
         }
-
     }
+
+    @Test
+    public void retrieve_shouldNot_ReWrapKasperException() throws Exception {
+
+        // Given - a_service_which_raise_exception;
+        ServiceWhichRaiseException service = Mockito.spy(new ServiceWhichRaiseException());
+        doThrow(new KasperQueryException("a KasperQueryException in the service implementation")).when(service).retrieve(Matchers.<IQueryMessage<ServiceWhichRaiseExceptionQuery>>any());
+
+        IQuery query = new ServiceWhichRaiseExceptionQuery();
+        QueryGatewayBase queryGateway = getQueryGatewayForQueryAndService(query, service);
+
+        // When
+        try {
+            queryGateway.retrieve(defaultContext(), query);
+            fail("Should raise a KasperQueryException");
+        }
+        // Then
+        catch (Exception e) {
+            if (e instanceof KasperQueryException) {
+                // OK. Expected a KasperQueryException
+                // Verify that the root KasperQueryException is not rewrapped by the Framework
+                assertEquals(null, e.getCause());
+            }
+            else {
+                fail("Should only raise a KasperQueryException, not a " + e.getClass().getName());
+            }
+        }
+    }
+
 }
-
-
-//  TestService service = Mockito.spy(new TestService());
-//  doThrow(new KasperQueryException("OK L exception !!")).when(service).retrieve(Matchers.<IQueryMessage<TestQuery>>any());
 

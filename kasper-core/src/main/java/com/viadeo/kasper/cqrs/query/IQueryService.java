@@ -7,14 +7,12 @@
 
 package com.viadeo.kasper.cqrs.query;
 
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-
 /**
  * A Kasper query service
- * 
+ *
  * @param <Q> the associated Query
  * @param <DTO> the associated Data Transfer Object
- * 
+ *
  * @see IQueryDTO
  * @see IQuery
  */
@@ -33,10 +31,10 @@ public interface IQueryService<Q extends IQuery, DTO extends IQueryDTO> {
 	/**
 	 * Operates the service, retrieve a service DTO satisfying the submitted
 	 * filter
-	 * 
+	 *
 	 * @param message a query message
 	 * @return a filled DTO
 	 */
-	DTO retrieve(IQueryMessage<Q> message) throws KasperQueryException;
+	DTO retrieve(IQueryMessage<Q> message) throws Exception;
 
 }
