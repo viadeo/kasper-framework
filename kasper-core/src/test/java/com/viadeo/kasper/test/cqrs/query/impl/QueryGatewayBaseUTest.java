@@ -25,6 +25,8 @@ public class QueryGatewayBaseUTest {
     private class ServiceWhichRaiseExceptionQuery implements IQuery {}
     private class TestDTO implements IQueryDTO {}
 
+    // ------------------------------------------------------------------------
+
     public class ServiceWhichRaiseException implements IQueryService<ServiceWhichRaiseExceptionQuery, TestDTO> {
         @Override
         public TestDTO retrieve(final IQueryMessage<ServiceWhichRaiseExceptionQuery> message) throws Exception {
@@ -36,55 +38,58 @@ public class QueryGatewayBaseUTest {
         return new DefaultContextBuilder().buildDefault();
     }
 
-    private QueryGatewayBase getQueryGatewayForQueryAndService(IQuery query, IQueryService service) {
+    private QueryGatewayBase getQueryGatewayForQueryAndService(final IQuery query, final IQueryService service) {
 
         // Associates Query and Service
-        IQueryServicesLocator locator = mock(IQueryServicesLocator.class);
+        final IQueryServicesLocator locator = mock(IQueryServicesLocator.class);
         when(locator.getServiceFromQueryClass(query.getClass())).thenReturn(Optional.of((IQueryService)service));
 
         // Create the queryGateway with mocked locator
-        QueryGatewayBase queryGateway = new QueryGatewayBase();
+        final QueryGatewayBase queryGateway = new QueryGatewayBase();
         queryGateway.setQueryServicesLocator(locator);
 
         return queryGateway;
     }
 
+    // ------------------------------------------------------------------------
+
     @Test
     public void retrieve_should_WrapAnyException_InKasperException() throws Exception {
 
         // Given - a_service_which_raise_exception;
-        ServiceWhichRaiseException service = Mockito.spy(new ServiceWhichRaiseException());
+        final ServiceWhichRaiseException service = Mockito.spy(new ServiceWhichRaiseException());
         doThrow(new FileNotFoundException("Exception in the service implementation")).when(service).retrieve(Matchers.<IQueryMessage<ServiceWhichRaiseExceptionQuery>>any());
 
-        IQuery query = new ServiceWhichRaiseExceptionQuery();
-        QueryGatewayBase queryGateway = getQueryGatewayForQueryAndService(query, service);
+        final IQuery query = new ServiceWhichRaiseExceptionQuery();
+        final QueryGatewayBase queryGateway = getQueryGatewayForQueryAndService(query, service);
 
         // When
         try {
             queryGateway.retrieve(defaultContext(), query);
             fail("Should raise a KasperQueryException");
         }
+
         // Then
-        catch (Exception e) {
+        catch (final Exception e) {
             if (e instanceof KasperQueryException) {
                 // OK. Expected a KasperQueryException
                 // Verify that root exception is correctly wrapped
                 assertEquals(FileNotFoundException.class, e.getCause().getClass());
-            }
-            else {
+            } else {
                 fail("Should only raise a KasperQueryException, not a " + e.getClass().getName());
             }
         }
+
     }
 
     @Test
     public void retrieve_shouldNot_ReWrapKasperException() throws Exception {
 
         // Given - a_service_which_raise_exception;
-        ServiceWhichRaiseException service = Mockito.spy(new ServiceWhichRaiseException());
+        final ServiceWhichRaiseException service = Mockito.spy(new ServiceWhichRaiseException());
         doThrow(new KasperQueryException("a KasperQueryException in the service implementation")).when(service).retrieve(Matchers.<IQueryMessage<ServiceWhichRaiseExceptionQuery>>any());
 
-        IQuery query = new ServiceWhichRaiseExceptionQuery();
+        final IQuery query = new ServiceWhichRaiseExceptionQuery();
         QueryGatewayBase queryGateway = getQueryGatewayForQueryAndService(query, service);
 
         // When
@@ -92,14 +97,14 @@ public class QueryGatewayBaseUTest {
             queryGateway.retrieve(defaultContext(), query);
             fail("Should raise a KasperQueryException");
         }
+
         // Then
-        catch (Exception e) {
+        catch (final Exception e) {
             if (e instanceof KasperQueryException) {
                 // OK. Expected a KasperQueryException
                 // Verify that the root KasperQueryException is not rewrapped by the Framework
                 assertEquals(null, e.getCause());
-            }
-            else {
+            } else {
                 fail("Should only raise a KasperQueryException, not a " + e.getClass().getName());
             }
         }

@@ -28,7 +28,7 @@ public class QueryGatewayBase implements IQueryGateway {
 
 	@Override
 	public <Q extends IQuery, DTO extends IQueryDTO> DTO retrieve(final IContext context, final Q query)
-			throws Exception {
+			throws KasperQueryException {
 		checkNotNull(context);
 		checkNotNull(query);
 
@@ -47,16 +47,15 @@ public class QueryGatewayBase implements IQueryGateway {
 		@SuppressWarnings({"rawtypes", "unchecked"}) // Safe
 		final IQueryMessage message = new QueryMessage(context, query);
 
-		//@SuppressWarnings("unchecked") // Caller must ensure
         try {
             final DTO dto = (DTO) service.get().retrieve(message);
     		return dto;
-        }
-        catch (Exception e) {
-            if (e instanceof KasperQueryException)
-                throw e;
-            else
+        } catch (final Exception e) {
+            if (e instanceof KasperQueryException) {
+                throw (KasperQueryException) e;
+            } else {
                 throw new KasperQueryException(e.getMessage(), e);
+            }
         }
 
 	}
