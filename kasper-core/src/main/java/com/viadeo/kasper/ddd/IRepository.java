@@ -19,11 +19,10 @@ import org.axonframework.repository.Repository;
  * validations required by the model and should be optimized for access, using for instance a
  * dedicated storage index.
  *
- * @param <D> Domain
- * @param <ENTITY> Entity
+ * @param <AGR> Aggregate root
  * 
  * @see IUbiquitousLanguageElement
- * @see IDomain
+ * @see com.viadeo.kasper.IDomain
  * @see IAggregateRoot
  */
 public interface IRepository<AGR extends IAggregateRoot> extends Repository<AGR>, IUbiquitousLanguageElement {

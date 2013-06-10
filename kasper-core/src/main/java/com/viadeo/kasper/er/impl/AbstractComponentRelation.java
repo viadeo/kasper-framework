@@ -19,7 +19,7 @@ import com.viadeo.kasper.er.IRootConcept;
  * @param <S> Source concept of the relation
  * @param <T> Target concept of the relation
  * 
- * @see IRelation
+ * @see com.viadeo.kasper.er.IRelation
  * @see IComponentRelation
  */
 public abstract class AbstractComponentRelation<S extends IRootConcept, T extends IRootConcept> 

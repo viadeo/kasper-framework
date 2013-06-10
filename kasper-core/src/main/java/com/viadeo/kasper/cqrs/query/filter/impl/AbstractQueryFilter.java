@@ -11,17 +11,14 @@ import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
 
 /**
  * 
- *         This object can then be used in two manner : 1/ To validate against a
- *         specific DTO 2/ To generate a transformed form of the query for
- *         storage backends
+ * This object can then be used in two manner : 1/ To validate against a
+ * specific DTO 2/ To generate a transformed form of the query for
+ * storage backends
  * 
- * @param <DQO>
- *            the associated Data Query Object
- * @param <DTO>
- *            the associated Data Transfer Object
- * 
+ * @param <DQO> the associated Data Query Object
+ *
  * @see IQueryDQO
- * @see IQueryDTO
+ * @see com.viadeo.kasper.cqrs.query.IQueryDTO
  * @see IQueryFilter
  */
 public abstract class AbstractQueryFilter<DQO extends IQueryDQO<DQO>> implements IQueryFilter<DQO> {

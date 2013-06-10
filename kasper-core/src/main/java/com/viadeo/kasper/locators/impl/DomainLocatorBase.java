@@ -173,8 +173,7 @@ public class DomainLocatorBase implements IDomainLocator {
 	// ========================================================================
 
 	/**
-	 * @see com.viadeo.kasper.locators.IDomainLocator#registerDomain(com.viadeo.kasper.IDomain,
-	 *      java.lang.String, java.lang.String)
+	 * @see com.viadeo.kasper.locators.IDomainLocator#registerDomain(com.viadeo.kasper.ddd.IInternalDomain, String, String)
 	 */
 	@Override
 	public void registerDomain(final IInternalDomain domain, final String name,

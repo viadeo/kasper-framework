@@ -8,10 +8,10 @@
 package com.viadeo.kasper.client.lib;
 
 /**
- * A callback class used in {@link KasperClient} for async commands/queries.
+ * A callback class used in {@link com.viadeo.kasper.client.KasperClient} for async commands/queries.
  * 
  * @param <T> the result type parameter
- * @see com.viadeo.kasper.client.KasperClient KasperClient
+ * @see com.viadeo.kasper.client.KasperClient
  */
 public interface ICallback<T> {
 

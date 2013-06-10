@@ -12,13 +12,12 @@ import com.viadeo.kasper.ddd.IComponentEntity;
  *
  * A Kasper Relation which is owned by an upper Relation or an aggregate root
  *
- * @param <D> Domain
  * @param <S> Source concept of the relation
  * @param <T> Target concept of the relation
  * 
- * @see IDomain
+ * @see com.viadeo.kasper.IDomain
  * @see IRelation
- * @see IEntity 
+ * @see com.viadeo.kasper.ddd.IEntity
  */
 public interface IComponentRelation<S extends IRootConcept, T extends IRootConcept> 
 		extends IComponentEntity<S>, IRelation<S, T> {

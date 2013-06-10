@@ -20,11 +20,9 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import java.lang.reflect.Field;
 
 /**
+ * A base implementation for Kasper query field
  * 
- *         A base implementation for Kasper query field
- * 
- * @param <P>
- *            the field payload (Comparable)
+ * @param <P> the field payload (Comparable)
  * 
  * @see IQueryField
  * @see IQueryDQO

@@ -16,7 +16,7 @@ public class DataSourcesLoader {
     /**
      * Read existing datasource configuration in Json Format
      * @param configFile
-     * @return
+     * @return the datasource settings
      */
     public static DataSourcesSettings read(final String configFile) throws IOException {
         final File config = JSONConfigurationLoader.getFile(configFile);

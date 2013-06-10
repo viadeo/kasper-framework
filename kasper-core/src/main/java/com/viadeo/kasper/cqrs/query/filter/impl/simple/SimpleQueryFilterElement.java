@@ -19,10 +19,8 @@ import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryFilter;
  *
  *         Simple affectation implementation for query filter element
  *
- * @param <DQO>
- *            the associated Data Query Object
- * @param <P>
- *            the managed payload type
+ * @param <DQO> the associated Data Query Object
+ * @param <P> the managed payload type
  */
 public class SimpleQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comparable<P>>
 		extends AbstractQueryFilter<DQO> implements IQueryFilterElement<DQO, P> {
@@ -76,7 +74,7 @@ public class SimpleQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comp
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement#isSatisfiedBy(java.lang.Comparable)
+	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement#isSatisfiedBy(Object)
 	 */
 	@Override
 	public boolean isSatisfiedBy(final P value) {
@@ -167,8 +165,7 @@ public class SimpleQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comp
 	/**
 	 * Parse an element filter definition and apply on this
 	 *
-	 * @param expr
-	 *            the expression to parse
+	 * @param expr the expression to parse
 	 * @return this instance
 	 */
 	public SimpleQueryFilterElement<DQO, P> parse(final String expr) {

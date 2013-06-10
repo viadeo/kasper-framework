@@ -12,9 +12,9 @@ import com.viadeo.kasper.er.IRootConcept;
 /**
  * Base Kasper Concept Aggregate Root implementation
  *
- * @see IConcept
+ * @see com.viadeo.kasper.er.IConcept
  * @see IRootConcept
- * @see IAggregateRoot
+ * @see com.viadeo.kasper.ddd.IAggregateRoot
  */
 public abstract class AbstractRootConcept 
 		extends AbstractAggregateRoot

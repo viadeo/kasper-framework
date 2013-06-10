@@ -15,6 +15,7 @@ dependencies {
     compile libraries.AXON_TEST
     compile libraries.HAMCREST
     compile libraries.MOCKITO
+    compile libraries.JUNIT
 
     // Test dependencies
     testCompile libraries.JACKSON_CORE

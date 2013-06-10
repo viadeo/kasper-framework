@@ -13,11 +13,10 @@ import com.viadeo.kasper.ddd.IEntity;
  * 
  * A relation is an entity used to link to Concept Aggregate roots
  *
- * @param <D> Domain
  * @param <S> Source entity of the relation
  * @param <T> Target entity of the relation
  * 
- * @see IDomain
+ * @see com.viadeo.kasper.IDomain
  * @see IEntity
  */
 public interface IRelation<S extends IRootConcept, T extends IRootConcept> extends IEntity {

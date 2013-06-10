@@ -24,7 +24,7 @@ public interface IFilteredQuery<DQO extends IQueryDQO<?>> extends IQuery {
 	Optional<IQueryFilter<DQO>> getFilter();
 
 	/**
-	 * @param the filter to be used by this query
+	 * @param filter the filter to be used by this query
 	 */
 	void setFilter(IQueryFilter<DQO> filter);
 

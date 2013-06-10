@@ -15,7 +15,7 @@ import com.viadeo.kasper.er.IRootConcept;
  *
  * @param <R> the parent's concept root
  * 
- * @see IConcept
+ * @see com.viadeo.kasper.er.IConcept
  * @see IComponentConcept
  */
 public abstract class AbstractComponentConcept<R extends IRootConcept> 

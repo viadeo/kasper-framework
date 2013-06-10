@@ -20,8 +20,7 @@ import java.util.List;
 
 /**
  * 
- * @param <DQO>
- *            the associated Data Query Object
+ * @param <DQO> the associated Data Query Object
  * 
  * @see IQueryDQO
  * @see IQueryFilterGroup
@@ -124,9 +123,7 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	}
 
 	/**
-	 * @see
-	 *      com.viadeo.kasper.cqrs.query.IKasperQueryFilterGroup#filter(com.viadeo
-	 *      .kasper.cqrs.query.IKasperQueryFilter<DQO>...)
+	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterGroup#filter(com.viadeo.kasper.cqrs.query.filter.IQueryFilter[])
 	 */
 	@Override
 	public QueryFilterGroup<DQO> filter(
@@ -140,7 +137,7 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.impl.base.BaseQueryFilter#and(com.viadeo.kasper.cqrs.query.filter.IQueryFilter)
+	 * @see com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryFilterElement#and(com.viadeo.kasper.cqrs.query.filter.IQueryFilter)
 	 */
 	@Override
 	public QueryFilterGroup<DQO> and(final IQueryFilter<DQO> filter) {
@@ -151,7 +148,7 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	}
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.impl.base.BaseQueryFilter#or(com.viadeo.kasper.cqrs.query.filter.IQueryFilter)
+	 * @see com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryFilterElement#or(com.viadeo.kasper.cqrs.query.filter.IQueryFilter)
 	 */
 	@Override
 	public QueryFilterGroup<DQO> or(final IQueryFilter<DQO> filter) {
@@ -164,7 +161,7 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.impl.base.BaseQueryFilter#and()
+	 * @see com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryFilterElement#and()
 	 */
 	@Override
 	public QueryFilterGroup<DQO> and() {
@@ -173,7 +170,7 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	}
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.impl.base.BaseQueryFilter#or()
+	 * @see com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryFilterElement#or()
 	 */
 	@Override
 	public QueryFilterGroup<DQO> or() {

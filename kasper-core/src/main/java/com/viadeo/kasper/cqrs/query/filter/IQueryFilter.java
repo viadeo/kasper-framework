@@ -15,8 +15,7 @@ import java.io.Serializable;
  * 
  *         The base Query filter, used to parameterize query services
  * 
- * @param <DQO>
- *            the associated Data Query Object
+ * @param <DQO> the associated Data Query Object
  * 
  * @see IQueryDQO
  */
@@ -25,8 +24,7 @@ public interface IQueryFilter<DQO extends IQueryDQO<?>> extends Serializable {
 	/**
 	 * Apply filter on a DTO instance and checks for conformance
 	 * 
-	 * @param dto
-	 *            the DTO intance
+	 * @param dto the DTO intance
 	 * @return true if the DTO instance conforms to this filter
 	 */
 	boolean isSatisfiedBy(IQueryDTO dto);
@@ -34,8 +32,7 @@ public interface IQueryFilter<DQO extends IQueryDQO<?>> extends Serializable {
 	/**
 	 * Compose a new group filter from this one and another one
 	 * 
-	 * @param otherFilter
-	 *            a filter to combine with AND operator
+	 * @param otherFilter a filter to combine with AND operator
 	 * @return a new grouped filter
 	 */
 	IQueryFilterGroup<DQO> and(IQueryFilter<DQO> otherFilter);
@@ -43,8 +40,7 @@ public interface IQueryFilter<DQO extends IQueryDQO<?>> extends Serializable {
 	/**
 	 * Compose a new group filter from this one and another one
 	 * 
-	 * @param otherFilter
-	 *            a filter to combine with OR operator
+	 * @param otherFilter a filter to combine with OR operator
 	 * @return a new grouped filter
 	 */
 	IQueryFilterGroup<DQO> or(IQueryFilter<DQO> otherFilter);
