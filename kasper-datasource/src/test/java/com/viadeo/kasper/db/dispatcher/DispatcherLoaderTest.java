@@ -15,7 +15,7 @@ import static org.junit.Assert.fail;
 
 public class DispatcherLoaderTest {
 
-    public static String configFile = "classpath:dispatcher.json";
+    public static String configFile = "dispatcher.json";
 
     @Test
     public void shouldReadJsonConfiguration() {

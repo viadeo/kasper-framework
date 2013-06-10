@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import com.viadeo.kasper.db.util.ResourcesUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +18,7 @@ import java.io.IOException;
 public class JSONConfigurationLoader {
 
     static final ObjectMapper JSON_OBJECT_MAPPER = new ObjectMapper();
+    static ResourcesUtils res = new ResourcesUtils();
 
     // version jackson 2
     static {
@@ -39,8 +41,8 @@ public class JSONConfigurationLoader {
         }
     }
 
-    public static File getFile(final String filename) throws IOException {
-        return ResourcesUtils.getFileOrStream(filename);
+    static public File getFile(final String filename) throws IOException  {
+        return res.getFile(filename);
     }
 
 }

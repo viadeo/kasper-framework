@@ -10,13 +10,11 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.viadeo.kasper.platform.IPlatform;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
-
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletResponse;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletResponse;
 import java.beans.Introspector;
 import java.io.IOException;
 import java.util.Map;

@@ -11,10 +11,14 @@ import com.viadeo.kasper.db.datasource.DataSourceFactoryBuilder;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import java.sql.*;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.Properties;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotSame;
 
 // integration test
 @Ignore
@@ -23,7 +27,7 @@ public class DataSourceITest {
     @Test
     public void testInit() throws SQLException {
         // Given
-        final String dsFile = "classpath:datasources.json", dispatcherFile = "classpath:dispatcher.json";
+        final String dsFile = "datasources.json", dispatcherFile = "dispatcher.json";
         final DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile, dispatcherFile);
 
         // When
@@ -37,7 +41,7 @@ public class DataSourceITest {
     @Test
     public void testFind() throws SQLException {
         // Given
-        final String dsFile = "classpath:datasources.json", dispatcherFile = "classpath:dispatcher.json";
+        final String dsFile = "datasources.json", dispatcherFile = "dispatcher.json";
         final DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile, dispatcherFile);
 
         // When
@@ -81,7 +85,7 @@ public class DataSourceITest {
     @Test
     public void testTwoOperationsBeforePrepareStatement() throws SQLException {
         // Given
-        final String dsFile = "classpath:datasources.json", dispatcherFile = "classpath:dispatcher.json";
+        final String dsFile = "datasources.json", dispatcherFile = "dispatcher.json";
         final DataSourceFactoryBuilder builder = new DataSourceFactoryBuilder(dsFile, dispatcherFile);
 
         // When
