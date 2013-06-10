@@ -10,7 +10,7 @@ allprojects  {
   apply plugin: 'cobertura'
 
   group = 'com.viadeo.kasper'
-  version = '0.0.6'
+  version = '0.0.7-SNAPSHOT'
 
   // Remote Maven repositories ---------
   repositories {
