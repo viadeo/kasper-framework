@@ -19,9 +19,9 @@ import com.viadeo.kasper.er.IRootRelation;
  * @param <S> Source concept of the relation
  * @param <T> Target concept of the relation
  * 
- * @see IRelation
+ * @see com.viadeo.kasper.er.IRelation
  * @see IRootRelation
- * @see IAggregateRoot
+ * @see com.viadeo.kasper.ddd.IAggregateRoot
  */
 public abstract class AbstractRootRelation<S extends IRootConcept, T extends IRootConcept> 
 		extends AbstractAggregateRoot

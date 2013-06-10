@@ -1,0 +1,7 @@
+
+- install Sphinx-doc : apt-get install python-sphinx
+- run 'make html' in doc/ directory
+
+Refer to http://docutils.sourceforge.net/docs/user/rst/quickstart.html for reStructuredText format reference
+Refer to http://sphinx-doc.org/contents.html for Sphinx documentation
+

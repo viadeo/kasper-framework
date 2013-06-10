@@ -17,8 +17,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
 /**
- *
- *         A base implementation for IQueryDQO
+ * A base implementation for IQueryDQO
  *
  * @param <DQO> itself for accurate link with filter
  *

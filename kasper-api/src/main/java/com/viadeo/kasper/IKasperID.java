@@ -14,8 +14,6 @@ import java.io.Serializable;
  * Identify uniquely a Kasper Entity (Concept or Relation)
  * IKasperID is a value object
  *
- * @see KasperID
- * 
  */
 public interface IKasperID extends Serializable {
 

@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
@@ -21,8 +20,6 @@ import com.viadeo.kasper.query.exposition.ITypeAdapter;
 import com.viadeo.kasper.query.exposition.QueryFactoryBuilder;
 import com.viadeo.kasper.query.exposition.QueryParser;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -39,14 +36,20 @@ public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
 
     private final Map<String, Class<? extends IQuery>> exposedQueries = Maps.newHashMap();
-    private IQueryServicesLocator queryServicesLocator;
-    private IQueryFactory queryAdapterFactory = new QueryFactoryBuilder().create();
+    private final IQueryServicesLocator queryServicesLocator;
+    private final IQueryFactory queryAdapterFactory;
 
     // ------------------------------------------------------------------------
 
     public HttpQueryExposer(final IPlatform platform, final IQueryServicesLocator queryLocator) {
+        this(platform, queryLocator, new QueryFactoryBuilder().create());
+    }
+
+    public HttpQueryExposer(IPlatform platform, IQueryServicesLocator queryServicesLocator,
+            IQueryFactory queryAdapterFactory) {
         super(platform);
-        this.queryServicesLocator = queryLocator;
+        this.queryServicesLocator = queryServicesLocator;
+        this.queryAdapterFactory = queryAdapterFactory;
     }
 
     @Override

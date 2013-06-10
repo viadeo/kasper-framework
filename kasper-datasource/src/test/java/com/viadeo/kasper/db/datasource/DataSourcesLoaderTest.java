@@ -10,11 +10,12 @@ import org.junit.Test;
 
 import java.io.IOException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.fail;
 
 public class DataSourcesLoaderTest {
 
-    public static String configFile = "classpath:datasources.json";
+    public static String configFile = "datasources.json";
 
     @Test
     public void shouldReturnListAfterReadingJsonConfiguration() {

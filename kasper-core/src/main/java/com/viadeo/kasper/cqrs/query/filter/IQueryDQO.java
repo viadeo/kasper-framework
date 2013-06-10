@@ -23,7 +23,7 @@ import java.io.Serializable;
  * }
  * 
  * @see IQueryField
- * @see IQueryDTO
+ * @see com.viadeo.kasper.cqrs.query.IQueryDTO
  * @see IQueryFilter
  */
 public interface IQueryDQO<DQO extends IQueryDQO<DQO>> extends Serializable {

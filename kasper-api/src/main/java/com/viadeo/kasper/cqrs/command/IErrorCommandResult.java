@@ -21,7 +21,7 @@ public interface IErrorCommandResult extends ICommandResult {
 	Optional<String> getErrorMessage();
 	
 	/**
-	 * @return
+	 * @return an optional error exception
 	 */
 	Optional<Exception> getErrorException();	
 	

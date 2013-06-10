@@ -18,7 +18,7 @@ import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryField;
  * @param <DQO>
  *            the associated DQO
  * 
- * @see IQueryField
+ * @see com.viadeo.kasper.cqrs.query.filter.IQueryField
  * @see IQueryDQO
  */
 public class BaseQueryField<P extends Comparable<P>, DQO extends IQueryDQO<DQO>>

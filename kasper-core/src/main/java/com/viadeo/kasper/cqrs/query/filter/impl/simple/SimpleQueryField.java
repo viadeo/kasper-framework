@@ -13,12 +13,10 @@ import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryField;
  * 
  *         A base implementation for Kasper query field
  * 
- * @param <P>
- *            the field payload (Comparable)
- * @param <DQO>
- *            the associated DQO
+ * @param <P> the field payload (Comparable)
+ * @param <DQO> the associated DQO
  * 
- * @see IQueryField
+ * @see com.viadeo.kasper.cqrs.query.filter.IQueryField
  * @see IQueryDQO
  */
 public class SimpleQueryField<P extends Comparable<P>, DQO extends IQueryDQO<DQO>>

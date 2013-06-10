@@ -20,8 +20,8 @@ import static org.junit.Assert.*;
 @Ignore
 public class DataSourceFactoryBuilderITest {
 
-    public static String dsFile = "classpath:datasources.json";
-    public static String dispatcherFile = "classpath:dispatcher.json";
+    public static String dsFile = "datasources.json";
+    public static String dispatcherFile = "dispatcher.json";
 
     @Test(expected = IllegalStateException.class)
     public void shouldThrowExceptiononNullFirstParameter() {

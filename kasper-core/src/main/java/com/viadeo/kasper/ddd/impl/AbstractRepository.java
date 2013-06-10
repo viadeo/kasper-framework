@@ -115,7 +115,7 @@ public abstract class AbstractRepository<AGR extends IAggregateRoot>
 	}
 
 	/**
-	 * @see org.axonframework.repository.Repository#add(org.axonframework.domain.AggregateRoot)
+	 * @see org.axonframework.repository.Repository#add(Object)
 	 */
 	@Override
 	public void add(final AGR aggregate) {

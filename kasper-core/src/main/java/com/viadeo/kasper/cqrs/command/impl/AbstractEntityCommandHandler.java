@@ -26,8 +26,8 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
  * 
  * @see IAggregateRoot
  * @see IEntityCommandHandler
- * @see ICommandHandler
- * @see IEntity
+ * @see com.viadeo.kasper.cqrs.command.ICommandHandler
+ * @see com.viadeo.kasper.ddd.IEntity
  * @see IAggregateRoot
  */
 public abstract class AbstractEntityCommandHandler<C extends ICommand, AGR extends IAggregateRoot> 

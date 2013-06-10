@@ -62,5 +62,6 @@ public abstract class BaseHttpExposerTest<T extends HttpExposer> {
 	@After
 	public void cleanUp() throws Exception {
 		server.stop();
-	}// ------------------------------------------------------------------------
+	}
+
 }

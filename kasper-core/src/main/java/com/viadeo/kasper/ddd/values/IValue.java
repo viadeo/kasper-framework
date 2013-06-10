@@ -32,12 +32,12 @@ import java.io.Serializable;
 public interface IValue extends Serializable {
 
 	/**
-	 * @return
+	 * @return a string serialization
 	 */
 	String toString();
 	
 	/**
-	 * @param _otherValue
+	 * @param otherValue
 	 * @return true if two objects or payloads are equal
 	 *
 	 * can be used to compare an IValue with a payload for instance

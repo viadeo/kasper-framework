@@ -14,7 +14,7 @@ import com.viadeo.kasper.ddd.IAggregateRoot;
  *
  * 
  * @see IConcept
- * @see IEntity
+ * @see com.viadeo.kasper.ddd.IEntity
  * @see IAggregateRoot
  */
 public interface IRootConcept extends IConcept, IAggregateRoot {

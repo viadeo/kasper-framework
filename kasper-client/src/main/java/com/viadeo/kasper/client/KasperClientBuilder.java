@@ -36,8 +36,8 @@ public class KasperClientBuilder {
 
 	// ------------------------------------------------------------------------
 
-	private static final String DEFAULT_COMMAND_URL = "http://kasper-platform/kasper/command";
-	private static final String DEFAULT_QUERY_URL = "http://kasper-platform/kasper/query";
+	public static final String DEFAULT_COMMAND_URL = "http://kasper-platform/kasper/command";
+	public static final String DEFAULT_QUERY_URL = "http://kasper-platform/kasper/query";
 
 	// ------------------------------------------------------------------------
 

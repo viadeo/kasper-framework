@@ -6,12 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition;
 
-public class MyTestAdapter implements ITypeAdapter<Integer>{
+public class MyTestAdapter implements ITypeAdapter<MyTestAdapter.MyTestPayload>{
+
+    static class MyTestPayload {}
 
 	@Override
-	public void adapt(final Integer value, final QueryBuilder builder) { }
+	public void adapt(final MyTestPayload value, final QueryBuilder builder) { }
 
 	@Override
-	public Integer adapt(final QueryParser parser) { return null; }
+	public MyTestPayload adapt(final QueryParser parser) { return null; }
 
 }

@@ -1,14 +1,14 @@
 package com.viadeo.kasper.tools;
 
-import java.io.IOException;
-import java.util.Arrays;
-
-import org.junit.Test;
-import static org.junit.Assert.*;
-
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
 import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionDTO;
+import org.junit.Test;
+
+import java.io.IOException;
+import java.util.Arrays;
+
+import static org.junit.Assert.assertEquals;
 
 public class ObjectMapperProviderTest {
     @Test public void dontFailOnUnknownProperty() throws IOException {

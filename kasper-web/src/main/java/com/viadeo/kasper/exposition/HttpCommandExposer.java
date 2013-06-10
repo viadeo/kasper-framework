@@ -21,8 +21,6 @@ import com.viadeo.kasper.cqrs.command.impl.KasperErrorCommandResult;
 import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.platform.IPlatform;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

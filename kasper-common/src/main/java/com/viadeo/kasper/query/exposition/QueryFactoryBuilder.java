@@ -23,6 +23,7 @@ import static com.viadeo.kasper.query.exposition.NullSafeTypeAdapter.nullSafe;
 
 public class QueryFactoryBuilder {
 	private ConcurrentMap<Type, ITypeAdapter<?>> adapters = Maps.newConcurrentMap();
+	private ConcurrentMap<Type, BeanAdapter<?>> beanAdapters = Maps.newConcurrentMap();
 	private List<ITypeAdapterFactory<?>> factories = Lists.newArrayList();
 	private VisibilityFilter visibilityFilter = VisibilityFilter.PACKAGE_PUBLIC;
 
@@ -36,7 +37,7 @@ public class QueryFactoryBuilder {
 				.getSupertype(ITypeAdapter.class)
 				.resolveType(ITypeAdapter.class.getTypeParameters()[0]);
 
-		adapters.put(adapterForType.getType(), new NullSafeTypeAdapter<>(
+		adapters.putIfAbsent(adapterForType.getType(), new NullSafeTypeAdapter<>(
 				(ITypeAdapter<Object>) adapter));
 
 		return this;
@@ -46,6 +47,18 @@ public class QueryFactoryBuilder {
 		factories.add(checkNotNull(factory));
 		return this;
 	}
+	
+	public QueryFactoryBuilder use(final BeanAdapter<?> beanAdapter) {
+	    checkNotNull(beanAdapter);
+	    
+	    final TypeToken<?> adapterForType = TypeToken.of(beanAdapter.getClass())
+                .getSupertype(BeanAdapter.class)
+                .resolveType(BeanAdapter.class.getTypeParameters()[0]);
+
+        beanAdapters.putIfAbsent(adapterForType.getType(), beanAdapter);
+
+        return this;
+	}
 
 	public QueryFactoryBuilder include(final VisibilityFilter visibility) {
 		this.visibilityFilter = checkNotNull(visibility);
@@ -53,8 +66,16 @@ public class QueryFactoryBuilder {
 	}
 
 	public IQueryFactory create() {
-		for (ITypeAdapter<?> adapter : loadDeclaredAdapters()) {
+		for (ITypeAdapter<?> adapter : loadServices(ITypeAdapter.class)) {
 			use(adapter);
+        }
+		
+		for (BeanAdapter<?> beanAdapter : loadServices(BeanAdapter.class)) {
+            use(beanAdapter);
+        }
+		
+		for (ITypeAdapterFactory<?> adapterFactory : loadServices(ITypeAdapterFactory.class)) {
+            use(adapterFactory);
         }
 
 		adapters.putIfAbsent(int.class, nullSafe(DefaultTypeAdapters.INT_ADAPTER));
@@ -78,25 +99,13 @@ public class QueryFactoryBuilder {
 		factories.add(DefaultTypeAdapters.ARRAY_ADAPTER_FACTORY);
 		factories.add(DefaultTypeAdapters.ENUM_ADAPTER_FACTORY);
 
-		return new StdQueryFactory(adapters, factories, visibilityFilter);
+		return new StdQueryFactory(adapters, beanAdapters, factories, visibilityFilter);
 	}
-
-	@SuppressWarnings("rawtypes")
+	
 	@VisibleForTesting
-	List<ITypeAdapter> loadDeclaredAdapters() {
-		final ServiceLoader<ITypeAdapter> serviceLoader = ServiceLoader.load(
-				ITypeAdapter.class, ITypeAdapter.class.getClassLoader());
-		return Lists.newArrayList(serviceLoader.iterator());
+	<T> List<T> loadServices(Class<T> serviceClass) {
+	    final ServiceLoader<T> serviceLoader = ServiceLoader.load(
+	            serviceClass, serviceClass.getClassLoader());
+        return Lists.newArrayList(serviceLoader.iterator());
 	}
-
-	@SuppressWarnings("rawtypes")
-	@VisibleForTesting
-	List<ITypeAdapterFactory> loadDeclaredTypeAdapterFactory() {
-		final ServiceLoader<ITypeAdapterFactory> serviceLoader = ServiceLoader.load(
-				ITypeAdapterFactory.class,
-				ITypeAdapterFactory.class.getClassLoader());
-
-		return Lists.newArrayList(serviceLoader.iterator());
-	}
-
 }

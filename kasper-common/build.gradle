@@ -1,0 +1,47 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//            Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
+
+description = 'KASPER COMMON'
+
+  configurations {
+    tools
+  }
+
+dependencies {
+    // Projects
+    compile project(':kasper-api')
+
+    // Third party dependencies
+    compile libraries.JACKSON_DATABIND
+    compile libraries.JACKSON_CORE
+    compile libraries.JACKSON_GUAVA_TYPES
+    compile libraries.PARANAMER
+    
+    tools "com.googlecode.jarjar:jarjar:1.3"
+}
+
+
+jar << {
+	project.ext {
+      jarjarArchivePath = new File(jar.archivePath.absolutePath + ".jarjar")
+	}
+
+    project.ant {
+        taskdef name: "jarjar", classname: "com.tonicsystems.jarjar.JarJarTask", classpath: configurations.tools.asPath
+        jarjar(jarfile: jarjarArchivePath) {
+            zipfileset(src: jar.archivePath)
+            configurations.runtime.files.findAll {file ->
+                ['paranamer'].any { file.name.startsWith(it) }
+            }.each {jarjarFile ->
+                zipfileset(src: jarjarFile)
+            }
+            rule pattern: "com.thoughtworks.paranamer.**", result: "com.viadeo.kasper.query.exposition.internal.@1"
+        }
+    }
+     
+    delete(file: jar.archivePath)
+    ant.rename(src: jarjarArchivePath, dest: jar.archivePath)
+}

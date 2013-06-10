@@ -24,10 +24,9 @@ import com.viadeo.kasper.ddd.IEntity;
  * (source: Wikipedia)
  ******
  *
- * @param <D> Domain
  * @param <E> Entity
  * 
- * @see IDomain
+ * @see com.viadeo.kasper.IDomain
  * @see IEntity
  */
 public interface IEntitySpecification<E extends IEntity> {

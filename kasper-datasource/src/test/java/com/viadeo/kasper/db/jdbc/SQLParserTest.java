@@ -10,6 +10,7 @@ import com.viadeo.kasper.db.Operation;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
 
 public class SQLParserTest {
 
@@ -24,12 +25,30 @@ public class SQLParserTest {
         // Then
         assertEquals(Operation.READ, query1.getOperation());
         assertEquals("toto", query1.getTableName());
+
+        // When
+        final String sql2 = "select age from FooBar where id = ?";
+        final SQLQuery query2 =  SQLParser.parse(sql2);
+
+        // Then
+        assertEquals(Operation.READ, query2.getOperation());
+        assertEquals("FooBar", query2.getTableName());
     }
 
     @Test
     public void parseShouldHandleInsertQuery() {
         // Given
-        final String sql2 = "INSERT   INTO toto(col1,col2) VALUES (val1, val2)";
+        final String sql1 = "INSERT   INTO toto(col1,col2) VALUES (val1, val2)";
+        
+        // When
+        final SQLQuery query1 =  SQLParser.parse(sql1);
+
+        // Then
+        assertEquals(Operation.WRITE, query1.getOperation());
+        assertEquals("toto",query1.getTableName());
+
+        // Given
+        final String sql2 = "INSERT   INTO toto VALUES (val1, val2)";
 
         // When
         final SQLQuery query2 =  SQLParser.parse(sql2);
@@ -58,7 +77,7 @@ public class SQLParserTest {
     public void parseShouldHandleDeleteQuery() {
         // Given
         final String sql4 = "DELETE FROM toto "+
-                "WHERE CustomerName='Alfreds Futterkiste' AND ContactName='Maria Anders'";
+                             "WHERE CustomerName='Alfreds Futterkiste' AND ContactName='Maria Anders'";
 
         // When
         final SQLQuery query4 =  SQLParser.parse(sql4);
@@ -66,6 +85,21 @@ public class SQLParserTest {
         // Then
         assertEquals(Operation.WRITE, query4.getOperation());
         assertEquals("toto",query4.getTableName());
+    }
+
+    @Test
+    public void parseShouldKeepASingleCleanTableNameIfMany() {
+        // Given
+        String test1 = null;
+        String test2 = "table1";
+        String test3 = "table1 , table2";
+        String test4 = "table1 , table2, table3,table4";
+
+        // Then
+        assertNotNull(SQLParser.keepSingleValue(test1));
+        assertEquals("table1",SQLParser.keepSingleValue(test2));
+        assertEquals("table1",SQLParser.keepSingleValue(test3));
+        assertEquals("table1",SQLParser.keepSingleValue(test4));
     }
 
 }

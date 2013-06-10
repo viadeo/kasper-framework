@@ -38,8 +38,6 @@ package com.viadeo.kasper;
  * outside.
  ******
  *
- * 
- * @see IKasperUbiquitousLanguageElement
  */
 public interface IDomain {
 

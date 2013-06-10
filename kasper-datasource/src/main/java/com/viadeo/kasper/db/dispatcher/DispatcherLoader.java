@@ -16,7 +16,7 @@ public class DispatcherLoader {
     /**
      * Read existing dispatcher configuration in Json Format
      * @param configFile
-     * @return
+     * @return the dispatcher settings
      */
     public static DispatcherSettings read(final String configFile) throws IOException {
         final File config = JSONConfigurationLoader.getFile(configFile);

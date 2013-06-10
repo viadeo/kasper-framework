@@ -76,7 +76,7 @@ public class BaseQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Compar
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement#isSatisfiedBy(java.lang.Comparable)
+	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement#isSatisfiedBy(Object)
 	 */
 	@Override
 	public boolean isSatisfiedBy(final P value) {

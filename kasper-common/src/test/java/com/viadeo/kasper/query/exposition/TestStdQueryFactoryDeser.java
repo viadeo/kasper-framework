@@ -13,141 +13,214 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.*;
 
 public class TestStdQueryFactoryDeser {
-	private StdQueryFactory factory;
+    private StdQueryFactory factory;
 
-	@Before
-	public void setUp() {
-		final Map<Type, ITypeAdapter<?>> adapters = new HashMap<>();
-		adapters.put(String.class, DefaultTypeAdapters.STRING_ADAPTER);
-		adapters.put(int.class, DefaultTypeAdapters.INT_ADAPTER);
+    @Before
+    public void setUp() {
+        final Map<Type, ITypeAdapter<?>> adapters = new HashMap<>();
+        adapters.put(String.class, DefaultTypeAdapters.STRING_ADAPTER);
+        adapters.put(int.class, DefaultTypeAdapters.INT_ADAPTER);
 
-		factory = new StdQueryFactory(adapters,
-				Arrays.asList(DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY),
-				VisibilityFilter.PACKAGE_PUBLIC);
-	}
+        factory = new StdQueryFactory(adapters, ImmutableMap.<Type, BeanAdapter<?>> of(),
+                Arrays.asList(DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY), VisibilityFilter.PACKAGE_PUBLIC);
+    }
 
-	@Test
-	public void testSimpleQueryDeserialization() {
-
-        // Given
-		final ITypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
-		final Map<String, List<String>> given = ImmutableMap.of("name",
-				Arrays.asList("foo"), "age", Arrays.asList("1"), "list",
-				Arrays.asList("bar", "barfoo", "foobar"));
-
-        // When
-		final SimpleQuery query = adapter.adapt(new QueryParser(given));
-
-        // Then
-		assertEquals("foo", query.name);
-		assertEquals(1, query.age);
-		assertEquals(Arrays.asList("bar", "barfoo", "foobar"), query.list);
-	}
-
-	@Test
-	public void testComposedQuery() {
+    @Test
+    public void testSimpleQueryDeserialization() {
 
         // Given
-		final Map<String, List<String>> given = ImmutableMap.of("field",
-				Arrays.asList("someValue"), "name", Arrays.asList("foo"),
-				"age", Arrays.asList("1"), "list",
-				Arrays.asList("bar", "barfoo", "foobar"));
-		final ITypeAdapter<ComposedQuery> adapter = factory.create(TypeToken
-				.of(ComposedQuery.class));
+        final ITypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
+        final Map<String, List<String>> given = ImmutableMap.of("name", Arrays.asList("foo"), "age",
+                Arrays.asList("1"), "list", Arrays.asList("bar", "barfoo", "foobar"));
 
         // When
-		final ComposedQuery query = adapter.adapt(new QueryParser(given));
+        final SimpleQuery query = adapter.adapt(new QueryParser(given));
 
         // Then
-		assertEquals("someValue", query.field);
-		assertEquals("foo", query.query.name);
-		assertEquals(1, query.query.age);
-		assertEquals(Arrays.asList("bar", "barfoo", "foobar"), query.query.list);
-	}
+        assertEquals("foo", query.name);
+        assertEquals(1, query.age);
+        assertEquals(Arrays.asList("bar", "barfoo", "foobar"), query.list);
+    }
 
-	@Test
-	public void testDeserializeWithMissingAndAdditionalFields() {
+    @Test
+    public void testComposedQuery() {
 
         // Given
-		final ITypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
+        final Map<String, List<String>> given = ImmutableMap.of("field", Arrays.asList("someValue"), "name",
+                Arrays.asList("foo"), "age", Arrays.asList("1"), "list", Arrays.asList("bar", "barfoo", "foobar"));
+        final ITypeAdapter<ComposedQuery> adapter = factory.create(TypeToken.of(ComposedQuery.class));
 
         // When
-		SimpleQuery query = adapter.adapt(new QueryParser(ImmutableMap.of(
-				"field", Arrays.asList("someValue"), "name",
-				Arrays.asList("foo"))));
+        final ComposedQuery query = adapter.adapt(new QueryParser(given));
 
         // Then
-		assertEquals("foo", query.name);
-		assertNull(query.list);
-		assertEquals(0, query.age);
-	}
+        assertEquals("someValue", query.field);
+        assertEquals("foo", query.query.name);
+        assertEquals(1, query.query.age);
+        assertEquals(Arrays.asList("bar", "barfoo", "foobar"), query.query.list);
+    }
+
+    @Test
+    public void testDeserializeWithMissingAndAdditionalFields() {
+
+        // Given
+        final ITypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
+
+        // When
+        final SimpleQuery query = adapter.adapt(new QueryParser(ImmutableMap.of("field", Arrays.asList("someValue"),
+                "name", Arrays.asList("foo"))));
+
+        // Then
+        assertEquals("foo", query.name);
+        assertNull(query.list);
+        assertEquals(0, query.age);
+    }
+
+    @Test
+    public void testDeserForComplexObjectWithCustomAdapter() {
+        // needed when a custom typeadapter is registered and does not serialize to a literal
+        // Given
+        final IQueryFactory factory = new QueryFactoryBuilder().use(new SomeBeanAdapter()).create();
+        final ITypeAdapter<BaseQuery> adapter = factory.create(TypeToken.of(BaseQuery.class));
+
+        // When
+        final BaseQuery q = adapter.adapt(new QueryParser(ImmutableMap.of("list_foo", Arrays.asList("bar"))));
+
+        // Then
+        assertNotNull(q.list);
+        assertTrue(q.list.size() == 1);
+        assertEquals("foo", q.list.get(0).key);
+        assertEquals("bar", q.list.get(0).value);
+    }
 
     // ------------------------------------------------------------------------
 
-	public static class ComposedQuery implements IQuery {
-		private static final long serialVersionUID = 5434689745780198187L;
+    public static class ComposedQuery implements IQuery {
+        private static final long serialVersionUID = 5434689745780198187L;
 
-		private SimpleQuery query;
-		private String field;
+        private SimpleQuery query;
+        private String field;
 
-		public ComposedQuery(final SimpleQuery query, final String field) {
-			this.query = query;
-			this.field = field;
-		}
+        public ComposedQuery(final SimpleQuery query, final String field) {
+            this.query = query;
+            this.field = field;
+        }
 
-		public SimpleQuery getQuery() {
-			return query;
-		}
+        public SimpleQuery getQuery() {
+            return query;
+        }
 
-		public void setQuery(final SimpleQuery query) {
-			this.query = query;
-		}
+        public void setQuery(final SimpleQuery query) {
+            this.query = query;
+        }
 
-		public String getField() {
-			return field;
-		}
+        public String getField() {
+            return field;
+        }
 
-		public void setField(final String field) {
-			this.field = field;
-		}
+        public void setField(final String field) {
+            this.field = field;
+        }
 
-	}
+    }
 
     // ------------------------------------------------------------------------
 
-	public static class SimpleQuery implements IQuery {
-		private static final long serialVersionUID = 2101539230768491786L;
+    public static class SomeBeanAdapter extends BeanAdapter<List<SomeBean>> {
 
-		private final String name;
-		private final int age;
-		private final List<String> list;
+        @Override
+        public void adapt(List<SomeBean> value, QueryBuilder builder, BeanProperty property) {
+            throw new UnsupportedOperationException();
+        }
 
-		public SimpleQuery(final String name, final int age, final List<String> list) {
-			this.name = name;
-			this.age = age;
-			this.list = list;
-		}
+        @Override
+        public List<SomeBean> adapt(QueryParser parser, BeanProperty property) {
+            final String prefix = property.getName() + "_";
+            final List<SomeBean> list = new ArrayList<>();
+            for (String name : parser.names()) {
+                if (name.startsWith(prefix)) {
+                    parser.begin(name);
+                    list.add(new SomeBean(name.replace(prefix, ""), parser.value()));
+                    parser.end();
+                }
+            }
+            return list;
+        }
 
-		public String getName() {
-			return name;
-		}
+    }
 
-		public int getAge() {
-			return age;
-		}
+    public static class BaseQuery implements IQuery {
+        private static final long serialVersionUID = -7064625946045395703L;
+        private List<SomeBean> list;
 
-		public List<String> getList() {
-			return list;
-		}
-	}
+        public List<SomeBean> getList() {
+            return list;
+        }
+
+        public void setList(List<SomeBean> list) {
+            this.list = list;
+        }
+    }
+
+    public static class SomeBean {
+        private String key;
+        private String value;
+
+        public SomeBean(String key, String value) {
+            this.key = key;
+            this.value = value;
+        }
+
+        public String getKey() {
+            return key;
+        }
+
+        public void setKey(String key) {
+            this.key = key;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+    }
+
+    public static class SimpleQuery implements IQuery {
+        private static final long serialVersionUID = 2101539230768491786L;
+
+        private final String name;
+        private final int age;
+        private final List<String> list;
+
+        public SimpleQuery(final String name, final int age, final List<String> list) {
+            this.name = name;
+            this.age = age;
+            this.list = list;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public int getAge() {
+            return age;
+        }
+
+        public List<String> getList() {
+            return list;
+        }
+    }
 
 }

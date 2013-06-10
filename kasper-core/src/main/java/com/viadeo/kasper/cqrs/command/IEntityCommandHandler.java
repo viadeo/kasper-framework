@@ -13,7 +13,7 @@ import com.viadeo.kasper.ddd.IRepository;
  *
  * The Kasper command handler for entity commands
  *
- * @param <E> Entity root
+ * @param <AGR> Aggregate root
  * @param <C> Command
  * 
  * @see IAggregateRoot
