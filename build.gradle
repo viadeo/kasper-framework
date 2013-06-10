@@ -107,14 +107,14 @@ subprojects {
       JACKSON_CORE          : 'com.fasterxml.jackson.core:jackson-core:2.1.4',
       JACKSON_JSON          : 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.1.2',
       JACKSON_GUAVA_TYPES   : 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.1.2',
-      
+
       JERSEY_SERVER         : 'com.sun.jersey:jersey-server:1.16',
       JERSEY_CLIENT         : 'com.sun.jersey:jersey-client:1.16',
       JERSEY_CORE           : 'com.sun.jersey:jersey-core:1.16',
       JERSEY_SERVLET        : 'com.sun.jersey:jersey-servlet:1.16',
       JERSEY_TEST_CORE      : 'com.sun.jersey.jersey-test-framework:jersey-test-framework-core:1.16',
       JERSEY_TEST_HTTP      : 'com.sun.jersey.jersey-test-framework:jersey-test-framework-http:1.16',
-      
+
       PARANAMER             : 'com.thoughtworks.paranamer:paranamer:2.5.2',
       REFLECTIONS           : 'org.reflections:reflections:0.9.8',
       MYSQL                 : 'mysql:mysql-connector-java:5.1.24',
@@ -141,7 +141,7 @@ subprojects {
       GUAVA                 : 'com.google.guava:guava:13.0.1'
 
   ] // see http://stackoverflow.com/questions/9547170/in-gradle-how-do-i-declare-common-dependencies-in-a-single-place
-  
+
   dependencies {
     compile libraries.GUAVA
     compile libraries.JODA_TIME
@@ -166,5 +166,5 @@ buildscript {
         classpath "net.saliman:gradle-cobertura-plugin:1.1.2"
     }
 }
-   
+
 
