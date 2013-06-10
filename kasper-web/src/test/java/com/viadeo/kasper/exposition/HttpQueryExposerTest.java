@@ -21,59 +21,15 @@ import com.viadeo.kasper.locators.IQueryServicesLocator;
 import com.viadeo.kasper.platform.IPlatform;
 
 public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> {
-	
-	public HttpQueryExposerTest() {
-	}
 
-    // ------------------------------------------------------------------------
-
-    @Override
-    protected HttpQueryExposer createExposer(ApplicationContext ctx) {
-        return new HttpQueryExposer(ctx.getBean(IPlatform.class), ctx.getBean(IQueryServicesLocator.class));
-    }
-	
-	@Test public void testQueryRoundTrip() {
-		final SomeQuery query = new SomeQuery();
-		query.aValue = "foo";
-		query.doThrowSomeException = false;
-		query.intArray = new int[]{1, 2, 3};
-		
-		final SomeDto dto = client().query(query, SomeDto.class);
-		
-		assertEquals(query.aValue, dto.query.aValue);
-		assertEquals(query.doThrowSomeException, dto.query.doThrowSomeException);
-		assertArrayEquals(query.intArray, dto.query.intArray);
-	}
-
-    // ------------------------------------------------------------------------
-	
-	@Test(expected=KasperClientException.class)
-    public void testQueryServiceThrowingException() {
-		final SomeQuery query = new SomeQuery();
-		query.doThrowSomeException = true;
-		
-		client().query(query, SomeDto.class);
-	}
-
-    // ------------------------------------------------------------------------
-	
-    @Test
-    public void testQueryServiceReturningCollectionDTO() {
-        final SomeCollectionQuery query = new SomeCollectionQuery();        
-        SomeCollectionDTO dto = client().query(query, SomeCollectionDTO.class);
-        assertEquals(1, dto.getCount());
-    }
-
-    // ------------------------------------------------------------------------
-	
-	public static class SomeCollectionQuery extends SomeQuery {
+    public static class SomeCollectionQuery extends SomeQuery {
         private static final long serialVersionUID = 104409802777527460L;
 	}
-    
+
     public static class SomeCollectionDTO extends AbstractQueryCollectionDTO<SomeDto> {
         private static final long serialVersionUID = 8849846911146025322L;
     }
-	
+
 	@XKasperQueryService(domain=AccountDomain.class)
     public static class SomeCollectionQueryService implements IQueryService<SomeCollectionQuery, SomeCollectionDTO> {
         @Override
@@ -87,18 +43,18 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
             return list;
         }
     }
-	
+
 	public static class UnknownQuery implements IQuery {
 		private static final long serialVersionUID = 3548447022174239091L;
 	}
-	
+
 	public static class SomeQuery implements IQuery {
 		private static final long serialVersionUID = -7447288176593489294L;
-		
+
 		private String aValue;
 		private int[] intArray;
 		private boolean doThrowSomeException;
-		
+
 		public int[] getIntArray() {
 			return intArray;
 		}
@@ -118,7 +74,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
 			this.doThrowSomeException = doThrowSomeException;
 		}
 	}
-	
+
 	public static class SomeDto implements IQueryDTO {
 		private static final long serialVersionUID = 4780302444624913577L;
 		private SomeQuery query;
@@ -131,7 +87,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
 			this.query = query;
 		}
 	}
-	
+
 	@XKasperQueryService(domain=AccountDomain.class)
 	public static class SomeQueryService implements IQueryService<SomeQuery, SomeDto> {
 		@Override
@@ -142,13 +98,65 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
             if (q.isDoThrowSomeException()) {
                 throw new KasperQueryException(q.aValue);
             }
-			
+
 			SomeDto dto = new SomeDto();
 			dto.setQuery(q);
 			return dto;
 		}
 	}
-	
+
 	public static class AccountDomain extends AbstractDomain { }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    protected HttpQueryExposer createExposer(ApplicationContext ctx) {
+        return new HttpQueryExposer(ctx.getBean(IPlatform.class), ctx.getBean(IQueryServicesLocator.class));
+    }
+	
+	@Test
+    public void testQueryRoundTrip() {
+        // Given
+		final SomeQuery query = new SomeQuery();
+		query.aValue = "foo";
+		query.doThrowSomeException = false;
+		query.intArray = new int[]{1, 2, 3};
+
+        // When
+		final SomeDto dto = client().query(query, SomeDto.class);
+
+        // Then
+		assertEquals(query.aValue, dto.query.aValue);
+		assertEquals(query.doThrowSomeException, dto.query.doThrowSomeException);
+		assertArrayEquals(query.intArray, dto.query.intArray);
+	}
+
+    // ------------------------------------------------------------------------
+	
+	@Test(expected=KasperClientException.class)
+    public void testQueryServiceThrowingException() {
+        // Given
+		final SomeQuery query = new SomeQuery();
+		query.doThrowSomeException = true;
+
+        // When
+		client().query(query, SomeDto.class);
+
+        // Then raise exception
+	}
+
+    // ------------------------------------------------------------------------
+	
+    @Test
+    public void testQueryServiceReturningCollectionDTO() {
+        // Given
+        final SomeCollectionQuery query = new SomeCollectionQuery();
+
+        // When
+        SomeCollectionDTO dto = client().query(query, SomeCollectionDTO.class);
+
+        // Then
+        assertEquals(1, dto.getCount());
+    }
 
 }

@@ -28,6 +28,7 @@ jar << {
 	project.ext {
       jarjarArchivePath = new File(jar.archivePath.absolutePath + ".jarjar")
 	}
+
     project.ant {
         taskdef name: "jarjar", classname: "com.tonicsystems.jarjar.JarJarTask", classpath: configurations.tools.asPath
         jarjar(jarfile: jarjarArchivePath) {
@@ -43,4 +44,4 @@ jar << {
      
     delete(file: jar.archivePath)
     ant.rename(src: jarjarArchivePath, dest: jar.archivePath)
-} 
+}

@@ -44,7 +44,7 @@ public class StdQueryFactory implements IQueryFactory {
 
     private static final Comparator<Constructor<?>> LEAST_PARAM_COUNT_CTR_COMPARATOR = new Comparator<Constructor<?>>() {
         @Override
-        public int compare(Constructor<?> o1, Constructor<?> o2) {
+        public int compare(final Constructor<?> o1, final Constructor<?> o2) {
             return o1.getParameterTypes().length - o2.getParameterTypes().length;
         }
     };
@@ -59,7 +59,9 @@ public class StdQueryFactory implements IQueryFactory {
     // ------------------------------------------------------------------------
 
     public StdQueryFactory(final Map<Type, ITypeAdapter<?>> adapters,
-            final List<? extends ITypeAdapterFactory<?>> factories, final VisibilityFilter visibilityFilter) {
+                           final List<? extends ITypeAdapterFactory<?>> factories,
+                           final VisibilityFilter visibilityFilter) {
+
         this.visibilityFilter = checkNotNull(visibilityFilter);
         this.factories = Lists.newArrayList(checkNotNull(factories));
 
@@ -81,7 +83,8 @@ public class StdQueryFactory implements IQueryFactory {
         if (null == adapter) {
             for (final ITypeAdapterFactory<?> candidateFactory : factories) {
                 if (TypeToken.of(candidateFactory.getClass())
-                        .resolveType(ITypeAdapterFactory.class.getTypeParameters()[0]).isAssignableFrom(typeToken)) {
+                        .resolveType(ITypeAdapterFactory.class.getTypeParameters()[0])
+                        .isAssignableFrom(typeToken)) {
 
                     final ITypeAdapterFactory<T> factory = (ITypeAdapterFactory<T>) candidateFactory;
                     final Optional<ITypeAdapter<T>> adapterOpt = factory.create(typeToken, this);
@@ -149,7 +152,7 @@ public class StdQueryFactory implements IQueryFactory {
 
             // we have a ctr with args, this property will be set using the ctr
             // => do not use the mutator
-            if (ctrProperty != null) {
+            if (null != ctrProperty) {
                 final TypeToken<?> ctrTypeToken = typeToken.resolveType(ctrProperty.type);
 
                 // FIXME do we want to check it or be more permissive?
@@ -159,8 +162,8 @@ public class StdQueryFactory implements IQueryFactory {
                             + " do not match.");
                 }
 
-                propertyAdapter = createPropertyAdapter(mutator, accessorEntry.getValue(), ctrProperty.name,
-                        accessorType);
+                propertyAdapter = createPropertyAdapter(mutator, accessorEntry.getValue(),
+                                                        ctrProperty.name, accessorType);
 
                 if (!retAdapters.contains(propertyAdapter)) {
                     retAdapters.add(propertyAdapter);
@@ -179,8 +182,8 @@ public class StdQueryFactory implements IQueryFactory {
                                 + typeToken.getRawType().getName() + " do not match.");
                     }
 
-                    propertyAdapter = createPropertyAdapter(mutator, accessorEntry.getValue(), accessorEntry.getKey(),
-                            accessorType);
+                    propertyAdapter = createPropertyAdapter(mutator, accessorEntry.getValue(),
+                                                            accessorEntry.getKey(), accessorType);
 
                     if (!retAdapters.contains(propertyAdapter)) {
                         retAdapters.add(propertyAdapter);
@@ -417,8 +420,8 @@ public class StdQueryFactory implements IQueryFactory {
 
                 return ctr.newInstance(params);
 
-            } catch (final IllegalArgumentException | InstantiationException | IllegalAccessException
-                    | InvocationTargetException e) {
+            } catch (final IllegalArgumentException | InstantiationException |
+                           IllegalAccessException | InvocationTargetException e) {
                 throw couldNotInstanciateQuery(e);
             }
         }

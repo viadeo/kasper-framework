@@ -11,18 +11,18 @@ import java.util.*;
 public class QueryParser implements Iterable<QueryParser> {
 
     private class Scope {
-        private String _actualName;
-        private LinkedList<String> _actualValues;
+        private String actualName;
+        private LinkedList<String> actualValues;
 
-        public Scope(final String _actualName, final LinkedList<String> _actualValues) {
-            this._actualName = _actualName;
-            this._actualValues = _actualValues;
+        public Scope(final String actualName, final LinkedList<String> actualValues) {
+            this.actualName = actualName;
+            this.actualValues = actualValues;
         }
     }
 
-    private final Deque<Scope> _ctx = new ArrayDeque<>();
+    private final Deque<Scope> ctx = new ArrayDeque<>();
     private final Map<String, List<String>> queryMap;
-    private String _actualValue;
+    private String actualValue;
 
     // ------------------------------------------------------------------------
 
@@ -43,19 +43,19 @@ public class QueryParser implements Iterable<QueryParser> {
             throw new NoSuchElementException("No value found for key[" + key + "].");
         }
         if (values.size() == 1) {
-            _actualValue = values.get(0);
+            actualValue = values.get(0);
         }
-        _ctx.push(new Scope(key, new LinkedList<>(values)));
+        ctx.push(new Scope(key, new LinkedList<>(values)));
         queryMap.remove(key);
 
         return this;
     }
 
     public QueryParser end() {
-        if (_ctx.isEmpty()) {
+        if (ctx.isEmpty()) {
             throw new IllegalStateException("Invalid call of end without calling begin.");
         }
-        _ctx.pop();
+        ctx.pop();
         return this;
     }
 
@@ -65,37 +65,37 @@ public class QueryParser implements Iterable<QueryParser> {
 
     public String name() {
         _checkContextNotEmpty();
-        return _ctx.peek()._actualName;
+        return ctx.peek().actualName;
     }
 
     public String value() {
         _checkContextNotEmpty();
-        return _actualValue;
+        return actualValue;
     }
 
     public int intValue() {
         _checkContextNotEmpty();
-        return Integer.valueOf(_actualValue);
+        return Integer.valueOf(actualValue);
     }
 
     public double doubleValue() {
         _checkContextNotEmpty();
-        return Double.valueOf(_actualValue);
+        return Double.valueOf(actualValue);
     }
 
     public long longValue() {
         _checkContextNotEmpty();
-        return Long.valueOf(_actualValue);
+        return Long.valueOf(actualValue);
     }
 
     public boolean booleanValue() {
         _checkContextNotEmpty();
-        return Boolean.valueOf(_actualValue);
+        return Boolean.valueOf(actualValue);
     }
 
     public boolean hasNext() {
-        if (!_ctx.isEmpty()) {
-            return !_ctx.peek()._actualValues.isEmpty();
+        if (!ctx.isEmpty()) {
+            return !ctx.peek().actualValues.isEmpty();
         } else {
             return !queryMap.isEmpty();
         }
@@ -105,8 +105,8 @@ public class QueryParser implements Iterable<QueryParser> {
         if (!hasNext()) {
             throw new NoSuchElementException();
         }
-        if (!_ctx.isEmpty()) {
-            _actualValue = _ctx.peek()._actualValues.pop();
+        if (!ctx.isEmpty()) {
+            actualValue = ctx.peek().actualValues.pop();
         }
         // else {
         /*
@@ -119,7 +119,7 @@ public class QueryParser implements Iterable<QueryParser> {
     }
 
     private void _checkContextNotEmpty() {
-        if (_ctx.isEmpty()) {
+        if (ctx.isEmpty()) {
             throw new IllegalStateException("Call begin before trying to get a value.");
         }
     }
