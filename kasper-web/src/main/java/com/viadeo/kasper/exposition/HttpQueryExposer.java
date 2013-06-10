@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
@@ -21,8 +20,6 @@ import com.viadeo.kasper.query.exposition.ITypeAdapter;
 import com.viadeo.kasper.query.exposition.QueryFactoryBuilder;
 import com.viadeo.kasper.query.exposition.QueryParser;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;

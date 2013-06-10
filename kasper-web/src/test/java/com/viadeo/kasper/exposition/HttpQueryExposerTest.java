@@ -1,10 +1,5 @@
 package com.viadeo.kasper.exposition;
 
-import static org.junit.Assert.*;
-
-import org.junit.Test;
-import org.springframework.context.ApplicationContext;
-
 import com.viadeo.kasper.client.exceptions.KasperClientException;
 import com.viadeo.kasper.cqrs.query.IQuery;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
@@ -15,6 +10,11 @@ import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.ddd.impl.AbstractDomain;
 import com.viadeo.kasper.locators.IQueryServicesLocator;
 import com.viadeo.kasper.platform.IPlatform;
+import org.junit.Test;
+import org.springframework.context.ApplicationContext;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> {
 	

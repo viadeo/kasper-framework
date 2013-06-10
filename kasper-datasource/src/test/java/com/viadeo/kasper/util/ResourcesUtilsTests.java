@@ -7,27 +7,22 @@
 package com.viadeo.kasper.util;
 
 
-import java.io.File;
-import java.io.IOException;
-
+import com.viadeo.kasper.db.util.ResourcesUtils;
 import junit.framework.Assert;
-
-
-
 import org.junit.Test;
 
-import com.viadeo.kasper.ResourcesUtils;
-
-import static junit.framework.Assert.assertEquals;
+import java.io.File;
+import java.io.IOException;
 
 public class ResourcesUtilsTests {
 
     @Test
     public void findFileOnFileSystem() throws IOException {
         // Given
-    	ResourcesUtils res = new ResourcesUtils(); 
+    	final ResourcesUtils res = new ResourcesUtils();
+
         // When
-        File file = res.getFile("dispatcher.json");
+        final File file = res.getFile("dispatcher.json");
 
         // Then
         Assert.assertNotNull(file);
@@ -37,11 +32,11 @@ public class ResourcesUtilsTests {
     @Test  // : Currently disabled, need to add a jar file
     public void findFileInJar() throws IOException {
         // Given
-    	ResourcesUtils res = new ResourcesUtils();
+    	final ResourcesUtils res = new ResourcesUtils();
     	
         // When
     	// Be careful, trying to get file inside commons-dbcp-1.4.jar
-        File file = res.getFile("testpool.jocl");
+        final File file = res.getFile("testpool.jocl");
 
         // Then
         Assert.assertNotNull(file);
@@ -51,11 +46,11 @@ public class ResourcesUtilsTests {
     @Test  // : Currently disabled, need to add a jar file
     public void findFileInSudirectoryThroughClasspath() throws IOException {
         // Given
-    	ResourcesUtils res = new ResourcesUtils();
+    	final ResourcesUtils res = new ResourcesUtils();
     	
         // When
     	// Be careful, trying to get file inside commons-dbcp-1.4.jar
-        File file = res.getFile("com/kasper/file.json");
+        final File file = res.getFile("com/kasper/file.json");
 
         // Then
         Assert.assertNotNull(file);
@@ -65,14 +60,15 @@ public class ResourcesUtilsTests {
     @Test (expected=IOException.class)
     public void failedFileOnWindowsFileSystem() throws IOException {
         // Given
-    	ResourcesUtils res = new ResourcesUtils();
+    	final ResourcesUtils res = new ResourcesUtils();
     	
         // When
     	// Be careful, trying to get file inside junit.jar
-        File file = res.getFile("c:/dispatcher.json");
+        final File file = res.getFile("c:/dispatcher.json");
 
         // Then
         // Expect IOException
         Assert.assertNull(file);
     }
+
 }

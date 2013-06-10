@@ -4,70 +4,67 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package com.viadeo.kasper.db.util;
 
 import com.google.common.base.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.URL;
 
 public class ResourcesUtils {
-	/** The logger of this class. */
 	static final Logger LOGGER = LoggerFactory.getLogger(ResourcesUtils.class);
 
 	// let checked exception to let caller to decide what to do, ignoring error or throwing runtime exception
 	
-	public File getFile(String resourceName) throws IOException  {
+	public File getFile(final String resourceName) throws IOException  {
+
 		// Try opening resource
 		// Convert resourceName in URL mode
 		Strings.isNullOrEmpty(resourceName);
 
-		URL url = this.getClass().getClassLoader().getResource(resourceName);
-		if (url == null) {
+		final URL url = this.getClass().getClassLoader().getResource(resourceName);
+		if (null == url) {
 			throw new IOException("Unknown file or resource : Can't read " + resourceName);
 		}
-		String protocol = url.getProtocol();
+
+		final String protocol = url.getProtocol();
 		if (protocol.equals("file")) {
 			return new File(url.getFile());
 		}
-		// Else load stream (http, jar, ...);
-		try {
-			return getFileFromStream(url);
-		} catch (IOException e) {
-			// convert Exception type to removed catched exception
-			throw new IOException(e);
-		}
-		
-	}
-	
 
-	private File getFileFromStream(URL url) throws IOException {
+		// Else load stream (http, jar, ...);
+		return getFileFromStream(url);
+
+	}
+
+    // ------------------------------------------------------------------------
+
+	private File getFileFromStream(final URL url) throws IOException {
 
 		// Create a File object on file system to be able to use Viadeo library which currently accept only File resource as parameter
 		// If the file creation sentence is after the inputStream creation, need to explicitely close inputStream in a try-catch statment
 
 		// Retrieve the filename part (without protocol)
-		String urlAsString = url.toString();
+		final String urlAsString = url.toString();
+		final String fileName = urlAsString.substring(urlAsString.lastIndexOf('/') + 1, urlAsString.length());
 
-		String fileName = urlAsString.substring(urlAsString.lastIndexOf('/') + 1, urlAsString.length());
 		// Remove extension, no need
-		String fileNamePrefix = fileName.substring(0, fileName.lastIndexOf('.'));
+		final String fileNamePrefix = fileName.substring(0, fileName.lastIndexOf('.'));
 		// And use this filename part as prefix (dispatcher, datasource, proxy, ...)
 
 		File file = null;
 		try {
 			file = File.createTempFile(fileNamePrefix, ".tmp");
-		file.deleteOnExit();
-		} catch (IOException ioe) {
+		    file.deleteOnExit();
+		} catch (final IOException ioe) {
 			// Catch the exception to add more information before throwing it
             throw new IOException("Can't create tmp file, check directory right access or disk space usage", ioe);
 		}
 
-		InputStream inputStream = new URL(url.toString()).openStream();
-		if (inputStream == null) {
+		final InputStream inputStream = new URL(url.toString()).openStream();
+		if (null == inputStream) {
 			throw new IOException("Can't open temp file for handling stream as file" + url.toString());
 		}
 
@@ -85,15 +82,13 @@ public class ResourcesUtils {
 
 			out.flush();
 
-		} catch (IOException ioe) {
+		} catch (final IOException ioe) {
             LOGGER.error("Loading file failed at location : {}", urlAsString);
             throw new IOException(
                     "Can't create temporary file, check tmp directory or content of the file in the .jar library ["
                     + urlAsString + "]",
                     ioe);
-		}
-
-		finally {
+		} finally {
 			try {
 				inputStream.close();
 			}
@@ -103,6 +98,8 @@ public class ResourcesUtils {
 			}
 
 		}
+
 		return file;
 	}
+
 }
