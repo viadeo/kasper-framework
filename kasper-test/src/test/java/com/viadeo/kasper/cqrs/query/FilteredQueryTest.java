@@ -4,7 +4,6 @@ import com.viadeo.kasper.AbstractPlatformTests;
 import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.context.IContext;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
 import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryDQO;
@@ -44,7 +43,7 @@ public class FilteredQueryTest extends AbstractPlatformTests {
 			return "test";
 		}
 	}
-	
+
 	// "*Field" classes are public (so there is no gain in testing accessibility here)
 	public static final class TestField<DQO extends IQueryDQO<DQO>>
 			extends BaseQueryField<String, DQO> {}
@@ -78,9 +77,9 @@ public class FilteredQueryTest extends AbstractPlatformTests {
 	// ------------------------------------------------------------------------
 
 	@Test
-	public void test() throws KasperQueryException {
+	public void test() throws Exception {
 
-		// Given 
+		// Given
 		final TestQuery query = new TestQuery();
 		final TestDQO dqo = query.dqo();
 
