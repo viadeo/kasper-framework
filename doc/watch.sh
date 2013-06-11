@@ -1,7 +1,13 @@
 #!/bin/sh
 
 # CONFIGURATION
-DIR=$1
+if [ -z "$1" ]
+  then
+	DIR="."
+  else
+	DIR=$1
+fi
+
 EVENTS="modify,move,create,delete,delete_self"
 FIFO="/tmp/inotify2.fifo"
 
