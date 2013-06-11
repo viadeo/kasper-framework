@@ -101,7 +101,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * </ul>
  * </p>
  */
-public final class KasperClient {
+public class KasperClient {
 	private static final KasperClient DEFAULT_KASPER_CLIENT = new KasperClientBuilder().create();
 
 	private final Client client;
