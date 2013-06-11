@@ -1,6 +1,16 @@
 
+=========================
 Automated HTTP exposition
-====================
+=========================
+
+Kasper framework provides an exposition component allowing to automatically expose commands and queries.
+Actually it is an HTTP exposition exchanging JSON messages + standard HTTP Headers and implemented via Java Servlets and a mini library
+doing the databinding between query strings and query POJOS and vice versa. 
+
+
+-----
+Goals
+-----
 
 During the first iteration on implementing kasper queries, we had to implement by hand each resource exposing a query.
 
@@ -14,33 +24,81 @@ Those implementations had following disadvantages:
 Platform teams were spending precious time on doing all that, so to improve productivity and make everyones life easier we implemented all
 that exposition layer in kasper framework.
 
-Goals
------
-
  * Do all the work of exposing queries & commands by requiring 0 line of code from platform teams
  * Be easy to use on both platform and consumer side
  * Handle errors
  * Uniformize the communication
  * Be extensible in order to allow customization and extension/addition of new features.
 
-How it works
-------------
-Kasper framework provides an exposition component allowing to automatically expose commands and queries.
-Actually it is an HTTP exposition exchanging JSON messages + standard HTTP Headers and implemented via Java Servlets and a mini library
-doing the databinding between query strings and query POJOS and vice versa. 
-
+--------------
 Queries & DTOs
 --------------
-A query is submitted using à GET request, the parameters will be in the query string not in the body. This was the prefered way because we want to keep queries as simple as possible and we also think that using GET is handy with tools such as curl.
+A query is submitted using à GET request, the parameters will be in the query string not in the body. This was the prefered way because we want to keep queries as simple as possible and we also think that using GET is handy with tools such as curl. Of course it imposes restrictions on having flat/simple queries and limited query size. We will address those points if they become really required.
+
+To enable Query exposition register HttpQueryExposer servlet, it will then use the IQueryServicesLocator to locate each query service.
+
+Ex: suppose we have the following query, it will be available at host:port/someRootPath/getMemberMessages?memberId=999.
+
+.. code-block:: java
+
+  class GetMemberMessagesQuery implements IQuery {
+     int memberId;
+     Date startingFrom;
+
+     // getters & setters
+  }
+
+Query objects will be flattened by the framework to a query string, you should avoid having complex structures. The framework will use the getters and setters during serialization/deserialization. The framework also supports deserialization to objects that don't have a default no arg constructor (yay!) another handy feature :)
+
+We might also add later support of ser/deser based on fields (being able to mix methods and fields or juste use one or another).
 
 
-In case of an error a standard HTTP error code will be set with the 
+In case of an error a standard HTTP error code will be set with the reason for this error (you have it in the response body as json and in the headers).
+
+.. code-block:: json
 
    {
      "code": 404,
-     "reason": "Some error message."
+     "reason": "Some query was not found..."
    }
-::
 
-Commands
---------
+TypeAdapters
+++++++++++++
+Internally Kasper exposition layer uses what we call TypeAdapters, they allow to work parse/build queries from java types. By default we provide a set of such adapters for most common types (primitives, dates, etc). But you might need to define a custom TypeAdapter for types we do not handle yet (or just open an issue if it is a standard type).
+
+Lets start with a bit harder one, suppose you want to support URIs:
+
+.. code-block:: java
+
+  class URITypeAdapter implements ITypeAdapter<URI> {
+    @Override
+    public void adapt(URI value, QueryBuilder builder) {
+        builder.add(value.toString());
+    }
+
+    @Override
+    public URI adapt(QueryParser parser) throws Exception {
+	// consume current uri value (will not be available anymore in the parser
+        return new URI(parser.value());
+    }
+  }
+
+To make your TypeAdapter automatically discovered you can use Java service loader mechanism. Just **create a file named
+com.viadeo.kasper.query.exposition.ITypeAdatper in META-INF/services (must be exported in the final jar)** and write the full name of each custom typeadapter (one per line) com.viadeo.somepackage.URITypeAdapter. The framework will automatically detect it, this is the standard java mechanism used in order to provide spi mechanisms for JSR implementors.
+
+
+
+
+Complex Queries & BeanAdapters
+++++++++++++++++++++++++++++++++++++++++
+However if you really need a complex query, we provide a way to do so by using custom TypeAdapters/BeanAdapter. Consider you want to have some kind of filtering.
+
+.. code-block:: java
+
+  class SomeQuery implements IQuery {
+    List<Filter> filters;
+    String someField;
+  }
+
+
+
