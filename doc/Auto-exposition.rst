@@ -87,11 +87,12 @@ To make your TypeAdapter automatically discovered you can use Java service loade
 com.viadeo.kasper.query.exposition.ITypeAdatper in META-INF/services (must be exported in the final jar)** and write the full name of each custom typeadapter (one per line) com.viadeo.somepackage.URITypeAdapter. The framework will automatically detect it, this is the standard java mechanism used in order to provide spi mechanisms for JSR implementors.
 
 
+The framework will also handle null & missing values for you. During serialization you will never be called with a null value, and during deserialization you are sure that there is an actual value.
 
 
 Complex Queries & BeanAdapters
 ++++++++++++++++++++++++++++++++++++++++
-However if you really need a complex query, we provide a way to do so by using custom TypeAdapters/BeanAdapter. Consider you want to have some kind of filtering.
+If you need to support some complex query, we provide a way to do so by using custom BeanAdapters. Consider you want to have some kind of filtering.
 
 .. code-block:: java
 
@@ -100,5 +101,37 @@ However if you really need a complex query, we provide a way to do so by using c
     String someField;
   }
 
+  class Filter {
+    String key;
+    String value;
+  }
 
+Filter is not a standard type, but a POJO, we could handle it too, but it would encourage having complex queries. To support it you will have to create a custom BeanAdapter.
 
+.. code-block:: java
+
+  class ListOfFilterAdapter extends BeanAdapter<List<Filter>> {
+    @Override
+    public void adapt(List<Filter> filters, QueryBuilder builder, BeanProperty property) {
+    	for (Filter filter : filters) {
+	  builder.addSingle(property.getName()+"_"+filter.key, filter.name);
+	}
+    }
+
+    @Override
+    public List<Filter> adapt(QueryParser parser, BeanProperty property) {
+    	final String prefix = property.getName() + "_";
+	final List<Filter> list = new ArrayList<Filter>();
+	for (String name : parser.names()) {
+	    if (name.startsWith(prefix)) {
+	        parser.begin(name);
+	        list.add(new SomeBean(name.replace(prefix, ""), parser.value()));
+	        parser.end();
+	    }
+        }
+	
+        return list;
+    }
+  }
+
+Then to register it, use the same mechanism as for TypeAdapters, the only difference here is that you must put your adapter into a file named com.viadeo.kasper.query.exposition.BeanAdapter.
