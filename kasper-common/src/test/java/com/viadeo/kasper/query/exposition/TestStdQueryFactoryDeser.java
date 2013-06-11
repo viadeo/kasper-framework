@@ -35,7 +35,7 @@ public class TestStdQueryFactoryDeser {
     }
 
     @Test
-    public void testSimpleQueryDeserialization() {
+    public void testSimpleQueryDeserialization() throws Exception {
 
         // Given
         final ITypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
@@ -52,7 +52,7 @@ public class TestStdQueryFactoryDeser {
     }
 
     @Test
-    public void testComposedQuery() {
+    public void testComposedQuery() throws Exception {
 
         // Given
         final Map<String, List<String>> given = ImmutableMap.of("field", Arrays.asList("someValue"), "name",
@@ -70,7 +70,7 @@ public class TestStdQueryFactoryDeser {
     }
 
     @Test
-    public void testDeserializeWithMissingAndAdditionalFields() {
+    public void testDeserializeWithMissingAndAdditionalFields() throws Exception {
 
         // Given
         final ITypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
@@ -86,7 +86,7 @@ public class TestStdQueryFactoryDeser {
     }
 
     @Test
-    public void testDeserForComplexObjectWithCustomAdapter() {
+    public void testDeserForComplexObjectWithCustomAdapter() throws Exception {
         // needed when a custom typeadapter is registered and does not serialize to a literal
         // Given
         final IQueryFactory factory = new QueryFactoryBuilder().use(new SomeBeanAdapter()).create();

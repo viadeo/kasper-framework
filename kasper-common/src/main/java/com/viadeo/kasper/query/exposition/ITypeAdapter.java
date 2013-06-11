@@ -37,8 +37,8 @@ package com.viadeo.kasper.query.exposition;
  */
 public interface ITypeAdapter<T> {
 
-    void adapt(T value, QueryBuilder builder);
+    void adapt(T value, QueryBuilder builder) throws Exception;
     
-    T adapt(QueryParser parser);
+    T adapt(QueryParser parser) throws Exception;
 
 }

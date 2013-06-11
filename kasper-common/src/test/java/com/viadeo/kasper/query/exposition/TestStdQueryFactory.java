@@ -42,12 +42,12 @@ public class TestStdQueryFactory {
     // ------------------------------------------------------------------------
 
     @Test
-    public void testSkipNull() {
+    public void testSkipNull() throws Exception {
         new NullSafeTypeAdapter<>(create()).adapt(null, new QueryBuilder());
     }
 
     @Test(expected = IllegalArgumentException.class)
-    public void testWithoutSkipNull() {
+    public void testWithoutSkipNull() throws Exception {
         create().adapt(null, null);
     }
 
@@ -58,7 +58,7 @@ public class TestStdQueryFactory {
     }
 
     @Test
-    public void testCustomQueryAdapterOutput() {
+    public void testCustomQueryAdapterOutput() throws Exception {
 
         // Given
         final ITypeAdapter<SomeQuery> adapter = create();
@@ -71,7 +71,7 @@ public class TestStdQueryFactory {
     }
 
     @Test
-    public void testBeanQueryAdapterOutputWithPrimitiveIntAdapter() {
+    public void testBeanQueryAdapterOutputWithPrimitiveIntAdapter() throws Exception {
 
         // Given
         final ITypeAdapter<SomeQuery> adapter = new StdQueryFactory(
@@ -88,7 +88,7 @@ public class TestStdQueryFactory {
     }
 
     @Test
-    public void testQueryFactoryOutputWithCollectionAdapter() {
+    public void testQueryFactoryOutputWithCollectionAdapter() throws Exception {
 
         // Given
         final DateTime firstDate = new DateTime();
@@ -105,7 +105,7 @@ public class TestStdQueryFactory {
     }
 
     @Test
-    public void testCustomTypeAdapterFactoryWithDeepGenerics() {
+    public void testCustomTypeAdapterFactoryWithDeepGenerics() throws Exception {
 
         // Given
         final String key1 = "key1";
@@ -136,7 +136,7 @@ public class TestStdQueryFactory {
 
                 final ITypeAdapter<Map<String, List<DateTime>>> adapter = new ITypeAdapter<Map<String, List<DateTime>>>() {
                     @Override
-                    public void adapt(final Map<String, List<DateTime>> value, final QueryBuilder builder) {
+                    public void adapt(final Map<String, List<DateTime>> value, final QueryBuilder builder) throws Exception {
                         for (final Map.Entry<String, List<DateTime>> entry : value.entrySet()) {
                             builder.begin(entry.getKey());
                             dateTimeListAdapter.adapt(entry.getValue(), builder);

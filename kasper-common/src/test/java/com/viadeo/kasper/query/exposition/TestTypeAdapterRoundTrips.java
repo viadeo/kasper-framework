@@ -19,7 +19,7 @@ public class TestTypeAdapterRoundTrips {
 
 	private IQueryFactory factory = new QueryFactoryBuilder().create();
 	
-	@Test public void testQueryWithDefaultValues() {
+	@Test public void testQueryWithDefaultValues() throws Exception {
 	    final ITypeAdapter<QueryWithDefaultValue> adapter = factory.create(TypeToken.of(QueryWithDefaultValue.class));
 	    
 	    QueryWithDefaultValue query = adapter.adapt(new QueryParser(new HashMap<String, List<String>>()));
@@ -28,7 +28,7 @@ public class TestTypeAdapterRoundTrips {
 	}
 	
 	@Test
-    public void testQueryWithPrimitiveArray() {
+    public void testQueryWithPrimitiveArray() throws Exception {
 
         // Given
 		final PrimitiveArrayQuery expected = new PrimitiveArrayQuery();

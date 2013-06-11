@@ -54,7 +54,7 @@ class PropertyAdapter {
 
     // ------------------------------------------------------------------------
 
-    public void adapt(final Object bean, final QueryBuilder builder) {
+    public void adapt(final Object bean, final QueryBuilder builder) throws Exception {
         try {
             final Object value = accessor.invoke(bean);
             if (handleName) {
@@ -70,7 +70,7 @@ class PropertyAdapter {
         }
     }
 
-    public Object adapt(final QueryParser parser) {
+    public Object adapt(final QueryParser parser) throws Exception {
         final Class<?> rawClass = property.getTypeToken().getRawType();
 
         /*
