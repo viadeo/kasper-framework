@@ -36,8 +36,8 @@ public class KasperClientBuilder {
 
 	// ------------------------------------------------------------------------
 
-	public static final String DEFAULT_COMMAND_URL = "http://kasper-platform/kasper/command";
-	public static final String DEFAULT_QUERY_URL = "http://kasper-platform/kasper/query";
+	public static final String DEFAULT_COMMAND_URL = "http://localhost:8080/kasper/command";
+	public static final String DEFAULT_QUERY_URL = "http://localhost:8080/kasper/query";
 
 	// ------------------------------------------------------------------------
 
@@ -79,7 +79,24 @@ public class KasperClientBuilder {
 	}
 
 	// ------------------------------------------------------------------------
+	/**
+     * @param url of the base path to use for query submission.
+     * @return a reference to this builder.
+	 * @throws MalformedURLException 
+     */
+    public KasperClientBuilder queryBaseLocation(final String url) throws MalformedURLException {
+        return queryBaseLocation(new URL(checkNotNull(url)));
+    }
 
+    /**
+     * @param url of the base path to use for commands submission.
+     * @return a reference to this builder.
+     * @throws MalformedURLException 
+     */
+    public KasperClientBuilder commandBaseLocation(final String url) throws MalformedURLException {
+        return commandBaseLocation(new URL(checkNotNull(url)));
+    }
+	
     /**
      * @param url of the base path to use for query submission.
      * @return a reference to this builder.
