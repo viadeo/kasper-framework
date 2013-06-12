@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Kasper java client &mdash; Kasper framework 0.0.6-SNAPSHOT documentation</title>
+    <title>Kasper java client &mdash; Kasper framework 0.0.7-SNAPSHOT documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.0.6-SNAPSHOT',
+        VERSION:     '0.0.7-SNAPSHOT',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Kasper framework 0.0.6-SNAPSHOT documentation" href="index.html" />
+    <link rel="top" title="Kasper framework 0.0.7-SNAPSHOT documentation" href="index.html" />
     <link rel="prev" title="Automated documentation" href="Auto-documentation.html" /> 
   </head>
   <body>
@@ -38,7 +38,7 @@
         <li class="right" >
           <a href="Auto-documentation.html" title="Automated documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Kasper framework 0.0.6-SNAPSHOT documentation</a> &raquo;</li> 
+        <li><a href="index.html">Kasper framework 0.0.7-SNAPSHOT documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -48,7 +48,72 @@
           <div class="body">
             
   <div class="section" id="kasper-java-client">
-<h1>Kasper java client<a class="headerlink" href="#kasper-java-client" title="Permalink to this headline">¶</a></h1>
+<span id="id1"></span><h1>Kasper java client<a class="headerlink" href="#kasper-java-client" title="Permalink to this headline">¶</a></h1>
+<p>The idea behind the Kasper client library is to provide a very easy and powerful API to hit exposed Kasper implementations. This requires
+kasper implementations to share their Query and Commands code with JVM based consumers. This allows the library to only require one liner code
+taking as arguments populated queries and commands (basic POJOs), the library takes care of all the ser/deser stuff, error handling,
+asynchronous calls and more.</p>
+<p>, they share some common code in order to ensure
+that the way in which the communication is done is symetric (ex: what can be serialized can also be deserialized). For example all the databinding
+part for query is shared between kasper-client and kasper-web.</p>
+<div class="admonition-see-also admonition seealso">
+<p class="first admonition-title">See also</p>
+<p>This library works with the <em class="xref std std-ref">Automated_HTTP_exposition</em> component enabled on the server side,
+you must enable it in order to be able to communicate.</p>
+<p class="last">Kasper http exposition and Kasper client share some common code (<a class="reference internal" href="Auto-exposition.html#typeadapters"><em>TypeAdapters</em></a> and jackson configuration), to ensure that the way in which the communication
+is done is symetric (ex: what can be serialized can also be deserialized).</p>
+</div>
+<p>The main entry point of the library is KasperClient class, it provides all the required methods to communicate with exposed Kasper implementations.
+KasperClient is thread safe and should be reused for optimal performances.</p>
+<p>Sending a query is as simple as :</p>
+<div class="highlight-java"><div class="highlight"><pre><span class="n">KasperClient</span> <span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KasperClient</span><span class="o">();</span>
+<span class="n">SuperCoolDTO</span> <span class="n">dto</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">query</span><span class="o">(</span><span class="k">new</span> <span class="n">SuperCoolQuery</span><span class="o">(</span><span class="s">&quot;what&#39;s up?&quot;</span><span class="o">),</span> <span class="n">SuperCoolDTO</span><span class="o">.</span><span class="na">class</span><span class="o">);</span>
+</pre></div>
+</div>
+<p>Hard to make it shorter! :)</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p>By default KasperClient is configured to hit queries at <a class="reference external" href="http://localhost:8080/query/">http://localhost:8080/query/</a> and commands at <a class="reference external" href="http://localhost:8080/command">http://localhost:8080/command</a>. Of course this can be configured using KasperClientBuilder.</p>
+<div class="last highlight-java"><div class="highlight"><pre><span class="n">KasperClient</span> <span class="n">client</span> <span class="o">=</span> <span class="k">new</span> <span class="n">KasperClientBuilder</span><span class="o">()</span>
+                        <span class="o">.</span><span class="na">queryBaseLocation</span><span class="o">(</span><span class="s">&quot;http://kasper-platform/query&quot;</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">commandBaseLocation</span><span class="o">(</span><span class="s">&quot;http://kasper-platform/query&quot;</span><span class="o">)</span>
+                        <span class="o">.</span><span class="na">create</span><span class="o">();</span>
+</pre></div>
+</div>
+</div>
+<p><strong>Get it</strong></p>
+<div class="highlight-code"><pre>Gradle :
+   'com.viadeo.kasper:kasper-client:KASPER_LATEST_VERSION'
+
+Maven:
+   &lt;dependency&gt;
+      &lt;groupId&gt;com.viadeo.kasper&lt;/groupId&gt;
+      &lt;artifactId&gt;kasper-client&lt;/artifactId&gt;
+      &lt;version&gt;KASPER_LATEST_VERSION&lt;/version&gt;
+   &lt;/dependency&gt;</pre>
+</div>
+<div class="section" id="asynchronous-queries-commands">
+<h2>Asynchronous queries &amp; commands<a class="headerlink" href="#asynchronous-queries-commands" title="Permalink to this headline">¶</a></h2>
+<p>Kasper client provides two ways of doing asynchronous operations, using Futures and Callbacks.</p>
+<div class="highlight-java"><div class="highlight"><pre><span class="n">client</span><span class="o">.</span><span class="na">sendAsync</span><span class="o">(</span><span class="n">someCommand</span><span class="o">,</span> <span class="k">new</span> <span class="n">ICallback</span><span class="o">&lt;</span><span class="n">ICommandResult</span><span class="o">&gt;()</span> <span class="o">{</span>
+    <span class="kd">public</span> <span class="kt">void</span> <span class="nf">done</span><span class="o">(</span><span class="n">ICommandResult</span> <span class="n">result</span><span class="o">)</span> <span class="o">{</span>
+        <span class="c1">// do something smart with my result</span>
+    <span class="o">}</span>
+<span class="o">});</span>
+
+<span class="c1">// or using a future</span>
+
+<span class="n">Future</span><span class="o">&lt;</span><span class="n">ICommandResult</span><span class="o">&gt;</span> <span class="n">futureCommandResult</span> <span class="o">=</span> <span class="n">client</span><span class="o">.</span><span class="na">sendAsync</span><span class="o">(</span><span class="n">someCommand</span><span class="o">);</span>
+
+<span class="c1">// do some other work while the command is being processed</span>
+<span class="o">...</span>
+
+<span class="c1">// block until the result is obtained</span>
+<span class="n">ICommandResult</span> <span class="n">commandResult</span> <span class="o">=</span> <span class="n">futureCommandResult</span><span class="o">.</span><span class="na">get</span><span class="o">();</span>
+</pre></div>
+</div>
+<p>In most cases you will prefer using Future.</p>
+</div>
 </div>
 
 
@@ -60,6 +125,14 @@
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/kasper-logo.png" alt="Logo"/>
             </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Kasper java client</a><ul>
+<li><a class="reference internal" href="#asynchronous-queries-commands">Asynchronous queries &amp; commands</a></li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="Auto-documentation.html"
                         title="previous chapter">Automated documentation</a></p>
@@ -94,7 +167,7 @@
         <li class="right" >
           <a href="Auto-documentation.html" title="Automated documentation"
              >previous</a> |</li>
-        <li><a href="index.html">Kasper framework 0.0.6-SNAPSHOT documentation</a> &raquo;</li> 
+        <li><a href="index.html">Kasper framework 0.0.7-SNAPSHOT documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

@@ -8,7 +8,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Automated exposition &mdash; Kasper framework 0.0.6-SNAPSHOT documentation</title>
+    <title>Automated HTTP exposition &mdash; Kasper framework 0.0.7-SNAPSHOT documentation</title>
     
     <link rel="stylesheet" href="_static/default.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -16,7 +16,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.0.6-SNAPSHOT',
+        VERSION:     '0.0.7-SNAPSHOT',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -25,7 +25,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="Kasper framework 0.0.6-SNAPSHOT documentation" href="index.html" />
+    <link rel="top" title="Kasper framework 0.0.7-SNAPSHOT documentation" href="index.html" />
     <link rel="next" title="Automated documentation" href="Auto-documentation.html" />
     <link rel="prev" title="CQRS: Queries" href="Develop with Kasper/Queries.html" /> 
   </head>
@@ -42,7 +42,7 @@
         <li class="right" >
           <a href="Develop with Kasper/Queries.html" title="CQRS: Queries"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">Kasper framework 0.0.6-SNAPSHOT documentation</a> &raquo;</li> 
+        <li><a href="index.html">Kasper framework 0.0.7-SNAPSHOT documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -51,8 +51,150 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="automated-exposition">
-<h1>Automated exposition<a class="headerlink" href="#automated-exposition" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="automated-http-exposition">
+<span id="id1"></span><h1>Automated HTTP exposition<a class="headerlink" href="#automated-http-exposition" title="Permalink to this headline">¶</a></h1>
+<p>Kasper framework provides an exposition component allowing to automatically expose commands and queries.
+Actually it is an HTTP exposition exchanging JSON messages + standard HTTP Headers and implemented via Java Servlets and a
+databinding component mapping query strings and query POJOS.</p>
+<p><strong>Get it</strong>:</p>
+<div class="highlight-gradle"><pre>Gradle :
+   'com.viadeo.kasper:kasper-web:KASPER_LATEST_VERSION'
+
+Maven:
+   &lt;dependency&gt;
+      &lt;groupId&gt;com.viadeo.kasper&lt;/groupId&gt;
+      &lt;artifactId&gt;kasper-web&lt;/artifactId&gt;
+      &lt;version&gt;KASPER_LATEST_VERSION&lt;/version&gt;
+   &lt;/dependency&gt;</pre>
+</div>
+<div class="section" id="goals">
+<h2>Goals<a class="headerlink" href="#goals" title="Permalink to this headline">¶</a></h2>
+<p>During the first iteration on implementing kasper queries, we had to implement by hand each resource exposing a query.</p>
+<p>Those implementations had following disadvantages:</p>
+<blockquote>
+<div><ul class="simple">
+<li>varying from team to team, thus being harder to use from a consumer perspective</li>
+<li>a great portion of code was just boilerplate</li>
+<li>decreased productivity as all the communication/exchange format had to be reimplemented for each new resource</li>
+<li>no error handling</li>
+</ul>
+</div></blockquote>
+<p>Platform teams were spending precious time on doing all that, so to improve productivity and make everyones life
+easier we implemented all that exposition layer in kasper framework.</p>
+<blockquote>
+<div><ul class="simple">
+<li>Do all the work of exposing queries &amp; commands by requiring 0 line of code from platform teams</li>
+<li>Be easy to use on both platform and consumer side</li>
+<li>Handle errors</li>
+<li>Uniformize the communication</li>
+<li>Be extensible in order to allow customization and extension/addition of new features.</li>
+</ul>
+</div></blockquote>
+</div>
+<div class="section" id="queries-dtos">
+<h2>Queries &amp; DTOs<a class="headerlink" href="#queries-dtos" title="Permalink to this headline">¶</a></h2>
+<p>A query is submitted using à GET request, the parameters will be in the query string not in the body.
+This was the prefered way because we want to keep queries as simple as possible and we also think that using GET
+is handy with tools such as curl. Of course it imposes restrictions on having flat/simple queries and limited query size.
+We will address those points if they become really required.</p>
+<p>To enable Query exposition register HttpQueryExposer servlet, it will then use the IQueryServicesLocator to locate each query service.</p>
+<p>Ex: suppose we have the following query, it will be <strong>available at host:port/someRootPath/getMemberMessages?memberId=999</strong>.</p>
+<div class="highlight-java"><div class="highlight"><pre><span class="kd">class</span> <span class="nc">GetMemberMessagesQuery</span> <span class="kd">implements</span> <span class="n">IQuery</span> <span class="o">{</span>
+   <span class="kt">int</span> <span class="n">memberId</span><span class="o">;</span>
+   <span class="n">Date</span> <span class="n">startingFrom</span><span class="o">;</span>
+
+   <span class="c1">// getters &amp; setters</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Query objects will be flattened by the framework to a query string, you should <strong>avoid having complex structures</strong>.
+The framework will use the getters and setters during serialization/deserialization.
+The framework also <strong>supports deserialization to objects that don&#8217;t have a default no arg constructor</strong> (yay!) another handy feature :)</p>
+<p>We might also add later support of ser/deser based on fields (being able to mix methods and fields or juste use one or another).</p>
+<p>In case of an error a standard HTTP error code will be set with the reason for this error
+(you have it in the response body as json and in the headers).</p>
+<div class="highlight-json"><div class="highlight"><pre><span class="p">{</span>
+  <span class="nt">&quot;code&quot;</span><span class="p">:</span> <span class="mi">404</span><span class="p">,</span>
+  <span class="nt">&quot;reason&quot;</span><span class="p">:</span> <span class="s2">&quot;Some query was not found...&quot;</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>In case of a success a DTO will be returned serialized to json, this is done with Jackson. That allows you to use standard Jackson
+annotations on your DTOs (if you want to use constructors with args for exemple).</p>
+<div class="section" id="typeadapters">
+<span id="id2"></span><h3>TypeAdapters<a class="headerlink" href="#typeadapters" title="Permalink to this headline">¶</a></h3>
+<p>Internally Kasper exposition layer uses what we call TypeAdapters, they allow to work parse/build queries from java types.
+By default we provide a set of such adapters for most common types (primitives, dates, etc).
+But you might need to define a custom TypeAdapter for types we do not handle yet (or just open an issue if it is a standard type so we add it).</p>
+<p>Suppose you want to support URIs but there is no default adapter for this type:</p>
+<div class="highlight-java"><div class="highlight"><pre><span class="kd">class</span> <span class="nc">URITypeAdapter</span> <span class="kd">implements</span> <span class="n">ITypeAdapter</span><span class="o">&lt;</span><span class="n">URI</span><span class="o">&gt;</span> <span class="o">{</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">adapt</span><span class="o">(</span><span class="n">URI</span> <span class="n">value</span><span class="o">,</span> <span class="n">QueryBuilder</span> <span class="n">builder</span><span class="o">)</span> <span class="o">{</span>
+      <span class="n">builder</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="n">value</span><span class="o">.</span><span class="na">toString</span><span class="o">());</span>
+  <span class="o">}</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="n">URI</span> <span class="nf">adapt</span><span class="o">(</span><span class="n">QueryParser</span> <span class="n">parser</span><span class="o">)</span> <span class="kd">throws</span> <span class="n">Exception</span> <span class="o">{</span>
+      <span class="c1">// consume current uri value (will not be available anymore in the parser</span>
+      <span class="k">return</span> <span class="k">new</span> <span class="nf">URI</span><span class="o">(</span><span class="n">parser</span><span class="o">.</span><span class="na">value</span><span class="o">());</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>To make your TypeAdapter automatically discovered you can use Java service loader mechanism. Just <strong>create a file named
+com.viadeo.kasper.query.exposition.ITypeAdatper in META-INF/services (must be exported in the final jar)</strong>
+and write the full name of each custom typeadapter (one per line) com.viadeo.somepackage.URITypeAdapter.
+The framework will automatically detect it, this is the standard java mechanism used in order to provide spi
+mechanisms for JSR implementors.</p>
+<p>The framework will also handle null &amp; missing values for you.
+During serialization you will never be called with a null value, and during deserialization you are sure that there is an actual value.</p>
+</div>
+<div class="section" id="complex-queries-beanadapters">
+<h3>Complex Queries &amp; BeanAdapters<a class="headerlink" href="#complex-queries-beanadapters" title="Permalink to this headline">¶</a></h3>
+<p>If you need to support some complex query, we provide a way to do so by using custom BeanAdapters.
+Consider you want to have some kind of filtering.</p>
+<div class="highlight-java"><div class="highlight"><pre><span class="kd">class</span> <span class="nc">SomeQuery</span> <span class="kd">implements</span> <span class="n">IQuery</span> <span class="o">{</span>
+  <span class="n">List</span><span class="o">&lt;</span><span class="n">Filter</span><span class="o">&gt;</span> <span class="n">filters</span><span class="o">;</span>
+  <span class="n">String</span> <span class="n">someField</span><span class="o">;</span>
+<span class="o">}</span>
+
+<span class="kd">class</span> <span class="nc">Filter</span> <span class="o">{</span>
+  <span class="n">String</span> <span class="n">key</span><span class="o">;</span>
+  <span class="n">String</span> <span class="n">value</span><span class="o">;</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Filter is not a standard type, but a POJO, we could handle it too, but it would encourage having complex queries.
+To support it you will have to create a custom BeanAdapter.</p>
+<div class="highlight-java"><div class="highlight"><pre><span class="kd">class</span> <span class="nc">ListOfFilterAdapter</span> <span class="kd">extends</span> <span class="n">BeanAdapter</span><span class="o">&lt;</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Filter</span><span class="o">&gt;&gt;</span> <span class="o">{</span>
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="kt">void</span> <span class="nf">adapt</span><span class="o">(</span><span class="n">List</span><span class="o">&lt;</span><span class="n">Filter</span><span class="o">&gt;</span> <span class="n">filters</span><span class="o">,</span> <span class="n">QueryBuilder</span> <span class="n">builder</span><span class="o">,</span> <span class="n">BeanProperty</span> <span class="n">property</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">for</span> <span class="o">(</span><span class="n">Filter</span> <span class="n">filter</span> <span class="o">:</span> <span class="n">filters</span><span class="o">)</span> <span class="o">{</span>
+       <span class="n">builder</span><span class="o">.</span><span class="na">addSingle</span><span class="o">(</span><span class="n">property</span><span class="o">.</span><span class="na">getName</span><span class="o">()+</span><span class="s">&quot;_&quot;</span><span class="o">+</span><span class="n">filter</span><span class="o">.</span><span class="na">key</span><span class="o">,</span> <span class="n">filter</span><span class="o">.</span><span class="na">value</span><span class="o">);</span>
+    <span class="o">}</span>
+  <span class="o">}</span>
+
+  <span class="nd">@Override</span>
+  <span class="kd">public</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Filter</span><span class="o">&gt;</span> <span class="nf">adapt</span><span class="o">(</span><span class="n">QueryParser</span> <span class="n">parser</span><span class="o">,</span> <span class="n">BeanProperty</span> <span class="n">property</span><span class="o">)</span> <span class="o">{</span>
+    <span class="kd">final</span> <span class="n">String</span> <span class="n">prefix</span> <span class="o">=</span> <span class="n">property</span><span class="o">.</span><span class="na">getName</span><span class="o">()</span> <span class="o">+</span> <span class="s">&quot;_&quot;</span><span class="o">;</span>
+    <span class="kd">final</span> <span class="n">List</span><span class="o">&lt;</span><span class="n">Filter</span><span class="o">&gt;</span> <span class="n">list</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ArrayList</span><span class="o">&lt;</span><span class="n">Filter</span><span class="o">&gt;();</span>
+    <span class="k">for</span> <span class="o">(</span><span class="n">String</span> <span class="n">name</span> <span class="o">:</span> <span class="n">parser</span><span class="o">.</span><span class="na">names</span><span class="o">())</span> <span class="o">{</span>
+       <span class="k">if</span> <span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">startsWith</span><span class="o">(</span><span class="n">prefix</span><span class="o">))</span> <span class="o">{</span>
+          <span class="n">parser</span><span class="o">.</span><span class="na">begin</span><span class="o">(</span><span class="n">name</span><span class="o">);</span>
+          <span class="n">list</span><span class="o">.</span><span class="na">add</span><span class="o">(</span><span class="k">new</span> <span class="n">Filter</span><span class="o">(</span><span class="n">name</span><span class="o">.</span><span class="na">replace</span><span class="o">(</span><span class="n">prefix</span><span class="o">,</span> <span class="s">&quot;&quot;</span><span class="o">),</span> <span class="n">parser</span><span class="o">.</span><span class="na">value</span><span class="o">()));</span>
+          <span class="n">parser</span><span class="o">.</span><span class="na">end</span><span class="o">();</span>
+       <span class="o">}</span>
+    <span class="o">}</span>
+
+    <span class="k">return</span> <span class="n">list</span><span class="o">;</span>
+  <span class="o">}</span>
+<span class="o">}</span>
+</pre></div>
+</div>
+<p>Then to register it, use the same mechanism as for TypeAdapters, the only difference here is that you must
+put your adapter into a file named com.viadeo.kasper.query.exposition.BeanAdapter.</p>
+</div>
+</div>
 </div>
 
 
@@ -64,6 +206,19 @@
             <p class="logo"><a href="index.html">
               <img class="logo" src="_static/kasper-logo.png" alt="Logo"/>
             </a></p>
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Automated HTTP exposition</a><ul>
+<li><a class="reference internal" href="#goals">Goals</a></li>
+<li><a class="reference internal" href="#queries-dtos">Queries &amp; DTOs</a><ul>
+<li><a class="reference internal" href="#typeadapters">TypeAdapters</a></li>
+<li><a class="reference internal" href="#complex-queries-beanadapters">Complex Queries &amp; BeanAdapters</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
   <h4>Previous topic</h4>
   <p class="topless"><a href="Develop with Kasper/Queries.html"
                         title="previous chapter">CQRS: Queries</a></p>
@@ -104,7 +259,7 @@
         <li class="right" >
           <a href="Develop with Kasper/Queries.html" title="CQRS: Queries"
              >previous</a> |</li>
-        <li><a href="index.html">Kasper framework 0.0.6-SNAPSHOT documentation</a> &raquo;</li> 
+        <li><a href="index.html">Kasper framework 0.0.7-SNAPSHOT documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
