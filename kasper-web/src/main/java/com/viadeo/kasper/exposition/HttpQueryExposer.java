@@ -200,7 +200,10 @@ public class HttpQueryExposer extends HttpExposer {
         final Class<? super IQuery> queryClass = (Class<? super IQuery>) typeToken.getSupertype(IQueryService.class)
                 .resolveType(IQueryService.class.getTypeParameters()[0]).getRawType();
 
-        putKey(queryToPath(queryClass), queryClass, exposedQueries);
+        final String queryPath = queryToPath(queryClass);
+        LOGGER.info("Exposing query[{}] at path[/{}]", queryClass.getSimpleName(), getServletContext().getContextPath()
+                + queryPath);
+        putKey(queryPath, queryClass, exposedQueries);
 
         return this;
     }

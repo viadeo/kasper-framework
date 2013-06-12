@@ -219,7 +219,10 @@ public class HttpCommandExposer extends HttpExposer {
         final Class<? super ICommand> commandClass = (Class<? super ICommand>) typeToken
                 .getSupertype(ICommandHandler.class).resolveType(ICommandHandler.class.getTypeParameters()[0])
                 .getRawType();
-        putKey(commandToPath(commandClass), commandClass, exposedCommands);
+        final String commandPath = commandToPath(commandClass);
+        LOGGER.info("Exposing command[{}] at path[/{}]", commandClass.getSimpleName(), getServletContext().getContextPath()
+                + commandPath);
+        putKey(commandPath, commandClass, exposedCommands);
         return this;
     }
 
