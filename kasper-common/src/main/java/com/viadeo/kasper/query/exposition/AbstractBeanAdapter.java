@@ -6,7 +6,7 @@ package com.viadeo.kasper.query.exposition;
 */
 public abstract class AbstractBeanAdapter<T> {
 
-    public abstract void adapt(T value, QueryBuilder builder, BeanProperty property);
+    public abstract void adapt(T value, QueryBuilder builder, BeanProperty property) throws Exception;
 
-    public abstract T adapt(QueryParser parser, BeanProperty property);
+    public abstract T adapt(QueryParser parser, BeanProperty property) throws Exception;
 }

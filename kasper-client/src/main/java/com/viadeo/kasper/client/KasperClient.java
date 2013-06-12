@@ -428,7 +428,9 @@ public class KasperClient {
 
 		} catch (KasperQueryAdapterException ex) {
 			throw new KasperClientException(ex);
-		}
+		} catch (Exception ex) {
+		    throw new KasperClientException(ex);
+        }
 	}
 
 	// ------------------------------------------------------------------------

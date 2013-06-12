@@ -1,5 +1,0 @@
-
-Automated documentation
-=======================
-
-

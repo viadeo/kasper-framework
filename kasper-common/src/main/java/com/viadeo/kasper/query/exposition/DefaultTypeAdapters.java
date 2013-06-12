@@ -187,7 +187,7 @@ public final class DefaultTypeAdapters {
 		}
 
 		@Override
-		public void adapt(final Object array, final QueryBuilder builder) {
+		public void adapt(final Object array, final QueryBuilder builder) throws Exception {
 			final int len = Array.getLength(array);
 
 			for (int i = 0; i < len; i++) {
@@ -197,7 +197,7 @@ public final class DefaultTypeAdapters {
 		}
 
 		@Override
-		public Object adapt(final QueryParser parser) {
+		public Object adapt(final QueryParser parser) throws Exception {
 			int size = 10;
 			Object array = Array.newInstance(componentClass, size);
 			int idx = 0;
@@ -260,13 +260,13 @@ public final class DefaultTypeAdapters {
 		}
 
 		@Override
-		public void adapt(final Collection<E> value, final QueryBuilder builder) {
+		public void adapt(final Collection<E> value, final QueryBuilder builder) throws Exception {
 			for (final E element : value) {
 				elementAdapter.adapt(element, builder);
 			}
 		}
 
-		public Collection<E> adapt(final QueryParser parser) {
+		public Collection<E> adapt(final QueryParser parser) throws Exception {
 			final List<E> listOfE = new ArrayList<>();
 			for (final QueryParser next : parser) {
 				listOfE.add(elementAdapter.adapt(next));

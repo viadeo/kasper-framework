@@ -388,14 +388,14 @@ public class AbstractQueryFactory implements IQueryFactory {
         }
 
         @Override
-        public void adapt(final IQuery value, final QueryBuilder builder) {
+        public void adapt(final IQuery value, final QueryBuilder builder) throws Exception {
             for (final PropertyAdapter adapter : adapters) {
                 adapter.adapt(value, builder);
             }
         }
 
         @Override
-        public IQuery adapt(final QueryParser parser) {
+        public IQuery adapt(final QueryParser parser) throws Exception {
             final Object[] ctrParams = new Object[queryCtr.parameters.size()];
             final List<Pair<PropertyAdapter, Object>> valuesToSet = new ArrayList<>();
 
@@ -495,12 +495,12 @@ public class AbstractQueryFactory implements IQueryFactory {
         }
 
         @Override
-        public void adapt(T value, QueryBuilder builder) {
+        public void adapt(T value, QueryBuilder builder) throws Exception {
             adapter.adapt(value, builder, property);
         }
 
         @Override
-        public T adapt(QueryParser parser) {
+        public T adapt(QueryParser parser) throws Exception {
             return adapter.adapt(parser, property);
         }
     }
