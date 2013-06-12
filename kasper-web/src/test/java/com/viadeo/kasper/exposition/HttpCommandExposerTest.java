@@ -79,24 +79,18 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 	
 	public static class CreateAccountCommand implements ICommand {
 		private static final long serialVersionUID = 674842094873929150L;
+
 		private String name;
 		private boolean throwException;
 
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
+        public String getName() {
+            return this.name;
+        }
 
         public boolean isThrowException() {
             return throwException;
         }
 
-        public void setThrowException(boolean throwException) {
-            this.throwException = throwException;
-        }
 	}
 
     // ------------------------------------------------------------------------

@@ -4,7 +4,7 @@ package com.viadeo.kasper.query.exposition;
 * is responsible of ser/deser complex objects and use (if needed) contextual information
 * provided via BeanProperty. If someone has a better name I want to hear it :)
 */
-public abstract class BeanAdapter<T> {
+public abstract class AbstractBeanAdapter<T> {
 
     public abstract void adapt(T value, QueryBuilder builder, BeanProperty property) throws Exception;
 

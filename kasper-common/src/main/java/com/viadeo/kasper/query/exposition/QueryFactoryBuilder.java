@@ -23,7 +23,7 @@ import static com.viadeo.kasper.query.exposition.NullSafeTypeAdapter.nullSafe;
 
 public class QueryFactoryBuilder {
 	private ConcurrentMap<Type, ITypeAdapter<?>> adapters = Maps.newConcurrentMap();
-	private ConcurrentMap<Type, BeanAdapter<?>> beanAdapters = Maps.newConcurrentMap();
+	private ConcurrentMap<Type, AbstractBeanAdapter<?>> beanAdapters = Maps.newConcurrentMap();
 	private List<ITypeAdapterFactory<?>> factories = Lists.newArrayList();
 	private VisibilityFilter visibilityFilter = VisibilityFilter.PACKAGE_PUBLIC;
 
@@ -48,12 +48,12 @@ public class QueryFactoryBuilder {
 		return this;
 	}
 	
-	public QueryFactoryBuilder use(final BeanAdapter<?> beanAdapter) {
+	public QueryFactoryBuilder use(final AbstractBeanAdapter<?> beanAdapter) {
 	    checkNotNull(beanAdapter);
 	    
 	    final TypeToken<?> adapterForType = TypeToken.of(beanAdapter.getClass())
-                .getSupertype(BeanAdapter.class)
-                .resolveType(BeanAdapter.class.getTypeParameters()[0]);
+                .getSupertype(AbstractBeanAdapter.class)
+                .resolveType(AbstractBeanAdapter.class.getTypeParameters()[0]);
 
         beanAdapters.putIfAbsent(adapterForType.getType(), beanAdapter);
 
@@ -70,7 +70,7 @@ public class QueryFactoryBuilder {
 			use(adapter);
         }
 		
-		for (BeanAdapter<?> beanAdapter : loadServices(BeanAdapter.class)) {
+		for (AbstractBeanAdapter<?> beanAdapter : loadServices(AbstractBeanAdapter.class)) {
             use(beanAdapter);
         }
 		
@@ -99,7 +99,7 @@ public class QueryFactoryBuilder {
 		factories.add(DefaultTypeAdapters.ARRAY_ADAPTER_FACTORY);
 		factories.add(DefaultTypeAdapters.ENUM_ADAPTER_FACTORY);
 
-		return new StdQueryFactory(adapters, beanAdapters, factories, visibilityFilter);
+		return new AbstractQueryFactory(adapters, beanAdapters, factories, visibilityFilter);
 	}
 	
 	@VisibleForTesting

@@ -32,7 +32,7 @@ package com.viadeo.kasper.query.exposition;
  * 
  * @param <T> the type of object this adapter is dealing with.
  * 
- * @see StdQueryFactory
+ * @see AbstractQueryFactory
  * @see ITypeAdapterFactory
  */
 public interface ITypeAdapter<T> {
