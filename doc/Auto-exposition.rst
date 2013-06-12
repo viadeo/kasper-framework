@@ -1,4 +1,6 @@
 
+..  _Automated_HTTP_exposition:
+
 =========================
 Automated HTTP exposition
 =========================
@@ -44,9 +46,9 @@ easier we implemented all that exposition layer in kasper framework.
  * Uniformize the communication
  * Be extensible in order to allow customization and extension/addition of new features.
 
--------
-Queries
--------
+--------------
+Queries & DTOs
+--------------
 A query is submitted using à GET request, the parameters will be in the query string not in the body. 
 This was the prefered way because we want to keep queries as simple as possible and we also think that using GET 
 is handy with tools such as curl. Of course it imposes restrictions on having flat/simple queries and limited query size. 
@@ -81,6 +83,11 @@ In case of an error a standard HTTP error code will be set with the reason for t
      "code": 404,
      "reason": "Some query was not found..."
    }
+
+In case of a success a DTO will be returned serialized to json, this is done with Jackson. That allows you to use standard Jackson
+annotations on your DTOs (if you want to use constructors with args for exemple). 
+
+..  _TypeAdapters:
 
 TypeAdapters
 ++++++++++++
