@@ -22,7 +22,7 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 public class TestStdQueryFactoryDeser {
-    private StdQueryFactory factory;
+    private AbstractQueryFactory factory;
 
     @Before
     public void setUp() {
@@ -30,7 +30,7 @@ public class TestStdQueryFactoryDeser {
         adapters.put(String.class, DefaultTypeAdapters.STRING_ADAPTER);
         adapters.put(int.class, DefaultTypeAdapters.INT_ADAPTER);
 
-        factory = new StdQueryFactory(adapters, ImmutableMap.<Type, BeanAdapter<?>> of(),
+        factory = new AbstractQueryFactory(adapters, ImmutableMap.<Type, AbstractBeanAdapter<?>> of(),
                 Arrays.asList(DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY), VisibilityFilter.PACKAGE_PUBLIC);
     }
 
@@ -135,7 +135,7 @@ public class TestStdQueryFactoryDeser {
 
     // ------------------------------------------------------------------------
 
-    public static class SomeBeanAdapter extends BeanAdapter<List<SomeBean>> {
+    public static class SomeBeanAdapter extends AbstractBeanAdapter<List<SomeBean>> {
 
         @Override
         public void adapt(List<SomeBean> value, QueryBuilder builder, BeanProperty property) {

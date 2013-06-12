@@ -33,7 +33,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see ITypeAdapter
  * @see ITypeAdapterFactory
  */
-public class StdQueryFactory implements IQueryFactory {
+public class AbstractQueryFactory implements IQueryFactory {
 
     private static final String PREFIX_METHOD_IS = "is";
     private static final int PREFIX_METHOD_IS_LEN = 2;
@@ -51,7 +51,7 @@ public class StdQueryFactory implements IQueryFactory {
     };
 
     private final ConcurrentMap<Type, ITypeAdapter<?>> adapters;
-    private final Map<Type, BeanAdapter<?>> beanAdapters;
+    private final Map<Type, AbstractBeanAdapter<?>> beanAdapters;
     private final List<ITypeAdapterFactory<?>> factories;
 
     private final VisibilityFilter visibilityFilter;
@@ -64,10 +64,10 @@ public class StdQueryFactory implements IQueryFactory {
 
     // ------------------------------------------------------------------------
 
-    public StdQueryFactory(final Map<Type, ITypeAdapter<?>> adapters,
-                           final Map<Type, BeanAdapter<?>> beanAdapters,
-                           final List<? extends ITypeAdapterFactory<?>> factories, 
-                           final VisibilityFilter visibilityFilter) {
+    public AbstractQueryFactory(final Map<Type, ITypeAdapter<?>> adapters,
+                                final Map<Type, AbstractBeanAdapter<?>> beanAdapters,
+                                final List<? extends ITypeAdapterFactory<?>> factories,
+                                final VisibilityFilter visibilityFilter) {
 
         this.visibilityFilter = checkNotNull(visibilityFilter);
         this.factories = Lists.newArrayList(checkNotNull(factories));
@@ -237,7 +237,7 @@ public class StdQueryFactory implements IQueryFactory {
         final ITypeAdapter<Object> delegateAdapter;
         
         @SuppressWarnings("unchecked") // type safety guaranteed by the lib
-        final BeanAdapter<Object> beanAdapter = (BeanAdapter<Object>) beanAdapters.get(property.getTypeToken().getType());
+        final AbstractBeanAdapter<Object> beanAdapter = (AbstractBeanAdapter<Object>) beanAdapters.get(property.getTypeToken().getType());
         
         if (beanAdapter == null) {
             handleName = true;
@@ -487,9 +487,9 @@ public class StdQueryFactory implements IQueryFactory {
     // would sound lolish...(a la spring) :p, this class allows us benefit from what has been done for TypeAdapters
     static class DecoratedBeanAdapter<T> implements ITypeAdapter<T> {
         private final BeanProperty property;
-        private final BeanAdapter<T> adapter;
+        private final AbstractBeanAdapter<T> adapter;
 
-        public DecoratedBeanAdapter(BeanProperty property, BeanAdapter<T> adapter) {
+        public DecoratedBeanAdapter(BeanProperty property, AbstractBeanAdapter<T> adapter) {
             this.property = property;
             this.adapter = adapter;
         }
