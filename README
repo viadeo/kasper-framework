@@ -6,7 +6,6 @@
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-parent                        => Kasper parent : generic configuration, dependency management
 kasper-client                 => Java client to access a Kasper platform
 kasper-common                 => Common code to be shared between api and core modules
 kasper-core                   => Kasper core : bootstrap, DDD modelisation, CQRS framework
