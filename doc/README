@@ -1,7 +1,12 @@
 
+* Build documentation
 - install Sphinx-doc : apt-get install python-sphinx
 - run 'make html' in doc/ directory
 
+* Automated documentation building using the provided watcher :
+- sudo aptitude install inotity-tools
+  cd kasper-framework/doc
+  ./watch.sh 
+
 Refer to http://docutils.sourceforge.net/docs/user/rst/quickstart.html for reStructuredText format reference
 Refer to http://sphinx-doc.org/contents.html for Sphinx documentation
-
