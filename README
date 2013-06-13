@@ -16,6 +16,8 @@ kasper-security               => Security framework
 kasper-test                   => Functional/Integration end to end testing
 kasper-web                    => Web exposition and helpers
 
+doc                           => Kasper developers documentation (cf README)
+tools                         => Some Kasper developer tools
 
 If you want to make changes in this framework, please :
 - Fork the develop branch as a private repo
