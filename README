@@ -8,22 +8,18 @@
 
 parent                        => Kasper parent : generic configuration, dependency management
 kasper-client                 => Java client to access a Kasper platform
-kasper-core/
-  kasper-core-boot            => Kasper core bootstrap
-  kasper-core-domain          => DDD: Domain modeling framework
-  kasper-core-command         => CQRS: Command framework
-  kasper-core-events          => CQRS: Events framework
-  kasper-core-query           => CQRS: Query framework
-kasper-platform               => The Kasper platform
-kasper-test                   => Functional/Integration end to end testing
-kasper-common                 => Common tools and shared libraries
+kasper-common                 => Common code to be shared between api and core modules
+kasper-core                   => Kasper core : bootstrap, DDD modelisation, CQRS framework
+kasper-datasource             => A datasource implementation using MyBatis
 kasper-documentation          => Automated documentation
+kasper-platform               => The Kasper platform
 kasper-security               => Security framework
+kasper-test                   => Functional/Integration end to end testing
 kasper-web                    => Web exposition and helpers
 
 
 If you want to make changes in this framework, please :
-- Fork the project as a private repo
+- Fork the develop branch as a private repo
 - Make your changes in a separate branch
 - Rebase your branch on viadeo 'develop' branch
 - Submit a pull request on 'develop' branch
