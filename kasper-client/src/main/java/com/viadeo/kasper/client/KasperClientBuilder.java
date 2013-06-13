@@ -85,7 +85,7 @@ public class KasperClientBuilder {
     public KasperClientBuilder queryBaseLocation(final String url) {
         try {
             return queryBaseLocation(new URL(checkNotNull(url)));
-        } catch (MalformedURLException e) {
+        } catch (final MalformedURLException e) {
             throw new KasperClientException(e);
         }
     }
@@ -98,7 +98,7 @@ public class KasperClientBuilder {
     public KasperClientBuilder commandBaseLocation(final String url) {
         try {
             return commandBaseLocation(new URL(checkNotNull(url)));
-        } catch (MalformedURLException e) {
+        } catch (final MalformedURLException e) {
             throw new KasperClientException(e);
         }
     }
@@ -121,7 +121,7 @@ public class KasperClientBuilder {
         return this;
     }
 
-    public KasperClientBuilder include(VisibilityFilter visibility) {
+    public KasperClientBuilder include(final VisibilityFilter visibility) {
         qFactoryBuilder.include(visibility);
         return this;
     }
