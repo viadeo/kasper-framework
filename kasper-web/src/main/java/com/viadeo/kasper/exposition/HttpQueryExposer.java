@@ -54,11 +54,15 @@ public class HttpQueryExposer extends HttpExposer {
 
     @Override
     public void init() throws ServletException {
+        LOGGER.info("=============== Exposing queries ===============");
         // expose all registered queries and commands
         for (final IQueryService<? extends IQuery, ? extends IQueryDTO> queryService : queryServicesLocator
                 .getServices()) {
             expose(queryService);
         }
+        if (exposedQueries.isEmpty()) LOGGER.warn("No Query has been exposed.");
+        else LOGGER.info("Total exposed " + exposedQueries.size() + " queries.");
+        LOGGER.info("=================================================");
     }
 
     // ------------------------------------------------------------------------
@@ -158,7 +162,7 @@ public class HttpQueryExposer extends HttpExposer {
              * checking if the response has not been sent, if it is true this
              * means that an error happened and has been handled
              */
-            dto = platform().getQueryGateway().retrieve(new DefaultContextBuilder().buildDefault(), query);
+            dto = platform().getQueryGateway().retrieve(query, new DefaultContextBuilder().buildDefault());
 
         } catch (final Throwable e) {
             /*

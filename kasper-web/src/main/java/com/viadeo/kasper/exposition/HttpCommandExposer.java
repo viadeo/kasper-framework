@@ -49,9 +49,13 @@ public class HttpCommandExposer extends HttpExposer {
 
     @Override
     public void init() throws ServletException {
+        LOGGER.info("=============== Exposing commands ===============");
         for (final ICommandHandler<? extends ICommand> handler : domainLocator.getHandlers()) {
             expose(handler);
         }
+        if (exposedCommands.isEmpty()) LOGGER.warn("No Command has been exposed.");
+        else LOGGER.info("Total exposed " + exposedCommands.size() + " commands.");
+        LOGGER.info("=================================================");
     }
 
     // ------------------------------------------------------------------------

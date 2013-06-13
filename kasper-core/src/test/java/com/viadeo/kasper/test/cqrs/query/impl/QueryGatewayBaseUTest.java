@@ -65,7 +65,7 @@ public class QueryGatewayBaseUTest {
 
         // When
         try {
-            queryGateway.retrieve(defaultContext(), query);
+            queryGateway.retrieve(query, defaultContext());
             fail("Should raise a KasperQueryException");
         }
 
@@ -94,7 +94,7 @@ public class QueryGatewayBaseUTest {
 
         // When
         try {
-            queryGateway.retrieve(defaultContext(), query);
+            queryGateway.retrieve(query, defaultContext());
             fail("Should raise a KasperQueryException");
         }
 

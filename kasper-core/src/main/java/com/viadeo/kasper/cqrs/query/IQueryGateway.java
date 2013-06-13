@@ -17,6 +17,6 @@ public interface IQueryGateway {
 	 * @param query the query to be answered
 	 * @return the Data Transfer Object as an answer
 	 */
-	<Q extends IQuery, DTO extends IQueryDTO> DTO retrieve(IContext context, Q query) throws KasperQueryException;
+	<Q extends IQuery, DTO extends IQueryDTO> DTO retrieve(Q query, IContext context) throws KasperQueryException;
 
 }

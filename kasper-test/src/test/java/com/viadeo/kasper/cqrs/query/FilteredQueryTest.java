@@ -102,7 +102,7 @@ public class FilteredQueryTest extends AbstractPlatformTests {
 		query.setFilter(filter);
 
 		// Then
-		final TestDTO dtoRes = this.servicesGateway.retrieve(context, query);
+		final TestDTO dtoRes = this.servicesGateway.retrieve(query, context);
 		assertEquals(dtoRes.getName(), "the test two");
 	}
 
