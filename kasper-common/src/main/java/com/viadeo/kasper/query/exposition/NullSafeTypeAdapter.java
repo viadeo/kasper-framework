@@ -36,7 +36,7 @@ public class NullSafeTypeAdapter<T> implements ITypeAdapter<T> {
 	}
 
 	@Override
-	public T adapt(QueryParser parser) throws Exception {
+	public T adapt(final QueryParser parser) throws Exception {
 		/*
 		 * FIXME I am not sure it is ok, null safe should also ensure people
 		 * dont have to deal with pairs that have a key but no value, actually

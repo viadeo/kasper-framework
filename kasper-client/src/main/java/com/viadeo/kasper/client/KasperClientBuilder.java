@@ -113,7 +113,7 @@ public class KasperClientBuilder {
         return this;
     }
 
-    public KasperClientBuilder include(VisibilityFilter visibility) {
+    public KasperClientBuilder include(final VisibilityFilter visibility) {
         qFactoryBuilder.include(visibility);
         return this;
     }
