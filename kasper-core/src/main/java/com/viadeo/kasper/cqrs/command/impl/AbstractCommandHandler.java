@@ -23,8 +23,6 @@ public abstract class AbstractCommandHandler<C extends ICommand> implements ICom
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommandHandler.class);
 
-    // ------------------------------------------------------------------------
-
     /**
      * Wrapper for Axon command handling
      * 
@@ -32,7 +30,7 @@ public abstract class AbstractCommandHandler<C extends ICommand> implements ICom
      * org.axonframework.unitofwork.UnitOfWork)
      */
     @Override
-    public Object handle(final CommandMessage<C> message, final UnitOfWork uow) throws Throwable {
+    final public Object handle(final CommandMessage<C> message, final UnitOfWork uow) throws Throwable {
         final ICommandMessage<C> kmessage = new KasperCommandMessage<>(message);
         CurrentContext.set(kmessage.getContext());
 
