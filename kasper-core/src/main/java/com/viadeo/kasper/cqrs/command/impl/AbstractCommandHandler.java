@@ -36,7 +36,7 @@ public abstract class AbstractCommandHandler<C extends ICommand>
 	 */
 	@SuppressWarnings("deprecation") // Controlled use of KasperErrorCommandResult
 	@Override
-	public Object handle(final CommandMessage<C> message, final UnitOfWork uow) throws Throwable {
+	final public Object handle(final CommandMessage<C> message, final UnitOfWork uow) throws Throwable {
 		final ICommandMessage<C> kmessage = new KasperCommandMessage<>(message);
 		CurrentContext.set(kmessage.getContext());
 
