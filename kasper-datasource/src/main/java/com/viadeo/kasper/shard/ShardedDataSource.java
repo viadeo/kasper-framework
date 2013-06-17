@@ -83,16 +83,16 @@ public class ShardedDataSource implements javax.sql.DataSource {
 	@Override
 	public Connection getConnection() throws SQLException {
 		LOGGER.debug("Getconnection Interceptor : Get proxy");
-		final Connection connection = (ShardedConnection) Proxy.newProxyInstance(
+		final Connection connection = (Connection) Proxy.newProxyInstance(
                 Thread.currentThread().getContextClassLoader(),
-                new Class<?>[]{ShardedConnection.class}, new ShardedConnectionHandler(this));
+                new Class<?>[]{Connection.class}, new ShardedConnectionHandler(this));
 
         return connection;
 	    
 	}
 	
 	public Connection getDefaultConnection() {
-		return (ShardedConnection) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class<?>[]{ShardedConnection.class}, new UnClosableConnectionHandler(connection));
+		return (Connection) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), new Class<?>[]{Connection.class}, new UnClosableConnectionHandler(connection));
 	}
 
 	@Override
