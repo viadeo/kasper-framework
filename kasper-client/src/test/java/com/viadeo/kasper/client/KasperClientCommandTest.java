@@ -8,16 +8,16 @@
 package com.viadeo.kasper.client;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.common.collect.ImmutableSet;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
 import com.viadeo.kasper.client.lib.ICallback;
+import com.viadeo.kasper.cqrs.command.CommandResult.Status;
 import com.viadeo.kasper.cqrs.command.ICommand;
-import com.viadeo.kasper.cqrs.command.ICommandResult;
-import com.viadeo.kasper.cqrs.command.ICommandResult.Status;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
+import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -27,12 +27,14 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.URL;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -117,15 +119,20 @@ public class KasperClientCommandTest extends JerseyTest {
         @PUT
         @Produces(MediaType.APPLICATION_JSON)
         @Consumes(MediaType.APPLICATION_JSON)
-        public ICommandResult getMember(final CreateMemberCommand command) {
-            return new KasperCommandResult(command.getStatus());
+        public CommandResult getMember(final CreateMemberCommand command) {
+            return new CommandResult.ResultBuilder().status(command.getStatus()).create();
         }
     }
 
     public static class TestConfiguration extends DefaultResourceConfig {
         public TestConfiguration() {
             super(DummyResource.class);
-            getProviderSingletons().add(new JacksonJsonProvider(new KasperClientBuilder().defaultMapper()));
+            add(new Application() {
+                @Override
+                public Set<Object> getSingletons() {
+                   return ImmutableSet.of((Object) new JacksonJsonProvider(new KasperClientBuilder().defaultMapper()));
+                }
+            });
         }
     }
 
@@ -157,7 +164,7 @@ public class KasperClientCommandTest extends JerseyTest {
     	final CreateMemberCommand command = new CreateMemberCommand(Status.REFUSED);
     	
     	// When
-    	final ICommandResult result = client.send(command);
+    	final CommandResult result = client.send(command);
     	
     	// Then
         assertEquals(Status.REFUSED, result.getStatus());
@@ -172,7 +179,7 @@ public class KasperClientCommandTest extends JerseyTest {
     	final CreateMemberCommand command = new CreateMemberCommand(Status.ERROR);
     	
     	// When
-    	final Future<? extends ICommandResult> result = client.sendAsync(command);
+    	final Future<? extends CommandResult> result = client.sendAsync(command);
     	
     	// Then
         assertEquals(Status.ERROR, result.get().getStatus());
@@ -184,13 +191,13 @@ public class KasperClientCommandTest extends JerseyTest {
     	// Given 
         final CountDownLatch latch = new CountDownLatch(1);
         final CreateMemberCommand command = new CreateMemberCommand(Status.OK);
-        final ICallback<ICommandResult> callback = spy(new ICallback<ICommandResult>() {
+        final ICallback<CommandResult> callback = spy(new ICallback<CommandResult>() {
             @Override
-            public void done(ICommandResult object) {
+            public void done(CommandResult object) {
                 latch.countDown();
             }
         });
-        final ArgumentCaptor<ICommandResult> result = ArgumentCaptor.forClass(ICommandResult.class);
+        final ArgumentCaptor<CommandResult> result = ArgumentCaptor.forClass(CommandResult.class);
         
         // When
         client.sendAsync(command, callback);

@@ -1,6 +1,5 @@
 package com.viadeo.kasper.exposition;
 
-import com.viadeo.kasper.client.exceptions.KasperClientException;
 import com.viadeo.kasper.cqrs.query.IQuery;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
 import com.viadeo.kasper.cqrs.query.IQueryMessage;
@@ -9,6 +8,7 @@ import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionDTO;
 import com.viadeo.kasper.ddd.impl.AbstractDomain;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.locators.IQueryServicesLocator;
 import com.viadeo.kasper.platform.IPlatform;
 import org.junit.Test;
@@ -132,11 +132,12 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
 
     // ------------------------------------------------------------------------
 	
-	@Test(expected=KasperClientException.class)
+	@Test(expected=KasperQueryException.class)
     public void testQueryServiceThrowingException() {
         // Given
 		final SomeQuery query = new SomeQuery();
 		query.doThrowSomeException = true;
+		query.aValue = "aaa";
 
         // When
 		client().query(query, SomeDto.class);

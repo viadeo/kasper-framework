@@ -13,6 +13,7 @@ import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.query.IQuery;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
 import com.viadeo.kasper.cqrs.query.IQueryService;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.locators.IQueryServicesLocator;
 import com.viadeo.kasper.platform.IPlatform;
 import com.viadeo.kasper.query.exposition.IQueryFactory;
@@ -60,8 +61,10 @@ public class HttpQueryExposer extends HttpExposer {
                 .getServices()) {
             expose(queryService);
         }
-        if (exposedQueries.isEmpty()) LOGGER.warn("No Query has been exposed.");
-        else LOGGER.info("Total exposed " + exposedQueries.size() + " queries.");
+        if (exposedQueries.isEmpty())
+            LOGGER.warn("No Query has been exposed.");
+        else
+            LOGGER.info("Total exposed " + exposedQueries.size() + " queries.");
         LOGGER.info("=================================================");
     }
 
@@ -192,6 +195,41 @@ public class HttpQueryExposer extends HttpExposer {
             sendError(SC_INTERNAL_SERVER_ERROR, "ERROR sending DTO[" + dto.getClass().getSimpleName() + "] for query["
                     + queryName + "].", resp, t);
         }
+    }
+
+    // ------------------------------------------------------------------------
+
+    @SuppressWarnings("deprecation")
+    protected void sendError(final int status, final String message, final HttpServletResponse resp,
+            final Throwable exception) throws IOException {
+
+        if (exception != null) {
+            LOGGER.error(message, exception);
+        } else {
+            LOGGER.error(message);
+        }
+
+        resp.setStatus(status, message);
+
+        final ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
+
+        final KasperQueryException queryException;
+        if (exception instanceof KasperQueryException)
+            queryException = (KasperQueryException) exception;
+        // FIXME I am not sure if we should get the most precise cause here by descending recursively in the stack 
+        // trace or just send the message
+        else {
+            if (exception != null) {
+                queryException = KasperQueryException.exception(message).reason(exception).create();
+            } else
+                queryException = KasperQueryException.exception(message).create();
+
+            queryException.fillInStackTrace();
+        }
+
+        writer.writeValue(resp.getOutputStream(), queryException);
+
+        resp.flushBuffer();
     }
 
     // ------------------------------------------------------------------------

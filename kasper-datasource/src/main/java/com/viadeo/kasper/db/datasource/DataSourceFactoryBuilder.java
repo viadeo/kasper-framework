@@ -9,7 +9,7 @@ package com.viadeo.kasper.db.datasource;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.db.dispatcher.DispatcherLoader;
 import com.viadeo.kasper.db.dispatcher.DispatcherSettings;
-import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -90,7 +90,7 @@ public class DataSourceFactoryBuilder {
             } catch (final IOException e) {
                 final String errorMessage = "Error while reading datasource/dispatching configuration files";
                 log.error(errorMessage, e);
-                throw new KasperRuntimeException(errorMessage, e);
+                throw new KasperException(errorMessage, e);
             }
 
             // instantiate all the datasources

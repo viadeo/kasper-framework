@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs.query.filter.impl;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilterGroup;
@@ -68,7 +68,7 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 			return satisfied;
 
 		} else {
-			throw new KasperQueryRuntimeException("No filter has been defined");
+			throw new KasperQueryException("No filter has been defined");
 		}
 	}
 

@@ -7,8 +7,8 @@
 
 package com.viadeo.kasper.client;
 
-import com.viadeo.kasper.client.exceptions.KasperClientException;
 import com.viadeo.kasper.cqrs.query.IQuery;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.query.exposition.ITypeAdapter;
 import com.viadeo.kasper.query.exposition.QueryBuilder;
 import com.viadeo.kasper.query.exposition.QueryParser;
@@ -131,7 +131,7 @@ public class KasperClientQueryCreationTest {
 
 	// ------------------------------------------------------------------------
 
-	@Test(expected = KasperClientException.class)
+	@Test(expected = KasperException.class)
 	public void testThrowExceptionForComplexPojos() {
 
 		// Given

@@ -10,7 +10,7 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.IEventListener;
 import com.viadeo.kasper.event.IEventMessage;
-import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 /**
@@ -36,7 +36,7 @@ public abstract class AbstractEventListener<E extends IEvent>
 		if (eventClassOpt.isPresent()) {
 			this.eventClass = eventClassOpt.get();
 		} else {
-			throw new KasperRuntimeException("Unable to identify event class for " + this.getClass());
+			throw new KasperException("Unable to identify event class for " + this.getClass());
 		}
 	}
 	

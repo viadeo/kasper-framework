@@ -7,7 +7,7 @@
 package com.viadeo.kasper.cqrs.query.filter.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
 
 import java.lang.reflect.Constructor;
@@ -64,9 +64,9 @@ public final class QueryDQOFactory {
 			} catch (final InstantiationException | IllegalAccessException |
                            SecurityException | NoSuchMethodException |
                            IllegalArgumentException e) {
-				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e);
+				throw new KasperQueryException(ERROR_INSTANCE, e);
 			} catch (final InvocationTargetException e) {
-				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e.getTargetException());
+				throw new KasperQueryException(ERROR_INSTANCE, e.getTargetException());
 			}
 		}
 

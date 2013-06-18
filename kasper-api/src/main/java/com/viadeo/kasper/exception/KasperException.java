@@ -6,24 +6,23 @@
 // ============================================================================
 package com.viadeo.kasper.exception;
 
-/** The base Kasper exception */
-public class KasperException extends Exception {
-	private static final long serialVersionUID = 8283132692513219950L;
+/**
+ * The base Kasper runtime exception, KasperQueryException and KasperCommandException should be preferred to this one as
+ * they are more specific.
+ */
+public class KasperException extends RuntimeException {
 
-	public KasperException() {
-		super();
-	}
-	
-	public KasperException(final String message, final Throwable e) {
-		super(message, e);
-	}
+    private static final long serialVersionUID = 4439295125026389937L;
 
-	public KasperException(final String message) {
-		super(message);
-	}
+    public KasperException(String message, Throwable cause) {
+        super(message, cause);
+    }
 
-	public KasperException(final Throwable e) {
-		super(e);
-	}
+    public KasperException(String message) {
+        super(message);
+    }
 
+    public KasperException(Throwable cause) {
+        super(cause);
+    }
 }

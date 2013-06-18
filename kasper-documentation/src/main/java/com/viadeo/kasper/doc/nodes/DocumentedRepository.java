@@ -15,7 +15,7 @@ import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
-import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 
@@ -40,7 +40,7 @@ public final class DocumentedRepository extends AbstractDocumentedDomainNode {
 					repositoryClazz, IRepository.class, IRepository.ENTITY_PARAMETER_POSITION);
 		
 		if (!agr.isPresent()) {
-			throw new KasperRuntimeException("Unable to find aggregate type for repository " + repositoryClazz.getClass());
+			throw new KasperException("Unable to find aggregate type for repository " + repositoryClazz.getClass());
 		}
 		
 		// Find associated domain ---------------------------------------------
@@ -53,7 +53,7 @@ public final class DocumentedRepository extends AbstractDocumentedDomainNode {
 			if (null != relationAnno) {
 				domain = relationAnno.domain();
 			} else {
-				throw new KasperRuntimeException("Unable to find domain from annotation for aggregate " + agr.get().getSimpleName());
+				throw new KasperException("Unable to find domain from annotation for aggregate " + agr.get().getSimpleName());
 			}
 		}
 		 		
@@ -61,7 +61,7 @@ public final class DocumentedRepository extends AbstractDocumentedDomainNode {
 		final XKasperDomain domainAnno = domain.getAnnotation(XKasperDomain.class);
 		
 		if (null == domainAnno) {
-			throw new KasperRuntimeException("Unable to find a name type for domain " + domain);
+			throw new KasperException("Unable to find a name type for domain " + domain);
 		}
 		
 		// Get description ----------------------------------------------------

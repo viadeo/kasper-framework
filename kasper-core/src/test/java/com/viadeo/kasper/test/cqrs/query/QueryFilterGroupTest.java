@@ -1,6 +1,6 @@
 package com.viadeo.kasper.test.cqrs.query;
 
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilterGroup.Operator;
 import com.viadeo.kasper.cqrs.query.filter.impl.QueryFilterGroup;
@@ -53,7 +53,7 @@ public class QueryFilterGroupTest extends TestCase {
 		try {
 			groupFilter.isSatisfiedBy(dto);
 			Assert.fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 

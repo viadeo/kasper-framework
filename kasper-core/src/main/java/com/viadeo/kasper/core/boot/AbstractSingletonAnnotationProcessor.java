@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -61,7 +61,7 @@ public abstract class AbstractSingletonAnnotationProcessor<T extends Annotation,
 			}
 			
 		} catch (final InstantiationException | IllegalAccessException e) {
-			throw new KasperRuntimeException("Unable to create instance of " + clazz.getName(), e);
+			throw new KasperException("Unable to create instance of " + clazz.getName(), e);
 		}
 
         this.process(clazz, instance);

@@ -1,13 +1,12 @@
 package com.viadeo.kasper.exposition;
 
+import com.viadeo.kasper.cqrs.command.CommandResult.Status;
 import com.viadeo.kasper.cqrs.command.ICommand;
-import com.viadeo.kasper.cqrs.command.ICommandResult;
-import com.viadeo.kasper.cqrs.command.ICommandResult.Status;
+import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
 import com.viadeo.kasper.ddd.impl.AbstractDomain;
-import com.viadeo.kasper.event.exceptions.KasperEventException;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.platform.IPlatform;
 import org.junit.Test;
@@ -35,11 +34,11 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 		final ICommand unknownCommand = new ICommand() { };
 
 		// When
-		final ICommandResult result = client().send(unknownCommand);
+		final CommandResult result = client().send(unknownCommand);
 
 		// Then
 		assertEquals(Status.ERROR, result.getStatus());
-		assertNotNull(result.asError().getErrorMessage().orNull());
+		assertNotNull(result.getErrors().get().get(0).getMessage());
 	}
 
     // ------------------------------------------------------------------------
@@ -51,7 +50,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 		command.name = "foo bar";
 
 		// When
-		final ICommandResult result = client().send(command);
+		final CommandResult result = client().send(command);
 
 		// Then
 		assertEquals(Status.OK, result.getStatus());
@@ -69,7 +68,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.throwException = true;
 
         // When
-        final ICommandResult result = client().send(command);
+        final CommandResult result = client().send(command);
 
         // Then
         assertEquals(Status.ERROR, result.getStatus());
@@ -100,10 +99,10 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 		static String createAccountCommandName = null;
 
 		@Override
-		public ICommandResult handle(final CreateAccountCommand command) throws KasperEventException {
-		    if (command.isThrowException()) throw new KasperEventException("Something bad happened!");
+		public CommandResult handle(final CreateAccountCommand command) throws Exception {
+		    if (command.isThrowException()) throw new KasperException("Something bad happened!");
 			createAccountCommandName = command.getName();
-			return new KasperCommandResult(Status.OK);
+			return CommandResult.ok();
 		}
 	}
 
