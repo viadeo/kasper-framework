@@ -8,6 +8,7 @@ package com.viadeo.kasper.shard.util;
 
 import java.util.Collection;
 
+@Deprecated
 public class ArrayWrapper {
 
     private final Collection<?> items;
