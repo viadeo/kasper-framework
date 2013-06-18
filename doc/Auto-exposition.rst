@@ -46,6 +46,50 @@ easier we implemented all that exposition layer in kasper framework.
  * Uniformize the communication
  * Be extensible in order to allow customization and extension/addition of new features.
 
+------------------------
+Commands & CommandResult
+------------------------
+
+Commands are submitted using POST or PUT requests, there are no query parameters, everything is in the body.
+Actually only json content is supported as input and output.
+
+To enable Command exposition register HttpCommandExposer servlet, it will then use IDomainLocator to locate each command handler.
+
+Ex: the following command would be exposed at **http://host:port/someRootPath/createMember**
+
+.. code-block:: java
+
+   class CreateMemberCommand implements ICommand {
+     String name;
+     // other fields
+     
+     // getters & setters
+   }
+
+this command serialized in its json form would look like :
+
+.. code-block:: javascript
+
+   {
+      "name": "john"
+   }
+
+In response you receive a json of the following form (see :ref:`Error_codes`).
+
+.. code-block:: javascript
+
+   {
+      status: "ERROR" // values can be : OK, ERROR or REFUSED
+      errors: [ // empty if status = OK
+         {
+            "code": "CONFLICT", // a mandatory human readable code, describing what is wrong
+            "message": "user already exists", // a free technical message, providing more information on waht happened
+            "userMessage": "You already have an account." // a optional free user facing message, can be sent/displayed to end users
+         }
+         // other errors
+      ]
+   }
+
 --------------
 Queries & DTOs
 --------------
@@ -56,7 +100,7 @@ We will address those points if they become really required.
 
 To enable Query exposition register HttpQueryExposer servlet, it will then use the IQueryServicesLocator to locate each query service.
 
-Ex: suppose we have the following query, it will be **available at host:port/someRootPath/getMemberMessages?memberId=999**.
+Ex: suppose we have the following query, it will be **available at http://host:port/someRootPath/getMemberMessages?memberId=999**.
 
 .. code-block:: java
 
@@ -74,14 +118,20 @@ The framework also **supports deserialization to objects that don't have a defau
 We might also add later support of ser/deser based on fields (being able to mix methods and fields or juste use one or another).
 
 
-In case of an error a standard HTTP error code will be set with the reason for this error 
-(you have it in the response body as json and in the headers).
+In case of an error a standard HTTP error code will be set with the reason for this error in the headers and the body will contain (optionally) more
+information on what happened, see :ref:`Error_codes`.
 
-.. code-block:: json
+.. code-block:: javascript
 
    {
-     "code": 404,
-     "reason": "Some query was not found..."
+     "message": "Some query was not found...", // a technical global error message
+     "errors": [ // can be empty
+      {
+         "code": "INVALID_INPUT", // awlays present, a readable code telling what happened
+         "message": "Some technical message", // a detailed free technical message
+         "userMessage": "Wrong email address?" // a optional free user message, can be displayed/sent to end users.
+      }
+     ]
    }
 
 In case of a success a DTO will be returned serialized to json, this is done with Jackson. That allows you to use standard Jackson
@@ -171,3 +221,24 @@ To support it you will have to create a custom BeanAdapter.
 
 Then to register it, use the same mechanism as for TypeAdapters, the only difference here is that you must 
 put your adapter into a file named com.viadeo.kasper.query.exposition.BeanAdapter.
+
+..  _Error_codes:
+
+----------------------
+Predefined Error codes
+----------------------
+
+For query & command errors some codes have been predefined, but users a free to use new ones.
+
+
+| REQUIRED_INPUT
+| INVALID_INPUT
+| TOO_MANY_ENTRIES
+| CONFLICT
+| REQUIRE_AUTHENTICATION
+| REQUIRE_AUTHORIZATION
+| UNKNOWN_ERROR
+| INTERNAL_COMPONENT_TIMEOUT
+| INTERNAL_COMPONENT_ERROR
+| INVALID_ID
+
