@@ -38,18 +38,18 @@ public class CommandResult {
         public ResultBuilder addError(String code, String message) {
             return addError(new KasperError(code, message));
         }
-        
+
         public ResultBuilder addError(String code, String message, String userMessage) {
             return addError(new KasperError(code, message, userMessage));
         }
-        
-        public ResultBuilder addError(KasperError...errors) {
+
+        public ResultBuilder addError(KasperError... errors) {
             if (status == Status.OK) {
                 status = Status.ERROR;
             }
             for (KasperError error : errors)
                 this.errors.add(error);
-            
+
             return this;
         }
 
@@ -63,7 +63,7 @@ public class CommandResult {
             this.status = status;
             return this;
         }
-        
+
         public boolean isError() {
             return Status.OK != status;
         }
@@ -95,7 +95,11 @@ public class CommandResult {
 
     private CommandResult(final Status status, final List<KasperError> errors) {
         this.status = Preconditions.checkNotNull(status);
-        this.errors = errors;
+        if (errors != null) {
+            this.errors = errors;
+        } else {
+            this.errors = ImmutableList.of();
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -110,8 +114,8 @@ public class CommandResult {
     /**
      * @return a list of errors or empty if command succeeded.
      */
-    public Optional<? extends List<KasperError>> getErrors() {
-        return Optional.fromNullable(ImmutableList.copyOf(errors));
+    public Optional<List<KasperError>> getErrors() {
+        return Optional.<List<KasperError>> fromNullable(ImmutableList.copyOf(errors));
     }
 
     /**
