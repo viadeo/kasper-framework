@@ -45,8 +45,10 @@ public class KasperQueryException extends RuntimeException {
         }
 
         public ExceptionBuilder addErrors(List<KasperError> errors) {
-            for (KasperError error : errors)
-                addError(error);
+            if (errors != null) {
+                for (KasperError error : errors)
+                    addError(error);
+            }
             return this;
         }
 
@@ -114,7 +116,7 @@ public class KasperQueryException extends RuntimeException {
 
     public Optional<List<KasperError>> getErrors() {
         if (errors != null)
-            return Optional.<List<KasperError>>of(ImmutableList.copyOf(errors));
+            return Optional.<List<KasperError>> of(ImmutableList.copyOf(errors));
         else
             return Optional.absent();
     }

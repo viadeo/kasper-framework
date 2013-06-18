@@ -371,6 +371,7 @@ public class KasperClient {
 
     private <T extends IQueryDTO> T handleQueryResponse(final ClientResponse response, final TypeToken<T> mapTo) {
         final Status status = response.getClientResponseStatus();
+        
         // handle errors
         if (status.getStatusCode() == 200) {
             return response.getEntity(new GenericType<T>(mapTo.getType()));
