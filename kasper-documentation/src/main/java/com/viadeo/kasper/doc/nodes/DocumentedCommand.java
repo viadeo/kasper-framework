@@ -7,11 +7,11 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.cqrs.command.ICommand;
+import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.doc.KasperLibrary;
 
-public final class DocumentedCommand extends AbstractDocumentedDomainNode {
+public final class DocumentedCommand extends DocumentedDomainNode {
 	private static final long serialVersionUID = -4593630507564176805L;
 
 	public static final String TYPE_NAME = "command";
@@ -26,7 +26,7 @@ public final class DocumentedCommand extends AbstractDocumentedDomainNode {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 	}
 
-	public DocumentedCommand(final KasperLibrary kl, final Class<? extends ICommand> commandClazz) {
+	public DocumentedCommand(final KasperLibrary kl, final Class<? extends Command> commandClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 
 		final XKasperCommand annotation = commandClazz

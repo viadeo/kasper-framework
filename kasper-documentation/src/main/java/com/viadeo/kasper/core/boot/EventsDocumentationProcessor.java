@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperEvent
  */
-public class EventsDocumentationProcessor extends AbstractDocumentationProcessor<XKasperEvent, IEvent> {
+public class EventsDocumentationProcessor extends DocumentationProcessor<XKasperEvent, Event> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventsDocumentationProcessor.class);
 
@@ -26,15 +26,15 @@ public class EventsDocumentationProcessor extends AbstractDocumentationProcessor
 	/**
 	 * Process Kasper event
 	 * 
-	 * @see IEvent
-	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
+	 * @see com.viadeo.kasper.event.Event
+	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
 	public void process(final Class<?> eventClazz) {
 		LOGGER.info("Record on event library : " + eventClazz.getName());
 
-		getKasperLibrary().recordEvent((Class<? extends IEvent>) eventClazz);		
+		getKasperLibrary().recordEvent((Class<? extends Event>) eventClazz);
 	}
 
 }

@@ -7,11 +7,11 @@
 package com.viadeo.kasper.ddd.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.IDomain;
-import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.ddd.IAggregateRoot;
-import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.locators.IDomainLocator;
+import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.ddd.AggregateRoot;
+import com.viadeo.kasper.ddd.Repository;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
 import org.joda.time.DateTime;
@@ -21,20 +21,20 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * Base AGR implementation
  *
- * @see IAggregateRoot
- * @see IDomain
+ * @see com.viadeo.kasper.ddd.AggregateRoot
+ * @see com.viadeo.kasper.Domain
  */
 public abstract class AbstractAggregateRoot 
-		extends AbstractAnnotatedAggregateRoot<IKasperID> 
-		implements IAggregateRoot {
+		extends AbstractAnnotatedAggregateRoot<KasperID>
+		implements AggregateRoot {
 	
 	private static final long serialVersionUID = 8352516744342839116L;
 	
 	@Autowired // FIXME: remove autowiring ??
-	private transient IDomainLocator domainLocator;
+	private transient DomainLocator domainLocator;
 	
 	@AggregateIdentifier
-	private IKasperID id;
+	private KasperID id;
 	
 	private DateTime creationDate;
 	
@@ -42,14 +42,14 @@ public abstract class AbstractAggregateRoot
 	
 	// ========================================================================
 	
-	protected void setId(final IKasperID id) {
+	protected void setId(final KasperID id) {
 		this.id = id;
 	}
 	
 	// ========================================================================
 
-	public <E extends IAggregateRoot> IRepository<E> getRepository() {
-        return (IRepository<E>)
+	public <E extends AggregateRoot> Repository<E> getRepository() {
+        return (Repository<E>)
             this.getDomainLocator().getEntityRepository(this.getClass());
 	}
 	
@@ -57,23 +57,23 @@ public abstract class AbstractAggregateRoot
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	public <I extends IKasperID> I  getEntityId() {
+	public <I extends KasperID> I  getEntityId() {
 		return (I) this.id;
 	}
 	
 	@Override
-	public IDomain getDomain() {
+	public Domain getDomain() {
 		return domainLocator.getEntityDomain(this);
 	}
 
 	// ========================================================================
 	
 	@Override
-	public void setDomainLocator(final IDomainLocator domainLocator) {
+	public void setDomainLocator(final DomainLocator domainLocator) {
 		this.domainLocator = Preconditions.checkNotNull(domainLocator);
 	}
 	
-	public IDomainLocator getDomainLocator() {
+	public DomainLocator getDomainLocator() {
 		return this.domainLocator;
 	}
 	

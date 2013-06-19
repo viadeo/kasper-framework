@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition;
 
-public class MyTestAdapter implements ITypeAdapter<MyTestAdapter.MyTestPayload>{
+public class MyTestAdapter implements TypeAdapter<MyTestAdapter.MyTestPayload> {
 
     static class MyTestPayload {}
 

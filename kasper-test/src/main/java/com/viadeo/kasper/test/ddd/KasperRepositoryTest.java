@@ -1,11 +1,10 @@
 package com.viadeo.kasper.test.ddd;
 
-import com.viadeo.kasper.ddd.IAggregateRoot;
-import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.ddd.AggregateRoot;
+import com.viadeo.kasper.ddd.Repository;
 import com.viadeo.kasper.ddd.impl.AbstractRepository;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventsourcing.EventSourcingRepository;
-import org.axonframework.repository.Repository;
 import org.axonframework.test.FixtureConfiguration;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
@@ -17,9 +16,9 @@ import static org.mockito.Mockito.*;
  *
  * @param <ENTITY> Aggregate Root
  */
-public class KasperRepositoryTest<ENTITY extends IAggregateRoot> implements IRepository<ENTITY>, Repository<ENTITY> {
+public class KasperRepositoryTest<ENTITY extends AggregateRoot> implements Repository<ENTITY> {
 
-	private Repository<ENTITY> axonRepository;
+	private org.axonframework.repository.Repository<ENTITY> axonRepository;
 	private final KasperRepositoryTest<ENTITY> that = this;
 
 	//------------------------------------------------------------------------
@@ -70,7 +69,7 @@ public class KasperRepositoryTest<ENTITY extends IAggregateRoot> implements IRep
 	 * @return a mocked repository which uses (this) as implementation
 	 */
 	@SuppressWarnings("unchecked")
-	public <R extends IRepository<ENTITY>> R asMockOf(final Class<R> repositoryClass) {
+	public <R extends Repository<ENTITY>> R asMockOf(final Class<R> repositoryClass) {
 		final R mocked = mock(repositoryClass);
 		
 		when(mocked.load(any(), any(Long.class))).then(
@@ -108,7 +107,7 @@ public class KasperRepositoryTest<ENTITY extends IAggregateRoot> implements IRep
 				that.add(aggregate);
 	            return "";
 	         }				
-		}).when(mocked).add((ENTITY) any(IAggregateRoot.class));				
+		}).when(mocked).add((ENTITY) any(AggregateRoot.class));
 		
 		return mocked;
 	}
@@ -122,7 +121,7 @@ public class KasperRepositoryTest<ENTITY extends IAggregateRoot> implements IRep
 	 * @param repositoryClass the repository class to mock as
 	 * @return a mocked repository
 	 */
-	public static <E extends IAggregateRoot, R extends IRepository<E>> R mockAs(
+	public static <E extends AggregateRoot, R extends Repository<E>> R mockAs(
 			final FixtureConfiguration<E> fixture, final Class<R> repositoryClass) {
 		final KasperRepositoryTest<E> repository = new KasperRepositoryTest<>(fixture);
 		return repository.asMockOf(repositoryClass);

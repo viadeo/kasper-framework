@@ -8,10 +8,10 @@
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.ddd.Repository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.ddd.impl.AbstractRepository;
-import com.viadeo.kasper.locators.IDomainLocator;
 import org.axonframework.eventhandling.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,14 +22,14 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperRepository
  */
-public class RepositoriesProcessor extends AbstractSingletonAnnotationProcessor<XKasperRepository, IRepository<?>> {
+public class RepositoriesProcessor extends SingletonAnnotationProcessor<XKasperRepository, Repository<?>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RepositoriesProcessor.class);	
 	
 	/**
 	 * The domain locator to register repositories on
 	 */
-	private transient IDomainLocator domainLocator;
+	private transient DomainLocator domainLocator;
 	
 	/**
 	 * The event bus to be injected on domain repositories (Axon dependency for event sourced aggregates)
@@ -41,11 +41,11 @@ public class RepositoriesProcessor extends AbstractSingletonAnnotationProcessor<
 	/**
 	 * Process Kasper repository
 	 * 
-	 * @see IRepository
-	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
+	 * @see com.viadeo.kasper.ddd.Repository
+	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
-	public void process(final Class<?> repositoryClazz, final IRepository<?> repository) {		
+	public void process(final Class<?> repositoryClazz, final Repository<?> repository) {
 		LOGGER.info("Record on domain locator : " + repositoryClazz.getName());
 			
 		repository.init();
@@ -63,7 +63,7 @@ public class RepositoriesProcessor extends AbstractSingletonAnnotationProcessor<
 	/**
 	 * @param domainLocator the domain locator to register repositories on
 	 */
-	public void setDomainLocator(final IDomainLocator domainLocator) {
+	public void setDomainLocator(final DomainLocator domainLocator) {
 		this.domainLocator = Preconditions.checkNotNull(domainLocator);
 	}
 	

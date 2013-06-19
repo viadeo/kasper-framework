@@ -9,7 +9,7 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionDTO;
 
@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ObjectMapperProviderTest {
 
-    static class SomeDTO implements IQueryDTO {
+    static class SomeDTO implements QueryDTO {
         private static final long serialVersionUID = -3621614243017076348L;
 
         public String getStr() {

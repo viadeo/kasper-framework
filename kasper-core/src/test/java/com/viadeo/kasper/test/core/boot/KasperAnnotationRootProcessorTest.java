@@ -1,7 +1,7 @@
 package com.viadeo.kasper.test.core.boot;
 
+import com.viadeo.kasper.core.boot.AnnotationProcessor;
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
-import com.viadeo.kasper.core.boot.IAnnotationProcessor;
 import junit.framework.TestCase;
 import org.junit.Test;
 
@@ -22,7 +22,7 @@ public class KasperAnnotationRootProcessorTest extends TestCase {
 	
 	// -----
 	
-	public static class TestProcessor implements IAnnotationProcessor<XTestAnnotation, TestInterface> {
+	public static class TestProcessor implements AnnotationProcessor<XTestAnnotation, TestInterface> {
 
 		@Override
 		public void process(final Class<?> clazz) {
@@ -38,7 +38,7 @@ public class KasperAnnotationRootProcessorTest extends TestCase {
 		final AnnotationRootProcessor rootProcessor = new AnnotationRootProcessor();
 		
 		final TestProcessor realProcessor = new TestProcessor();
-		final IAnnotationProcessor<?,?> processor = spy(realProcessor);	
+		final AnnotationProcessor<?,?> processor = spy(realProcessor);
 		
 		rootProcessor.registerProcessor(processor);
 		rootProcessor.setDoNotScanDefaultPrefix(true);
@@ -54,7 +54,7 @@ public class KasperAnnotationRootProcessorTest extends TestCase {
         final AnnotationRootProcessor rootProcessor = new AnnotationRootProcessor();
 
         final TestProcessor realProcessor = new TestProcessor();
-        final IAnnotationProcessor<?,?> processor = spy(realProcessor);
+        final AnnotationProcessor<?,?> processor = spy(realProcessor);
 
         rootProcessor.registerProcessor(processor);
         rootProcessor.setDoNotScanDefaultPrefix(true);

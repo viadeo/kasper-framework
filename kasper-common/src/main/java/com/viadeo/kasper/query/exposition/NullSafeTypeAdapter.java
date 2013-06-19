@@ -11,16 +11,16 @@ package com.viadeo.kasper.query.exposition;
  * @param <T>
  *            the type of objects this adapter is dealing with.
  */
-public class NullSafeTypeAdapter<T> implements ITypeAdapter<T> {
-	private final ITypeAdapter<T> decoratedAdapter;
+public class NullSafeTypeAdapter<T> implements TypeAdapter<T> {
+	private final TypeAdapter<T> decoratedAdapter;
 
     // ------------------------------------------------------------------------
 
-	public NullSafeTypeAdapter(final ITypeAdapter<T> decoratedAdapter) {
+	public NullSafeTypeAdapter(final TypeAdapter<T> decoratedAdapter) {
 		this.decoratedAdapter = decoratedAdapter;
 	}
 
-	public static <T> NullSafeTypeAdapter<T> nullSafe(final ITypeAdapter<T> adapter) {
+	public static <T> NullSafeTypeAdapter<T> nullSafe(final TypeAdapter<T> adapter) {
 		return new NullSafeTypeAdapter<>(adapter);
 	}
 
@@ -47,7 +47,7 @@ public class NullSafeTypeAdapter<T> implements ITypeAdapter<T> {
 
     // ------------------------------------------------------------------------
 
-	public ITypeAdapter<T> unwrap() {
+	public TypeAdapter<T> unwrap() {
 		return decoratedAdapter;
 	}
 

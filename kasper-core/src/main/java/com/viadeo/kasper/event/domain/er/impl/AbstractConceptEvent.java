@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.event.domain.er.impl;
 
-import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.event.domain.er.IConceptEvent;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.event.domain.er.ConceptEvent;
 import com.viadeo.kasper.event.domain.impl.AbstractEntityEvent;
 import org.joda.time.DateTime;
 
@@ -16,11 +16,11 @@ import org.joda.time.DateTime;
  * Base implementation for Kasper event on Concept
  * 
  * @see AbstractEntityEvent
- * @see IConceptEvent
+ * @see com.viadeo.kasper.event.domain.er.ConceptEvent
  */
 public abstract class AbstractConceptEvent 
 		extends AbstractEntityEvent 
-		implements IConceptEvent {
+		implements ConceptEvent {
 
 	private static final long serialVersionUID = 578218386414763706L;
 
@@ -28,7 +28,7 @@ public abstract class AbstractConceptEvent
 	
     protected AbstractConceptEvent() { /* For serialization */ }
 
-	protected AbstractConceptEvent(final IKasperID id, final DateTime lastModificationDate) {
+	protected AbstractConceptEvent(final KasperID id, final DateTime lastModificationDate) {
 		super(id, lastModificationDate);
 	}
 

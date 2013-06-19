@@ -8,11 +8,11 @@ package com.viadeo.kasper.cqrs.query.filter.impl.base;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
-import com.viadeo.kasper.cqrs.query.filter.IQueryField;
-import com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement;
+import com.viadeo.kasper.cqrs.query.filter.QueryDQO;
+import com.viadeo.kasper.cqrs.query.filter.QueryField;
+import com.viadeo.kasper.cqrs.query.filter.QueryFilterElement;
 import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryFilter;
 
 /**
@@ -21,13 +21,13 @@ import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryFilter;
  * @param <DQO> the associated Data Query Object
  * @param <P> the managed payload type
  */
-public class BaseQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comparable<P>> extends
-        AbstractQueryFilter<DQO> implements IQueryFilterElement<DQO, P> {
+public class BaseQueryFilterElement<DQO extends QueryDQO<DQO>, P extends Comparable<P>> extends
+        AbstractQueryFilter<DQO> implements QueryFilterElement<DQO, P> {
 
     private static final long serialVersionUID = -818497044226142978L;
 
     /** the filter field for DTO resolution */
-    private IQueryField<P, DQO, ? extends BaseQueryFilterElement<DQO, P>> field;
+    private QueryField<P, DQO, ? extends BaseQueryFilterElement<DQO, P>> field;
 
     /** the operator to apply on */
     private BaseFilterOperator operator;
@@ -41,17 +41,17 @@ public class BaseQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Compar
 
     }
 
-    public BaseQueryFilterElement(final IQueryField<P, DQO, ? extends BaseQueryFilterElement<DQO, P>> field) {
+    public BaseQueryFilterElement(final QueryField<P, DQO, ? extends BaseQueryFilterElement<DQO, P>> field) {
         this.field = Preconditions.checkNotNull(field);
     }
 
     // ------------------------------------------------------------------------
 
     /**
-     * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilter#isSatisfiedBy(com.viadeo.kasper.cqrs.query.IQueryDTO)
+     * @see com.viadeo.kasper.cqrs.query.filter.QueryFilter#isSatisfiedBy(com.viadeo.kasper.cqrs.query.QueryDTO)
      */
     @Override
-    public boolean isSatisfiedBy(final IQueryDTO dto) {
+    public boolean isSatisfiedBy(final QueryDTO dto) {
         Preconditions.checkNotNull(dto);
 
         if (null == this.field) {
@@ -72,7 +72,7 @@ public class BaseQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Compar
     // ------------------------------------------------------------------------
 
     /**
-     * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement#isSatisfiedBy(Object)
+     * @see com.viadeo.kasper.cqrs.query.filter.QueryFilterElement#isSatisfiedBy(Object)
      */
     @Override
     public boolean isSatisfiedBy(final P value) {
@@ -141,25 +141,25 @@ public class BaseQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Compar
     // ------------------------------------------------------------------------
 
     /**
-     * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement#field(com.viadeo.kasper.cqrs.query.filter.IQueryField)
+     * @see com.viadeo.kasper.cqrs.query.filter.QueryFilterElement#field(com.viadeo.kasper.cqrs.query.filter.QueryField)
      */
     @SuppressWarnings("unchecked")
     // Must be satisfied
     @Override
-    public <FL extends IQueryFilterElement<DQO, P>> BaseQueryFilterElement<DQO, P> field(
-            final IQueryField<P, DQO, FL> field) {
-        this.field = (IQueryField<P, DQO, ? extends BaseQueryFilterElement<DQO, P>>) Preconditions.checkNotNull(field);
+    public <FL extends QueryFilterElement<DQO, P>> BaseQueryFilterElement<DQO, P> field(
+            final QueryField<P, DQO, FL> field) {
+        this.field = (QueryField<P, DQO, ? extends BaseQueryFilterElement<DQO, P>>) Preconditions.checkNotNull(field);
         return this;
     }
 
     /**
-     * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement#getField()
+     * @see com.viadeo.kasper.cqrs.query.filter.QueryFilterElement#getField()
      */
     @SuppressWarnings("unchecked")
     // Must be satisfied
     @Override
-    public <F extends IQueryFilterElement<DQO, P>> Optional<IQueryField<P, DQO, F>> getField() {
-        return Optional.fromNullable((IQueryField<P, DQO, F>) this.field);
+    public <F extends QueryFilterElement<DQO, P>> Optional<QueryField<P, DQO, F>> getField() {
+        return Optional.fromNullable((QueryField<P, DQO, F>) this.field);
     }
 
     // ------------------------------------------------------------------------

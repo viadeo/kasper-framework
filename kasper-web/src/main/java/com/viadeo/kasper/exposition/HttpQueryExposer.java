@@ -10,14 +10,14 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
-import com.viadeo.kasper.cqrs.query.IQuery;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
-import com.viadeo.kasper.cqrs.query.IQueryService;
+import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.locators.IQueryServicesLocator;
-import com.viadeo.kasper.platform.IPlatform;
-import com.viadeo.kasper.query.exposition.IQueryFactory;
-import com.viadeo.kasper.query.exposition.ITypeAdapter;
+import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.query.exposition.QueryFactory;
+import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.QueryFactoryBuilder;
 import com.viadeo.kasper.query.exposition.QueryParser;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
@@ -36,18 +36,18 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
 
-    private final Map<String, Class<? extends IQuery>> exposedQueries = Maps.newHashMap();
-    private final IQueryServicesLocator queryServicesLocator;
-    private final IQueryFactory queryAdapterFactory;
+    private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
+    private final QueryServicesLocator queryServicesLocator;
+    private final QueryFactory queryAdapterFactory;
 
     // ------------------------------------------------------------------------
 
-    public HttpQueryExposer(final IPlatform platform, final IQueryServicesLocator queryLocator) {
+    public HttpQueryExposer(final Platform platform, final QueryServicesLocator queryLocator) {
         this(platform, queryLocator, new QueryFactoryBuilder().create());
     }
 
-    public HttpQueryExposer(IPlatform platform, IQueryServicesLocator queryServicesLocator,
-            IQueryFactory queryAdapterFactory) {
+    public HttpQueryExposer(Platform platform, QueryServicesLocator queryServicesLocator,
+            QueryFactory queryAdapterFactory) {
         super(platform);
         this.queryServicesLocator = queryServicesLocator;
         this.queryAdapterFactory = queryAdapterFactory;
@@ -57,7 +57,7 @@ public class HttpQueryExposer extends HttpExposer {
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing queries ===============");
         // expose all registered queries and commands
-        for (final IQueryService<? extends IQuery, ? extends IQueryDTO> queryService : queryServicesLocator
+        for (final QueryService<? extends Query, ? extends QueryDTO> queryService : queryServicesLocator
                 .getServices()) {
             expose(queryService);
         }
@@ -88,9 +88,9 @@ public class HttpQueryExposer extends HttpExposer {
          */
         try {
             final String queryName = resourceName(req.getRequestURI());
-            final IQuery query = parseQuery(queryName, req, resp);
+            final Query query = parseQuery(queryName, req, resp);
 
-            IQueryDTO dto = null;
+            QueryDTO dto = null;
             if (!resp.isCommitted()) {
                 dto = handleQuery(queryName, query, resp);
             }
@@ -112,11 +112,11 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     // we can not use send error as it will send text/html response.
-    protected IQuery parseQuery(final String queryName, final HttpServletRequest req, final HttpServletResponse resp)
+    protected Query parseQuery(final String queryName, final HttpServletRequest req, final HttpServletResponse resp)
             throws IOException {
 
-        IQuery query = null;
-        final Class<? extends IQuery> queryClass = exposedQueries.get(queryName);
+        Query query = null;
+        final Class<? extends Query> queryClass = exposedQueries.get(queryName);
 
         if (queryClass == null) {
 
@@ -124,7 +124,7 @@ public class HttpQueryExposer extends HttpExposer {
 
         } else {
 
-            final ITypeAdapter<? extends IQuery> adapter = queryAdapterFactory.create(TypeToken.of(queryClass));
+            final TypeAdapter<? extends Query> adapter = queryAdapterFactory.create(TypeToken.of(queryClass));
             final Map<String, List<String>> queryParams = new HashMap<>();
 
             final Enumeration<String> keys = req.getParameterNames();
@@ -154,10 +154,10 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     // can not use sendError it is forcing response to text/html
-    protected IQueryDTO handleQuery(final String queryName, final IQuery query, final HttpServletResponse resp)
+    protected QueryDTO handleQuery(final String queryName, final Query query, final HttpServletResponse resp)
             throws IOException {
 
-        IQueryDTO dto = null;
+        QueryDTO dto = null;
 
         try {
 
@@ -181,7 +181,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     // can not use sendError it is forcing response to text/html
-    protected void sendDTO(final String queryName, final IQueryDTO dto, final HttpServletResponse resp)
+    protected void sendDTO(final String queryName, final QueryDTO dto, final HttpServletResponse resp)
             throws IOException {
 
         final ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
@@ -235,12 +235,12 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    HttpQueryExposer expose(final IQueryService<? extends IQuery, ? extends IQueryDTO> queryService) {
+    HttpQueryExposer expose(final QueryService<? extends Query, ? extends QueryDTO> queryService) {
         checkNotNull(queryService);
 
-        final TypeToken<? extends IQueryService> typeToken = TypeToken.of(queryService.getClass());
-        final Class<? super IQuery> queryClass = (Class<? super IQuery>) typeToken.getSupertype(IQueryService.class)
-                .resolveType(IQueryService.class.getTypeParameters()[0]).getRawType();
+        final TypeToken<? extends QueryService> typeToken = TypeToken.of(queryService.getClass());
+        final Class<? super Query> queryClass = (Class<? super Query>) typeToken.getSupertype(QueryService.class)
+                .resolveType(QueryService.class.getTypeParameters()[0]).getRawType();
 
         final String queryPath = queryToPath(queryClass);
         LOGGER.info("Exposing query[{}] at path[/{}]", queryClass.getSimpleName(), getServletContext().getContextPath()
@@ -252,7 +252,7 @@ public class HttpQueryExposer extends HttpExposer {
 
     // ------------------------------------------------------------------------
 
-    private String queryToPath(final Class<? super IQuery> exposedQuery) {
+    private String queryToPath(final Class<? super Query> exposedQuery) {
         return Introspector.decapitalize(exposedQuery.getSimpleName().replaceAll("Query", ""));
     }
 

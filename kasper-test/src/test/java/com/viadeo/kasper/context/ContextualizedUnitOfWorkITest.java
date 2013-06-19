@@ -2,16 +2,16 @@ package com.viadeo.kasper.context;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.AbstractPlatformTests;
-import com.viadeo.kasper.IKasperID;
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperTestId;
-import com.viadeo.kasper.context.impl.CurrentContext;
-import com.viadeo.kasper.cqrs.command.ICommand;
-import com.viadeo.kasper.cqrs.command.ICommandGateway;
+import com.viadeo.kasper.core.context.CurrentContext;
+import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
-import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.ddd.Repository;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.ddd.impl.AbstractDomain;
@@ -40,13 +40,13 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 
     private static class StaticChecker {
         private static Integer counter = 0;
-        private static IContext context;
+        private static Context context;
 
-        public static void context(final IContext context) {
+        public static void context(final Context context) {
             StaticChecker.context = context;
         }
 
-        public static void verify(final IContext context) {
+        public static void verify(final Context context) {
             counter++;
             final boolean equals = context == StaticChecker.context;
             if (!equals) {
@@ -66,7 +66,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     }
 
     @XKasperCommand
-    public static class ContextTestCommand implements ICommand {
+    public static class ContextTestCommand implements Command {
     }
 
     @XKasperCommandHandler(domain = ContextTestDomain.class)
@@ -75,7 +75,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 
             StaticChecker.verify(CurrentContext.value().get());
 
-            final IRepository<ContextTestAGR> repo = this.getRepository();
+            final Repository<ContextTestAGR> repo = this.getRepository();
 
             try {
                 repo.load(new KasperTestId("42"), 0L);
@@ -94,7 +94,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     public static class ContextTestEvent extends AbstractEntityEvent {
         private static final long serialVersionUID = 7017358308867238442L;
 
-        public ContextTestEvent(final IKasperID id) {
+        public ContextTestEvent(final KasperID id) {
             super(id, DateTime.now());
             StaticChecker.verify(CurrentContext.value().get());
         }
@@ -102,7 +102,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 
     @XKasperConcept(domain = ContextTestDomain.class, label = "test agr")
     public static class ContextTestAGR extends AbstractRootConcept {
-        public ContextTestAGR(final IKasperID id) {
+        public ContextTestAGR(final KasperID id) {
             StaticChecker.verify(CurrentContext.value().get());
             apply(new ContextTestEvent(id));
         }
@@ -118,7 +118,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     @XKasperRepository
     public static class ContextTestRepository extends AbstractRepository<ContextTestAGR> {
         @Override
-        protected Optional<ContextTestAGR> doLoad(final IKasperID aggregateIdentifier, final Long expectedVersion) {
+        protected Optional<ContextTestAGR> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {
             StaticChecker.verify(CurrentContext.value().get());
             return Optional.absent();
         }
@@ -139,8 +139,8 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     public void test() throws Exception {
 
         // Given
-        final IContext context = this.newContext();
-        final ICommandGateway gw = this.getPlatform().getCommandGateway();
+        final Context context = this.newContext();
+        final CommandGateway gw = this.getPlatform().getCommandGateway();
         final ContextTestCommand command = new ContextTestCommand();
         StaticChecker.context(context);
 

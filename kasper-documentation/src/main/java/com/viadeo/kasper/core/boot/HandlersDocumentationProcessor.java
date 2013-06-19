@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import com.viadeo.kasper.cqrs.command.ICommandHandler;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * Process Kasper handler dynamic registration at platform boot
  *
  */
-public class HandlersDocumentationProcessor extends AbstractDocumentationProcessor<XKasperCommandHandler, ICommandHandler<?>> {
+public class HandlersDocumentationProcessor extends DocumentationProcessor<XKasperCommandHandler, CommandHandler<?>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HandlersDocumentationProcessor.class);
 
@@ -25,8 +25,8 @@ public class HandlersDocumentationProcessor extends AbstractDocumentationProcess
 	/**
 	 * Process Kasper handler
 	 * 
-	 * @see ICommandHandler
-	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
+	 * @see com.viadeo.kasper.cqrs.command.CommandHandler
+	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -34,7 +34,7 @@ public class HandlersDocumentationProcessor extends AbstractDocumentationProcess
 		LOGGER.info("Record on handler library : " + handlerClazz.getName());
 		
 		//- Register the handler to the locator -------------------------------
-		getKasperLibrary().recordHandler((Class<? extends ICommandHandler<?>>) handlerClazz);
+		getKasperLibrary().recordHandler((Class<? extends CommandHandler<?>>) handlerClazz);
 	}
 
 }

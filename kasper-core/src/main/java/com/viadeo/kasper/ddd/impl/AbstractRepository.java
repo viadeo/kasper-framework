@@ -8,14 +8,13 @@ package com.viadeo.kasper.ddd.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.ddd.IAggregateRoot;
-import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.ddd.AggregateRoot;
+import com.viadeo.kasper.ddd.Repository;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.repository.AggregateNotFoundException;
-import org.axonframework.repository.Repository;
 
 /** 
  * 
@@ -29,8 +28,7 @@ import org.axonframework.repository.Repository;
  *
  * @param <AGR> Aggregate Root
  */
-public abstract class AbstractRepository<AGR extends IAggregateRoot> 
-		implements Repository<AGR>, IRepository<AGR> {
+public abstract class AbstractRepository<AGR extends AggregateRoot> implements Repository<AGR> {
 	
 	/**
 	 * Decored axon repository
@@ -78,7 +76,7 @@ public abstract class AbstractRepository<AGR extends IAggregateRoot>
 		@SuppressWarnings("unchecked") // Safe
 		final Optional<Class<AGR>> entityType =
 				(Optional<Class<AGR>>) (ReflectionGenericsResolver.getParameterTypeFromClass(
-						this.getClass(), IRepository.class, IRepository.ENTITY_PARAMETER_POSITION));
+						this.getClass(), Repository.class, Repository.ENTITY_PARAMETER_POSITION));
 		
 		if (!entityType.isPresent()) {
 			throw new KasperException("Cannot determine entity type for " + this.getClass().getName());
@@ -136,9 +134,9 @@ public abstract class AbstractRepository<AGR extends IAggregateRoot>
 	protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
 		Preconditions.checkNotNull(aggregateIdentifier);
 		
-		if (IKasperID.class.isAssignableFrom(aggregateIdentifier.getClass())) {
+		if (KasperID.class.isAssignableFrom(aggregateIdentifier.getClass())) {
 			
-			final Optional<AGR> agr = this.doLoad((IKasperID) aggregateIdentifier, expectedVersion);
+			final Optional<AGR> agr = this.doLoad((KasperID) aggregateIdentifier, expectedVersion);
 			if (agr.isPresent()) {
 				return agr.get();
 			}
@@ -160,7 +158,7 @@ public abstract class AbstractRepository<AGR extends IAggregateRoot>
 	 * 
 	 * @return the (optional) aggregate
 	 */
-	protected abstract Optional<AGR> doLoad(final IKasperID aggregateIdentifier, final Long expectedVersion);
+	protected abstract Optional<AGR> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion);
 	
 	/**
 	 * saves a new (create) or existing (update) aggregate to the repository

@@ -1,16 +1,16 @@
 package com.viadeo.kasper.exposition;
 
-import com.viadeo.kasper.cqrs.query.IQuery;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
-import com.viadeo.kasper.cqrs.query.IQueryMessage;
-import com.viadeo.kasper.cqrs.query.IQueryService;
+import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryMessage;
+import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException.ExceptionBuilder;
 import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionDTO;
 import com.viadeo.kasper.ddd.impl.AbstractDomain;
-import com.viadeo.kasper.locators.IQueryServicesLocator;
-import com.viadeo.kasper.platform.IPlatform;
+import com.viadeo.kasper.platform.Platform;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
@@ -30,9 +30,9 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     }
 
     @XKasperQueryService(domain = AccountDomain.class)
-    public static class SomeCollectionQueryService implements IQueryService<SomeCollectionQuery, SomeCollectionDTO> {
+    public static class SomeCollectionQueryService implements QueryService<SomeCollectionQuery, SomeCollectionDTO> {
         @Override
-        public SomeCollectionDTO retrieve(final IQueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
+        public SomeCollectionDTO retrieve(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
             SomeCollectionDTO list = new SomeCollectionDTO();
             SomeDto dto = new SomeDto();
@@ -42,11 +42,11 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         }
     }
 
-    public static class UnknownQuery implements IQuery {
+    public static class UnknownQuery implements Query {
         private static final long serialVersionUID = 3548447022174239091L;
     }
 
-    public static class SomeQuery implements IQuery {
+    public static class SomeQuery implements Query {
         private static final long serialVersionUID = -7447288176593489294L;
 
         private String aValue;
@@ -88,7 +88,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         }
     }
 
-    public static class SomeDto implements IQueryDTO {
+    public static class SomeDto implements QueryDTO {
         private static final long serialVersionUID = 4780302444624913577L;
         private SomeQuery query;
 
@@ -102,9 +102,9 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     }
 
     @XKasperQueryService(domain = AccountDomain.class)
-    public static class SomeQueryService implements IQueryService<SomeQuery, SomeDto> {
+    public static class SomeQueryService implements QueryService<SomeQuery, SomeDto> {
         @Override
-        public SomeDto retrieve(final IQueryMessage<SomeQuery> message) throws KasperQueryException {
+        public SomeDto retrieve(final QueryMessage<SomeQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
 
             if (q.isDoThrowSomeException()) {
@@ -130,7 +130,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
 
     @Override
     protected HttpQueryExposer createExposer(ApplicationContext ctx) {
-        return new HttpQueryExposer(ctx.getBean(IPlatform.class), ctx.getBean(IQueryServicesLocator.class));
+        return new HttpQueryExposer(ctx.getBean(Platform.class), ctx.getBean(QueryServicesLocator.class));
     }
 
     @Test

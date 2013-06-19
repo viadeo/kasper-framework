@@ -57,7 +57,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
     /**
      * Allow user to explicitly specify processor instances to use before boot
      */
-    private transient List<IAnnotationProcessor<?, ?>> userProcessors;
+    private transient List<AnnotationProcessor<?, ?>> userProcessors;
 
     /**
      * User provided scan packages names
@@ -72,8 +72,8 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
     /**
      * Scanned processors
      */
-    private transient Map<Class<? extends Annotation>, List<IAnnotationProcessor<?, ?>>> processors;
-    private transient Map<IAnnotationProcessor<?, ?>, Class<?>> processorsInterface;
+    private transient Map<Class<? extends Annotation>, List<AnnotationProcessor<?, ?>>> processors;
+    private transient Map<AnnotationProcessor<?, ?>, Class<?>> processorsInterface;
 
     /**
      * Class-path reflection resolver
@@ -98,7 +98,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
     /**
      * Bootstrap the Kasper annotations processing phase
      *
-     * @see IAnnotationProcessor
+     * @see AnnotationProcessor
      */
     public void boot() {
         LOGGER.info("Boot Kasper annotation processing");
@@ -146,12 +146,12 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
         processorsInterface = Maps.newHashMap();
 
         @SuppressWarnings("rawtypes") // Deterministic
-        final Set<Class<? extends IAnnotationProcessor>> classes =
-                reflections.getSubTypesOf(IAnnotationProcessor.class);
+        final Set<Class<? extends AnnotationProcessor>> classes =
+                reflections.getSubTypesOf(AnnotationProcessor.class);
 
         // Add user-defined processor classes ---------------------------------
         if (null != this.userProcessors) {
-            for (final IAnnotationProcessor<?, ?> userProc : this.userProcessors) {
+            for (final AnnotationProcessor<?, ?> userProc : this.userProcessors) {
                 if (!classes.contains(userProc.getClass())) {
                     classes.add(userProc.getClass());
                 }
@@ -163,7 +163,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
         }
 
         // Instanciate and record each found processor ------------------------
-        for (@SuppressWarnings("rawtypes") final Class<? extends IAnnotationProcessor> clazz : classes) {
+        for (@SuppressWarnings("rawtypes") final Class<? extends AnnotationProcessor> clazz : classes) {
 
             if (Modifier.isAbstract(clazz.getModifiers())) {
                 continue;
@@ -174,12 +174,12 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
                 @SuppressWarnings("unchecked") // Safe
                 final Optional<Class<? extends Annotation>> annoClass =
                         (Optional<Class<? extends Annotation>>) ReflectionGenericsResolver.getParameterTypeFromClass(clazz,
-                                IAnnotationProcessor.class, IAnnotationProcessor.ANNOTYPE_PARAMETER_POSITION);
+                                AnnotationProcessor.class, AnnotationProcessor.ANNOTYPE_PARAMETER_POSITION);
 
                 @SuppressWarnings("unchecked") // Safe
                 final Optional<Class<?>> interfaceClass =
                         (Optional<Class<?>>) ReflectionGenericsResolver.getParameterTypeFromClass(clazz,
-                                IAnnotationProcessor.class, IAnnotationProcessor.INTERFACE_PARAMETER_POSITION);
+                                AnnotationProcessor.class, AnnotationProcessor.INTERFACE_PARAMETER_POSITION);
 
                 if (annoClass.isPresent() && interfaceClass.isPresent()) {
                     Object objInstance = null;
@@ -192,7 +192,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
 
                     // 1- User supplied processor
                     if (null != this.userProcessors) {
-                        for (final IAnnotationProcessor<?, ?> processor : this.userProcessors) {
+                        for (final AnnotationProcessor<?, ?> processor : this.userProcessors) {
                             if (clazz.isAssignableFrom(processor.getClass())) {
                                 objInstance = processor;
                             }
@@ -221,12 +221,12 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
                     LOGGER.debug("Registered Kasper processor : " + clazz.getName());
 
                     if (!processors.containsKey(annoClass.get())) {
-                        processors.put(annoClass.get(), new ArrayList<IAnnotationProcessor<?, ?>>());
+                        processors.put(annoClass.get(), new ArrayList<AnnotationProcessor<?, ?>>());
                     }
 
                     if (!processors.get(annoClass.get()).contains(objInstance)) {
-                        processors.get(annoClass.get()).add((IAnnotationProcessor<?, ?>) objInstance);
-                        processorsInterface.put((IAnnotationProcessor<?, ?>) objInstance, interfaceClass.get());
+                        processors.get(annoClass.get()).add((AnnotationProcessor<?, ?>) objInstance);
+                        processorsInterface.put((AnnotationProcessor<?, ?>) objInstance, interfaceClass.get());
                     }
 
                 } else {
@@ -253,7 +253,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
         LOGGER.info("Delegate to Kasper annotation processors");
 
         for (final Class<? extends Annotation> annotation : processors.keySet()) {
-            for (final IAnnotationProcessor<?, ?> processor : processors.get(annotation)) {
+            for (final AnnotationProcessor<?, ?> processor : processors.get(annotation)) {
                 final Class<?> tplClass = processorsInterface.get(processor);
 
                 LOGGER.info(String.format("Delegate for %s to %s", tplClass.getSimpleName(), processor.getClass().getSimpleName()));
@@ -287,7 +287,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
      *
      * @param processor the processor to register
      */
-    public void registerProcessor(final IAnnotationProcessor<?, ?> processor) {
+    public void registerProcessor(final AnnotationProcessor<?, ?> processor) {
         Preconditions.checkNotNull(processor);
 
         if (null == this.userProcessors) {

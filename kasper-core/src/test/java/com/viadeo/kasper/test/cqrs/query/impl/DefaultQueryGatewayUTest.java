@@ -1,15 +1,15 @@
 package com.viadeo.kasper.test.cqrs.query.impl;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.context.IContext;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
-import com.viadeo.kasper.cqrs.query.IQuery;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
-import com.viadeo.kasper.cqrs.query.IQueryMessage;
-import com.viadeo.kasper.cqrs.query.IQueryService;
+import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryMessage;
+import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
-import com.viadeo.kasper.locators.IQueryServicesLocator;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -24,29 +24,29 @@ import static org.mockito.Mockito.*;
 
 public class DefaultQueryGatewayUTest {
 
-    private class ServiceWhichRaiseExceptionQuery implements IQuery {
+    private class ServiceWhichRaiseExceptionQuery implements Query {
     }
 
-    private class TestDTO implements IQueryDTO {
+    private class TestDTO implements QueryDTO {
     }
 
     // ------------------------------------------------------------------------
 
-    public class ServiceWhichRaiseException implements IQueryService<ServiceWhichRaiseExceptionQuery, TestDTO> {
+    public class ServiceWhichRaiseException implements QueryService<ServiceWhichRaiseExceptionQuery, TestDTO> {
         @Override
-        public TestDTO retrieve(final IQueryMessage<ServiceWhichRaiseExceptionQuery> message) throws Exception {
+        public TestDTO retrieve(final QueryMessage<ServiceWhichRaiseExceptionQuery> message) throws Exception {
             return null;
         }
     }
 
-    private IContext defaultContext() {
+    private Context defaultContext() {
         return new DefaultContextBuilder().buildDefault();
     }
 
-    private DefaultQueryGateway getQueryGatewayForQueryAndService(final IQuery query, final IQueryService service) {
+    private DefaultQueryGateway getQueryGatewayForQueryAndService(final Query query, final QueryService service) {
 
         // Associates Query and Service
-        final IQueryServicesLocator locator = mock(IQueryServicesLocator.class);
+        final QueryServicesLocator locator = mock(QueryServicesLocator.class);
         when(locator.getServiceFromQueryClass(query.getClass())).thenReturn(Optional.of(service));
 
         // Create the queryGateway with mocked locator
@@ -68,9 +68,9 @@ public class DefaultQueryGatewayUTest {
         // Given - a_service_which_raise_exception;
         final ServiceWhichRaiseException service = Mockito.spy(new ServiceWhichRaiseException());
         doThrow(new FileNotFoundException("Exception in the service implementation")).when(service).retrieve(
-                Matchers.<IQueryMessage<ServiceWhichRaiseExceptionQuery>> any());
+                Matchers.<QueryMessage<ServiceWhichRaiseExceptionQuery>> any());
 
-        final IQuery query = new ServiceWhichRaiseExceptionQuery();
+        final Query query = new ServiceWhichRaiseExceptionQuery();
         final DefaultQueryGateway queryGateway = getQueryGatewayForQueryAndService(query, service);
 
         // When
@@ -98,9 +98,9 @@ public class DefaultQueryGatewayUTest {
         // Given - a_service_which_raise_exception;
         final ServiceWhichRaiseException service = Mockito.spy(new ServiceWhichRaiseException());
         doThrow(new KasperQueryException("a KasperQueryException in the service implementation")).when(service)
-                .retrieve(Matchers.<IQueryMessage<ServiceWhichRaiseExceptionQuery>> any());
+                .retrieve(Matchers.<QueryMessage<ServiceWhichRaiseExceptionQuery>> any());
 
-        final IQuery query = new ServiceWhichRaiseExceptionQuery();
+        final Query query = new ServiceWhichRaiseExceptionQuery();
         DefaultQueryGateway queryGateway = getQueryGatewayForQueryAndService(query, service);
 
         // When

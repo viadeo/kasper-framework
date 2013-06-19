@@ -7,23 +7,23 @@
 package com.viadeo.kasper.ddd.specification.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.IEntity;
-import com.viadeo.kasper.ddd.specification.IEntitySpecification;
+import com.viadeo.kasper.ddd.Entity;
+import com.viadeo.kasper.ddd.specification.EntitySpecification;
 
 /**
  *
  * @param <E> Entity
  * 
- * @see IEntitySpecification
- * @see IEntity
+ * @see com.viadeo.kasper.ddd.specification.EntitySpecification
+ * @see com.viadeo.kasper.ddd.Entity
  */
-public class NotSpecification<E extends IEntity> extends AbstractSpecification<E> {
+public class NotSpecification<E extends Entity> extends AbstractSpecification<E> {
 
-	private final IEntitySpecification<E> spec;
+	private final EntitySpecification<E> spec;
 
 	// ----------------------------------------------------------------------
 
-	public NotSpecification(final IEntitySpecification<E> spec) {
+	public NotSpecification(final EntitySpecification<E> spec) {
 		super();
 		
 		this.spec = Preconditions.checkNotNull(spec);
@@ -32,7 +32,7 @@ public class NotSpecification<E extends IEntity> extends AbstractSpecification<E
 	// ----------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.ddd.specification.impl.AbstractSpecification#isSatisfiedBy(com.viadeo.kasper.ddd.IEntity)
+	 * @see com.viadeo.kasper.ddd.specification.impl.AbstractSpecification#isSatisfiedBy(com.viadeo.kasper.ddd.Entity)
 	 */
 	@Override
 	public boolean isSatisfiedBy(final E entity) {

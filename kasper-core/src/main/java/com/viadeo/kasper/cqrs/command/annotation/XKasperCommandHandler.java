@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.annotation;
 
-import com.viadeo.kasper.IDomain;
+import com.viadeo.kasper.Domain;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -27,5 +27,5 @@ public @interface XKasperCommandHandler {
 	 */
 	String description() default "";
 	
-	Class<? extends IDomain> domain();
+	Class<? extends Domain> domain();
 }

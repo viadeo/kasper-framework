@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import com.viadeo.kasper.ddd.IInternalDomain;
+import com.viadeo.kasper.ddd.InternalDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperDomain
  */
-public class DomainsDocumentationProcessor extends AbstractDocumentationProcessor<XKasperDomain, IInternalDomain> {
+public class DomainsDocumentationProcessor extends DocumentationProcessor<XKasperDomain, InternalDomain> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DomainsDocumentationProcessor.class);
 
@@ -26,7 +26,7 @@ public class DomainsDocumentationProcessor extends AbstractDocumentationProcesso
 	/**
 	 * Process Kasper domain
 	 * 
-	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
+	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -34,7 +34,7 @@ public class DomainsDocumentationProcessor extends AbstractDocumentationProcesso
 		LOGGER.info("Record on domain library : " + domainClazz.getName());
 
 		//- Register the domain to the locator --------------------------------
-		getKasperLibrary().recordDomain((Class<? extends IInternalDomain>) domainClazz);
+		getKasperLibrary().recordDomain((Class<? extends InternalDomain>) domainClazz);
 	}
 
 }

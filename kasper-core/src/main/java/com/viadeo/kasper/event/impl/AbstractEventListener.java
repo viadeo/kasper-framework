@@ -7,9 +7,8 @@
 package com.viadeo.kasper.event.impl;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.event.IEvent;
-import com.viadeo.kasper.event.IEventListener;
-import com.viadeo.kasper.event.IEventMessage;
+import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
@@ -19,19 +18,19 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
  *
  * @param <E> Event
  */
-public abstract class AbstractEventListener<E extends IEvent> 
-		implements IEventListener<E> {
+public abstract class AbstractEventListener<E extends Event>
+		implements EventListener<E> {
 
-	private final Class<? extends IEvent> eventClass;
+	private final Class<? extends Event> eventClass;
 	
 	// ------------------------------------------------------------------------
 	
 	public AbstractEventListener() {
 		@SuppressWarnings("unchecked")
-		final Optional<Class<? extends IEvent>> eventClassOpt = 
-				(Optional<Class<? extends IEvent>>) 
+		final Optional<Class<? extends Event>> eventClassOpt =
+				(Optional<Class<? extends Event>>)
 				ReflectionGenericsResolver.getParameterTypeFromClass(
-						this.getClass(), IEventListener.class, IEventListener.EVENT_PARAMETER_POSITION);
+						this.getClass(), EventListener.class, EventListener.EVENT_PARAMETER_POSITION);
 		
 		if (eventClassOpt.isPresent()) {
 			this.eventClass = eventClassOpt.get();
@@ -42,7 +41,7 @@ public abstract class AbstractEventListener<E extends IEvent>
 	
 	// ------------------------------------------------------------------------
 	
-	public Class<? extends IEvent> getEventClass() {
+	public Class<? extends Event> getEventClass() {
 		return this.eventClass;
 	}
 	
@@ -61,7 +60,7 @@ public abstract class AbstractEventListener<E extends IEvent>
 			return;
 		}
 		
-		final IEventMessage<E> message = new EventMessage<E>(eventMessage);
+		final com.viadeo.kasper.event.EventMessage<E> message = new DefaultEventMessage(eventMessage);
 		
 		try {
 			this.handle(message);
@@ -75,7 +74,7 @@ public abstract class AbstractEventListener<E extends IEvent>
 	/**
 	 * @param eventMessage the Kasper event message to handle
 	 */
-	public void handle(final IEventMessage<E> eventMessage){
+	public void handle(final com.viadeo.kasper.event.EventMessage<E> eventMessage){
 		throw new UnsupportedOperationException();
 	}
 

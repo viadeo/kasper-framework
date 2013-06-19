@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.viadeo.kasper.platform.IPlatform;
+import com.viadeo.kasper.platform.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,11 +20,11 @@ public abstract class HttpExposer extends HttpServlet {
 	private static final long serialVersionUID = 8448984922303895424L;
 	protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 	        
-	private IPlatform platform;
+	private Platform platform;
 
     // ------------------------------------------------------------------------
 
-	protected HttpExposer(final IPlatform platform) {
+	protected HttpExposer(final Platform platform) {
 	    this.platform = platform;
 	}
 
@@ -61,7 +61,7 @@ public abstract class HttpExposer extends HttpServlet {
 
     // ------------------------------------------------------------------------
 
-	protected final IPlatform platform() {
+	protected final Platform platform() {
 		return platform;
 	}
 

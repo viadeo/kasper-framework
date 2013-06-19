@@ -7,11 +7,11 @@
 package com.viadeo.kasper.ddd.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.IAggregateRoot;
-import com.viadeo.kasper.ddd.IEntity;
-import com.viadeo.kasper.ddd.IInternalDomain;
-import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.locators.IDomainLocator;
+import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.ddd.AggregateRoot;
+import com.viadeo.kasper.ddd.Entity;
+import com.viadeo.kasper.ddd.InternalDomain;
+import com.viadeo.kasper.ddd.Repository;
 
 import java.util.Set;
 
@@ -19,10 +19,10 @@ import java.util.Set;
  *
  * Base Kasper domain implementation
  *
- * @see IInternalDomain
+ * @see com.viadeo.kasper.ddd.InternalDomain
  */
-public abstract class AbstractDomain implements IInternalDomain {
-	private IDomainLocator domainLocator;
+public abstract class AbstractDomain implements InternalDomain {
+	private DomainLocator domainLocator;
 
 	// ------------------------------------------------------------------------
 
@@ -38,30 +38,30 @@ public abstract class AbstractDomain implements IInternalDomain {
 
 	// ------------------------------------------------------------------------
 
-	public void setDomainLocator(final IDomainLocator domainLocator) {
+	public void setDomainLocator(final DomainLocator domainLocator) {
 		this.domainLocator = Preconditions.checkNotNull(domainLocator);
 	}
 
-	public IDomainLocator getDomainLocator() {
+	public DomainLocator getDomainLocator() {
 		return this.domainLocator;
 	}
 
 	// ------------------------------------------------------------------------
 
 	@Override
-	public <E extends IAggregateRoot> IRepository<E> getEntityRepository(final E entity) {
+	public <E extends AggregateRoot> Repository<E> getEntityRepository(final E entity) {
 		return this.domainLocator.getEntityRepository(Preconditions.checkNotNull(entity));
 	}
 
 	@Override
-	public <E extends IAggregateRoot> IRepository<E> getEntityRepository(final Class<E> entityClass) {
+	public <E extends AggregateRoot> Repository<E> getEntityRepository(final Class<E> entityClass) {
 		return this.domainLocator.getEntityRepository(Preconditions.checkNotNull(entityClass));
 	}
 
 	// ------------------------------------------------------------------------
 
 	@Override
-	public Set<? extends IEntity> getDomainEntities() {
+	public Set<? extends Entity> getDomainEntities() {
 		return this.domainLocator.getDomainEntities(this.getClass());
 	}
 

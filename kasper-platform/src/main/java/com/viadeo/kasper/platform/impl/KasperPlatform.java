@@ -9,21 +9,21 @@ package com.viadeo.kasper.platform.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.context.IContext;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
-import com.viadeo.kasper.cqrs.command.ICommandGateway;
-import com.viadeo.kasper.cqrs.query.IQueryGateway;
-import com.viadeo.kasper.event.IEvent;
-import com.viadeo.kasper.platform.IPlatform;
+import com.viadeo.kasper.cqrs.command.CommandGateway;
+import com.viadeo.kasper.cqrs.query.QueryGateway;
+import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.platform.Platform;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
 
 import java.util.Map;
 
-public class KasperPlatform implements IPlatform {
+public class KasperPlatform implements Platform {
 
-	protected ICommandGateway commandGateway;
-	protected IQueryGateway queryGateway;
+	protected CommandGateway commandGateway;
+	protected QueryGateway queryGateway;
 	protected AnnotationRootProcessor rootProcessor;
 	protected EventBus eventBus;
 	private volatile Boolean _booted = false;
@@ -42,7 +42,7 @@ public class KasperPlatform implements IPlatform {
 	}
 
 	@Override
-	public ICommandGateway getCommandGateway() {
+	public CommandGateway getCommandGateway() {
 		return this.commandGateway;
 	}
 
@@ -51,20 +51,20 @@ public class KasperPlatform implements IPlatform {
 	}
 
 	@Override
-	public IQueryGateway getQueryGateway() {
+	public QueryGateway getQueryGateway() {
 		return this.queryGateway;
 	}
 
 	@Override
-	public void publishEvent(final IEvent event) {
+	public void publishEvent(final Event event) {
 		Preconditions.checkNotNull(event);
 		Preconditions.checkState(event.getContext().isPresent(), "Context must be present !");
 
-		final IContext context = event.getContext().get();
+		final Context context = event.getContext().get();
 		final Map<String, Object> metaData = Maps.newHashMap();
-		metaData.put(IContext.METANAME, Preconditions.checkNotNull(context));
+		metaData.put(Context.METANAME, Preconditions.checkNotNull(context));
 
-		final GenericEventMessage<IEvent> eventMessageAxon = 
+		final GenericEventMessage<Event> eventMessageAxon =
 				new GenericEventMessage<>(event, metaData);
 
 		this.eventBus.publish(eventMessageAxon);
@@ -73,7 +73,7 @@ public class KasperPlatform implements IPlatform {
 	// ------------------------------------------------------------------------
 
 	@Override
-	public void setCommandGateway(final ICommandGateway commandGateway) {
+	public void setCommandGateway(final CommandGateway commandGateway) {
 		this.commandGateway = Preconditions.checkNotNull(commandGateway);
 	}
 
@@ -83,7 +83,7 @@ public class KasperPlatform implements IPlatform {
 	}
 
 	@Override
-	public void setQueryGateway(final IQueryGateway queryGateway) {
+	public void setQueryGateway(final QueryGateway queryGateway) {
 		this.queryGateway = Preconditions.checkNotNull(queryGateway);
 	}
 

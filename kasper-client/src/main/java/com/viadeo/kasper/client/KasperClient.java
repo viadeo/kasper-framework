@@ -18,15 +18,15 @@ import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.async.TypeListener;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import com.viadeo.kasper.client.lib.ICallback;
-import com.viadeo.kasper.cqrs.command.ICommand;
+import com.viadeo.kasper.client.lib.Callback;
+import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.query.IQuery;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.query.exposition.IQueryFactory;
-import com.viadeo.kasper.query.exposition.ITypeAdapter;
+import com.viadeo.kasper.query.exposition.QueryFactory;
+import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.KasperQueryAdapterException;
 import com.viadeo.kasper.query.exposition.QueryBuilder;
 
@@ -56,7 +56,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p>
  * <strong>Usage</strong><br />
  * KasperClient supports synchronous and asynchronous requests. Sending asynchronous requests can be done by asking for
- * a java Future or by passing a {@link ICallback callback} argument. For example submitting a command asynchronously
+ * a java Future or by passing a {@link com.viadeo.kasper.client.lib.Callback callback} argument. For example submitting a command asynchronously
  * with a callback (we will use here a client with its default configuration). <br/>
  * Command and query methods can throw KasperClientException, which are unchecked exceptions in order to avoid
  * boilerplate code.
@@ -93,7 +93,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <ul>
  * <li>Query implementations must be composed only of simple types (serialized to litterals), if you need a complex
  * query or some type used in your query is not supported you should ask the team responsible of maintaining the kasper
- * platform to implement a custom {@link ITypeAdapter} for that specific type.</li>
+ * platform to implement a custom {@link com.viadeo.kasper.query.exposition.TypeAdapter} for that specific type.</li>
  * <li>At the moment the DTO to which the result should be mapped is free, but take care it must match the resulting
  * stream. This will probably change in the future by making IQuery parameterized with a DTO. Thus query methods
  * signature could change.</li>
@@ -108,7 +108,7 @@ public class KasperClient {
     private final URL queryBaseLocation;
 
     @VisibleForTesting
-    final IQueryFactory queryFactory;
+    final QueryFactory queryFactory;
 
     // ------------------------------------------------------------------------
 
@@ -124,7 +124,7 @@ public class KasperClient {
 
     // --
 
-    KasperClient(final IQueryFactory queryFactory, final ObjectMapper mapper, final URL commandBaseUrl,
+    KasperClient(final QueryFactory queryFactory, final ObjectMapper mapper, final URL commandBaseUrl,
             final URL queryBaseUrl) {
 
         final DefaultClientConfig cfg = new DefaultClientConfig();
@@ -138,7 +138,7 @@ public class KasperClient {
 
     // --
 
-    KasperClient(final IQueryFactory queryFactory, final Client client, final URL commandBaseUrl, final URL queryBaseUrl) {
+    KasperClient(final QueryFactory queryFactory, final Client client, final URL commandBaseUrl, final URL queryBaseUrl) {
 
         this.client = client;
         this.commandBaseLocation = commandBaseUrl;
@@ -157,9 +157,9 @@ public class KasperClient {
      * @return the command result, indicating if the command has been processed successfully or not (in that case you
      * can get the error message from the command).
      * @throws KasperException KasperClientException if something went wrong.
-     * @see ICommandResult
+     * @see CommandResult
      */
-    public CommandResult send(final ICommand command) {
+    public CommandResult send(final Command command) {
         checkNotNull(command);
 
         final ClientResponse response = client.resource(resolveCommandPath(command.getClass()))
@@ -178,9 +178,9 @@ public class KasperClient {
      * @param command to submit
      * @return a Future allowing to retrieve the result later.
      * @throws KasperException if something went wrong.
-     * @see ICommandResult
+     * @see CommandResult
      */
-    public Future<? extends CommandResult> sendAsync(final ICommand command) {
+    public Future<? extends CommandResult> sendAsync(final Command command) {
         checkNotNull(command);
 
         final Future<ClientResponse> futureResponse = client.asyncResource(resolveCommandPath(command.getClass()))
@@ -221,9 +221,9 @@ public class KasperClient {
      * @param command to submit
      * @param callback to call when the response is ready.
      * @throws KasperException if something went wrong.
-     * @see ICommandResult
+     * @see CommandResult
      */
-    public void sendAsync(final ICommand command, final ICallback<CommandResult> callback) {
+    public void sendAsync(final Command command, final Callback<CommandResult> callback) {
         checkNotNull(command);
 
         client.asyncResource(resolveCommandPath(command.getClass()))
@@ -258,7 +258,7 @@ public class KasperClient {
      * @return an instance of the DTO for this query.
      * @throws KasperException if something went wrong.
      */
-    public <T extends IQueryDTO> T query(final IQuery query, final Class<T> mapTo) {
+    public <T extends QueryDTO> T query(final Query query, final Class<T> mapTo) {
         return query(query, TypeToken.of(mapTo));
     }
 
@@ -282,7 +282,7 @@ public class KasperClient {
      * @return an instance of the DTO for this query.
      * @throws KasperException if something went wrong.
      */
-    public <T extends IQueryDTO> T query(final IQuery query, final TypeToken<T> mapTo) {
+    public <T extends QueryDTO> T query(final Query query, final TypeToken<T> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
@@ -297,17 +297,17 @@ public class KasperClient {
 
     // --
 
-    public <T extends IQueryDTO> Future<T> queryAsync(final IQuery query, final Class<T> mapTo) {
+    public <T extends QueryDTO> Future<T> queryAsync(final Query query, final Class<T> mapTo) {
         return queryAsync(query, TypeToken.of(mapTo));
     }
 
     /**
      * FIXME should we also handle async in the platform side ?? Is it really useful?
      * 
-     * @see KasperClient#query(IQuery, Class)
-     * @see KasperClient#sendAsync(ICommand)
+     * @see KasperClient#query(com.viadeo.kasper.cqrs.query.Query, Class)
+     * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command)
      */
-    public <T extends IQueryDTO> Future<T> queryAsync(final IQuery query, final TypeToken<T> mapTo) {
+    public <T extends QueryDTO> Future<T> queryAsync(final Query query, final TypeToken<T> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
@@ -343,20 +343,20 @@ public class KasperClient {
     // --
 
     /**
-     * @see KasperClient#query(IQuery, Class)
-     * @see KasperClient#sendAsync(ICommand, ICallback)
+     * @see KasperClient#query(com.viadeo.kasper.cqrs.query.Query, Class)
+     * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command, com.viadeo.kasper.client.lib.Callback)
      */
-    public <T extends IQueryDTO> void queryAsync(final IQuery query, final Class<T> mapTo, final ICallback<T> callback) {
+    public <T extends QueryDTO> void queryAsync(final Query query, final Class<T> mapTo, final Callback<T> callback) {
 
         queryAsync(query, TypeToken.of(mapTo), callback);
     }
 
     /**
-     * @see KasperClient#query(IQuery, Class)
-     * @see KasperClient#sendAsync(ICommand, ICallback)
+     * @see KasperClient#query(com.viadeo.kasper.cqrs.query.Query, Class)
+     * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command, com.viadeo.kasper.client.lib.Callback)
      */
-    public <T extends IQueryDTO> void queryAsync(final IQuery query, final TypeToken<T> mapTo,
-            final ICallback<T> callback) {
+    public <T extends QueryDTO> void queryAsync(final Query query, final TypeToken<T> mapTo,
+            final Callback<T> callback) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
@@ -377,7 +377,7 @@ public class KasperClient {
                 });
     }
 
-    private <T extends IQueryDTO> T handleQueryResponse(final ClientResponse response, final TypeToken<T> mapTo) {
+    private <T extends QueryDTO> T handleQueryResponse(final ClientResponse response, final TypeToken<T> mapTo) {
         final Status status = response.getClientResponseStatus();
         
         // handle errors
@@ -393,10 +393,10 @@ public class KasperClient {
 
     // --
 
-    MultivaluedMap<String, String> prepareQueryParams(final IQuery query) {
+    MultivaluedMap<String, String> prepareQueryParams(final Query query) {
         try {
             @SuppressWarnings("unchecked")
-            final ITypeAdapter<IQuery> adapter = (ITypeAdapter<IQuery>) queryFactory.create(TypeToken.of(query.getClass()));
+            final TypeAdapter<Query> adapter = (TypeAdapter<Query>) queryFactory.create(TypeToken.of(query.getClass()));
 
             final QueryBuilder queryBuilder = new QueryBuilder();
             adapter.adapt(query, queryBuilder);
@@ -417,12 +417,12 @@ public class KasperClient {
     // RESOLVERS
     // ------------------------------------------------------------------------
 
-    private URI resolveCommandPath(final Class<? extends ICommand> commandClass) {
+    private URI resolveCommandPath(final Class<? extends Command> commandClass) {
         final String className = commandClass.getSimpleName().replace("Command", "");
         return resolvePath(commandBaseLocation, Introspector.decapitalize(className), commandClass);
     }
 
-    private URI resolveQueryPath(final Class<? extends IQuery> queryClass) {
+    private URI resolveQueryPath(final Class<? extends Query> queryClass) {
         final String className = queryClass.getSimpleName().replace("Query", "");
         return resolvePath(queryBaseLocation, Introspector.decapitalize(className), queryClass);
     }

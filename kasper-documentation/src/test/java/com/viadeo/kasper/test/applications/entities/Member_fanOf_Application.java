@@ -1,10 +1,10 @@
 package com.viadeo.kasper.test.applications.entities;
 
-import com.viadeo.kasper.IDomain;
-import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.er.IRootRelation;
+import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.er.RootRelation;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
-import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.test.applications.Applications;
 import com.viadeo.kasper.test.root.entities.Member;
 import org.axonframework.domain.DomainEventStream;
@@ -12,20 +12,20 @@ import org.axonframework.domain.EventRegistrationCallback;
 import org.joda.time.DateTime;
 
 @XKasperRelation(domain = Applications.class, label = Member_fanOf_Application.NAME, description = Member_fanOf_Application.DESCRIPTION)
-public class Member_fanOf_Application implements IRootRelation<Member, Application> {
+public class Member_fanOf_Application implements RootRelation<Member, Application> {
 	private static final long serialVersionUID = -6384465229521499408L;
 	
 	public static final String NAME = "fan_of";
 	public static final String DESCRIPTION = "Tha Member is a big fan of this application";
 
 	@Override
-	public IKasperID getSourceIdentifier() {
+	public KasperID getSourceIdentifier() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public IKasperID getTargetIdentifier() {
+	public KasperID getTargetIdentifier() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -37,19 +37,19 @@ public class Member_fanOf_Application implements IRootRelation<Member, Applicati
 	}
 
 	@Override
-	public IDomain getDomain() {
+	public Domain getDomain() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void setDomainLocator(IDomainLocator domainLocator) {
+	public void setDomainLocator(DomainLocator domainLocator) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public <I extends IKasperID> I getEntityId() {
+	public <I extends KasperID> I getEntityId() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -85,7 +85,7 @@ public class Member_fanOf_Application implements IRootRelation<Member, Applicati
 	}
 
 	@Override
-	public IKasperID getIdentifier() {
+	public KasperID getIdentifier() {
 		// TODO Auto-generated method stub
 		return null;
 	}

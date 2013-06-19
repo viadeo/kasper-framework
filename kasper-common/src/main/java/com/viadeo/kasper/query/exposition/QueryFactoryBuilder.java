@@ -22,38 +22,38 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.query.exposition.NullSafeTypeAdapter.nullSafe;
 
 public class QueryFactoryBuilder {
-	private ConcurrentMap<Type, ITypeAdapter<?>> adapters = Maps.newConcurrentMap();
-	private ConcurrentMap<Type, AbstractBeanAdapter<?>> beanAdapters = Maps.newConcurrentMap();
-	private List<ITypeAdapterFactory<?>> factories = Lists.newArrayList();
+	private ConcurrentMap<Type, TypeAdapter<?>> adapters = Maps.newConcurrentMap();
+	private ConcurrentMap<Type, BeanAdapter<?>> beanAdapters = Maps.newConcurrentMap();
+	private List<TypeAdapterFactory<?>> factories = Lists.newArrayList();
 	private VisibilityFilter visibilityFilter = VisibilityFilter.PACKAGE_PUBLIC;
 
 	// ------------------------------------------------------------------------
 
 	@SuppressWarnings("unchecked")
-	public QueryFactoryBuilder use(final ITypeAdapter<?> adapter) {
+	public QueryFactoryBuilder use(final TypeAdapter<?> adapter) {
 		checkNotNull(adapter);
 
 		final TypeToken<?> adapterForType = TypeToken.of(adapter.getClass())
-				.getSupertype(ITypeAdapter.class)
-				.resolveType(ITypeAdapter.class.getTypeParameters()[0]);
+				.getSupertype(TypeAdapter.class)
+				.resolveType(TypeAdapter.class.getTypeParameters()[0]);
 
 		adapters.putIfAbsent(adapterForType.getType(), new NullSafeTypeAdapter<>(
-				(ITypeAdapter<Object>) adapter));
+				(TypeAdapter<Object>) adapter));
 
 		return this;
 	}
 
-	public QueryFactoryBuilder use(final ITypeAdapterFactory<?> factory) {
+	public QueryFactoryBuilder use(final TypeAdapterFactory<?> factory) {
 		factories.add(checkNotNull(factory));
 		return this;
 	}
 	
-	public QueryFactoryBuilder use(final AbstractBeanAdapter<?> beanAdapter) {
+	public QueryFactoryBuilder use(final BeanAdapter<?> beanAdapter) {
 	    checkNotNull(beanAdapter);
 	    
 	    final TypeToken<?> adapterForType = TypeToken.of(beanAdapter.getClass())
-                .getSupertype(AbstractBeanAdapter.class)
-                .resolveType(AbstractBeanAdapter.class.getTypeParameters()[0]);
+                .getSupertype(BeanAdapter.class)
+                .resolveType(BeanAdapter.class.getTypeParameters()[0]);
 
         beanAdapters.putIfAbsent(adapterForType.getType(), beanAdapter);
 
@@ -65,16 +65,16 @@ public class QueryFactoryBuilder {
 		return this;
 	}
 
-	public IQueryFactory create() {
-		for (ITypeAdapter<?> adapter : loadServices(ITypeAdapter.class)) {
+	public QueryFactory create() {
+		for (TypeAdapter<?> adapter : loadServices(TypeAdapter.class)) {
 			use(adapter);
         }
 		
-		for (AbstractBeanAdapter<?> beanAdapter : loadServices(AbstractBeanAdapter.class)) {
+		for (BeanAdapter<?> beanAdapter : loadServices(BeanAdapter.class)) {
             use(beanAdapter);
         }
 		
-		for (ITypeAdapterFactory<?> adapterFactory : loadServices(ITypeAdapterFactory.class)) {
+		for (TypeAdapterFactory<?> adapterFactory : loadServices(TypeAdapterFactory.class)) {
             use(adapterFactory);
         }
 
@@ -99,7 +99,7 @@ public class QueryFactoryBuilder {
 		factories.add(DefaultTypeAdapters.ARRAY_ADAPTER_FACTORY);
 		factories.add(DefaultTypeAdapters.ENUM_ADAPTER_FACTORY);
 
-		return new AbstractQueryFactory(adapters, beanAdapters, factories, visibilityFilter);
+		return new DefaultQueryFactory(adapters, beanAdapters, factories, visibilityFilter);
 	}
 	
 	@VisibleForTesting

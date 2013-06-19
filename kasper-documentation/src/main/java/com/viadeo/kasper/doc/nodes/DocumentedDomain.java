@@ -7,7 +7,7 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.ddd.IInternalDomain;
+import com.viadeo.kasper.ddd.InternalDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.doc.KasperLibrary;
 
@@ -24,7 +24,7 @@ public final class DocumentedDomain extends DocumentedNode {
 	
 	// ------------------------------------------------------------------------
 	
-	public DocumentedDomain(final KasperLibrary kl, final Class<? extends IInternalDomain> domainClazz) {		
+	public DocumentedDomain(final KasperLibrary kl, final Class<? extends InternalDomain> domainClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);		
 		
 		final XKasperDomain annotation = domainClazz.getAnnotation(XKasperDomain.class);		

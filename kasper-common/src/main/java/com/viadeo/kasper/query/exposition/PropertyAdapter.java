@@ -7,7 +7,7 @@
 package com.viadeo.kasper.query.exposition;
 
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.cqrs.query.IQuery;
+import com.viadeo.kasper.cqrs.query.Query;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -30,14 +30,14 @@ class PropertyAdapter {
     private final Method mutator;
     private final Method accessor;
     private final BeanProperty property;
-    private final ITypeAdapter<Object> adapter;
+    private final TypeAdapter<Object> adapter;
     // it is a bit ugly to use it to distinguish between typeadapter and beanadapter, 
     // but it does the work with less code & anyway PropertyAdapter is an internal class 
     private final boolean handleName;
 
     // ------------------------------------------------------------------------
 
-    public PropertyAdapter(final BeanProperty property, final Method accessor, final Method mutator, final ITypeAdapter<Object> adapter, final boolean handleName) {
+    public PropertyAdapter(final BeanProperty property, final Method accessor, final Method mutator, final TypeAdapter<Object> adapter, final boolean handleName) {
         this.property = checkNotNull(property);
         this.accessor = checkNotNull(accessor);
 
@@ -81,7 +81,7 @@ class PropertyAdapter {
          * does not have such thing).
          */
 
-        if (IQuery.class.isAssignableFrom(rawClass) || !handleName) {
+        if (Query.class.isAssignableFrom(rawClass) || !handleName) {
 
             return adapter.adapt(parser);
 

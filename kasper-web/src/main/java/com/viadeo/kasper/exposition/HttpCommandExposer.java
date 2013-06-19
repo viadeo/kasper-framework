@@ -15,11 +15,11 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.command.ICommand;
-import com.viadeo.kasper.cqrs.command.ICommandHandler;
-import com.viadeo.kasper.locators.IDomainLocator;
-import com.viadeo.kasper.platform.IPlatform;
+import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 
 import javax.servlet.ServletException;
@@ -35,12 +35,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class HttpCommandExposer extends HttpExposer {
     private static final long serialVersionUID = 8444284922303895624L;
 
-    private final Map<String, Class<? extends ICommand>> exposedCommands = new HashMap<>();
-    private IDomainLocator domainLocator;
+    private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
+    private DomainLocator domainLocator;
 
     // ------------------------------------------------------------------------
 
-    public HttpCommandExposer(final IPlatform platform, final IDomainLocator domainLocator) {
+    public HttpCommandExposer(final Platform platform, final DomainLocator domainLocator) {
         super(platform);
         this.domainLocator = checkNotNull(domainLocator);
     }
@@ -50,7 +50,7 @@ public class HttpCommandExposer extends HttpExposer {
     @Override
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing commands ===============");
-        for (final ICommandHandler<? extends ICommand> handler : domainLocator.getHandlers()) {
+        for (final CommandHandler<? extends Command> handler : domainLocator.getHandlers()) {
             expose(handler);
         }
         if (exposedCommands.isEmpty())
@@ -95,7 +95,7 @@ public class HttpCommandExposer extends HttpExposer {
         String commandName = resourceName(req.getRequestURI());
 
         // locate corresponding command class
-        Class<? extends ICommand> commandClass = exposedCommands.get(commandName);
+        Class<? extends Command> commandClass = exposedCommands.get(commandName);
         if (null == commandClass) {
             sendError(resp, HttpServletResponse.SC_NOT_FOUND, "Command[" + commandName + "] not found.");
             return;
@@ -116,7 +116,7 @@ public class HttpCommandExposer extends HttpExposer {
 
             // parse the input stream to that command, no utility method for inputstream+type??
             parser = reader.getFactory().createJsonParser(req.getInputStream());
-            ICommand command = reader.readValue(parser, commandClass);
+            Command command = reader.readValue(parser, commandClass);
 
             // FIXME 1 use context from request
             // FIXME 2 does it make sense to have async commands here? In any
@@ -158,7 +158,7 @@ public class HttpCommandExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     protected void sendResponse(final CommandResult result, final HttpServletResponse resp,
-            final Class<? extends ICommand> commandClass) throws IOException {
+            final Class<? extends Command> commandClass) throws IOException {
 
         final ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
         JsonGenerator generator = null;
@@ -219,11 +219,11 @@ public class HttpCommandExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    HttpExposer expose(final ICommandHandler<? extends ICommand> commandHandler) {
+    HttpExposer expose(final CommandHandler<? extends Command> commandHandler) {
         checkNotNull(commandHandler);
-        final TypeToken<? extends ICommandHandler> typeToken = TypeToken.of(commandHandler.getClass());
-        final Class<? super ICommand> commandClass = (Class<? super ICommand>) typeToken
-                .getSupertype(ICommandHandler.class).resolveType(ICommandHandler.class.getTypeParameters()[0])
+        final TypeToken<? extends CommandHandler> typeToken = TypeToken.of(commandHandler.getClass());
+        final Class<? super Command> commandClass = (Class<? super Command>) typeToken
+                .getSupertype(CommandHandler.class).resolveType(CommandHandler.class.getTypeParameters()[0])
                 .getRawType();
         final String commandPath = commandToPath(commandClass);
         LOGGER.info("Exposing command[{}] at path[/{}]", commandClass.getSimpleName(), getServletContext()
@@ -234,7 +234,7 @@ public class HttpCommandExposer extends HttpExposer {
 
     // ------------------------------------------------------------------------
 
-    private String commandToPath(final Class<? super ICommand> exposedCommand) {
+    private String commandToPath(final Class<? super Command> exposedCommand) {
         return Introspector.decapitalize(exposedCommand.getSimpleName().replaceAll("Command", ""));
     }
 

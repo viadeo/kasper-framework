@@ -124,8 +124,8 @@ public class KasperDocResourceTest extends JerseyTest {
         kasperLibrary = new KasperLibrary(); // Assign the static instance
         
         for (final Class<?> processorClazz : PROCESSORS) {
-            final AbstractDocumentationProcessor<?,?> processor = 
-            		(AbstractDocumentationProcessor<?, ?>) processorClazz.newInstance();
+            final DocumentationProcessor<?,?> processor =
+            		(DocumentationProcessor<?, ?>) processorClazz.newInstance();
             processor.setKasperLibrary(kasperLibrary);
             rootProcessor.registerProcessor(processor);
         }

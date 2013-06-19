@@ -7,22 +7,21 @@
 package com.viadeo.kasper.ddd.specification.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.IEntity;
-import com.viadeo.kasper.ddd.specification.IEntitySpecification;
-import com.viadeo.kasper.ddd.specification.ISpecificationErrorMessage;
+import com.viadeo.kasper.ddd.Entity;
+import com.viadeo.kasper.ddd.specification.*;
 
 /**
  * @param <E> the entity
  */
-public abstract class AbstractCompositeSpecification<E extends IEntity> 
+public abstract class AbstractCompositeSpecification<E extends Entity>
 		extends AbstractSpecification<E> {
 
-	protected final IEntitySpecification<E> spec1;
-	protected final IEntitySpecification<E> spec2;
+	protected final EntitySpecification<E> spec1;
+	protected final EntitySpecification<E> spec2;
 
 	// ----------------------------------------------------------------------
 
-	public AbstractCompositeSpecification(final IEntitySpecification<E> spec1, final IEntitySpecification<E> spec2) {
+	public AbstractCompositeSpecification(final EntitySpecification<E> spec1, final EntitySpecification<E> spec2) {
 		this.spec1 = Preconditions.checkNotNull(spec1);
 		this.spec2 = Preconditions.checkNotNull(spec2);
 	}
@@ -33,6 +32,6 @@ public abstract class AbstractCompositeSpecification<E extends IEntity>
 	 * Force reimplementation in child classes
 	 */
 	@Override
-	public abstract boolean isSatisfiedBy(final E entity, final ISpecificationErrorMessage errorMessage);
+	public abstract boolean isSatisfiedBy(final E entity, final com.viadeo.kasper.ddd.specification.SpecificationErrorMessage errorMessage);
 	
 }

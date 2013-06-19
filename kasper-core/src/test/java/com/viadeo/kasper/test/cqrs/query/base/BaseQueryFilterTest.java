@@ -1,7 +1,7 @@
 package com.viadeo.kasper.test.cqrs.query.base;
 
-import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
-import com.viadeo.kasper.cqrs.query.filter.IQueryFilterGroup.Operator;
+import com.viadeo.kasper.cqrs.query.filter.QueryFilter;
+import com.viadeo.kasper.cqrs.query.filter.QueryFilterGroup.Operator;
 import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryFilter;
 import com.viadeo.kasper.test.cqrs.query.StubbedDQTOS.DQOTest;
 import junit.framework.Assert;
@@ -13,8 +13,8 @@ public class BaseQueryFilterTest {
 	@Test
 	public void testOperators() {
 		@SuppressWarnings("unchecked")
-		final IQueryFilter<DQOTest> filter = Mockito
-		.mock(IQueryFilter.class);
+		final QueryFilter<DQOTest> filter = Mockito
+		.mock(QueryFilter.class);
 
 		@SuppressWarnings("unchecked")
 		final AbstractQueryFilter<DQOTest> tested = Mockito.mock(

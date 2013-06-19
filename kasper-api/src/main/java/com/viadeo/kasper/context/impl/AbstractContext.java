@@ -8,7 +8,7 @@ package com.viadeo.kasper.context.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.context.IContext;
+import com.viadeo.kasper.context.Context;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -18,7 +18,7 @@ import java.util.Map;
  * Simple implementation of a IContext
  *
  */
-public abstract class AbstractContext implements IContext {
+public abstract class AbstractContext implements Context {
 	private static final long serialVersionUID = 1887660968377933167L;
 	
 	private Map<String, Serializable> properties;

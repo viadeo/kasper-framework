@@ -8,13 +8,12 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.cqrs.command.ICommand;
-import com.viadeo.kasper.cqrs.command.IEntityCommandHandler;
+import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
-import com.viadeo.kasper.ddd.IAggregateRoot;
-import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.locators.IDomainLocator;
+import com.viadeo.kasper.ddd.AggregateRoot;
+import com.viadeo.kasper.ddd.Repository;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 /**
@@ -22,22 +21,22 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
  * 
  * @param <C> Command
  * @param <AGR> the entity (aggregate root)
- * @see IAggregateRoot
- * @see IEntityCommandHandler
- * @see com.viadeo.kasper.cqrs.command.ICommandHandler
- * @see com.viadeo.kasper.ddd.IEntity
- * @see IAggregateRoot
+ * @see com.viadeo.kasper.ddd.AggregateRoot
+ * @see com.viadeo.kasper.cqrs.command.EntityCommandHandler
+ * @see com.viadeo.kasper.cqrs.command.CommandHandler
+ * @see com.viadeo.kasper.ddd.Entity
+ * @see com.viadeo.kasper.ddd.AggregateRoot
  */
-public abstract class AbstractEntityCommandHandler<C extends ICommand, AGR extends IAggregateRoot> extends
-        AbstractCommandHandler<C> implements IEntityCommandHandler<C, AGR> {
+public abstract class AbstractEntityCommandHandler<C extends Command, AGR extends AggregateRoot> extends
+        AbstractCommandHandler<C> implements EntityCommandHandler<C, AGR> {
 
-    private transient IDomainLocator domainLocator;
+    private transient DomainLocator domainLocator;
 
     // ------------------------------------------------------------------------
 
     // Consistent data container for entity class and repository
-    private static final class Consistent<E extends IAggregateRoot> {
-        private IRepository<E> repository;
+    private static final class Consistent<E extends AggregateRoot> {
+        private Repository<E> repository;
         private Class<E> entityClass;
 
         @SuppressWarnings("unchecked")
@@ -46,8 +45,8 @@ public abstract class AbstractEntityCommandHandler<C extends ICommand, AGR exten
         }
 
         @SuppressWarnings("unchecked")
-        void setRepository(final IRepository<?> repository) {
-            this.repository = (IRepository<E>) repository;
+        void setRepository(final Repository<?> repository) {
+            this.repository = (Repository<E>) repository;
         }
     }
 
@@ -64,9 +63,9 @@ public abstract class AbstractEntityCommandHandler<C extends ICommand, AGR exten
 
         @SuppressWarnings("unchecked")
         // Safe
-        final Optional<Class<? extends IAggregateRoot>> entityAssignClass = (Optional<Class<? extends IAggregateRoot>>) ReflectionGenericsResolver
-                .getParameterTypeFromClass(this.getClass(), IEntityCommandHandler.class,
-                        IEntityCommandHandler.ENTITY_PARAMETER_POSITION);
+        final Optional<Class<? extends AggregateRoot>> entityAssignClass = (Optional<Class<? extends AggregateRoot>>) ReflectionGenericsResolver
+                .getParameterTypeFromClass(this.getClass(), EntityCommandHandler.class,
+                        EntityCommandHandler.ENTITY_PARAMETER_POSITION);
 
         if (!entityAssignClass.isPresent()) {
             throw new KasperCommandException("Cannot determine entity type for " + this.getClass().getName());
@@ -80,26 +79,26 @@ public abstract class AbstractEntityCommandHandler<C extends ICommand, AGR exten
     /**
      * @param domainLocator
      */
-    public void setDomainLocator(final IDomainLocator domainLocator) {
+    public void setDomainLocator(final DomainLocator domainLocator) {
         this.domainLocator = domainLocator;
     }
 
     // ========================================================================
 
     /**
-     * @see com.viadeo.kasper.cqrs.command.IEntityCommandHandler#setRepository(com.viadeo.kasper.ddd.IRepository)
+     * @see com.viadeo.kasper.cqrs.command.EntityCommandHandler#setRepository(com.viadeo.kasper.ddd.Repository)
      */
     @Override
-    public void setRepository(final IRepository<AGR> repository) {
+    public void setRepository(final Repository<AGR> repository) {
         this.consistent.setRepository(Preconditions.checkNotNull(repository));
     }
 
     /**
-     * @see com.viadeo.kasper.cqrs.command.IEntityCommandHandler#getRepository()
+     * @see com.viadeo.kasper.cqrs.command.EntityCommandHandler#getRepository()
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <R extends IRepository<AGR>> R getRepository() {
+    public <R extends Repository<AGR>> R getRepository() {
         if (null == this.consistent.repository) {
             if (null == this.domainLocator) {
                 throw new KasperCommandException("Unable to resolve repository, no domain locator was provided");

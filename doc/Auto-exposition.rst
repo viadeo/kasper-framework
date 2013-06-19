@@ -149,7 +149,7 @@ Suppose you want to support URIs but there is no default adapter for this type:
 
 .. code-block:: java
 
-  class URITypeAdapter implements ITypeAdapter<URI> {
+  class URITypeAdapter implements TypeAdapter<URI> {
     @Override
     public void adapt(URI value, QueryBuilder builder) {
         builder.add(value.toString());

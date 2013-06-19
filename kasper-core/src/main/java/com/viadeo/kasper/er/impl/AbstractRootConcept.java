@@ -7,18 +7,18 @@
 package com.viadeo.kasper.er.impl;
 
 import com.viadeo.kasper.ddd.impl.AbstractAggregateRoot;
-import com.viadeo.kasper.er.IRootConcept;
+import com.viadeo.kasper.er.RootConcept;
 
 /**
  * Base Kasper Concept Aggregate Root implementation
  *
- * @see com.viadeo.kasper.er.IConcept
- * @see IRootConcept
- * @see com.viadeo.kasper.ddd.IAggregateRoot
+ * @see com.viadeo.kasper.er.Concept
+ * @see com.viadeo.kasper.er.RootConcept
+ * @see com.viadeo.kasper.ddd.AggregateRoot
  */
 public abstract class AbstractRootConcept 
 		extends AbstractAggregateRoot
-		implements IRootConcept {
+		implements RootConcept {
 
 	private static final long serialVersionUID = -1431592970440969164L;
 

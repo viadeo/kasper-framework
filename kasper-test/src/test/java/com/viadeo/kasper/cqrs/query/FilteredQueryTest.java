@@ -1,11 +1,11 @@
 package com.viadeo.kasper.cqrs.query;
 
 import com.viadeo.kasper.AbstractPlatformTests;
-import com.viadeo.kasper.IDomain;
-import com.viadeo.kasper.context.IContext;
+import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
-import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
-import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
+import com.viadeo.kasper.cqrs.query.filter.QueryDQO;
+import com.viadeo.kasper.cqrs.query.filter.QueryFilter;
 import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.impl.FilteredQuery;
 import com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryField;
@@ -19,7 +19,7 @@ public class FilteredQueryTest extends AbstractPlatformTests {
 
 	// ------------------------------------------------------------------------
 
-	private static final class TestDTO implements IQueryDTO {
+	private static final class TestDTO implements QueryDTO {
 		private static final long serialVersionUID = -7571158053188747847L;
 		private final String name;
 
@@ -33,7 +33,7 @@ public class FilteredQueryTest extends AbstractPlatformTests {
 
 	}
 
-	private static final class TestDomain implements IDomain {
+	private static final class TestDomain implements Domain {
 		@Override
 		public String getPrefix() {
 			return "tst";
@@ -45,7 +45,7 @@ public class FilteredQueryTest extends AbstractPlatformTests {
 	}
 
 	// "*Field" classes are public (so there is no gain in testing accessibility here)
-	public static final class TestField<DQO extends IQueryDQO<DQO>>
+	public static final class TestField<DQO extends QueryDQO<DQO>>
 			extends BaseQueryField<String, DQO> {}
 
 	private static final class TestDQO
@@ -58,16 +58,16 @@ public class FilteredQueryTest extends AbstractPlatformTests {
 
 	@XKasperQueryService(domain = TestDomain.class)
 	public static final class TestService
-			implements IQueryService<TestQuery, TestDTO> {
+			implements QueryService<TestQuery, TestDTO> {
 		@Override
-		public TestDTO retrieve(final IQueryMessage<TestQuery> message) {
+		public TestDTO retrieve(final QueryMessage<TestQuery> message) {
 			return new TestDTO("the test two");
 		}
 	}
 
 	// ------------------------------------------------------------------------
 
-	private final IQueryGateway servicesGateway;
+	private final QueryGateway servicesGateway;
 
 	public FilteredQueryTest() {
 		super();
@@ -84,7 +84,7 @@ public class FilteredQueryTest extends AbstractPlatformTests {
 		final TestDQO dqo = query.dqo();
 
 		// When
-		final IQueryFilter<TestDQO> filter =
+		final QueryFilter<TestDQO> filter =
 				dqo.name.filter().endsWith("test").or(
 						dqo.name.filter().startsWith("test").and(
 								dqo.name.filter().endsWith("two")
@@ -96,7 +96,7 @@ public class FilteredQueryTest extends AbstractPlatformTests {
 		assertTrue(filter.isSatisfiedBy(new TestDTO("test two")));
 
 		// Given
-		final IContext context = this.newContext();
+		final Context context = this.newContext();
 
 		// When
 		query.setFilter(filter);

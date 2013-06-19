@@ -14,11 +14,11 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
-import com.viadeo.kasper.client.lib.ICallback;
+import com.viadeo.kasper.client.lib.Callback;
+import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResult.Status;
-import com.viadeo.kasper.cqrs.command.ICommand;
 import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -52,7 +52,7 @@ public class KasperClientCommandTest extends JerseyTest {
     
     //-------------------------------------------------------------------------
     
-    public static class MemberDTO implements IQueryDTO {
+    public static class MemberDTO implements QueryDTO {
         private static final long serialVersionUID = 271804229442342903L;
 
         private String memberName;
@@ -86,7 +86,7 @@ public class KasperClientCommandTest extends JerseyTest {
         }
     }
 
-    public static class CreateMemberCommand implements ICommand {
+    public static class CreateMemberCommand implements Command {
         private static final long serialVersionUID = -2618953642539379331L;
         private Status status;
 
@@ -191,7 +191,7 @@ public class KasperClientCommandTest extends JerseyTest {
     	// Given 
         final CountDownLatch latch = new CountDownLatch(1);
         final CreateMemberCommand command = new CreateMemberCommand(Status.OK);
-        final ICallback<CommandResult> callback = spy(new ICallback<CommandResult>() {
+        final Callback<CommandResult> callback = spy(new Callback<CommandResult>() {
             @Override
             public void done(CommandResult object) {
                 latch.countDown();

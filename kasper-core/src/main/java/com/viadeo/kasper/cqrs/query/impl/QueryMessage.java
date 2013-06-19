@@ -7,24 +7,23 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.context.IContext;
-import com.viadeo.kasper.cqrs.query.IQuery;
-import com.viadeo.kasper.cqrs.query.IQueryMessage;
+import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.cqrs.query.Query;
 
 /**
  * The kasper query message base implementation
  *
  * @param <Q> the enclosed query type
  */
-public class QueryMessage<Q extends IQuery> implements IQueryMessage<Q> {
+public class QueryMessage<Q extends Query> implements com.viadeo.kasper.cqrs.query.QueryMessage<Q> {
 
 	private static final long serialVersionUID = 8648752933168387124L;
-	private final IContext context;
+	private final Context context;
 	private final Q query;
 
 	// -----------------------------------------------------------------------
 
-	public QueryMessage(final IContext context, final Q query) {
+	public QueryMessage(final Context context, final Q query) {
 		this.context = Preconditions.checkNotNull(context);
 		this.query = Preconditions.checkNotNull(query);
 	}
@@ -39,7 +38,7 @@ public class QueryMessage<Q extends IQuery> implements IQueryMessage<Q> {
 	// -----------------------------------------------------------------------
 
 	@Override
-	public IContext getContext() {
+	public Context getContext() {
 		return this.context;
 	}
 

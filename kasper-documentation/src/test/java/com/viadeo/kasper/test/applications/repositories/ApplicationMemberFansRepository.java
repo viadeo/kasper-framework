@@ -1,11 +1,11 @@
 package com.viadeo.kasper.test.applications.repositories;
 
-import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.ddd.Repository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.test.applications.entities.Member_fanOf_Application;
 
 @XKasperRepository
-public class ApplicationMemberFansRepository implements IRepository<Member_fanOf_Application> {
+public class ApplicationMemberFansRepository implements Repository<Member_fanOf_Application> {
 
 	@Override
 	public void add(final Member_fanOf_Application arg0) {

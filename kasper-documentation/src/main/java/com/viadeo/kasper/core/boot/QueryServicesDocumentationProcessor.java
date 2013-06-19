@@ -7,7 +7,7 @@
 package com.viadeo.kasper.core.boot;
 
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
-import com.viadeo.kasper.cqrs.query.IQueryService;
+import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperCommand
  */
-public class QueryServicesDocumentationProcessor extends AbstractDocumentationProcessor<XKasperQueryService, IQueryService<?,?>> {
+public class QueryServicesDocumentationProcessor extends DocumentationProcessor<XKasperQueryService, QueryService<?,?>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueryServicesDocumentationProcessor.class);
 
@@ -26,8 +26,8 @@ public class QueryServicesDocumentationProcessor extends AbstractDocumentationPr
 	/**
 	 * Process Kasper query
 	 * 
-	 * @see IQueryService
-	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
+	 * @see com.viadeo.kasper.cqrs.query.QueryService
+	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -35,7 +35,7 @@ public class QueryServicesDocumentationProcessor extends AbstractDocumentationPr
 		LOGGER.info("Record on query services library : " + queryServiceClazz.getName());
 		
 		//- Register the domain to the locator --------------------------------
-		getKasperLibrary().recordQueryService((Class<? extends IQueryService<?,?>>) queryServiceClazz);
+		getKasperLibrary().recordQueryService((Class<? extends QueryService<?,?>>) queryServiceClazz);
 	}
 
 	

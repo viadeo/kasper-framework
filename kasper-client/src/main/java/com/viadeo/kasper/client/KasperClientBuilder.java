@@ -30,7 +30,7 @@ public class KasperClientBuilder {
     private ObjectMapper mapper;
     private URL commandBaseLocation;
     private URL queryBaseLocation;
-    private IQueryFactory queryFactory;
+    private QueryFactory queryFactory;
     private final QueryFactoryBuilder qFactoryBuilder = new QueryFactoryBuilder();
 
     // ------------------------------------------------------------------------
@@ -43,13 +43,13 @@ public class KasperClientBuilder {
     /**
      * Registers an adapter for its parameterized type for query ser/deser. Registration of adapters should be done in
      * domain api projects as they are shared between server and clients. To allow adapters discovery prefer using java
-     * service loader mechanism. Create a file named com.viadeo.kasper.query.exposition.ITypeAdapter under
+     * service loader mechanism. Create a file named com.viadeo.kasper.query.exposition.TypeAdapter under
      * META-INF/services and put inside the name of your adapters. They will be automatically discovered by the
      * KasperClient.
      * 
      * @param mapper to register for query serialization/deserialization.
      * @return a reference to this builder.
-     * @see ITypeAdapter
+     * @see com.viadeo.kasper.query.exposition.TypeAdapter
      */
     public KasperClientBuilder use(final ObjectMapper mapper) {
         checkNotNull(mapper);
@@ -57,21 +57,21 @@ public class KasperClientBuilder {
         return this;
     }
 
-    public KasperClientBuilder use(final IQueryFactory queryFactory) {
+    public KasperClientBuilder use(final QueryFactory queryFactory) {
         checkNotNull(queryFactory);
         this.queryFactory = queryFactory;
         return this;
     }
 
-    public KasperClientBuilder use(final ITypeAdapter<?> adapter) {
+    public KasperClientBuilder use(final TypeAdapter<?> adapter) {
         qFactoryBuilder.use(adapter);
         return this;
     }
 
     /**
-     * @see #use(ITypeAdapter)
+     * @see #use(com.viadeo.kasper.query.exposition.TypeAdapter)
      */
-    public KasperClientBuilder use(final ITypeAdapterFactory<?> factory) {
+    public KasperClientBuilder use(final TypeAdapterFactory<?> factory) {
         qFactoryBuilder.use(factory);
         return this;
     }

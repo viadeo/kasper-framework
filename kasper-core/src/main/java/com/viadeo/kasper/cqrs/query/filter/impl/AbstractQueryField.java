@@ -10,11 +10,11 @@ package com.viadeo.kasper.cqrs.query.filter.impl;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
-import com.viadeo.kasper.cqrs.query.filter.IQueryField;
-import com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement;
+import com.viadeo.kasper.cqrs.query.filter.QueryDQO;
+import com.viadeo.kasper.cqrs.query.filter.QueryField;
+import com.viadeo.kasper.cqrs.query.filter.QueryFilterElement;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.lang.reflect.Field;
@@ -24,10 +24,10 @@ import java.lang.reflect.Field;
  * 
  * @param <P> the field payload (Comparable)
  * 
- * @see IQueryField
- * @see IQueryDQO
+ * @see com.viadeo.kasper.cqrs.query.filter.QueryField
+ * @see com.viadeo.kasper.cqrs.query.filter.QueryDQO
  */
-public abstract class AbstractQueryField<P, DQO extends IQueryDQO<DQO>, F extends IQueryFilterElement<DQO, P>> implements IQueryField<P, DQO, F> {
+public abstract class AbstractQueryField<P, DQO extends QueryDQO<DQO>, F extends QueryFilterElement<DQO, P>> implements QueryField<P, DQO, F> {
 
 	/** The name of the field */
 	private String name;
@@ -50,7 +50,7 @@ public abstract class AbstractQueryField<P, DQO extends IQueryDQO<DQO>, F extend
 			final Optional<Class<F>> optClass = 
 				(Optional<Class<F>>) 
 					ReflectionGenericsResolver.getParameterTypeFromClass(
-							this.getClass(), IQueryField.class, IQueryField.PARAMETER_FILTER_POSITION);
+							this.getClass(), QueryField.class, QueryField.PARAMETER_FILTER_POSITION);
 
 			if (!optClass.isPresent()) {
 				throw new KasperQueryException("Unable to find class for associated filter on " + this.getClass());
@@ -65,10 +65,10 @@ public abstract class AbstractQueryField<P, DQO extends IQueryDQO<DQO>, F extend
 	/**
 	 * Resolve DQO field from a specified DTO
 	 * 
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryField#getFieldValue(com.viadeo.kasper.cqrs.query.IQueryDTO)
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryField#getFieldValue(com.viadeo.kasper.cqrs.query.QueryDTO)
 	 */
 	@Override
-	public Optional<P> getFieldValue(final IQueryDTO dto) {
+	public Optional<P> getFieldValue(final QueryDTO dto) {
 
 		// Default behaviour, try to get DTO with field name ------------------
 		// TODO: XPath implementation ?
@@ -104,7 +104,7 @@ public abstract class AbstractQueryField<P, DQO extends IQueryDQO<DQO>, F extend
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryField#getName()
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryField#getName()
 	 */
 	@Override
 	public String getName() {
@@ -112,7 +112,7 @@ public abstract class AbstractQueryField<P, DQO extends IQueryDQO<DQO>, F extend
 	}
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryField#setName(java.lang.String)
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryField#setName(java.lang.String)
 	 */
 	@Override
 	public void setName(final String name) {
@@ -122,7 +122,7 @@ public abstract class AbstractQueryField<P, DQO extends IQueryDQO<DQO>, F extend
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryField#filter()
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryField#filter()
 	 */
 	@Override
 	public F filter() {

@@ -7,7 +7,7 @@
 package com.viadeo.kasper.ddd.values.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.values.IValue;
+import com.viadeo.kasper.ddd.values.Value;
 
 import java.io.Serializable;
 
@@ -18,7 +18,7 @@ import java.io.Serializable;
  * @param <PAYLOAD> The enclosed type
  */
 public abstract class AbstractEnclosingValue<PAYLOAD extends Serializable> 
-		implements IValue {
+		implements Value {
 
 	private static final long serialVersionUID = -2912518894544854252L;
 

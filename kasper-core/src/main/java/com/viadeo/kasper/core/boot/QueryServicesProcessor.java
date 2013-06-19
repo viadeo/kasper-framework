@@ -8,9 +8,9 @@
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.cqrs.query.IQueryService;
+import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
-import com.viadeo.kasper.locators.IQueryServicesLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,25 +20,25 @@ import org.slf4j.LoggerFactory;
  * 
  * @see XKasperQueryService
  */
-public class QueryServicesProcessor extends AbstractSingletonAnnotationProcessor<XKasperQueryService, IQueryService<?,?>> {
+public class QueryServicesProcessor extends SingletonAnnotationProcessor<XKasperQueryService, QueryService<?,?>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueryServicesProcessor.class);
 
 	/**
 	 * The locator to register query services on
 	 */
-	private transient IQueryServicesLocator queryServicesLocator;
+	private transient QueryServicesLocator queryServicesLocator;
 
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Process Kasper query service
 	 * 
-	 * @see IQueryService
-	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
+	 * @see com.viadeo.kasper.cqrs.query.QueryService
+	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
-	public void process(final Class<?> queryServiceClazz, final IQueryService<?,?> queryService) {
+	public void process(final Class<?> queryServiceClazz, final QueryService<?,?> queryService) {
 		LOGGER.info("Record on query services locator : " + queryServiceClazz.getName());
 
 		final String serviceName;
@@ -58,7 +58,7 @@ public class QueryServicesProcessor extends AbstractSingletonAnnotationProcessor
 	/**
 	 * @param queryServicesLocator the locator to register query services on
 	 */
-	public void setQueryServicesLocator(final IQueryServicesLocator queryServicesLocator) {
+	public void setQueryServicesLocator(final QueryServicesLocator queryServicesLocator) {
 		this.queryServicesLocator = Preconditions.checkNotNull(queryServicesLocator);
 	}
 

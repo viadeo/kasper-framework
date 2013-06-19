@@ -10,17 +10,17 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.cqrs.query.IQuery;
+import com.viadeo.kasper.cqrs.query.Query;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class TestTypeAdapterRoundTrips {
 
-	private IQueryFactory factory = new QueryFactoryBuilder().create();
+	private QueryFactory factory = new QueryFactoryBuilder().create();
 	
 	@Test public void testQueryWithDefaultValues() throws Exception {
-	    final ITypeAdapter<QueryWithDefaultValue> adapter = factory.create(TypeToken.of(QueryWithDefaultValue.class));
+	    final TypeAdapter<QueryWithDefaultValue> adapter = factory.create(TypeToken.of(QueryWithDefaultValue.class));
 	    
 	    QueryWithDefaultValue query = adapter.adapt(new QueryParser(new HashMap<String, List<String>>()));
 	    
@@ -33,7 +33,7 @@ public class TestTypeAdapterRoundTrips {
         // Given
 		final PrimitiveArrayQuery expected = new PrimitiveArrayQuery();
 		expected.array = new int[]{1, 2, 3};
-		final ITypeAdapter<PrimitiveArrayQuery> adapter = factory.create(TypeToken.of(PrimitiveArrayQuery.class));
+		final TypeAdapter<PrimitiveArrayQuery> adapter = factory.create(TypeToken.of(PrimitiveArrayQuery.class));
 		final QueryBuilder qBuilder = new QueryBuilder();
 
         // When
@@ -46,7 +46,7 @@ public class TestTypeAdapterRoundTrips {
 	
     // ------------------------------------------------------------------------
 
-	public static class QueryWithDefaultValue implements IQuery {
+	public static class QueryWithDefaultValue implements Query {
         private static final long serialVersionUID = 6077221562941902221L;
         
         private int value = 10;
@@ -60,7 +60,7 @@ public class TestTypeAdapterRoundTrips {
         }
 	}
 	
-	public static class PrimitiveArrayQuery implements IQuery {
+	public static class PrimitiveArrayQuery implements Query {
 		private static final long serialVersionUID = 1604748331409564661L;
 		
 		private int[] array;

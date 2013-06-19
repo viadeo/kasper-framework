@@ -1,10 +1,10 @@
 package com.viadeo.kasper.test.timelines.entities;
 
-import com.viadeo.kasper.IDomain;
-import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.er.IComponentRelation;
+import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.er.ComponentRelation;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
-import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.test.root.entities.Member;
 import com.viadeo.kasper.test.timelines.Timelines;
 import org.axonframework.domain.DomainEventMessage;
@@ -12,25 +12,25 @@ import org.axonframework.eventsourcing.AbstractEventSourcedAggregateRoot;
 import org.joda.time.DateTime;
 
 @XKasperRelation(domain = Timelines.class, label = Timeline_ownedBy_Member.NAME)
-public class Timeline_ownedBy_Member implements IComponentRelation<Timeline, Member> {
+public class Timeline_ownedBy_Member implements ComponentRelation<Timeline, Member> {
 	private static final long serialVersionUID = 2346719835553766381L;
 	
 	public static final String NAME = "published_by";
 
 	@Override
-	public IDomain getDomain() {
+	public Domain getDomain() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void setDomainLocator(IDomainLocator domainLocator) {
+	public void setDomainLocator(DomainLocator domainLocator) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public <I extends IKasperID> I getEntityId() {
+	public <I extends KasperID> I getEntityId() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -62,13 +62,13 @@ public class Timeline_ownedBy_Member implements IComponentRelation<Timeline, Mem
 	}
 
 	@Override
-	public IKasperID getSourceIdentifier() {
+	public KasperID getSourceIdentifier() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public IKasperID getTargetIdentifier() {
+	public KasperID getTargetIdentifier() {
 		// TODO Auto-generated method stub
 		return null;
 	}

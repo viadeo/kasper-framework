@@ -4,15 +4,15 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResult.Status;
-import com.viadeo.kasper.cqrs.command.ICommand;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
 import com.viadeo.kasper.ddd.impl.AbstractDomain;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.locators.IDomainLocator;
-import com.viadeo.kasper.platform.IPlatform;
+import com.viadeo.kasper.platform.Platform;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
@@ -26,7 +26,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 
     @Override
     protected HttpCommandExposer createExposer(ApplicationContext ctx) {
-        return new HttpCommandExposer(ctx.getBean(IPlatform.class), ctx.getBean(IDomainLocator.class));
+        return new HttpCommandExposer(ctx.getBean(Platform.class), ctx.getBean(DomainLocator.class));
     }
 
     // ------------------------------------------------------------------------
@@ -35,7 +35,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
     public void testCommandNotFound() throws Exception {
         // Given an unknown command
         @SuppressWarnings("serial")
-        final ICommand unknownCommand = new ICommand() {};
+        final Command unknownCommand = new Command() {};
 
         // When
         final CommandResult result = client().send(unknownCommand);
@@ -96,7 +96,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 
     // ------------------------------------------------------------------------
 
-    public static class CreateAccountCommand implements ICommand {
+    public static class CreateAccountCommand implements Command {
         private static final long serialVersionUID = 674842094873929150L;
 
         private String name;

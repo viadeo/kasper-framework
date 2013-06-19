@@ -8,11 +8,11 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.IDomain;
-import com.viadeo.kasper.ddd.IAggregateRoot;
+import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.er.IRelation;
-import com.viadeo.kasper.er.IRootConcept;
+import com.viadeo.kasper.er.Relation;
+import com.viadeo.kasper.er.RootConcept;
 import com.viadeo.kasper.er.annotation.XBidirectional;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
@@ -31,7 +31,7 @@ public final class DocumentedRelation extends DocumentedEntity {
 	
 	// ------------------------------------------------------------------------
 	
-	public DocumentedRelation(final KasperLibrary kl, final Class<? extends IRelation<?,?>> relationClazz) {
+	public DocumentedRelation(final KasperLibrary kl, final Class<? extends Relation<?,?>> relationClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
 		final XKasperRelation annotation = relationClazz.getAnnotation(XKasperRelation.class);
@@ -40,24 +40,24 @@ public final class DocumentedRelation extends DocumentedEntity {
 		final String label = annotation.label();
 				
 		// Find if it's an aggregate ------------------------------------------
-		final boolean isAggregate = IAggregateRoot.class.isAssignableFrom(relationClazz);
+		final boolean isAggregate = AggregateRoot.class.isAssignableFrom(relationClazz);
 		
 		// Find associated domain ---------------------------------------------
-		final Class<? extends IDomain> domain = annotation.domain();		
+		final Class<? extends Domain> domain = annotation.domain();
 		final String domainName = domain.getSimpleName();
 		
 		// Find source and target root concepts -------------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends IRootConcept>> sourceClass =  
-				(Optional<Class<? extends IRootConcept>>) 
+		final Optional<Class<? extends RootConcept>> sourceClass =
+				(Optional<Class<? extends RootConcept>>)
 					ReflectionGenericsResolver.getParameterTypeFromClass(
-							relationClazz, IRelation.class, IRelation.SOURCE_PARAMETER_POSITION);
+							relationClazz, Relation.class, Relation.SOURCE_PARAMETER_POSITION);
 		
 		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends IRootConcept>> targetClass =  
-				(Optional<Class<? extends IRootConcept>>) 
+		final Optional<Class<? extends RootConcept>> targetClass =
+				(Optional<Class<? extends RootConcept>>)
 					ReflectionGenericsResolver.getParameterTypeFromClass(
-							relationClazz, IRelation.class, IRelation.TARGET_PARAMETER_POSITION);
+							relationClazz, Relation.class, Relation.TARGET_PARAMETER_POSITION);
 		
 		String source = "error";
 		String target = "error";

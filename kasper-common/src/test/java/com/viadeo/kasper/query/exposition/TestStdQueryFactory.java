@@ -9,7 +9,7 @@ package com.viadeo.kasper.query.exposition;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.cqrs.query.IQuery;
+import com.viadeo.kasper.cqrs.query.Query;
 import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +25,7 @@ public class TestStdQueryFactory {
 
     // ------------------------------------------------------------------------
 
-    public static class SomeQuery implements IQuery {
+    public static class SomeQuery implements Query {
         private static final long serialVersionUID = -6763165103363988454L;
 
         public int getDummy() { return 1; }
@@ -53,7 +53,7 @@ public class TestStdQueryFactory {
 
     @Test
     public void testCustomQueryAdapterResolution() {
-        final ITypeAdapter<SomeQuery> adapter = create();
+        final TypeAdapter<SomeQuery> adapter = create();
         assertEquals(adapter, createQueryFactory(adapter).create(TypeToken.of(SomeQuery.class)));
     }
 
@@ -61,7 +61,7 @@ public class TestStdQueryFactory {
     public void testCustomQueryAdapterOutput() throws Exception {
 
         // Given
-        final ITypeAdapter<SomeQuery> adapter = create();
+        final TypeAdapter<SomeQuery> adapter = create();
 
         // When
         createQueryFactory(adapter).create(TypeToken.of(SomeQuery.class)).adapt(new SomeQuery(), builder);
@@ -74,10 +74,10 @@ public class TestStdQueryFactory {
     public void testBeanQueryAdapterOutputWithPrimitiveIntAdapter() throws Exception {
 
         // Given
-        final ITypeAdapter<SomeQuery> adapter = new AbstractQueryFactory(
-                ImmutableMap.<Type, ITypeAdapter<?>> of(int.class, DefaultTypeAdapters.INT_ADAPTER),
-                ImmutableMap.<Type, AbstractBeanAdapter<?>> of(),
-                new ArrayList<ITypeAdapterFactory<?>>(),
+        final TypeAdapter<SomeQuery> adapter = new DefaultQueryFactory(
+                ImmutableMap.<Type, TypeAdapter<?>> of(int.class, DefaultTypeAdapters.INT_ADAPTER),
+                ImmutableMap.<Type, BeanAdapter<?>> of(),
+                new ArrayList<TypeAdapterFactory<?>>(),
                 VisibilityFilter.PACKAGE_PUBLIC).create(TypeToken.of(SomeQuery.class));
 
         // When
@@ -94,7 +94,7 @@ public class TestStdQueryFactory {
         final DateTime firstDate = new DateTime();
         final DateTime secondDate = new DateTime();
         final QueryOfDateTimeCollection query = new QueryOfDateTimeCollection(Arrays.asList(firstDate, secondDate));
-        final IQueryFactory queryFactory = createQueryFactory(DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY, DefaultTypeAdapters.DATETIME_ADAPTER);
+        final QueryFactory queryFactory = createQueryFactory(DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY, DefaultTypeAdapters.DATETIME_ADAPTER);
 
         // When
         queryFactory.create(TypeToken.of(QueryOfDateTimeCollection.class)).adapt(query, builder);
@@ -112,7 +112,7 @@ public class TestStdQueryFactory {
         final String key2 = "key2";
         final List<DateTime> key1Values = Arrays.asList(new DateTime(), new DateTime());
         final QueryWithMap query = new QueryWithMap(ImmutableMap.of(key1, key1Values, key2, new ArrayList<DateTime>()));
-        final IQueryFactory factory = createQueryFactory(createTypeAdapterFactory(), DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY, DefaultTypeAdapters.DATETIME_ADAPTER);
+        final QueryFactory factory = createQueryFactory(createTypeAdapterFactory(), DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY, DefaultTypeAdapters.DATETIME_ADAPTER);
 
         // When
         factory.create(TypeToken.of(QueryWithMap.class)).adapt(query, builder);
@@ -127,14 +127,14 @@ public class TestStdQueryFactory {
 
     // ========================================================================
     
-    private ITypeAdapterFactory<Map<String, List<DateTime>>> createTypeAdapterFactory() {
-        return new ITypeAdapterFactory<Map<String, List<DateTime>>>() {
+    private TypeAdapterFactory<Map<String, List<DateTime>>> createTypeAdapterFactory() {
+        return new TypeAdapterFactory<Map<String, List<DateTime>>>() {
             @Override
-            public Optional<ITypeAdapter<Map<String, List<DateTime>>>> create(TypeToken<Map<String, List<DateTime>>> typeToken, final IQueryFactory adapterFactory) {
+            public Optional<TypeAdapter<Map<String, List<DateTime>>>> create(TypeToken<Map<String, List<DateTime>>> typeToken, final QueryFactory adapterFactory) {
                 @SuppressWarnings("serial")
-                final ITypeAdapter<List<DateTime>> dateTimeListAdapter = adapterFactory.create(new TypeToken<List<DateTime>>() {});
+                final TypeAdapter<List<DateTime>> dateTimeListAdapter = adapterFactory.create(new TypeToken<List<DateTime>>() {});
 
-                final ITypeAdapter<Map<String, List<DateTime>>> adapter = new ITypeAdapter<Map<String, List<DateTime>>>() {
+                final TypeAdapter<Map<String, List<DateTime>>> adapter = new TypeAdapter<Map<String, List<DateTime>>>() {
                     @Override
                     public void adapt(final Map<String, List<DateTime>> value, final QueryBuilder builder) throws Exception {
                         for (final Map.Entry<String, List<DateTime>> entry : value.entrySet()) {
@@ -154,31 +154,31 @@ public class TestStdQueryFactory {
         };
     }
 
-    private IQueryFactory createQueryFactory(final Object... queryFactoryParameters) {
-        final Map<Type, ITypeAdapter<?>> adaptersMap = new HashMap<>();
-        final List<ITypeAdapterFactory<?>> factories = new ArrayList<>();
+    private QueryFactory createQueryFactory(final Object... queryFactoryParameters) {
+        final Map<Type, TypeAdapter<?>> adaptersMap = new HashMap<>();
+        final List<TypeAdapterFactory<?>> factories = new ArrayList<>();
         
         for (final Object parameter : queryFactoryParameters) {
-            if (parameter instanceof ITypeAdapter) {
-                final ITypeAdapter<?> adapter = (ITypeAdapter<?>) parameter;
-                final TypeToken<?> adapterForType = TypeToken.of(adapter.getClass()).resolveType(ITypeAdapter.class.getTypeParameters()[0]);
+            if (parameter instanceof TypeAdapter) {
+                final TypeAdapter<?> adapter = (TypeAdapter<?>) parameter;
+                final TypeToken<?> adapterForType = TypeToken.of(adapter.getClass()).resolveType(TypeAdapter.class.getTypeParameters()[0]);
                 adaptersMap.put(adapterForType.getType(), adapter);
-            } else if (parameter instanceof ITypeAdapterFactory) {
-                factories.add((ITypeAdapterFactory<?>) parameter);
+            } else if (parameter instanceof TypeAdapterFactory) {
+                factories.add((TypeAdapterFactory<?>) parameter);
             } else {
                 throw new IllegalArgumentException("Only TypeAdapter or TypeAdapter factories are allowed.");
             }
         }
         
-        return new AbstractQueryFactory(
+        return new DefaultQueryFactory(
                 adaptersMap,
-                ImmutableMap.<Type, AbstractBeanAdapter<?>> of(),
+                ImmutableMap.<Type, BeanAdapter<?>> of(),
                 factories,
                 VisibilityFilter.PACKAGE_PUBLIC);
     }
 
-    private ITypeAdapter<SomeQuery> create() {
-        return new ITypeAdapter<SomeQuery>() {
+    private TypeAdapter<SomeQuery> create() {
+        return new TypeAdapter<SomeQuery>() {
             @Override
             public void adapt(final SomeQuery value, final QueryBuilder builder) {
                 if (null == value) {
@@ -194,7 +194,7 @@ public class TestStdQueryFactory {
         };
     }
 
-    public static class QueryWithMap implements IQuery {
+    public static class QueryWithMap implements Query {
         private static final long serialVersionUID = 1914912257262499643L;
         private final Map<String, List<DateTime>> mapOfDateTime;
 
@@ -207,7 +207,7 @@ public class TestStdQueryFactory {
         }
     }
 
-    public static class QueryOfDateTimeCollection implements IQuery {
+    public static class QueryOfDateTimeCollection implements Query {
         private static final long serialVersionUID = -6933354147082294343L;
 
         private final List<DateTime> listOfDateTime;

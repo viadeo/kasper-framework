@@ -8,7 +8,7 @@
 package com.viadeo.kasper.ddd.values.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.values.IReferenceValuesRepository;
+import com.viadeo.kasper.ddd.values.ReferenceValuesRepository;
 
 /**
  *
@@ -17,7 +17,7 @@ import com.viadeo.kasper.ddd.values.IReferenceValuesRepository;
  * @param <ENUM>
  */
 public abstract class AbstractEnumRepository<ENUM extends Enum<?>> 
-		implements IReferenceValuesRepository<AbstractReferenceValue<ENUM>, ENUM> {
+		implements ReferenceValuesRepository<AbstractReferenceValue<ENUM>, ENUM> {
 
 	/**
 	 * The enclosing value type managed by this repository
@@ -61,7 +61,7 @@ public abstract class AbstractEnumRepository<ENUM extends Enum<?>>
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.ddd.values.IReferenceValuesRepository#build(java.io.Serializable)
+	 * @see com.viadeo.kasper.ddd.values.ReferenceValuesRepository#build(java.io.Serializable)
 	 */
 	@Override
 	public Value build(final ENUM value) {
@@ -69,7 +69,7 @@ public abstract class AbstractEnumRepository<ENUM extends Enum<?>>
 	}
 	
 	/**
-	 * @see com.viadeo.kasper.ddd.values.IReferenceValuesRepository#getDefault()
+	 * @see com.viadeo.kasper.ddd.values.ReferenceValuesRepository#getDefault()
 	 */
 	@Override
 	public Value getDefault() {

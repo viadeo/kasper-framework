@@ -6,10 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
-import com.viadeo.kasper.context.impl.CurrentContext;
-import com.viadeo.kasper.cqrs.command.ICommand;
-import com.viadeo.kasper.cqrs.command.ICommandHandler;
-import com.viadeo.kasper.cqrs.command.ICommandMessage;
+import com.viadeo.kasper.core.context.CurrentContext;
+import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.unitofwork.UnitOfWork;
@@ -19,7 +19,7 @@ import org.slf4j.LoggerFactory;
 /**
  * @param <C> Command
  */
-public abstract class AbstractCommandHandler<C extends ICommand> implements ICommandHandler<C> {
+public abstract class AbstractCommandHandler<C extends Command> implements CommandHandler<C> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommandHandler.class);
 
     /**
@@ -30,7 +30,7 @@ public abstract class AbstractCommandHandler<C extends ICommand> implements ICom
      */
     @Override
     final public Object handle(final CommandMessage<C> message, final UnitOfWork uow) throws Throwable {
-        final ICommandMessage<C> kmessage = new KasperCommandMessage<>(message);
+        final KasperCommandMessage<C> kmessage = new DefaultKasperCommandMessage<>(message);
         CurrentContext.set(kmessage.getContext());
 
         AbstractCommandHandler.LOGGER.debug("Handle command " + message.getPayload().getClass().getSimpleName());
@@ -71,7 +71,7 @@ public abstract class AbstractCommandHandler<C extends ICommand> implements ICom
      * @return the command result
      * @throws KasperEventException
      */
-    public CommandResult handle(final ICommandMessage<C> message, final UnitOfWork uow) throws Exception {
+    public CommandResult handle(final KasperCommandMessage<C> message, final UnitOfWork uow) throws Exception {
         throw new UnsupportedOperationException();
     }
 
@@ -80,7 +80,7 @@ public abstract class AbstractCommandHandler<C extends ICommand> implements ICom
      * @return the command result
      * @throws KasperEventException
      */
-    public CommandResult handle(final ICommandMessage<C> message) throws Exception {
+    public CommandResult handle(final KasperCommandMessage<C> message) throws Exception {
         throw new UnsupportedOperationException();
     }
 

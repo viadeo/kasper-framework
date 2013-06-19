@@ -6,9 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.context.impl;
 
-import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.context.IContext;
-import com.viadeo.kasper.context.IDefaultContextBuilder;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.impl.AbstractKasperID;
 
 import java.util.UUID;
@@ -16,15 +15,15 @@ import java.util.UUID;
 /**
  *
  * Default context builder used as a last chance if no other implementation can be found
- * @see IDefaultContextBuilder
+ * @see com.viadeo.kasper.context.DefaultContextBuilder
  *
  */
-public class DefaultContextBuilder implements IDefaultContextBuilder {
+public class DefaultContextBuilder implements com.viadeo.kasper.context.DefaultContextBuilder {
 	
 	/**
 	 *
-	 * A default {@link IContext} implementation
-	 * @see IContext
+	 * A default {@link com.viadeo.kasper.context.Context} implementation
+	 * @see com.viadeo.kasper.context.Context
 	 * 
 	 */
 	public static class DefaultContext extends AbstractContext {
@@ -33,7 +32,7 @@ public class DefaultContextBuilder implements IDefaultContextBuilder {
 		
 		public static final String DEFAULT_USER_LANG = "us";
 		
-		private IKasperID userId;
+		private KasperID userId;
 		private String userLang;
 		
 		public DefaultContext() {
@@ -44,12 +43,12 @@ public class DefaultContextBuilder implements IDefaultContextBuilder {
 		}		
 		
 		@Override
-		public IKasperID getUserId() {
+		public KasperID getUserId() {
 			return this.userId;
 		}
 
 		@Override
-		public DefaultContext setUserId(final IKasperID userId) {
+		public DefaultContext setUserId(final KasperID userId) {
 			this.userId = userId;
 			return this;
 		}
@@ -70,8 +69,8 @@ public class DefaultContextBuilder implements IDefaultContextBuilder {
 
 	/**
 	 *
-	 * A default {@link IKasperID} implementation
-	 * @see IKasperID
+	 * A default {@link com.viadeo.kasper.KasperID} implementation
+	 * @see com.viadeo.kasper.KasperID
 	 * 
 	 */
 	public static class DefaultKasperId extends AbstractKasperID<UUID> {
@@ -94,7 +93,7 @@ public class DefaultContextBuilder implements IDefaultContextBuilder {
 	// ------------------------------------------------------------------------
 
 	@Override
-	public IContext buildDefault() {
+	public Context buildDefault() {
 		return new DefaultContext();
 	}
 

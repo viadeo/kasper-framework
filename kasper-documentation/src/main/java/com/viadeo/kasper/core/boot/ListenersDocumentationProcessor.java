@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import com.viadeo.kasper.event.IEventListener;
+import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * Process Kasper listener dynamic registration at platform boot
  *
  */
-public class ListenersDocumentationProcessor extends AbstractDocumentationProcessor<XKasperEventListener, IEventListener<?>> {
+public class ListenersDocumentationProcessor extends DocumentationProcessor<XKasperEventListener, EventListener<?>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ListenersDocumentationProcessor.class);
 
@@ -25,8 +25,8 @@ public class ListenersDocumentationProcessor extends AbstractDocumentationProces
 	/**
 	 * Process Kasper listener
 	 * 
-	 * @see IEventListener
-	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
+	 * @see com.viadeo.kasper.event.EventListener
+	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -34,7 +34,7 @@ public class ListenersDocumentationProcessor extends AbstractDocumentationProces
 		LOGGER.info("Record on listener library : " + listenerClazz.getName());
 		
 		//- Register the domain to the locator --------------------------------
-		getKasperLibrary().recordListener((Class<? extends IEventListener<?>>) listenerClazz);
+		getKasperLibrary().recordListener((Class<? extends EventListener<?>>) listenerClazz);
 	}
 	
 }

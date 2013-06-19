@@ -8,51 +8,50 @@
 package com.viadeo.kasper.cqrs.query.filter.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
-import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
-import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
-import com.viadeo.kasper.cqrs.query.filter.IQueryFilterNot;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.filter.QueryDQO;
+import com.viadeo.kasper.cqrs.query.filter.QueryFilter;
 
 /**
  * 
  * @param <DQO>
  *            the associated Data Query Object
  * 
- * @see IQueryDQO
- * @see IQueryFilterNot
- * @see IQueryFilter
+ * @see com.viadeo.kasper.cqrs.query.filter.QueryDQO
+ * @see com.viadeo.kasper.cqrs.query.filter.QueryFilterNot
+ * @see com.viadeo.kasper.cqrs.query.filter.QueryFilter
  */
-public class QueryFilterNot<DQO extends IQueryDQO<DQO>> extends
-AbstractQueryFilter<DQO> implements IQueryFilterNot<DQO> {
+public class QueryFilterNot<DQO extends QueryDQO<DQO>> extends
+AbstractQueryFilter<DQO> implements com.viadeo.kasper.cqrs.query.filter.QueryFilterNot<DQO> {
 
 	private static final long serialVersionUID = 728076780149195258L;
 
 	/**
 	 * The enclosed inversed filter
 	 */
-	private final IQueryFilter<DQO> filter;
+	private final QueryFilter<DQO> filter;
 
 	// ------------------------------------------------------------------------
 
-	public QueryFilterNot(final IQueryFilter<DQO> filter) {
+	public QueryFilterNot(final QueryFilter<DQO> filter) {
 		this.filter = Preconditions.checkNotNull(filter);
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilter#isSatisfiedBy(com.viadeo.kasper.cqrs.query.IQueryDTO)
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryFilter#isSatisfiedBy(com.viadeo.kasper.cqrs.query.QueryDTO)
 	 */
 	@Override
-	public boolean isSatisfiedBy(final IQueryDTO value) {
+	public boolean isSatisfiedBy(final QueryDTO value) {
 		return !this.filter.isSatisfiedBy(Preconditions.checkNotNull(value));
 	}
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterNot#getFilter()
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryFilterNot#getFilter()
 	 */
 	@Override
-	public IQueryFilter<DQO> getFilter() {
+	public QueryFilter<DQO> getFilter() {
 		return this.filter;
 	}
 

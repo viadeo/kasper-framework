@@ -7,8 +7,8 @@
 package com.viadeo.kasper.event.domain.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.event.domain.IEntityEvent;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.event.domain.EntityEvent;
 import com.viadeo.kasper.event.impl.AbstractEvent;
 import org.joda.time.DateTime;
 
@@ -16,19 +16,19 @@ import org.joda.time.DateTime;
  *
  * Base implementation for entity events
  *
- * @see IEntityEvent
+ * @see com.viadeo.kasper.event.domain.EntityEvent
  */
-public abstract class AbstractEntityEvent extends AbstractEvent implements IEntityEvent {
+public abstract class AbstractEntityEvent extends AbstractEvent implements EntityEvent {
 
 	private static final long serialVersionUID = -1948165707419476512L;
 
-	private IKasperID entityId;
+	private KasperID entityId;
 	private DateTime lastEntityModificationDate;
 
 	// ------------------------------------------------------------------------
     protected AbstractEntityEvent() { /* For serialization */ }
 
-	protected AbstractEntityEvent(final IKasperID id, final DateTime lastModificationDate) {
+	protected AbstractEntityEvent(final KasperID id, final DateTime lastModificationDate) {
 		this.entityId = Preconditions.checkNotNull(id);
 		this.lastEntityModificationDate = Preconditions.checkNotNull(lastModificationDate);
 	}
@@ -36,10 +36,10 @@ public abstract class AbstractEntityEvent extends AbstractEvent implements IEnti
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.event.domain.IEntityEvent#getEntityId()
+	 * @see com.viadeo.kasper.event.domain.EntityEvent#getEntityId()
 	 */
 	@Override
-	public IKasperID getEntityId() {
+	public KasperID getEntityId() {
 		return this.entityId;
 	}
 
