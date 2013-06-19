@@ -43,6 +43,11 @@ public class KasperQueryServicesLocatorBaseTest {
 		assertEquals(locator.getServices().size(), 0);
 	}
 
+    @Test
+    public void getServiceByClass() {
+        assertNotNull(locator.getServiceFromClass(TestService.class));
+    }
+
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void getServiceFromQueryClassEmptyState() {

@@ -8,6 +8,8 @@
 package com.viadeo.kasper.locators.impl;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.MutableClassToInstanceMap;
 import com.viadeo.kasper.cqrs.query.IQuery;
 import com.viadeo.kasper.cqrs.query.IQueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
@@ -26,7 +28,7 @@ public class QueryServicesLocatorBase implements IQueryServicesLocator {
 
 	/** Registered services */
 	@SuppressWarnings("rawtypes")
-	private final Map<Class<? extends IQueryService>, IQueryService> services = newHashMap();
+    private final ClassToInstanceMap<IQueryService> services = MutableClassToInstanceMap.create();
 
 	/** Registered query classes and associated service instances */
 	private final Map<Class<? extends IQuery>, IQueryService<?,?>> serviceQueryClasses = newHashMap();
@@ -79,7 +81,7 @@ public class QueryServicesLocatorBase implements IQueryServicesLocator {
 	@Override
 	public Optional<IQueryService> getServiceFromClass(
 			final Class<? extends IQueryService<?, ?>> serviceClass) {
-		final IQueryService service = this.services.get(serviceClass);
+		final IQueryService service = this.services.getInstance(serviceClass);
 		return Optional.fromNullable(service);
 	}
 
