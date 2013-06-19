@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs.query.filter.impl;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.cqrs.query.IFilteredQuery;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
@@ -65,7 +65,7 @@ public class FilteredQuery<DQO extends IQueryDQO<?>> implements IFilteredQuery<D
 						FilteredQuery.class,	FilteredQuery.PARAMETER_DQO_POSITION);
 
 		if (!dqoClass.isPresent()) {
-			throw new KasperQueryRuntimeException(
+			throw new KasperQueryException(
 					"DQO type cannot by determined for "
 							+ this.getClass().getName());
 		}

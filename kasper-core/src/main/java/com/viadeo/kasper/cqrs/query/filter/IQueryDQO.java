@@ -18,7 +18,7 @@ import java.io.Serializable;
  * ex:
  * 
  * private static final class DQOTest extends AbstractQueryDQO<DQOTest, DTOTest> {
- * 		private static final long serialVersionUID = 5709183469621265829L;
+ * 		private static final long serialVersionUID = 5709183469642265829L;
  * 		public KasperQueryField<String, DQOTest> name;
  * }
  * 

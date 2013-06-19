@@ -11,7 +11,7 @@ import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.IEventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
-import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 
@@ -36,7 +36,7 @@ public final class DocumentedListener extends AbstractDocumentedDomainNode {
 						listenerClazz, IEventListener.class, IEventListener.EVENT_PARAMETER_POSITION);
 		
 		if (!eventClazz.isPresent()) {
-			throw new KasperRuntimeException("Unable to find event type for listener " + listenerClazz.getClass());
+			throw new KasperException("Unable to find event type for listener " + listenerClazz.getClass());
 		}
 		
 		// Find associated domain ---------------------------------------------		

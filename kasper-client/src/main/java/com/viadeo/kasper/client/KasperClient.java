@@ -18,14 +18,13 @@ import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.async.TypeListener;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import com.viadeo.kasper.client.exceptions.KasperClientException;
 import com.viadeo.kasper.client.lib.ICallback;
 import com.viadeo.kasper.cqrs.command.ICommand;
-import com.viadeo.kasper.cqrs.command.ICommandResult;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
-import com.viadeo.kasper.cqrs.command.impl.KasperErrorCommandResult;
+import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.query.IQuery;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.query.exposition.IQueryFactory;
 import com.viadeo.kasper.query.exposition.ITypeAdapter;
 import com.viadeo.kasper.query.exposition.KasperQueryAdapterException;
@@ -102,365 +101,346 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * </p>
  */
 public class KasperClient {
-	private static final KasperClient DEFAULT_KASPER_CLIENT = new KasperClientBuilder().create();
+    private static final KasperClient DEFAULT_KASPER_CLIENT = new KasperClientBuilder().create();
 
-	private final Client client;
-	private final URL commandBaseLocation;
-	private final URL queryBaseLocation;
+    private final Client client;
+    private final URL commandBaseLocation;
+    private final URL queryBaseLocation;
 
-	@VisibleForTesting
-	final IQueryFactory queryFactory;
+    @VisibleForTesting
+    final IQueryFactory queryFactory;
 
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 
     /**
      * Creates a new KasperClient instance using the default {@link KasperClientBuilder} configuration.
      */
-	public KasperClient() {
-		this.client = DEFAULT_KASPER_CLIENT.client;
-		this.commandBaseLocation = DEFAULT_KASPER_CLIENT.commandBaseLocation;
-		this.queryBaseLocation = DEFAULT_KASPER_CLIENT.queryBaseLocation;
-		this.queryFactory = DEFAULT_KASPER_CLIENT.queryFactory;
-	}
+    public KasperClient() {
+        this.client = DEFAULT_KASPER_CLIENT.client;
+        this.commandBaseLocation = DEFAULT_KASPER_CLIENT.commandBaseLocation;
+        this.queryBaseLocation = DEFAULT_KASPER_CLIENT.queryBaseLocation;
+        this.queryFactory = DEFAULT_KASPER_CLIENT.queryFactory;
+    }
 
     // --
 
-	KasperClient(final IQueryFactory queryFactory, final ObjectMapper mapper,
-	             final URL commandBaseUrl, final URL queryBaseUrl) {
+    KasperClient(final IQueryFactory queryFactory, final ObjectMapper mapper, final URL commandBaseUrl,
+            final URL queryBaseUrl) {
 
-		final DefaultClientConfig cfg = new DefaultClientConfig();
-		cfg.getSingletons().add(new JacksonJsonProvider(mapper));
+        final DefaultClientConfig cfg = new DefaultClientConfig();
+        cfg.getSingletons().add(new JacksonJsonProvider(mapper));
 
-		this.client = Client.create(cfg);
-		this.commandBaseLocation = commandBaseUrl;
-		this.queryBaseLocation = queryBaseUrl;
-		this.queryFactory = queryFactory;
-	}
+        this.client = Client.create(cfg);
+        this.commandBaseLocation = commandBaseUrl;
+        this.queryBaseLocation = queryBaseUrl;
+        this.queryFactory = queryFactory;
+    }
 
     // --
 
-	KasperClient(final IQueryFactory queryFactory, final Client client,
-			     final URL commandBaseUrl, final URL queryBaseUrl) {
+    KasperClient(final IQueryFactory queryFactory, final Client client, final URL commandBaseUrl, final URL queryBaseUrl) {
 
-		this.client = client;
-		this.commandBaseLocation = commandBaseUrl;
-		this.queryBaseLocation = queryBaseUrl;
-		this.queryFactory = queryFactory;
-	}
+        this.client = client;
+        this.commandBaseLocation = commandBaseUrl;
+        this.queryBaseLocation = queryBaseUrl;
+        this.queryFactory = queryFactory;
+    }
 
-	// ------------------------------------------------------------------------
-	// COMMANDS
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // COMMANDS
+    // ------------------------------------------------------------------------
 
     /**
      * Sends a command and waits until a result is returned.
-     *
+     * 
      * @param command to submit
      * @return the command result, indicating if the command has been processed successfully or not (in that case you
      * can get the error message from the command).
-     * @throws KasperClientException if something went wrong.
+     * @throws KasperException KasperClientException if something went wrong.
      * @see ICommandResult
      */
-    public ICommandResult send(final ICommand command) {
-		checkNotNull(command);
+    public CommandResult send(final ICommand command) {
+        checkNotNull(command);
 
-		final ClientResponse response = client
-				.resource(resolveCommandPath(command.getClass()))
-				.accept(MediaType.APPLICATION_JSON)
-				.type(MediaType.APPLICATION_JSON)
-				.put(ClientResponse.class, command);
+        final ClientResponse response = client.resource(resolveCommandPath(command.getClass()))
+                                        .accept(MediaType.APPLICATION_JSON)
+                                        .type(MediaType.APPLICATION_JSON)
+                                        .put(ClientResponse.class, command);
 
-		return handleResponse(response);
-	}
+        return handleResponse(response);
+    }
 
-	// --
+    // --
 
     /**
      * Sends a command and returns immediately a future allowing to retrieve the result later.
-     *
+     * 
      * @param command to submit
      * @return a Future allowing to retrieve the result later.
-     * @throws KasperClientException if something went wrong.
+     * @throws KasperException if something went wrong.
      * @see ICommandResult
      */
-	public Future<? extends ICommandResult> sendAsync(final ICommand command) {
-		checkNotNull(command);
+    public Future<? extends CommandResult> sendAsync(final ICommand command) {
+        checkNotNull(command);
 
-		final Future<ClientResponse> futureResponse = client
-				.asyncResource(resolveCommandPath(command.getClass()))
-				.accept(MediaType.APPLICATION_JSON)
-				.type(MediaType.APPLICATION_JSON)
-				.put(ClientResponse.class, command);
+        final Future<ClientResponse> futureResponse = client.asyncResource(resolveCommandPath(command.getClass()))
+                .accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON).put(ClientResponse.class, command);
 
-		// we need to decorate the Future returned by jersey in order to handle
-		// exceptions and populate according to it the command result
-		return new Future<ICommandResult>() {
-			public boolean cancel(final boolean mayInterruptIfRunning) {
-				return futureResponse.cancel(mayInterruptIfRunning);
-			}
+        // we need to decorate the Future returned by jersey in order to handle
+        // exceptions and populate according to it the command result
+        return new Future<CommandResult>() {
+            public boolean cancel(final boolean mayInterruptIfRunning) {
+                return futureResponse.cancel(mayInterruptIfRunning);
+            }
 
-			public boolean isCancelled() {
-				return futureResponse.isCancelled();
-			}
+            public boolean isCancelled() {
+                return futureResponse.isCancelled();
+            }
 
-			public boolean isDone() {
-				return futureResponse.isDone();
-			}
+            public boolean isDone() {
+                return futureResponse.isDone();
+            }
 
-			public ICommandResult get() throws InterruptedException,
-					ExecutionException {
-				return handleResponse(futureResponse.get());
-			}
+            public CommandResult get() throws InterruptedException, ExecutionException {
+                return handleResponse(futureResponse.get());
+            }
 
-			public ICommandResult get(final long timeout, final TimeUnit unit)
-					throws InterruptedException, ExecutionException, TimeoutException {
-				return handleResponse(futureResponse.get(timeout, unit));
-			}
-		};
-	}
+            public CommandResult get(final long timeout, final TimeUnit unit) throws InterruptedException,
+                    ExecutionException, TimeoutException {
+                return handleResponse(futureResponse.get(timeout, unit));
+            }
+        };
+    }
 
-	// --
+    // --
 
     /**
      * Sends a command and returns immediately, when the response is ready the callback will be called with the obtained
      * ICommandResult as parameter.
-     *
+     * 
      * @param command to submit
      * @param callback to call when the response is ready.
-     * @throws KasperClientException if something went wrong.
+     * @throws KasperException if something went wrong.
      * @see ICommandResult
      */
-	public void sendAsync(final ICommand command,
-			              final ICallback<ICommandResult> callback) {
-		checkNotNull(command);
+    public void sendAsync(final ICommand command, final ICallback<CommandResult> callback) {
+        checkNotNull(command);
 
-		client.asyncResource(resolveCommandPath(command.getClass()))
-				.accept(MediaType.APPLICATION_JSON)
-				.type(MediaType.APPLICATION_JSON)
-				.put(new TypeListener<ClientResponse>(ClientResponse.class) {
-					@Override
-					public void onComplete(final Future<ClientResponse> f)
-							throws InterruptedException {
-						try {
-							callback.done(handleResponse(f.get()));
-						} catch (final ExecutionException e) {
-							throw new KasperClientException(e);
-						}
-					}
-				}, command);
-	}
+        client.asyncResource(resolveCommandPath(command.getClass()))
+                            .accept(MediaType.APPLICATION_JSON)
+                            .type(MediaType.APPLICATION_JSON)
+                            .put(new TypeListener<ClientResponse>(ClientResponse.class) {
+                                @Override
+                                public void onComplete(final Future<ClientResponse> f) throws InterruptedException {
+                                    try {
+                                        callback.done(handleResponse(f.get()));
+                                    } catch (final ExecutionException e) {
+                                        throw new KasperException("ERROR handling command [" + command.getClass() + "]", e);
+                                    }
+                                }
+                            }, command);
+    }
 
-	private ICommandResult handleResponse(final ClientResponse response) {
-		final Status status = response.getClientResponseStatus();
+    private CommandResult handleResponse(final ClientResponse response) {
+        // handle errors
+        return response.getEntity(CommandResult.class);
+    }
 
-		// handle errors
-		if (status.getStatusCode() == 200) {
-			return response.getEntity(KasperCommandResult.class);
-		} else
-			return response.getEntity(KasperErrorCommandResult.class);
-	}
-
-	// ------------------------------------------------------------------------
-	// QUERIES
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+    // QUERIES
+    // ------------------------------------------------------------------------
 
     /**
      * Send a query and maps the result to a DTO.
-     *
+     * 
      * @param query to submit.
      * @param mapTo DTO class to which we want to map the result.
      * @return an instance of the DTO for this query.
-     * @throws KasperClientException if something went wrong.
+     * @throws KasperException if something went wrong.
      */
-	public <T extends IQueryDTO> T query(final IQuery query, final Class<T> mapTo) {
-		return query(query, TypeToken.of(mapTo));
-	}
+    public <T extends IQueryDTO> T query(final IQuery query, final Class<T> mapTo) {
+        return query(query, TypeToken.of(mapTo));
+    }
 
     /**
      * Send a query and maps the result to a DTO. Here we use guavas TypeToken allowing to define a generic type. This
      * is useful if you want to map the result to a IQueryCollectionDTO. <br/>
      * <p>
      * Type tokens are used like that:
+     * 
      * <pre>
-     *  SomeCollectionDTO&lt;SomeDTO> someDTOCollection = client.query(someQuery, new TypeToken&lt;SomeCollectionDTO&lt;SomeDTO>>());
+     * SomeCollectionDTO&lt;SomeDTO&gt; someDTOCollection = client.query(someQuery, new TypeToken&lt;SomeCollectionDTO&lt;SomeDTO&gt;&gt;());
      * </pre>
+     * 
      * If you are not familiar with the concept of TypeTokens you can read <a
      * href="http://gafter.blogspot.fr/2006/12/super-type-tokens.html">this blog post</a> who explains a bit more in
      * details what it is about.
      * </p>
+     * 
      * @param query to submit.
      * @param mapTo DTO class to which we want to map the result.
      * @return an instance of the DTO for this query.
-     * @throws KasperClientException if something went wrong.
+     * @throws KasperException if something went wrong.
      */
-	public <T extends IQueryDTO> T query(final IQuery query, final TypeToken<T> mapTo) {
-		checkNotNull(query);
-		checkNotNull(mapTo);
+    public <T extends IQueryDTO> T query(final IQuery query, final TypeToken<T> mapTo) {
+        checkNotNull(query);
+        checkNotNull(mapTo);
 
-		final ClientResponse response = client
-				.resource(resolveQueryPath(query.getClass()))
-				.queryParams(prepareQueryParams(query))
-				.accept(MediaType.APPLICATION_JSON)
-				.type(MediaType.APPLICATION_JSON)
-                .get(ClientResponse.class);
+        final ClientResponse response = client.resource(resolveQueryPath(query.getClass()))
+                                              .queryParams(prepareQueryParams(query))
+                                              .accept(MediaType.APPLICATION_JSON)
+                                              .type(MediaType.APPLICATION_JSON)
+                                              .get(ClientResponse.class);
 
-		return handleQueryResponse(response, mapTo);
-	}
+        return handleQueryResponse(response, mapTo);
+    }
 
-	// --
+    // --
 
+    public <T extends IQueryDTO> Future<T> queryAsync(final IQuery query, final Class<T> mapTo) {
+        return queryAsync(query, TypeToken.of(mapTo));
+    }
 
-	public <T extends IQueryDTO> Future<T> queryAsync(final IQuery query, final Class<T> mapTo) {
-		return queryAsync(query, TypeToken.of(mapTo));
-	}
-
-	/**
-	 * FIXME should we also handle async in the platform side ?? Is it really
-	 * useful?
-	 *
+    /**
+     * FIXME should we also handle async in the platform side ?? Is it really useful?
+     * 
      * @see KasperClient#query(IQuery, Class)
      * @see KasperClient#sendAsync(ICommand)
      */
-	public <T extends IQueryDTO> Future<T> queryAsync(final IQuery query, final TypeToken<T> mapTo) {
-		checkNotNull(query);
-		checkNotNull(mapTo);
+    public <T extends IQueryDTO> Future<T> queryAsync(final IQuery query, final TypeToken<T> mapTo) {
+        checkNotNull(query);
+        checkNotNull(mapTo);
 
-		final Future<ClientResponse> futureResponse = client
-				.asyncResource(resolveQueryPath(query.getClass()))
-				.queryParams(prepareQueryParams(query))
-				.accept(MediaType.APPLICATION_JSON)
-				.type(MediaType.APPLICATION_JSON)
-                .get(ClientResponse.class);
+        final Future<ClientResponse> futureResponse = client.asyncResource(resolveQueryPath(query.getClass()))
+                                                            .queryParams(prepareQueryParams(query))
+                                                            .accept(MediaType.APPLICATION_JSON)
+                                                            .type(MediaType.APPLICATION_JSON)
+                                                            .get(ClientResponse.class);
 
-		return new Future<T>() {
-			public boolean cancel(final boolean mayInterruptIfRunning) {
-				return futureResponse.cancel(mayInterruptIfRunning);
-			}
+        return new Future<T>() {
+            public boolean cancel(final boolean mayInterruptIfRunning) {
+                return futureResponse.cancel(mayInterruptIfRunning);
+            }
 
-			public boolean isCancelled() {
-				return futureResponse.isCancelled();
-			}
+            public boolean isCancelled() {
+                return futureResponse.isCancelled();
+            }
 
-			public boolean isDone() {
-				return futureResponse.isDone();
-			}
+            public boolean isDone() {
+                return futureResponse.isDone();
+            }
 
-			public T get() throws InterruptedException, ExecutionException {
-				return handleQueryResponse(futureResponse.get(), mapTo);
-			}
+            public T get() throws InterruptedException, ExecutionException {
+                return handleQueryResponse(futureResponse.get(), mapTo);
+            }
 
-			public T get(final long timeout, final TimeUnit unit)
-					throws InterruptedException, ExecutionException, TimeoutException {
-				return handleQueryResponse(futureResponse.get(timeout, unit), mapTo);
-			}
-		};
-	}
-
-	// --
-
-    /**
-     * @see KasperClient#query(IQuery, Class)
-     * @see KasperClient#sendAsync(ICommand, ICallback)
-     */
-	public <T extends IQueryDTO> void queryAsync(final IQuery query,
-			                                     final Class<T> mapTo,
-                                                 final ICallback<T> callback) {
-
-		queryAsync(query, TypeToken.of(mapTo), callback);
-	}
-
-    /**
-     * @see KasperClient#query(IQuery, Class)
-     * @see KasperClient#sendAsync(ICommand, ICallback)
-     */
-	public <T extends IQueryDTO> void queryAsync(final IQuery query,
-			                                     final TypeToken<T> mapTo,
-                                                 final ICallback<T> callback) {
-		checkNotNull(query);
-		checkNotNull(mapTo);
-
-		client.asyncResource(resolveQueryPath(query.getClass()))
-				.queryParams(prepareQueryParams(query))
-				.accept(MediaType.APPLICATION_JSON)
-				.type(MediaType.APPLICATION_JSON)
-				.get(new TypeListener<ClientResponse>(ClientResponse.class) {
-					@Override
-					public void onComplete(final Future<ClientResponse> f)
-							throws InterruptedException {
-						try {
-
-							callback.done(handleQueryResponse(f.get(), mapTo));
-
-						} catch (final ExecutionException e) {
-							throw new KasperClientException(e);
-						}
-					}
-				});
-	}
-
-	private <T extends IQueryDTO> T handleQueryResponse(final ClientResponse response, final TypeToken<T> mapTo) {
-		final Status status = response.getClientResponseStatus();
-		// handle errors
-		if (status.getStatusCode() == 200) {
-			return response.getEntity(new GenericType<T>(mapTo.getType()));
-		} else {
-			throw new KasperClientException("SERVER ERROR [status="
-					+ status.getStatusCode() + ", reason="
-					+ status.getReasonPhrase() + "]");
-        }
-	}
-
-	// --
-
-	MultivaluedMap<String, String> prepareQueryParams(final IQuery query) {
-		try {
-			@SuppressWarnings("unchecked")
-			final ITypeAdapter<IQuery> adapter = (ITypeAdapter<IQuery>) queryFactory
-					.create(TypeToken.of(query.getClass()));
-
-			final QueryBuilder queryBuilder = new QueryBuilder();
-			adapter.adapt(query, queryBuilder);
-
-			final MultivaluedMap<String, String> map = new MultivaluedMapImpl();
-			map.putAll(queryBuilder.build());
-
-			return map;
-
-		} catch (KasperQueryAdapterException ex) {
-			throw new KasperClientException(ex);
-		} catch (Exception ex) {
-		    throw new KasperClientException(ex);
-        }
-	}
-
-	// ------------------------------------------------------------------------
-	// RESOLVERS
-	// ------------------------------------------------------------------------
-
-	private URI resolveCommandPath(final Class<? extends ICommand> commandClass) {
-        final String className = commandClass.getSimpleName().replace("Command", "");
-		return resolvePath(commandBaseLocation, Introspector.decapitalize(className), commandClass);
-	}
-
-	private URI resolveQueryPath(final Class<? extends IQuery> queryClass) {
-        final String className = queryClass.getSimpleName().replace("Query", "");
-		return resolvePath(queryBaseLocation, Introspector.decapitalize(className), queryClass);
-	}
-
-	private URI resolvePath(final URL basePath, final String path, final Class<?> clazz) {
-		try {
-
-			return new URL(basePath, path).toURI();
-
-		} catch (final MalformedURLException | URISyntaxException e) {
-			throw cannotConstructURI(clazz, e);
-		}
+            public T get(final long timeout, final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
+                return handleQueryResponse(futureResponse.get(timeout, unit), mapTo);
+            }
+        };
     }
 
-	// ------------------------------------------------------------------------
+    // --
 
-	private KasperClientException cannotConstructURI(final Class<?> clazz, final Exception e) {
-		return new KasperClientException("Could not construct resource url for " + clazz, e);
-	}
+    /**
+     * @see KasperClient#query(IQuery, Class)
+     * @see KasperClient#sendAsync(ICommand, ICallback)
+     */
+    public <T extends IQueryDTO> void queryAsync(final IQuery query, final Class<T> mapTo, final ICallback<T> callback) {
+
+        queryAsync(query, TypeToken.of(mapTo), callback);
+    }
+
+    /**
+     * @see KasperClient#query(IQuery, Class)
+     * @see KasperClient#sendAsync(ICommand, ICallback)
+     */
+    public <T extends IQueryDTO> void queryAsync(final IQuery query, final TypeToken<T> mapTo,
+            final ICallback<T> callback) {
+        checkNotNull(query);
+        checkNotNull(mapTo);
+
+        client.asyncResource(resolveQueryPath(query.getClass())).queryParams(prepareQueryParams(query))
+                .accept(MediaType.APPLICATION_JSON)
+                .type(MediaType.APPLICATION_JSON)
+                .get(new TypeListener<ClientResponse>(ClientResponse.class) {
+                    @Override
+                    public void onComplete(final Future<ClientResponse> f) throws InterruptedException {
+                        try {
+
+                            callback.done(handleQueryResponse(f.get(), mapTo));
+
+                        } catch (final ExecutionException e) {
+                            throw new KasperException("ERROR handling query[" + query.getClass() + "]", e);
+                        }
+                    }
+                });
+    }
+
+    private <T extends IQueryDTO> T handleQueryResponse(final ClientResponse response, final TypeToken<T> mapTo) {
+        final Status status = response.getClientResponseStatus();
+        
+        // handle errors
+        if (status.getStatusCode() == 200) {
+            return response.getEntity(new GenericType<T>(mapTo.getType()));
+        } else {
+            final KasperQueryException exception = response.getEntity(KasperQueryException.class);
+            // TODO: need to clean it, otherwise it will contain garbage stack trace from jackson deserialization
+            exception.fillInStackTrace();
+            throw exception;
+        }
+    }
+
+    // --
+
+    MultivaluedMap<String, String> prepareQueryParams(final IQuery query) {
+        try {
+            @SuppressWarnings("unchecked")
+            final ITypeAdapter<IQuery> adapter = (ITypeAdapter<IQuery>) queryFactory.create(TypeToken.of(query.getClass()));
+
+            final QueryBuilder queryBuilder = new QueryBuilder();
+            adapter.adapt(query, queryBuilder);
+
+            final MultivaluedMap<String, String> map = new MultivaluedMapImpl();
+            map.putAll(queryBuilder.build());
+
+            return map;
+
+        } catch (final KasperQueryAdapterException ex) {
+            throw new KasperException("ERROR generating query string for [" + query.getClass() + "]", ex);
+        } catch (final Exception ex) {
+            throw new KasperException("ERROR generating query string for [" + query.getClass() + "]", ex);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+    // RESOLVERS
+    // ------------------------------------------------------------------------
+
+    private URI resolveCommandPath(final Class<? extends ICommand> commandClass) {
+        final String className = commandClass.getSimpleName().replace("Command", "");
+        return resolvePath(commandBaseLocation, Introspector.decapitalize(className), commandClass);
+    }
+
+    private URI resolveQueryPath(final Class<? extends IQuery> queryClass) {
+        final String className = queryClass.getSimpleName().replace("Query", "");
+        return resolvePath(queryBaseLocation, Introspector.decapitalize(className), queryClass);
+    }
+
+    private URI resolvePath(final URL basePath, final String path, final Class<?> clazz) {
+        try {
+
+            return new URL(basePath, path).toURI();
+
+        } catch (final MalformedURLException | URISyntaxException e) {
+            throw cannotConstructURI(clazz, e);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    private KasperException cannotConstructURI(final Class<?> clazz, final Exception e) {
+        return new KasperException("Could not construct resource url for " + clazz, e);
+    }
 
 }

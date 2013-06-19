@@ -24,7 +24,7 @@ part for query is shared between kasper-client and kasper-web.
 The main entry point of the library is KasperClient class, it provides all the required methods to communicate with exposed Kasper implementations.
 KasperClient is thread safe and should be reused for optimal performances.
 
-Sending a query is as simple as :
+**Sending a query** is as simple as :
 
 .. code-block:: java
 
@@ -32,6 +32,8 @@ Sending a query is as simple as :
    SuperCoolDTO dto = client.query(new SuperCoolQuery("what's up?"), SuperCoolDTO.class);
 
 Hard to make it shorter! :)
+
+If an error occured during query processing (it can also be a query validation error) a KasperQueryException will be raised.
 
 .. note:: 
    
@@ -43,9 +45,19 @@ Hard to make it shorter! :)
                               .queryBaseLocation("http://kasper-platform/query")
                               .commandBaseLocation("http://kasper-platform/query")
                               .create();
+                              
+**Sending a command** is also quite simple:
 
+.. code-block:: java
 
-**Get it**
+   CommandResult result = client.send(new ICommandYouTo("Enjoy Coding!"));
+   if (result.isError()) {
+      // do something useful with result.getErrors()
+   }
+
+|
+
+You like it? Then **Get it!**
 
 .. code-block:: code
    

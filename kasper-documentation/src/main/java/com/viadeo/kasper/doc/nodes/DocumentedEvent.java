@@ -10,7 +10,7 @@ import com.viadeo.kasper.IDomain;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
-import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.exception.KasperException;
 
 import java.util.Collection;
 
@@ -72,7 +72,7 @@ public final class DocumentedEvent extends AbstractDocumentedDomainNode {
 		final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
 		
 		if (null == annotation) {
-			throw new KasperRuntimeException(
+			throw new KasperException(
 					String.format("Event %s is not annotated !", eventClazz.getSimpleName()));
 		}
 		

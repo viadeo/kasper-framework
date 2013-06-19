@@ -9,7 +9,7 @@ package com.viadeo.kasper.core.boot;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
@@ -159,7 +159,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
         }
 
         if ((null == classes) || (0 == classes.size())) {
-            throw new KasperRuntimeException("Unable to find any Kasper annotation processor class");
+            throw new KasperException("Unable to find any Kasper annotation processor class");
         }
 
         // Instanciate and record each found processor ------------------------
@@ -185,7 +185,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
                     Object objInstance = null;
 
                     if (!interfaceClass.get().isInterface()) {
-                        throw new KasperRuntimeException(interfaceClass.get().getSimpleName()
+                        throw new KasperException(interfaceClass.get().getSimpleName()
                                 + " is not an interface in processor "
                                 + clazz.getSimpleName());
                     }
@@ -230,13 +230,13 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
                     }
 
                 } else {
-                    throw new KasperRuntimeException("Unable to find parameter type for type " + clazz.getSimpleName());
+                    throw new KasperException("Unable to find parameter type for type " + clazz.getSimpleName());
                 }
 
             } catch (final InstantiationException e) {
-                throw new KasperRuntimeException("Error when instantiating Kasper annotation processor", e);
+                throw new KasperException("Error when instantiating Kasper annotation processor", e);
             } catch (final IllegalAccessException e) {
-                throw new KasperRuntimeException("Error when accessing Kasper annotation processor", e);
+                throw new KasperException("Error when accessing Kasper annotation processor", e);
             }
         }
 
@@ -271,7 +271,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
                         }
 
                     } else {
-                        throw new KasperRuntimeException(
+                        throw new KasperException(
                                 String.format("%s must extends/implements %s", clazz.getName(), tplClass.getName()));
                     }
                 }

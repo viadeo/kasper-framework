@@ -1,13 +1,16 @@
 package com.viadeo.kasper.exposition;
 
+import java.util.Arrays;
+import java.util.List;
+
+import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.cqrs.command.CommandResult.Status;
 import com.viadeo.kasper.cqrs.command.ICommand;
-import com.viadeo.kasper.cqrs.command.ICommandResult;
-import com.viadeo.kasper.cqrs.command.ICommandResult.Status;
+import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
 import com.viadeo.kasper.ddd.impl.AbstractDomain;
-import com.viadeo.kasper.event.exceptions.KasperEventException;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.platform.IPlatform;
 import org.junit.Test;
@@ -17,51 +20,50 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExposer> {
-	
-	public HttpCommandExposerTest() {
-	}
-	
-	@Override
-	protected HttpCommandExposer createExposer(ApplicationContext ctx) {
-	    return new HttpCommandExposer(ctx.getBean(IPlatform.class), ctx.getBean(IDomainLocator.class));
-	}
 
-    // ------------------------------------------------------------------------
-	
-	@Test
-	public void testCommandNotFound() throws Exception {
-		// Given an unknown command
-		@SuppressWarnings("serial")
-		final ICommand unknownCommand = new ICommand() { };
+    public HttpCommandExposerTest() {
+    }
 
-		// When
-		final ICommandResult result = client().send(unknownCommand);
-
-		// Then
-		assertEquals(Status.ERROR, result.getStatus());
-		assertNotNull(result.asError().getErrorMessage().orNull());
-	}
+    @Override
+    protected HttpCommandExposer createExposer(ApplicationContext ctx) {
+        return new HttpCommandExposer(ctx.getBean(IPlatform.class), ctx.getBean(IDomainLocator.class));
+    }
 
     // ------------------------------------------------------------------------
 
-	@Test
-	public void testSuccessfulCommand() throws Exception {
-		// Given valid input
-		final CreateAccountCommand command = new CreateAccountCommand();
-		command.name = "foo bar";
+    @Test
+    public void testCommandNotFound() throws Exception {
+        // Given an unknown command
+        @SuppressWarnings("serial")
+        final ICommand unknownCommand = new ICommand() {};
 
-		// When
-		final ICommandResult result = client().send(command);
+        // When
+        final CommandResult result = client().send(unknownCommand);
 
-		// Then
-		assertEquals(Status.OK, result.getStatus());
-		assertEquals(command.name,
-				CreateAccountCommandHandler.createAccountCommandName);
-	}
+        // Then
+        assertEquals(Status.ERROR, result.getStatus());
+        assertNotNull(result.getErrors().get().get(0).getMessage());
+    }
 
     // ------------------------------------------------------------------------
 
-	@Test
+    @Test
+    public void testSuccessfulCommand() throws Exception {
+        // Given valid input
+        final CreateAccountCommand command = new CreateAccountCommand();
+        command.name = "foo bar";
+
+        // When
+        final CommandResult result = client().send(command);
+
+        // Then
+        assertEquals(Status.OK, result.getStatus());
+        assertEquals(command.name, CreateAccountCommandHandler.createAccountCommandName);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Test
     public void testExceptionCommand() throws Exception {
         // Given valid input
         final CreateAccountCommand command = new CreateAccountCommand();
@@ -69,19 +71,37 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.throwException = true;
 
         // When
-        final ICommandResult result = client().send(command);
+        final CommandResult result = client().send(command);
 
         // Then
         assertEquals(Status.ERROR, result.getStatus());
     }
 
     // ------------------------------------------------------------------------
-	
-	public static class CreateAccountCommand implements ICommand {
-		private static final long serialVersionUID = 674842094873929150L;
 
-		private String name;
-		private boolean throwException;
+    @Test
+    public void testCommandResultWithListOfErrors() throws Exception {
+        // Given valid input
+        final CreateAccountCommand command = new CreateAccountCommand();
+        command.errors = Arrays.asList(new KasperError("a", "aa", "aaa"), new KasperError("c", "cc"));
+
+        // When
+        final CommandResult result = client().send(command);
+
+        // Then
+        assertEquals(Status.ERROR, result.getStatus());
+        for (int i = 0; i < command.getErrors().size(); i++)
+            assertEquals(command.getErrors().get(i), result.getErrors().get().get(i));
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static class CreateAccountCommand implements ICommand {
+        private static final long serialVersionUID = 674842094873929150L;
+
+        private String name;
+        private boolean throwException;
+        private List<KasperError> errors;
 
         public String getName() {
             return this.name;
@@ -91,24 +111,36 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
             return throwException;
         }
 
-	}
+        public List<KasperError> getErrors() {
+            return errors;
+        }
+
+        public void setErrors(List<KasperError> errors) {
+            this.errors = errors;
+        }
+
+    }
 
     // ------------------------------------------------------------------------
 
-	@XKasperCommandHandler(domain = AccountDomain.class)
-	public static class CreateAccountCommandHandler extends AbstractCommandHandler<CreateAccountCommand> {
-		static String createAccountCommandName = null;
+    @XKasperCommandHandler(domain = AccountDomain.class)
+    public static class CreateAccountCommandHandler extends AbstractCommandHandler<CreateAccountCommand> {
+        static String createAccountCommandName = null;
 
-		@Override
-		public ICommandResult handle(final CreateAccountCommand command) throws KasperEventException {
-		    if (command.isThrowException()) throw new KasperEventException("Something bad happened!");
-			createAccountCommandName = command.getName();
-			return new KasperCommandResult(Status.OK);
-		}
-	}
+        @Override
+        public CommandResult handle(final CreateAccountCommand command) throws Exception {
+            if (command.isThrowException())
+                throw new KasperException("Something bad happened!");
+            if (command.getErrors() != null)
+                return CommandResult.error().addErrors(command.getErrors()).create();
+            createAccountCommandName = command.getName();
+            return CommandResult.ok();
+        }
+    }
 
     // ------------------------------------------------------------------------
 
-	public static class AccountDomain extends AbstractDomain { }
+    public static class AccountDomain extends AbstractDomain {
+    }
 
 }

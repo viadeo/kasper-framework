@@ -9,7 +9,7 @@ package com.viadeo.kasper.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
-import com.viadeo.kasper.client.exceptions.KasperClientException;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.query.exposition.*;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 
@@ -80,27 +80,19 @@ public class KasperClientBuilder {
     /**
      * @param url of the base path to use for query submission.
      * @return a reference to this builder.
-     * @throws MalformedURLException
+     * @throws KasperException
      */
     public KasperClientBuilder queryBaseLocation(final String url) {
-        try {
-            return queryBaseLocation(new URL(checkNotNull(url)));
-        } catch (final MalformedURLException e) {
-            throw new KasperClientException(e);
-        }
+        return queryBaseLocation(createURL(checkNotNull(url)));
     }
 
     /**
      * @param url of the base path to use for commands submission.
      * @return a reference to this builder.
-     * @throws MalformedURLException
+     * @throws KasperException
      */
     public KasperClientBuilder commandBaseLocation(final String url) {
-        try {
-            return commandBaseLocation(new URL(checkNotNull(url)));
-        } catch (final MalformedURLException e) {
-            throw new KasperClientException(e);
-        }
+        return commandBaseLocation(createURL(checkNotNull(url)));
     }
 
     /**
@@ -163,15 +155,14 @@ public class KasperClientBuilder {
     }
 
     // ------------------------------------------------------------------------
-
-    // FIXME: non-used parameter ?
+    
     private URL createURL(final String url) {
         try {
 
             return new URL(url);
 
         } catch (final MalformedURLException e) {
-            throw new KasperClientException(e);
+            throw new KasperException("Bad URL[" + url + "]", e);
         }
     }
 

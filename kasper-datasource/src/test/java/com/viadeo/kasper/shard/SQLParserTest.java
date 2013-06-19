@@ -15,7 +15,7 @@ import static junit.framework.Assert.assertEquals;
 import static junit.framework.Assert.assertNotNull;
 
 public class SQLParserTest {
-
+    
     @Test
     public void parseShouldHandleSelectQuery() {
         // Given

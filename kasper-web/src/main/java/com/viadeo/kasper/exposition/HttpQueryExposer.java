@@ -13,6 +13,7 @@ import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.query.IQuery;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
 import com.viadeo.kasper.cqrs.query.IQueryService;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.locators.IQueryServicesLocator;
 import com.viadeo.kasper.platform.IPlatform;
 import com.viadeo.kasper.query.exposition.IQueryFactory;
@@ -54,11 +55,17 @@ public class HttpQueryExposer extends HttpExposer {
 
     @Override
     public void init() throws ServletException {
+        LOGGER.info("=============== Exposing queries ===============");
         // expose all registered queries and commands
         for (final IQueryService<? extends IQuery, ? extends IQueryDTO> queryService : queryServicesLocator
                 .getServices()) {
             expose(queryService);
         }
+        if (exposedQueries.isEmpty())
+            LOGGER.warn("No Query has been exposed.");
+        else
+            LOGGER.info("Total exposed " + exposedQueries.size() + " queries.");
+        LOGGER.info("=================================================");
     }
 
     // ------------------------------------------------------------------------
@@ -158,7 +165,7 @@ public class HttpQueryExposer extends HttpExposer {
              * checking if the response has not been sent, if it is true this
              * means that an error happened and has been handled
              */
-            dto = platform().getQueryGateway().retrieve(new DefaultContextBuilder().buildDefault(), query);
+            dto = platform().getQueryGateway().retrieve(query, new DefaultContextBuilder().buildDefault());
 
         } catch (final Throwable e) {
             /*
@@ -188,6 +195,41 @@ public class HttpQueryExposer extends HttpExposer {
             sendError(SC_INTERNAL_SERVER_ERROR, "ERROR sending DTO[" + dto.getClass().getSimpleName() + "] for query["
                     + queryName + "].", resp, t);
         }
+    }
+
+    // ------------------------------------------------------------------------
+
+    @SuppressWarnings("deprecation")
+    protected void sendError(final int status, final String message, final HttpServletResponse resp,
+            final Throwable exception) throws IOException {
+
+        if (exception != null) {
+            LOGGER.error(message, exception);
+        } else {
+            LOGGER.error(message);
+        }
+
+        resp.setStatus(status, message);
+
+        final ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
+
+        final KasperQueryException queryException;
+        if (exception instanceof KasperQueryException)
+            queryException = (KasperQueryException) exception;
+        // FIXME I am not sure if we should get the most precise cause here by descending recursively in the stack 
+        // trace or just send the message
+        else {
+            if (exception != null) {
+                queryException = KasperQueryException.exception(message).reason(exception).create();
+            } else
+                queryException = KasperQueryException.exception(message).create();
+
+            queryException.fillInStackTrace();
+        }
+
+        writer.writeValue(resp.getOutputStream(), queryException);
+
+        resp.flushBuffer();
     }
 
     // ------------------------------------------------------------------------

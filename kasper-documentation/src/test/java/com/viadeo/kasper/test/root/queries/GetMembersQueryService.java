@@ -6,7 +6,6 @@ import com.viadeo.kasper.cqrs.query.IQueryDTO;
 import com.viadeo.kasper.cqrs.query.IQueryMessage;
 import com.viadeo.kasper.cqrs.query.IQueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.test.root.Facebook;
 
 @XKasperQueryService(domain=Facebook.class)
@@ -25,7 +24,7 @@ public class GetMembersQueryService implements IQueryService<GetMembersQueryServ
 	}
 
 	@Override
-	public DTO retrieve(final IQueryMessage<Q> message) throws KasperQueryException {
+	public DTO retrieve(final IQueryMessage<Q> message) throws Exception {
 		return null;
 	}
 	

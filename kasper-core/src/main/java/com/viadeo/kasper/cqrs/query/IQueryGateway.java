@@ -7,7 +7,6 @@
 package com.viadeo.kasper.cqrs.query;
 
 import com.viadeo.kasper.context.IContext;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 
 /** The Kasper query gateway, used to answer queries from the kasper platform */
 public interface IQueryGateway {
@@ -17,6 +16,6 @@ public interface IQueryGateway {
 	 * @param query the query to be answered
 	 * @return the Data Transfer Object as an answer
 	 */
-	<Q extends IQuery, DTO extends IQueryDTO> DTO retrieve(IContext context, Q query) throws KasperQueryException;
+	<Q extends IQuery, DTO extends IQueryDTO> DTO retrieve(Q query, IContext context) throws Exception;
 
 }

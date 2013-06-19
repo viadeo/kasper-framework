@@ -11,8 +11,7 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.IKasperID;
 import com.viadeo.kasper.ddd.IAggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.ddd.exception.KasperDomainRepositoryRuntimeException;
-import com.viadeo.kasper.ddd.exception.KasperDomainRuntimeException;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.repository.AggregateNotFoundException;
@@ -82,7 +81,7 @@ public abstract class AbstractRepository<AGR extends IAggregateRoot>
 						this.getClass(), IRepository.class, IRepository.ENTITY_PARAMETER_POSITION));
 		
 		if (!entityType.isPresent()) {
-			throw new KasperDomainRuntimeException("Cannot determine entity type for " + this.getClass().getName());
+			throw new KasperException("Cannot determine entity type for " + this.getClass().getName());
 		}
 		
 		axonRepository = new AxonRepository(this, entityType.get());
@@ -147,7 +146,7 @@ public abstract class AbstractRepository<AGR extends IAggregateRoot>
 			throw new AggregateNotFoundException(aggregateIdentifier, "Not found aggregate"); // Axon
 			
 		} else {
-			throw new KasperDomainRepositoryRuntimeException("Unable to manage with identifier of this kind : " + aggregateIdentifier.getClass());
+			throw new KasperException("Unable to manage with identifier of this kind : " + aggregateIdentifier.getClass());
 		}
 	}
 	

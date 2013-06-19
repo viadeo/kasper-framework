@@ -10,7 +10,7 @@ package com.viadeo.kasper.locators.impl;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.query.IQuery;
 import com.viadeo.kasper.cqrs.query.IQueryService;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.locators.IQueryServicesLocator;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
@@ -44,7 +44,7 @@ public class QueryServicesLocatorBase implements IQueryServicesLocator {
 		checkNotNull(service);
 
 		if (name.isEmpty()) {
-			throw new KasperQueryRuntimeException("Name of services cannot be empty : " + service.getClass());
+			throw new KasperQueryException("Name of services cannot be empty : " + service.getClass());
 		}
 
 		final Class<? extends IQueryService> serviceClass = service.getClass();
@@ -56,16 +56,16 @@ public class QueryServicesLocatorBase implements IQueryServicesLocator {
 								service.getClass(), IQueryService.class, IQueryService.PARAMETER_QUERY_POSITION);
 
 		if (!optQueryClass.isPresent()) {
-			throw new KasperQueryRuntimeException("Unable to find query class for service " + service.getClass());
+			throw new KasperQueryException("Unable to find query class for service " + service.getClass());
 		}
 
 		final Class<? extends IQuery> queryClass = optQueryClass.get();
 		if (this.serviceQueryClasses.containsKey(queryClass)) {
-			throw new KasperQueryRuntimeException("A service for the same query class is already registered : " + queryClass);
+			throw new KasperQueryException("A service for the same query class is already registered : " + queryClass);
 		}
 
 		if (this.serviceNames.containsKey(name)) {
-			throw new KasperQueryRuntimeException("A service by the same name is already registered : " + name);
+			throw new KasperQueryException("A service by the same name is already registered : " + name);
 		}
 
 		this.serviceQueryClasses.put(queryClass, service);

@@ -8,9 +8,9 @@
 package com.viadeo.kasper.cqrs.query.filter.impl;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
 import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.IQueryField;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.lang.reflect.Field;
@@ -57,7 +57,7 @@ public abstract class AbstractQueryDQO<DQO extends AbstractQueryDQO<DQO>> implem
 					@SuppressWarnings("rawtypes")
 					final Optional<Class> optFieldClass = ReflectionGenericsResolver.getClass(field.getGenericType());
 					if (!optFieldClass.isPresent()) {
-						throw new KasperQueryRuntimeException(String.format("Unable to find field class for %s", field.getName()));
+						throw new KasperException(String.format("Unable to find field class for %s", field.getName()));
 					}
 					final Class<?> fieldClass = optFieldClass.get();
 
@@ -68,7 +68,7 @@ public abstract class AbstractQueryDQO<DQO extends AbstractQueryDQO<DQO>> implem
 					field.set(this, newField);
 
 				} catch (final InstantiationException | IllegalAccessException e) {
-					throw new KasperQueryRuntimeException(String.format("Unable to instanciate field %s on DQO %s", field.getName(), thisClass.getSimpleName()), e);
+					throw new KasperException(String.format("Unable to instanciate field %s on DQO %s", field.getName(), thisClass.getSimpleName()), e);
 				}
             }
 		}

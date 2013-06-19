@@ -11,7 +11,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.IQueryField;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement;
@@ -53,7 +53,7 @@ public abstract class AbstractQueryField<P, DQO extends IQueryDQO<DQO>, F extend
 							this.getClass(), IQueryField.class, IQueryField.PARAMETER_FILTER_POSITION);
 
 			if (!optClass.isPresent()) {
-				throw new KasperQueryRuntimeException("Unable to find class for associated filter on " + this.getClass());
+				throw new KasperQueryException("Unable to find class for associated filter on " + this.getClass());
 			}
 
 			this.filterClass = optClass.get();
@@ -85,11 +85,11 @@ public abstract class AbstractQueryField<P, DQO extends IQueryDQO<DQO>, F extend
 				return Optional.fromNullable(value);
 
 			} catch (final IllegalArgumentException | IllegalAccessException e) {
-				throw new KasperQueryRuntimeException(String.format(
+				throw new KasperQueryException(String.format(
 						"Can't access field %s of DTO type %s",
 						dtoField.getName(), dto.getClass().getName()), e);
 			} catch (final ClassCastException e) {
-				throw new KasperQueryRuntimeException(String.format(
+				throw new KasperQueryException(String.format(
 						"Bad comparison of field %s of DTO type %s",
 						dtoField.getName(), dto.getClass().getName()), e);
 			}
@@ -132,7 +132,7 @@ public abstract class AbstractQueryField<P, DQO extends IQueryDQO<DQO>, F extend
 			filter.field(this);
 			return filter;
 		} catch (final InstantiationException | IllegalAccessException e) {
-			throw new KasperQueryRuntimeException("Unable to instantiate a new " + this.filterClass.getClass(), e);
+			throw new KasperQueryException("Unable to instantiate a new " + this.filterClass.getClass(), e);
 		}
     }
 

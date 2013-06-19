@@ -2,7 +2,7 @@ package com.viadeo.kasper.test.cqrs.query.base;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.filter.IQueryField;
 import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.impl.base.BaseFilterOperator;
@@ -293,7 +293,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			stringFilter.isSatisfiedBy(dto);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 
@@ -301,7 +301,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			stringFilter.isSatisfiedBy(VALUE);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 
@@ -311,7 +311,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			stringFilter.isSatisfiedBy(VALUE);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 
@@ -322,7 +322,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			stringFilter.isSatisfiedBy(dto);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 
@@ -331,7 +331,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			stringFilter.isSatisfiedBy(dto);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 
@@ -340,7 +340,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			intFilter.isSatisfiedBy(QUARANTE_DEUX);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 
@@ -348,7 +348,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			intFilter.isSatisfiedBy(QUARANTE_DEUX);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 
@@ -356,7 +356,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			intFilter.isSatisfiedBy(QUARANTE_DEUX);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 

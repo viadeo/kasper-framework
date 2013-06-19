@@ -9,11 +9,11 @@ package com.viadeo.kasper.cqrs.query.filter.impl.simple;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.cqrs.query.IQueryDTO;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
 import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.IQueryField;
 import com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement;
 import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryFilter;
+import com.viadeo.kasper.exception.KasperException;
 
 /**
  *
@@ -56,7 +56,7 @@ public class SimpleQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comp
 		Preconditions.checkNotNull(dto);
 
 		if (null == this.field) {
-			throw new KasperQueryRuntimeException(String.format("Field must be defined in %s", this.getClass().getName()));
+			throw new KasperException(String.format("Field must be defined in %s", this.getClass().getName()));
 		}
 
 		final Optional<P> valueOpt = this.field.getFieldValue(dto);
@@ -64,8 +64,7 @@ public class SimpleQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comp
 		if (!valueOpt.isPresent()) {
 			// Note: Perhaps we will authorize null values comparisons later in
 			// some conditions
-			throw new KasperQueryRuntimeException(
-					"Trying to compare with null value from DTO");
+			throw new KasperException("Trying to compare with null value from DTO");
 		}
 
 		return this.isSatisfiedBy(valueOpt.get());
@@ -81,13 +80,11 @@ public class SimpleQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comp
 		Preconditions.checkNotNull(value);
 
 		if (null == this.operator) {
-			throw new KasperQueryRuntimeException(
-					"The operator has not been defined");
+			throw new KasperException("The operator has not been defined");
 		}
 
 		if (null == this.value) {
-			throw new KasperQueryRuntimeException(
-					"The comparison base value has not been defined");
+			throw new KasperException("The comparison base value has not been defined");
 		}
 
 		// Normal Comparable operators ----------------------------------------

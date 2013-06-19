@@ -13,7 +13,7 @@ import com.viadeo.kasper.cqrs.command.ICommand;
 import com.viadeo.kasper.cqrs.command.ICommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
-import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.commandhandling.CommandBus;
@@ -104,7 +104,7 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
 			this.commandBus.subscribe(castor.getBeanClass().getName(), castor.getContainerClass());
 
 		} else {
-			throw new KasperRuntimeException("Unable to determine Command class for handler " + commandHandlerClazz.getName());
+			throw new KasperException("Unable to determine Command class for handler " + commandHandlerClazz.getName());
 		}
 	}
 
