@@ -25,7 +25,7 @@ public class AbstractQueryService<Q extends Query, DTO extends QueryDTO> impleme
 
     @Override
     public DTO retrieve(final com.viadeo.kasper.cqrs.query.QueryMessage<Q> message) throws Exception {
-        throw new UnsupportedOperationException();
+        return retrieve(message.getQuery());
     }
 
     public DTO retrieve(final Q query) throws Exception {
