@@ -1,35 +1,35 @@
 package com.viadeo.kasper.test.applications.entities;
 
-import com.viadeo.kasper.IDomain;
-import com.viadeo.kasper.IKasperID;
-import com.viadeo.kasper.er.IRootConcept;
+import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.er.RootConcept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
-import com.viadeo.kasper.locators.IDomainLocator;
 import com.viadeo.kasper.test.applications.Applications;
 import org.axonframework.domain.DomainEventStream;
 import org.axonframework.domain.EventRegistrationCallback;
 import org.joda.time.DateTime;
 
 @XKasperConcept(domain = Applications.class, label = Application.NAME)
-public class Application implements IRootConcept {
+public class Application implements RootConcept {
 	private static final long serialVersionUID = 7663957891087399105L;
 
 	public static final String NAME = "Application";
 	
 	@Override
-	public IDomain getDomain() {
+	public Domain getDomain() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public void setDomainLocator(IDomainLocator domainLocator) {
+	public void setDomainLocator(DomainLocator domainLocator) {
 		// TODO Auto-generated method stub
 
 	}
 
 	@Override
-	public <I extends IKasperID> I getEntityId() {
+	public <I extends KasperID> I getEntityId() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -65,7 +65,7 @@ public class Application implements IRootConcept {
 	}
 
 	@Override
-	public IKasperID getIdentifier() {
+	public KasperID getIdentifier() {
 		// TODO Auto-generated method stub
 		return null;
 	}

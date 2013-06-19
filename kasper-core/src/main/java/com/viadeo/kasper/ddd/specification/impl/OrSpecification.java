@@ -7,20 +7,19 @@
 package com.viadeo.kasper.ddd.specification.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.IEntity;
-import com.viadeo.kasper.ddd.specification.IEntitySpecification;
-import com.viadeo.kasper.ddd.specification.ISpecificationErrorMessage;
+import com.viadeo.kasper.ddd.Entity;
+import com.viadeo.kasper.ddd.specification.EntitySpecification;
 
 /**
  *
  * @param <E> Entity
  * 
- * @see IEntitySpecification
- * @see IEntity
+ * @see com.viadeo.kasper.ddd.specification.EntitySpecification
+ * @see com.viadeo.kasper.ddd.Entity
  */
-public class OrSpecification<E extends IEntity> extends AbstractCompositeSpecification<E> {
+public class OrSpecification<E extends Entity> extends AbstractCompositeSpecification<E> {
 
-	public OrSpecification(final IEntitySpecification<E> spec1, final IEntitySpecification<E> spec2) {
+	public OrSpecification(final EntitySpecification<E> spec1, final EntitySpecification<E> spec2) {
 		super(spec1, spec2);
 	}
 
@@ -35,12 +34,12 @@ public class OrSpecification<E extends IEntity> extends AbstractCompositeSpecifi
 	// ----------------------------------------------------------------------
 	
 	@Override
-	public boolean isSatisfiedBy(final E entity, final ISpecificationErrorMessage errorMessage) {
+	public boolean isSatisfiedBy(final E entity, final com.viadeo.kasper.ddd.specification.SpecificationErrorMessage errorMessage) {
 		
-		final ISpecificationErrorMessage errorMessage1 = new SpecificationErrorMessage();
+		final com.viadeo.kasper.ddd.specification.SpecificationErrorMessage errorMessage1 = new DefaultSpecificationErrorMessage();
 		final boolean isSatisfied1 = this.spec1.isSatisfiedBy(entity, errorMessage1);
 
-		final ISpecificationErrorMessage errorMessage2 = new SpecificationErrorMessage();
+		final com.viadeo.kasper.ddd.specification.SpecificationErrorMessage errorMessage2 = new DefaultSpecificationErrorMessage();
 		final boolean isSatisfied2 = this.spec2.isSatisfiedBy(entity, errorMessage2);
 
 		if (isSatisfied1 || isSatisfied2) {

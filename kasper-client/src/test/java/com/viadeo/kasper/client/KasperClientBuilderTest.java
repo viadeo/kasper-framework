@@ -8,7 +8,7 @@
 package com.viadeo.kasper.client;
 
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.query.exposition.ITypeAdapter;
+import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.NullSafeTypeAdapter;
 import com.viadeo.kasper.query.exposition.QueryBuilder;
 import com.viadeo.kasper.query.exposition.QueryParser;
@@ -22,7 +22,7 @@ public class KasperClientBuilderTest {
 
     @Test public void testCustomTypeAdapterOverrideDefault() {
         // Given
-        final ITypeAdapter<Date> expected = new ITypeAdapter<Date>() {
+        final TypeAdapter<Date> expected = new TypeAdapter<Date>() {
             public void adapt(final Date value, final QueryBuilder builder) {
                 // Empty
             }
@@ -34,7 +34,7 @@ public class KasperClientBuilderTest {
         };
         
         // When
-        final ITypeAdapter<Date> actual = new KasperClientBuilder().use(expected).create()
+        final TypeAdapter<Date> actual = new KasperClientBuilder().use(expected).create()
                                                 .queryFactory.create(TypeToken.of(Date.class));
         
         // Then

@@ -7,14 +7,14 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.cqrs.query.IQuery;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
-import com.viadeo.kasper.cqrs.query.IQueryService;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
-public final class DocumentedQueryService extends AbstractDocumentedDomainNode {
+public final class DocumentedQueryService extends DocumentedDomainNode {
 	private static final long serialVersionUID = -4593630427564176805L;
 
 	public static final String TYPE_NAME = "queryservice";
@@ -30,7 +30,7 @@ public final class DocumentedQueryService extends AbstractDocumentedDomainNode {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 	}
 
-	public DocumentedQueryService(final KasperLibrary kl, final Class<? extends IQueryService<?,?>> queryServiceClazz) {
+	public DocumentedQueryService(final KasperLibrary kl, final Class<? extends QueryService<?,?>> queryServiceClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 
 		final XKasperQueryService annotation = queryServiceClazz.getAnnotation(XKasperQueryService.class);
@@ -51,18 +51,18 @@ public final class DocumentedQueryService extends AbstractDocumentedDomainNode {
 
 		// - the Query --------------------------------------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends IQuery>> optQueryClass =
-				(Optional<Class<? extends IQuery>>)
+		final Optional<Class<? extends Query>> optQueryClass =
+				(Optional<Class<? extends Query>>)
 						ReflectionGenericsResolver.getParameterTypeFromClass(
-								queryServiceClazz, IQueryService.class, IQueryService.PARAMETER_QUERY_POSITION);
+								queryServiceClazz, QueryService.class, QueryService.PARAMETER_QUERY_POSITION);
 		this.query = new DocumentedBean(optQueryClass.get());
 		
 		// - the DTO ----------------------------------------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends IQueryDTO>> optQueryDTOClass =
-				(Optional<Class<? extends IQueryDTO>>)
+		final Optional<Class<? extends QueryDTO>> optQueryDTOClass =
+				(Optional<Class<? extends QueryDTO>>)
 						ReflectionGenericsResolver.getParameterTypeFromClass(
-								queryServiceClazz, IQueryService.class, IQueryService.PARAMETER_DTO_POSITION);
+								queryServiceClazz, QueryService.class, QueryService.PARAMETER_DTO_POSITION);
 		this.response = new DocumentedBean(optQueryDTOClass.get());
 		
 	}

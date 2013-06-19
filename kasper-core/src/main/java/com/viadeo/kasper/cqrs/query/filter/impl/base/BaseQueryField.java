@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.filter.impl.base;
 
-import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
+import com.viadeo.kasper.cqrs.query.filter.QueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryField;
 
 /**
@@ -18,10 +18,10 @@ import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryField;
  * @param <DQO>
  *            the associated DQO
  * 
- * @see com.viadeo.kasper.cqrs.query.filter.IQueryField
- * @see IQueryDQO
+ * @see com.viadeo.kasper.cqrs.query.filter.QueryField
+ * @see com.viadeo.kasper.cqrs.query.filter.QueryDQO
  */
-public class BaseQueryField<P extends Comparable<P>, DQO extends IQueryDQO<DQO>>
+public class BaseQueryField<P extends Comparable<P>, DQO extends QueryDQO<DQO>>
 		extends AbstractQueryField<P, DQO, BaseQueryFilterElement<DQO,P>> {
 
 }

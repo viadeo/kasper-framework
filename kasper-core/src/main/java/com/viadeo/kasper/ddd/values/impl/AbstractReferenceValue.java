@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.values.impl;
 
-import com.viadeo.kasper.ddd.values.IReferenceValue;
+import com.viadeo.kasper.ddd.values.ReferenceValue;
 
 import java.io.Serializable;
 
@@ -17,7 +17,7 @@ import java.io.Serializable;
  */
 public abstract class AbstractReferenceValue<PAYLOAD extends Serializable> 
 		extends AbstractEnclosingValue<PAYLOAD> 
-		implements IReferenceValue<PAYLOAD> {
+		implements ReferenceValue<PAYLOAD> {
 	
 	private static final long serialVersionUID = -2912518894544850152L;
 	

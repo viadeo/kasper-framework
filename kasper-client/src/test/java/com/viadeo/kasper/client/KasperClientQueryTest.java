@@ -13,9 +13,9 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
-import com.viadeo.kasper.client.lib.ICallback;
-import com.viadeo.kasper.cqrs.query.IQuery;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
+import com.viadeo.kasper.client.lib.Callback;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -46,7 +46,7 @@ public class KasperClientQueryTest extends JerseyTest {
 
     // ------------------------------------------------------------------------
 
-    public static class MemberDTO implements IQueryDTO {
+    public static class MemberDTO implements QueryDTO {
         private static final long serialVersionUID = 271800729414361903L;
 
         private String memberName;
@@ -81,7 +81,7 @@ public class KasperClientQueryTest extends JerseyTest {
         }
     }
 
-    public static class GetMemberQuery implements IQuery {
+    public static class GetMemberQuery implements Query {
         private static final long serialVersionUID = -2618953632539379331L;
 
         private final String memberName;
@@ -196,7 +196,7 @@ public class KasperClientQueryTest extends JerseyTest {
         // Given
         final CountDownLatch latch = new CountDownLatch(1);
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
-        final ICallback<MemberDTO> callback = spy(new ICallback<MemberDTO>() {
+        final Callback<MemberDTO> callback = spy(new Callback<MemberDTO>() {
             @Override
             public void done(MemberDTO dto) {
                 latch.countDown();

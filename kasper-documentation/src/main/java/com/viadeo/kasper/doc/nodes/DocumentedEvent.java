@@ -6,16 +6,16 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
-import com.viadeo.kasper.IDomain;
+import com.viadeo.kasper.Domain;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
-import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.exception.KasperException;
 
 import java.util.Collection;
 
 
-public final class DocumentedEvent extends AbstractDocumentedDomainNode {
+public final class DocumentedEvent extends DocumentedDomainNode {
 	private static final long serialVersionUID = 6817858609739438236L;
 	
 	public static final String TYPE_NAME = "event";
@@ -31,7 +31,7 @@ public final class DocumentedEvent extends AbstractDocumentedDomainNode {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 	}
 	
-	public DocumentedEvent(final KasperLibrary kl, final Class<? extends IEvent> eventClazz) {
+	public DocumentedEvent(final KasperLibrary kl, final Class<? extends Event> eventClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
 		final String domainName = getDomainFromEventClass(eventClazz);
@@ -72,11 +72,11 @@ public final class DocumentedEvent extends AbstractDocumentedDomainNode {
 		final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
 		
 		if (null == annotation) {
-			throw new KasperRuntimeException(
+			throw new KasperException(
 					String.format("Event %s is not annotated !", eventClazz.getSimpleName()));
 		}
 		
-		final Class<? extends IDomain> domain = annotation.domain();		
+		final Class<? extends Domain> domain = annotation.domain();
 		return domain.getSimpleName();
 	}	
 	

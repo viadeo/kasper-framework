@@ -8,11 +8,10 @@
 package com.viadeo.kasper.cqrs.query.filter.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
-import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
-import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
-import com.viadeo.kasper.cqrs.query.filter.IQueryFilterGroup;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
+import com.viadeo.kasper.cqrs.query.filter.QueryDQO;
+import com.viadeo.kasper.cqrs.query.filter.QueryFilter;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -22,19 +21,19 @@ import java.util.List;
  * 
  * @param <DQO> the associated Data Query Object
  * 
- * @see IQueryDQO
- * @see IQueryFilterGroup
- * @see IQueryFilter
+ * @see com.viadeo.kasper.cqrs.query.filter.QueryDQO
+ * @see com.viadeo.kasper.cqrs.query.filter.QueryFilterGroup
+ * @see com.viadeo.kasper.cqrs.query.filter.QueryFilter
  */
-public class QueryFilterGroup<DQO extends IQueryDQO<DQO>> extends
-AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
+public class QueryFilterGroup<DQO extends QueryDQO<DQO>> extends
+AbstractQueryFilter<DQO> implements com.viadeo.kasper.cqrs.query.filter.QueryFilterGroup<DQO> {
 
 	private static final long serialVersionUID = 7630593928554794374L;
 
 	/**
 	 * The associated filters list
 	 */
-	private List<IQueryFilter<DQO>> filters;
+	private List<QueryFilter<DQO>> filters;
 
 	/**
 	 * The operator to apply on filters group
@@ -44,17 +43,17 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilter#isSatisfiedBy(com.viadeo.kasper.cqrs.query.IQueryDTO)
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryFilter#isSatisfiedBy(com.viadeo.kasper.cqrs.query.QueryDTO)
 	 */
 	@Override
-	public boolean isSatisfiedBy(final IQueryDTO value) {
+	public boolean isSatisfiedBy(final QueryDTO value) {
 		Preconditions.checkNotNull(value);
 
 		if (null != this.filters) {
 
 			boolean satisfied = this.operator.equals(Operator.AND);
 
-			for (final IQueryFilter<DQO> filter : this.filters) {
+			for (final QueryFilter<DQO> filter : this.filters) {
 				final boolean localSatisfied = filter.isSatisfiedBy(value);
 				if (this.operator.equals(Operator.AND) && !localSatisfied) {
 					satisfied = false;
@@ -68,16 +67,16 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 			return satisfied;
 
 		} else {
-			throw new KasperQueryRuntimeException("No filter has been defined");
+			throw new KasperQueryException("No filter has been defined");
 		}
 	}
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterGroup#getFilters()
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryFilterGroup#getFilters()
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public List<IQueryFilter<DQO>> getFilters() {
+	public List<QueryFilter<DQO>> getFilters() {
 		if (null == this.filters) {
 			return Collections.EMPTY_LIST;
 		}
@@ -85,7 +84,7 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	}
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterGroup#getOperator()
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryFilterGroup#getOperator()
 	 */
 	@Override
 	public Operator getOperator() {
@@ -95,10 +94,10 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterGroup#reset()
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryFilterGroup#reset()
 	 */
 	@Override
-	public QueryFilterGroup<DQO> reset() {
+	public QueryFilterGroup reset() {
 		this.filters = null;
 		this.operator = Operator.AND;
 		return this;
@@ -107,10 +106,10 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterGroup#filter(com.viadeo.kasper.cqrs.query.filter.IQueryFilter)
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryFilterGroup#filter(com.viadeo.kasper.cqrs.query.filter.QueryFilter)
 	 */
 	@Override
-	public QueryFilterGroup<DQO> filter(final IQueryFilter<DQO> filter) {
+	public QueryFilterGroup filter(final QueryFilter<DQO> filter) {
 		Preconditions.checkNotNull(filter);
 
 		if (null == this.filters) {
@@ -123,12 +122,12 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	}
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterGroup#filter(com.viadeo.kasper.cqrs.query.filter.IQueryFilter[])
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryFilterGroup#filter(com.viadeo.kasper.cqrs.query.filter.QueryFilter[])
 	 */
 	@Override
-	public QueryFilterGroup<DQO> filter(
-			final IQueryFilter<DQO>... filters) {
-		for (final IQueryFilter<DQO> filter : filters) {
+	public QueryFilterGroup filter(
+			final QueryFilter<DQO>... filters) {
+		for (final QueryFilter<DQO> filter : filters) {
 			this.filter(filter);
 		}
 		return this;
@@ -137,10 +136,10 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryFilterElement#and(com.viadeo.kasper.cqrs.query.filter.IQueryFilter)
+	 * @see com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryFilterElement#and(com.viadeo.kasper.cqrs.query.filter.QueryFilter)
 	 */
 	@Override
-	public QueryFilterGroup<DQO> and(final IQueryFilter<DQO> filter) {
+	public QueryFilterGroup and(final QueryFilter<DQO> filter) {
 		this.filter(filter);
 		this.and();
 
@@ -148,10 +147,10 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	}
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryFilterElement#or(com.viadeo.kasper.cqrs.query.filter.IQueryFilter)
+	 * @see com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryFilterElement#or(com.viadeo.kasper.cqrs.query.filter.QueryFilter)
 	 */
 	@Override
-	public QueryFilterGroup<DQO> or(final IQueryFilter<DQO> filter) {
+	public QueryFilterGroup or(final QueryFilter<DQO> filter) {
 		this.filter(filter);
 		this.or();
 
@@ -164,7 +163,7 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	 * @see com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryFilterElement#and()
 	 */
 	@Override
-	public QueryFilterGroup<DQO> and() {
+	public QueryFilterGroup and() {
 		this.operator = Operator.AND;
 		return this;
 	}
@@ -173,7 +172,7 @@ AbstractQueryFilter<DQO> implements IQueryFilterGroup<DQO> {
 	 * @see com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryFilterElement#or()
 	 */
 	@Override
-	public QueryFilterGroup<DQO> or() {
+	public QueryFilterGroup or() {
 		this.operator = Operator.OR;
 		return this;
 	}

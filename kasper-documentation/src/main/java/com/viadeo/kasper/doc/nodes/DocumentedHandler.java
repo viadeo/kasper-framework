@@ -8,15 +8,15 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.cqrs.command.ICommand;
-import com.viadeo.kasper.cqrs.command.ICommandHandler;
+import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 
-public final class DocumentedHandler extends AbstractDocumentedDomainNode {
+public final class DocumentedHandler extends DocumentedDomainNode {
 	private static final long serialVersionUID = 2245288475776783642L;
 	
 	public static final String TYPE_NAME = "handler";
@@ -26,18 +26,18 @@ public final class DocumentedHandler extends AbstractDocumentedDomainNode {
 	
 	// ------------------------------------------------------------------------
 	
-	public DocumentedHandler(final KasperLibrary kl, final Class<? extends ICommandHandler<?>> handlerClazz) {
+	public DocumentedHandler(final KasperLibrary kl, final Class<? extends CommandHandler<?>> handlerClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
 		// Extract command type from handler ----------------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends ICommand>> commandClazz =  
-				(Optional<Class<? extends ICommand>>) 
+		final Optional<Class<? extends Command>> commandClazz =
+				(Optional<Class<? extends Command>>)
 					ReflectionGenericsResolver.getParameterTypeFromClass(
-						handlerClazz, ICommandHandler.class, ICommandHandler.COMMAND_PARAMETER_POSITION);
+						handlerClazz, CommandHandler.class, CommandHandler.COMMAND_PARAMETER_POSITION);
 		
 		if (!commandClazz.isPresent()) {
-			throw new KasperRuntimeException("Unable to find command type for handler " + handlerClazz.getClass());
+			throw new KasperException("Unable to find command type for handler " + handlerClazz.getClass());
 		}
 		
 		// Find associated domain ---------------------------------------------		

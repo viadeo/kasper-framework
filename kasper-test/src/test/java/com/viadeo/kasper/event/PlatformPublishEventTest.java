@@ -1,7 +1,7 @@
 package com.viadeo.kasper.event;
 
 import com.viadeo.kasper.AbstractPlatformTests;
-import com.viadeo.kasper.IKasperID;
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperTestIdGenerator;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.ddd.impl.AbstractDomain;
@@ -29,7 +29,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 	@SuppressWarnings("serial")
 	@XKasperEvent(domain = TestDomain.class, action = "test")
 	public static class TestEvent extends AbstractConceptEvent {
-		public TestEvent(final IKasperID idShortMessage, final DateTime creationDate) {
+		public TestEvent(final KasperID idShortMessage, final DateTime creationDate) {
 			super(idShortMessage, creationDate);
 		}
 	}
@@ -37,7 +37,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 	@XKasperEventListener
 	public static class TestListener extends AbstractEventListener<TestEvent> {
 		@Override
-		public void handle(final IEventMessage<TestEvent> eventMessage) {
+		public void handle(final EventMessage<TestEvent> eventMessage) {
 			received = true;
 			LOCK.unlock();
 		}
@@ -47,8 +47,8 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 
 	@Test
 	public void test() {
-		final IKasperID id = KasperTestIdGenerator.get();
-		final IEvent event = new TestEvent(id, new DateTime());
+		final KasperID id = KasperTestIdGenerator.get();
+		final Event event = new TestEvent(id, new DateTime());
 		event.setContext(this.newContext());
 
 		LOCK.lock();

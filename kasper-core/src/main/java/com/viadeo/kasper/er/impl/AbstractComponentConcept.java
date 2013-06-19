@@ -7,20 +7,20 @@
 package com.viadeo.kasper.er.impl;
 
 import com.viadeo.kasper.ddd.impl.AbstractComponentEntity;
-import com.viadeo.kasper.er.IComponentConcept;
-import com.viadeo.kasper.er.IRootConcept;
+import com.viadeo.kasper.er.ComponentConcept;
+import com.viadeo.kasper.er.RootConcept;
 
 /**
  * A base implementation for a component concept
  *
  * @param <R> the parent's concept root
  * 
- * @see com.viadeo.kasper.er.IConcept
- * @see IComponentConcept
+ * @see com.viadeo.kasper.er.Concept
+ * @see com.viadeo.kasper.er.ComponentConcept
  */
-public abstract class AbstractComponentConcept<R extends IRootConcept> 
+public abstract class AbstractComponentConcept<R extends RootConcept>
 		extends AbstractComponentEntity<R> 
-		implements IComponentConcept<R> {
+		implements ComponentConcept<R> {
 
 	private static final long serialVersionUID = -5237849445883458840L;
 	

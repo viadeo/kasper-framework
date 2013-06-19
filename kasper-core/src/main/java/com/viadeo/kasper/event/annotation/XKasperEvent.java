@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event.annotation;
 
-import com.viadeo.kasper.IDomain;
+import com.viadeo.kasper.Domain;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -30,7 +30,7 @@ public @interface XKasperEvent {
 	/**
 	 * @return the event's domain
 	 */
-	Class<? extends IDomain> domain();
+	Class<? extends Domain> domain();
 	
 	/**
 	 * @return the event's description

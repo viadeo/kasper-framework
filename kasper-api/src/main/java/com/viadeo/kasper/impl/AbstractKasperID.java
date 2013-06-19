@@ -7,7 +7,7 @@
 package com.viadeo.kasper.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.IKasperID;
+import com.viadeo.kasper.KasperID;
 
 import java.io.Serializable;
 
@@ -17,7 +17,7 @@ import java.io.Serializable;
  *
  * @param <T> the internal IKasperID type
  */
-public abstract class AbstractKasperID<T extends Serializable> implements IKasperID {
+public abstract class AbstractKasperID<T extends Serializable> implements KasperID {
 	private static final long serialVersionUID = 5118678966818650797L;
 
 	private T id;
@@ -39,8 +39,8 @@ public abstract class AbstractKasperID<T extends Serializable> implements IKaspe
 		if (this == Preconditions.checkNotNull(otherId)) {
 			return true;
 		}
-		if (IKasperID.class.isAssignableFrom(otherId.getClass())) {
-			final IKasperID other = (IKasperID) otherId;
+		if (KasperID.class.isAssignableFrom(otherId.getClass())) {
+			final KasperID other = (KasperID) otherId;
 			return this.toString().equals(other.toString());
 		}		
 		return this.id.equals(otherId);

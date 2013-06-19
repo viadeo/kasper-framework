@@ -7,19 +7,19 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.IDomain;
-import com.viadeo.kasper.ddd.IAggregateRoot;
-import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.ddd.AggregateRoot;
+import com.viadeo.kasper.ddd.Repository;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
-import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 
-public final class DocumentedRepository extends AbstractDocumentedDomainNode {
+public final class DocumentedRepository extends DocumentedDomainNode {
 	private static final long serialVersionUID = 2245288475776783601L;
 	
 	public static final String TYPE_NAME = "repository";
@@ -29,22 +29,22 @@ public final class DocumentedRepository extends AbstractDocumentedDomainNode {
 	
 	// ------------------------------------------------------------------------
 	
-	public DocumentedRepository(final KasperLibrary kl, final Class<? extends IRepository<?>> repositoryClazz) {
+	public DocumentedRepository(final KasperLibrary kl, final Class<? extends Repository<?>> repositoryClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
 		// Extract aggregate type from repository -----------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends IAggregateRoot>> agr =  
-			(Optional<Class<? extends IAggregateRoot>>) 
+		final Optional<Class<? extends AggregateRoot>> agr =
+			(Optional<Class<? extends AggregateRoot>>)
 				ReflectionGenericsResolver.getParameterTypeFromClass(
-					repositoryClazz, IRepository.class, IRepository.ENTITY_PARAMETER_POSITION);
+					repositoryClazz, Repository.class, Repository.ENTITY_PARAMETER_POSITION);
 		
 		if (!agr.isPresent()) {
-			throw new KasperRuntimeException("Unable to find aggregate type for repository " + repositoryClazz.getClass());
+			throw new KasperException("Unable to find aggregate type for repository " + repositoryClazz.getClass());
 		}
 		
 		// Find associated domain ---------------------------------------------
-		final Class<? extends IDomain> domain;
+		final Class<? extends Domain> domain;
 		final XKasperConcept conceptAnno = agr.get().getAnnotation(XKasperConcept.class);
 		if (null != conceptAnno) {
 			domain = conceptAnno.domain();
@@ -53,7 +53,7 @@ public final class DocumentedRepository extends AbstractDocumentedDomainNode {
 			if (null != relationAnno) {
 				domain = relationAnno.domain();
 			} else {
-				throw new KasperRuntimeException("Unable to find domain from annotation for aggregate " + agr.get().getSimpleName());
+				throw new KasperException("Unable to find domain from annotation for aggregate " + agr.get().getSimpleName());
 			}
 		}
 		 		
@@ -61,7 +61,7 @@ public final class DocumentedRepository extends AbstractDocumentedDomainNode {
 		final XKasperDomain domainAnno = domain.getAnnotation(XKasperDomain.class);
 		
 		if (null == domainAnno) {
-			throw new KasperRuntimeException("Unable to find a name type for domain " + domain);
+			throw new KasperException("Unable to find a name type for domain " + domain);
 		}
 		
 		// Get description ----------------------------------------------------

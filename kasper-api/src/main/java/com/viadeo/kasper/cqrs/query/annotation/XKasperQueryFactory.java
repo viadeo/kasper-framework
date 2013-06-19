@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.annotation;
 
-import com.viadeo.kasper.cqrs.query.IQuery;
+import com.viadeo.kasper.cqrs.query.Query;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -24,6 +24,6 @@ public @interface XKasperQueryFactory {
 	/**
 	 * @return the name of the service
 	 */
-	Class<IQuery> query();
+	Class<Query> query();
 
 }

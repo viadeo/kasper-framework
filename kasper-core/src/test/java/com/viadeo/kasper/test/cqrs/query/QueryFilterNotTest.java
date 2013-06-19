@@ -1,6 +1,6 @@
 package com.viadeo.kasper.test.cqrs.query;
 
-import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
+import com.viadeo.kasper.cqrs.query.filter.QueryFilter;
 import com.viadeo.kasper.cqrs.query.filter.impl.QueryFilterNot;
 import com.viadeo.kasper.test.cqrs.query.StubbedDQTOS.DQOTest;
 import com.viadeo.kasper.test.cqrs.query.StubbedDQTOS.DTOTest;
@@ -13,8 +13,8 @@ public class QueryFilterNotTest {
 	@Test
 	public void testNot() {
 		@SuppressWarnings("unchecked")
-		final IQueryFilter<DQOTest> filter = Mockito
-		.mock(IQueryFilter.class);
+		final QueryFilter<DQOTest> filter = Mockito
+		.mock(QueryFilter.class);
 		final DTOTest dto = Mockito.mock(DTOTest.class);
 
 		final QueryFilterNot<DQOTest> notFilter = new QueryFilterNot<>(filter);

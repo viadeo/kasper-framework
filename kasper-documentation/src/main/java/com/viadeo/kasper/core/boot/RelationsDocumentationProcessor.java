@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import com.viadeo.kasper.er.IRelation;
+import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperRelation
  */
-public class RelationsDocumentationProcessor extends AbstractDocumentationProcessor<XKasperRelation, IRelation<?,?>> {
+public class RelationsDocumentationProcessor extends DocumentationProcessor<XKasperRelation, Relation<?,?>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RelationsDocumentationProcessor.class);
 
@@ -26,8 +26,8 @@ public class RelationsDocumentationProcessor extends AbstractDocumentationProces
 	/**
 	 * Process Kasper relation
 	 * 
-	 * @see IRelation
-	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
+	 * @see com.viadeo.kasper.er.Relation
+	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -35,7 +35,7 @@ public class RelationsDocumentationProcessor extends AbstractDocumentationProces
 		LOGGER.info("Record on relation library : " + relationClazz.getName());
 
 		//- Register the domain to the locator --------------------------------
-		getKasperLibrary().recordRelation((Class<? extends IRelation<?, ?>>) relationClazz);
+		getKasperLibrary().recordRelation((Class<? extends Relation<?, ?>>) relationClazz);
 	}
 
 }

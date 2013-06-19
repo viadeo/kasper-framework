@@ -8,10 +8,10 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.IDomain;
-import com.viadeo.kasper.ddd.IAggregateRoot;
+import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.er.IConcept;
+import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import org.axonframework.eventhandling.annotation.EventHandler;
 
@@ -34,16 +34,16 @@ public final class DocumentedConcept extends DocumentedEntity {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 	}
 	
-	public DocumentedConcept(final KasperLibrary kl, final Class<? extends IConcept> conceptClazz) {
+	public DocumentedConcept(final KasperLibrary kl, final Class<? extends Concept> conceptClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
 		final XKasperConcept annotation = conceptClazz.getAnnotation(XKasperConcept.class);
 		
 		// Find if it's an aggregate ------------------------------------------
-		final boolean isAggregate = IAggregateRoot.class.isAssignableFrom(conceptClazz);
+		final boolean isAggregate = AggregateRoot.class.isAssignableFrom(conceptClazz);
 		
 		// Find associated domain ---------------------------------------------
-		final Class<? extends IDomain> domain = annotation.domain();
+		final Class<? extends Domain> domain = annotation.domain();
 		
 		// Get description ----------------------------------------------------
 		String description = annotation.description();
@@ -69,7 +69,7 @@ public final class DocumentedConcept extends DocumentedEntity {
 	
 	// --
 	
-	private void fillSourceEvents(final Class<? extends IConcept> conceptClazz) {
+	private void fillSourceEvents(final Class<? extends Concept> conceptClazz) {
 		final Method[] methods = conceptClazz.getDeclaredMethods();
 		for (Method method : methods) {
 			if (null != method.getAnnotation(EventHandler.class)) {

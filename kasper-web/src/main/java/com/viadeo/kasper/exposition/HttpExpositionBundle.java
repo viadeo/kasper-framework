@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.viadeo.kasper.locators.IDomainLocator;
-import com.viadeo.kasper.locators.IQueryServicesLocator;
-import com.viadeo.kasper.platform.IPlatform;
+import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.platform.Platform;
 import com.yammer.dropwizard.Bundle;
 import com.yammer.dropwizard.config.Bootstrap;
 import com.yammer.dropwizard.config.Environment;
@@ -16,16 +16,16 @@ import com.yammer.dropwizard.config.Environment;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class HttpExpositionBundle implements Bundle {
-    private final IPlatform platform;
-    private final IQueryServicesLocator queryServiceLocator;
-    private final IDomainLocator domainLocator;
+    private final Platform platform;
+    private final QueryServicesLocator queryServiceLocator;
+    private final DomainLocator domainLocator;
     private final String queryUrlPattern;
     private final String commandUrlPattern;
 
     // ------------------------------------------------------------------------
 
-    public HttpExpositionBundle(IPlatform platform, IQueryServicesLocator queryServiceLocator,
-            IDomainLocator domainLocator, String queryUrlPattern, String commandUrlPattern) {
+    public HttpExpositionBundle(Platform platform, QueryServicesLocator queryServiceLocator,
+            DomainLocator domainLocator, String queryUrlPattern, String commandUrlPattern) {
         this.platform = platform;
         this.queryServiceLocator = queryServiceLocator;
         this.domainLocator = domainLocator;
@@ -47,23 +47,23 @@ public class HttpExpositionBundle implements Bundle {
     // ------------------------------------------------------------------------
 
     public static class Builder {
-        private IPlatform platform;
-        private IQueryServicesLocator queryServiceLocator;
-        private IDomainLocator domainLocator;
+        private Platform platform;
+        private QueryServicesLocator queryServiceLocator;
+        private DomainLocator domainLocator;
         private String queryUrlPattern;
         private String commandUrlPattern;
 
-        public Builder use(final IPlatform platform) {
+        public Builder use(final Platform platform) {
             this.platform = platform;
             return this;
         }
 
-        public Builder use(final IQueryServicesLocator queryServiceLocator) {
+        public Builder use(final QueryServicesLocator queryServiceLocator) {
             this.queryServiceLocator = queryServiceLocator;
             return this;
         }
 
-        public Builder use(final IDomainLocator domainLocator) {
+        public Builder use(final DomainLocator domainLocator) {
             this.domainLocator = domainLocator;
             return this;
         }

@@ -1,11 +1,11 @@
 package com.viadeo.kasper.test.applications.repositories;
 
-import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.ddd.Repository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.test.applications.entities.Application;
 
 @XKasperRepository(description = ApplicationRepository.DESCRIPTION)
-public class ApplicationRepository implements IRepository<Application> {
+public class ApplicationRepository implements Repository<Application> {
 
 	public static final String DESCRIPTION = "The applications repository";
 	

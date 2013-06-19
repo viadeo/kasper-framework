@@ -8,9 +8,9 @@
 package com.viadeo.kasper.cqrs.query.filter.impl;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
-import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
-import com.viadeo.kasper.cqrs.query.filter.IQueryField;
+import com.viadeo.kasper.cqrs.query.filter.QueryDQO;
+import com.viadeo.kasper.cqrs.query.filter.QueryField;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.lang.reflect.Field;
@@ -22,9 +22,9 @@ import java.lang.reflect.Modifier;
  * @param <DQO> itself for accurate link with filter
  *
  * @see QueryDQOFactory
- * @see IQueryDQO
+ * @see com.viadeo.kasper.cqrs.query.filter.QueryDQO
  */
-public abstract class AbstractQueryDQO<DQO extends AbstractQueryDQO<DQO>> implements IQueryDQO<DQO> {
+public abstract class AbstractQueryDQO<DQO extends AbstractQueryDQO<DQO>> implements QueryDQO<DQO> {
 
 	private static final long serialVersionUID = -6878704922450778336L;
 
@@ -51,24 +51,24 @@ public abstract class AbstractQueryDQO<DQO extends AbstractQueryDQO<DQO>> implem
 			if (!field.isAccessible()) {
 				field.setAccessible(true);
 			}
-			if (Modifier.isPublic(field.getModifiers()) && IQueryField.class.isAssignableFrom(field.getType())) {
+			if (Modifier.isPublic(field.getModifiers()) && QueryField.class.isAssignableFrom(field.getType())) {
 				try {
 
 					@SuppressWarnings("rawtypes")
 					final Optional<Class> optFieldClass = ReflectionGenericsResolver.getClass(field.getGenericType());
 					if (!optFieldClass.isPresent()) {
-						throw new KasperQueryRuntimeException(String.format("Unable to find field class for %s", field.getName()));
+						throw new KasperException(String.format("Unable to find field class for %s", field.getName()));
 					}
 					final Class<?> fieldClass = optFieldClass.get();
 
 					@SuppressWarnings("unchecked") // safe
-					final IQueryField<?,DQO, ?> newField = (IQueryField<?, DQO, ?>) fieldClass.newInstance();
+					final QueryField<?,DQO, ?> newField = (QueryField<?, DQO, ?>) fieldClass.newInstance();
 					newField.setName(field.getName());
 					this.configureField(field, newField);
 					field.set(this, newField);
 
 				} catch (final InstantiationException | IllegalAccessException e) {
-					throw new KasperQueryRuntimeException(String.format("Unable to instanciate field %s on DQO %s", field.getName(), thisClass.getSimpleName()), e);
+					throw new KasperException(String.format("Unable to instanciate field %s on DQO %s", field.getName(), thisClass.getSimpleName()), e);
 				}
             }
 		}
@@ -83,7 +83,7 @@ public abstract class AbstractQueryDQO<DQO extends AbstractQueryDQO<DQO>> implem
 	 * @param field
 	 * @param fieldInstance
 	 */
-	protected void configureField(final Field field, final IQueryField<?, DQO, ?> fieldInstance) {
+	protected void configureField(final Field field, final QueryField<?, DQO, ?> fieldInstance) {
 		// Can be overriden by child classes to configure own fields
 	}
 

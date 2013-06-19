@@ -8,10 +8,9 @@ package com.viadeo.kasper.cqrs.query.filter.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.cqrs.query.IFilteredQuery;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
-import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
-import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
+import com.viadeo.kasper.cqrs.query.filter.QueryDQO;
+import com.viadeo.kasper.cqrs.query.filter.QueryFilter;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.net.URL;
@@ -21,19 +20,19 @@ import java.net.URL;
  * 
  * @param <DQO>
  */
-public class FilteredQuery<DQO extends IQueryDQO<?>> implements IFilteredQuery<DQO> {
+public class FilteredQuery<DQO extends QueryDQO<?>> implements com.viadeo.kasper.cqrs.query.FilteredQuery<DQO> {
 
 	private static final long serialVersionUID = 7761845519876972683L;
 	private static final int PARAMETER_DQO_POSITION = 0;
 
-	private IQueryFilter<DQO> filter;
+	private QueryFilter<DQO> filter;
 
 	// ------------------------------------------------------------------------
 
 	public FilteredQuery() {
 	}
 
-	public FilteredQuery(final IQueryFilter<DQO> filter) {
+	public FilteredQuery(final QueryFilter<DQO> filter) {
 		this.filter = Preconditions.checkNotNull(filter);
 	}
 
@@ -45,12 +44,12 @@ public class FilteredQuery<DQO extends IQueryDQO<?>> implements IFilteredQuery<D
 	// ------------------------------------------------------------------------
 
 	@Override
-	public Optional<IQueryFilter<DQO>> getFilter() {
+	public Optional<QueryFilter<DQO>> getFilter() {
 		return Optional.fromNullable(this.filter);
 	}
 
 	@Override
-	public void setFilter(final IQueryFilter<DQO> filter) {
+	public void setFilter(final QueryFilter<DQO> filter) {
 		this.filter = Preconditions.checkNotNull(filter);
 	}
 
@@ -62,10 +61,10 @@ public class FilteredQuery<DQO extends IQueryDQO<?>> implements IFilteredQuery<D
 		final Optional<Class<DQO>> dqoClass = 
 				(Optional<Class<DQO>>)
 					ReflectionGenericsResolver.getParameterTypeFromClass(this.getClass(),
-						FilteredQuery.class,	FilteredQuery.PARAMETER_DQO_POSITION);
+						FilteredQuery.class,	com.viadeo.kasper.cqrs.query.filter.impl.FilteredQuery.PARAMETER_DQO_POSITION);
 
 		if (!dqoClass.isPresent()) {
-			throw new KasperQueryRuntimeException(
+			throw new KasperQueryException(
 					"DQO type cannot by determined for "
 							+ this.getClass().getName());
 		}

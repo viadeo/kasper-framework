@@ -1,11 +1,11 @@
 package com.viadeo.kasper.test.timelines.repositories;
 
-import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.ddd.Repository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.test.timelines.entities.Status;
 
 @XKasperRepository
-public class StatusRepository implements IRepository<Status> {
+public class StatusRepository implements Repository<Status> {
 
 	@Override
 	public void add(Status arg0) {

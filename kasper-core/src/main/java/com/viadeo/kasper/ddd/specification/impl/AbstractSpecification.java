@@ -8,9 +8,8 @@ package com.viadeo.kasper.ddd.specification.impl;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.ddd.IEntity;
-import com.viadeo.kasper.ddd.specification.IEntitySpecification;
-import com.viadeo.kasper.ddd.specification.ISpecificationErrorMessage;
+import com.viadeo.kasper.ddd.Entity;
+import com.viadeo.kasper.ddd.specification.*;
 import com.viadeo.kasper.ddd.specification.annotation.XSpecification;
 
 import java.util.Map;
@@ -19,7 +18,7 @@ import java.util.Map;
  *
  * @param <E> Entity
  */
-public abstract class AbstractSpecification<E extends IEntity> implements IEntitySpecification<E> {
+public abstract class AbstractSpecification<E extends Entity> implements EntitySpecification<E> {
 
 	/**
 	 * Cache for all specifications annotation (if present)
@@ -30,12 +29,12 @@ public abstract class AbstractSpecification<E extends IEntity> implements IEntit
 	// ----------------------------------------------------------------------
 	
 	/**
-	 * @see com.viadeo.kasper.ddd.specification.IEntitySpecification#isSatisfiedBy(com.viadeo.kasper.ddd.IEntity)
+	 * @see com.viadeo.kasper.ddd.specification.EntitySpecification#isSatisfiedBy(com.viadeo.kasper.ddd.Entity)
 	 */
 	@Override
 	public abstract boolean isSatisfiedBy(E entity);
 
-	public boolean isSatisfiedBy(final E entity, final ISpecificationErrorMessage errorMessage) {
+	public boolean isSatisfiedBy(final E entity, final com.viadeo.kasper.ddd.specification.SpecificationErrorMessage errorMessage) {
 		Preconditions.checkNotNull(errorMessage);
 		final boolean isSatisfied = this.isSatisfiedBy(Preconditions.checkNotNull(entity));
 		
@@ -84,17 +83,17 @@ public abstract class AbstractSpecification<E extends IEntity> implements IEntit
 	// ----------------------------------------------------------------------
 
 	@Override
-	public IEntitySpecification<E> and(final IEntitySpecification<E> specification) {
+	public EntitySpecification<E> and(final EntitySpecification<E> specification) {
 		return new AndSpecification<>(this, Preconditions.checkNotNull(specification));
 	}
 
 	@Override
-	public IEntitySpecification<E> or(final IEntitySpecification<E> specification) {
+	public EntitySpecification<E> or(final EntitySpecification<E> specification) {
 		return new OrSpecification<>(this, Preconditions.checkNotNull(specification));
 	}
 
 	@Override
-	public IEntitySpecification<E> not(final IEntitySpecification<E> specification) {
+	public EntitySpecification<E> not(final EntitySpecification<E> specification) {
 		return new NotSpecification<>(Preconditions.checkNotNull(specification));
 	}
 

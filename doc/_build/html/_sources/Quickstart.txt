@@ -1,6 +1,0 @@
-
-
-Kasper framework Quickstart
-===========================
-
-

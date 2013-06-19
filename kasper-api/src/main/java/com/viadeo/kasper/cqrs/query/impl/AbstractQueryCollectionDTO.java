@@ -7,15 +7,15 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.google.common.base.Objects;
-import com.viadeo.kasper.cqrs.query.IQueryCollectionDTO;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryCollectionDTO;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
 
 import java.util.Collection;
 import java.util.Iterator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class AbstractQueryCollectionDTO<DTO extends IQueryDTO> implements IQueryCollectionDTO<DTO> {
+public abstract class AbstractQueryCollectionDTO<DTO extends QueryDTO> implements QueryCollectionDTO<DTO> {
 
 	private static final long serialVersionUID = 5181041546682941845L;
 

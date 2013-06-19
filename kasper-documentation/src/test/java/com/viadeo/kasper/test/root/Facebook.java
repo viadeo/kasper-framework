@@ -1,15 +1,15 @@
 package com.viadeo.kasper.test.root;
 
-import com.viadeo.kasper.ddd.IAggregateRoot;
-import com.viadeo.kasper.ddd.IEntity;
-import com.viadeo.kasper.ddd.IInternalDomain;
-import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.ddd.AggregateRoot;
+import com.viadeo.kasper.ddd.Entity;
+import com.viadeo.kasper.ddd.InternalDomain;
+import com.viadeo.kasper.ddd.Repository;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 
 import java.util.Set;
 
 @XKasperDomain(prefix=Facebook.PREFIX, label=Facebook.NAME, description=Facebook.DESCRIPTION)
-public class Facebook implements IInternalDomain {
+public class Facebook implements InternalDomain {
 
 	public static final String PREFIX = "fb";
 	public static final String NAME = "Facebook";
@@ -28,19 +28,19 @@ public class Facebook implements IInternalDomain {
 	}
 
 	@Override
-	public Set<? extends IEntity> getDomainEntities() {
+	public Set<? extends Entity> getDomainEntities() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <E extends IAggregateRoot> IRepository<E> getEntityRepository(E entity) {
+	public <E extends AggregateRoot> Repository<E> getEntityRepository(E entity) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public <E extends IAggregateRoot> IRepository<E> getEntityRepository(Class<E> entityClass) {
+	public <E extends AggregateRoot> Repository<E> getEntityRepository(Class<E> entityClass) {
 		// TODO Auto-generated method stub
 		return null;
 	}

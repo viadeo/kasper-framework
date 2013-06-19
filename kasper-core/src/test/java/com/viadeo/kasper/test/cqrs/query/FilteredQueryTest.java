@@ -1,8 +1,8 @@
 package com.viadeo.kasper.test.cqrs.query;
 
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
-import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
-import com.viadeo.kasper.cqrs.query.filter.IQueryFilter;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.filter.QueryDQO;
+import com.viadeo.kasper.cqrs.query.filter.QueryFilter;
 import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.impl.FilteredQuery;
 import com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryField;
@@ -14,7 +14,7 @@ public class FilteredQueryTest extends TestCase {
 
 	// ------------------------------------------------------------------------
 
-	private static final class DTOTest implements IQueryDTO {
+	private static final class DTOTest implements QueryDTO {
 		private static final long serialVersionUID = -7571158053188747427L;
 		@SuppressWarnings("unused")
 		private String name;
@@ -27,7 +27,7 @@ public class FilteredQueryTest extends TestCase {
 	}
 
 	// "*Field" classes are public (so there is no gain in testing accessibility here)
-	public static final class FieldTest<DQO extends IQueryDQO<DQO>> extends BaseQueryField<String, DQO> {
+	public static final class FieldTest<DQO extends QueryDQO<DQO>> extends BaseQueryField<String, DQO> {
 
 	}
 
@@ -48,7 +48,7 @@ public class FilteredQueryTest extends TestCase {
 		final QueryTest query = new QueryTest();
 		final DQOTest dqo = query.dqo();
 
-		final IQueryFilter<DQOTest> filter =
+		final QueryFilter<DQOTest> filter =
 				dqo.name.filter().endsWith("test").or(
 						dqo.name.filter().startsWith("test").and(
 								dqo.name.filter().endsWith("two")

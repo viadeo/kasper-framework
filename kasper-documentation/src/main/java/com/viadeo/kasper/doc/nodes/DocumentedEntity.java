@@ -7,15 +7,15 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.ddd.IComponentEntity;
-import com.viadeo.kasper.ddd.IEntity;
+import com.viadeo.kasper.ddd.ComponentEntity;
+import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.er.IRootConcept;
+import com.viadeo.kasper.er.RootConcept;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.Collection;
 
-public class DocumentedEntity extends AbstractDocumentedDomainNode {
+public class DocumentedEntity extends DocumentedDomainNode {
 	private static final long serialVersionUID = -3336007269246172693L;
 	
 	public static final String TYPE_NAME = "entity";
@@ -48,20 +48,20 @@ public class DocumentedEntity extends AbstractDocumentedDomainNode {
 	
 	// ------------------------------------------------------------------------
 	
-	protected void fillProperties(final Class<? extends IEntity> entityClazz) {
+	protected void fillProperties(final Class<? extends Entity> entityClazz) {
 		this.properties = new DocumentedBean(entityClazz);
 	}
 	
 	// ------------------------------------------------------------------------
 	
-	protected void fillParent(final Class<? extends IEntity> entityClazz) {
-		if (IComponentEntity.class.isAssignableFrom(entityClazz)) {
+	protected void fillParent(final Class<? extends Entity> entityClazz) {
+		if (ComponentEntity.class.isAssignableFrom(entityClazz)) {
 			
 			@SuppressWarnings("unchecked") // Safe
-			final Optional<Class<? extends IRootConcept>> agr = 
-				(Optional<Class<? extends IRootConcept>>) 
+			final Optional<Class<? extends RootConcept>> agr =
+				(Optional<Class<? extends RootConcept>>)
 					ReflectionGenericsResolver.getParameterTypeFromClass(
-						entityClazz, IComponentEntity.class, IComponentEntity.PARENT_ARGUMENT_POSITION);			
+						entityClazz, ComponentEntity.class, ComponentEntity.PARENT_ARGUMENT_POSITION);
 			
 			if (agr.isPresent()) {
 				this.parent = agr.get().getSimpleName();

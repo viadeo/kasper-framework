@@ -9,15 +9,14 @@ package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.cqrs.command.ICommand;
-import com.viadeo.kasper.cqrs.command.ICommandHandler;
+import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
-import com.viadeo.kasper.exception.KasperRuntimeException;
-import com.viadeo.kasper.locators.IDomainLocator;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.commandhandling.CommandBus;
-import org.axonframework.commandhandling.CommandHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,7 +26,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperCommandHandler
  */
-public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcessor<XKasperCommandHandler, ICommandHandler<?>> {
+public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasperCommandHandler, CommandHandler<?>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommandHandlersProcessor.class);
 
@@ -39,7 +38,7 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
 	/**
 	 * The domain locator to be passed to command handlers
 	 */
-	private transient IDomainLocator domainLocator;
+	private transient DomainLocator domainLocator;
 
 	// ------------------------------------------------------------------------
 
@@ -49,22 +48,22 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
 	 *
 	 * @param <C> the Kasper command type handled
 	 */
-	private static class CommandCastor<C extends ICommand> {
+	private static class CommandCastor<C extends Command> {
 
 		private final transient Class<? extends C> payload;
-		private final transient CommandHandler<? super C> handler;
+		private final transient org.axonframework.commandhandling.CommandHandler handler;
 
 		@SuppressWarnings("unchecked") // Safe by previous parent class typing
-		CommandCastor(final Class<?> bean, final CommandHandler<?> container) {
+		CommandCastor(final Class<?> bean, final org.axonframework.commandhandling.CommandHandler container) {
 			this.payload = (Class<? extends C>) bean;
-			this.handler = (CommandHandler<? super C>) container;
+			this.handler = container;
 		}
 
 		public Class<? extends C> getBeanClass() {
 			return this.payload;
 		}
 
-		public CommandHandler<? super C> getContainerClass() {
+		public org.axonframework.commandhandling.CommandHandler getContainerClass() {
 			return this.handler;
 		}
 	}
@@ -74,11 +73,11 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
 	/**
 	 * Process Kasper command handlers
 	 * 
-	 * @see ICommandHandler
-	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
+	 * @see com.viadeo.kasper.cqrs.command.CommandHandler
+	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
-	public void process(final Class<?> commandHandlerClazz, final ICommandHandler<?> commandHandler) {
+	public void process(final Class<?> commandHandlerClazz, final CommandHandler<?> commandHandler) {
 		LOGGER.info("Subscribe to command bus : " + commandHandlerClazz.getName());
 
 		if (AbstractEntityCommandHandler.class.isAssignableFrom(commandHandler.getClass())) {
@@ -90,21 +89,21 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
 		final Optional<Class<?>> commandClass =
 				(Optional<Class<?>>) 
 					ReflectionGenericsResolver.getParameterTypeFromClass(commandHandlerClazz,
-						ICommandHandler.class, ICommandHandler.COMMAND_PARAMETER_POSITION);
+						CommandHandler.class, CommandHandler.COMMAND_PARAMETER_POSITION);
 
 		if (commandClass.isPresent()) {
 		    // register this command handler for further use in kasper components
 			domainLocator.registerHandler(commandHandler);
             
 			//- Dynamic type command class and command handler for Axon -------
-			final CommandCastor<ICommand> castor =
+			final CommandCastor<Command> castor =
 					new CommandCastor<>(commandClass.get(), commandHandler);
 
 			//- Subscribe the handler to this command type (Axon) -------------
 			this.commandBus.subscribe(castor.getBeanClass().getName(), castor.getContainerClass());
 
 		} else {
-			throw new KasperRuntimeException("Unable to determine Command class for handler " + commandHandlerClazz.getName());
+			throw new KasperException("Unable to determine Command class for handler " + commandHandlerClazz.getName());
 		}
 	}
 
@@ -120,7 +119,7 @@ public class CommandHandlersProcessor extends AbstractSingletonAnnotationProcess
 	/**
 	 * @param domainLocator the domain locator to inject on command handlers
 	 */
-	public void setDomainLocator(final IDomainLocator domainLocator) {
+	public void setDomainLocator(final DomainLocator domainLocator) {
 		this.domainLocator = Preconditions.checkNotNull(domainLocator);
 	}
 

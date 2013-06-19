@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperEventListener
  */
-public class EventListenersProcessor extends AbstractSingletonAnnotationProcessor<XKasperEventListener, EventListener> {
+public class EventListenersProcessor extends SingletonAnnotationProcessor<XKasperEventListener, EventListener> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventListenersProcessor.class);	
 	
@@ -35,7 +35,7 @@ public class EventListenersProcessor extends AbstractSingletonAnnotationProcesso
 	 * Process Kasper event listener
 	 * 
 	 * @see EventListener
-	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
+	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
 	public void process(final Class<?> eventListenerClazz, final EventListener eventListener) {		

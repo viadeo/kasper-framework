@@ -1,3 +1,0 @@
-
-Kasper java client
-==================

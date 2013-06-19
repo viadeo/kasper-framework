@@ -23,15 +23,15 @@
     <!-- Command gateway -->
     <bean id="commandGateway" class="org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean">
         <property name="commandBus" ref="commandBus"/>
-        <property name="gatewayInterface" value="com.viadeo.kasper.cqrs.command.ICommandGateway"/>
+        <property name="gatewayInterface" value="com.viadeo.kasper.cqrs.command.CommandGateway"/>
     </bean>
 
 
     <!-- =================== Kasper default wiring ======================== -->
 
     <!--  Kasper locators -->
-    <bean id="domainLocator" class="com.viadeo.kasper.locators.impl.DomainLocatorBase"/>
-    <bean id="queryServicesLocator" class="com.viadeo.kasper.locators.impl.QueryServicesLocatorBase"/>
+    <bean id="domainLocator" class="com.viadeo.kasper.core.locators.impl.DefaultDomainLocator"/>
+    <bean id="queryServicesLocator" class="com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator"/>
     
     <!--  Kasper annotation processors -->
     <bean id="commandHandlersProcessor" class="com.viadeo.kasper.core.boot.CommandHandlersProcessor">
@@ -63,7 +63,7 @@
     <!--  Kasper platform beans -->
 
     <!-- Query gateway -->
-    <bean id="queryGateway" class="com.viadeo.kasper.cqrs.query.impl.QueryGatewayBase">
+    <bean id="queryGateway" class="com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway">
         <property name="queryServicesLocator" ref="queryServicesLocator"/>
     </bean>
 

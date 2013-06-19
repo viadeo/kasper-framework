@@ -10,16 +10,16 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.cqrs.command.ICommand;
-import com.viadeo.kasper.cqrs.command.ICommandHandler;
-import com.viadeo.kasper.cqrs.query.IQueryService;
-import com.viadeo.kasper.ddd.IInternalDomain;
-import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.ddd.InternalDomain;
+import com.viadeo.kasper.ddd.Repository;
 import com.viadeo.kasper.doc.nodes.*;
-import com.viadeo.kasper.er.IConcept;
-import com.viadeo.kasper.er.IRelation;
-import com.viadeo.kasper.event.IEvent;
-import com.viadeo.kasper.event.IEventListener;
+import com.viadeo.kasper.er.Concept;
+import com.viadeo.kasper.er.Relation;
+import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.EventListener;
 import org.springframework.stereotype.Component;
 
 import java.util.Collections;
@@ -53,7 +53,7 @@ public class KasperLibrary {
 	/**
 	 * Stores all registered domain-related components
 	 */
-	private final Map<Class<? extends AbstractDocumentedDomainNode>, Map<String, ?>> domainEntities;
+	private final Map<Class<? extends DocumentedDomainNode>, Map<String, ?>> domainEntities;
 	
 	/**
 	 * Store commands (do not depend directly from a specific domain)
@@ -84,8 +84,8 @@ public class KasperLibrary {
 	/**
 	 * Static mapping between string component type names and associated classes
 	 */
-	private final Map<String, Class<? extends AbstractDocumentedDomainNode>> simpleTypes;
-	private final Map<String, Class<? extends AbstractDocumentedDomainNode>> pluralTypes;
+	private final Map<String, Class<? extends DocumentedDomainNode>> simpleTypes;
+	private final Map<String, Class<? extends DocumentedDomainNode>> pluralTypes;
 	
 	// ========================================================================
 	
@@ -127,7 +127,7 @@ public class KasperLibrary {
 	// == DOMAINS =============================================================	
 	// ========================================================================
 	
-	public DocumentedDomain recordDomain(final Class<? extends IInternalDomain> domainClazz) {
+	public DocumentedDomain recordDomain(final Class<? extends InternalDomain> domainClazz) {
 		final DocumentedDomain documentedDomain = new DocumentedDomain(this, domainClazz);
 		
 		this.domainNames.put(documentedDomain.getName(), documentedDomain);
@@ -169,7 +169,7 @@ public class KasperLibrary {
 	// == REPOSITORIES ========================================================
 	// ========================================================================
 	
-	public DocumentedRepository recordRepository(final Class<? extends IRepository<?>> repositoryClazz) {		
+	public DocumentedRepository recordRepository(final Class<? extends Repository<?>> repositoryClazz) {
 		final DocumentedRepository documentedRepository = new DocumentedRepository(this, repositoryClazz);		
 		recordElement(documentedRepository.getDomainName(), documentedRepository);
 		return documentedRepository;
@@ -184,7 +184,7 @@ public class KasperLibrary {
 	// == COMMANDS ============================================================
 	// ========================================================================
 	
-	public DocumentedCommand recordCommand(final Class<? extends ICommand> commandClazz) {		
+	public DocumentedCommand recordCommand(final Class<? extends Command> commandClazz) {
 		final DocumentedCommand documentedCommand = new DocumentedCommand(this, commandClazz);		
 		
 		this.commandEntities.put(documentedCommand.getName(), documentedCommand);
@@ -217,7 +217,7 @@ public class KasperLibrary {
 	// == EVENTS ==============================================================
 	// ========================================================================
 	
-	public DocumentedEvent recordEvent(final Class<? extends IEvent> eventClazz) {		
+	public DocumentedEvent recordEvent(final Class<? extends Event> eventClazz) {
 		final DocumentedEvent documentedEvent = new DocumentedEvent(this, eventClazz);		
 		recordElement(documentedEvent.getDomainName(), documentedEvent);
 		return documentedEvent;
@@ -238,7 +238,7 @@ public class KasperLibrary {
 	// == CONCEPTS ============================================================
 	// ========================================================================
 	
-	public DocumentedConcept recordConcept(final Class<? extends IConcept> conceptClazz) {
+	public DocumentedConcept recordConcept(final Class<? extends Concept> conceptClazz) {
 		final DocumentedConcept documentedConcept = new DocumentedConcept(this, conceptClazz);
 		recordElement(documentedConcept.getDomainName(), documentedConcept);
 		return documentedConcept;
@@ -307,7 +307,7 @@ public class KasperLibrary {
 	// == RELATIONS ===========================================================
 	// ========================================================================
 	
-	public DocumentedRelation recordRelation(final Class<? extends IRelation<?,?>> relationClazz) {		
+	public DocumentedRelation recordRelation(final Class<? extends Relation<?,?>> relationClazz) {
 		final DocumentedRelation documentedRelation = new DocumentedRelation(this, relationClazz);		
 
 		recordElement(documentedRelation.getDomainName(), documentedRelation);
@@ -372,7 +372,7 @@ public class KasperLibrary {
 	// == LISTENERS ===========================================================
 	// ========================================================================
 	
-	public DocumentedListener recordListener(final Class<? extends IEventListener<?>> listenerClazz) {		
+	public DocumentedListener recordListener(final Class<? extends EventListener<?>> listenerClazz) {
 		final DocumentedListener documentedListener = new DocumentedListener(this, listenerClazz);
 		recordElement(documentedListener.getDomainName(), documentedListener);
 		return documentedListener;
@@ -415,7 +415,7 @@ public class KasperLibrary {
 	// == HANDLERS ============================================================
 	// ========================================================================
 	
-	public DocumentedHandler recordHandler(final Class<? extends ICommandHandler<?>> handlerClazz) {		
+	public DocumentedHandler recordHandler(final Class<? extends CommandHandler<?>> handlerClazz) {
 		final DocumentedHandler documentedHandler = new DocumentedHandler(this, handlerClazz);
 		recordElement(documentedHandler.getDomainName(), documentedHandler);
 		return documentedHandler;
@@ -445,7 +445,7 @@ public class KasperLibrary {
 	// == QUERY SERVICES ======================================================
 	// ========================================================================
 	
-	public DocumentedQueryService recordQueryService(final Class<? extends IQueryService<?,?>> queryServiceClazz) {		
+	public DocumentedQueryService recordQueryService(final Class<? extends QueryService<?,?>> queryServiceClazz) {
 		final DocumentedQueryService documentedQueryService = new DocumentedQueryService(this, queryServiceClazz);		
 		recordElement(documentedQueryService.getDomainName(), documentedQueryService);
 		return documentedQueryService;
@@ -521,7 +521,7 @@ public class KasperLibrary {
 	
 	// ------------------------------------------------------------------------
 	
-	public <T extends AbstractDocumentedDomainNode> Optional<T> getEntity(final String domainName, final String entityType, final String entityName) {
+	public <T extends DocumentedDomainNode> Optional<T> getEntity(final String domainName, final String entityType, final String entityName) {
 		Preconditions.checkNotNull(domainName);
 		Preconditions.checkNotNull(entityType);
 		Preconditions.checkNotNull(entityName);
@@ -548,7 +548,7 @@ public class KasperLibrary {
 	// --
 	
 	@SuppressWarnings("unchecked") // Safe
-	public <T extends AbstractDocumentedDomainNode> Optional<T> getEntity(final String domainName, final String entityName) {
+	public <T extends DocumentedDomainNode> Optional<T> getEntity(final String domainName, final String entityName) {
 		
 		Class<T> entityClass = (Class<T>) this.simpleTypes.get(DocumentedConcept.TYPE_NAME);		
 		final Optional<T> concept = getEntity(domainName, entityClass, entityName);
@@ -569,7 +569,7 @@ public class KasperLibrary {
 	// ========================================================================
 	
 	@SuppressWarnings("unchecked")
-	private <T extends AbstractDocumentedDomainNode> void recordElement(final String domain, final T node) {
+	private <T extends DocumentedDomainNode> void recordElement(final String domain, final T node) {
 		final Map<String, T> nodes;
 		
 		final Map<String, Map<String, T>> list;
@@ -592,7 +592,7 @@ public class KasperLibrary {
 	
 	// --
 	
-	public <T extends AbstractDocumentedDomainNode> Map<String, DocumentedNode> simpleNodesFrom(final Map<String, T> nodes) {
+	public <T extends DocumentedDomainNode> Map<String, DocumentedNode> simpleNodesFrom(final Map<String, T> nodes) {
 		Preconditions.checkNotNull(nodes);
 		
 		final TreeMap<String, DocumentedNode> simpleNodes = Maps.newTreeMap();
@@ -609,7 +609,7 @@ public class KasperLibrary {
 	
 	// --
 	
-	public <T extends AbstractDocumentedDomainNode> Map<String, DocumentedNode> simpleNodesFrom(final List<T> nodes) {
+	public <T extends DocumentedDomainNode> Map<String, DocumentedNode> simpleNodesFrom(final List<T> nodes) {
 		Preconditions.checkNotNull(nodes);
 		
 		final Map<String, DocumentedNode> simpleNodes = Maps.newTreeMap();

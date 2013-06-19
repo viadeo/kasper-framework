@@ -8,12 +8,12 @@ package com.viadeo.kasper.cqrs.query.filter.impl.simple;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
-import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
-import com.viadeo.kasper.cqrs.query.filter.IQueryField;
-import com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.filter.QueryDQO;
+import com.viadeo.kasper.cqrs.query.filter.QueryField;
+import com.viadeo.kasper.cqrs.query.filter.QueryFilterElement;
 import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryFilter;
+import com.viadeo.kasper.exception.KasperException;
 
 /**
  *
@@ -22,13 +22,13 @@ import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryFilter;
  * @param <DQO> the associated Data Query Object
  * @param <P> the managed payload type
  */
-public class SimpleQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comparable<P>>
-		extends AbstractQueryFilter<DQO> implements IQueryFilterElement<DQO, P> {
+public class SimpleQueryFilterElement<DQO extends QueryDQO<DQO>, P extends Comparable<P>>
+		extends AbstractQueryFilter<DQO> implements QueryFilterElement<DQO, P> {
 
 	private static final long serialVersionUID = -818497044226174978L;
 
 	/** the filter field for DTO resolution */
-	private IQueryField<P, DQO, ? extends SimpleQueryFilterElement<DQO, P>> field;
+	private QueryField<P, DQO, ? extends SimpleQueryFilterElement<DQO, P>> field;
 
 	/** the operator to apply on */
 	private SimpleFilterOperator operator;
@@ -42,21 +42,21 @@ public class SimpleQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comp
 
 	}
 
-	public SimpleQueryFilterElement(final IQueryField<P, DQO, ? extends SimpleQueryFilterElement<DQO, P>> field) {
+	public SimpleQueryFilterElement(final QueryField<P, DQO, ? extends SimpleQueryFilterElement<DQO, P>> field) {
 		this.field = Preconditions.checkNotNull(field);
 	}
 
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilter#isSatisfiedBy(com.viadeo.kasper.cqrs.query.IQueryDTO)
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryFilter#isSatisfiedBy(com.viadeo.kasper.cqrs.query.QueryDTO)
 	 */
 	@Override
-	public boolean isSatisfiedBy(final IQueryDTO dto) {
+	public boolean isSatisfiedBy(final QueryDTO dto) {
 		Preconditions.checkNotNull(dto);
 
 		if (null == this.field) {
-			throw new KasperQueryRuntimeException(String.format("Field must be defined in %s", this.getClass().getName()));
+			throw new KasperException(String.format("Field must be defined in %s", this.getClass().getName()));
 		}
 
 		final Optional<P> valueOpt = this.field.getFieldValue(dto);
@@ -64,8 +64,7 @@ public class SimpleQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comp
 		if (!valueOpt.isPresent()) {
 			// Note: Perhaps we will authorize null values comparisons later in
 			// some conditions
-			throw new KasperQueryRuntimeException(
-					"Trying to compare with null value from DTO");
+			throw new KasperException("Trying to compare with null value from DTO");
 		}
 
 		return this.isSatisfiedBy(valueOpt.get());
@@ -74,20 +73,18 @@ public class SimpleQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comp
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement#isSatisfiedBy(Object)
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryFilterElement#isSatisfiedBy(Object)
 	 */
 	@Override
 	public boolean isSatisfiedBy(final P value) {
 		Preconditions.checkNotNull(value);
 
 		if (null == this.operator) {
-			throw new KasperQueryRuntimeException(
-					"The operator has not been defined");
+			throw new KasperException("The operator has not been defined");
 		}
 
 		if (null == this.value) {
-			throw new KasperQueryRuntimeException(
-					"The comparison base value has not been defined");
+			throw new KasperException("The comparison base value has not been defined");
 		}
 
 		// Normal Comparable operators ----------------------------------------
@@ -102,22 +99,22 @@ public class SimpleQueryFilterElement<DQO extends IQueryDQO<DQO>, P extends Comp
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement#field(com.viadeo.kasper.cqrs.query.filter.IQueryField)
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryFilterElement#field(com.viadeo.kasper.cqrs.query.filter.QueryField)
 	 */
 	@SuppressWarnings("unchecked") // Must be satisfied
 	@Override
-	public <FL extends IQueryFilterElement<DQO, P>> SimpleQueryFilterElement<DQO, P> field(final IQueryField<P, DQO, FL> field) {
-		this.field = (IQueryField<P, DQO, ? extends SimpleQueryFilterElement<DQO, P>>) Preconditions.checkNotNull(field);
+	public <FL extends QueryFilterElement<DQO, P>> SimpleQueryFilterElement<DQO, P> field(final QueryField<P, DQO, FL> field) {
+		this.field = (QueryField<P, DQO, ? extends SimpleQueryFilterElement<DQO, P>>) Preconditions.checkNotNull(field);
 		return this;
 	}
 
 	/**
-	 * @see com.viadeo.kasper.cqrs.query.filter.IQueryFilterElement#getField()
+	 * @see com.viadeo.kasper.cqrs.query.filter.QueryFilterElement#getField()
 	 */
 	@SuppressWarnings("unchecked") // Must be satisfied
 	@Override
-	public <F extends IQueryFilterElement<DQO, P>> Optional<IQueryField<P, DQO, F>> getField() {
-		return Optional.fromNullable((IQueryField<P, DQO, F>) this.field);
+	public <F extends QueryFilterElement<DQO, P>> Optional<QueryField<P, DQO, F>> getField() {
+		return Optional.fromNullable((QueryField<P, DQO, F>) this.field);
 	}
 
 	// ------------------------------------------------------------------------

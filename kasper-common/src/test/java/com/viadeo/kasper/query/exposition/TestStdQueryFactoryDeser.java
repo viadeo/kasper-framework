@@ -8,7 +8,7 @@ package com.viadeo.kasper.query.exposition;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.cqrs.query.IQuery;
+import com.viadeo.kasper.cqrs.query.Query;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -22,23 +22,23 @@ import java.util.Map;
 import static org.junit.Assert.*;
 
 public class TestStdQueryFactoryDeser {
-    private StdQueryFactory factory;
+    private DefaultQueryFactory factory;
 
     @Before
     public void setUp() {
-        final Map<Type, ITypeAdapter<?>> adapters = new HashMap<>();
+        final Map<Type, TypeAdapter<?>> adapters = new HashMap<>();
         adapters.put(String.class, DefaultTypeAdapters.STRING_ADAPTER);
         adapters.put(int.class, DefaultTypeAdapters.INT_ADAPTER);
 
-        factory = new StdQueryFactory(adapters, ImmutableMap.<Type, BeanAdapter<?>> of(),
+        factory = new DefaultQueryFactory(adapters, ImmutableMap.<Type, BeanAdapter<?>> of(),
                 Arrays.asList(DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY), VisibilityFilter.PACKAGE_PUBLIC);
     }
 
     @Test
-    public void testSimpleQueryDeserialization() {
+    public void testSimpleQueryDeserialization() throws Exception {
 
         // Given
-        final ITypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
+        final TypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
         final Map<String, List<String>> given = ImmutableMap.of("name", Arrays.asList("foo"), "age",
                 Arrays.asList("1"), "list", Arrays.asList("bar", "barfoo", "foobar"));
 
@@ -52,12 +52,12 @@ public class TestStdQueryFactoryDeser {
     }
 
     @Test
-    public void testComposedQuery() {
+    public void testComposedQuery() throws Exception {
 
         // Given
         final Map<String, List<String>> given = ImmutableMap.of("field", Arrays.asList("someValue"), "name",
                 Arrays.asList("foo"), "age", Arrays.asList("1"), "list", Arrays.asList("bar", "barfoo", "foobar"));
-        final ITypeAdapter<ComposedQuery> adapter = factory.create(TypeToken.of(ComposedQuery.class));
+        final TypeAdapter<ComposedQuery> adapter = factory.create(TypeToken.of(ComposedQuery.class));
 
         // When
         final ComposedQuery query = adapter.adapt(new QueryParser(given));
@@ -70,10 +70,10 @@ public class TestStdQueryFactoryDeser {
     }
 
     @Test
-    public void testDeserializeWithMissingAndAdditionalFields() {
+    public void testDeserializeWithMissingAndAdditionalFields() throws Exception {
 
         // Given
-        final ITypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
+        final TypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
 
         // When
         final SimpleQuery query = adapter.adapt(new QueryParser(ImmutableMap.of("field", Arrays.asList("someValue"),
@@ -86,11 +86,11 @@ public class TestStdQueryFactoryDeser {
     }
 
     @Test
-    public void testDeserForComplexObjectWithCustomAdapter() {
+    public void testDeserForComplexObjectWithCustomAdapter() throws Exception {
         // needed when a custom typeadapter is registered and does not serialize to a literal
         // Given
-        final IQueryFactory factory = new QueryFactoryBuilder().use(new SomeBeanAdapter()).create();
-        final ITypeAdapter<BaseQuery> adapter = factory.create(TypeToken.of(BaseQuery.class));
+        final QueryFactory factory = new QueryFactoryBuilder().use(new SomeBeanAdapter()).create();
+        final TypeAdapter<BaseQuery> adapter = factory.create(TypeToken.of(BaseQuery.class));
 
         // When
         final BaseQuery q = adapter.adapt(new QueryParser(ImmutableMap.of("list_foo", Arrays.asList("bar"))));
@@ -104,7 +104,7 @@ public class TestStdQueryFactoryDeser {
 
     // ------------------------------------------------------------------------
 
-    public static class ComposedQuery implements IQuery {
+    public static class ComposedQuery implements Query {
         private static final long serialVersionUID = 5434689745780198187L;
 
         private SimpleQuery query;
@@ -158,7 +158,7 @@ public class TestStdQueryFactoryDeser {
 
     }
 
-    public static class BaseQuery implements IQuery {
+    public static class BaseQuery implements Query {
         private static final long serialVersionUID = -7064625946045395703L;
         private List<SomeBean> list;
 
@@ -197,7 +197,7 @@ public class TestStdQueryFactoryDeser {
         }
     }
 
-    public static class SimpleQuery implements IQuery {
+    public static class SimpleQuery implements Query {
         private static final long serialVersionUID = 2101539230768491786L;
 
         private final String name;

@@ -8,10 +8,10 @@ package com.viadeo.kasper.er.impl;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.IKasperID;
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.impl.AbstractComponentEntity;
-import com.viadeo.kasper.er.IComponentRelation;
-import com.viadeo.kasper.er.IRootConcept;
+import com.viadeo.kasper.er.ComponentRelation;
+import com.viadeo.kasper.er.RootConcept;
 
 /**
  * A base implementation for a component relation
@@ -19,21 +19,21 @@ import com.viadeo.kasper.er.IRootConcept;
  * @param <S> Source concept of the relation
  * @param <T> Target concept of the relation
  * 
- * @see com.viadeo.kasper.er.IRelation
- * @see IComponentRelation
+ * @see com.viadeo.kasper.er.Relation
+ * @see com.viadeo.kasper.er.ComponentRelation
  */
-public abstract class AbstractComponentRelation<S extends IRootConcept, T extends IRootConcept> 
+public abstract class AbstractComponentRelation<S extends RootConcept, T extends RootConcept>
 					extends AbstractComponentEntity<S> 
-					implements IComponentRelation<S, T> {
+					implements ComponentRelation<S, T> {
 
 	private static final long serialVersionUID = -5237849165883458840L;
 
-	private IKasperID sourceId;
-	private IKasperID targetId;	
+	private KasperID sourceId;
+	private KasperID targetId;
 
 	// ------------------------------------------------------------------------
 
-	public void setId(final IKasperID sourceId, final IKasperID targetId) {
+	public void setId(final KasperID sourceId, final KasperID targetId) {
 		this.sourceId = Preconditions.checkNotNull(sourceId);
 		this.targetId = Preconditions.checkNotNull(targetId);
 	}
@@ -41,23 +41,23 @@ public abstract class AbstractComponentRelation<S extends IRootConcept, T extend
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.er.IRelation#getSourceIdentifier()
+	 * @see com.viadeo.kasper.er.Relation#getSourceIdentifier()
 	 */
 	@Override
-	public IKasperID getSourceIdentifier() {
+	public KasperID getSourceIdentifier() {
 		return this.sourceId;
 	}
 
 	/**
-	 * @see com.viadeo.kasper.er.IRelation#getTargetIdentifier()
+	 * @see com.viadeo.kasper.er.Relation#getTargetIdentifier()
 	 */
 	@Override
-	public IKasperID getTargetIdentifier() {
+	public KasperID getTargetIdentifier() {
 		return this.targetId;
 	}
 
 	/**
-	 * @see com.viadeo.kasper.er.IRelation#isBidirectional()
+	 * @see com.viadeo.kasper.er.Relation#isBidirectional()
 	 */
 	@Override
 	public boolean isBidirectional() {

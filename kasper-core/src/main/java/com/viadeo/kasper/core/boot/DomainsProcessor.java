@@ -8,9 +8,9 @@
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.IInternalDomain;
+import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.ddd.InternalDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
-import com.viadeo.kasper.locators.IDomainLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,24 +20,24 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperDomain
  */
-public class DomainsProcessor extends AbstractSingletonAnnotationProcessor<XKasperDomain, IInternalDomain> {
+public class DomainsProcessor extends SingletonAnnotationProcessor<XKasperDomain, InternalDomain> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DomainsProcessor.class);
 
 	/**
 	 * The domain locator to register domains on
 	 */
-	private transient IDomainLocator domainLocator;
+	private transient DomainLocator domainLocator;
 
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Process Kasper domain
 	 * 
-	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
+	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
-	public void process(final Class<?> domainClazz, final IInternalDomain domain) {
+	public void process(final Class<?> domainClazz, final InternalDomain domain) {
 		LOGGER.info("Record on domain locator : " + domainClazz.getName());
 
 		//- Register the domain to the locator --------------------------------
@@ -50,7 +50,7 @@ public class DomainsProcessor extends AbstractSingletonAnnotationProcessor<XKasp
 	/**
 	 * @param domainLocator the domain locator for registering domains
 	 */
-	public void setDomainLocator(final IDomainLocator domainLocator) {
+	public void setDomainLocator(final DomainLocator domainLocator) {
 		this.domainLocator = Preconditions.checkNotNull(domainLocator);
 	}
 	

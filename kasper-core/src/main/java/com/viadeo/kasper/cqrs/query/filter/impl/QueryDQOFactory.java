@@ -7,8 +7,8 @@
 package com.viadeo.kasper.cqrs.query.filter.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
-import com.viadeo.kasper.cqrs.query.filter.IQueryDQO;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
+import com.viadeo.kasper.cqrs.query.filter.QueryDQO;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
  *         reflection to create fields These are description objects not
  *         targeted to be directly manipulated
  * 
- * @see IQueryDQO
+ * @see com.viadeo.kasper.cqrs.query.filter.QueryDQO
  */
 public final class QueryDQOFactory {
 
@@ -32,7 +32,7 @@ public final class QueryDQOFactory {
 	/**
 	 * the DQO cache
 	 */
-	private static Map<Class<? extends IQueryDQO<?>>, IQueryDQO<?>> dqoCache;
+	private static Map<Class<? extends QueryDQO<?>>, QueryDQO<?>> dqoCache;
 	static {
 		QueryDQOFactory.dqoCache = new ConcurrentHashMap<>();
 	}
@@ -46,7 +46,7 @@ public final class QueryDQOFactory {
 	 * @return a cached DQO instance
 	 */
 	@SuppressWarnings("unchecked")
-	public static <DQO extends IQueryDQO<?>> DQO get(final Class<DQO> dqoClass) {
+	public static <DQO extends QueryDQO<?>> DQO get(final Class<DQO> dqoClass) {
 
 		if (!QueryDQOFactory.dqoCache.containsKey(Preconditions
 				.checkNotNull(dqoClass))) {
@@ -57,16 +57,16 @@ public final class QueryDQOFactory {
 					constructor.setAccessible(true);
 				}
 
-				final IQueryDQO<?> newInstance = (IQueryDQO<?>) constructor	.newInstance();
+				final QueryDQO<?> newInstance = (QueryDQO<?>) constructor	.newInstance();
 				newInstance.init();
 				QueryDQOFactory.dqoCache.put(dqoClass, newInstance);
 
 			} catch (final InstantiationException | IllegalAccessException |
                            SecurityException | NoSuchMethodException |
                            IllegalArgumentException e) {
-				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e);
+				throw new KasperQueryException(ERROR_INSTANCE, e);
 			} catch (final InvocationTargetException e) {
-				throw new KasperQueryRuntimeException(ERROR_INSTANCE, e.getTargetException());
+				throw new KasperQueryException(ERROR_INSTANCE, e.getTargetException());
 			}
 		}
 

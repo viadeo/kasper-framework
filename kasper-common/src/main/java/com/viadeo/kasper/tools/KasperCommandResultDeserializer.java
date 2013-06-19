@@ -9,48 +9,61 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
-import com.viadeo.kasper.cqrs.command.ICommandResult.Status;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandResult;
+import com.fasterxml.jackson.databind.JsonDeserializer;
+import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.cqrs.command.CommandResult;
+import com.viadeo.kasper.cqrs.command.CommandResult.ResultBuilder;
+import com.viadeo.kasper.cqrs.command.CommandResult.Status;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public final class KasperCommandResultDeserializer extends StdDeserializer<KasperCommandResult> {
-	private static final long serialVersionUID = 5531546914770492090L;
+public final class KasperCommandResultDeserializer extends JsonDeserializer<CommandResult> {
+    
+    static final Logger LOGGER = LoggerFactory.getLogger(KasperCommandResultDeserializer.class);
 
-	static final Logger LOGGER = LoggerFactory.getLogger(KasperCommandResultDeserializer.class);
-    
     private static final String STATUS = "status";
-    
+    private static final String ERRORS = "errors";
+    private static final String ERROR = "error";
+
     // ------------------------------------------------------------------------
-    
+
     public KasperCommandResultDeserializer() {
-        super(KasperCommandResult.class);
     }
 
     // ------------------------------------------------------------------------
-    
-    @Override
-    public KasperCommandResult deserialize(final JsonParser jp, final DeserializationContext ctxt) 
-            throws IOException {
-        
-        Status status = null;
 
-        while (!jp.nextToken().equals(JsonToken.END_OBJECT)) {
+    @Override
+    public CommandResult deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException {
+        ResultBuilder result = new ResultBuilder();
+
+        while ((null != jp.nextToken()) && !jp.getCurrentToken().equals(JsonToken.END_OBJECT)) {
             final String name = jp.getCurrentName();
             jp.nextToken();
-            
+
             if (STATUS.equals(name)) {
-                status = jp.readValueAs(Status.class);
+                result.status(jp.readValueAs(Status.class));
+            } else if (ERRORS.equals(name)) {
+                if (jp.getCurrentToken() != JsonToken.START_ARRAY) {
+                    throw new IllegalStateException("Expected START_ARRAY encountered " + jp.getCurrentToken());
+                }
+
+                while ((null != jp.nextToken()) && !jp.getCurrentToken().equals(JsonToken.END_ARRAY)) {
+                    if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
+                        result.addError(jp.readValueAs(KasperError.class));
+                    }
+                }
+            }
+            if (ERROR.equals(name)) {
+                // just ignore
             } else {
                 LOGGER.warn("Unknown property when default mapping DTO");
                 // FIXME do we just ignore unknown properties or take some action?
             }
         }
 
-        return new KasperCommandResult(status);
+        return result.create();
     }
-    
 }

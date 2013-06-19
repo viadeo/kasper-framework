@@ -8,14 +8,14 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.event.IEvent;
-import com.viadeo.kasper.event.IEventListener;
+import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
-import com.viadeo.kasper.exception.KasperRuntimeException;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 
-public final class DocumentedListener extends AbstractDocumentedDomainNode {
+public final class DocumentedListener extends DocumentedDomainNode {
 	private static final long serialVersionUID = 2245288475426783601L;
 	
 	public static final String TYPE_NAME = "listener";
@@ -25,18 +25,18 @@ public final class DocumentedListener extends AbstractDocumentedDomainNode {
 	
 	// ------------------------------------------------------------------------
 	
-	public DocumentedListener(final KasperLibrary kl, final Class<? extends IEventListener<?>> listenerClazz) {
+	public DocumentedListener(final KasperLibrary kl, final Class<? extends EventListener<?>> listenerClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
 		// Extract event type from listener -----------------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends IEvent>> eventClazz =  
-				(Optional<Class<? extends IEvent>>) 
+		final Optional<Class<? extends Event>> eventClazz =
+				(Optional<Class<? extends Event>>)
 					ReflectionGenericsResolver.getParameterTypeFromClass(
-						listenerClazz, IEventListener.class, IEventListener.EVENT_PARAMETER_POSITION);
+						listenerClazz, EventListener.class, EventListener.EVENT_PARAMETER_POSITION);
 		
 		if (!eventClazz.isPresent()) {
-			throw new KasperRuntimeException("Unable to find event type for listener " + listenerClazz.getClass());
+			throw new KasperException("Unable to find event type for listener " + listenerClazz.getClass());
 		}
 		
 		// Find associated domain ---------------------------------------------		

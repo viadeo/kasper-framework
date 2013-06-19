@@ -27,7 +27,7 @@ public final class DefaultTypeAdapters {
 
 	// ------------------------------------------------------------------------
 
-	public static final ITypeAdapter<Integer> INT_ADAPTER = new ITypeAdapter<Integer>() {
+	public static final TypeAdapter<Integer> INT_ADAPTER = new TypeAdapter<Integer>() {
 		@Override
 		public void adapt(final Integer value, final QueryBuilder builder) {
 			builder.add(value);
@@ -41,7 +41,7 @@ public final class DefaultTypeAdapters {
 
     // --
 
-	public static final ITypeAdapter<Long> Long_ADAPTER = new ITypeAdapter<Long>() {
+	public static final TypeAdapter<Long> Long_ADAPTER = new TypeAdapter<Long>() {
 		@Override
 		public void adapt(final Long value, final QueryBuilder builder) {
 			builder.add(value);
@@ -55,7 +55,7 @@ public final class DefaultTypeAdapters {
 
     // --
 
-	public static final ITypeAdapter<Double> DOUBLE_ADAPTER = new ITypeAdapter<Double>() {
+	public static final TypeAdapter<Double> DOUBLE_ADAPTER = new TypeAdapter<Double>() {
 		@Override
 		public void adapt(final Double value, final QueryBuilder builder) {
 			builder.add(value);
@@ -69,7 +69,7 @@ public final class DefaultTypeAdapters {
 
     // --
 
-	public static final ITypeAdapter<Float> FLOAT_ADAPTER = new ITypeAdapter<Float>() {
+	public static final TypeAdapter<Float> FLOAT_ADAPTER = new TypeAdapter<Float>() {
 		@Override
 		public void adapt(final Float value, final QueryBuilder builder) {
 			builder.add(value);
@@ -83,7 +83,7 @@ public final class DefaultTypeAdapters {
 
     // --
 
-	public static final ITypeAdapter<Short> SHORT_ADAPTER = new ITypeAdapter<Short>() {
+	public static final TypeAdapter<Short> SHORT_ADAPTER = new TypeAdapter<Short>() {
 		@Override
 		public void adapt(final Short value, final QueryBuilder builder) {
 			builder.add(value);
@@ -97,7 +97,7 @@ public final class DefaultTypeAdapters {
 
 	// --
 
-	public static final ITypeAdapter<String> STRING_ADAPTER = new ITypeAdapter<String>() {
+	public static final TypeAdapter<String> STRING_ADAPTER = new TypeAdapter<String>() {
 		@Override
 		public void adapt(final String value, final QueryBuilder builder) {
 			builder.add(value);
@@ -111,7 +111,7 @@ public final class DefaultTypeAdapters {
 
 	// --
 
-	public static final ITypeAdapter<Boolean> BOOLEAN_ADAPTER = new ITypeAdapter<Boolean>() {
+	public static final TypeAdapter<Boolean> BOOLEAN_ADAPTER = new TypeAdapter<Boolean>() {
 		@Override
 		public void adapt(final Boolean value, final QueryBuilder builder) {
 			builder.add(value.toString());
@@ -125,7 +125,7 @@ public final class DefaultTypeAdapters {
 
 	// --
 
-	public static final ITypeAdapter<Date> DATE_ADAPTER = new ITypeAdapter<Date>() {
+	public static final TypeAdapter<Date> DATE_ADAPTER = new TypeAdapter<Date>() {
 		@Override
 		public void adapt(final Date value, final QueryBuilder builder) {
 			builder.add(String.valueOf(value.getTime()));
@@ -139,7 +139,7 @@ public final class DefaultTypeAdapters {
 
 	// --
 
-	public static final ITypeAdapter<DateTime> DATETIME_ADAPTER = new ITypeAdapter<DateTime>() {
+	public static final TypeAdapter<DateTime> DATETIME_ADAPTER = new TypeAdapter<DateTime>() {
 		@Override
 		public void adapt(final DateTime value, final QueryBuilder builder) {
 			builder.add(String.valueOf(value.getMillis()));
@@ -153,20 +153,20 @@ public final class DefaultTypeAdapters {
 
 	// --
 
-	public static final ITypeAdapterFactory<Object> ARRAY_ADAPTER_FACTORY = new ITypeAdapterFactory<Object>() {
+	public static final TypeAdapterFactory<Object> ARRAY_ADAPTER_FACTORY = new TypeAdapterFactory<Object>() {
 		@Override
-		public Optional<ITypeAdapter<Object>> create(
+		public Optional<TypeAdapter<Object>> create(
 				final TypeToken<Object> typeToken,
-				final IQueryFactory adapterFactory) {
+				final QueryFactory adapterFactory) {
 			final Class<?> rawClass = typeToken.getRawType();
 
 			if (rawClass.isArray()) {
-				final ITypeAdapter<?> elementAdapter = adapterFactory
+				final TypeAdapter<?> elementAdapter = adapterFactory
 						.create(TypeToken.of(rawClass.getComponentType()));
 
 				@SuppressWarnings({ "unchecked" })
-				final ITypeAdapter<Object> adapter = new ArrayAdapter(
-						(ITypeAdapter<Object>) elementAdapter,
+				final TypeAdapter<Object> adapter = new ArrayAdapter(
+						(TypeAdapter<Object>) elementAdapter,
 						rawClass.getComponentType());
 				return Optional.fromNullable(adapter);
 			}
@@ -177,17 +177,17 @@ public final class DefaultTypeAdapters {
 
 	// --
 
-	public static final class ArrayAdapter implements ITypeAdapter<Object> {
-		private final ITypeAdapter<Object> componentAdapter;
+	public static final class ArrayAdapter implements TypeAdapter<Object> {
+		private final TypeAdapter<Object> componentAdapter;
 		private final Class<?> componentClass;
 
-		public ArrayAdapter(final ITypeAdapter<Object> componentAdapter, final Class<?> componentClass) {
+		public ArrayAdapter(final TypeAdapter<Object> componentAdapter, final Class<?> componentClass) {
 			this.componentAdapter = componentAdapter;
 			this.componentClass = componentClass;
 		}
 
 		@Override
-		public void adapt(final Object array, final QueryBuilder builder) {
+		public void adapt(final Object array, final QueryBuilder builder) throws Exception {
 			final int len = Array.getLength(array);
 
 			for (int i = 0; i < len; i++) {
@@ -197,7 +197,7 @@ public final class DefaultTypeAdapters {
 		}
 
 		@Override
-		public Object adapt(final QueryParser parser) {
+		public Object adapt(final QueryParser parser) throws Exception {
 			int size = 10;
 			Object array = Array.newInstance(componentClass, size);
 			int idx = 0;
@@ -224,11 +224,11 @@ public final class DefaultTypeAdapters {
 
 	// --
 
-	public static final ITypeAdapterFactory<Collection<?>> COLLECTION_ADAPTER_FACTORY = new ITypeAdapterFactory<Collection<?>>() {
+	public static final TypeAdapterFactory<Collection<?>> COLLECTION_ADAPTER_FACTORY = new TypeAdapterFactory<Collection<?>>() {
 		@Override
-		public Optional<ITypeAdapter<Collection<?>>> create(
+		public Optional<TypeAdapter<Collection<?>>> create(
 				final TypeToken<Collection<?>> typeToken,
-				final IQueryFactory adapterFactory) {
+				final QueryFactory adapterFactory) {
 			final Class<?> rawClass = typeToken.getRawType();
 
 			if (Collection.class.isAssignableFrom(rawClass)) {
@@ -236,11 +236,11 @@ public final class DefaultTypeAdapters {
 				final Class<?> elementType = ReflectionGenericsResolver
 						.getParameterTypeFromClass(typeToken.getType(),
 								Collection.class, 0).get();
-				final ITypeAdapter<?> elementAdapter = adapterFactory
+				final TypeAdapter<?> elementAdapter = adapterFactory
 						.create(TypeToken.of(elementType));
 
 				@SuppressWarnings({ "unchecked", "rawtypes" })
-				final ITypeAdapter<Collection<?>> adapter = new CollectionAdapter(
+				final TypeAdapter<Collection<?>> adapter = new CollectionAdapter(
 						elementAdapter);
 
 				return Optional.fromNullable(adapter);
@@ -252,21 +252,21 @@ public final class DefaultTypeAdapters {
 
 	// --
 
-	public static final class CollectionAdapter<E> implements ITypeAdapter<Collection<E>> {
-		private final ITypeAdapter<E> elementAdapter;
+	public static final class CollectionAdapter<E> implements TypeAdapter<Collection<E>> {
+		private final TypeAdapter<E> elementAdapter;
 
-		CollectionAdapter(final ITypeAdapter<E> elementAdapter) {
+		CollectionAdapter(final TypeAdapter<E> elementAdapter) {
 			this.elementAdapter = elementAdapter;
 		}
 
 		@Override
-		public void adapt(final Collection<E> value, final QueryBuilder builder) {
+		public void adapt(final Collection<E> value, final QueryBuilder builder) throws Exception {
 			for (final E element : value) {
 				elementAdapter.adapt(element, builder);
 			}
 		}
 
-		public Collection<E> adapt(final QueryParser parser) {
+		public Collection<E> adapt(final QueryParser parser) throws Exception {
 			final List<E> listOfE = new ArrayList<>();
 			for (final QueryParser next : parser) {
 				listOfE.add(elementAdapter.adapt(next));
@@ -275,7 +275,7 @@ public final class DefaultTypeAdapters {
 		}
 	}
 
-	public static class EnumAdapter<T extends Enum<T>> implements ITypeAdapter<T> {
+	public static class EnumAdapter<T extends Enum<T>> implements TypeAdapter<T> {
 		private final Class<T> eClass;
 
 		public EnumAdapter(final Class<T> eClass) {
@@ -291,14 +291,14 @@ public final class DefaultTypeAdapters {
 		}
 	}
 
-	public static final ITypeAdapterFactory<Enum<?>> ENUM_ADAPTER_FACTORY = new ITypeAdapterFactory<Enum<?>>() {
+	public static final TypeAdapterFactory<Enum<?>> ENUM_ADAPTER_FACTORY = new TypeAdapterFactory<Enum<?>>() {
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
-		public Optional<ITypeAdapter<Enum<?>>> create(
-				TypeToken<Enum<?>> typeToken, IQueryFactory adapterFactory) {
+		public Optional<TypeAdapter<Enum<?>>> create(
+				TypeToken<Enum<?>> typeToken, QueryFactory adapterFactory) {
 			final Class<?> rawClass = typeToken.getRawType();
-			final ITypeAdapter<Enum<?>> adapter;
+			final TypeAdapter<Enum<?>> adapter;
 
 			if (rawClass.isEnum() || Enum.class.isAssignableFrom(rawClass)) {
 				adapter = new EnumAdapter(rawClass);

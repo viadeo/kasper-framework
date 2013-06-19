@@ -1,9 +1,9 @@
 package com.viadeo.kasper.test.cqrs.query.base;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.cqrs.query.IQueryDTO;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryRuntimeException;
-import com.viadeo.kasper.cqrs.query.filter.IQueryField;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
+import com.viadeo.kasper.cqrs.query.filter.QueryField;
 import com.viadeo.kasper.cqrs.query.filter.impl.AbstractQueryDQO;
 import com.viadeo.kasper.cqrs.query.filter.impl.base.BaseFilterOperator;
 import com.viadeo.kasper.cqrs.query.filter.impl.base.BaseQueryFilterElement;
@@ -35,7 +35,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		}
 
 		@SuppressWarnings("unchecked")
-		final IQueryField<String, DQOTest, BaseQueryFilterElement<DQOTest, String>> field = Mockito.mock(IQueryField.class);
+		final QueryField<String, DQOTest, BaseQueryFilterElement<DQOTest, String>> field = Mockito.mock(QueryField.class);
 
 		final BaseQueryFilterElement<DQOTest, String> eltFilter3 = new BaseQueryFilterElement<>(field);
 
@@ -50,7 +50,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		assertFalse(eltFilter.getField().isPresent());
 
 		@SuppressWarnings("unchecked")
-		final IQueryField<String, DQOTest, BaseQueryFilterElement<DQOTest, String>> field = Mockito.mock(IQueryField.class);
+		final QueryField<String, DQOTest, BaseQueryFilterElement<DQOTest, String>> field = Mockito.mock(QueryField.class);
 
 		assertEquals(eltFilter.field(field).getField().get(), field);
 
@@ -220,7 +220,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 	// BASIC DQO/DTO stubbed implementations for testing purposes
 	// ------------------------------------------------------------------------
 
-	private static final class dtofield implements IQueryDTO {
+	private static final class dtofield implements QueryDTO {
 		private static final long serialVersionUID = 4000122334767301613L;
 
 		private String stringField;
@@ -233,14 +233,14 @@ public class BaseQueryFilterElementTest extends TestCase {
 		private static final long serialVersionUID = -6031139541221227916L;
 
 		@SuppressWarnings("unchecked")
-		public final IQueryField<String, dqofield, BaseQueryFilterElement<dqofield, String>> stringField = Mockito.mock(IQueryField.class);
+		public final QueryField<String, dqofield, BaseQueryFilterElement<dqofield, String>> stringField = Mockito.mock(QueryField.class);
 
 		@SuppressWarnings("unchecked")
-		public final IQueryField<Integer, dqofield, BaseQueryFilterElement<dqofield, Integer>> intField = Mockito.mock(IQueryField.class);
+		public final QueryField<Integer, dqofield, BaseQueryFilterElement<dqofield, Integer>> intField = Mockito.mock(QueryField.class);
 
 		@SuppressWarnings("unchecked")
 		// Field that will be absent from DTO
-		public final IQueryField<String, dqofield, BaseQueryFilterElement<dqofield, String>> noneField = Mockito.mock(IQueryField.class);
+		public final QueryField<String, dqofield, BaseQueryFilterElement<dqofield, String>> noneField = Mockito.mock(QueryField.class);
 
 		// Init mocks
 		dqofield(final dtofield dto) {
@@ -293,7 +293,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			stringFilter.isSatisfiedBy(dto);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 
@@ -301,7 +301,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			stringFilter.isSatisfiedBy(VALUE);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 
@@ -311,7 +311,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			stringFilter.isSatisfiedBy(VALUE);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 
@@ -322,7 +322,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			stringFilter.isSatisfiedBy(dto);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 
@@ -331,7 +331,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			stringFilter.isSatisfiedBy(dto);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 
@@ -340,7 +340,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			intFilter.isSatisfiedBy(QUARANTE_DEUX);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 
@@ -348,7 +348,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			intFilter.isSatisfiedBy(QUARANTE_DEUX);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 
@@ -356,7 +356,7 @@ public class BaseQueryFilterElementTest extends TestCase {
 		try {
 			intFilter.isSatisfiedBy(QUARANTE_DEUX);
 			fail();
-		} catch (final KasperQueryRuntimeException e) {
+		} catch (final KasperQueryException e) {
 			// Ignore
 		}
 

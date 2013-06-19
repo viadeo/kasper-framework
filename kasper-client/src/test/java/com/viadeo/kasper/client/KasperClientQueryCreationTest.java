@@ -7,9 +7,9 @@
 
 package com.viadeo.kasper.client;
 
-import com.viadeo.kasper.client.exceptions.KasperClientException;
-import com.viadeo.kasper.cqrs.query.IQuery;
-import com.viadeo.kasper.query.exposition.ITypeAdapter;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.QueryBuilder;
 import com.viadeo.kasper.query.exposition.QueryParser;
 import org.joda.time.DateTime;
@@ -27,7 +27,7 @@ public class KasperClientQueryCreationTest {
 
 	// ------------------------------------------------------------------------
 
-	public static class CombinedQuery implements IQuery {
+	public static class CombinedQuery implements Query {
 		private static final long serialVersionUID = 7214975580153615343L;
 		private final MoreComplexQuery innerQuery;
 
@@ -40,7 +40,7 @@ public class KasperClientQueryCreationTest {
 		}
 	}
 
-	public static class ComplexQuery implements IQuery {
+	public static class ComplexQuery implements Query {
 		private static final long serialVersionUID = -5681649437512129142L;
 		private final SomePojo complexPojo;
 
@@ -65,7 +65,7 @@ public class KasperClientQueryCreationTest {
 		}
 	}
 
-	public static class MoreComplexQuery implements IQuery {
+	public static class MoreComplexQuery implements Query {
 		private static final long serialVersionUID = -1376553638435430921L;
 
 		private final String aStr;
@@ -131,7 +131,7 @@ public class KasperClientQueryCreationTest {
 
 	// ------------------------------------------------------------------------
 
-	@Test(expected = KasperClientException.class)
+	@Test(expected = KasperException.class)
 	public void testThrowExceptionForComplexPojos() {
 
 		// Given
@@ -152,7 +152,7 @@ public class KasperClientQueryCreationTest {
 
 		// Given
 		final KasperClient client = new KasperClientBuilder().use(
-				new ITypeAdapter<SomePojo>() {
+				new TypeAdapter<SomePojo>() {
 					@Override
 					public void adapt(final SomePojo value,
 							          final QueryBuilder builder) {

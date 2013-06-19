@@ -1,6 +1,6 @@
 package com.viadeo.kasper.test.event;
 
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import org.axonframework.test.matchers.MatcherExecutionException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
@@ -18,7 +18,7 @@ import java.util.Arrays;
  * @author Allard Buijze
  * @since 1.1
  */
-public class EventMatcher<E extends IEvent> extends BaseMatcher<E> {
+public class EventMatcher<E extends Event> extends BaseMatcher<E> {
 
     private final E expected;
     private Field failedField;
@@ -136,7 +136,7 @@ public class EventMatcher<E extends IEvent> extends BaseMatcher<E> {
     // ------------------------------------------------------------------------
     
     @Factory
-    public static <E extends IEvent> EventMatcher<E> equalToEvent(E expected) {
+    public static <E extends Event> EventMatcher<E> equalToEvent(E expected) {
         return new EventMatcher<>(expected);
     }
     

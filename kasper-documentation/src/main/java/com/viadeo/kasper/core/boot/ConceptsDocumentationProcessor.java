@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import com.viadeo.kasper.er.IConcept;
+import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperConcept
  */
-public class ConceptsDocumentationProcessor extends AbstractDocumentationProcessor<XKasperConcept, IConcept> {
+public class ConceptsDocumentationProcessor extends DocumentationProcessor<XKasperConcept, Concept> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(ConceptsDocumentationProcessor.class);
 
@@ -25,8 +25,8 @@ public class ConceptsDocumentationProcessor extends AbstractDocumentationProcess
 	/**
 	 * Process Kasper concept
 	 * 
-	 * @see IConcept
-	 * @see com.viadeo.kasper.core.boot.IAnnotationProcessor#process(java.lang.Class)
+	 * @see com.viadeo.kasper.er.Concept
+	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
@@ -34,7 +34,7 @@ public class ConceptsDocumentationProcessor extends AbstractDocumentationProcess
 		LOGGER.info("Record on concept library : " + conceptClazz.getName());
 		
 		//- Register the domain to the locator --------------------------------
-		getKasperLibrary().recordConcept((Class<? extends IConcept>) conceptClazz);
+		getKasperLibrary().recordConcept((Class<? extends Concept>) conceptClazz);
 	}
 
 }

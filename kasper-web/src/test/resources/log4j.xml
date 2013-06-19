@@ -38,17 +38,17 @@
 	</appender>	
 
 	<logger name="com.viadeo.kasper" additivity="false">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="consoleKasper" />
 	</logger>
 
 	<logger name="org.axonframework" additivity="false">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="consoleAxon" />
 	</logger>
 	
 	<logger name="org.springframework" additivity="false">
-		<level value="debug" />
+		<level value="info" />
 		<appender-ref ref="consoleSpring" />
 	</logger>	
 

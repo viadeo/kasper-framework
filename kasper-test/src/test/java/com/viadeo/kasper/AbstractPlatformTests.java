@@ -1,8 +1,8 @@
 package com.viadeo.kasper;
 
-import com.viadeo.kasper.context.IContext;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
-import com.viadeo.kasper.platform.IPlatform;
+import com.viadeo.kasper.platform.Platform;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
@@ -10,8 +10,8 @@ public abstract class AbstractPlatformTests {
 
     private static ApplicationContext context = null;
 
-    private static IPlatform staticPlatform = null;
-    private IPlatform platform = null;
+    private static Platform staticPlatform = null;
+    private Platform platform = null;
 
     // ------------------------------------------------------------------------
 
@@ -29,14 +29,14 @@ public abstract class AbstractPlatformTests {
         }
 
         if (null == staticPlatform) {
-            staticPlatform = context.getBean(IPlatform.class);
+            staticPlatform = context.getBean(Platform.class);
             staticPlatform.boot();
         }
 
         if (uniquePlatform) {
             platform = staticPlatform;
         } else {
-            platform = context.getBean(IPlatform.class);
+            platform = context.getBean(Platform.class);
             platform.boot();
         }
 
@@ -44,14 +44,14 @@ public abstract class AbstractPlatformTests {
 
     // ------------------------------------------------------------------------
 
-    protected IPlatform getPlatform() {
+    protected Platform getPlatform() {
         return this.platform;
     }
 
     // ------------------------------------------------------------------------
 
-    protected IContext newContext() {
-        return new DefaultContextBuilder().buildDefault();
+    protected Context newContext() {
+        return new DefaultContextBuilder().build();
     }
 
 }
