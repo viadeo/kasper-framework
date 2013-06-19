@@ -7,7 +7,7 @@
 package com.viadeo.kasper.cqrs.command.impl;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.DefaultContextBuilder;
+import com.viadeo.kasper.context.ContextBuilder;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
 import org.axonframework.commandhandling.CommandMessage;
@@ -36,7 +36,7 @@ public class DefaultKasperCommandMessage<C extends Command> implements KasperCom
 	 * If absent a default implementation will be used
 	 */
 	@Autowired
-	private transient DefaultContextBuilder defaultContextBuilder;
+	private transient ContextBuilder defaultContextBuilder;
 
 	// ------------------------------------------------------------------------
 
@@ -55,7 +55,7 @@ public class DefaultKasperCommandMessage<C extends Command> implements KasperCom
 	 * default context builder will then be used, failing back to a default
 	 * implementation
 	 * 
-	 * @see com.viadeo.kasper.context.DefaultContextBuilder
+	 * @see com.viadeo.kasper.context.ContextBuilder
 	 * @see com.viadeo.kasper.context.impl.DefaultContextBuilder
 	 * @see com.viadeo.kasper.cqrs.command.KasperCommandMessage#getContext()
 	 */
@@ -65,10 +65,10 @@ public class DefaultKasperCommandMessage<C extends Command> implements KasperCom
 
 		if (null == context) {
 			if (null != this.defaultContextBuilder) {
-				context = this.defaultContextBuilder.buildDefault();
+				context = this.defaultContextBuilder.build();
 			} else {
 				DefaultKasperCommandMessage.LOGGER.warn("Defauting to base Kasper default context, no context has been provided and no Spring contextBuilder can be found ");
-				context = new com.viadeo.kasper.context.impl.DefaultContextBuilder().buildDefault();
+				context = new com.viadeo.kasper.context.impl.DefaultContextBuilder().build();
 			}
 		}
 
@@ -91,7 +91,7 @@ public class DefaultKasperCommandMessage<C extends Command> implements KasperCom
 	 * @param defaultContextBuilder the default context builder to be used if no
 	 *         context has been provided during command processing on bus
 	 */
-	public void setDefaultContextBuilder(final DefaultContextBuilder defaultContextBuilder) {
+	public void setDefaultContextBuilder(final ContextBuilder defaultContextBuilder) {
 		this.defaultContextBuilder = defaultContextBuilder;
 	}
 

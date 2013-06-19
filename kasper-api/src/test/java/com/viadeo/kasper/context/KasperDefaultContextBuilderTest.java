@@ -9,7 +9,7 @@ public class KasperDefaultContextBuilderTest extends TestCase {
 	@Test
 	public void testDeterministicId() {
 		final DefaultContextBuilder builder = new DefaultContextBuilder();
-		final Context context = builder.buildDefault();
+		final Context context = builder.build();
 		assertEquals(context.getUserId(), context.getUserId());
 	}
 	

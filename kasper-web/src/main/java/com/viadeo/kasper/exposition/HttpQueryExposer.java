@@ -165,7 +165,7 @@ public class HttpQueryExposer extends HttpExposer {
              * checking if the response has not been sent, if it is true this
              * means that an error happened and has been handled
              */
-            dto = platform().getQueryGateway().retrieve(query, new DefaultContextBuilder().buildDefault());
+            dto = platform().getQueryGateway().retrieve(query, new DefaultContextBuilder().build());
 
         } catch (final Throwable e) {
             /*

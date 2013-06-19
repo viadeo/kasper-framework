@@ -13,11 +13,11 @@ package com.viadeo.kasper.context;
  * @see Context
  *
  */
-public interface DefaultContextBuilder {
+public interface ContextBuilder {
 
 	/**
 	 * @return a default context
 	 */
-	Context buildDefault();
+	Context build();
 	
 }

@@ -8,6 +8,7 @@ package com.viadeo.kasper.context.impl;
 
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.ContextBuilder;
 import com.viadeo.kasper.impl.AbstractKasperID;
 
 import java.util.UUID;
@@ -15,10 +16,10 @@ import java.util.UUID;
 /**
  *
  * Default context builder used as a last chance if no other implementation can be found
- * @see com.viadeo.kasper.context.DefaultContextBuilder
+ * @see com.viadeo.kasper.context.ContextBuilder
  *
  */
-public class DefaultContextBuilder implements com.viadeo.kasper.context.DefaultContextBuilder {
+public class DefaultContextBuilder implements ContextBuilder {
 	
 	/**
 	 *
@@ -93,7 +94,7 @@ public class DefaultContextBuilder implements com.viadeo.kasper.context.DefaultC
 	// ------------------------------------------------------------------------
 
 	@Override
-	public Context buildDefault() {
+	public Context build() {
 		return new DefaultContext();
 	}
 

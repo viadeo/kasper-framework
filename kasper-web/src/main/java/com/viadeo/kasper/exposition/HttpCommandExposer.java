@@ -124,7 +124,7 @@ public class HttpCommandExposer extends HttpExposer {
 
             // send now that command to the platform and wait for the result
             result = platform().getCommandGateway().sendCommandAndWaitForAResult(command,
-                    new DefaultContextBuilder().buildDefault());
+                    new DefaultContextBuilder().build());
 
         } catch (final IOException e) {
 

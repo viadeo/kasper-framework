@@ -51,7 +51,7 @@ public abstract class AbstractPlatformTests {
     // ------------------------------------------------------------------------
 
     protected Context newContext() {
-        return new DefaultContextBuilder().buildDefault();
+        return new DefaultContextBuilder().build();
     }
 
 }

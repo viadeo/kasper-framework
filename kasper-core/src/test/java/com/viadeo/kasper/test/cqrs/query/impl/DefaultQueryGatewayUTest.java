@@ -40,7 +40,7 @@ public class DefaultQueryGatewayUTest {
     }
 
     private Context defaultContext() {
-        return new DefaultContextBuilder().buildDefault();
+        return new DefaultContextBuilder().build();
     }
 
     private DefaultQueryGateway getQueryGatewayForQueryAndService(final Query query, final QueryService service) {
