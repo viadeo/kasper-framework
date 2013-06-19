@@ -10,7 +10,7 @@ allprojects  {
   apply plugin: 'cobertura'
 
   group = 'com.viadeo.kasper'
-  version = '0.0.7-SNAPSHOT-TEST'
+  version = '0.0.7-SNAPSHOT'
 
   // Remote Maven repositories ---------
   repositories {
@@ -39,7 +39,7 @@ allprojects  {
 
     // Currently deleted, see http://issues.gradle.org/browse/GRADLE-2034
     // Refer to epantera or ldiasdasilva for questions
-    mavenLocal()
+    // mavenLocal()
   }
 
   cobertura {
