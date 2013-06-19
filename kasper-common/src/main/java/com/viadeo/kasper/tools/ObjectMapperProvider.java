@@ -30,10 +30,12 @@ public class ObjectMapperProvider {
     private static final String ERRORS = "errors";
     private static final String MESSAGE = "message";
 
+    // ------------------------------------------------------------------------
+
     static class KasperQueryExceptionSerializer extends JsonSerializer<KasperQueryException> {
         @Override
-        public void serialize(KasperQueryException value, JsonGenerator jgen, SerializerProvider provider)
-                throws IOException, JsonProcessingException {
+        public void serialize(final KasperQueryException value, final JsonGenerator jgen, final SerializerProvider provider)
+                throws IOException {
             jgen.writeStartObject();
 
             // lets write a boolean telling that this is an error, can be useful for js consumers
@@ -45,14 +47,18 @@ public class ObjectMapperProvider {
 
             jgen.writeFieldName(ERRORS);
             jgen.writeStartArray();
+
             List<KasperError> emptyList = ImmutableList.of();
-            for (final KasperError error : value.getErrors().or(emptyList))
+            for (final KasperError error : value.getErrors().or(emptyList)) {
                 jgen.writeObject(error);
+            }
             jgen.writeEndArray();
 
             jgen.writeEndObject();
         }
     }
+
+    // ------------------------------------------------------------------------
 
     static class KasperQueryExceptionDeserializer extends JsonDeserializer<KasperQueryException> {
         private static final Logger LOGGER = LoggerFactory.getLogger(KasperQueryExceptionDeserializer.class);
@@ -60,12 +66,13 @@ public class ObjectMapperProvider {
         private final TypeReference<List<KasperError>> listOfKasperErrorType = new TypeReference<List<KasperError>>() {};
 
         @Override
-        public KasperQueryException deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,
-                JsonProcessingException {
+        public KasperQueryException deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException {
             String message = null;
             List<KasperError> errors = null;
-            while (jp.nextToken() != null && !jp.getCurrentToken().equals(JsonToken.END_OBJECT)) {
+
+            while ((null != jp.nextToken()) && !jp.getCurrentToken().equals(JsonToken.END_OBJECT)) {
                 final String name = jp.getCurrentName();
+
                 if (MESSAGE.equals(name)) {
                     message = jp.getValueAsString();
                 } else if (ERRORS.equals(name)) {
@@ -80,6 +87,8 @@ public class ObjectMapperProvider {
         }
     }
 
+    // ------------------------------------------------------------------------
+
     public static final ObjectMapperProvider instance = new ObjectMapperProvider();
 
     private final ObjectWriter writer;
@@ -89,6 +98,7 @@ public class ObjectMapperProvider {
     // ------------------------------------------------------------------------
 
     private ObjectMapperProvider() {
+
         mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, true);
         mapper.configure(MapperFeature.AUTO_DETECT_CREATORS, true);
@@ -109,6 +119,8 @@ public class ObjectMapperProvider {
         writer = mapper.writer();
         reader = mapper.reader();
     }
+
+    // ------------------------------------------------------------------------
 
     /**
      * @return the configured instance of ObjectWriter to use. This writer is shared between server and client code thus

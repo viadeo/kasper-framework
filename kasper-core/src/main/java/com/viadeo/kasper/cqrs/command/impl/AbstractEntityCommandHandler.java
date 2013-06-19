@@ -33,6 +33,8 @@ public abstract class AbstractEntityCommandHandler<C extends ICommand, AGR exten
 
     private transient IDomainLocator domainLocator;
 
+    // ------------------------------------------------------------------------
+
     // Consistent data container for entity class and repository
     private static final class Consistent<E extends IAggregateRoot> {
         private IRepository<E> repository;

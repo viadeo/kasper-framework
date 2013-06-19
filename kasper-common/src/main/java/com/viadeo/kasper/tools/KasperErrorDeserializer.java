@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.tools;
 
 import java.io.IOException;
@@ -20,12 +26,11 @@ public class KasperErrorDeserializer extends JsonDeserializer<KasperError> {
     private static final String MESSAGE = "message";
     private static final String USERMESSAGE = "userMessage";
 
-    public KasperErrorDeserializer() {
-    }
+    // ------------------------------------------------------------------------
 
     @Override
-    public KasperError deserialize(JsonParser jp, DeserializationContext ctxt) throws IOException,
-            JsonProcessingException {
+    public KasperError deserialize(final JsonParser jp, final DeserializationContext ctxt)
+            throws IOException {
 
         String code = null;
         String message = null;
@@ -40,6 +45,7 @@ public class KasperErrorDeserializer extends JsonDeserializer<KasperError> {
             } else if (MESSAGE.equals(name)) {
                 message = jp.getValueAsString();
             }
+
             if (USERMESSAGE.equals(name)) {
                 userMessage = jp.getValueAsString();
             } else {
@@ -50,4 +56,5 @@ public class KasperErrorDeserializer extends JsonDeserializer<KasperError> {
 
         return new KasperError(code, message, userMessage);
     }
+
 }

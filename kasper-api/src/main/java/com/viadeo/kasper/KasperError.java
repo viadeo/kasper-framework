@@ -1,10 +1,18 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 
 public final class KasperError {
+
     public static final String REQUIRED_INPUT = "REQUIRED_INPUT";
     public static final String INVALID_INPUT = "INVALID_INPUT";
     public static final String TOO_MANY_ENTRIES = "TOO_MANY_ENTRIES";
@@ -19,6 +27,8 @@ public final class KasperError {
     private final String code;
     private final String message;
     private final Optional<String> userMessage;
+
+    // ------------------------------------------------------------------------
     
     public KasperError(String code, String message) {
         this(code, message, null);
@@ -29,7 +39,9 @@ public final class KasperError {
         this.message = checkNotNull(message);
         this.userMessage = Optional.fromNullable(userMessage);
     }
-    
+
+    // ------------------------------------------------------------------------
+
     public String getCode() {
         return code;
     }
@@ -42,40 +54,39 @@ public final class KasperError {
         return userMessage;
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((code == null) ? 0 : code.hashCode());
-        result = prime * result + ((message == null) ? 0 : message.hashCode());
-        result = prime * result + ((userMessage == null) ? 0 : userMessage.hashCode());
-        return result;
+        return Objects.hashCode(this.code, this.message, this.userMessage);
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (this == obj)
+    public boolean equals(final Object obj) {
+        if (this == obj) {
             return true;
-        if (obj == null)
+        }
+        if (null == obj) {
             return false;
-        if (getClass() != obj.getClass())
+        }
+        if (getClass() != obj.getClass()) {
             return false;
-        KasperError other = (KasperError) obj;
-        if (code == null) {
-            if (other.code != null)
-                return false;
-        } else if (!code.equals(other.code))
-            return false;
-        if (message == null) {
-            if (other.message != null)
-                return false;
-        } else if (!message.equals(other.message))
-            return false;
-        if (userMessage == null) {
-            if (other.userMessage != null)
-                return false;
-        } else if (!userMessage.equals(other.userMessage))
-            return false;
-        return true;
+        }
+
+        final KasperError other = (KasperError) obj;
+
+        return Objects.equal(this.code, other.code) &&
+                Objects.equal(this.message, other.message) &&
+                 Objects.equal(this.userMessage, other.userMessage);
     }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .addValue(this.code)
+                .addValue(this.message)
+                .addValue(this.userMessage)
+                .toString();
+    }
+
 }

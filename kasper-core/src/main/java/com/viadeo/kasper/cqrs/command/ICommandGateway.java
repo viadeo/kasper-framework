@@ -43,8 +43,8 @@ public interface ICommandGateway {
      * Wait for result and get exceptions
      */
     @Timeout(value = DEFAULT_TIMEOUT_SEC, unit = TimeUnit.SECONDS)
-    CommandResult sendCommandAndWaitForAResultWithException(ICommand command,
-            @MetaData(IContext.METANAME) IContext context) throws Exception, TimeoutException, InterruptedException;
+    CommandResult sendCommandAndWaitForAResultWithException(ICommand command, @MetaData(IContext.METANAME) IContext context)
+            throws Exception, TimeoutException, InterruptedException;
 
     /**
      * Wait for command execution

@@ -39,20 +39,20 @@ public final class KasperCommandResultDeserializer extends JsonDeserializer<Comm
     public CommandResult deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException {
         ResultBuilder result = new ResultBuilder();
 
-        while (jp.nextToken() != null && !jp.getCurrentToken().equals(JsonToken.END_OBJECT)) {
+        while ((null != jp.nextToken()) && !jp.getCurrentToken().equals(JsonToken.END_OBJECT)) {
             final String name = jp.getCurrentName();
             jp.nextToken();
 
             if (STATUS.equals(name)) {
                 result.status(jp.readValueAs(Status.class));
             } else if (ERRORS.equals(name)) {
-                if (jp.getCurrentToken() != JsonToken.START_ARRAY)
+                if (jp.getCurrentToken() != JsonToken.START_ARRAY) {
                     throw new IllegalStateException("Expected START_ARRAY encountered " + jp.getCurrentToken());
+                }
 
-                while (jp.nextToken() != null && jp.getCurrentToken() != JsonToken.END_ARRAY) {
+                while ((null != jp.nextToken()) && !jp.getCurrentToken().equals(JsonToken.END_ARRAY)) {
                     if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
                         result.addError(jp.readValueAs(KasperError.class));
-
                     }
                 }
             }

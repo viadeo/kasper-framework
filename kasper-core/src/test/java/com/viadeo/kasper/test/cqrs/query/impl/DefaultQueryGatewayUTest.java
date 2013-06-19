@@ -8,7 +8,7 @@ import com.viadeo.kasper.cqrs.query.IQueryDTO;
 import com.viadeo.kasper.cqrs.query.IQueryMessage;
 import com.viadeo.kasper.cqrs.query.IQueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.cqrs.query.impl.QueryGatewayBase;
+import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.locators.IQueryServicesLocator;
 
 import org.junit.Ignore;
@@ -22,7 +22,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.*;
 
-public class QueryGatewayBaseUTest {
+public class DefaultQueryGatewayUTest {
 
     private class ServiceWhichRaiseExceptionQuery implements IQuery {
     }
@@ -43,14 +43,14 @@ public class QueryGatewayBaseUTest {
         return new DefaultContextBuilder().buildDefault();
     }
 
-    private QueryGatewayBase getQueryGatewayForQueryAndService(final IQuery query, final IQueryService service) {
+    private DefaultQueryGateway getQueryGatewayForQueryAndService(final IQuery query, final IQueryService service) {
 
         // Associates Query and Service
         final IQueryServicesLocator locator = mock(IQueryServicesLocator.class);
-        when(locator.getServiceFromQueryClass(query.getClass())).thenReturn(Optional.of((IQueryService) service));
+        when(locator.getServiceFromQueryClass(query.getClass())).thenReturn(Optional.of(service));
 
         // Create the queryGateway with mocked locator
-        final QueryGatewayBase queryGateway = new QueryGatewayBase();
+        final DefaultQueryGateway queryGateway = new DefaultQueryGateway();
         queryGateway.setQueryServicesLocator(locator);
 
         return queryGateway;
@@ -71,7 +71,7 @@ public class QueryGatewayBaseUTest {
                 Matchers.<IQueryMessage<ServiceWhichRaiseExceptionQuery>> any());
 
         final IQuery query = new ServiceWhichRaiseExceptionQuery();
-        final QueryGatewayBase queryGateway = getQueryGatewayForQueryAndService(query, service);
+        final DefaultQueryGateway queryGateway = getQueryGatewayForQueryAndService(query, service);
 
         // When
         try {
@@ -101,7 +101,7 @@ public class QueryGatewayBaseUTest {
                 .retrieve(Matchers.<IQueryMessage<ServiceWhichRaiseExceptionQuery>> any());
 
         final IQuery query = new ServiceWhichRaiseExceptionQuery();
-        QueryGatewayBase queryGateway = getQueryGatewayForQueryAndService(query, service);
+        DefaultQueryGateway queryGateway = getQueryGatewayForQueryAndService(query, service);
 
         // When
         try {

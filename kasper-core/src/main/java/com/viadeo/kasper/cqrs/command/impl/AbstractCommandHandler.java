@@ -20,7 +20,6 @@ import org.slf4j.LoggerFactory;
  * @param <C> Command
  */
 public abstract class AbstractCommandHandler<C extends ICommand> implements ICommandHandler<C> {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommandHandler.class);
 
     /**

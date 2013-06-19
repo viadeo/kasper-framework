@@ -14,15 +14,16 @@ public class KasperException extends RuntimeException {
 
     private static final long serialVersionUID = 4439295125026389937L;
 
-    public KasperException(String message, Throwable cause) {
+    public KasperException(final String message, final Throwable cause) {
         super(message, cause);
     }
 
-    public KasperException(String message) {
+    public KasperException(final String message) {
         super(message);
     }
 
-    public KasperException(Throwable cause) {
+    public KasperException(final Throwable cause) {
         super(cause);
     }
+
 }

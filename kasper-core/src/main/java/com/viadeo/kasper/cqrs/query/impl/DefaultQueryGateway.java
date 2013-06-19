@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /** The Kasper gateway base implementation */
-public class QueryGatewayBase implements IQueryGateway {
+public class DefaultQueryGateway implements IQueryGateway {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueryGatewayBase.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultQueryGateway.class);
 
     private IQueryServicesLocator queryServicesLocator;
 
@@ -31,7 +31,7 @@ public class QueryGatewayBase implements IQueryGateway {
         checkNotNull(context);
         checkNotNull(query);
 
-        QueryGatewayBase.LOGGER.info("Call service for query " + query.getClass().getSimpleName());
+        DefaultQueryGateway.LOGGER.info("Call service for query " + query.getClass().getSimpleName());
 
         @SuppressWarnings("rawtypes")
         // Safe
@@ -41,7 +41,7 @@ public class QueryGatewayBase implements IQueryGateway {
             throw new KasperException("Unable to find the service implementing query class " + query.getClass());
         }
 
-        QueryGatewayBase.LOGGER.info("Call service " + service.get().getClass().getSimpleName());
+        DefaultQueryGateway.LOGGER.info("Call service " + service.get().getClass().getSimpleName());
 
         @SuppressWarnings({ "rawtypes", "unchecked" })
         // Safe

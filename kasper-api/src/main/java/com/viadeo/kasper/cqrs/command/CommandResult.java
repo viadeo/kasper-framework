@@ -23,43 +23,49 @@ public class CommandResult {
      * Accepted values for command result statuses
      */
     public static enum Status {
-        OK,
-        /** All is ok */
-        REFUSED,
-        /** Refused by some intermediate validation mechanisms */
-        ERROR
-        /** Just error in command handling or domain business */
+        OK,         /** All is ok */
+        REFUSED,    /** Refused by some intermediate validation mechanisms */
+        ERROR       /** Just error in command handling or domain business */
     }
+
+    /**
+     * The current command status
+     */
+    private final Status status;
+    private final List<KasperError> errors;
+
+    // ------------------------------------------------------------------------
 
     public static class ResultBuilder {
         private final List<KasperError> errors = new ArrayList<>();
         private Status status = Status.OK;
 
-        public ResultBuilder addError(String code, String message) {
+        public ResultBuilder addError(final String code, final String message) {
             return addError(new KasperError(code, message));
         }
 
-        public ResultBuilder addError(String code, String message, String userMessage) {
+        public ResultBuilder addError(final String code, final String message, final String userMessage) {
             return addError(new KasperError(code, message, userMessage));
         }
 
-        public ResultBuilder addError(KasperError... errors) {
+        public ResultBuilder addError(final KasperError... errors) {
             if (status == Status.OK) {
                 status = Status.ERROR;
             }
-            for (KasperError error : errors)
+            for (final KasperError error : errors) {
                 this.errors.add(error);
-
+            }
             return this;
         }
 
-        public ResultBuilder addErrors(List<KasperError> errors) {
-            for (KasperError error : errors)
+        public ResultBuilder addErrors(final List<KasperError> errors) {
+            for (final KasperError error : errors){
                 addError(error);
+            }
             return this;
         }
 
-        public ResultBuilder status(Status status) {
+        public ResultBuilder status(final Status status) {
             this.status = status;
             return this;
         }
@@ -71,7 +77,10 @@ public class CommandResult {
         public CommandResult create() {
             return new CommandResult(status, errors);
         }
+
     }
+
+    // ------------------------------------------------------------------------
 
     public static ResultBuilder error() {
         return new ResultBuilder().status(Status.ERROR);
@@ -85,17 +94,12 @@ public class CommandResult {
         return new ResultBuilder().status(Status.OK).create();
     }
 
-    /**
-     * The current command status
-     */
-    private final Status status;
-    private final List<KasperError> errors;
 
     // ------------------------------------------------------------------------
 
     private CommandResult(final Status status, final List<KasperError> errors) {
         this.status = Preconditions.checkNotNull(status);
-        if (errors != null) {
+        if (null != errors) {
             this.errors = errors;
         } else {
             this.errors = ImmutableList.of();
@@ -124,4 +128,5 @@ public class CommandResult {
     public boolean isError() {
         return this.status.equals(Status.ERROR);
     }
+
 }

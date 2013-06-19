@@ -63,7 +63,7 @@
     <!--  Kasper platform beans -->
 
     <!-- Query gateway -->
-    <bean id="queryGateway" class="com.viadeo.kasper.cqrs.query.impl.QueryGatewayBase">
+    <bean id="queryGateway" class="com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway">
         <property name="queryServicesLocator" ref="queryServicesLocator"/>
     </bean>
 

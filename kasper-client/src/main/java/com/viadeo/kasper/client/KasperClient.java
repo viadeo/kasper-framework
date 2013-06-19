@@ -163,7 +163,9 @@ public class KasperClient {
         checkNotNull(command);
 
         final ClientResponse response = client.resource(resolveCommandPath(command.getClass()))
-                .accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON).put(ClientResponse.class, command);
+                                        .accept(MediaType.APPLICATION_JSON)
+                                        .type(MediaType.APPLICATION_JSON)
+                                        .put(ClientResponse.class, command);
 
         return handleResponse(response);
     }
@@ -224,17 +226,19 @@ public class KasperClient {
     public void sendAsync(final ICommand command, final ICallback<CommandResult> callback) {
         checkNotNull(command);
 
-        client.asyncResource(resolveCommandPath(command.getClass())).accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON).put(new TypeListener<ClientResponse>(ClientResponse.class) {
-                    @Override
-                    public void onComplete(final Future<ClientResponse> f) throws InterruptedException {
-                        try {
-                            callback.done(handleResponse(f.get()));
-                        } catch (final ExecutionException e) {
-                            throw new KasperException("ERROR handling command [" + command.getClass() + "]", e);
-                        }
-                    }
-                }, command);
+        client.asyncResource(resolveCommandPath(command.getClass()))
+                            .accept(MediaType.APPLICATION_JSON)
+                            .type(MediaType.APPLICATION_JSON)
+                            .put(new TypeListener<ClientResponse>(ClientResponse.class) {
+                                @Override
+                                public void onComplete(final Future<ClientResponse> f) throws InterruptedException {
+                                    try {
+                                        callback.done(handleResponse(f.get()));
+                                    } catch (final ExecutionException e) {
+                                        throw new KasperException("ERROR handling command [" + command.getClass() + "]", e);
+                                    }
+                                }
+                            }, command);
     }
 
     private CommandResult handleResponse(final ClientResponse response) {
@@ -283,8 +287,10 @@ public class KasperClient {
         checkNotNull(mapTo);
 
         final ClientResponse response = client.resource(resolveQueryPath(query.getClass()))
-                .queryParams(prepareQueryParams(query)).accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                                              .queryParams(prepareQueryParams(query))
+                                              .accept(MediaType.APPLICATION_JSON)
+                                              .type(MediaType.APPLICATION_JSON)
+                                              .get(ClientResponse.class);
 
         return handleQueryResponse(response, mapTo);
     }
@@ -306,8 +312,10 @@ public class KasperClient {
         checkNotNull(mapTo);
 
         final Future<ClientResponse> futureResponse = client.asyncResource(resolveQueryPath(query.getClass()))
-                .queryParams(prepareQueryParams(query)).accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                                                            .queryParams(prepareQueryParams(query))
+                                                            .accept(MediaType.APPLICATION_JSON)
+                                                            .type(MediaType.APPLICATION_JSON)
+                                                            .get(ClientResponse.class);
 
         return new Future<T>() {
             public boolean cancel(final boolean mayInterruptIfRunning) {
@@ -326,8 +334,7 @@ public class KasperClient {
                 return handleQueryResponse(futureResponse.get(), mapTo);
             }
 
-            public T get(final long timeout, final TimeUnit unit) throws InterruptedException, ExecutionException,
-                    TimeoutException {
+            public T get(final long timeout, final TimeUnit unit) throws InterruptedException, ExecutionException, TimeoutException {
                 return handleQueryResponse(futureResponse.get(timeout, unit), mapTo);
             }
         };
@@ -354,7 +361,8 @@ public class KasperClient {
         checkNotNull(mapTo);
 
         client.asyncResource(resolveQueryPath(query.getClass())).queryParams(prepareQueryParams(query))
-                .accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .type(MediaType.APPLICATION_JSON)
                 .get(new TypeListener<ClientResponse>(ClientResponse.class) {
                     @Override
                     public void onComplete(final Future<ClientResponse> f) throws InterruptedException {
@@ -376,8 +384,8 @@ public class KasperClient {
         if (status.getStatusCode() == 200) {
             return response.getEntity(new GenericType<T>(mapTo.getType()));
         } else {
-            KasperQueryException exception = response.getEntity(KasperQueryException.class);
-            // need to clean it, otherwise it will contain garbage stack trace from jackson deserialization
+            final KasperQueryException exception = response.getEntity(KasperQueryException.class);
+            // TODO: need to clean it, otherwise it will contain garbage stack trace from jackson deserialization
             exception.fillInStackTrace();
             throw exception;
         }
@@ -388,8 +396,7 @@ public class KasperClient {
     MultivaluedMap<String, String> prepareQueryParams(final IQuery query) {
         try {
             @SuppressWarnings("unchecked")
-            final ITypeAdapter<IQuery> adapter = (ITypeAdapter<IQuery>) queryFactory.create(TypeToken.of(query
-                    .getClass()));
+            final ITypeAdapter<IQuery> adapter = (ITypeAdapter<IQuery>) queryFactory.create(TypeToken.of(query.getClass()));
 
             final QueryBuilder queryBuilder = new QueryBuilder();
             adapter.adapt(query, queryBuilder);
@@ -399,9 +406,9 @@ public class KasperClient {
 
             return map;
 
-        } catch (KasperQueryAdapterException ex) {
+        } catch (final KasperQueryAdapterException ex) {
             throw new KasperException("ERROR generating query string for [" + query.getClass() + "]", ex);
-        } catch (Exception ex) {
+        } catch (final Exception ex) {
             throw new KasperException("ERROR generating query string for [" + query.getClass() + "]", ex);
         }
     }

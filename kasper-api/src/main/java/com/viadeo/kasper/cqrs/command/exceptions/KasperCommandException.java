@@ -13,15 +13,15 @@ package com.viadeo.kasper.cqrs.command.exceptions;
 public class KasperCommandException extends RuntimeException {
 	private static final long serialVersionUID = -1102642646985641991L;
 
-	public KasperCommandException(String message, Exception e) {
+	public KasperCommandException(final String message, final Exception e) {
 		super(message, e);
 	}	
 
-	public KasperCommandException(Exception e) {
+	public KasperCommandException(final Exception e) {
 		super(e);
 	}	
 	
-	public KasperCommandException(String message) {
+	public KasperCommandException(final String message) {
 		super(message);
 	}	
 	
