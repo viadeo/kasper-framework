@@ -9,12 +9,26 @@ package com.viadeo.kasper.shard.util;
 
 import com.viadeo.kasper.shard.util.ResourcesUtils;
 import junit.framework.Assert;
+import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Scanner;
 
 public class ResourcesUtilsTests {
+
+    public static String URL_ON_FILESYSTEM;
+
+    @BeforeClass
+    public static void init() throws IOException {
+
+        File f = File.createTempFile("test", "txt");
+        URL_ON_FILESYSTEM = f.getAbsolutePath();
+        System.out.println(URL_ON_FILESYSTEM);
+    }
+
 
     @Test
     public void findFileOnFileSystem() throws IOException {
@@ -22,8 +36,23 @@ public class ResourcesUtilsTests {
     	final ResourcesUtils res = new ResourcesUtils();
 
         // When
-        final File file = res.getFile("dispatcher.json");
+        final File file = res.getFile(URL_ON_FILESYSTEM);
 
+
+        // Then
+        Assert.assertNotNull(file);
+        Assert.assertTrue(file.exists());
+    }
+
+    @Test @Ignore
+    public void readFileOnFileSystem() throws IOException {
+        // Given
+        final ResourcesUtils res = new ResourcesUtils();
+
+        // When
+        final File file = res.getFile(URL_ON_FILESYSTEM);
+        String text = new Scanner( file ).useDelimiter("\\A").next();
+        System.out.println(text);
         // Then
         Assert.assertNotNull(file);
         Assert.assertTrue(file.exists());
@@ -70,5 +99,6 @@ public class ResourcesUtilsTests {
         // Expect IOException
         Assert.assertNull(file);
     }
+
 
 }
