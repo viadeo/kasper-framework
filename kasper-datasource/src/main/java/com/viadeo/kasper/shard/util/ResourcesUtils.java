@@ -24,15 +24,20 @@ public class ResourcesUtils {
 		// Convert resourceName in URL mode
 		Strings.isNullOrEmpty(resourceName);
 
-		final URL url = this.getClass().getClassLoader().getResource(resourceName);
-		if (null == url) {
-			throw new IOException("Unknown file or resource : Can't read " + resourceName);
-		}
+        File fileOnDisk = new File(resourceName);
+        if (fileOnDisk.exists()) {
+            return fileOnDisk;
+        }
 
-		final String protocol = url.getProtocol();
-		if (protocol.equals("file")) {
-			return new File(url.getFile());
-		}
+        final URL url = this.getClass().getClassLoader().getResource(resourceName);
+        if (null == url) {
+            throw new IOException("Unknown file or resource : Can't read " + resourceName);
+        }
+
+        final String protocol = url.getProtocol();
+        if (protocol.equals("file")) {
+            return new File(url.getFile());
+        }
 
 		// Else load stream (http, jar, ...);
 		return getFileFromStream(url);
