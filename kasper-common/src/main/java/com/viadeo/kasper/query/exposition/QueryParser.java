@@ -8,6 +8,8 @@ package com.viadeo.kasper.query.exposition;
 
 import java.util.*;
 
+import com.google.common.collect.ImmutableSet;
+
 public class QueryParser implements Iterable<QueryParser> {
 
     private class Scope {
@@ -60,7 +62,7 @@ public class QueryParser implements Iterable<QueryParser> {
     }
 
     public Set<String> names() {
-        return queryMap.keySet();
+        return ImmutableSet.copyOf(queryMap.keySet());
     }
 
     public String name() {
