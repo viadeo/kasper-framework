@@ -44,7 +44,7 @@ public class DefaultQueryGateway implements QueryGateway {
         DefaultQueryGateway.LOGGER.info("Call service " + optService.get().getClass().getSimpleName());
 
         @SuppressWarnings({ "rawtypes", "unchecked" }) // Safe
-        final com.viadeo.kasper.cqrs.query.QueryMessage message = new QueryMessage(context, query);
+        final com.viadeo.kasper.cqrs.query.QueryMessage message = new DefaultQueryMessage(context, query);
         final QueryService service = optService.get();
 
         DTO ret;

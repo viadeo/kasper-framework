@@ -15,7 +15,7 @@ import com.viadeo.kasper.cqrs.query.Query;
  *
  * @param <Q> the enclosed query type
  */
-public class QueryMessage<Q extends Query> implements com.viadeo.kasper.cqrs.query.QueryMessage<Q> {
+public class DefaultQueryMessage<Q extends Query> implements com.viadeo.kasper.cqrs.query.QueryMessage<Q> {
 
 	private static final long serialVersionUID = 8648752933168387124L;
 	private final Context context;
@@ -23,7 +23,7 @@ public class QueryMessage<Q extends Query> implements com.viadeo.kasper.cqrs.que
 
 	// -----------------------------------------------------------------------
 
-	public QueryMessage(final Context context, final Q query) {
+	public DefaultQueryMessage(final Context context, final Q query) {
 		this.context = Preconditions.checkNotNull(context);
 		this.query = Preconditions.checkNotNull(query);
 	}
