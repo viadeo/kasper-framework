@@ -17,6 +17,21 @@ import java.util.NoSuchElementException;
 import static org.junit.Assert.*;
 
 public class QueryParserTest {
+    
+    @Test public void testConcurrentModificationOfNames() {
+        final QueryParser parser = new QueryParser(ImmutableMap.of("key_1", Arrays.asList("a", "b"), "key_2", Arrays.asList("a", "b"), "key2", Arrays.asList("1")));
+
+        for (String name : parser.names()) {
+            if (name.startsWith("key_")) {
+                for (QueryParser next : parser.begin(name)) {
+                    next.value();
+                }
+                parser.end();
+            }
+        }
+        
+        parser.begin("key2").end();
+    }
 
     @Test
     public void testExists() {
