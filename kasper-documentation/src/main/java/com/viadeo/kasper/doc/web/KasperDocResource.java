@@ -22,7 +22,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import java.util.Map;
 
-@Path("/doc")
+@Path("/kasper/doc")
 public class KasperDocResource {
 
 	private static final String DEFAULT_UNSPECIFIED = "unspecified";
