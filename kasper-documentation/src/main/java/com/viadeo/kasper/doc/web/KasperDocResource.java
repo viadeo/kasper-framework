@@ -23,12 +23,10 @@ import javax.ws.rs.core.MediaType;
 import java.util.Map;
 
 @Path("/doc")
-@Configurable
 public class KasperDocResource {
 
 	private static final String DEFAULT_UNSPECIFIED = "unspecified";
 	
-	@InjectParam
 	private KasperLibrary kasperLibrary;
 	
 	// ------------------------------------------------------------------------
