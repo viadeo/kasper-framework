@@ -25,7 +25,7 @@ public class KasperQueryException extends RuntimeException {
     // ------------------------------------------------------------------------
 
     public static class ExceptionBuilder {
-        private final List<KasperError> errors = new ArrayList<>();
+        private final List<KasperError> errors = new ArrayList<KasperError>();
         private String message;
         private Throwable exception;
 

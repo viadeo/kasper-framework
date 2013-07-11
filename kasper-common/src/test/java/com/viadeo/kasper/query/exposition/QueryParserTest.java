@@ -53,7 +53,7 @@ public class QueryParserTest {
         final List<String> expected = Arrays.asList("foo", "bar");
         final QueryParser parser = new QueryParser(ImmutableMap.of("someKey", expected));
 
-        final List<String> values = new ArrayList<>();
+        final List<String> values = new ArrayList<String>();
         for (final QueryParser next : parser.begin("someKey")) {
             values.add(next.value());
         }

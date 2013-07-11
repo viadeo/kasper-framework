@@ -24,9 +24,10 @@ import static org.junit.Assert.*;
 public class TestStdQueryFactoryDeser {
     private DefaultQueryFactory factory;
 
+    @SuppressWarnings("unchecked")
     @Before
     public void setUp() {
-        final Map<Type, TypeAdapter<?>> adapters = new HashMap<>();
+        final Map<Type, TypeAdapter<?>> adapters = new HashMap<Type, TypeAdapter<?>>();
         adapters.put(String.class, DefaultTypeAdapters.STRING_ADAPTER);
         adapters.put(int.class, DefaultTypeAdapters.INT_ADAPTER);
 
@@ -145,7 +146,7 @@ public class TestStdQueryFactoryDeser {
         @Override
         public List<SomeBean> adapt(QueryParser parser, BeanProperty property) {
             final String prefix = property.getName() + "_";
-            final List<SomeBean> list = new ArrayList<>();
+            final List<SomeBean> list = new ArrayList<SomeBean>();
             for (String name : parser.names()) {
                 if (name.startsWith(prefix)) {
                     parser.begin(name);

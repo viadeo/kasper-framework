@@ -432,7 +432,9 @@ public class KasperClient {
 
             return new URL(basePath, path).toURI();
 
-        } catch (final MalformedURLException | URISyntaxException e) {
+        } catch (final MalformedURLException e) {
+            throw cannotConstructURI(clazz, e);
+        } catch (final URISyntaxException e) {
             throw cannotConstructURI(clazz, e);
         }
     }

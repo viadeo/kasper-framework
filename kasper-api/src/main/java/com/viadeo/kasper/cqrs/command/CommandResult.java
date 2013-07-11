@@ -37,7 +37,7 @@ public class CommandResult {
     // ------------------------------------------------------------------------
 
     public static class ResultBuilder {
-        private final List<KasperError> errors = new ArrayList<>();
+        private final List<KasperError> errors = new ArrayList<KasperError>();
         private Status status = Status.OK;
 
         public ResultBuilder addError(final String code, final String message) {
