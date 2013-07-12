@@ -21,7 +21,7 @@ public class NullSafeTypeAdapter<T> implements TypeAdapter<T> {
 	}
 
 	public static <T> NullSafeTypeAdapter<T> nullSafe(final TypeAdapter<T> adapter) {
-		return new NullSafeTypeAdapter<>(adapter);
+		return new NullSafeTypeAdapter<T>(adapter);
 	}
 
     // ------------------------------------------------------------------------

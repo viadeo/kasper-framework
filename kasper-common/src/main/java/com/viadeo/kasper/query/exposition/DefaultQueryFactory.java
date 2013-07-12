@@ -27,8 +27,9 @@ import java.util.concurrent.ConcurrentMap;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * This class is responsible of locating and doing all the wiring between TypeAdapters. You can use it in your custom
- * {@link TypeAdapterFactory} in order to delegate the "serialization" to existing mechanism.
+ * This class is responsible of locating and doing all the wiring between
+ * TypeAdapters. You can use it in your custom {@link TypeAdapterFactory} in
+ * order to delegate the "serialization" to existing mechanism.
  * 
  * @see TypeAdapter
  * @see TypeAdapterFactory
@@ -55,23 +56,19 @@ public class DefaultQueryFactory implements QueryFactory {
     private final List<TypeAdapterFactory<?>> factories;
 
     private final VisibilityFilter visibilityFilter;
-    private final Paranamer paranamer = new CachingParanamer(
-                                          new AdaptiveParanamer(
-                                            new AnnotationParanamer(new DefaultParanamer()), 
-                                            new BytecodeReadingParanamer()
-                                          )
-                                        );
+    private final Paranamer paranamer = new CachingParanamer(new AdaptiveParanamer(
+            new AnnotationParanamer(new DefaultParanamer()), new BytecodeReadingParanamer()));
 
     // ------------------------------------------------------------------------
 
     public DefaultQueryFactory(final Map<Type, TypeAdapter<?>> adapters,
-                               final Map<Type, BeanAdapter<?>> beanAdapters,
-                               final List<? extends TypeAdapterFactory<?>> factories,
-                               final VisibilityFilter visibilityFilter) {
+            final Map<Type, BeanAdapter<?>> beanAdapters,
+            final List<? extends TypeAdapterFactory<?>> factories,
+            final VisibilityFilter visibilityFilter) {
 
         this.visibilityFilter = checkNotNull(visibilityFilter);
         this.factories = Lists.newArrayList(checkNotNull(factories));
-        
+
         this.beanAdapters = Maps.newHashMap(checkNotNull(beanAdapters));
 
         this.adapters = Maps.newConcurrentMap();
@@ -107,14 +104,15 @@ public class DefaultQueryFactory implements QueryFactory {
 
             if (null == adapter) {
                 if (!Query.class.isAssignableFrom(typeToken.getRawType())) {
-                    throw new KasperQueryAdapterException("Could not find any valid TypeAdapter for type "
-                            + typeToken.getRawType());
+                    throw new KasperQueryAdapterException(
+                            "Could not find any valid TypeAdapter for type "
+                                    + typeToken.getRawType());
                 }
                 adapter = (TypeAdapter<T>) provideBeanQueryMapper((TypeToken<Class<? extends Query>>) typeToken);
             }
             checkNotNull(adapter);
 
-            adapter = new NullSafeTypeAdapter<>(adapter);
+            adapter = new NullSafeTypeAdapter<T>(adapter);
             adapters.putIfAbsent(typeToken.getType(), adapter);
         }
 
@@ -123,12 +121,13 @@ public class DefaultQueryFactory implements QueryFactory {
 
     // ------------------------------------------------------------------------
 
-    private TypeAdapter<? extends Query> provideBeanQueryMapper(final TypeToken<Class<? extends Query>> typeToken) {
+    private TypeAdapter<? extends Query> provideBeanQueryMapper(
+            final TypeToken<Class<? extends Query>> typeToken) {
 
         final Set<PropertyAdapter> retAdapters = Sets.newHashSet();
 
-        Map<String, Method> accessors = new HashMap<>();
-        Map<String, Method> mutators = new HashMap<>();
+        Map<String, Method> accessors = new HashMap<String, Method>();
+        Map<String, Method> mutators = new HashMap<String, Method>();
 
         // no need to look at interfaces as we are interested only in
         // implementations
@@ -151,11 +150,12 @@ public class DefaultQueryFactory implements QueryFactory {
          */
         for (final Map.Entry<String, Method> accessorEntry : accessors.entrySet()) {
             @SuppressWarnings("unchecked")
-            final TypeToken<Object> accessorType = (TypeToken<Object>) typeToken.resolveType(accessorEntry.getValue()
-                    .getGenericReturnType());
+            final TypeToken<Object> accessorType = (TypeToken<Object>) typeToken
+                    .resolveType(accessorEntry.getValue().getGenericReturnType());
 
             final Method mutator = mutators.get(accessorEntry.getKey());
-            final BeanConstructorProperty ctrProperty = creator.parameters.get(accessorEntry.getKey());
+            final BeanConstructorProperty ctrProperty = creator.parameters.get(accessorEntry
+                    .getKey());
 
             PropertyAdapter propertyAdapter;
 
@@ -166,13 +166,15 @@ public class DefaultQueryFactory implements QueryFactory {
 
                 // FIXME do we want to check it or be more permissive?
                 if (!accessorType.equals(ctrTypeToken)) {
-                    throw new KasperQueryAdapterException("Type of parameter[" + ctrProperty.name + "] and accessor "
-                            + accessorEntry.getValue().getName() + " in " + typeToken.getRawType().getName()
-                            + " do not match.");
+                    throw new KasperQueryAdapterException("Type of parameter[" + ctrProperty.name
+                            + "] of type[" + ctrTypeToken.getRawType() + "] and accessor["
+                            + accessorEntry.getValue().getName() + "] of type["
+                            + accessorType.getRawType() + "] in "
+                            + typeToken.getRawType().getName() + " do not match.");
                 }
 
                 propertyAdapter = createPropertyAdapter(mutator, accessorEntry.getValue(),
-                                                        ctrProperty.name, accessorType);
+                        ctrProperty.name, accessorType);
 
                 if (!retAdapters.contains(propertyAdapter)) {
                     retAdapters.add(propertyAdapter);
@@ -182,17 +184,20 @@ public class DefaultQueryFactory implements QueryFactory {
 
                 if (null != mutator) {
 
-                    final TypeToken<?> mutatorTypeToken = typeToken.resolveType(mutator.getGenericParameterTypes()[0]);
+                    final TypeToken<?> mutatorTypeToken = typeToken.resolveType(mutator
+                            .getGenericParameterTypes()[0]);
 
                     // FIXME do we want to check it or be more permissive?
                     if (!accessorType.equals(mutatorTypeToken)) {
-                        throw new KasperQueryAdapterException("Type of mutator[" + mutator.getName()
-                                + "] and accessor " + accessorEntry.getValue().getName() + " in "
+                        throw new KasperQueryAdapterException("Type of mutator["
+                                + mutator.getName() + "] of type[" + mutatorTypeToken.getRawType()
+                                + "] and accessor[" + accessorEntry.getValue().getName()
+                                + "] of type[" + accessorType.getRawType() + "] in "
                                 + typeToken.getRawType().getName() + " do not match.");
                     }
 
                     propertyAdapter = createPropertyAdapter(mutator, accessorEntry.getValue(),
-                                                            accessorEntry.getKey(), accessorType);
+                            accessorEntry.getKey(), accessorType);
 
                     if (!retAdapters.contains(propertyAdapter)) {
                         retAdapters.add(propertyAdapter);
@@ -209,7 +214,8 @@ public class DefaultQueryFactory implements QueryFactory {
         }
 
         if (retAdapters.isEmpty()) {
-            throw new KasperQueryAdapterException("No property has been discovered for query " + typeToken.getRawType());
+            throw new KasperQueryAdapterException("No property has been discovered for query "
+                    + typeToken.getRawType());
         }
 
         return new BeanQueryMapper(creator, retAdapters);
@@ -217,36 +223,46 @@ public class DefaultQueryFactory implements QueryFactory {
 
     // ------------------------------------------------------------------------
 
-    private PropertyAdapter createPropertyAdapter(final Method mutator, final Method accessor, final String name,
-            final TypeToken<Object> propertyType) {
+    private PropertyAdapter createPropertyAdapter(final Method mutator, final Method accessor,
+            final String name, final TypeToken<Object> propertyType) {
 
-        // for the moment lets mix accessor and mutator annotations as things must be symetric, latter if we need to
+        // for the moment lets mix accessor and mutator annotations as things
+        // must be symetric, latter if we need to
         // support more complex cases we will change things
         final Annotation[] propertyAnnotations;
-        
-        // Need to check for null if the property does not have a mutator but uses the ctr.
+
+        // Need to check for null if the property does not have a mutator but
+        // uses the ctr.
         // We could do it differently but its fine like that for the moment
-        // I prefer avoiding to add more and more classes until we really need it
+        // I prefer avoiding to add more and more classes until we really need
+        // it
         // deleting code is harder than writing!
-        if (mutator == null) propertyAnnotations = accessor.getAnnotations();
-        else propertyAnnotations =  ObjectArrays.concat(mutator.getAnnotations(), accessor.getAnnotations(), Annotation.class);
-        
-        final BeanProperty property = new BeanProperty(name, accessor.getDeclaringClass(), propertyAnnotations, propertyType);
-        
+        if (mutator == null)
+            propertyAnnotations = accessor.getAnnotations();
+        else
+            propertyAnnotations = ObjectArrays.concat(mutator.getAnnotations(),
+                    accessor.getAnnotations(), Annotation.class);
+
+        final BeanProperty property = new BeanProperty(name, accessor.getDeclaringClass(),
+                propertyAnnotations, propertyType);
+
         final boolean handleName;
         final TypeAdapter<Object> delegateAdapter;
-        
-        @SuppressWarnings("unchecked") // type safety guaranteed by the lib
-        final BeanAdapter<Object> beanAdapter = (BeanAdapter<Object>) beanAdapters.get(property.getTypeToken().getType());
-        
+
+        @SuppressWarnings("unchecked")
+        // type safety guaranteed by the lib
+        final BeanAdapter<Object> beanAdapter = (BeanAdapter<Object>) beanAdapters.get(property
+                .getTypeToken().getType());
+
         if (beanAdapter == null) {
             handleName = true;
             delegateAdapter = create(propertyType);
         } else {
             handleName = false;
-            delegateAdapter = new NullSafeTypeAdapter<>(new DecoratedBeanAdapter<>(property, beanAdapter));
+            delegateAdapter = new NullSafeTypeAdapter<Object>(new DecoratedBeanAdapter<Object>(property,
+                    beanAdapter));
         }
-       
+
         if (null != delegateAdapter) {
 
             return new PropertyAdapter(property, accessor, mutator, delegateAdapter, handleName);
@@ -257,7 +273,7 @@ public class DefaultQueryFactory implements QueryFactory {
                     + "properties or register custom a TypeAdapter.");
         }
     }
-    
+
     // ------------------------------------------------------------------------
 
     private BeanConstructor resolveBeanConstructor(final Class<?> forClass) {
@@ -270,8 +286,8 @@ public class DefaultQueryFactory implements QueryFactory {
 
         /*
          * we choose the first one, because it is crazy to try to guess which is
-         * better to use
-         * so the rule is choose the ctr with the less number of params
+         * better to use so the rule is choose the ctr with the less number of
+         * params
          */
         @SuppressWarnings("unchecked")
         final Constructor<Object> ctr = (Constructor<Object>) ctrs[0];
@@ -281,16 +297,15 @@ public class DefaultQueryFactory implements QueryFactory {
          */
         final String[] names = paranamer.lookupParameterNames(ctr);
         if (names.length != ctr.getParameterTypes().length) {
-            throw new KasperQueryAdapterException("Could not resolve constructor[" + ctr + "] parameter names");
+            throw new KasperQueryAdapterException("Could not resolve constructor[" + ctr
+                    + "] parameter names");
         }
 
-        final Map<String, BeanConstructorProperty> parameters = new HashMap<>();
+        final Map<String, BeanConstructorProperty> parameters = new HashMap<String, BeanConstructorProperty>();
 
         for (int i = 0; i < names.length; i++) {
-            parameters.put(
-                    names[i],
-                    new BeanConstructorProperty(i, ctr.getParameterAnnotations()[i], names[i], ctr
-                            .getGenericParameterTypes()[i]));
+            parameters.put(names[i], new BeanConstructorProperty(i,
+                    ctr.getParameterAnnotations()[i], names[i], ctr.getGenericParameterTypes()[i]));
         }
 
         return new BeanConstructor(ctr, parameters);
@@ -343,7 +358,8 @@ public class DefaultQueryFactory implements QueryFactory {
             return firstCharToLowerCase(methodName.substring(PREFIX_METHOD_SET_LEN));
         }
 
-        throw new IllegalStateException("Method must respect Java Bean conventions and start with is, get or set.");
+        throw new IllegalStateException(
+                "Method must respect Java Bean conventions and start with is, get or set.");
     }
 
     // --
@@ -362,16 +378,20 @@ public class DefaultQueryFactory implements QueryFactory {
 
     private boolean isAccessor(final Method method) {
 
-        return method.getName().startsWith(PREFIX_METHOD_GET) && (method.getName().length() > PREFIX_METHOD_GET_LEN)
-                && method.getParameterTypes().length == 0 || method.getName().startsWith(PREFIX_METHOD_IS)
-                && method.getName().length() > PREFIX_METHOD_IS_LEN && method.getParameterTypes().length == 0;
+        return method.getName().startsWith(PREFIX_METHOD_GET)
+                && (method.getName().length() > PREFIX_METHOD_GET_LEN)
+                && method.getParameterTypes().length == 0
+                || method.getName().startsWith(PREFIX_METHOD_IS)
+                && method.getName().length() > PREFIX_METHOD_IS_LEN
+                && method.getParameterTypes().length == 0;
     }
 
     // --
 
     private boolean isMutator(final Method method) {
 
-        return method.getName().startsWith(PREFIX_METHOD_SET) && (method.getName().length() > PREFIX_METHOD_SET_LEN)
+        return method.getName().startsWith(PREFIX_METHOD_SET)
+                && (method.getName().length() > PREFIX_METHOD_SET_LEN)
                 && method.getParameterTypes().length == 1;
 
     }
@@ -397,13 +417,15 @@ public class DefaultQueryFactory implements QueryFactory {
         @Override
         public Query adapt(final QueryParser parser) throws Exception {
             final Object[] ctrParams = new Object[queryCtr.parameters.size()];
-            final List<Pair<PropertyAdapter, Object>> valuesToSet = new ArrayList<>();
+            final List<Pair<PropertyAdapter, Object>> valuesToSet = new ArrayList<Pair<PropertyAdapter, Object>>();
 
             for (final PropertyAdapter adapter : adapters) {
-                /* we have to check if the property exists in th sream
-                * if it doesn't we should not override it in case of setters 
-                * (for the ctr we have no choice as we can't pass null to primitive args)
-                * */
+                /*
+                 * we have to check if the property exists in th sream if it
+                 * doesn't we should not override it in case of setters (for the
+                 * ctr we have no choice as we can't pass null to primitive
+                 * args)
+                 */
                 final boolean exists = adapter.existsInQuery(parser);
                 final Object value = adapter.adapt(parser);
                 final BeanConstructorProperty ctrParam = queryCtr.parameters.get(adapter.getName());
@@ -412,7 +434,7 @@ public class DefaultQueryFactory implements QueryFactory {
                     ctrParams[ctrParam.position] = value;
                 } else {
                     if (exists) {
-                        valuesToSet.add(new Pair<>(adapter, value));
+                        valuesToSet.add(new Pair<PropertyAdapter, Object>(adapter, value));
                     }
                 }
             }
@@ -444,7 +466,8 @@ public class DefaultQueryFactory implements QueryFactory {
         private final Constructor<Object> ctr;
         private final Map<String, BeanConstructorProperty> parameters;
 
-        public BeanConstructor(final Constructor<Object> ctr, final Map<String, BeanConstructorProperty> parameters) {
+        public BeanConstructor(final Constructor<Object> ctr,
+                final Map<String, BeanConstructorProperty> parameters) {
             this.ctr = ctr;
             this.parameters = parameters;
         }
@@ -454,14 +477,20 @@ public class DefaultQueryFactory implements QueryFactory {
 
                 return ctr.newInstance(params);
 
-            } catch (final IllegalArgumentException | InstantiationException |
-                           IllegalAccessException | InvocationTargetException e) {
+            } catch (final IllegalArgumentException e) {
+                throw couldNotInstanciateQuery(e);
+            } catch (final InstantiationException e) {
+                throw couldNotInstanciateQuery(e);
+            } catch (final IllegalAccessException e) {
+                throw couldNotInstanciateQuery(e);
+            } catch (final InvocationTargetException e) {
                 throw couldNotInstanciateQuery(e);
             }
         }
 
         private KasperQueryAdapterException couldNotInstanciateQuery(final Exception e) {
-            return new KasperQueryAdapterException("Failed to instanciate query of type " + ctr.getDeclaringClass(), e);
+            return new KasperQueryAdapterException("Failed to instanciate query of type "
+                    + ctr.getDeclaringClass(), e);
         }
     }
 
@@ -474,8 +503,8 @@ public class DefaultQueryFactory implements QueryFactory {
         private final String name;
         private final Type type;
 
-        public BeanConstructorProperty(final int position, final Annotation[] annotations, final String name,
-                final Type type) {
+        public BeanConstructorProperty(final int position, final Annotation[] annotations,
+                final String name, final Type type) {
             this.position = position;
             this.annotations = annotations;
             this.name = name;
@@ -483,8 +512,10 @@ public class DefaultQueryFactory implements QueryFactory {
         }
     }
 
-    // in fact it is a beanadapter adapted to TypeAdapter, but naming it AdaptedBeanAdapter 
-    // would sound lolish...(a la spring) :p, this class allows us benefit from what has been done for TypeAdapters
+    // in fact it is a beanadapter adapted to TypeAdapter, but naming it
+    // AdaptedBeanAdapter
+    // would sound lolish...(a la spring) :p, this class allows us benefit from
+    // what has been done for TypeAdapters
     static class DecoratedBeanAdapter<T> implements TypeAdapter<T> {
         private final BeanProperty property;
         private final BeanAdapter<T> adapter;

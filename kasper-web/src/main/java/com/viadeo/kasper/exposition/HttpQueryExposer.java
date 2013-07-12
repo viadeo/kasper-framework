@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
@@ -39,18 +40,20 @@ public class HttpQueryExposer extends HttpExposer {
     private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
     private final QueryServicesLocator queryServicesLocator;
     private final QueryFactory queryAdapterFactory;
-
+    private final ObjectMapper mapper;
+    
     // ------------------------------------------------------------------------
 
     public HttpQueryExposer(final Platform platform, final QueryServicesLocator queryLocator) {
-        this(platform, queryLocator, new QueryFactoryBuilder().create());
+        this(platform, queryLocator, new QueryFactoryBuilder().create(), ObjectMapperProvider.instance.mapper());
     }
 
-    public HttpQueryExposer(Platform platform, QueryServicesLocator queryServicesLocator,
-            QueryFactory queryAdapterFactory) {
+    public HttpQueryExposer(final Platform platform, final QueryServicesLocator queryServicesLocator,
+            final QueryFactory queryAdapterFactory, final ObjectMapper mapper) {
         super(platform);
         this.queryServicesLocator = queryServicesLocator;
         this.queryAdapterFactory = queryAdapterFactory;
+        this.mapper = mapper;
     }
 
     @Override
@@ -184,7 +187,7 @@ public class HttpQueryExposer extends HttpExposer {
     protected void sendDTO(final String queryName, final QueryDTO dto, final HttpServletResponse resp)
             throws IOException {
 
-        final ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
+        final ObjectWriter writer = mapper.writer();
 
         try {
 
@@ -211,7 +214,7 @@ public class HttpQueryExposer extends HttpExposer {
 
         resp.setStatus(status, message);
 
-        final ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
+        final ObjectWriter writer = mapper.writer();
 
         final KasperQueryException queryException;
         if (exception instanceof KasperQueryException)

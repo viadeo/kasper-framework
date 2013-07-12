@@ -14,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
@@ -91,8 +90,6 @@ public class ObjectMapperProvider {
 
     public static final ObjectMapperProvider instance = new ObjectMapperProvider();
 
-    private final ObjectWriter writer;
-    private final ObjectReader reader;
     private final ObjectMapper mapper;
 
     // ------------------------------------------------------------------------
@@ -115,32 +112,24 @@ public class ObjectMapperProvider {
                 .addDeserializer(KasperQueryException.class, new KasperQueryExceptionDeserializer());
 
         mapper.registerModule(kasperClientModule).registerModule(new GuavaModule());
-
-        writer = mapper.writer();
-        reader = mapper.reader();
     }
 
     // ------------------------------------------------------------------------
 
     /**
-     * @return the configured instance of ObjectWriter to use. This writer is shared between server and client code thus
-     * do not reconfigure it.
+     * @return the configured instance of ObjectWriter to use.
      */
     public ObjectWriter objectWriter() {
-        return writer;
+        return mapper.writer();
     }
 
     /**
-     * @return the configured instance of ObjectReader to use. This reader is shared between server and client code thus
-     * do not reconfigure it.
+     * @return the configured instance of ObjectReader to use.
      */
     public ObjectReader objectReader() {
-        return reader;
+        return mapper.reader();
     }
 
-    /**
-     * @return this instance should not be modified.
-     */
     public ObjectMapper mapper() {
         return mapper;
     }
