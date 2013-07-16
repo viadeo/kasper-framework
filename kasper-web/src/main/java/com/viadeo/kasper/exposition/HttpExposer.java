@@ -9,8 +9,10 @@ package com.viadeo.kasper.exposition;
 import com.viadeo.kasper.platform.Platform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.StringUtils;
 
 import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
 import java.beans.Introspector;
 import java.util.Map;
 
@@ -65,4 +67,14 @@ public abstract class HttpExposer extends HttpServlet {
 		return platform;
 	}
 
+    protected String getFullRequestURI(final HttpServletRequest req){
+        StringBuilder sb = new StringBuilder();
+        sb.append(req.getRequestURI());
+        String queryString = req.getQueryString();
+        if (StringUtils.hasText(queryString)){
+            sb.append("?");
+            sb.append(queryString);
+        }
+        return sb.toString();
+    }
 }

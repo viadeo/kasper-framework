@@ -22,6 +22,8 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,7 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class HttpCommandExposer extends HttpExposer {
     private static final long serialVersionUID = 8444284922303895624L;
-
+    protected final Logger REQUEST_LOGGER = LoggerFactory.getLogger(getClass());
     private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
     private final DomainLocator domainLocator;
     private final ObjectMapper mapper;
@@ -94,6 +96,7 @@ public class HttpCommandExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     private void handleCommand(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
+        REQUEST_LOGGER.info("Processing Command : "+req.getMethod()+" "+getFullRequestURI(req));
 
         // always respond with a json stream (even if empty)
         resp.setContentType("application/json; charset=utf-8");
