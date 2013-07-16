@@ -63,7 +63,7 @@ public class QueryBuilder {
         List<String> getAndPutIfAbsent(final String key) {
             List<String> values = get(key);
             if (null == values) {
-                values = new ArrayList<>();
+                values = new ArrayList<String>();
                 put(key, values);
             }
             return values;
@@ -71,7 +71,7 @@ public class QueryBuilder {
     }
 
     private final MapOfLists map = new MapOfLists();
-    private final Deque<String> names = new ArrayDeque<>();
+    private final Deque<String> names = new ArrayDeque<String>();
     private String actualName;
 
     // ------------------------------------------------------------------------
@@ -305,9 +305,9 @@ public class QueryBuilder {
     }
 
     public Map<String, List<String>> build() {
-        final HashMap<String, List<String>> copyMap = new HashMap<>();
+        final HashMap<String, List<String>> copyMap = new HashMap<String, List<String>>();
         for (final Map.Entry<String, List<String>> e : map.entrySet()) {
-            copyMap.put(e.getKey(), new ArrayList<>(e.getValue()));
+            copyMap.put(e.getKey(), new ArrayList<String>(e.getValue()));
         }
         return copyMap;
     }

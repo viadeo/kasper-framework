@@ -13,6 +13,7 @@ import com.google.common.reflect.TypeToken;
 import org.joda.time.DateTime;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.ServiceLoader;
@@ -26,9 +27,16 @@ public class QueryFactoryBuilder {
 	private ConcurrentMap<Type, BeanAdapter<?>> beanAdapters = Maps.newConcurrentMap();
 	private List<TypeAdapterFactory<?>> factories = Lists.newArrayList();
 	private VisibilityFilter visibilityFilter = VisibilityFilter.PACKAGE_PUBLIC;
-
+	private List<Bundle> bundles = new ArrayList<Bundle>();
+	
 	// ------------------------------------------------------------------------
 
+	public QueryFactoryBuilder bundle(Bundle... extensions) {
+	    for (Bundle bundle : extensions)
+	        bundles.add(bundle);
+	    return this;
+	}
+	
 	@SuppressWarnings("unchecked")
 	public QueryFactoryBuilder use(final TypeAdapter<?> adapter) {
 		checkNotNull(adapter);
@@ -37,7 +45,7 @@ public class QueryFactoryBuilder {
 				.getSupertype(TypeAdapter.class)
 				.resolveType(TypeAdapter.class.getTypeParameters()[0]);
 
-		adapters.putIfAbsent(adapterForType.getType(), new NullSafeTypeAdapter<>(
+		adapters.putIfAbsent(adapterForType.getType(), new NullSafeTypeAdapter<Object>(
 				(TypeAdapter<Object>) adapter));
 
 		return this;
@@ -77,7 +85,12 @@ public class QueryFactoryBuilder {
 		for (TypeAdapterFactory<?> adapterFactory : loadServices(TypeAdapterFactory.class)) {
             use(adapterFactory);
         }
+		
+		// after registering user extensions (must be prefered to bundles), setup with the bundles
+		for (Bundle bundle : bundles)
+		    bundle.setup(this);
 
+		// and last define default adapters
 		adapters.putIfAbsent(int.class, nullSafe(DefaultTypeAdapters.INT_ADAPTER));
 		adapters.putIfAbsent(Integer.class, nullSafe(DefaultTypeAdapters.INT_ADAPTER));
 		adapters.putIfAbsent(long.class, nullSafe(DefaultTypeAdapters.Long_ADAPTER));

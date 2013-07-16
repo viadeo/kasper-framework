@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.reflect.TypeToken;
@@ -36,13 +37,19 @@ public class HttpCommandExposer extends HttpExposer {
     private static final long serialVersionUID = 8444284922303895624L;
 
     private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
-    private DomainLocator domainLocator;
+    private final DomainLocator domainLocator;
+    private final ObjectMapper mapper;
 
     // ------------------------------------------------------------------------
 
     public HttpCommandExposer(final Platform platform, final DomainLocator domainLocator) {
+        this(platform, domainLocator, ObjectMapperProvider.instance.mapper());
+    }
+    
+    public HttpCommandExposer(final Platform platform, final DomainLocator domainLocator, final ObjectMapper mapper) {
         super(platform);
         this.domainLocator = checkNotNull(domainLocator);
+        this.mapper = mapper;
     }
 
     // ------------------------------------------------------------------------
@@ -112,7 +119,7 @@ public class HttpCommandExposer extends HttpExposer {
                 return;
             }
 
-            final ObjectReader reader = ObjectMapperProvider.instance.objectReader();
+            final ObjectReader reader = mapper.reader();
 
             // parse the input stream to that command, no utility method for inputstream+type??
             parser = reader.getFactory().createJsonParser(req.getInputStream());
@@ -160,7 +167,7 @@ public class HttpCommandExposer extends HttpExposer {
     protected void sendResponse(final CommandResult result, final HttpServletResponse resp,
             final Class<? extends Command> commandClass) throws IOException {
 
-        final ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
+        final ObjectWriter writer = mapper.writer();
         JsonGenerator generator = null;
 
         try {
@@ -212,7 +219,7 @@ public class HttpCommandExposer extends HttpExposer {
         // set an error status and a message
         response.setStatus(status, reason);
         // write also into the body the result as json
-        ObjectMapperProvider.instance.objectWriter().writeValue(response.getOutputStream(),
+        mapper.writer().writeValue(response.getOutputStream(),
                 CommandResult.error().addError(new KasperError(KasperError.UNKNOWN_ERROR, reason)).create());
     }
 
