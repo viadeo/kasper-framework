@@ -22,6 +22,8 @@ import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.QueryFactoryBuilder;
 import com.viadeo.kasper.query.exposition.QueryParser;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -36,7 +38,7 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
-
+    protected final Logger QUERY_LOGGER = LoggerFactory.getLogger(getClass());
     private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
     private final QueryServicesLocator queryServicesLocator;
     private final QueryFactory queryAdapterFactory;
@@ -77,6 +79,7 @@ public class HttpQueryExposer extends HttpExposer {
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
             IOException {
+        QUERY_LOGGER.info("Processing Query : "+req.getMethod()+" "+getFullRequestURI(req));
 
         // TODO we should think of providing some more information to client in
         // case of failure. We also need to be sure that those infos a really
