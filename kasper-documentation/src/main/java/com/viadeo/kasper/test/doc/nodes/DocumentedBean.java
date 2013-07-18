@@ -1,4 +1,4 @@
-package com.viadeo.kasper.doc.nodes;
+package com.viadeo.kasper.test.doc.nodes;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;

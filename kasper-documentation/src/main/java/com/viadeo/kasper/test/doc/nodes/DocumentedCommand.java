@@ -4,12 +4,12 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.doc.nodes;
+package com.viadeo.kasper.test.doc.nodes;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
-import com.viadeo.kasper.doc.KasperLibrary;
+import com.viadeo.kasper.test.doc.KasperLibrary;
 
 public final class DocumentedCommand extends DocumentedDomainNode {
 	private static final long serialVersionUID = -4593630507564176805L;

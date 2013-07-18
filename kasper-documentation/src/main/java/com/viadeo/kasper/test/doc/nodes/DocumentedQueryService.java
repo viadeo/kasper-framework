@@ -4,14 +4,14 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.doc.nodes;
+package com.viadeo.kasper.test.doc.nodes;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryDTO;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
-import com.viadeo.kasper.doc.KasperLibrary;
+import com.viadeo.kasper.test.doc.KasperLibrary;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 public final class DocumentedQueryService extends DocumentedDomainNode {

@@ -4,28 +4,32 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.doc.nodes;
+package com.viadeo.kasper.test.doc.nodes;
 
-public class RetUnexistent extends RetError {
-	private static final long serialVersionUID = -9151268172766961974L;
+
+public class RetError extends RetBase {
+	private static final long serialVersionUID = 8985310989912862924L;
+
+	private final String message;
 	
-	private final String name;
-	
-	// ------------------------------------------------------------------------
-	
-	protected RetUnexistent() {
-		name = "unknown";
-	}
-	
-	public RetUnexistent(final String type, final String name) {
-		super("Unexistent entity");		
-		this.name = String.format("%s (%s)", name, type);
-	}
+	private static final String TYPE = "error";
 	
 	// ------------------------------------------------------------------------
 	
-	public String getName() {
-		return this.name;
+	protected RetError() {
+		super(TYPE);
+		this.message = "unknown";
+	}
+	
+	public RetError(final String message) {
+		super(TYPE);		
+		this.message = message;
+	}
+
+	// ------------------------------------------------------------------------
+	
+	public String getMessage() {
+		return this.message;
 	}
 	
 }

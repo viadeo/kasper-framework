@@ -4,13 +4,13 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.doc.nodes;
+package com.viadeo.kasper.test.doc.nodes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.Domain;
 import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.doc.KasperLibrary;
+import com.viadeo.kasper.test.doc.KasperLibrary;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.er.RootConcept;
 import com.viadeo.kasper.er.annotation.XBidirectional;

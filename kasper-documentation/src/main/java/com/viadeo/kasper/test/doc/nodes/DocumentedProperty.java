@@ -1,4 +1,4 @@
-package com.viadeo.kasper.doc.nodes;
+package com.viadeo.kasper.test.doc.nodes;
 
 public class DocumentedProperty {
 

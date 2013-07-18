@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.doc;
+package com.viadeo.kasper.test.doc;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -15,7 +15,7 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.ddd.InternalDomain;
 import com.viadeo.kasper.ddd.Repository;
-import com.viadeo.kasper.doc.nodes.*;
+import com.viadeo.kasper.test.doc.nodes.*;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.event.Event;

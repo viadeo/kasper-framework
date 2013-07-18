@@ -32,7 +32,7 @@
       {
         "list": false,
         "name": "id",
-        "type": "IKasperID"
+        "type": "KasperID"
       }
     ],
     "type": "queryservice",

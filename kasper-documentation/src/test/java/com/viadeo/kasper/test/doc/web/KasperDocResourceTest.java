@@ -1,4 +1,4 @@
-package com.viadeo.kasper.doc.web;
+package com.viadeo.kasper.test.doc.web;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.base.Charsets;
@@ -8,8 +8,8 @@ import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
-import com.viadeo.kasper.core.boot.*;
-import com.viadeo.kasper.doc.KasperLibrary;
+import com.viadeo.kasper.doc.web.KasperDocResource;
+import com.viadeo.kasper.doc.web.ObjectMapperCustomResolver;
 import difflib.Delta;
 import difflib.DiffUtils;
 import difflib.Patch;
@@ -25,7 +25,10 @@ import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.ws.rs.GET;
 import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -60,84 +63,51 @@ public class KasperDocResourceTest extends JerseyTest {
 	 * Set to true for ONLY ONE LAUNCH if you are sure of what you're doing, then switch it back to false
 	 */
 	private static final boolean UPDATE_TESTS = false;
-	
-	/**
-	 * The KasperLibrary instance to be used
-	 */
-	private static KasperLibrary kasperLibrary;
-	
-	/**
-	 * The processors to register
-	 */
-	static final Class<?>[] PROCESSORS = {
-		CommandsDocumentationProcessor.class,
-		ConceptsDocumentationProcessor.class,
-		DomainsDocumentationProcessor.class,
-		EventsDocumentationProcessor.class,
-		HandlersDocumentationProcessor.class,
-		ListenersDocumentationProcessor.class,
-		RelationsDocumentationProcessor.class,
-		RepositoriesDocumentationProcessor.class,
-		QueryServicesDocumentationProcessor.class
-	};
-	
-	/**
-	 * The wrapped resource, in order to not use injection in the Kasper doc resource
-	 * 
-	 * Will delegate all calls to the standard Kasper doc root resource
-	 */
-	@Path("/")
-	public static class WrappedDocResource {
-		
-		public WrappedDocResource() { }
-		
-		@Path("/")
-		public KasperDocResource delegate() {
-			final KasperDocResource res = new KasperDocResource();
-			res.setKasperLibrary(kasperLibrary);
-			return res;
-		}
-		
-	}
-	
-	static class TestConfiguration extends DefaultResourceConfig {
-		
-		public TestConfiguration() {
-			super(WrappedDocResource.class);
-			getProviderSingletons().add(new JacksonJsonProvider(new ObjectMapperCustomResolver().getContext(null)));
-		}
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	/**
-	 * Bootstrap the Jersey configuration
-	 * Boot the Kasper root processor with only Kasper documentation processors
-	 * 
-	 * @throws Exception
-	 */
-	public KasperDocResourceTest() throws Exception {
-        super(new LowLevelAppDescriptor.Builder(new TestConfiguration()).contextPath("/").build());
-        
-        final AnnotationRootProcessor rootProcessor = new AnnotationRootProcessor();
-		
-        kasperLibrary = new KasperLibrary(); // Assign the static instance
-        
-        for (final Class<?> processorClazz : PROCESSORS) {
-            final DocumentationProcessor<?,?> processor =
-            		(DocumentationProcessor<?, ?>) processorClazz.newInstance();
-            processor.setKasperLibrary(kasperLibrary);
-            rootProcessor.registerProcessor(processor);
+
+    /**
+     * Used to boot Kasper platform for documentation capabilities testing
+     */
+    private static final KasperConfigurator kasperConfigurator = new KasperConfigurator();
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * The wrapped resource, in order to not use injection in the Kasper doc resource
+     *
+     * Will delegate all calls to the standard Kasper doc root resource
+     */
+    @Path("/")
+    public static class WrappedDocResource {
+
+        public WrappedDocResource() { }
+
+        @GET
+        @Produces(MediaType.APPLICATION_JSON)
+        @Path("/")
+        public KasperDocResource delegate() {
+            final KasperDocResource res = new KasperDocResource();
+            res.setKasperLibrary(kasperConfigurator.getKasperLibrary());
+            return res;
         }
-       
-		rootProcessor.addScanPrefix("com.viadeo.kasper.test"); // Scan test classes (test use case)
-		rootProcessor.setDoNotScanDefaultPrefix(true); // Do not use default boot processors
-		
-		rootProcessor.boot();
+
     }
-	
+
+    static class TestConfiguration extends DefaultResourceConfig {
+
+        public TestConfiguration() {
+            super(WrappedDocResource.class);
+            getProviderSingletons().add(new JacksonJsonProvider(new ObjectMapperCustomResolver().getContext(null)));
+        }
+    }
+
 	// ------------------------------------------------------------------------
 
+    public KasperDocResourceTest() {
+        super(new LowLevelAppDescriptor.Builder(new TestConfiguration()).contextPath("/").build());
+    }
+
+    // ------------------------------------------------------------------------
+	
 	/**
 	 * Main run test method
 	 * 
