@@ -1,24 +1,35 @@
 package com.viadeo.kasper.test.doc.web;
 
+import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
 import com.sun.jersey.api.container.grizzly2.servlet.GrizzlyWebContainerFactory;
+import com.sun.jersey.api.core.PackagesResourceConfig;
+import com.sun.jersey.api.core.ResourceConfig;
+import com.viadeo.kasper.doc.web.KasperDocResource;
+import com.viadeo.kasper.doc.web.ObjectMapperCustomResolver;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class KasperDocStandalone extends KasperConfigurator {
 
+
+
     public static void main(String [] args) throws IOException, InterruptedException {
         final String baseUri = "http://localhost:9998/";
-        final Map<String, String> initParams = new HashMap<>();
 
-        initParams.put("com.sun.jersey.config.property.packages", "com.viadeo.kasper.test.doc.web");
+        final KasperConfigurator kasperConfigurator = new KasperConfigurator();
+
+        final KasperDocResource res = new KasperDocResource();
+        res.setKasperLibrary(kasperConfigurator.getKasperLibrary());
+
+        final ResourceConfig rc = new PackagesResourceConfig("com.viadeo.kasper.test.doc.web");
+        rc.getSingletons().add(res);
+        rc.getProviderClasses().add(ObjectMapperCustomResolver.class);
 
         System.out.println("Starting grizzly...");
 
-        final HttpServer server = GrizzlyWebContainerFactory.create(baseUri, initParams);
+        final HttpServer server = GrizzlyServerFactory.createHttpServer(baseUri, rc);
 
         server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("src/main/resources/META-INF/resources/doc/"),"/doc");
 
