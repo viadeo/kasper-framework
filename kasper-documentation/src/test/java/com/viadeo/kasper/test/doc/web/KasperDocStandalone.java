@@ -2,6 +2,7 @@ package com.viadeo.kasper.test.doc.web;
 
 import com.sun.jersey.api.container.grizzly2.servlet.GrizzlyWebContainerFactory;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -18,7 +19,10 @@ public class KasperDocStandalone extends KasperConfigurator {
         System.out.println("Starting grizzly...");
 
         final HttpServer server = GrizzlyWebContainerFactory.create(baseUri, initParams);
-        System.out.println(String.format("Try out %skasper/doc/domains \n", baseUri, baseUri));
+
+        server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("src/main/resources/META-INF/resources/doc/"),"/doc");
+
+        System.out.println(String.format("Try out %skasper/doc/domains \nAccess UI at %sdoc/index.htm", baseUri, baseUri, baseUri));
 
         System.in.read();
 
