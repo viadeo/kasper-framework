@@ -36,7 +36,7 @@ dependencies {
     testCompile libraries.DIFFUTILS
 }
 
-task (server, dependsOn: 'test', type: JavaExec)  {
+task (run, dependsOn: 'test', type: JavaExec)  {
     main = 'com.viadeo.kasper.test.doc.web.KasperDocStandalone'
     classpath = sourceSets.test.runtimeClasspath
     standardInput = System.in

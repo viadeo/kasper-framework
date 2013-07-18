@@ -1,0 +1,3 @@
+
+launch 'gradle run' to launch a server with the test domain
+
