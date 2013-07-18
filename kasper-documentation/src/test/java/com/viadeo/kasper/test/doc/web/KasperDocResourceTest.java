@@ -81,8 +81,6 @@ public class KasperDocResourceTest extends JerseyTest {
 
         public WrappedDocResource() { }
 
-        @GET
-        @Produces(MediaType.APPLICATION_JSON)
         @Path("/")
         public KasperDocResource delegate() {
             final KasperDocResource res = new KasperDocResource();
