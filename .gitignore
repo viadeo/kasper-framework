@@ -23,3 +23,5 @@ out
 build/
 gradle/
 .gradle/
+application.log
+sql.log
