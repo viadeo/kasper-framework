@@ -10,7 +10,7 @@ allprojects  {
   apply plugin: 'cobertura'
 
   group = 'com.viadeo.kasper'
-  version = '0.0.7.3'
+  version = '0.0.8'
 
   // Remote Maven repositories ---------
   repositories {
@@ -111,9 +111,13 @@ subprojects {
       JERSEY_SERVER         : 'com.sun.jersey:jersey-server:1.16',
       JERSEY_CLIENT         : 'com.sun.jersey:jersey-client:1.16',
       JERSEY_CORE           : 'com.sun.jersey:jersey-core:1.16',
+      JERSEY_JSON           : 'com.sun.jersey:jersey-json:1.16',
       JERSEY_SERVLET        : 'com.sun.jersey:jersey-servlet:1.16',
+      JERSEY_GRIZZLY        : 'com.sun.jersey:jersey-grizzly2-servlet:1.16',
+      JERSEY_GRIZZLY_SERVLET: 'org.glassfish.grizzly:grizzly-http-servlet:2.0',
       JERSEY_TEST_CORE      : 'com.sun.jersey.jersey-test-framework:jersey-test-framework-core:1.16',
       JERSEY_TEST_HTTP      : 'com.sun.jersey.jersey-test-framework:jersey-test-framework-http:1.16',
+      JERSEY_TEST_GRIZZLY   : 'org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2:2.0',
 
       PARANAMER             : 'com.thoughtworks.paranamer:paranamer:2.5.2',
       REFLECTIONS           : 'org.reflections:reflections:0.9.8',
@@ -138,7 +142,13 @@ subprojects {
       JUNIT                 : 'junit:junit:4.10',
       MOCKITO               : 'org.mockito:mockito-all:1.9.5',
       JODA_TIME             : 'joda-time:joda-time:2.1',
-      GUAVA                 : 'com.google.guava:guava:13.0.1'
+      GUAVA                 : 'com.google.guava:guava:13.0.1',
+
+      LOGBACK               : [
+                                'org.slf4j:slf4j-api:1.7.5',
+                                'ch.qos.logback:logback-classic:1.0.13',
+                                'ch.qos.logback:logback-core:1.0.13'
+                              ]
 
   ] // see http://stackoverflow.com/questions/9547170/in-gradle-how-do-i-declare-common-dependencies-in-a-single-place
 
@@ -147,6 +157,7 @@ subprojects {
     compile libraries.JODA_TIME
     compile libraries.SLF4J
 
+    testCompile libraries.LOGBACK
     testCompile libraries.JUNIT
     testCompile libraries.MOCKITO
     testCompile libraries.HAMCREST

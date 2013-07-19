@@ -16,7 +16,7 @@ import com.viadeo.kasper.ddd.Entity;
  * @param <S> Source entity of the relation
  * @param <T> Target entity of the relation
  * 
- * @see com.viadeo.kasper.Domain
+ * @see com.viadeo.kasper.ddd.Domain
  * @see com.viadeo.kasper.ddd.Entity
  */
 public interface Relation<S extends RootConcept, T extends RootConcept> extends Entity {

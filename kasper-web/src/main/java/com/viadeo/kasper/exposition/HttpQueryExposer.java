@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
@@ -21,6 +22,8 @@ import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.QueryFactoryBuilder;
 import com.viadeo.kasper.query.exposition.QueryParser;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -35,22 +38,24 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
-
+    protected final Logger QUERY_LOGGER = LoggerFactory.getLogger(getClass());
     private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
     private final QueryServicesLocator queryServicesLocator;
     private final QueryFactory queryAdapterFactory;
-
+    private final ObjectMapper mapper;
+    
     // ------------------------------------------------------------------------
 
     public HttpQueryExposer(final Platform platform, final QueryServicesLocator queryLocator) {
-        this(platform, queryLocator, new QueryFactoryBuilder().create());
+        this(platform, queryLocator, new QueryFactoryBuilder().create(), ObjectMapperProvider.instance.mapper());
     }
 
-    public HttpQueryExposer(Platform platform, QueryServicesLocator queryServicesLocator,
-            QueryFactory queryAdapterFactory) {
+    public HttpQueryExposer(final Platform platform, final QueryServicesLocator queryServicesLocator,
+            final QueryFactory queryAdapterFactory, final ObjectMapper mapper) {
         super(platform);
         this.queryServicesLocator = queryServicesLocator;
         this.queryAdapterFactory = queryAdapterFactory;
+        this.mapper = mapper;
     }
 
     @Override
@@ -74,6 +79,7 @@ public class HttpQueryExposer extends HttpExposer {
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
             IOException {
+        QUERY_LOGGER.info("Processing Query : "+req.getMethod()+" "+getFullRequestURI(req));
 
         // TODO we should think of providing some more information to client in
         // case of failure. We also need to be sure that those infos a really
@@ -184,7 +190,7 @@ public class HttpQueryExposer extends HttpExposer {
     protected void sendDTO(final String queryName, final QueryDTO dto, final HttpServletResponse resp)
             throws IOException {
 
-        final ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
+        final ObjectWriter writer = mapper.writer();
 
         try {
 
@@ -211,7 +217,7 @@ public class HttpQueryExposer extends HttpExposer {
 
         resp.setStatus(status, message);
 
-        final ObjectWriter writer = ObjectMapperProvider.instance.objectWriter();
+        final ObjectWriter writer = mapper.writer();
 
         final KasperQueryException queryException;
         if (exception instanceof KasperQueryException)

@@ -3,8 +3,8 @@ package com.viadeo.kasper.event;
 import com.viadeo.kasper.AbstractPlatformTests;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperTestIdGenerator;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
-import com.viadeo.kasper.ddd.impl.AbstractDomain;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.event.domain.er.impl.AbstractConceptEvent;
@@ -24,7 +24,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 	// ------------------------------------------------------------------------
 
 	@XKasperDomain(label = "testDomain", prefix = "tst", description = "test domain")
-	public static class TestDomain extends AbstractDomain {}
+	public static class TestDomain implements Domain {}
 
 	@SuppressWarnings("serial")
 	@XKasperEvent(domain = TestDomain.class, action = "test")

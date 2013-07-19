@@ -65,7 +65,11 @@ class PropertyAdapter {
                 adapter.adapt(value, builder);
             }
 
-        } catch (final IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+        } catch (final IllegalArgumentException e) {
+            throw cannotGetPropertyValue(e);
+        } catch (final IllegalAccessException e) {
+            throw cannotGetPropertyValue(e);
+        } catch (final InvocationTargetException e) {
             throw cannotGetPropertyValue(e);
         }
     }
@@ -108,7 +112,11 @@ class PropertyAdapter {
 
             mutator.invoke(bean, value);
 
-        } catch (final IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
+        } catch (final IllegalArgumentException e) {
+            throw cannotSetPropertyValue(bean, e);
+        } catch (final IllegalAccessException e) {
+            throw cannotSetPropertyValue(bean, e);
+        } catch (final InvocationTargetException e) {
             throw cannotSetPropertyValue(bean, e);
         }
     }

@@ -16,6 +16,7 @@ dependencies {
     compile libraries.AXON_CORE
     compile libraries.JERSEY_SERVER
     compile libraries.JERSEY_CORE
+    compile libraries.JERSEY_JSON
     compile libraries.JERSEY_SERVLET
 
     compile libraries.JACKSON_JSON
@@ -27,8 +28,17 @@ dependencies {
     // Test dependencies
     testCompile libraries.JERSEY_TEST_CORE
     testCompile libraries.JERSEY_TEST_HTTP
+    testCompile libraries.JERSEY_GRIZZLY
+    testCompile libraries.JERSEY_GRIZZLY_SERVLET
     testCompile libraries.JERSEY_CLIENT
     testCompile libraries.REFLECTIONS
     testCompile libraries.JSON
     testCompile libraries.DIFFUTILS
 }
+
+task (run, dependsOn: 'test', type: JavaExec)  {
+    main = 'com.viadeo.kasper.test.doc.web.KasperDocStandalone'
+    classpath = sourceSets.test.runtimeClasspath
+    standardInput = System.in
+}
+

@@ -9,7 +9,7 @@ import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException.ExceptionBuilder;
 import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionDTO;
-import com.viadeo.kasper.ddd.impl.AbstractDomain;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.platform.Platform;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -123,8 +123,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         }
     }
 
-    public static class AccountDomain extends AbstractDomain {
-    }
+    public static class AccountDomain implements Domain { }
 
     // ------------------------------------------------------------------------
 

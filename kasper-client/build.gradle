@@ -6,6 +6,9 @@
 
 description = 'KASPER CLIENT'
 
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
+
 dependencies {
 
     // Projects

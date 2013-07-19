@@ -8,6 +8,8 @@ package com.viadeo.kasper.query.exposition;
 
 import java.util.*;
 
+import com.google.common.collect.ImmutableSet;
+
 public class QueryParser implements Iterable<QueryParser> {
 
     private class Scope {
@@ -20,14 +22,14 @@ public class QueryParser implements Iterable<QueryParser> {
         }
     }
 
-    private final Deque<Scope> ctx = new ArrayDeque<>();
+    private final Deque<Scope> ctx = new ArrayDeque<Scope>();
     private final Map<String, List<String>> queryMap;
     private String actualValue;
 
     // ------------------------------------------------------------------------
 
     public QueryParser(final Map<String, List<String>> queryMap) {
-        this.queryMap = new HashMap<>(queryMap);
+        this.queryMap = new HashMap<String, List<String>>(queryMap);
     }
 
     // ------------------------------------------------------------------------
@@ -45,7 +47,7 @@ public class QueryParser implements Iterable<QueryParser> {
         if (values.size() == 1) {
             actualValue = values.get(0);
         }
-        ctx.push(new Scope(key, new LinkedList<>(values)));
+        ctx.push(new Scope(key, new LinkedList<String>(values)));
         queryMap.remove(key);
 
         return this;
@@ -60,7 +62,7 @@ public class QueryParser implements Iterable<QueryParser> {
     }
 
     public Set<String> names() {
-        return queryMap.keySet();
+        return ImmutableSet.copyOf(queryMap.keySet());
     }
 
     public String name() {

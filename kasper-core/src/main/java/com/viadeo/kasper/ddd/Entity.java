@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.ddd;
 
-import com.viadeo.kasper.Domain;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import org.joda.time.DateTime;

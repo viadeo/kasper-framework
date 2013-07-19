@@ -267,7 +267,7 @@ public final class DefaultTypeAdapters {
 		}
 
 		public Collection<E> adapt(final QueryParser parser) throws Exception {
-			final List<E> listOfE = new ArrayList<>();
+			final List<E> listOfE = new ArrayList<E>();
 			for (final QueryParser next : parser) {
 				listOfE.add(elementAdapter.adapt(next));
             }

@@ -138,7 +138,7 @@ public final class ReflectionGenericsResolver {
 
 		final Type[] types = runtimeClass.get().getGenericInterfaces();
 
-		final List<Type> currentTypes = new ArrayList<>();
+		final List<Type> currentTypes = new ArrayList<Type>();
 		currentTypes.add(runtimeType);
 		currentTypes.addAll(Arrays.asList(types));
 
@@ -161,7 +161,7 @@ public final class ReflectionGenericsResolver {
 		final Type parent = runtimeClass.get().getGenericSuperclass();
 		final Type[] interfaces = runtimeClass.get().getGenericInterfaces();
 
-		final List<Type> proposalTypes = new ArrayList<>();
+		final List<Type> proposalTypes = new ArrayList<Type>();
 		proposalTypes.add(parent);
 		proposalTypes.addAll(Arrays.asList(interfaces));
 

@@ -7,7 +7,7 @@
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.doc.KasperLibrary;
+import com.viadeo.kasper.test.doc.KasperLibrary;
 
 import java.lang.annotation.Annotation;
 

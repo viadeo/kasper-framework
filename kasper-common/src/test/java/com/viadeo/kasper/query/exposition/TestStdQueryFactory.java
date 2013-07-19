@@ -43,7 +43,7 @@ public class TestStdQueryFactory {
 
     @Test
     public void testSkipNull() throws Exception {
-        new NullSafeTypeAdapter<>(create()).adapt(null, new QueryBuilder());
+        new NullSafeTypeAdapter<SomeQuery>(create()).adapt(null, new QueryBuilder());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -155,8 +155,8 @@ public class TestStdQueryFactory {
     }
 
     private QueryFactory createQueryFactory(final Object... queryFactoryParameters) {
-        final Map<Type, TypeAdapter<?>> adaptersMap = new HashMap<>();
-        final List<TypeAdapterFactory<?>> factories = new ArrayList<>();
+        final Map<Type, TypeAdapter<?>> adaptersMap = new HashMap<Type, TypeAdapter<?>>();
+        final List<TypeAdapterFactory<?>> factories = new ArrayList<TypeAdapterFactory<?>>();
         
         for (final Object parameter : queryFactoryParameters) {
             if (parameter instanceof TypeAdapter) {

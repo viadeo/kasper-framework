@@ -7,13 +7,11 @@
 package com.viadeo.kasper.doc.web;
 
 import com.google.common.base.Optional;
-import com.sun.jersey.api.core.InjectParam;
-import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.doc.nodes.DocumentedDomainNode;
-import com.viadeo.kasper.doc.nodes.DocumentedDomain;
-import com.viadeo.kasper.doc.nodes.RetMap;
-import com.viadeo.kasper.doc.nodes.RetUnexistent;
-import org.springframework.beans.factory.annotation.Configurable;
+import com.viadeo.kasper.test.doc.KasperLibrary;
+import com.viadeo.kasper.test.doc.nodes.DocumentedDomainNode;
+import com.viadeo.kasper.test.doc.nodes.DocumentedDomain;
+import com.viadeo.kasper.test.doc.nodes.RetMap;
+import com.viadeo.kasper.test.doc.nodes.RetUnexistent;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

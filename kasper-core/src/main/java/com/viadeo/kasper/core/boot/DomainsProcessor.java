@@ -9,7 +9,7 @@ package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.ddd.InternalDomain;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperDomain
  */
-public class DomainsProcessor extends SingletonAnnotationProcessor<XKasperDomain, InternalDomain> {
+public class DomainsProcessor extends SingletonAnnotationProcessor<XKasperDomain, Domain> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DomainsProcessor.class);
 
@@ -37,7 +37,7 @@ public class DomainsProcessor extends SingletonAnnotationProcessor<XKasperDomain
 	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
-	public void process(final Class<?> domainClazz, final InternalDomain domain) {
+	public void process(final Class<?> domainClazz, final Domain domain) {
 		LOGGER.info("Record on domain locator : " + domainClazz.getName());
 
 		//- Register the domain to the locator --------------------------------

@@ -6,9 +6,12 @@
 
 description = 'KASPER COMMON'
 
-  configurations {
+configurations {
     tools
-  }
+}
+  
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
 
 dependencies {
     // Projects

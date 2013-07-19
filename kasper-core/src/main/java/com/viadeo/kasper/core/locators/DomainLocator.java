@@ -7,12 +7,11 @@
 package com.viadeo.kasper.core.locators;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Entity;
-import com.viadeo.kasper.ddd.InternalDomain;
 import com.viadeo.kasper.ddd.Repository;
 
 import java.util.Collection;
@@ -45,7 +44,7 @@ public interface DomainLocator {
 	 * @param name the name of the domain
 	 * @param prefix the prefix assigned to this domain
 	 */
-	void registerDomain(InternalDomain domain, String name, String prefix);
+	void registerDomain(Domain domain, String name, String prefix);
 
 	/**
 	 * Return the prefix of a specified domain
