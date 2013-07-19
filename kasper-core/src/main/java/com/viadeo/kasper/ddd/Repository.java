@@ -20,7 +20,7 @@ package com.viadeo.kasper.ddd;
  * @param <AGR> Aggregate root
  * 
  * @see UbiquitousLanguageElement
- * @see com.viadeo.kasper.Domain
+ * @see Domain
  * @see AggregateRoot
  */
 public interface Repository<AGR extends AggregateRoot> extends org.axonframework.repository.Repository<AGR>, UbiquitousLanguageElement {

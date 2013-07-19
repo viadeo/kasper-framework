@@ -5,7 +5,7 @@
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper;
+package com.viadeo.kasper.ddd;
 
 /**
  *
@@ -39,17 +39,6 @@ package com.viadeo.kasper;
  ******
  *
  */
-public interface Domain {
-
-	
-	/**
-	 * @return the domain's prefix
-	 */
-	String getPrefix();
-
-	/**
-	 * @return the domain's name
-	 */
-	String getName();
+public interface Domain extends UbiquitousLanguageElement {
 
 }

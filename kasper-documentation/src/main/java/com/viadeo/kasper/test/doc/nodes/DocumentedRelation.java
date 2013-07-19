@@ -8,7 +8,7 @@ package com.viadeo.kasper.test.doc.nodes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.test.doc.KasperLibrary;
 import com.viadeo.kasper.er.Relation;

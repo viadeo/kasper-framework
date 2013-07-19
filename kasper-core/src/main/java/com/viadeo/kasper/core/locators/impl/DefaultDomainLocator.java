@@ -8,15 +8,13 @@ package com.viadeo.kasper.core.locators.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Entity;
-import com.viadeo.kasper.ddd.InternalDomain;
 import com.viadeo.kasper.ddd.Repository;
-import com.viadeo.kasper.ddd.impl.AbstractDomain;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
@@ -76,7 +74,7 @@ public class DefaultDomainLocator implements DomainLocator {
     }
 
     /**
-     * @see com.viadeo.kasper.core.locators.DomainLocator#getDomainEntities(com.viadeo.kasper.Domain)
+     * @see com.viadeo.kasper.core.locators.DomainLocator#getDomainEntities(com.viadeo.kasper.ddd.Domain)
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -157,12 +155,8 @@ public class DefaultDomainLocator implements DomainLocator {
 
     // ========================================================================
 
-    /**
-     * @see com.viadeo.kasper.core.locators.DomainLocator#registerDomain(com.viadeo.kasper.ddd.InternalDomain, String,
-     * String)
-     */
     @Override
-    public void registerDomain(final InternalDomain domain, final String name, final String prefix) {
+    public void registerDomain(final Domain domain, final String name, final String prefix) {
         Preconditions.checkNotNull(domain);
         Preconditions.checkNotNull(name);
         Preconditions.checkNotNull(prefix);
@@ -170,11 +164,6 @@ public class DefaultDomainLocator implements DomainLocator {
         if (name.isEmpty() || prefix.isEmpty()) {
             throw new KasperException("Domain name and prefix must not be empty for domain"
                     + domain.getClass().getSimpleName());
-        }
-
-        if (AbstractDomain.class.isAssignableFrom(domain.getClass())) {
-            ((AbstractDomain) domain).setDomainLocator(this); // Create locator
-                                                              // link
         }
 
         final Map<String, String> domainData = new HashMap<>();
@@ -211,7 +200,7 @@ public class DefaultDomainLocator implements DomainLocator {
     // ------------------------------------------------------------------------
 
     /**
-     * @see com.viadeo.kasper.core.locators.DomainLocator#getDomainPrefix(com.viadeo.kasper.Domain)
+     * @see com.viadeo.kasper.core.locators.DomainLocator#getDomainPrefix(com.viadeo.kasper.ddd.Domain)
      */
     @Override
     public String getDomainPrefix(final Domain domain) {
@@ -223,7 +212,7 @@ public class DefaultDomainLocator implements DomainLocator {
     }
 
     /**
-     * @see com.viadeo.kasper.core.locators.DomainLocator#getDomainName(com.viadeo.kasper.Domain)
+     * @see com.viadeo.kasper.core.locators.DomainLocator#getDomainName(com.viadeo.kasper.ddd.Domain)
      */
     @Override
     public String getDomainName(final Domain domain) {

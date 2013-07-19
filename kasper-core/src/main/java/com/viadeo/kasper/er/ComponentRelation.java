@@ -15,7 +15,7 @@ import com.viadeo.kasper.ddd.ComponentEntity;
  * @param <S> Source concept of the relation
  * @param <T> Target concept of the relation
  * 
- * @see com.viadeo.kasper.Domain
+ * @see com.viadeo.kasper.ddd.Domain
  * @see Relation
  * @see com.viadeo.kasper.ddd.Entity
  */

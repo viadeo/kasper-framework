@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.doc.nodes;
 
-import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.test.doc.KasperLibrary;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.annotation.XKasperEvent;

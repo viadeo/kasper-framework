@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event.annotation;
 
-import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.ddd.Domain;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

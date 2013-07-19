@@ -11,10 +11,10 @@ import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Repository;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
-import com.viadeo.kasper.ddd.impl.AbstractDomain;
 import com.viadeo.kasper.ddd.impl.AbstractRepository;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.er.impl.AbstractRootConcept;
@@ -62,7 +62,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     // -- Test components -----------------------------------------------------
 
     @XKasperDomain(label = "test domain", prefix = "ctx")
-    public static class ContextTestDomain extends AbstractDomain {
+    public static class ContextTestDomain implements Domain {
     }
 
     @XKasperCommand

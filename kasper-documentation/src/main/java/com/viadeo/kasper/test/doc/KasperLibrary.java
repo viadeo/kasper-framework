@@ -13,7 +13,7 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryService;
-import com.viadeo.kasper.ddd.InternalDomain;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Repository;
 import com.viadeo.kasper.test.doc.nodes.*;
 import com.viadeo.kasper.er.Concept;
@@ -127,7 +127,7 @@ public class KasperLibrary {
 	// == DOMAINS =============================================================	
 	// ========================================================================
 	
-	public DocumentedDomain recordDomain(final Class<? extends InternalDomain> domainClazz) {
+	public DocumentedDomain recordDomain(final Class<? extends Domain> domainClazz) {
 		final DocumentedDomain documentedDomain = new DocumentedDomain(this, domainClazz);
 		
 		this.domainNames.put(documentedDomain.getName(), documentedDomain);

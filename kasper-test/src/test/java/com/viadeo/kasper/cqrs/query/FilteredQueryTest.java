@@ -1,7 +1,7 @@
 package com.viadeo.kasper.cqrs.query;
 
 import com.viadeo.kasper.AbstractPlatformTests;
-import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.cqrs.query.filter.QueryDQO;
@@ -33,16 +33,7 @@ public class FilteredQueryTest extends AbstractPlatformTests {
 
 	}
 
-	private static final class TestDomain implements Domain {
-		@Override
-		public String getPrefix() {
-			return "tst";
-		}
-		@Override
-		public String getName() {
-			return "test";
-		}
-	}
+	private static final class TestDomain implements Domain { }
 
 	// "*Field" classes are public (so there is no gain in testing accessibility here)
 	public static final class TestField<DQO extends QueryDQO<DQO>>

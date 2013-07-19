@@ -7,7 +7,7 @@
 package com.viadeo.kasper.ddd.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.Domain;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.ddd.AggregateRoot;
@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * Base AGR implementation
  *
  * @see com.viadeo.kasper.ddd.AggregateRoot
- * @see com.viadeo.kasper.Domain
+ * @see com.viadeo.kasper.ddd.Domain
  */
 public abstract class AbstractAggregateRoot 
 		extends AbstractAnnotatedAggregateRoot<KasperID>

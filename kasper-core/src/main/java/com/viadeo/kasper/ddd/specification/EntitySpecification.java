@@ -26,7 +26,7 @@ import com.viadeo.kasper.ddd.Entity;
  *
  * @param <E> Entity
  * 
- * @see com.viadeo.kasper.Domain
+ * @see com.viadeo.kasper.ddd.Domain
  * @see com.viadeo.kasper.ddd.Entity
  */
 public interface EntitySpecification<E extends Entity> {
