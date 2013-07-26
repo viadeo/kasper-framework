@@ -104,7 +104,7 @@ public class QueryServicesProcessorTest {
 
         // Then
         verify(locator).registerService(any(String.class), any(QueryService.class));
-        verify(locator).registerFilteredService(eq(service.getClass()), eq(TestFilter.class));
+        verify(locator).registerFilterForService(eq(service.getClass()), eq(TestFilter.class));
 
     }
 
@@ -119,8 +119,8 @@ public class QueryServicesProcessorTest {
 
         // Then
         verify(locator).registerService(any(String.class), any(QueryService.class));
-        verify(locator).registerFilteredService(eq(service.getClass()), eq(TestFilter.class));
-        verify(locator).registerFilteredService(eq(service.getClass()), eq(TestFilter2.class));
+        verify(locator).registerFilterForService(eq(service.getClass()), eq(TestFilter.class));
+        verify(locator).registerFilterForService(eq(service.getClass()), eq(TestFilter2.class));
     }
 
 }

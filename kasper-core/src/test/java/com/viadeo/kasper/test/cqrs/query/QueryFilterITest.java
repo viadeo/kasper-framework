@@ -75,7 +75,7 @@ public class QueryFilterITest {
         locator.registerService("testService", service);
         locator.registerFilter("testFilter", filter);
         locator.registerFilter("testFilter2", filterGlobal, true);
-        locator.registerFilteredService(service.getClass(), filter.getClass());
+        locator.registerFilterForService(service.getClass(), filter.getClass());
 
         final DefaultQueryGateway gateway = new DefaultQueryGateway();
         gateway.setQueryServicesLocator(locator);

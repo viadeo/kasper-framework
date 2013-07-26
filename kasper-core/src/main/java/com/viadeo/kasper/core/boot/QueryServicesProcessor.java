@@ -54,7 +54,7 @@ public class QueryServicesProcessor extends SingletonAnnotationProcessor<XKasper
         if (null != filters) {
             for (Class<? extends ServiceFilter> filterClass : filters) {
                 LOGGER.info(String.format("  --> w/ filter %s", filterClass.getSimpleName()));
-                this.queryServicesLocator.registerFilteredService((Class<? extends QueryService<?, ?>>) queryServiceClazz, filterClass);
+                this.queryServicesLocator.registerFilterForService((Class<? extends QueryService<?, ?>>) queryServiceClazz, filterClass);
             }
         }
 

@@ -37,7 +37,7 @@ public interface QueryServicesLocator {
      * @param queryServiceClass the service on which the filter must be applied
      * @param filterClass the class of the filter to be applied
      */
-    void registerFilteredService(Class<? extends QueryService<?,?>> queryServiceClass, Class<? extends ServiceFilter> filterClass);
+    void registerFilterForService(Class<? extends QueryService<?, ?>> queryServiceClass, Class<? extends ServiceFilter> filterClass);
 
 	/**
 	 * Retrieve a service instance from its query class

@@ -117,7 +117,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     // ------------------------------------------------------------------------
 
     @Override
-    public void registerFilteredService(final Class<? extends QueryService<?, ?>> queryServiceClass, final Class<? extends ServiceFilter> filterClass) {
+    public void registerFilterForService(final Class<? extends QueryService<?, ?>> queryServiceClass, final Class<? extends ServiceFilter> filterClass) {
         checkNotNull(queryServiceClass);
         checkNotNull(filterClass);
 

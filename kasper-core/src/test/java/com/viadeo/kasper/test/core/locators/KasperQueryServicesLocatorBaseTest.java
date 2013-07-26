@@ -7,10 +7,8 @@
 package com.viadeo.kasper.test.core.locators;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -103,7 +101,7 @@ public class KasperQueryServicesLocatorBaseTest {
         // When
         locator.registerFilter("testFilter", filter);
         locator.registerService("testService", service);
-        locator.registerFilteredService(serviceClass, filter.getClass());
+        locator.registerFilterForService(serviceClass, filter.getClass());
 
         // Then
         assertEquals(1, locator.getFiltersForServiceClass(serviceClass).size());
@@ -115,7 +113,7 @@ public class KasperQueryServicesLocatorBaseTest {
 
         // When
         locator.registerFilter("testFilter2", filter2);
-        locator.registerFilteredService(serviceClass, filter2.getClass());
+        locator.registerFilterForService(serviceClass, filter2.getClass());
 
         // Then
         assertEquals(2, locator.getFiltersForServiceClass(serviceClass).size());
