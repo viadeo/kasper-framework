@@ -104,6 +104,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
         if (isGlobal) {
             this.globalFilters.add(filterClass);
+            this.instanceFilters.clear(); // Drop all service instances caches
         }
 
     }
@@ -133,6 +134,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
         if (null != filters) {
             filters.add(filterClass);
+            this.instanceFilters.remove(queryServiceClass); // Drop cache of instances
         }
     }
 

@@ -32,10 +32,10 @@ public class QueryFiltersProcessorTest {
     // ------------------------------------------------------------------------
 
     @XKasperServiceFilter( name = FILTER_NAME )
-    private class TestFilter implements ServiceFilter { }
+    private static final class TestFilter implements ServiceFilter { }
 
     @XKasperServiceFilter
-    private class TestFilterNoName implements ServiceFilter { }
+    private static final class TestFilterNoName implements ServiceFilter { }
 
     // ------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ public class QueryFiltersProcessorTest {
         final TestFilter filter = new TestFilter();
 
         // When
-        processor.process(filter.getClass());
+        processor.process(filter.getClass(), filter);
 
         // Then
         verify(locator).registerFilter(eq(FILTER_NAME), eq(filter));
@@ -59,7 +59,7 @@ public class QueryFiltersProcessorTest {
         final TestFilterNoName filter = new TestFilterNoName();
 
         // When
-        processor.process(filter.getClass());
+        processor.process(filter.getClass(), filter);
 
         // Then
         verify(locator).registerFilter(eq(filter.getClass().getSimpleName()), eq(filter));

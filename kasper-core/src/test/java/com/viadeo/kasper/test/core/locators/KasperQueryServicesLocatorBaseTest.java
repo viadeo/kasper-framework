@@ -7,15 +7,16 @@
 package com.viadeo.kasper.test.core.locators;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryDTO;
-import com.viadeo.kasper.cqrs.query.QueryMessage;
-import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -81,5 +82,55 @@ public class KasperQueryServicesLocatorBaseTest {
 		thrown.expect(NullPointerException.class);
 		locator.registerService("", null);
 	}
+
+    // ------------------------------------------------------------------------
+
+    // ------------------------------------------------------------------------
+
+    private static class TestFilter implements ServiceFilter { }
+    private static class TestFilter2 implements ServiceFilter { }
+
+    @Test
+    public void registerServiceFilter() {
+
+        final Collection<ServiceFilter> filters;
+
+        // Given
+        final TestFilter filter = mock(TestFilter.class);
+        final TestService service = mock(TestService.class);
+        final Class<? extends TestService> serviceClass = service.getClass();
+
+        // When
+        locator.registerFilter("testFilter", filter);
+        locator.registerService("testService", service);
+        locator.registerFilteredService(serviceClass, filter.getClass());
+
+        // Then
+        assertEquals(1, locator.getFiltersForServiceClass(serviceClass).size());
+
+        // --
+
+        // Given
+        final TestFilter2 filter2 = mock(TestFilter2.class);
+
+        // When
+        locator.registerFilter("testFilter2", filter2);
+        locator.registerFilteredService(serviceClass, filter2.getClass());
+
+        // Then
+        assertEquals(2, locator.getFiltersForServiceClass(serviceClass).size());
+
+         // --
+
+        // Given
+        final ServiceFilter filterGlobal = mock(ServiceFilter.class);
+
+        // When
+        locator.registerFilter("testFilterGlobal", filterGlobal, true);
+
+        // Then
+        assertEquals(3, locator.getFiltersForServiceClass(serviceClass).size());
+
+    }
 
 }

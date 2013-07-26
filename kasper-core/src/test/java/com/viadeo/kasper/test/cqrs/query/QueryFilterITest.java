@@ -56,6 +56,11 @@ public class QueryFilterITest {
         }
     }
 
+    private class TestFilterGlobal implements QueryFilter {
+        @Override
+        public void filter(Context context, Query query) throws KasperQueryException { }
+    }
+
     // ------------------------------------------------------------------------
 
     @Test
@@ -64,10 +69,12 @@ public class QueryFilterITest {
         // Given
         final TestService service = spy(new TestService());
         final TestFilter filter = spy(new TestFilter());
+        final TestFilterGlobal filterGlobal = spy(new TestFilterGlobal());
         final QueryServicesLocator locator = new DefaultQueryServicesLocator();
 
         locator.registerService("testService", service);
         locator.registerFilter("testFilter", filter);
+        locator.registerFilter("testFilter2", filterGlobal, true);
         locator.registerFilteredService(service.getClass(), filter.getClass());
 
         final DefaultQueryGateway gateway = new DefaultQueryGateway();
@@ -85,6 +92,8 @@ public class QueryFilterITest {
 
         verify(filter).filter(eq(context), any(QueryDTO.class));
         assertEquals(STATE_MODIFIED, dto.state);
+
+        verify(filterGlobal).filter(eq(context), any(Query.class));
     }
 
 }
