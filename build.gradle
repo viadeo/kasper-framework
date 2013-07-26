@@ -135,7 +135,10 @@ subprojects {
       DROPWIZARD_CORE       : 'com.yammer.dropwizard:dropwizard-core:0.6.2',
 
       AXON_TEST             : 'org.axonframework:axon-test:2.0.2',
-      AXON_CORE             : 'org.axonframework:axon-core:2.0.2',
+      AXON_CORE             : [
+                                'javax.persistence:persistence-api:1.0',
+                                'org.axonframework:axon-core:2.0.2'
+                              ],
       AXON_MONGO            : 'org.axonframework:axon-mongo:2.0.2',
 
       SLF4J                 : 'org.slf4j:slf4j-api:1.7.1',
