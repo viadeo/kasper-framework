@@ -6,7 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.impl;
 
-import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryService;
 
 /**
  *

@@ -52,6 +52,10 @@
         <property name="queryServicesLocator" ref="queryServicesLocator"/>
     </bean>
 
+    <bean id="queryFiltersProcessor" class="com.viadeo.kasper.core.boot.QueryFiltersProcessor">
+        <property name="queryServicesLocator" ref="queryServicesLocator"/>
+    </bean>
+
     <bean id="domainsProcessor" class="com.viadeo.kasper.core.boot.DomainsProcessor">
         <property name="domainLocator" ref="domainLocator"/>
     </bean>

@@ -10,8 +10,7 @@ package com.viadeo.kasper.core.boot;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.ServiceFilter;
-import com.viadeo.kasper.cqrs.query.QueryService;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperServiceFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -19,11 +18,11 @@ import org.slf4j.LoggerFactory;
  *
  * Process Kasper query services dynamic registration at kasper platform boot
  * 
- * @see XKasperQueryService
+ * @see com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService
  */
-public class QueryServicesProcessor extends SingletonAnnotationProcessor<XKasperQueryService, QueryService<?,?>> {
+public class QueryFiltersProcessor extends SingletonAnnotationProcessor<XKasperServiceFilter, ServiceFilter> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(QueryServicesProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(QueryFiltersProcessor.class);
 
 	/**
 	 * The locator to register query services on
@@ -34,32 +33,24 @@ public class QueryServicesProcessor extends SingletonAnnotationProcessor<XKasper
 
 	/**
 	 * Process Kasper query service
-	 * 
+	 *
 	 * @see com.viadeo.kasper.cqrs.query.QueryService
-	 * @see AnnotationProcessor#process(java.lang.Class)
+	 * @see com.viadeo.kasper.core.boot.AnnotationProcessor#process(Class)
 	 */
 	@Override
-	public void process(final Class<?> queryServiceClazz, final QueryService<?,?> queryService) {
-		LOGGER.info("Record on query services locator : " + queryServiceClazz.getName());
+	public void process(final Class<?> queryFilterClazz, final ServiceFilter queryFilter) {
+		LOGGER.info("Record filter on query services locator : " + queryFilterClazz.getName());
 
-		final String serviceName;
-		final XKasperQueryService annotation = queryServiceClazz.getAnnotation(XKasperQueryService.class);
+		final String filterName;
+		final XKasperServiceFilter annotation = queryFilterClazz.getAnnotation(XKasperServiceFilter.class);
 		if (annotation.name().isEmpty()) {
-			serviceName = queryServiceClazz.getSimpleName();
+			filterName = queryFilterClazz.getSimpleName();
 		} else {
-			serviceName = annotation.name();
+			filterName = annotation.name();
 		}
 
-        final Class<? extends ServiceFilter>[] filters = annotation.filters();
-        if (null != filters) {
-            for (Class<? extends ServiceFilter> filterClass : filters) {
-                LOGGER.info(String.format("  --> w/ filter %s", filterClass.getSimpleName()));
-                this.queryServicesLocator.registerFilteredService((Class<? extends QueryService<?, ?>>) queryServiceClazz, filterClass);
-            }
-        }
-
-		//- Register the query service to the locator -------------------------
-		this.queryServicesLocator.registerService(serviceName, queryService);
+        //- Register the query filter to the locator -------------------------
+		this.queryServicesLocator.registerFilter(filterName, queryFilter);
 	}
 
 	// ------------------------------------------------------------------------

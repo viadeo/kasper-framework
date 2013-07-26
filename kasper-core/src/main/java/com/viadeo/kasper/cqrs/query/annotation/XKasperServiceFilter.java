@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.annotation;
 
-import com.viadeo.kasper.ddd.Domain;
-
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -19,12 +17,18 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface XKasperQueryService {
+public @interface XKasperServiceFilter {
 
 	/**
 	 * @return the name of the service
 	 */
 	String name() default "";
 
-	Class<? extends Domain> domain();
+    /**
+     * Sets to true if this filter must be applied to every service in the runtime context
+     *
+     * @return if this filter is global
+     */
+    boolean global() default false;
+
 }

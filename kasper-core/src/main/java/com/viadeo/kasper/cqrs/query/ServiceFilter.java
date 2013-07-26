@@ -4,14 +4,16 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.cqrs.query.filter.impl.base;
+
+package com.viadeo.kasper.cqrs.query;
 
 /**
- * 
- *         Accepted operators for base filters implementation
+ * A Kasper query filter
+ *
+ * @see com.viadeo.kasper.cqrs.query.Query
  */
-public enum BaseFilterOperator {
-
-	EQ, NE, GT, GE, LT, LE, STARTSWITH, CONTAINS, ENDSWITH
+public interface ServiceFilter {
 
 }
+
+

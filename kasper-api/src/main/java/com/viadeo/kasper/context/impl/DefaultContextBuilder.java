@@ -98,4 +98,8 @@ public class DefaultContextBuilder implements ContextBuilder {
 		return new DefaultContext();
 	}
 
+    public static Context get() {
+        return new DefaultContext();
+    }
+
 }

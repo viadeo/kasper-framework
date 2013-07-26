@@ -1,3 +1,5 @@
+..  _modules_split:
+
 Recommended modules split
 =========================
 
