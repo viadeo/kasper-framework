@@ -52,7 +52,7 @@
         <property name="queryServicesLocator" ref="queryServicesLocator"/>
     </bean>
 
-    <bean id="queryFiltersProcessor" class="com.viadeo.kasper.core.boot.QueryFiltersProcessor">
+    <bean id="serviceFiltersProcessor" class="com.viadeo.kasper.core.boot.ServiceFiltersProcessor">
         <property name="queryServicesLocator" ref="queryServicesLocator"/>
     </bean>
 

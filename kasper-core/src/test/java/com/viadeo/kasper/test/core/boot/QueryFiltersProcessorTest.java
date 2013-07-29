@@ -6,13 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.test.core.boot;
 
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.boot.QueryFiltersProcessor;
+import com.viadeo.kasper.core.boot.ServiceFiltersProcessor;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperServiceFilter;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import org.junit.Test;
 
 import static org.mockito.Matchers.eq;
@@ -26,7 +24,7 @@ public class QueryFiltersProcessorTest {
     // ------------------------------------------------------------------------
 
     final QueryServicesLocator locator = spy(new DefaultQueryServicesLocator());
-    final QueryFiltersProcessor processor = new QueryFiltersProcessor();
+    final ServiceFiltersProcessor processor = new ServiceFiltersProcessor();
     { processor.setQueryServicesLocator(locator); }
 
     // ------------------------------------------------------------------------

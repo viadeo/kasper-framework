@@ -1,6 +1,9 @@
 Urgent :
 ========
 
+- verifier la bonne prise en compte des noms présents dans les annotations
+    -> doc, auto-expo
+    -> une seule méthode de noms par défaut
 - improve kasper queries documentation
 - revoir les nodes de kasper-doc, voir à utiliser les locators globaux ?
 - possibilité de virer les qques @Inject ou @Autowired qui traînent ?

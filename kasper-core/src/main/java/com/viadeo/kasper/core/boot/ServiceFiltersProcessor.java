@@ -20,9 +20,9 @@ import org.slf4j.LoggerFactory;
  * 
  * @see com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService
  */
-public class QueryFiltersProcessor extends SingletonAnnotationProcessor<XKasperServiceFilter, ServiceFilter> {
+public class ServiceFiltersProcessor extends SingletonAnnotationProcessor<XKasperServiceFilter, ServiceFilter> {
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(QueryFiltersProcessor.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceFiltersProcessor.class);
 
 	/**
 	 * The locator to register query services on
