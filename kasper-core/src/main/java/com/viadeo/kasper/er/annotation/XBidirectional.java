@@ -20,4 +20,9 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 public @interface XBidirectional {
 
+     /**
+     * @return the inverse relation verb from ontology
+     */
+    String verb() default "";
+
 }

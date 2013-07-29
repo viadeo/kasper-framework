@@ -10,7 +10,7 @@ package com.viadeo.kasper.cqrs.query;
  * An ordered KasperQuery
  *
  */
-public interface OrderedQuery extends Query {
+public interface OrderedQueryDTO extends QueryDTO {
 
 	public static enum ORDER {
 		ASC, DESC, NONE

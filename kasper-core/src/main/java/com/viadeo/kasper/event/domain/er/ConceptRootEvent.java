@@ -6,13 +6,15 @@
 // ============================================================================
 package com.viadeo.kasper.event.domain.er;
 
-import com.viadeo.kasper.event.domain.EntityEvent;
+import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.er.RootConcept;
+import com.viadeo.kasper.event.domain.RootEntityEvent;
 
 /**
  *
  * Event on Kasper Concept
  *
  */
-public interface ConceptEvent extends EntityEvent {
+public interface ConceptRootEvent<D extends Domain, C extends RootConcept> extends RootEntityEvent<D, C> {
 
 }

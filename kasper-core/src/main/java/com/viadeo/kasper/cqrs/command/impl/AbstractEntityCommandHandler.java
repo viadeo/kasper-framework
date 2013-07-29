@@ -8,7 +8,6 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
@@ -29,10 +28,6 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
  */
 public abstract class AbstractEntityCommandHandler<C extends Command, AGR extends AggregateRoot> extends
         AbstractCommandHandler<C> implements EntityCommandHandler<C, AGR> {
-
-    private transient DomainLocator domainLocator;
-
-    // ------------------------------------------------------------------------
 
     // Consistent data container for entity class and repository
     private static final class Consistent<E extends AggregateRoot> {
@@ -74,16 +69,7 @@ public abstract class AbstractEntityCommandHandler<C extends Command, AGR extend
         this.consistent.setEntityClass(entityAssignClass.get());
     }
 
-    // ------------------------------------------------------------------------
-
-    /**
-     * @param domainLocator
-     */
-    public void setDomainLocator(final DomainLocator domainLocator) {
-        this.domainLocator = domainLocator;
-    }
-
-    // ========================================================================
+   // ========================================================================
 
     /**
      * @see com.viadeo.kasper.cqrs.command.EntityCommandHandler#setRepository(com.viadeo.kasper.ddd.Repository)
@@ -100,10 +86,10 @@ public abstract class AbstractEntityCommandHandler<C extends Command, AGR extend
     @SuppressWarnings("unchecked")
     public <R extends Repository<AGR>> R getRepository() {
         if (null == this.consistent.repository) {
-            if (null == this.domainLocator) {
+            if (null == this.getDomainLocator()) {
                 throw new KasperCommandException("Unable to resolve repository, no domain locator was provided");
             }
-            this.consistent.setRepository(this.domainLocator.getEntityRepository(this.consistent.entityClass));
+            this.consistent.setRepository(this.getDomainLocator().getEntityRepository(this.consistent.entityClass));
         }
         return (R) this.consistent.repository;
     }

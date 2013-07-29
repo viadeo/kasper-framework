@@ -8,11 +8,11 @@ package com.viadeo.kasper.core.locators.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.ddd.AggregateRoot;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.ddd.Repository;
 import com.viadeo.kasper.exception.KasperException;

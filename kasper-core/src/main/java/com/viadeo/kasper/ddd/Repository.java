@@ -11,7 +11,7 @@ package com.viadeo.kasper.ddd;
  * The base domain CQRS repository
  *
  * DDD Repository pattern hide the complexity of persisting business objects.
- * 
+ *
  * CQRS repository does not allow retrieving entities by contract, but very discrete accesses of data
  * can be envisaged on some repositories. These read accesses has to be created for particular business
  * validations required by the model and should be optimized for access, using for instance a

@@ -11,7 +11,7 @@ databinding component mapping query strings and query POJOS.
 
 **Get it**:
 
-.. code-block:: gradle
+::
    
    Gradle : 
       'com.viadeo.kasper:kasper-web:KASPER_LATEST_VERSION'

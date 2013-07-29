@@ -1,5 +1,153 @@
+.. _events:
 
 CQRS: Events
 ============
 
- 
+Events are the nervous system of the Kasper platform.
+
+Their counter-part are the event listeners, which can be defined either in the **COMMAND** or **QUERY**
+architectural areas.
+
+**Command listeners** receive events and send commands or interact with some domain services.
+
+**Query listeners** denormalize events within query indexes.
+
+Events
+------
+
+Kasper events are defined as immutable, anemic objects, implementing the **Event**  interface and
+can optionally define metadata using the **@XKasperEvent** annotation, its class name ends with the
+'**Event**' prefix (recommended).
+
+A base implementation is provided by the **AbstractEvent** class (recommended).
+
+**usage** ::
+
+    @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
+    public class UsersAreNowConnectedEvent extends AbstractEvent {
+        private final KasperId userSource;
+        private final KasperId userTarget; 
+
+        public UsersAreNowConnected(final KasperId userSource, final KasperId userTarget) {
+            this.userSource = userSource;
+            this.userTarget = userTarget;
+        }
+
+        public KasperId getUserSource() {
+            return this.userSource;
+        }
+
+        public KasperId getUserTarget() {
+            return this.userTarget;
+        }
+    }
+
+Domain events
+^^^^^^^^^^^^^
+
+If your event is originated from a domain (not a management event or other out-of-domain generated event), you have to
+use the **DomainEvent** interface instead, provided with the default implementation **AbstractDomainEvent**.
+
+**usage** ::
+
+    @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
+    public class UsersAreNowConnectedEvent extends AbstractDomainEvent<MyDomain> {
+        private final KasperId userSource;
+        private final KasperId userTarget; 
+
+        public UsersAreNowConnected(final KasperId userSource, final KasperId userTarget) {
+            this.userSource = userSource;
+            this.userTarget = userTarget;
+        }
+
+        public KasperId getUserSource() {
+            return this.userSource;
+        }
+
+        public KasperId getUserTarget() {
+            return this.userTarget;
+        }
+    }
+
+
+Domain entity events
+^^^^^^^^^^^^^^^^^^^^
+
+As a vast majority of cases, events have as major concern a specific domain entity, the interface **EntityEvent<Domain, Entity>** is
+provided, with a default implementation **AbstractEntityEvent<Domain, Entity>**.
+
+**usage** ::
+
+    @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
+    public class UsersAreNowConnectedEvent extends AbstractEntityEvent<MyDomain, User> {
+        private final KasperId userTarget; 
+
+        public UsersAreNowConnected(final KasperId userSource, final KasperId userTarget, final DateTime lastModificationDate) {
+            super(userSource, lastModificationDate);
+            this.userTarget = userTarget;
+        }
+
+        public KasperId getUserSource() {
+            return this.getEntityId();
+        }
+
+        public KasperId getUserTarget() {
+            return this.userTarget;
+        }
+    }
+
+Entity-relationship events
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+If your entity is an aggregate root (Concept or Relation), an entity which is persisted as a whole with its enclosed entities, you'll prefer to use either :
+
+- **ConceptRootEvent<Domain, ConceptRoot>** interface, with its default implementation **AbstractConceptRootEvent<Domain, ConceptRoot>**.
+- **RelationRootEvent<Domain, RelationRoot>** interface, with its default implementation **AbstractRelationRootEvent<Domain, RelationRoot>**.
+
+**usage** ::
+
+    @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
+    public class UsersAreNowConnectedEvent extends AbstractConceptRootEvent<MyDomain, User> {
+        private final KasperId userTarget; 
+
+        public UsersAreNowConnected(final KasperId userSource, final KasperId userTarget, final DateTime lastModificationDate) {
+            super(userSource, lastModificationDate);
+            this.userTarget = userTarget;
+        }
+
+        public KasperId getUserSource() {
+            return this.getEntityId();
+        }
+
+        public KasperId getUserTarget() {
+            return this.userTarget;
+        }
+    }
+
+The interest of using these two last events is awesome as it allows a immediate graph-oriented denormalization of your events, for instance
+as a default datastore in a graph database. **Do not negligate it !**
+
+
+Event listeners
+---------------
+
+An event listener "just" listens for events..
+
+A Kasper event listener have to extend the **AbstractEventListener<Event>**, declaring its owning domain using the **@XKasperEventListener** annotation,
+and have a name ending with '**EventListener**' (recommended).
+
+**usage** ::
+
+    @XKasperEventListener( domain = MyDomain.class, description = "Send a email when two users are connected" )
+    public class SendAnEmailWhenTwoUsersAreConnectedEventListener extends AbstractEventListener<UsersAreNowConnectedEvent> {
+
+        @Override
+        public void handle(final UsersAreNowConnectedEvent event) {
+            MailService.send(event.getUserSource(), event.getUserTarget(), MailTemplates.USERS_ARE_NOW_CONNECTED);            
+            MailService.send(event.getUserTarget(), event.getUSerSource(), MailTemplates.USERS_ARE_NOW_CONNECTED);            
+        }
+
+    }
+
+
+TODO: access easily the command gateway from the listeners

@@ -13,7 +13,7 @@ import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
+import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.commandhandling.CommandBus;
@@ -80,8 +80,8 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 	public void process(final Class<?> commandHandlerClazz, final CommandHandler<?> commandHandler) {
 		LOGGER.info("Subscribe to command bus : " + commandHandlerClazz.getName());
 
-		if (AbstractEntityCommandHandler.class.isAssignableFrom(commandHandler.getClass())) {
-			((AbstractEntityCommandHandler<?, ?>) commandHandler).setDomainLocator(this.domainLocator);
+		if (AbstractCommandHandler.class.isAssignableFrom(commandHandler.getClass())) {
+			((AbstractCommandHandler<?>) commandHandler).setDomainLocator(this.domainLocator);
 		}
 		
 		//- Retrieve command type from command handler definition -------------

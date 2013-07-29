@@ -8,20 +8,22 @@ package com.viadeo.kasper.event.domain.er.impl;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.event.domain.er.RelationEvent;
-import com.viadeo.kasper.event.domain.impl.AbstractEntityEvent;
+import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.er.RootRelation;
+import com.viadeo.kasper.event.domain.er.RelationRootEvent;
+import com.viadeo.kasper.event.domain.impl.AbstractDomainEvent;
 import org.joda.time.DateTime;
 
 /**
  *
  * Base implementation for Kasper event on Relation
  *
- * @see AbstractEntityEvent
- * @see com.viadeo.kasper.event.domain.er.RelationEvent
+ * @see com.viadeo.kasper.event.domain.impl.AbstractDomainEvent
+ * @see com.viadeo.kasper.event.domain.er.RelationRootEvent
  */
-public abstract class AbstractRelationEvent 
-		extends AbstractEntityEvent 
-		implements RelationEvent {
+public abstract class AbstractRelationRootEvent<D extends Domain, R extends RootRelation>
+		extends AbstractDomainEvent<D, R>
+		implements RelationRootEvent<D, R> {
 
 	private static final long serialVersionUID = 2649090309164938753L;
 
@@ -30,7 +32,7 @@ public abstract class AbstractRelationEvent
 
 	// ------------------------------------------------------------------------
 
-	protected AbstractRelationEvent(final KasperID id, final KasperID sourceId, final KasperID targetId, final DateTime lastModificationDate) {
+	protected AbstractRelationRootEvent(final KasperID id, final KasperID sourceId, final KasperID targetId, final DateTime lastModificationDate) {
 		super(id, lastModificationDate);
 
 		this.sourceId = Preconditions.checkNotNull(sourceId);
@@ -40,7 +42,7 @@ public abstract class AbstractRelationEvent
 	// ------------------------------------------------------------------------
 
 	/**
-	 * @see com.viadeo.kasper.event.domain.er.RelationEvent#getSourceId()
+	 * @see com.viadeo.kasper.event.domain.er.RelationRootEvent#getSourceId()
 	 */
 	@Override
 	public KasperID getSourceId() {
@@ -48,7 +50,7 @@ public abstract class AbstractRelationEvent
 	}
 
 	/**
-	 * @see com.viadeo.kasper.event.domain.er.RelationEvent#getTargetId()
+	 * @see com.viadeo.kasper.event.domain.er.RelationRootEvent#getTargetId()
 	 */
 	@Override
 	public KasperID getTargetId() {

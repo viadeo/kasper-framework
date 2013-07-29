@@ -19,7 +19,7 @@ import com.viadeo.kasper.ddd.impl.AbstractRepository;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.er.impl.AbstractRootConcept;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
-import com.viadeo.kasper.event.domain.impl.AbstractEntityEvent;
+import com.viadeo.kasper.event.domain.impl.AbstractDomainEvent;
 
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.repository.AggregateNotFoundException;
@@ -91,7 +91,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     }
 
     @XKasperEvent(action = "test", domain = ContextTestDomain.class)
-    public static class ContextTestEvent extends AbstractEntityEvent {
+    public static class ContextTestEvent extends AbstractDomainEvent {
         private static final long serialVersionUID = 7017358308867238442L;
 
         public ContextTestEvent(final KasperID id) {

@@ -9,7 +9,7 @@ package com.viadeo.kasper.ddd.specification.impl;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.ddd.Entity;
-import com.viadeo.kasper.ddd.specification.*;
+import com.viadeo.kasper.ddd.specification.EntitySpecification;
 import com.viadeo.kasper.ddd.specification.annotation.XSpecification;
 
 import java.util.Map;

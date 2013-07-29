@@ -16,18 +16,18 @@ import com.viadeo.kasper.cqrs.command.CreateCommand;
  * Convenient base implementation for idToUse simple management
  * 
  */
-public abstract class KasperCreateCommand implements CreateCommand {
+public abstract class AbstractCreateCommand implements CreateCommand {
     private static final long serialVersionUID = -432287057793281452L;
 
 	private KasperID idToUse;
 
 	// ------------------------------------------------------------------------
 
-	public KasperCreateCommand() {
+	public AbstractCreateCommand() {
 		// For serialization
 	}
 
-	public KasperCreateCommand(final KasperID providedId) {
+	public AbstractCreateCommand(final KasperID providedId) {
 		this.idToUse = Preconditions.checkNotNull(providedId);
 	}
 

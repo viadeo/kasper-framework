@@ -36,5 +36,10 @@ public @interface XKasperRelation {
 	 * @return the relation's domain
 	 */
 	Class<? extends Domain> domain();
+
+    /**
+     * @return the relation verb from ontology
+     */
+    String verb() default "";
 	
 }

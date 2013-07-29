@@ -7,10 +7,10 @@
 package com.viadeo.kasper.ddd.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.ddd.AggregateRoot;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Repository;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;

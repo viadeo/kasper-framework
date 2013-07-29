@@ -8,22 +8,28 @@
 package com.viadeo.kasper.core.locators.impl;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.*;
+import com.google.common.collect.ClassToInstanceMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.MutableClassToInstanceMap;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.ServiceFilter;
 import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.ServiceFilter;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
-import static java.util.Collections.*;
+import static java.util.Collections.unmodifiableCollection;
 
 /** Base implementation for query services locator */
 public class DefaultQueryServicesLocator implements QueryServicesLocator {

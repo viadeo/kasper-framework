@@ -7,7 +7,7 @@ import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
-import com.viadeo.kasper.event.domain.er.impl.AbstractConceptEvent;
+import com.viadeo.kasper.event.domain.er.impl.AbstractConceptRootEvent;
 import com.viadeo.kasper.event.impl.AbstractEventListener;
 import org.joda.time.DateTime;
 import org.junit.Test;
@@ -28,7 +28,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 
 	@SuppressWarnings("serial")
 	@XKasperEvent(domain = TestDomain.class, action = "test")
-	public static class TestEvent extends AbstractConceptEvent {
+	public static class TestEvent extends AbstractConceptRootEvent {
 		public TestEvent(final KasperID idShortMessage, final DateTime creationDate) {
 			super(idShortMessage, creationDate);
 		}

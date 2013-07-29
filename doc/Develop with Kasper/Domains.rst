@@ -1,7 +1,8 @@
 DDD: Domains
 ============
 
-Kasper domains can be understood as the DDD bounded contexts
+Kasper domains can be understood as DDD bounded contexts, it's related to s specific functional area and is 
+generally under the responsibility of a unique team.
 
 .. topic:: Wikipedia - Bounded context
 
@@ -21,11 +22,32 @@ A domain is separated into several logical parts, dependencies are symbolized he
 
 So a domain :
 
-* is split between the **COMMAND** and **QUERY** areas
+* is split between the **COMMAND** and **QUERY** architectural areas
 * offers an API composed of :
-    * the commands it can handle
-    * the queries it can answer
-    * the events it will emit
-* cannot have access to any other part of another domain than its api components (C/Q/E)
+    * the **commands** it can handle
+    * the **queries** it can answer
+    * the **query results** it can send
+    * the **events** it will emit
+* cannot have access to any part of another domain other than its api components (C/Q/E)
 * represent an atomic functional area, generally handled by only one close team
 
+Define a Kasper domain
+----------------------
+
+A domain is generally defined as an empty class, implementing the '**Domain**' interface and
+annotated with the **@XKasperDomain** annotation.
+
+**A domain is part of a domain API**.
+
+**usage** ::
+
+    @XKasperDomain( prefix = "th", label = "The Things domain" )
+    public class ThingsDomain implements Domain { }
+
+This class will be used by the other Kasper components annotations as a **logical aggregator**.
+
+
+Inter-domains considerations
+----------------------------
+
+TODO

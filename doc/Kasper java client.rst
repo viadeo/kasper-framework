@@ -59,7 +59,7 @@ If an error occured during query processing (it can also be a query validation e
 
 You like it? Then **Get it!**
 
-.. code-block:: code
+:: 
    
    Gradle : 
       'com.viadeo.kasper:kasper-client:KASPER_LATEST_VERSION'

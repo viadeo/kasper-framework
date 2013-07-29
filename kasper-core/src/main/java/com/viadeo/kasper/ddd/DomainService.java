@@ -4,15 +4,14 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.cqrs.query;
+package com.viadeo.kasper.ddd;
 
-/** A paginated Kasper query */
-public interface PaginatedQuery extends Query {
-
-	/** The requested number of elements. */
-	int getCount();
-
-	/** The requested index of the first element in the page. Starts at {@code 0}. */
-	int getStartIndex();
+/**
+ * Proposal marker interface for domain services
+ *
+ * @see com.viadeo.kasper.ddd.UbiquitousLanguageElement
+ * @see com.viadeo.kasper.ddd.Domain
+ */
+public interface DomainService extends UbiquitousLanguageElement {
 
 }
