@@ -26,6 +26,10 @@ public @interface XKasperCommandHandler {
 	 * @return the command handler's description
 	 */
 	String description() default "";
-	
+
+    /**
+     * @return the domain of this command handler
+     */
 	Class<? extends Domain> domain();
+
 }

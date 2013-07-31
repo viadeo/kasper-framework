@@ -37,7 +37,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 		}
 	}
 
-	@XKasperEventListener
+	@XKasperEventListener( domain = TestDomain.class )
 	public static class TestListener extends AbstractEventListener<TestEvent> {
 		@Override
 		public void handle(final EventMessage<TestEvent> eventMessage) {
