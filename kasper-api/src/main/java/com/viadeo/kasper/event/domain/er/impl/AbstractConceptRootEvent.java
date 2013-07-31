@@ -7,8 +7,8 @@
 package com.viadeo.kasper.event.domain.er.impl;
 
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.er.RootConcept;
 import com.viadeo.kasper.event.domain.er.ConceptRootEvent;
 import com.viadeo.kasper.event.domain.impl.AbstractRootEntityEvent;
 import org.joda.time.DateTime;
@@ -20,7 +20,7 @@ import org.joda.time.DateTime;
  * @see com.viadeo.kasper.event.domain.impl.AbstractDomainEvent
  * @see com.viadeo.kasper.event.domain.er.ConceptRootEvent
  */
-public abstract class AbstractConceptRootEvent<D extends Domain, C extends RootConcept>
+public abstract class AbstractConceptRootEvent<D extends Domain, C>
 		extends AbstractRootEntityEvent<D, C>
 		implements ConceptRootEvent<D,C> {
 
@@ -28,10 +28,15 @@ public abstract class AbstractConceptRootEvent<D extends Domain, C extends RootC
 
 	// ------------------------------------------------------------------------
 	
-    protected AbstractConceptRootEvent() { /* For serialization */ }
+    protected AbstractConceptRootEvent() {
+        /* For serialization */
+        super();
+    }
 
-	protected AbstractConceptRootEvent(final KasperID id, final DateTime lastModificationDate) {
-		super(id, lastModificationDate);
+	protected AbstractConceptRootEvent(final Context context,
+                                       final KasperID id,
+                                       final DateTime lastModificationDate) {
+		super(context, id, lastModificationDate);
 	}
 
 }

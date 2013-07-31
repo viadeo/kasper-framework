@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event.domain.impl;
 
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.domain.DomainEvent;
 import com.viadeo.kasper.event.impl.AbstractEvent;
@@ -20,5 +21,14 @@ public abstract class AbstractDomainEvent<D extends Domain>
         extends AbstractEvent implements DomainEvent<D> {
 
 	private static final long serialVersionUID = 1948164207419476512L;
+
+    protected AbstractDomainEvent() {
+        /* for serialization */
+        super();
+    }
+
+	protected AbstractDomainEvent(final Context context) {
+        super(context);
+	}
 
 }

@@ -8,8 +8,8 @@ package com.viadeo.kasper.event.domain.er.impl;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.er.RootRelation;
 import com.viadeo.kasper.event.domain.er.RelationRootEvent;
 import com.viadeo.kasper.event.domain.impl.AbstractRootEntityEvent;
 import org.joda.time.DateTime;
@@ -21,7 +21,7 @@ import org.joda.time.DateTime;
  * @see com.viadeo.kasper.event.domain.impl.AbstractDomainEvent
  * @see com.viadeo.kasper.event.domain.er.RelationRootEvent
  */
-public abstract class AbstractRelationRootEvent<D extends Domain, R extends RootRelation>
+public abstract class AbstractRelationRootEvent<D extends Domain, R>
 		extends AbstractRootEntityEvent<D, R>
 		implements RelationRootEvent<D, R> {
 
@@ -32,8 +32,10 @@ public abstract class AbstractRelationRootEvent<D extends Domain, R extends Root
 
 	// ------------------------------------------------------------------------
 
-	protected AbstractRelationRootEvent(final KasperID id, final KasperID sourceId, final KasperID targetId, final DateTime lastModificationDate) {
-		super(id, lastModificationDate);
+	protected AbstractRelationRootEvent(final Context context,
+                                        final KasperID id,
+                                        final KasperID sourceId, final KasperID targetId, final DateTime lastModificationDate) {
+		super(context, id, lastModificationDate);
 
 		this.sourceId = Preconditions.checkNotNull(sourceId);
 		this.targetId = Preconditions.checkNotNull(targetId);

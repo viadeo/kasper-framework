@@ -8,9 +8,9 @@ package com.viadeo.kasper.event.domain.impl;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.ddd.AggregateRoot;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.domain.RootEntityEvent;
+import com.viadeo.kasper.event.domain.EntityEvent;
 import org.joda.time.DateTime;
 
 /**
@@ -19,8 +19,8 @@ import org.joda.time.DateTime;
  *
  * @see com.viadeo.kasper.event.domain.EntityEvent
  */
-public abstract class AbstractRootEntityEvent<D extends Domain, AGR extends AggregateRoot>
-        extends AbstractEntityEvent<D, AGR> implements RootEntityEvent<D, AGR> {
+public abstract class AbstractEntityEvent<D extends Domain, E>
+        extends AbstractDomainEvent<D> implements EntityEvent<D, E> {
 
 	private static final long serialVersionUID = -1948165707419476512L;
 
@@ -28,9 +28,16 @@ public abstract class AbstractRootEntityEvent<D extends Domain, AGR extends Aggr
 	private DateTime lastEntityModificationDate;
 
 	// ------------------------------------------------------------------------
-    protected AbstractRootEntityEvent() { /* For serialization */ }
+    protected AbstractEntityEvent() {
+        /* For serialization */
+        super();
+    }
 
-	protected AbstractRootEntityEvent(final KasperID id, final DateTime lastModificationDate) {
+	protected AbstractEntityEvent(final Context context,
+                                  final KasperID id,
+                                  final DateTime lastModificationDate) {
+        super(context);
+
 		this.entityId = Preconditions.checkNotNull(id);
 		this.lastEntityModificationDate = Preconditions.checkNotNull(lastModificationDate);
 	}

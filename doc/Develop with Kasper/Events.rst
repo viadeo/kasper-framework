@@ -31,7 +31,9 @@ A base implementation is provided by the **AbstractEvent** class (recommended).
         private final KasperId userSource;
         private final KasperId userTarget; 
 
-        public UsersAreNowConnected(final KasperId userSource, final KasperId userTarget) {
+        public UsersAreNowConnected(final Context context, final KasperId userSource, final KasperId userTarget) {
+            super(context);
+
             this.userSource = userSource;
             this.userTarget = userTarget;
         }
@@ -63,7 +65,9 @@ use the **DomainEvent** interface instead, provided with the default implementat
         private final KasperId userSource;
         private final KasperId userTarget; 
 
-        public UsersAreNowConnected(final KasperId userSource, final KasperId userTarget) {
+        public UsersAreNowConnected(final Context context, final KasperId userSource, final KasperId userTarget) {
+            super(context);
+
             this.userSource = userSource;
             this.userTarget = userTarget;
         }
@@ -93,8 +97,9 @@ provided, with a default implementation **AbstractEntityEvent<Domain, Entity>**.
     public class UsersAreNowConnectedEvent extends AbstractEntityEvent<MyDomain, User> {
         private final KasperId userTarget; 
 
-        public UsersAreNowConnected(final KasperId userSource, final KasperId userTarget, final DateTime lastModificationDate) {
-            super(userSource, lastModificationDate);
+        public UsersAreNowConnected(final Context context, final KasperId userSource,
+                                    final KasperId userTarget, final DateTime lastModificationDate) {
+            super(context, userSource, lastModificationDate);
             this.userTarget = userTarget;
         }
 
@@ -124,8 +129,9 @@ If your entity is an aggregate root (Concept or Relation), an entity which is pe
     public class UsersAreNowConnectedEvent extends AbstractConceptRootEvent<MyDomain, User> {
         private final KasperId userTarget; 
 
-        public UsersAreNowConnected(final KasperId userSource, final KasperId userTarget, final DateTime lastModificationDate) {
-            super(userSource, lastModificationDate);
+        public UsersAreNowConnected(final Context context, final KasperId userSource,
+                                    final KasperId userTarget, final DateTime lastModificationDate) {
+            super(context, userSource, lastModificationDate);
             this.userTarget = userTarget;
         }
 

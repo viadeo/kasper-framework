@@ -22,10 +22,10 @@ public interface Event extends Serializable {
 	 * @return the event's context
 	 */
 	Optional<Context> getContext();
-	
+
 	/**
 	 * @param context the event's context
 	 */
 	void setContext(Context context);
-	
+
 }

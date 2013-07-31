@@ -96,7 +96,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
         private static final long serialVersionUID = 7017358308867238442L;
 
         public ContextTestEvent(final KasperID id) {
-            super(id, DateTime.now());
+            super(CurrentContext.value().get(), id, DateTime.now());
             StaticChecker.verify(CurrentContext.value().get());
         }
     }

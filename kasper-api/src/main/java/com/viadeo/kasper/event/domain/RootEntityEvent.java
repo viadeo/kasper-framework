@@ -8,7 +8,6 @@ package com.viadeo.kasper.event.domain;
 
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.ddd.Entity;
 import org.joda.time.DateTime;
 
 /**
@@ -16,7 +15,9 @@ import org.joda.time.DateTime;
  * A Kasper event related to an entity
  *
  */
-public interface EntityEvent<D extends Domain, E extends Entity> extends DomainEvent<D> {
+
+
+public interface RootEntityEvent<D extends Domain, AGR> extends EntityEvent<D, AGR> {
 
 	/**
 	 * @return the entity identifier associated with this entity event
@@ -27,7 +28,7 @@ public interface EntityEvent<D extends Domain, E extends Entity> extends DomainE
 	 * @return the last modification date of the entity (creation/update/deletion)
 	 */
 	DateTime getEntityLastModificationDate();
-
+	
 }
 
 

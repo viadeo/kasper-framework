@@ -3,6 +3,7 @@ package com.viadeo.kasper.event;
 import com.viadeo.kasper.AbstractPlatformTests;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperTestIdGenerator;
+import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.er.impl.AbstractRootConcept;
@@ -33,7 +34,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 	@XKasperEvent(action = "test")
 	public static class TestEvent extends AbstractConceptRootEvent<TestDomain, TestConceptRoot> {
 		public TestEvent(final KasperID idShortMessage, final DateTime creationDate) {
-			super(idShortMessage, creationDate);
+			super(DefaultContextBuilder.get(), idShortMessage, creationDate);
 		}
 	}
 
