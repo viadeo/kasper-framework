@@ -10,7 +10,7 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.RootConcept;
 import com.viadeo.kasper.event.domain.er.ConceptRootEvent;
-import com.viadeo.kasper.event.domain.impl.AbstractDomainEvent;
+import com.viadeo.kasper.event.domain.impl.AbstractRootEntityEvent;
 import org.joda.time.DateTime;
 
 /**
@@ -21,7 +21,7 @@ import org.joda.time.DateTime;
  * @see com.viadeo.kasper.event.domain.er.ConceptRootEvent
  */
 public abstract class AbstractConceptRootEvent<D extends Domain, C extends RootConcept>
-		extends AbstractDomainEvent<D, C>
+		extends AbstractRootEntityEvent<D, C>
 		implements ConceptRootEvent<D,C> {
 
 	private static final long serialVersionUID = 578218386414763706L;

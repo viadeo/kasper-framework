@@ -22,6 +22,13 @@ public class CommandsDocumentationProcessor extends DocumentationProcessor<XKasp
 
 	// ------------------------------------------------------------------------
 
+    /**
+     * Annotation is optional for commands
+     */
+    public boolean isAnnotationMandatory() {
+        return false;
+    }
+
 	/**
 	 * Process Kasper command
 	 * 

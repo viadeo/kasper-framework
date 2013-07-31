@@ -12,7 +12,7 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
-import com.viadeo.kasper.ddd.Repository;
+import com.viadeo.kasper.ddd.IRepository;
 
 import java.util.Collection;
 import java.util.Set;
@@ -115,7 +115,7 @@ public interface DomainLocator {
 	 * 
 	 * @param repository the repository to register
 	 */
-	void registerRepository(Repository<?> repository);
+	void registerRepository(IRepository<?> repository);
 
 	/**
 	 * Get the repository for an entity
@@ -123,7 +123,7 @@ public interface DomainLocator {
 	 * @param entity the entity
 	 * @return the repository responsible for storing this entity
 	 */
-	<E extends AggregateRoot> Repository<E> getEntityRepository(E entity);
+	<E extends AggregateRoot> IRepository<E> getEntityRepository(E entity);
 
 	/**
 	 * Get the repository for an entity class
@@ -131,6 +131,6 @@ public interface DomainLocator {
 	 * @param entityClass the entity class
 	 * @return the repository responsible for storing this class of entities
 	 */
-	<E extends AggregateRoot> Repository<E> getEntityRepository(Class<E> entityClass);
+	<E extends AggregateRoot> IRepository<E> getEntityRepository(Class<E> entityClass);
 
 }

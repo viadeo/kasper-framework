@@ -35,7 +35,10 @@ A command can optionally declares some metadata using the **@XKasperCommand** an
 The abstract class **AbstractCreateCommand** can be used to define an entity creation command, which contains an id to be used as
 identifier for the entity to be created.
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XKasperCommand( description = "An awesome command used to create a User" )
     public class CreateAUserCommand extends AbstractCreateCommand {
@@ -72,7 +75,10 @@ The abstract class **AbstractEntityCommandHandler<Command, Entity>** can be used
 *getRepository()* used to retrieve easily the repository corresponding to this entity. This abstract class must generally be used when
 defining a command mainly dedicated to create, modify and delete a domain entity.
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XKasperCommandHandler( domain = UserDomain.class, description = "Creates a user known to the application" )
     public class CreateAUserCommandHandler extends AbstractEntityCommandHandler<User, CreateAUserCommand> {
@@ -88,7 +94,10 @@ defining a command mainly dedicated to create, modify and delete a domain entity
 
     }
 
-If you need to retrieve a different repository, use the platform domain locator ::
+If you need to retrieve a different repository, use the platform domain locator :
+
+.. code-block:: java
+    :linenos:
 
     @XKasperCommandHandler( domain = UserDomain.class, description = "Creates a user known to the application" )
     public class CreateAUserCommandHandler extends AbstractEntityCommandHandler<User, CreateAUserCommand> {

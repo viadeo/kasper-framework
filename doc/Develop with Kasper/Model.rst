@@ -27,6 +27,9 @@ Kasper domain modeling is heavily based on Domain-Driven Design paradigms.
     :scale: 45%
     :align: center
 
+.. contents::
+
+
 Entities
 --------
 
@@ -122,7 +125,10 @@ contain any direct reference to other aggregate roots without a intermediate rel
 
 **An aggregate root in Kasper is not necessarily a composition of several entities**, it can just be a standalone object, persistable.
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XKasperConcept( domain = Vehicles.class, label = "A simple car" )
     public class Car extends AbstractRootConcept {
@@ -163,7 +169,10 @@ a car wheel will be an aggregate component for a car rental company, but will be
     :scale: 80%
     :align: center
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     public static enum WheelPosition { FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT }
 
@@ -266,7 +275,10 @@ Kasper encourage to use a specific class names nomenclature for relations :
     :scale: 80%
     :align: center
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XBidirectional( verb = "likedBy" )
     @XKasperRelation( domain = MemberWall.class, verb = "likes", label = "A member liked an article" )
@@ -305,7 +317,10 @@ The *BlogPost* root concept contains a unidirectional (default) component relati
     :scale: 80%
     :align: center
 
-**usage** (*warning: non event-sourced aggregate code*) ::
+**usage** (*warning: non event-sourced aggregate code*)
+
+.. code-block:: java
+    :linenos:
 
     @XKasperConcept( domain = Blogs.class, label = "A Member" )
     public class Member extends AbstractRootConcept {
@@ -375,7 +390,10 @@ in order to mark and better identify all of your factories, this interface encou
 
 You are encouraged to add the suffix **Factory** to your class names.
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     public class MemberFactory implements EntityFactory<Member> {
 
@@ -414,7 +432,7 @@ Repositories
 A DDD repository is used to manage with entities persistence, and as the only persistable entities in Kasper framework are the aggregate roots then Kasper repositories are
 bound to a specific aggregate root.
 
-In order to create a Kasper repository you have to extend the **AbstractRepository<AggregateRoot>** class annotating it with the
+In order to create a Kasper repository you have to extend **Repository<AggregateRoot>** annotating it with the
 **@XKasperRepository** annotation.
 
 **usage**
@@ -423,34 +441,39 @@ In order to create a Kasper repository you have to extend the **AbstractReposito
     :linenos:
 
     @XKasperRepository( description = "Stores a Member into an SQL datastore" )
-    public class MemberRepository extends AbstractRepository<Member> {
+    public class MemberRepository extends Repository<Member> {
 
-        private static final REQ_SELECT = "SELECT id, name, version FROM Member WHERE id = %d and version = '%s'";
-        private static final REQ_INSERT = "INSERT INTO Member VALUES(%d, '%s', '%s')";
-        private static final REQ_DELETE = "DELETE FROM Member WHERE memberId = %d AND version = '%s'";
+        private static final String REQ_SELECT = "SELECT name FROM Member WHERE id = %d and version = '%s'";
+        private static final String REQ_INSERT = "INSERT INTO Member VALUES(%d, '%s', '%s')";
+        private static final String REQ_DELETE = "DELETE FROM Member WHERE memberId = %d AND version = '%s'";
 
+        @Override
         protected abstract Optional<Member> doLoad(final KasperID memberId, final Long expectedVersion) {
             final result = sql.selectFirst(String.format(REQ_SELECT, memberId, expectedVersion));
             if (null != result) {
-                return Optional.of(new Member(result.get('id'),
-                                              result.get('version'),
+                return Optional.of(new Member(memberId,
+                                              expectedVersion,
                                               result.get('name')));
             }
             return Optional.absent();
         }
 
+        @Override
         protected abstract void doSave(final Member member) {
             sql.exec(String.format(REQ_INSERT, member.getIdentifier(),
                                                member.getVersion(),
                                                member.getName()));
         }
 
+        @Override
         protected abstract void doDelete(final Member member) {
             sql.exec(String.format(REQ_DELETE, member.getIdentifier(), member.getVersion()));
         }
 
     }
 
+You can then add new public methods to this repository in order to access to your business indexes (logically hosted in your
+COMMAND architectural area).
 
 Value objects
 -------------
@@ -461,9 +484,102 @@ Value objects
 
     *Example: When people exchange dollar bills, they generally do not distinguish between each unique bill; they only are concerned about the face value of the dollar bill. In this context, dollar bills are value objects. However, the Federal Reserve may be concerned about each unique bill; in this context each bill would be an entity.*
 
-TODO
+A value object is well.. just a value object..
 
-ex of WheelPosition
+But Kasper framework propose you two interfaces in order to better identify them and reinforce some good practices and
+constraints.
+
+**A value object is immutable.**
+
+If you want to create a value object you can the interface **Value**.
+
+The **Value** interface will force you to implement the **Serializable** interface and propose you to not miss the implementation
+of the methods *toString()*, *hashCode()* and *equals()*.
+
+**usage**
+
+.. code-block:: java
+    :linenos:
+
+    public class WheelPosition implements Value {
+
+        private static final enum AcceptedWheelPosition { FL, FR, BL, BR };
+
+        private final AcceptedWheelPosition position;
+
+        // -----
+
+        private WheelPosition(final AcceptedWheelPosition position) {
+            this.position = position;
+        }
+
+        // -----
+
+        public static final frontLeft()  { return new WheelPosition(AcceptedWheelPosition.FL); }
+        public static final frontRight() { return new WheelPosition(AcceptedWheelPosition.FR); }
+        public static final backLeft()   { return new WheelPosition(AcceptedWheelPosition.BL); }
+        public static final backRight()  { return new WheelPosition(AcceptedWheelPosition.BR); }
+
+        // -----
+
+        public boolean isFront() {
+            return AcceptedWheelPosition.FL.equals(this.position)
+                    || AcceptedWheelPosition.FR.equals(this.position);
+        }
+
+        public boolean isBack()  {
+             return AcceptedWheelPosition.BL.equals(this.position)
+                    || AcceptedWheelPosition.BR.equals(this.position);
+        }
+
+        public boolean isLeft()  {
+             return AcceptedWheelPosition.FL.equals(this.position)
+                    || AcceptedWheelPosition.BL.equals(this.position);
+        }
+
+        public boolean isRight() {
+             return AcceptedWheelPosition.BR.equals(this.position)
+                    || AcceptedWheelPosition.FR.equals(this.position);
+        }
+
+        // -----
+
+        @Override
+        public int hashCode() {
+            return this.position.hashCode();
+        }
+
+        @Override
+        public boolean equals(final Object other) {
+            checkNotNull(other);
+            if (this.getClass() != other.getClass()) {
+                return false;
+            }
+            return this.position.equals((WheelPosition) other);
+        }
+
+        @Override
+        public String toString() {
+            return Objects.toStringHelper(this).addValue(this.position).toString();
+        }
+
+    }
+
+Sometimes you just want to create a value object around one unique other type (primitive or not) and add management
+methods to this enclosing value. Kasper framework propose you the **AbstractEnclosingValue** abstract class.
+
+**usage**
+
+.. code-block:: java
+    :linenos:
+
+    public class FirstName extends AbstractEnclosingValue<String> {
+
+        public FirstName(final String firstName) {
+            super(firstName);
+        }
+
+    }
 
 Domain services
 ---------------
@@ -477,23 +593,16 @@ identification. A domain service can be either a COMMAND area service or a QUERY
 
 You are encouraged to add the suffix **Service** to your class names.
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     public class SendEmailsService implements DomainService {
 
-        public static void send(final EmailData data, final EmailTemplate template) {
+        public void send(final EmailData data, final EmailTemplate template) {
             ...
         }
 
     }
-
-
-Advanced modeling
------------------
-
-TODO: TOC with use cases, samples, ...
-
-
-
-
 

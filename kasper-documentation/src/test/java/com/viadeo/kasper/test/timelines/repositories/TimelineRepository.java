@@ -1,11 +1,11 @@
 package com.viadeo.kasper.test.timelines.repositories;
 
-import com.viadeo.kasper.ddd.Repository;
+import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.test.timelines.entities.Timeline;
 
 @XKasperRepository
-public class TimelineRepository implements Repository<Timeline> {
+public class TimelineRepository implements IRepository<Timeline> {
 
 	@Override
 	public void add(Timeline arg0) {

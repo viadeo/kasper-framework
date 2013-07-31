@@ -23,7 +23,14 @@ public class DomainsDocumentationProcessor extends DocumentationProcessor<XKaspe
 
 	// ------------------------------------------------------------------------
 
-	/**
+    /**
+     * Annotation is optional for domains
+     */
+    public boolean isAnnotationMandatory() {
+        return false;
+    }
+
+    /**
 	 * Process Kasper domain
 	 * 
 	 * @see AnnotationProcessor#process(java.lang.Class)

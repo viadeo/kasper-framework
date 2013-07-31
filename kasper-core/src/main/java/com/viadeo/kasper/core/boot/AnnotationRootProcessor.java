@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
@@ -72,8 +73,8 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
     /**
      * Scanned processors
      */
-    private transient Map<Class<? extends Annotation>, List<AnnotationProcessor<?, ?>>> processors;
-    private transient Map<AnnotationProcessor<?, ?>, Class<?>> processorsInterface;
+    private transient Map<Class<?>, List<AnnotationProcessor<?, ?>>> processors;
+    private transient Map<AnnotationProcessor<?, ?>, Class<? extends Annotation>> processorsInterface;
 
     /**
      * Class-path reflection resolver
@@ -109,8 +110,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
         final Set<String> prefixes = new HashSet<>();
 
         if (!this.doNotScanDefaultPrefix) {
-            final String currentPackage = this.getClass().getPackage().getName();
-            prefixes.add(currentPackage);
+            prefixes.add("com.viadeo.kasper");
         }
 
         if ((null != this.scanPrefixes) && (this.scanPrefixes.size() > 0)) {
@@ -220,13 +220,13 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
 
                     LOGGER.debug("Registered Kasper processor : " + clazz.getName());
 
-                    if (!processors.containsKey(annoClass.get())) {
-                        processors.put(annoClass.get(), new ArrayList<AnnotationProcessor<?, ?>>());
+                    if (!processors.containsKey(interfaceClass.get())) {
+                        processors.put(interfaceClass.get(), new ArrayList<AnnotationProcessor<?, ?>>());
                     }
 
-                    if (!processors.get(annoClass.get()).contains(objInstance)) {
-                        processors.get(annoClass.get()).add((AnnotationProcessor<?, ?>) objInstance);
-                        processorsInterface.put((AnnotationProcessor<?, ?>) objInstance, interfaceClass.get());
+                    if (!processors.get(interfaceClass.get()).contains(objInstance)) {
+                        processors.get(interfaceClass.get()).add((AnnotationProcessor<?, ?>) objInstance);
+                        processorsInterface.put((AnnotationProcessor<?, ?>) objInstance, annoClass.get());
                     }
 
                 } else {
@@ -252,27 +252,41 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
     protected void process() {
         LOGGER.info("Delegate to Kasper annotation processors");
 
-        for (final Class<? extends Annotation> annotation : processors.keySet()) {
-            for (final AnnotationProcessor<?, ?> processor : processors.get(annotation)) {
-                final Class<?> tplClass = processorsInterface.get(processor);
+        for (final Class<?> tplClass : processors.keySet()) {
+            for (final AnnotationProcessor<?, ?> processor : processors.get(tplClass)) {
+                final Class<? extends Annotation> annotation = processorsInterface.get(processor);
 
                 LOGGER.info(String.format("Delegate for %s to %s", tplClass.getSimpleName(), processor.getClass().getSimpleName()));
 
-                final Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(annotation);
+                final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(annotation);
+                final Set<Class<?>> conformClasses = (Set<Class<?>>) reflections.getSubTypesOf(tplClass);
+                conformClasses.addAll(annotatedClasses);
 
-                for (final Class<?> clazz : annotated) {
-                    if (tplClass.isAssignableFrom(clazz)) {
+                for (final Class<?> clazz : conformClasses) {
 
-                        // PROCESSOR DELEGATION
-                        try {
-                            processor.process(clazz);
-                        } catch (Exception e) {
-                            LOGGER.warn("Unexpected error during processor delegation, <class=" + clazz.getName() + ">: ", e);
+                    if (!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
+
+                        if (null == clazz.getAnnotation(XKasperUnregistered.class)) {
+
+                            if ((null != clazz.getAnnotation(annotation)) || !processor.isAnnotationMandatory()) {
+
+                                // PROCESSOR DELEGATION
+                                try {
+                                    processor.process(clazz);
+                                } catch (Exception e) {
+                                    LOGGER.warn("Unexpected error during processor delegation, <class=" + clazz.getName() + ">: ", e);
+                                }
+
+                            } else {
+                                throw new KasperException(
+                                            String.format("%s must have an annotation : %s",
+                                                    clazz.getName(), annotation.getSimpleName()));
+                            }
+
+                        } else {
+                            LOGGER.debug(String.format("Ignore unregistered class %s", clazz.getName()));
                         }
 
-                    } else {
-                        throw new KasperException(
-                                String.format("%s must extends/implements %s", clazz.getName(), tplClass.getName()));
                     }
                 }
             }

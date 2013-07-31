@@ -2,6 +2,8 @@
 CQRS: Queries
 =============
 
+
+
 Implementing queries consists on implementing four Kasper components :
 
 - one **event listener** used to listen for accurate events and index data
@@ -16,7 +18,8 @@ Kasper does not say anything about your indexation process, but you are heavily 
 
 About implementing event listeners, see :ref:`events`.
 
-**Using Kasper, the client does not ask a service for data, it sends queries to the platform and expects for a result.**
+Kasper queries uses the **Command pattern**, the client does not ask a service for data, it sends queries to the
+platform and expects for a result.
 
 Queries
 -------
@@ -32,7 +35,10 @@ the request and filter the indexed data.
 A Kasper query has to implement the interface **Query** and can optionally defines some metadata
 using the **@XKasperQuery** annotation.
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XKasperQuery( description = "Get some things" )
     public class GetThingsQuery implements Query {
@@ -71,7 +77,10 @@ to the requesting client, it ends with the suffix '**QueryResult**' (recommended
 A Kasper query result has to implement the interface **QueryResult** and can optionally defines some metadata
 using the **@XKasperQueryResult** annotation.
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XKasperQueryResult( description = "A simple thing" )
     public class ThingsQueryResult implements QueryResult {
@@ -91,7 +100,10 @@ The interface **QueryCollectionResult** can be used to return a list of some oth
 The abstract class **AbstractQueryCollectionResult** is provided as a default implementation of the list methods
 required by the **QueryCollectionResult** interface.
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XKasperQueryResult( description = "A List of things" )
     public class ThingsListQueryResult extends AbstractQueryCollectionResult<ThingsQueryResult> {
@@ -113,7 +125,10 @@ A Kasper query service is I/O component using a **Query** as input and responsib
 It has to implement the **QueryService<Query, QueryResult>** interface and specify its owning domain with the **@XKasperQueryService**
 annotation and ends with the '**QueryService**' suffix (recommended).
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XKasperQueryService( domain = ThingsDomain.class )
     public class GetThingsQueryService implements QueryService<GetThingsQuery, ThingsListQueryResult> {
@@ -128,7 +143,10 @@ annotation and ends with the '**QueryService**' suffix (recommended).
 The **AbstractQueryService** abstract class is provided in order to ease the extraction of the query from the message
 when other message informations are not required :
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XKasperQueryService( domain = ThingsDomain.class )
     public class GetThingsQueryService extends AbstractQueryService<GetThingsQuery, ThingsListQueryResult> {
@@ -160,7 +178,8 @@ ex :
 
 **ValidateIdQueryFilter.class** :
 
-::
+.. code-block:: java
+    :linenos:
 
     @XKasperServiceFilter( name = "ValidateUniverseId" )
     public class ValidateIdQueryFilter implements QueryFilter {
@@ -180,7 +199,8 @@ A filter can be defined global (set the global flag (**global = true**) on the a
 
 **IdEraserResultFilter.class** :
 
-::
+.. code-block:: java
+    :linenos:
 
     @XKasperServiceFilter( global = true ) // Will be applied to all query services
     public class IdEraserResultFilter implements ResultFilter {
@@ -202,7 +222,8 @@ filling the 'filters' field.
 
 **GetThingsQueryService.class** :
 
-::
+.. code-block:: java
+    :linenos:
 
     @XKasperQueryService( ... , filters = ValidateIdQueryFilter.class )
     public class GetThingsQueryService extends AbstractQueryService<GetThingsQuery, ThingsListQueryResult> {

@@ -33,7 +33,15 @@ public abstract class SingletonAnnotationProcessor<T extends Annotation, I> impl
 	private transient ApplicationContext context;	
 
 	// ------------------------------------------------------------------------	
-	
+
+    /**
+     * Annotations are mandatory by default
+     */
+    @Override
+    public boolean isAnnotationMandatory() {
+        return true;
+    }
+
 	@SuppressWarnings("unchecked") // Must be controlled by child class (C)
 	@Override
 	public void process(final Class<?> clazz) {

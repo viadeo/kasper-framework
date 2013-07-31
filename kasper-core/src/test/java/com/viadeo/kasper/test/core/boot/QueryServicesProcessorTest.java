@@ -33,34 +33,38 @@ public class QueryServicesProcessorTest {
 
     private class TestDomain implements Domain { }
     private class TestQuery implements Query { }
-    private class TestDTO implements QueryDTO { }
+    private class TestResult implements QueryResult { }
+
+    @XKasperQueryService( domain = TestDomain.class )
     private class TestFilter implements ServiceFilter { }
+
+    @XKasperQueryService( domain = TestDomain.class )
     private class TestFilter2 implements ServiceFilter { }
 
     // ------------------------------------------------------------------------
 
     @XKasperQueryService( name = SERVICE_NAME, domain = TestDomain.class )
-    private class TestService implements QueryService<TestQuery, TestDTO> {
+    private class TestService implements QueryService<TestQuery, TestResult> {
         @Override
-        public TestDTO retrieve(final QueryMessage message) throws Exception { return null; }
+        public TestResult retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperQueryService( domain = TestDomain.class )
-    private class TestServiceNoName implements QueryService<TestQuery, TestDTO> {
+    private class TestServiceNoName implements QueryService<TestQuery, TestResult> {
         @Override
-        public TestDTO retrieve(final QueryMessage message) throws Exception { return null; }
+        public TestResult retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperQueryService( domain = TestDomain.class, filters = TestFilter.class )
-    private class TestServiceOneFilter implements QueryService<TestQuery, TestDTO> {
+    private class TestServiceOneFilter implements QueryService<TestQuery, TestResult> {
         @Override
-        public TestDTO retrieve(final QueryMessage message) throws Exception { return null; }
+        public TestResult retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperQueryService( domain = TestDomain.class, filters = { TestFilter.class, TestFilter2.class } )
-    private class TestServiceMultipleFilters implements QueryService<TestQuery, TestDTO> {
+    private class TestServiceMultipleFilters implements QueryService<TestQuery, TestResult> {
         @Override
-        public TestDTO retrieve(final QueryMessage message) throws Exception { return null; }
+        public TestResult retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     // ------------------------------------------------------------------------

@@ -5,6 +5,7 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperTestIdGenerator;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
+import com.viadeo.kasper.er.impl.AbstractRootConcept;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.event.domain.er.impl.AbstractConceptRootEvent;
@@ -26,9 +27,11 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 	@XKasperDomain(label = "testDomain", prefix = "tst", description = "test domain")
 	public static class TestDomain implements Domain {}
 
+    public static class TestConceptRoot extends AbstractRootConcept {}
+
 	@SuppressWarnings("serial")
-	@XKasperEvent(domain = TestDomain.class, action = "test")
-	public static class TestEvent extends AbstractConceptRootEvent {
+	@XKasperEvent(action = "test")
+	public static class TestEvent extends AbstractConceptRootEvent<TestDomain, TestConceptRoot> {
 		public TestEvent(final KasperID idShortMessage, final DateTime creationDate) {
 			super(idShortMessage, creationDate);
 		}

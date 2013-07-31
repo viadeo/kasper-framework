@@ -121,7 +121,7 @@ subprojects {
       JERSEY_TEST_GRIZZLY   : 'org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2:2.0',
 
       PARANAMER             : 'com.thoughtworks.paranamer:paranamer:2.5.2',
-      REFLECTIONS           : 'org.reflections:reflections:0.9.8',
+      REFLECTIONS           : 'org.reflections:reflections:0.9.9-RC1',
       MYSQL                 : 'mysql:mysql-connector-java:5.1.24',
       COMMONS_DBCP          : 'commons-dbcp:commons-dbcp:1.4',
       JSON                  : 'org.json:json:20090211',

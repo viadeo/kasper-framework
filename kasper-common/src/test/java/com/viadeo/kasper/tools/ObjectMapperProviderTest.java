@@ -9,9 +9,9 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionDTO;
+import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionResult;
 
 import org.junit.Test;
 
@@ -23,7 +23,7 @@ import static org.junit.Assert.assertEquals;
 
 public class ObjectMapperProviderTest {
 
-    static class SomeDTO implements QueryDTO {
+    static class SomeResult implements QueryResult {
         private static final long serialVersionUID = -3621614243017076348L;
 
         public String getStr() {
@@ -31,7 +31,7 @@ public class ObjectMapperProviderTest {
         }
     }
 
-    static class SomeCollectionDTO extends AbstractQueryCollectionDTO<SomeDTO> {
+    static class SomeCollectionResult extends AbstractQueryCollectionResult<SomeResult> {
         private static final long serialVersionUID = 8849846914246025322L;
     }
 
@@ -135,17 +135,17 @@ public class ObjectMapperProviderTest {
     @Test
     public void dontFailOnUnknownProperty() throws IOException {
         // Given
-        final SomeCollectionDTO dto = new SomeCollectionDTO();
-        dto.setList(Arrays.asList(new SomeDTO(), new SomeDTO()));
+        final SomeCollectionResult result = new SomeCollectionResult();
+        result.setList(Arrays.asList(new SomeResult(), new SomeResult()));
 
         // When
-        final String json = ObjectMapperProvider.instance.objectWriter().writeValueAsString(dto);
+        final String json = ObjectMapperProvider.instance.objectWriter().writeValueAsString(result);
         final ObjectReader objectReader = ObjectMapperProvider.instance.objectReader();
-        final SomeCollectionDTO actual = objectReader.readValue(objectReader.getFactory().createJsonParser(json),
-                SomeCollectionDTO.class);
+        final SomeCollectionResult actual = objectReader.readValue(objectReader.getFactory().createJsonParser(json),
+                SomeCollectionResult.class);
 
         // Then
-        assertEquals(dto.getCount(), actual.getCount());
+        assertEquals(result.getCount(), actual.getCount());
     }
 
 }

@@ -39,7 +39,10 @@ annotated with the **@XKasperDomain** annotation.
 
 **A domain is part of a domain API**.
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XKasperDomain( prefix = "th", label = "The Things domain" )
     public class ThingsDomain implements Domain { }

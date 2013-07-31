@@ -12,7 +12,7 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.ddd.Repository;
+import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 /**
@@ -31,7 +31,7 @@ public abstract class AbstractEntityCommandHandler<C extends Command, AGR extend
 
     // Consistent data container for entity class and repository
     private static final class Consistent<E extends AggregateRoot> {
-        private Repository<E> repository;
+        private IRepository<E> repository;
         private Class<E> entityClass;
 
         @SuppressWarnings("unchecked")
@@ -40,8 +40,8 @@ public abstract class AbstractEntityCommandHandler<C extends Command, AGR extend
         }
 
         @SuppressWarnings("unchecked")
-        void setRepository(final Repository<?> repository) {
-            this.repository = (Repository<E>) repository;
+        void setRepository(final IRepository<?> repository) {
+            this.repository = (IRepository<E>) repository;
         }
     }
 
@@ -72,10 +72,10 @@ public abstract class AbstractEntityCommandHandler<C extends Command, AGR extend
    // ========================================================================
 
     /**
-     * @see com.viadeo.kasper.cqrs.command.EntityCommandHandler#setRepository(com.viadeo.kasper.ddd.Repository)
+     * @see com.viadeo.kasper.cqrs.command.EntityCommandHandler#setRepository(com.viadeo.kasper.ddd.IRepository)
      */
     @Override
-    public void setRepository(final Repository<AGR> repository) {
+    public void setRepository(final IRepository<AGR> repository) {
         this.consistent.setRepository(Preconditions.checkNotNull(repository));
     }
 
@@ -84,7 +84,7 @@ public abstract class AbstractEntityCommandHandler<C extends Command, AGR extend
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <R extends Repository<AGR>> R getRepository() {
+    public <R extends IRepository<AGR>> R getRepository() {
         if (null == this.consistent.repository) {
             if (null == this.getDomainLocator()) {
                 throw new KasperCommandException("Unable to resolve repository, no domain locator was provided");

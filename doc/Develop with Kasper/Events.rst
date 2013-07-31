@@ -21,7 +21,10 @@ can optionally define metadata using the **@XKasperEvent** annotation, its class
 
 A base implementation is provided by the **AbstractEvent** class (recommended).
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
     public class UsersAreNowConnectedEvent extends AbstractEvent {
@@ -48,7 +51,12 @@ Domain events
 If your event is originated from a domain (not a management event or other out-of-domain generated event), you have to
 use the **DomainEvent** interface instead, provided with the default implementation **AbstractDomainEvent**.
 
-**usage** ::
+**A major part of your events should be domain events**
+
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
     public class UsersAreNowConnectedEvent extends AbstractDomainEvent<MyDomain> {
@@ -76,7 +84,10 @@ Domain entity events
 As a vast majority of cases, events have as major concern a specific domain entity, the interface **EntityEvent<Domain, Entity>** is
 provided, with a default implementation **AbstractEntityEvent<Domain, Entity>**.
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
     public class UsersAreNowConnectedEvent extends AbstractEntityEvent<MyDomain, User> {
@@ -104,7 +115,10 @@ If your entity is an aggregate root (Concept or Relation), an entity which is pe
 - **ConceptRootEvent<Domain, ConceptRoot>** interface, with its default implementation **AbstractConceptRootEvent<Domain, ConceptRoot>**.
 - **RelationRootEvent<Domain, RelationRoot>** interface, with its default implementation **AbstractRelationRootEvent<Domain, RelationRoot>**.
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
     public class UsersAreNowConnectedEvent extends AbstractConceptRootEvent<MyDomain, User> {
@@ -136,7 +150,10 @@ An event listener "just" listens for events..
 A Kasper event listener have to extend the **AbstractEventListener<Event>**, declaring its owning domain using the **@XKasperEventListener** annotation,
 and have a name ending with '**EventListener**' (recommended).
 
-**usage** ::
+**usage**
+
+.. code-block:: java
+    :linenos:
 
     @XKasperEventListener( domain = MyDomain.class, description = "Send a email when two users are connected" )
     public class SendAnEmailWhenTwoUsersAreConnectedEventListener extends AbstractEventListener<UsersAreNowConnectedEvent> {

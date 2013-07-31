@@ -15,7 +15,7 @@ import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
 import com.viadeo.kasper.client.lib.Callback;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -46,7 +46,7 @@ public class KasperClientQueryTest extends JerseyTest {
 
     // ------------------------------------------------------------------------
 
-    public static class MemberDTO implements QueryDTO {
+    public static class MemberResult implements QueryResult {
         private static final long serialVersionUID = 271800729414361903L;
 
         private String memberName;
@@ -54,10 +54,10 @@ public class KasperClientQueryTest extends JerseyTest {
 
         // --
 
-        public MemberDTO() {
+        public MemberResult() {
         }
 
-        public MemberDTO(final String memberName, final List<Integer> ids) {
+        public MemberResult(final String memberName, final List<Integer> ids) {
             this.memberName = memberName;
             this.ids = ids;
         }
@@ -108,8 +108,8 @@ public class KasperClientQueryTest extends JerseyTest {
         @Path("/getMember")
         @GET
         @Produces(MediaType.APPLICATION_JSON)
-        public MemberDTO getMember(@QueryParam("memberName") final String memberName, @QueryParam("ids") final List<Integer> ids) {
-            return new MemberDTO(memberName, ids);
+        public MemberResult getMember(@QueryParam("memberName") final String memberName, @QueryParam("ids") final List<Integer> ids) {
+            return new MemberResult(memberName, ids);
         }
     }
     
@@ -122,7 +122,7 @@ public class KasperClientQueryTest extends JerseyTest {
 
     // ------------------------------------------------------------------------
 
-    private void checkRoundTrip(final GetMemberQuery original, final MemberDTO obtained) {
+    private void checkRoundTrip(final GetMemberQuery original, final MemberResult obtained) {
         assertEquals(original.getMemberName(), obtained.getMemberName());
 
         final List<Integer> expected = original.getIds();
@@ -171,10 +171,10 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When
-        final MemberDTO dto = client.query(query, MemberDTO.class);
+        final MemberResult result = client.query(query, MemberResult.class);
 
         // Then
-        checkRoundTrip(query, dto);
+        checkRoundTrip(query, result);
     }
 
     @Test
@@ -184,10 +184,10 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When 
-        final MemberDTO dto = client.queryAsync(query, MemberDTO.class).get();
+        final MemberResult result = client.queryAsync(query, MemberResult.class).get();
 
         // Then
-        checkRoundTrip(query, dto);
+        checkRoundTrip(query, result);
     }
 
     @Test
@@ -196,16 +196,16 @@ public class KasperClientQueryTest extends JerseyTest {
         // Given
         final CountDownLatch latch = new CountDownLatch(1);
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
-        final Callback<MemberDTO> callback = spy(new Callback<MemberDTO>() {
+        final Callback<MemberResult> callback = spy(new Callback<MemberResult>() {
             @Override
-            public void done(MemberDTO dto) {
+            public void done(MemberResult result) {
                 latch.countDown();
             }
         });
-        final ArgumentCaptor<MemberDTO> result = ArgumentCaptor.forClass(MemberDTO.class);
+        final ArgumentCaptor<MemberResult> result = ArgumentCaptor.forClass(MemberResult.class);
 
         // When
-        client.queryAsync(query, MemberDTO.class, callback);
+        client.queryAsync(query, MemberResult.class, callback);
 
         // Then
         latch.await(5, TimeUnit.SECONDS);

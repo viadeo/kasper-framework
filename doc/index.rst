@@ -11,9 +11,7 @@ Kasper is the treasure keeper
 
 Kasper is the Viadeo's new platform architecture, **this is the engine framework of this platform**.
 
-Kasper framework is based on several key components of the CQRS `Axon Framework`_ .
-
-.. _Axon Framework: http://www.axonframework.org/
+Kasper framework is based on several key components of the CQRS framework `Axon <http://www.axonframework.org>`_ .
 
 It acts as a skeleton and nervous system, an efficient modeling framework and infrastructure-as-a-layer bridge
 in order to implement or (re-)enforce several key concepts :
@@ -24,7 +22,7 @@ in order to implement or (re-)enforce several key concepts :
 
 Kasper relies on several software and architecture patterns :
 
-* Domain-Driven Design (DDD) with an additional Entity-Relation modeling layer and reinforcement of the business rules pattern of Specification
+* Domain-Driven Design (DDD)
 * Command & Query Responsbility Segregation (CQRS) pattern
 * Event-sourcing (ES) pattern, partially applied
 * Entity-Relationship model in order to re-enforce data modelisation and analysis

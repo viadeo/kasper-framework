@@ -31,6 +31,13 @@ public class DomainsProcessor extends SingletonAnnotationProcessor<XKasperDomain
 
 	// ------------------------------------------------------------------------
 
+    /**
+     * Annotation is optional for domains
+     */
+    public boolean isAnnotationMandatory() {
+        return false;
+    }
+
 	/**
 	 * Process Kasper domain
 	 * 
@@ -42,7 +49,19 @@ public class DomainsProcessor extends SingletonAnnotationProcessor<XKasperDomain
 
 		//- Register the domain to the locator --------------------------------
 		final XKasperDomain annotation = domainClazz.getAnnotation(XKasperDomain.class);
-		this.domainLocator.registerDomain(domain, annotation.label(), annotation.prefix());
+
+        final String label;
+        final String prefix;
+
+        if (null != annotation) {
+            label = annotation.label();
+            prefix = annotation.prefix();
+        } else {
+            label = domainClazz.getSimpleName();
+            prefix = "UNK";
+        }
+
+		this.domainLocator.registerDomain(domain, label, prefix);
 	}
 
 	// ------------------------------------------------------------------------

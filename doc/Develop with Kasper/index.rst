@@ -22,6 +22,8 @@ Components of the model :
 
 - **DE** - Domain entities (**DC** - Concepts & **DR** - Relations)
 - **DR** - Domain repositories
+- **DS** - Domain services
+- **EF** - Entity factories
 
 Kasper framework is based on some standard libraries and frameworks :
 
@@ -44,9 +46,11 @@ And encourages you to use some software patterns in your developments :
 - The `State pattern <http://en.wikipedia.org/wiki/State_pattern>`_
 - The `Specification pattern <http://en.wikipedia.org/wiki/Specification_pattern>`_
 - The `Repository pattern <http://www.codeproject.com/Articles/600097/Why-the-Repository-Pattern>`_
+- The `Command pattern <http://en.wikipedia.org/wiki/Command_pattern>`_
 - The `Anti-corruption layer pattern <http://moffdub.wordpress.com/2008/09/21/anatomy-of-an-anti-corruption-layer-part-1/>`_
 
-**Go deeper into Kasper framework development** :
+Contents
+========
 
 .. toctree::
     :maxdepth: 2
