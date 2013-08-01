@@ -46,6 +46,7 @@ The following annotations are currently used by the framework :
 - XKasperCommand
 - XKasperDomain
 - XKasperEvent
+- XKasperQuery
 
 Some are mandatory (**here in bold**) for discovery and registering, other are optional, for adding metadata to your components.
 

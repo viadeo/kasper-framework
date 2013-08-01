@@ -9,7 +9,7 @@ Implementing queries consists on implementing four Kasper components :
 - one **event listener** used to listen for accurate events and index data
 - one **query** used by the client to send a request to the platform
 - one **query result** used by the platform to send results back to the client
-- one **query service** which query the data according to the received query Result
+- one **query service** which query the data according to the received query and sends back a result
 
 Kasper does not say anything about your indexation process, but you are heavily encouraged to :
 
