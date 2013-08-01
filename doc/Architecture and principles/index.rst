@@ -62,7 +62,7 @@ Using Kasper you'll first need to understand some major facts :
     to think about.
 
 Recommended modules split
-=========================
+-------------------------
 
 A Kasper domain definition can be encapsulated in only one module, however Kasper framework encourage developers to split their domains in several modules, ensuring strict respect of the domain entities usage, anemic commands and events and atomic dependencies between domains.
 

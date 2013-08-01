@@ -49,8 +49,7 @@ And encourages you to use some software patterns in your developments :
 - The `Command pattern <http://en.wikipedia.org/wiki/Command_pattern>`_
 - The `Anti-corruption layer pattern <http://moffdub.wordpress.com/2008/09/21/anatomy-of-an-anti-corruption-layer-part-1/>`_
 
-Contents
-========
+**Contents**
 
 .. toctree::
     :maxdepth: 2

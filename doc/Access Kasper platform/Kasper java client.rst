@@ -9,55 +9,61 @@ kasper implementations to share their Query and Commands code with JVM based con
 taking as arguments populated queries and commands (basic POJOs), the library takes care of all the ser/deser stuff, error handling, 
 asynchronous calls and more.
 
-, they share some common code in order to ensure
-that the way in which the communication is done is symetric (ex: what can be serialized can also be deserialized). For example all the databinding
-part for query is shared between kasper-client and kasper-web.
+They share some common code in order to ensure that the way in which the communication is done is symmetric
+(ex: what can be serialized can also be deserialized). For example all the databinding part for query is
+shared between kasper-client and kasper-web.
 
 .. seealso:: 
    
    This library works with the :ref:`Automated_HTTP_exposition` component enabled on the server side, 
-   you must enable it in order to be able to communicate.
+   you must enable it server-side in order to be able to communicate.
    
    Kasper http exposition and Kasper client share some common code (:ref:`TypeAdapters` and jackson configuration), to ensure that the way in which the communication 
-   is done is symetric (ex: what can be serialized can also be deserialized).
+   is done is symmetric (ex: what can be serialized can also be deserialized).
 
-The main entry point of the library is KasperClient class, it provides all the required methods to communicate with exposed Kasper implementations.
+The main entry point of the library is the **KasperClient** class, it provides all the required methods to communicate with exposed Kasper implementations.
+
 KasperClient is thread safe and should be reused for optimal performances.
 
 **Sending a query** is as simple as :
 
 .. code-block:: java
+   :linenos:
 
-   KasperClient client = new KasperClient();
-   SuperCoolDTO dto = client.query(new SuperCoolQuery("what's up?"), SuperCoolDTO.class);
+   final KasperClient client = new KasperClient();
+   final SuperCoolResult result = client.query(new SuperCoolQuery("what's up?"), SuperCoolResult.class);
 
 Hard to make it shorter! :)
 
-If an error occured during query processing (it can also be a query validation error) a KasperQueryException will be raised.
+If an error occurred during query processing (it can also be a query validation error) a **KasperQueryException** will be raised.
 
 .. note:: 
    
-   By default KasperClient is configured to hit queries at http://localhost:8080/query/ and commands at http://localhost:8080/command. Of course this can be configured using KasperClientBuilder.
+   By default KasperClient is configured to hit queries at **http://localhost:8080/query** and commands at **http://localhost:8080/command**.
+
+   This can be configured using **KasperClientBuilder**.
 
    .. code-block:: java
+      :linenos:
 
-      KasperClient client = new KasperClientBuilder()
-                              .queryBaseLocation("http://kasper-platform/query")
-                              .commandBaseLocation("http://kasper-platform/query")
-                              .create();
+      final KasperClient client = new KasperClientBuilder()
+                                        .queryBaseLocation("http://kasper-platform/query")
+                                        .commandBaseLocation("http://kasper-platform/query")
+                                        .create();
                               
 **Sending a command** is also quite simple:
 
 .. code-block:: java
+   :linenos:
 
-   CommandResult result = client.send(new ICommandYouTo("Enjoy Coding!"));
+   final CommandResult result = client.send(new ICommandYouTo("Enjoy Coding!"));
    if (result.isError()) {
       // do something useful with result.getErrors()
    }
 
 |
 
-You like it? Then **Get it!**
+You like it ? Then **Get it!**
 
 :: 
    
@@ -78,21 +84,23 @@ Asynchronous queries & commands
 Kasper client provides two ways of doing asynchronous operations, using Futures and Callbacks.
   
 .. code-block:: java
-  
+   :linenos:
+
    client.sendAsync(someCommand, new ICallback<ICommandResult>() {
-       public void done(ICommandResult result) {
+       public void done(final ICommandResult result) {
            // do something smart with my result
        }
    });
    
-   // or using a future
+   /* or using a future */
    
-   Future<ICommandResult> futureCommandResult = client.sendAsync(someCommand);
+   final Future<ICommandResult> futureCommandResult = client.sendAsync(someCommand);
    
    // do some other work while the command is being processed
    ...
    
    // block until the result is obtained
-   ICommandResult commandResult = futureCommandResult.get();
+   final ICommandResult commandResult = futureCommandResult.get();
       
-In most cases you will prefer using Future. 
+In most cases you will probably prefer using Futures.
+

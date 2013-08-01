@@ -45,9 +45,8 @@ Contents
     Architecture and principles/index
     Quickstart
     Develop with Kasper/index
-    Auto-exposition
+    Access Kasper platform/index
     Auto-documentation
-    Kasper java client
 
 Indices and tables
 ==================
