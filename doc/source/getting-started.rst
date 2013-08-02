@@ -1,13 +1,7 @@
+.. _getting-started:
 
-Kasper is the treasure keeper
+Getting Started
 =============================
-
-.. topic:: Wikipedia - Kasperle
-
-    Kasper (known as Kasperl and Kasperle in southern Germany and Austria) is the hero of German puppet theater. 
-    The name Kasper probably comes from the ancient Persian meaning "keeper of the treasure." Tradition holds 
-    one of the three Magi who visited the Christ Child was named Caspar. This character also existed in the 
-    mystery plays of the medieval Church.
 
 Kasper is the Viadeo's new platform architecture, **this is the engine framework of this platform**.
 
@@ -20,6 +14,9 @@ in order to implement or (re-)enforce several key concepts :
 * Clear separation of distinct expert areas as domain modeling, data persistence, authentication, identification, authorization, events handling or query optimization
 * Automated platform exposition and automated documentation
 
+Key patterns
+------------
+
 Kasper relies on several software and architecture patterns :
 
 * Domain-Driven Design (DDD)
@@ -27,30 +24,46 @@ Kasper relies on several software and architecture patterns :
 * Event-sourcing (ES) pattern, partially applied
 * Entity-Relationship model in order to re-enforce data modelisation and analysis
 
-Kasper platform is built as an association of several main components :
+Main components
+---------------
 
-* Two directly exposed gateways : the Command gateway and the Query gateway
+The Kasper platform is built as an association of several main components :
+
+* Two directly exposed gateways : the CommandGateway and the Query gateway
 * An automated HTTP interface
 * A Command Bus and an Event Bus
 * A security manager (SSO + Identity + ACL)
 * An entity store, backed by the Repository pattern (DDD)
 * An event log
 
-Contents
-========
+Quickstart
+----------
 
-.. toctree::
-    :maxdepth: 2
+Check :ref:`modules_split` and choose one module splitting strategy, then create your project hierarchy accordingly.
 
-    Architecture and principles/index
-    Quickstart
-    Develop with Kasper/index
-    Access Kasper platform/index
-    Auto-documentation
+ex: minimal modules strategy : api/command/query
 
-Indices and tables
-==================
+- **mycompany-mydomain-api**
+    depends on :
+        * kasper-api
 
-* :ref:`genindex`
-* :ref:`search`
+- **mycompany-mydomain-command**
+    depends on :
+        * *mycompany-mydomain-api*
+        * kasper-core
+
+- **mycompany-mydomain-query**
+    depends on :
+        * *mycompany-mydomain-api*
+        * kasper-core
+
+- **mycompany-mywebapp**
+    depends on :
+        * *mycompany-mydomain-query*
+        * *mycompany-mydomain-command*
+        * kasper-platform (the Kasper platform, with resources discovery, binding mechanisms, ...)
+        * kasper-web (web bindings, helpers, auto-exposition)
+        * kasper-documentation (auto-documentation)
+
+TODO: domain bootstrap helpers, webapp configuration,..
 

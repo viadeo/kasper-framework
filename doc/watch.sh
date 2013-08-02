@@ -3,7 +3,7 @@
 # CONFIGURATION
 if [ -z "$1" ]
   then
-	DIR="."
+	DIR="source"
   else
 	DIR=$1
 fi

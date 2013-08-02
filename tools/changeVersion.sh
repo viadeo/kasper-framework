@@ -14,6 +14,6 @@ tmp=$(mktemp)
 cat build.gradle | sed -e "s/version = '.*'/version = '$VERSION'/" > $tmp
 mv $tmp build.gradle
 
-cat doc/conf.py | sed -e "s/version = '.*'/version = '$VERSION_NOSS'/" -e "s/release = '.*'/release = '$VERSION'/" > $tmp
-mv $tmp doc/conf.py
+cat doc/source/conf.py | sed -e "s/version = '.*'/version = '$VERSION_NOSS'/" -e "s/release = '.*'/release = '$VERSION'/" > $tmp
+mv $tmp doc/source/conf.py
 
