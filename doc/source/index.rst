@@ -23,4 +23,6 @@ Kasper is the Viadeo's new platform architecture, **this is the engine framework
    
 .. raw:: html
 
+      You can also access the <a href="javadoc">javadoc</a>.
+
     </div>
