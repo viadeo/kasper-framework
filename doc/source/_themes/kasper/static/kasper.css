@@ -98,9 +98,9 @@ q:before,q:after,blockquote:before,blockquote:after{content:""}
 address{display:block;margin-bottom:18px;line-height:18px;font-style:normal}
 small{font-size:100%}
 cite{font-style:normal}
-.code-and-pre,pre{padding:0 3px 2px;font-family:"Panic Sans",Menlo,Monaco,Consolas,"Courier New",monospace;font-size:12px;color:#333;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px}
-.code,code{padding:0 3px 2px;font-family:"Panic Sans",Menlo,Monaco,Consolas,"Courier New",monospace;font-size:12px;color:#333;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;color:#d14;background-color:#f7f7f9;border:1px solid #e1e1e8}
-pre{display:block;padding:8.5px;margin:0 0 9px;font-size:12px;line-height:18px;background-color:#f5f5f5;border:1px solid #ccc;border:1px solid rgba(0,0,0,0.15);-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;white-space:pre;white-space:pre-wrap;word-break:break-all}pre.prettyprint{margin-bottom:18px}
+.code-and-pre,pre{padding:0 3px 2px;font-family:"Panic Sans",Menlo,Monaco,Consolas,"Courier New",monospace;font-size:10px;color:#333;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px}
+.code,code{padding:0 3px 2px;font-family:"Panic Sans",Menlo,Monaco,Consolas,"Courier New",monospace;font-size:10px;color:#333;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;color:#d14;background-color:#f7f7f9;border:1px solid #e1e1e8}
+pre{display:block;padding:8.5px;margin:0 0 9px;font-size:10px;line-height:18px;background-color:#f5f5f5;border:1px solid #ccc;border:1px solid rgba(0,0,0,0.15);-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;white-space:pre;white-space:pre-wrap;word-break:break-all}pre.prettyprint{margin-bottom:18px}
 pre code{padding:0;background-color:transparent}
 table{max-width:100%;border-collapse:collapse;border-spacing:0}
 .table{width:100%;margin-bottom:18px}.table th,.table td{padding:16px;line-height:18px;text-align:left;border-top:1px solid #ddd}
@@ -261,7 +261,7 @@ a.headerlink{display:none}
 .hero-unit h1{padding-bottom:20px ! important}
 #top-bar small{color:#f8f8ff;text-shadow:0 -1px 0 #5f0c17}
 .admonition{padding:14px 35px 14px 14px;margin-bottom:18px;text-shadow:0 1px 0 rgba(255,255,255,0.5);background-color:#fcf8e3;border:1px solid #fbeed5;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px}
-.admonition .admonition-title{font-size:14pt;font-weight:bold}
+.admonition .admonition-title{font-size:10pt;font-weight:bold}
 .admonition.note .admonition-title,.admonition-todo .admonition-title{color:#c09853}
 .admonition.tip,.admonition.hint{background-color:#dff0d8;border-color:#d6e9c6}
 .admonition.tip .admonition-title,.admonition.hint .admonition-title{color:#468847}
@@ -272,11 +272,11 @@ a.headerlink{display:none}
 .admonition>p,.admonition>ul{margin-bottom:0}
 .admonition p+p{margin-top:5px}
 a.internal.reference>em{font-style:normal ! important;text-decoration:none ! important}
-tt{padding:0 3px 2px;font-family:"Panic Sans",Menlo,Monaco,Consolas,"Courier New",monospace;font-size:12px;color:#333;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;color:#d14;background-color:#f7f7f9;border:1px solid #e1e1e8}
-.section>p,.section ul li,.admonition p,.section dt,.section dl{font-size:13pt;line-height:18pt}
-.section tt{font-size:11pt;line-height:11pt}
+tt{padding:0 3px 2px;font-family:"Panic Sans",Menlo,Monaco,Consolas,"Courier New",monospace;font-size:10px;color:#333;-webkit-border-radius:3px;-moz-border-radius:3px;border-radius:3px;color:#d14;background-color:#f7f7f9;border:1px solid #e1e1e8}
+.section>p,.section ul li,.admonition p,.section dt,.section dl{font-size:11pt;line-height:16pt}
+.section tt{font-size:10pt;line-height:11pt}
 .section>*{margin-bottom:20px}
-pre{font-family:'Panic Sans',Menlo,Monaco,Consolas,Andale Mono,Courier New,monospace !important;font-size:12pt !important;line-height:22px !important;display:block !important;width:auto !important;height:auto !important;overflow:auto !important;white-space:pre !important;word-wrap:normal !important}
+pre{font-family:'Panic Sans',Menlo,Monaco,Consolas,Andale Mono,Courier New,monospace !important;font-size:10pt !important;line-height:22px !important;display:block !important;width:auto !important;height:auto !important;overflow:auto !important;white-space:pre !important;word-wrap:normal !important}
 #body h1,h1 tt{font-size:28pt}
 h1 tt{background-color:transparent;font-size:26pt !important}
 #body h2{font-size:24pt}

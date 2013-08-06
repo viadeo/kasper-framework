@@ -475,6 +475,11 @@ In order to create a Kasper repository you have to extend **Repository<Aggregate
 You can then add new public methods to this repository in order to access to your business indexes (logically hosted in your
 COMMAND architectural area).
 
+In order to support the special case of repositories backed by legacy constraints which are using auto-incremented keys, Kasper
+framework provides you with the SQLRepository :
+
+**TODO**
+
 Value objects
 -------------
 

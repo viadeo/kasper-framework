@@ -61,6 +61,9 @@ Using Kasper you'll first need to understand some major facts :
     the needs of your product first, then think your data persistence mechanisms at the end, when all other things has been done, it must be the last thing you want
     to think about.
 
+
+.. _modules_split:
+
 Recommended modules split
 -------------------------
 
