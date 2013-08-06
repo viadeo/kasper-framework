@@ -182,4 +182,8 @@ buildscript {
     }
 }
 
-
+task alljavadoc(type: Javadoc) { 
+     source rootProject.subprojects.collect { project -> project.sourceSets.main.allJava } 
+     classpath = files(rootProject.subprojects.collect {project -> project.sourceSets.main.compileClasspath }) 
+     destinationDir = file('build/javadoc') 
+} 
