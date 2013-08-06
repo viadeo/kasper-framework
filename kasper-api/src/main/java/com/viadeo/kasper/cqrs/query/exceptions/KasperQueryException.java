@@ -13,11 +13,12 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.exception.KasperException;
 
 /**
  * The base Kasper query exception
  */
-public class KasperQueryException extends RuntimeException {
+public class KasperQueryException extends KasperException {
 
     private static final long serialVersionUID = 4429295125026389937L;
     private final List<KasperError> errors;
