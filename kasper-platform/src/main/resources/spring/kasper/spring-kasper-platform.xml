@@ -61,7 +61,11 @@
         <property name="domainLocator" ref="domainLocator"/>
     </bean>
 
-    <bean id="rootProcessor" class="com.viadeo.kasper.core.boot.AnnotationRootProcessor"/>
+    <bean id="instancesManager" class="com.viadeo.kasper.core.boot.SpringComponentsInstanceManager" />
+
+    <bean id="rootProcessor" class="com.viadeo.kasper.core.boot.AnnotationRootProcessor">
+        <property name="componentsInstanceManager" ref="instancesManager" />
+    </bean>
 
     <!--  Kasper platform beans -->
 

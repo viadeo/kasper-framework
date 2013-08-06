@@ -20,11 +20,6 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
@@ -39,21 +34,15 @@ import java.util.*;
  * 2-SCAN    - scan all classes matching recorded processors configuration
  * 3-PROCESS - delegate processing of scanned classes to their respective processor
  * <p/>
- * This root processor can use Spring configured processors instance if executed inside Spring context.
+ * This root processor can use a components instance manager if supplied
  * <p/>
- * User can specify which processor instances to use, they will also override Spring ones.
  * User can filter scanned packages (default: all packages of jvm classpath).
  * <p/>
  * TODO: allow user to specify classpath as a list of URLs or at least as Reflections helpers
  */
-public class AnnotationRootProcessor implements ApplicationContextAware {
+public class AnnotationRootProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationRootProcessor.class);
-
-    /**
-     * Only used if Spring context available in order to reuse injected processor instances
-     */
-    private transient ApplicationContext context;
 
     /**
      * Allow user to explicitly specify processor instances to use before boot
@@ -80,6 +69,11 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
      * Class-path reflection resolver
      */
     private Reflections reflections;
+
+    /**
+     * Instances manager (optional)
+     */
+    private ComponentsInstanceManager instancesManager;
 
     // ------------------------------------------------------------------------
 
@@ -200,21 +194,24 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
                     }
 
                     // 2- Spring injected processor
-                    if ((null == objInstance) && (null != this.context)) {
-                        try {
-                            objInstance = context.getBean(clazz);
-                        } catch (final NoSuchBeanDefinitionException e) {
-                            // Ignore
+                    if (null == objInstance) {
+                        final Optional<AnnotationProcessor> optInstance = getComponentsInstanceManager().getInstanceFromClass(clazz);
+                        if (optInstance.isPresent()) {
+                            objInstance = optInstance.get();
                         }
                     }
 
                     // 3- New processor instance
                     if (null == objInstance) {
                         objInstance = clazz.newInstance();
-                        if (null != this.context) {
-                            final ConfigurableBeanFactory cfb = (ConfigurableBeanFactory) this.context.getAutowireCapableBeanFactory();
-                            objInstance = ((AutowireCapableBeanFactory) cfb).createBean(clazz);
-                            cfb.registerSingleton(clazz.getSimpleName(), objInstance);
+                        getComponentsInstanceManager().recordInstance(clazz, objInstance);
+                    }
+
+                    // Forward its components instance manager to the processor if suitable
+                    if (SingletonAnnotationProcessor.class.isAssignableFrom(objInstance.getClass())) {
+                        final SingletonAnnotationProcessor singletonProcessor = (SingletonAnnotationProcessor) objInstance;
+                        if (!singletonProcessor.hasComponentsInstanceManager()) {
+                            singletonProcessor.setComponentsInstanceManager(getComponentsInstanceManager());
                         }
                     }
 
@@ -262,17 +259,24 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
                 final Set<Class<?>> conformClasses = (Set<Class<?>>) reflections.getSubTypesOf(tplClass);
                 conformClasses.addAll(annotatedClasses);
 
+                // For all suitable classes
                 for (final Class<?> clazz : conformClasses) {
 
+                    // Filter out interfaces and abstract classes
                     if (!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
 
+                        // Filter out user-excluded classes
                         if (null == clazz.getAnnotation(XKasperUnregistered.class)) {
 
+                            // Check annotation presence if pertinent
                             if ((null != clazz.getAnnotation(annotation)) || !processor.isAnnotationMandatory()) {
 
-                                // PROCESSOR DELEGATION
                                 try {
+
+                                    // PROCESSOR DELEGATION
                                     processor.process(clazz);
+
+
                                 } catch (Exception e) {
                                     LOGGER.warn("Unexpected error during processor delegation, <class=" + clazz.getName() + ">: ", e);
                                 }
@@ -344,7 +348,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
     /**
      * Exclude own processors, can be useful for system isolation or testing purposes
      *
-     * @param doNotScanDefaultPrefix if true we will not our package name to the scanned ones
+     * @param doNotScanDefaultPrefix if true we will not add our package name to the scanned ones
      */
     public void setDoNotScanDefaultPrefix(final boolean doNotScanDefaultPrefix) {
         this.doNotScanDefaultPrefix = doNotScanDefaultPrefix;
@@ -352,15 +356,22 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
 
     //-------------------------------------------------------------------------
 
+    public void setComponentsInstanceManager(final ComponentsInstanceManager instancesManager) {
+        this.instancesManager = instancesManager;
+    }
+
     /**
-     * Set Spring context if available
-     * Not mandatory
+     * Return the current instances manager, revert (create) to a simple map-backed one
+     * if no one has been provided
      *
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     * @return the components instance manager to use
      */
-    @Override
-    public void setApplicationContext(final ApplicationContext context) {
-        this.context = context;
+    private ComponentsInstanceManager getComponentsInstanceManager() {
+        if (null == this.instancesManager) {
+            LOGGER.info("No Components instance manager has been provided, revert back to simple one (default)");
+            this.instancesManager = new SimpleComponentsInstanceManager();
+        }
+        return this.instancesManager;
     }
 
 }
