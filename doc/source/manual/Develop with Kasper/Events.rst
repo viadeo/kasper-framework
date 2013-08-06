@@ -172,5 +172,6 @@ and have a name ending with '**EventListener**' (recommended).
 
     }
 
-
-TODO: access easily the command gateway from the listeners
+A common job of event listeners is to send new commands to the command gateway concerning its domain or another.
+If you use the **AbstractEventListener**, you can access the **getCommandGateway()** getter in order to retrieve an (optional)
+reference to the command gateway.

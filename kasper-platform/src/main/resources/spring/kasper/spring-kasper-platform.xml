@@ -46,6 +46,7 @@
 
     <bean id="listenersProcessor" class="com.viadeo.kasper.core.boot.EventListenersProcessor">
         <property name="eventBus" ref="eventBus"/>
+        <property name="commandGateway" ref="commandGateway" />
     </bean>
 
     <bean id="queryServicesProcessor" class="com.viadeo.kasper.core.boot.QueryServicesProcessor">
