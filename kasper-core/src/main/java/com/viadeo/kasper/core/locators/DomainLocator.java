@@ -56,7 +56,7 @@ public interface DomainLocator {
 
 	/**
 	 * Return the name of a specified domain
-	 * 
+	 *
 	 * @param domain the domain
 	 * @return the domain name
 	 */
@@ -83,15 +83,13 @@ public interface DomainLocator {
 	 */
 	Set<Domain> getDomains();
 
-
-
 	/**
 	 * Return the domain related to the specified entity
 	 * 
 	 * @param entity the entitiy to search for domain
 	 * @return the domain of the entity
 	 */
-	<D extends Domain> D getEntityDomain(Entity entity);
+	<D extends Domain> Optional<D> getEntityDomain(Entity entity);
 
 	/**
 	 * Return a set with all the entities of the specified domain
@@ -123,7 +121,7 @@ public interface DomainLocator {
 	 * @param entity the entity
 	 * @return the repository responsible for storing this entity
 	 */
-	<E extends AggregateRoot> IRepository<E> getEntityRepository(E entity);
+	<E extends AggregateRoot> Optional<IRepository<E>> getEntityRepository(E entity);
 
 	/**
 	 * Get the repository for an entity class
@@ -131,6 +129,6 @@ public interface DomainLocator {
 	 * @param entityClass the entity class
 	 * @return the repository responsible for storing this class of entities
 	 */
-	<E extends AggregateRoot> IRepository<E> getEntityRepository(Class<E> entityClass);
+	<E extends AggregateRoot> Optional<IRepository<E>> getEntityRepository(Class<E> entityClass);
 
 }

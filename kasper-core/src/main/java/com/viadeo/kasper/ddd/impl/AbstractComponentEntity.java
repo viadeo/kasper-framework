@@ -64,7 +64,7 @@ public abstract class AbstractComponentEntity<R extends RootConcept>
 
     @Override
 	public Domain getDomain() {
-		return domainLocator.getEntityDomain(this);
+		return domainLocator.getEntityDomain(this).get();
 	}
 
 	// ========================================================================

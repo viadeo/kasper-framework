@@ -101,7 +101,7 @@ public class DefaultDomainLocator implements DomainLocator {
      * @see com.viadeo.kasper.core.locators.DomainLocator#getEntityDomain(com.viadeo.kasper.ddd.Entity)
      */
     @Override
-    public <D extends Domain> D getEntityDomain(final Entity entity) {
+    public <D extends Domain> Optional<D> getEntityDomain(final Entity entity) {
         Preconditions.checkNotNull(entity);
         // TODO Auto-generated method stub
         throw new KasperException("Entity has no registered domain : " + entity.getClass().getName());
@@ -137,9 +137,9 @@ public class DefaultDomainLocator implements DomainLocator {
     @SuppressWarnings("unchecked")
     // Safe
     @Override
-    public <E extends AggregateRoot> IRepository<E> getEntityRepository(final E entity) {
+    public <E extends AggregateRoot> Optional<IRepository<E>> getEntityRepository(final E entity) {
         Preconditions.checkNotNull(entity);
-        return (IRepository<E>) this.entityRepositories.get(entity.getClass());
+        return Optional.of((IRepository<E>) this.entityRepositories.get(entity.getClass()));
     }
 
     /**
@@ -147,10 +147,10 @@ public class DefaultDomainLocator implements DomainLocator {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <E extends AggregateRoot> IRepository<E> getEntityRepository(final Class<E> entityClass) {
+    public <E extends AggregateRoot> Optional<IRepository<E>> getEntityRepository(final Class<E> entityClass) {
         Preconditions.checkNotNull(entityClass);
 
-        return (IRepository<E>) this.entityRepositories.get(entityClass);
+        return Optional.of((IRepository<E>) this.entityRepositories.get(entityClass));
     }
 
     // ========================================================================

@@ -46,7 +46,7 @@ Ex: the following command would be exposed at **http://host:port/someRootPath/cr
 .. code-block:: java
    :linenos:
 
-   class CreateMemberCommand implements ICommand {
+   class CreateMemberCommand implements Command {
      String name;
      // other fields
      
@@ -95,12 +95,12 @@ Ex: suppose we have the following query, it will be **available at http://host:p
 .. code-block:: java
     :linenos:
 
-    class GetMemberMessagesQuery implements IQuery {
-        int memberId;
-        Date startingFrom;
+  class GetMemberMessagesQuery implements Query {
+     int memberId;
+     Date startingFrom;
 
-        // getters
-    }
+     // getters
+  }
 
 Query objects will be flattened by the framework to a query string, you should **avoid having complex structures**.
 
@@ -181,7 +181,7 @@ Consider you want to have some kind of filtering.
 .. code-block:: java
     :linenos:
 
-    class SomeQuery implements IQuery {
+    class SomeQuery implements Query {
         List<Filter> filters;
         String someField;
     }

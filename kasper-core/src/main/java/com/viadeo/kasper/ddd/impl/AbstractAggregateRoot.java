@@ -49,8 +49,10 @@ public abstract class AbstractAggregateRoot
 	// ========================================================================
 
 	public <E extends AggregateRoot> IRepository<E> getRepository() {
-        return (IRepository<E>)
-            this.getDomainLocator().getEntityRepository(this.getClass());
+        @SuppressWarnings("unchecked")
+        final IRepository<E> repo = (IRepository<E>)
+            this.getDomainLocator().getEntityRepository(this.getClass()).get();
+        return repo;
 	}
 	
 	// ========================================================================	
@@ -63,7 +65,7 @@ public abstract class AbstractAggregateRoot
 	
 	@Override
 	public Domain getDomain() {
-		return domainLocator.getEntityDomain(this);
+		return domainLocator.getEntityDomain(this).get();
 	}
 
 	// ========================================================================
