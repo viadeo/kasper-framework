@@ -13,6 +13,8 @@ import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionResult;
 
+import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -146,6 +148,31 @@ public class ObjectMapperProviderTest {
 
         // Then
         assertEquals(result.getCount(), actual.getCount());
+    }
+
+    @Test
+    public void serializeDateTimeToISO8601() throws IOException {
+        // Given
+        final DateTime dateTime = new DateTime(2013, 8, 6, 7, 35, 0, 123, DateTimeZone.UTC);
+
+        // When
+        final String actual = ObjectMapperProvider.instance.mapper().writeValueAsString(dateTime);
+
+        // Then
+        assertEquals("\"2013-08-06T07:35:00.123Z\"", actual);
+    }
+
+    @Test
+    public void deserializeISO8601DateToDateTime() throws IOException {
+        // Given
+        final String jsonIso8601 = "\"2013-08-06T07:35:00.123Z\"";
+
+        // When
+        final DateTime actual = ObjectMapperProvider.instance.mapper().readValue(jsonIso8601, DateTime.class);
+
+        // Then
+        final DateTime expectedDateTime = new DateTime(2013, 8, 6, 7, 35, 0, 123, DateTimeZone.UTC);
+        assertEquals(expectedDateTime, actual);
     }
 
 }
