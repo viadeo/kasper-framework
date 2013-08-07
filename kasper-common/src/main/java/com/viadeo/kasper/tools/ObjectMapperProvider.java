@@ -9,6 +9,7 @@ package com.viadeo.kasper.tools;
 import java.io.IOException;
 import java.util.List;
 
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -112,6 +113,9 @@ public class ObjectMapperProvider {
                 .addDeserializer(KasperQueryException.class, new KasperQueryExceptionDeserializer());
 
         mapper.registerModule(kasperClientModule).registerModule(new GuavaModule());
+
+        mapper.registerModule(kasperClientModule).registerModule(new JodaModule());
+        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
     }
 
     // ------------------------------------------------------------------------

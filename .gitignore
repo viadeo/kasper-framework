@@ -8,10 +8,7 @@
 .settings
 .project
 .classpath
-*.iml
-*.iws
 .DS_Store
-.idea/
 **/.svn
 .pmd
 **/.pmd
@@ -25,3 +22,9 @@ gradle/
 .gradle/
 application.log
 sql.log
+
+# Idea files
+*.iml
+*.iws
+*.ipr
+.idea/
