@@ -108,6 +108,7 @@ subprojects {
       JACKSON_CORE          : 'com.fasterxml.jackson.core:jackson-core:2.1.4',
       JACKSON_JSON          : 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.1.2',
       JACKSON_GUAVA_TYPES   : 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.1.2',
+      JACKSON_JODA_TYPES   : 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.1.2',
 
       JERSEY_SERVER         : 'com.sun.jersey:jersey-server:1.16',
       JERSEY_CLIENT         : 'com.sun.jersey:jersey-client:1.16',
