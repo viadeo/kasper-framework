@@ -56,7 +56,6 @@ public class DefaultKasperCommandMessage<C extends Command> implements KasperCom
 	 * implementation
 	 * 
 	 * @see com.viadeo.kasper.context.ContextBuilder
-	 * @see com.viadeo.kasper.context.impl.DefaultContextBuilder
 	 * @see com.viadeo.kasper.cqrs.command.KasperCommandMessage#getContext()
 	 */
 	@Override

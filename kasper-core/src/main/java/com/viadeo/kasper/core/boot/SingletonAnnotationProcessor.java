@@ -6,14 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
+import com.google.common.base.Optional;
 import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import java.lang.annotation.Annotation;
 
@@ -23,17 +19,25 @@ import java.lang.annotation.Annotation;
  * @param <T> The processed annotation type
  * @param <I> The required interface to be implemented by the processed class
  */
-public abstract class SingletonAnnotationProcessor<T extends Annotation, I> implements AnnotationProcessor<T,I>, ApplicationContextAware {
+public abstract class SingletonAnnotationProcessor<T extends Annotation, I> implements AnnotationProcessor<T,I> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SingletonAnnotationProcessor.class);
 	
-	/** 
-	 * Only used if Spring context available in order to reuse injected processor instances 
-	 */
-	private transient ApplicationContext context;	
+    /**
+     * Instances manager (optional)
+     */
+    private ComponentsInstanceManager instancesManager;
 
 	// ------------------------------------------------------------------------	
-	
+
+    /**
+     * Annotations are mandatory by default
+     */
+    @Override
+    public boolean isAnnotationMandatory() {
+        return true;
+    }
+
 	@SuppressWarnings("unchecked") // Must be controlled by child class (C)
 	@Override
 	public void process(final Class<?> clazz) {
@@ -41,22 +45,18 @@ public abstract class SingletonAnnotationProcessor<T extends Annotation, I> impl
 		I instance = null;
 		try {
 			
-			if ((null != context)) { // Try to retrieve from Spring bean
-				try {
-					instance = (I) context.getBean(clazz);
-					LOGGER.debug("Use bounded spring bean for " + clazz);
-				} catch (final NoSuchBeanDefinitionException e) {
-					// Ignore
-				}
+			if (null != this.instancesManager) { // Try to retrieve from Spring bean
+                final Optional<Object> optInstance = this.instancesManager.getInstanceFromClass(clazz);
+                if (optInstance.isPresent()) {
+                    instance = (I) optInstance.get();
+                }
 			}
 			
 			if (null == instance) {
 				LOGGER.debug("Create new instance of " + clazz);
 				instance = (I) clazz.newInstance();
-				if (null != this.context) {
-					final ConfigurableBeanFactory cfb = (ConfigurableBeanFactory) this.context.getAutowireCapableBeanFactory();
-					((AutowireCapableBeanFactory) cfb).autowireBean(instance);
-					cfb.registerSingleton(clazz.getSimpleName(), instance);
+				if (null != this.instancesManager) {
+                    this.instancesManager.recordInstance(clazz, instance);
 				}
 			}
 			
@@ -70,10 +70,22 @@ public abstract class SingletonAnnotationProcessor<T extends Annotation, I> impl
 	protected abstract void process(Class<?> clazz, I instance);
 	
 	// ------------------------------------------------------------------------
-	
-	@Override
-	public void setApplicationContext(final ApplicationContext context) {
-		this.context = context;
-	}
+
+    /**
+     * The components instance manager is set up by the root processor,
+     * there is no need to provide it (but you can, it will not be overriden)
+     *
+     * @param instancesManager
+     */
+    public void setComponentsInstanceManager(final ComponentsInstanceManager instancesManager) {
+        this.instancesManager = instancesManager;
+    }
+
+    /**
+     * @return true if a components instance manager has already been set
+     */
+    public boolean hasComponentsInstanceManager() {
+        return (null != this.instancesManager);
+    }
 	
 }

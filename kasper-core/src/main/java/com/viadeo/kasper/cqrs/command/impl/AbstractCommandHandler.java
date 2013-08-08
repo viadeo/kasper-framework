@@ -7,10 +7,11 @@
 package com.viadeo.kasper.cqrs.command.impl;
 
 import com.viadeo.kasper.core.context.CurrentContext;
+import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
 import com.viadeo.kasper.cqrs.command.CommandResult;
+import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.unitofwork.UnitOfWork;
 import org.slf4j.Logger;
@@ -21,6 +22,10 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractCommandHandler<C extends Command> implements CommandHandler<C> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommandHandler.class);
+
+    private transient DomainLocator domainLocator;
+
+    // ------------------------------------------------------------------------
 
     /**
      * Wrapper for Axon command handling
@@ -69,7 +74,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
      * @param message the command handler encapsulating message
      * @param uow Axon unit of work
      * @return the command result
-     * @throws KasperEventException
+     * @throws Exception
      */
     public CommandResult handle(final KasperCommandMessage<C> message, final UnitOfWork uow) throws Exception {
         throw new UnsupportedOperationException();
@@ -78,7 +83,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
     /**
      * @param message the command handler encapsulating message
      * @return the command result
-     * @throws KasperEventException
+     * @throws Exception
      */
     public CommandResult handle(final KasperCommandMessage<C> message) throws Exception {
         throw new UnsupportedOperationException();
@@ -86,10 +91,23 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
 
     /**
      * @param command The command to handle
-     * @throws KasperEventException
+     * @throws Exception
      */
     public CommandResult handle(final C command) throws Exception {
         throw new UnsupportedOperationException();
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * @param domainLocator
+     */
+    public void setDomainLocator(final DomainLocator domainLocator) {
+        this.domainLocator = domainLocator;
+    }
+
+    protected DomainLocator getDomainLocator() {
+        return this.domainLocator;
     }
 
 }

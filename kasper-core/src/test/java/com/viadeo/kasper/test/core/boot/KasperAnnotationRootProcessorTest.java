@@ -1,28 +1,45 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.test.core.boot;
 
 import com.viadeo.kasper.core.boot.AnnotationProcessor;
+
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
 import junit.framework.TestCase;
 import org.junit.Test;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+
 import static org.mockito.Mockito.*;
 
 public class KasperAnnotationRootProcessorTest extends TestCase {
-	
+
+    public static interface TestInterface { }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    public static @interface XTestAnnotation { }
+
+    @XTestAnnotation
+    public static class TestClass implements TestInterface {}
+
+    @XTestAnnotation
+    public static final class TestChildClass extends TestClass { }
+
 	// ------------------------------------------------------------------------
 	// TEST SIMPLE WORKING PROCESSOR/CLASS SCANNING
 	// ------------------------------------------------------------------------
 	
-	public static @interface XTestAnnotation { }
-	
-	public interface TestInterface { }
-	
-	@XTestAnnotation
-	public static final class TestClass implements TestInterface {	}	
-	
-	// -----
-	
 	public static class TestProcessor implements AnnotationProcessor<XTestAnnotation, TestInterface> {
+
+        @Override
+        public boolean isAnnotationMandatory() {
+            return true;
+        }
 
 		@Override
 		public void process(final Class<?> clazz) {
@@ -47,6 +64,7 @@ public class KasperAnnotationRootProcessorTest extends TestCase {
 		rootProcessor.boot();
 		
 		verify(processor).process(TestClass.class);
+        verify(processor).process(TestChildClass.class);
 	}
 
     @Test

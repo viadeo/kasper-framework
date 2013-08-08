@@ -59,7 +59,7 @@ public final class KasperCommandResultDeserializer extends JsonDeserializer<Comm
             if (ERROR.equals(name)) {
                 // just ignore
             } else {
-                LOGGER.warn("Unknown property when default mapping DTO");
+                LOGGER.warn("Unknown property when default mapping to a Result");
                 // FIXME do we just ignore unknown properties or take some action?
             }
         }

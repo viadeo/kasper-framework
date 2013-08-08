@@ -1,8 +1,9 @@
 package com.viadeo.kasper.test.ddd;
 
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.ddd.Repository;
-import com.viadeo.kasper.ddd.impl.AbstractRepository;
+import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.ddd.impl.Repository;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventsourcing.EventSourcingRepository;
 import org.axonframework.test.FixtureConfiguration;
@@ -16,7 +17,8 @@ import static org.mockito.Mockito.*;
  *
  * @param <ENTITY> Aggregate Root
  */
-public class KasperRepositoryTest<ENTITY extends AggregateRoot> implements Repository<ENTITY> {
+@XKasperUnregistered
+public class KasperRepositoryTest<ENTITY extends AggregateRoot> implements IRepository<ENTITY> {
 
 	private org.axonframework.repository.Repository<ENTITY> axonRepository;
 	private final KasperRepositoryTest<ENTITY> that = this;
@@ -69,7 +71,7 @@ public class KasperRepositoryTest<ENTITY extends AggregateRoot> implements Repos
 	 * @return a mocked repository which uses (this) as implementation
 	 */
 	@SuppressWarnings("unchecked")
-	public <R extends Repository<ENTITY>> R asMockOf(final Class<R> repositoryClass) {
+	public <R extends IRepository<ENTITY>> R asMockOf(final Class<R> repositoryClass) {
 		final R mocked = mock(repositoryClass);
 		
 		when(mocked.load(any(), any(Long.class))).then(
@@ -91,14 +93,14 @@ public class KasperRepositoryTest<ENTITY extends AggregateRoot> implements Repos
 				}
 			);		
 		
-		if (AbstractRepository.class.isAssignableFrom(repositoryClass)) {
+		if (Repository.class.isAssignableFrom(repositoryClass)) {
 			doAnswer(new Answer<Object>() {
 				public Object answer(InvocationOnMock invocation) {
 					final EventBus eventBus = (EventBus) invocation.getArguments()[0];
 					that.setEventBus(eventBus);
 		            return "";
 		         }				
-			}).when((AbstractRepository<?>) mocked).setEventBus(any(EventBus.class));
+			}).when((Repository<?>) mocked).setEventBus(any(EventBus.class));
 		}
 		
 		doAnswer(new Answer<Object>() {
@@ -121,7 +123,7 @@ public class KasperRepositoryTest<ENTITY extends AggregateRoot> implements Repos
 	 * @param repositoryClass the repository class to mock as
 	 * @return a mocked repository
 	 */
-	public static <E extends AggregateRoot, R extends Repository<E>> R mockAs(
+	public static <E extends AggregateRoot, R extends IRepository<E>> R mockAs(
 			final FixtureConfiguration<E> fixture, final Class<R> repositoryClass) {
 		final KasperRepositoryTest<E> repository = new KasperRepositoryTest<>(fixture);
 		return repository.asMockOf(repositoryClass);

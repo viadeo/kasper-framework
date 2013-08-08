@@ -2,14 +2,13 @@ package com.viadeo.kasper.exposition;
 
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryMessage;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException.ExceptionBuilder;
-import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionDTO;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionResult;
 import com.viadeo.kasper.platform.Platform;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -25,19 +24,19 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         private static final long serialVersionUID = 104409802777527460L;
     }
 
-    public static class SomeCollectionDTO extends AbstractQueryCollectionDTO<SomeDto> {
+    public static class SomeCollectionResult extends AbstractQueryCollectionResult<SomeResult> {
         private static final long serialVersionUID = 8849846911146025322L;
     }
 
     @XKasperQueryService(domain = AccountDomain.class)
-    public static class SomeCollectionQueryService implements QueryService<SomeCollectionQuery, SomeCollectionDTO> {
+    public static class SomeCollectionQueryService implements QueryService<SomeCollectionQuery, SomeCollectionResult> {
         @Override
-        public SomeCollectionDTO retrieve(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
+        public SomeCollectionResult retrieve(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
-            SomeCollectionDTO list = new SomeCollectionDTO();
-            SomeDto dto = new SomeDto();
-            dto.setQuery(q);
-            list.setList(Arrays.asList(dto));
+            SomeCollectionResult list = new SomeCollectionResult();
+            SomeResult result = new SomeResult();
+            result.setQuery(q);
+            list.setList(Arrays.asList(result));
             return list;
         }
     }
@@ -88,7 +87,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         }
     }
 
-    public static class SomeDto implements QueryDTO {
+    public static class SomeResult implements QueryResult {
         private static final long serialVersionUID = 4780302444624913577L;
         private SomeQuery query;
 
@@ -102,9 +101,9 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     }
 
     @XKasperQueryService(domain = AccountDomain.class)
-    public static class SomeQueryService implements QueryService<SomeQuery, SomeDto> {
+    public static class SomeQueryService implements QueryService<SomeQuery, SomeResult> {
         @Override
-        public SomeDto retrieve(final QueryMessage<SomeQuery> message) throws KasperQueryException {
+        public SomeResult retrieve(final QueryMessage<SomeQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
 
             if (q.isDoThrowSomeException()) {
@@ -117,13 +116,11 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
                 builder.throwEx();
             }
 
-            SomeDto dto = new SomeDto();
-            dto.setQuery(q);
-            return dto;
+            SomeResult result = new SomeResult();
+            result.setQuery(q);
+            return result;
         }
     }
-
-    public static class AccountDomain implements Domain { }
 
     // ------------------------------------------------------------------------
 
@@ -141,12 +138,12 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         query.intArray = new int[] { 1, 2, 3 };
 
         // When
-        final SomeDto dto = client().query(query, SomeDto.class);
+        final SomeResult result = client().query(query, SomeResult.class);
 
         // Then
-        assertEquals(query.aValue, dto.query.aValue);
-        assertEquals(query.doThrowSomeException, dto.query.doThrowSomeException);
-        assertArrayEquals(query.intArray, dto.query.intArray);
+        assertEquals(query.aValue, result.query.aValue);
+        assertEquals(query.doThrowSomeException, result.query.doThrowSomeException);
+        assertArrayEquals(query.intArray, result.query.intArray);
     }
 
     // ------------------------------------------------------------------------
@@ -159,7 +156,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         query.aValue = "aaa";
 
         // When
-        client().query(query, SomeDto.class);
+        client().query(query, SomeResult.class);
 
         // Then raise exception
     }
@@ -167,15 +164,15 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     // ------------------------------------------------------------------------
 
     @Test
-    public void testQueryServiceReturningCollectionDTO() {
+    public void testQueryServiceReturningCollectionResult() {
         // Given
         final SomeCollectionQuery query = new SomeCollectionQuery();
 
         // When
-        SomeCollectionDTO dto = client().query(query, SomeCollectionDTO.class);
+        SomeCollectionResult result = client().query(query, SomeCollectionResult.class);
 
         // Then
-        assertEquals(1, dto.getCount());
+        assertEquals(1, result.getCount());
     }
 
     // ------------------------------------------------------------------------
@@ -190,7 +187,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
 
         // When
         try {
-            client().query(query, SomeCollectionDTO.class);
+            client().query(query, SomeCollectionResult.class);
             fail();
         } catch (KasperQueryException e) {
             // Then

@@ -8,7 +8,9 @@
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
+import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
+import com.viadeo.kasper.event.impl.AbstractEventListener;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventhandling.EventListener;
 import org.slf4j.Logger;
@@ -28,6 +30,7 @@ public class EventListenersProcessor extends SingletonAnnotationProcessor<XKaspe
 	 * The event bus to register event listeners on
 	 */
 	private transient EventBus eventBus;
+    private transient CommandGateway commandGateway;
 	
 	// ------------------------------------------------------------------------
 	
@@ -40,7 +43,11 @@ public class EventListenersProcessor extends SingletonAnnotationProcessor<XKaspe
 	@Override
 	public void process(final Class<?> eventListenerClazz, final EventListener eventListener) {		
 		LOGGER.info("Subscribe to event bus : " + eventListenerClazz.getName());
-		
+
+        if (AbstractEventListener.class.isAssignableFrom(eventListener.getClass())) {
+            ((AbstractEventListener) eventListener).setCommandGateway(this.commandGateway);
+        }
+
 		//- Subscribe the listener to the event bus (Axon) --------------------
 		eventBus.subscribe(eventListener);
 	}
@@ -53,6 +60,10 @@ public class EventListenersProcessor extends SingletonAnnotationProcessor<XKaspe
 	public void setEventBus(final EventBus eventBus) {
 		this.eventBus = Preconditions.checkNotNull(eventBus);
 	}
+
+    public void setCommandGateway(final CommandGateway commandGateway) {
+        this.commandGateway = Preconditions.checkNotNull(commandGateway);
+    }
 	
 }
 

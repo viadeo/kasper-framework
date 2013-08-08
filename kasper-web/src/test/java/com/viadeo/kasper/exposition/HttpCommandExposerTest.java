@@ -10,7 +10,6 @@ import com.viadeo.kasper.cqrs.command.CommandResult.Status;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
-import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.platform.Platform;
 import org.junit.Test;
@@ -138,8 +137,19 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         }
     }
 
-    // ------------------------------------------------------------------------
-
-    public static class AccountDomain implements Domain { }
-
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

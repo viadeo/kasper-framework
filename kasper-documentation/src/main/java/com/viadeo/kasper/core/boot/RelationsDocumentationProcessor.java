@@ -23,7 +23,7 @@ public class RelationsDocumentationProcessor extends DocumentationProcessor<XKas
 
 	// ------------------------------------------------------------------------
 
-	/**
+    /**
 	 * Process Kasper relation
 	 * 
 	 * @see com.viadeo.kasper.er.Relation

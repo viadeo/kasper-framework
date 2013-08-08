@@ -22,7 +22,7 @@ import com.viadeo.kasper.client.lib.Callback;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.query.exposition.QueryFactory;
@@ -94,8 +94,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <li>Query implementations must be composed only of simple types (serialized to litterals), if you need a complex
  * query or some type used in your query is not supported you should ask the team responsible of maintaining the kasper
  * platform to implement a custom {@link com.viadeo.kasper.query.exposition.TypeAdapter} for that specific type.</li>
- * <li>At the moment the DTO to which the result should be mapped is free, but take care it must match the resulting
- * stream. This will probably change in the future by making IQuery parameterized with a DTO. Thus query methods
+ * <li>At the moment the Result to which the result should be mapped is free, but take care it must match the resulting
+ * stream. This will probably change in the future by making IQuery parameterized with a Result. Thus query methods
  * signature could change.</li>
  * </ul>
  * </p>
@@ -251,25 +251,25 @@ public class KasperClient {
     // ------------------------------------------------------------------------
 
     /**
-     * Send a query and maps the result to a DTO.
+     * Send a query and maps the answer to a Result.
      * 
      * @param query to submit.
-     * @param mapTo DTO class to which we want to map the result.
-     * @return an instance of the DTO for this query.
+     * @param mapTo Result class to which we want to map the result.
+     * @return an instance of the Result for this query.
      * @throws KasperException if something went wrong.
      */
-    public <T extends QueryDTO> T query(final Query query, final Class<T> mapTo) {
+    public <T extends QueryResult> T query(final Query query, final Class<T> mapTo) {
         return query(query, TypeToken.of(mapTo));
     }
 
     /**
-     * Send a query and maps the result to a DTO. Here we use guavas TypeToken allowing to define a generic type. This
-     * is useful if you want to map the result to a IQueryCollectionDTO. <br/>
+     * Send a query and maps the result to a Result. Here we use guavas TypeToken allowing to define a generic type. This
+     * is useful if you want to map the result to a IQueryCollectionResult. <br/>
      * <p>
      * Type tokens are used like that:
      * 
      * <pre>
-     * SomeCollectionDTO&lt;SomeDTO&gt; someDTOCollection = client.query(someQuery, new TypeToken&lt;SomeCollectionDTO&lt;SomeDTO&gt;&gt;());
+     * SomeCollectionResult&lt;SomeResult&gt; someResultCollection = client.query(someQuery, new TypeToken&lt;SomeCollectionResult&lt;SomeResult&gt;&gt;());
      * </pre>
      * 
      * If you are not familiar with the concept of TypeTokens you can read <a
@@ -278,11 +278,11 @@ public class KasperClient {
      * </p>
      * 
      * @param query to submit.
-     * @param mapTo DTO class to which we want to map the result.
-     * @return an instance of the DTO for this query.
+     * @param mapTo Result class to which we want to map the result.
+     * @return an instance of the Result for this query.
      * @throws KasperException if something went wrong.
      */
-    public <T extends QueryDTO> T query(final Query query, final TypeToken<T> mapTo) {
+    public <T extends QueryResult> T query(final Query query, final TypeToken<T> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
@@ -297,7 +297,7 @@ public class KasperClient {
 
     // --
 
-    public <T extends QueryDTO> Future<T> queryAsync(final Query query, final Class<T> mapTo) {
+    public <T extends QueryResult> Future<T> queryAsync(final Query query, final Class<T> mapTo) {
         return queryAsync(query, TypeToken.of(mapTo));
     }
 
@@ -307,7 +307,7 @@ public class KasperClient {
      * @see KasperClient#query(com.viadeo.kasper.cqrs.query.Query, Class)
      * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command)
      */
-    public <T extends QueryDTO> Future<T> queryAsync(final Query query, final TypeToken<T> mapTo) {
+    public <T extends QueryResult> Future<T> queryAsync(final Query query, final TypeToken<T> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
@@ -346,7 +346,7 @@ public class KasperClient {
      * @see KasperClient#query(com.viadeo.kasper.cqrs.query.Query, Class)
      * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command, com.viadeo.kasper.client.lib.Callback)
      */
-    public <T extends QueryDTO> void queryAsync(final Query query, final Class<T> mapTo, final Callback<T> callback) {
+    public <T extends QueryResult> void queryAsync(final Query query, final Class<T> mapTo, final Callback<T> callback) {
 
         queryAsync(query, TypeToken.of(mapTo), callback);
     }
@@ -355,7 +355,7 @@ public class KasperClient {
      * @see KasperClient#query(com.viadeo.kasper.cqrs.query.Query, Class)
      * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command, com.viadeo.kasper.client.lib.Callback)
      */
-    public <T extends QueryDTO> void queryAsync(final Query query, final TypeToken<T> mapTo,
+    public <T extends QueryResult> void queryAsync(final Query query, final TypeToken<T> mapTo,
             final Callback<T> callback) {
         checkNotNull(query);
         checkNotNull(mapTo);
@@ -377,7 +377,7 @@ public class KasperClient {
                 });
     }
 
-    private <T extends QueryDTO> T handleQueryResponse(final ClientResponse response, final TypeToken<T> mapTo) {
+    private <T extends QueryResult> T handleQueryResponse(final ClientResponse response, final TypeToken<T> mapTo) {
         final Status status = response.getClientResponseStatus();
         
         // handle errors

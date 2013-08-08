@@ -7,6 +7,7 @@
 package com.viadeo.kasper.event.impl;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
@@ -22,7 +23,8 @@ public abstract class AbstractEventListener<E extends Event>
 		implements EventListener<E> {
 
 	private final Class<? extends Event> eventClass;
-	
+	private CommandGateway commandGateway;
+
 	// ------------------------------------------------------------------------
 	
 	public AbstractEventListener() {
@@ -44,7 +46,17 @@ public abstract class AbstractEventListener<E extends Event>
 	public Class<? extends Event> getEventClass() {
 		return this.eventClass;
 	}
-	
+
+    // ------------------------------------------------------------------------
+
+    public void setCommandGateway(final CommandGateway commandGateway) {
+        this.commandGateway = commandGateway;
+    }
+
+    protected Optional<CommandGateway> getCommandGateway() {
+        return Optional.of(this.commandGateway);
+    }
+
 	// ------------------------------------------------------------------------
 	
 	/**
