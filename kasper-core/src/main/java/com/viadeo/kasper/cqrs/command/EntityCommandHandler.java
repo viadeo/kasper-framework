@@ -7,7 +7,7 @@
 package com.viadeo.kasper.cqrs.command;
 
 import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.ddd.Repository;
+import com.viadeo.kasper.ddd.IRepository;
 
 /**
  *
@@ -36,11 +36,11 @@ public interface EntityCommandHandler<C extends Command, AGR extends AggregateRo
 	/**
 	 * @param repository the repository of the entity
 	 */
-	void setRepository(Repository<AGR> repository);
+	void setRepository(IRepository<AGR> repository);
 
 	/**
 	 * @return the repository of the repository
 	 */
-	<R extends Repository<AGR>> R getRepository();
+	<R extends IRepository<AGR>> R getRepository();
 
 }

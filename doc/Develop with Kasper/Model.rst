@@ -1,3 +1,0 @@
-DDD: Domains modeling
-=====================
-

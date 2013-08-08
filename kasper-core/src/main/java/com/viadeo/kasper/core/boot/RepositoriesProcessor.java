@@ -9,9 +9,9 @@ package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.ddd.Repository;
+import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
-import com.viadeo.kasper.ddd.impl.AbstractRepository;
+import com.viadeo.kasper.ddd.impl.Repository;
 import org.axonframework.eventhandling.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperRepository
  */
-public class RepositoriesProcessor extends SingletonAnnotationProcessor<XKasperRepository, Repository<?>> {
+public class RepositoriesProcessor extends SingletonAnnotationProcessor<XKasperRepository, IRepository<?>> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RepositoriesProcessor.class);	
 	
@@ -41,17 +41,17 @@ public class RepositoriesProcessor extends SingletonAnnotationProcessor<XKasperR
 	/**
 	 * Process Kasper repository
 	 * 
-	 * @see com.viadeo.kasper.ddd.Repository
+	 * @see com.viadeo.kasper.ddd.IRepository
 	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
-	public void process(final Class<?> repositoryClazz, final Repository<?> repository) {
+	public void process(final Class<?> repositoryClazz, final IRepository<?> repository) {
 		LOGGER.info("Record on domain locator : " + repositoryClazz.getName());
 			
 		repository.init();
 		
-		if (AbstractRepository.class.isAssignableFrom(repositoryClazz)) {
-			((AbstractRepository<?>) repository).setEventBus(eventBus);
+		if (Repository.class.isAssignableFrom(repositoryClazz)) {
+			((Repository<?>) repository).setEventBus(eventBus);
 		}
 			
 		//- Register the repository to the domain locator ---------------------

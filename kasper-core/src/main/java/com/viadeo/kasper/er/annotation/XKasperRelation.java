@@ -36,5 +36,14 @@ public @interface XKasperRelation {
 	 * @return the relation's domain
 	 */
 	Class<? extends Domain> domain();
+
+    /**
+     * @return the relation verb from ontology
+     *
+     * If the class name use the Kasper pattern Concept_verb_Concept
+     * it can be inferred.
+     *
+     */
+    String verb() default "";
 	
 }

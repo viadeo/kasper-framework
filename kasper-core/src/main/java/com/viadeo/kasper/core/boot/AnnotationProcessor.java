@@ -31,10 +31,14 @@ public interface AnnotationProcessor<T extends Annotation, I> {
 	 */
 	int INTERFACE_PARAMETER_POSITION = 1;
 	
-	
 	/**
 	 * @param clazz a matching class to process
 	 */
 	void process(Class<?> clazz);
-	
+
+    /**
+     * @return true if the annotation must be present on each class
+     */
+    boolean isAnnotationMandatory();
+
 }

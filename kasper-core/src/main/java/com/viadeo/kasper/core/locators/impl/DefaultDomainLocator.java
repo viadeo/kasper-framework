@@ -8,13 +8,13 @@ package com.viadeo.kasper.core.locators.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.ddd.AggregateRoot;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
-import com.viadeo.kasper.ddd.Repository;
+import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
@@ -28,7 +28,7 @@ public class DefaultDomainLocator implements DomainLocator {
     // - Convenient Cache types ------------------------------------------------
 
     private static final class RepositoriesByAggregateCache extends
-            HashMap<Class<? extends AggregateRoot>, Repository<?>> {
+            HashMap<Class<? extends AggregateRoot>, IRepository<?>> {
         private static final long serialVersionUID = 4713909577649004213L;
     }
 
@@ -101,7 +101,7 @@ public class DefaultDomainLocator implements DomainLocator {
      * @see com.viadeo.kasper.core.locators.DomainLocator#getEntityDomain(com.viadeo.kasper.ddd.Entity)
      */
     @Override
-    public <D extends Domain> D getEntityDomain(final Entity entity) {
+    public <D extends Domain> Optional<D> getEntityDomain(final Entity entity) {
         Preconditions.checkNotNull(entity);
         // TODO Auto-generated method stub
         throw new KasperException("Entity has no registered domain : " + entity.getClass().getName());
@@ -110,17 +110,17 @@ public class DefaultDomainLocator implements DomainLocator {
     // ========================================================================
 
     /**
-     * @see com.viadeo.kasper.core.locators.DomainLocator#registerRepository(com.viadeo.kasper.ddd.Repository)
+     * @see com.viadeo.kasper.core.locators.DomainLocator#registerRepository(com.viadeo.kasper.ddd.IRepository)
      */
     @Override
-    public void registerRepository(final Repository<?> repository) {
+    public void registerRepository(final IRepository<?> repository) {
         Preconditions.checkNotNull(repository);
 
         @SuppressWarnings("unchecked")
         // Safe
         final Optional<Class<? extends AggregateRoot>> entity = (Optional<Class<? extends AggregateRoot>>) ReflectionGenericsResolver
-                .getParameterTypeFromClass(repository.getClass(), Repository.class,
-                        Repository.ENTITY_PARAMETER_POSITION);
+                .getParameterTypeFromClass(repository.getClass(), IRepository.class,
+                        IRepository.ENTITY_PARAMETER_POSITION);
 
         if (!entity.isPresent()) {
             throw new KasperException("Entity type cannot be determined for " + repository.getClass().getName());
@@ -137,9 +137,9 @@ public class DefaultDomainLocator implements DomainLocator {
     @SuppressWarnings("unchecked")
     // Safe
     @Override
-    public <E extends AggregateRoot> Repository<E> getEntityRepository(final E entity) {
+    public <E extends AggregateRoot> Optional<IRepository<E>> getEntityRepository(final E entity) {
         Preconditions.checkNotNull(entity);
-        return (Repository<E>) this.entityRepositories.get(entity.getClass());
+        return Optional.of((IRepository<E>) this.entityRepositories.get(entity.getClass()));
     }
 
     /**
@@ -147,10 +147,10 @@ public class DefaultDomainLocator implements DomainLocator {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <E extends AggregateRoot> Repository<E> getEntityRepository(final Class<E> entityClass) {
+    public <E extends AggregateRoot> Optional<IRepository<E>> getEntityRepository(final Class<E> entityClass) {
         Preconditions.checkNotNull(entityClass);
 
-        return (Repository<E>) this.entityRepositories.get(entityClass);
+        return Optional.of((IRepository<E>) this.entityRepositories.get(entityClass));
     }
 
     // ========================================================================

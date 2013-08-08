@@ -28,7 +28,7 @@ public class DefaultQueryGateway implements QueryGateway {
     // -----------------------------------------------------------------------
 
     @Override
-    public <Q extends Query, DTO extends QueryDTO> DTO retrieve(final Q query, final Context context)
+    public <Q extends Query, RES extends QueryResult> RES retrieve(final Q query, final Context context)
             throws Exception {
 
         checkNotNull(context);
@@ -61,24 +61,24 @@ public class DefaultQueryGateway implements QueryGateway {
         }
 
         /* Call the service */
-        DTO ret;
+        RES ret;
         try {
             LOGGER.info("Call service " + optService.get().getClass().getSimpleName());
-            ret = (DTO) service.retrieve(message);
+            ret = (RES) service.retrieve(message);
         } catch (final UnsupportedOperationException e) {
             if (AbstractQueryService.class.isAssignableFrom(service.getClass())) {
-                ret = (DTO) ((AbstractQueryService) service).retrieve(message.getQuery());
+                ret = (RES) ((AbstractQueryService) service).retrieve(message.getQuery());
             } else {
                 throw e;
             }
         }
 
-        /* Apply DTO filters if needed */
+        /* Apply Result filters if needed */
         if (null != ret) {
             for (final ServiceFilter filter : filters) {
-                if (DTOFilter.class.isAssignableFrom(filter.getClass())) {
-                    LOGGER.info(String.format("Apply DTO filter %s", filter.getClass().getSimpleName()));
-                    ((DTOFilter) filter).filter(context, ret);
+                if (ResultFilter.class.isAssignableFrom(filter.getClass())) {
+                    LOGGER.info(String.format("Apply Result filter %s", filter.getClass().getSimpleName()));
+                    ((ResultFilter) filter).filter(context, ret);
                 }
             }
         }

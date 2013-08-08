@@ -12,14 +12,15 @@ import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.ddd.Repository;
+import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
-import com.viadeo.kasper.ddd.impl.AbstractRepository;
+import com.viadeo.kasper.ddd.impl.Repository;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.er.impl.AbstractRootConcept;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
-import com.viadeo.kasper.event.domain.impl.AbstractEntityEvent;
+import com.viadeo.kasper.event.domain.er.impl.AbstractConceptRootEvent;
+import com.viadeo.kasper.event.domain.impl.AbstractDomainEvent;
 
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.repository.AggregateNotFoundException;
@@ -75,7 +76,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 
             StaticChecker.verify(CurrentContext.value().get());
 
-            final Repository<ContextTestAGR> repo = this.getRepository();
+            final IRepository<ContextTestAGR> repo = this.getRepository();
 
             try {
                 repo.load(new KasperTestId("42"), 0L);
@@ -90,12 +91,12 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
         }
     }
 
-    @XKasperEvent(action = "test", domain = ContextTestDomain.class)
-    public static class ContextTestEvent extends AbstractEntityEvent {
+    @XKasperEvent(action = "test")
+    public static class ContextTestEvent extends AbstractConceptRootEvent<ContextTestDomain, ContextTestAGR> {
         private static final long serialVersionUID = 7017358308867238442L;
 
         public ContextTestEvent(final KasperID id) {
-            super(id, DateTime.now());
+            super(CurrentContext.value().get(), id, DateTime.now());
             StaticChecker.verify(CurrentContext.value().get());
         }
     }
@@ -116,7 +117,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     }
 
     @XKasperRepository
-    public static class ContextTestRepository extends AbstractRepository<ContextTestAGR> {
+    public static class ContextTestRepository extends Repository<ContextTestAGR> {
         @Override
         protected Optional<ContextTestAGR> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {
             StaticChecker.verify(CurrentContext.value().get());

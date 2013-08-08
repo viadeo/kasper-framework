@@ -6,11 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.exceptions;
 
+import com.viadeo.kasper.exception.KasperException;
+
 /**
  *
  * Base Kasper commands runtime exception
  */
-public class KasperCommandException extends RuntimeException {
+public class KasperCommandException extends KasperException {
 	private static final long serialVersionUID = -1102642646985641991L;
 
 	public KasperCommandException(final String message, final Exception e) {

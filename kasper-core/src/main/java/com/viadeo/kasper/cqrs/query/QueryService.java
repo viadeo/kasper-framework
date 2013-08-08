@@ -11,12 +11,12 @@ package com.viadeo.kasper.cqrs.query;
  * A Kasper query service
  *
  * @param <Q> the associated Query
- * @param <DTO> the associated Data Transfer Object
+ * @param <RES> the associated Data Transfer Object
  *
- * @see QueryDTO
+ * @see QueryResult
  * @see Query
  */
-public interface QueryService<Q extends Query, DTO extends QueryDTO> {
+public interface QueryService<Q extends Query, RES extends QueryResult> {
 
 	/**
 	 * Generic parameter position for Data Query Object
@@ -26,18 +26,18 @@ public interface QueryService<Q extends Query, DTO extends QueryDTO> {
 	/**
 	 * Generic parameter position for Data Transfer Object
 	 */
-	int PARAMETER_DTO_POSITION = 1;
+	int PARAMETER_RESULT_POSITION = 1;
 
 	/**
-	 * Operates the service, retrieve a service DTO satisfying the submitted
+	 * Operates the service, retrieve a service Result satisfying the submitted
 	 * filter
      *
      * You have to implement at least one retrieve() method
 	 *
 	 * @param message a message encapsulating the query to answer
-	 * @return a filled DTO
+	 * @return a filled Result
 	 */
-	DTO retrieve(QueryMessage<Q> message) throws Exception;
+	RES retrieve(QueryMessage<Q> message) throws Exception;
 
 }
 

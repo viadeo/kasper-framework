@@ -8,7 +8,7 @@ package com.viadeo.kasper.ddd.specification.impl;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.ddd.Entity;
-import com.viadeo.kasper.ddd.specification.*;
+import com.viadeo.kasper.ddd.specification.EntitySpecification;
 
 /**
  * @param <E> the entity

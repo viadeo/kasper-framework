@@ -7,7 +7,7 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryService;
 
 /**
@@ -21,16 +21,16 @@ import com.viadeo.kasper.cqrs.query.QueryService;
  * The query gateway is aware of this internal convenience and will deal with it
  *
  * @param <Q> the query
- * @param <DTO> the DTO
+ * @param <RES> the Result
  */
-public class AbstractQueryService<Q extends Query, DTO extends QueryDTO> implements QueryService<Q, DTO> {
+public abstract class AbstractQueryService<Q extends Query, RES extends QueryResult> implements QueryService<Q, RES> {
 
     @Override
-    public DTO retrieve(final com.viadeo.kasper.cqrs.query.QueryMessage<Q> message) throws Exception {
+    public RES retrieve(final com.viadeo.kasper.cqrs.query.QueryMessage<Q> message) throws Exception {
         return retrieve(message.getQuery());
     }
 
-    public DTO retrieve(final Q query) throws Exception {
+    public RES retrieve(final Q query) throws Exception {
         throw new UnsupportedOperationException();
     }
 

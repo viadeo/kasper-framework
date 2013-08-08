@@ -9,8 +9,8 @@ package com.viadeo.kasper.core.locators;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.ServiceFilter;
 import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.ServiceFilter;
 
 import java.util.Collection;
 

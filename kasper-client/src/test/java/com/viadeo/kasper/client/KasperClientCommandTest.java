@@ -18,7 +18,7 @@ import com.viadeo.kasper.client.lib.Callback;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResult.Status;
 import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -52,7 +52,7 @@ public class KasperClientCommandTest extends JerseyTest {
     
     //-------------------------------------------------------------------------
     
-    public static class MemberDTO implements QueryDTO {
+    public static class MemberResult implements QueryResult {
         private static final long serialVersionUID = 271804229442342903L;
 
         private String memberName;
@@ -60,9 +60,9 @@ public class KasperClientCommandTest extends JerseyTest {
 
         // --
 
-        public MemberDTO() { }
+        public MemberResult() { }
 
-        public MemberDTO(final String memberName, final List<Integer> ids) {
+        public MemberResult(final String memberName, final List<Integer> ids) {
             this.memberName = memberName;
             this.ids = ids;
         }

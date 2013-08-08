@@ -13,7 +13,7 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryDTO;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.platform.Platform;
@@ -62,7 +62,7 @@ public class HttpQueryExposer extends HttpExposer {
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing queries ===============");
         // expose all registered queries and commands
-        for (final QueryService<? extends Query, ? extends QueryDTO> queryService : queryServicesLocator
+        for (final QueryService<? extends Query, ? extends QueryResult> queryService : queryServicesLocator
                 .getServices()) {
             expose(queryService);
         }
@@ -96,14 +96,14 @@ public class HttpQueryExposer extends HttpExposer {
             final String queryName = resourceName(req.getRequestURI());
             final Query query = parseQuery(queryName, req, resp);
 
-            QueryDTO dto = null;
+            QueryResult result = null;
             if (!resp.isCommitted()) {
-                dto = handleQuery(queryName, query, resp);
+                result = handleQuery(queryName, query, resp);
             }
 
             // need to check again as something might go wrong in handleQuery
             if (!resp.isCommitted()) {
-                sendDTO(queryName, dto, resp);
+                sendResult(queryName, result, resp);
             }
 
         } catch (final Throwable t) {
@@ -160,10 +160,10 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     // can not use sendError it is forcing response to text/html
-    protected QueryDTO handleQuery(final String queryName, final Query query, final HttpServletResponse resp)
+    protected QueryResult handleQuery(final String queryName, final Query query, final HttpServletResponse resp)
             throws IOException {
 
-        QueryDTO dto = null;
+        QueryResult result = null;
 
         try {
 
@@ -171,7 +171,7 @@ public class HttpQueryExposer extends HttpExposer {
              * checking if the response has not been sent, if it is true this
              * means that an error happened and has been handled
              */
-            dto = platform().getQueryGateway().retrieve(query, new DefaultContextBuilder().build());
+            result = platform().getQueryGateway().retrieve(query, new DefaultContextBuilder().build());
 
         } catch (final Throwable e) {
             /*
@@ -181,24 +181,24 @@ public class HttpQueryExposer extends HttpExposer {
             sendError(SC_INTERNAL_SERVER_ERROR, "ERROR Submiting query[" + queryName + "] to Kasper platform.", resp, e);
         }
 
-        return dto;
+        return result;
     }
 
     // ------------------------------------------------------------------------
 
     // can not use sendError it is forcing response to text/html
-    protected void sendDTO(final String queryName, final QueryDTO dto, final HttpServletResponse resp)
+    protected void sendResult(final String queryName, final QueryResult result, final HttpServletResponse resp)
             throws IOException {
 
         final ObjectWriter writer = mapper.writer();
 
         try {
 
-            writer.writeValue(resp.getOutputStream(), dto);
+            writer.writeValue(resp.getOutputStream(), result);
             resp.setStatus(HttpServletResponse.SC_OK);
 
         } catch (final Throwable t) {
-            sendError(SC_INTERNAL_SERVER_ERROR, "ERROR sending DTO[" + dto.getClass().getSimpleName() + "] for query["
+            sendError(SC_INTERNAL_SERVER_ERROR, "ERROR sending Result[" + result.getClass().getSimpleName() + "] for query["
                     + queryName + "].", resp, t);
         }
     }
@@ -241,7 +241,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    HttpQueryExposer expose(final QueryService<? extends Query, ? extends QueryDTO> queryService) {
+    HttpQueryExposer expose(final QueryService<? extends Query, ? extends QueryResult> queryService) {
         checkNotNull(queryService);
 
         final TypeToken<? extends QueryService> typeToken = TypeToken.of(queryService.getClass());

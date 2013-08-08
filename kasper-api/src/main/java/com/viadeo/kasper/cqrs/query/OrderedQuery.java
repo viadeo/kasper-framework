@@ -6,14 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
-/**
- * An ordered KasperQuery
- *
- */
+/** A paginated Kasper query */
 public interface OrderedQuery extends Query {
 
-	public static enum ORDER {
-		ASC, DESC, NONE
-	}
+    public static enum ORDER {
+        ASC, DESC, NONE
+    }
 
 }

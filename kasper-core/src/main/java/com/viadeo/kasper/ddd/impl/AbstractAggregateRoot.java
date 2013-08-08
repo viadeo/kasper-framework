@@ -7,11 +7,11 @@
 package com.viadeo.kasper.ddd.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.ddd.Repository;
+import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.ddd.IRepository;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
 import org.joda.time.DateTime;
@@ -48,9 +48,11 @@ public abstract class AbstractAggregateRoot
 	
 	// ========================================================================
 
-	public <E extends AggregateRoot> Repository<E> getRepository() {
-        return (Repository<E>)
-            this.getDomainLocator().getEntityRepository(this.getClass());
+	public <E extends AggregateRoot> IRepository<E> getRepository() {
+        @SuppressWarnings("unchecked")
+        final IRepository<E> repo = (IRepository<E>)
+            this.getDomainLocator().getEntityRepository(this.getClass()).get();
+        return repo;
 	}
 	
 	// ========================================================================	
@@ -63,7 +65,7 @@ public abstract class AbstractAggregateRoot
 	
 	@Override
 	public Domain getDomain() {
-		return domainLocator.getEntityDomain(this);
+		return domainLocator.getEntityDomain(this).get();
 	}
 
 	// ========================================================================

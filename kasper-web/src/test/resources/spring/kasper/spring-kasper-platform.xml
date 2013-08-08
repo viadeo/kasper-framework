@@ -46,6 +46,7 @@
 
     <bean id="listenersProcessor" class="com.viadeo.kasper.core.boot.EventListenersProcessor">
         <property name="eventBus" ref="eventBus"/>
+        <property name="commandGateway" ref="commandGateway" />
     </bean>
 
     <bean id="queryServicesProcessor" class="com.viadeo.kasper.core.boot.QueryServicesProcessor">
@@ -56,8 +57,11 @@
         <property name="domainLocator" ref="domainLocator"/>
     </bean>
 
-    <bean id="rootProcessor" class="com.viadeo.kasper.core.boot.AnnotationRootProcessor" >
-    	<property name="scanPrefixes" value="com.viadeo.kasper.exposition"/>
+    <bean id="instancesManager" class="com.viadeo.kasper.core.boot.SpringComponentsInstanceManager" />
+
+    <bean id="rootProcessor" class="com.viadeo.kasper.core.boot.AnnotationRootProcessor">
+        <property name="componentsInstanceManager" ref="instancesManager" />
+        <property name="scanPrefixes" value="com.viadeo.kasper.exposition"/>
     </bean>
 
     <!--  Kasper platform beans -->

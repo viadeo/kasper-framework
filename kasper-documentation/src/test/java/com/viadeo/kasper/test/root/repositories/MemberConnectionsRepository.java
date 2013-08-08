@@ -1,11 +1,11 @@
 package com.viadeo.kasper.test.root.repositories;
 
-import com.viadeo.kasper.ddd.Repository;
+import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.test.root.entities.Member_connectedTo_Member;
 
 @XKasperRepository
-public class MemberConnectionsRepository implements Repository<Member_connectedTo_Member> {
+public class MemberConnectionsRepository implements IRepository<Member_connectedTo_Member> {
 
 	@Override
 	public void add(Member_connectedTo_Member arg0) {

@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import org.reflections.Reflections;
 import org.reflections.scanners.SubTypesScanner;
 import org.reflections.scanners.TypeAnnotationsScanner;
@@ -19,11 +20,6 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.ApplicationContextAware;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
@@ -38,21 +34,15 @@ import java.util.*;
  * 2-SCAN    - scan all classes matching recorded processors configuration
  * 3-PROCESS - delegate processing of scanned classes to their respective processor
  * <p/>
- * This root processor can use Spring configured processors instance if executed inside Spring context.
+ * This root processor can use a components instance manager if supplied
  * <p/>
- * User can specify which processor instances to use, they will also override Spring ones.
  * User can filter scanned packages (default: all packages of jvm classpath).
  * <p/>
  * TODO: allow user to specify classpath as a list of URLs or at least as Reflections helpers
  */
-public class AnnotationRootProcessor implements ApplicationContextAware {
+public class AnnotationRootProcessor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationRootProcessor.class);
-
-    /**
-     * Only used if Spring context available in order to reuse injected processor instances
-     */
-    private transient ApplicationContext context;
 
     /**
      * Allow user to explicitly specify processor instances to use before boot
@@ -72,13 +62,18 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
     /**
      * Scanned processors
      */
-    private transient Map<Class<? extends Annotation>, List<AnnotationProcessor<?, ?>>> processors;
-    private transient Map<AnnotationProcessor<?, ?>, Class<?>> processorsInterface;
+    private transient Map<Class<?>, List<AnnotationProcessor<?, ?>>> processors;
+    private transient Map<AnnotationProcessor<?, ?>, Class<? extends Annotation>> processorsInterface;
 
     /**
      * Class-path reflection resolver
      */
     private Reflections reflections;
+
+    /**
+     * Instances manager (optional)
+     */
+    private ComponentsInstanceManager instancesManager;
 
     // ------------------------------------------------------------------------
 
@@ -109,8 +104,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
         final Set<String> prefixes = new HashSet<>();
 
         if (!this.doNotScanDefaultPrefix) {
-            final String currentPackage = this.getClass().getPackage().getName();
-            prefixes.add(currentPackage);
+            prefixes.add("com.viadeo.kasper");
         }
 
         if ((null != this.scanPrefixes) && (this.scanPrefixes.size() > 0)) {
@@ -200,33 +194,36 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
                     }
 
                     // 2- Spring injected processor
-                    if ((null == objInstance) && (null != this.context)) {
-                        try {
-                            objInstance = context.getBean(clazz);
-                        } catch (final NoSuchBeanDefinitionException e) {
-                            // Ignore
+                    if (null == objInstance) {
+                        final Optional<AnnotationProcessor> optInstance = getComponentsInstanceManager().getInstanceFromClass(clazz);
+                        if (optInstance.isPresent()) {
+                            objInstance = optInstance.get();
                         }
                     }
 
                     // 3- New processor instance
                     if (null == objInstance) {
                         objInstance = clazz.newInstance();
-                        if (null != this.context) {
-                            final ConfigurableBeanFactory cfb = (ConfigurableBeanFactory) this.context.getAutowireCapableBeanFactory();
-                            objInstance = ((AutowireCapableBeanFactory) cfb).createBean(clazz);
-                            cfb.registerSingleton(clazz.getSimpleName(), objInstance);
+                        getComponentsInstanceManager().recordInstance(clazz, objInstance);
+                    }
+
+                    // Forward its components instance manager to the processor if suitable
+                    if (SingletonAnnotationProcessor.class.isAssignableFrom(objInstance.getClass())) {
+                        final SingletonAnnotationProcessor singletonProcessor = (SingletonAnnotationProcessor) objInstance;
+                        if (!singletonProcessor.hasComponentsInstanceManager()) {
+                            singletonProcessor.setComponentsInstanceManager(getComponentsInstanceManager());
                         }
                     }
 
                     LOGGER.debug("Registered Kasper processor : " + clazz.getName());
 
-                    if (!processors.containsKey(annoClass.get())) {
-                        processors.put(annoClass.get(), new ArrayList<AnnotationProcessor<?, ?>>());
+                    if (!processors.containsKey(interfaceClass.get())) {
+                        processors.put(interfaceClass.get(), new ArrayList<AnnotationProcessor<?, ?>>());
                     }
 
-                    if (!processors.get(annoClass.get()).contains(objInstance)) {
-                        processors.get(annoClass.get()).add((AnnotationProcessor<?, ?>) objInstance);
-                        processorsInterface.put((AnnotationProcessor<?, ?>) objInstance, interfaceClass.get());
+                    if (!processors.get(interfaceClass.get()).contains(objInstance)) {
+                        processors.get(interfaceClass.get()).add((AnnotationProcessor<?, ?>) objInstance);
+                        processorsInterface.put((AnnotationProcessor<?, ?>) objInstance, annoClass.get());
                     }
 
                 } else {
@@ -252,27 +249,48 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
     protected void process() {
         LOGGER.info("Delegate to Kasper annotation processors");
 
-        for (final Class<? extends Annotation> annotation : processors.keySet()) {
-            for (final AnnotationProcessor<?, ?> processor : processors.get(annotation)) {
-                final Class<?> tplClass = processorsInterface.get(processor);
+        for (final Class<?> tplClass : processors.keySet()) {
+            for (final AnnotationProcessor<?, ?> processor : processors.get(tplClass)) {
+                final Class<? extends Annotation> annotation = processorsInterface.get(processor);
 
                 LOGGER.info(String.format("Delegate for %s to %s", tplClass.getSimpleName(), processor.getClass().getSimpleName()));
 
-                final Set<Class<?>> annotated = reflections.getTypesAnnotatedWith(annotation);
+                final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(annotation);
+                final Set<Class<?>> conformClasses = (Set<Class<?>>) reflections.getSubTypesOf(tplClass);
+                conformClasses.addAll(annotatedClasses);
 
-                for (final Class<?> clazz : annotated) {
-                    if (tplClass.isAssignableFrom(clazz)) {
+                // For all suitable classes
+                for (final Class<?> clazz : conformClasses) {
 
-                        // PROCESSOR DELEGATION
-                        try {
-                            processor.process(clazz);
-                        } catch (Exception e) {
-                            LOGGER.warn("Unexpected error during processor delegation, <class=" + clazz.getName() + ">: ", e);
+                    // Filter out interfaces and abstract classes
+                    if (!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
+
+                        // Filter out user-excluded classes
+                        if (null == clazz.getAnnotation(XKasperUnregistered.class)) {
+
+                            // Check annotation presence if pertinent
+                            if ((null != clazz.getAnnotation(annotation)) || !processor.isAnnotationMandatory()) {
+
+                                try {
+
+                                    // PROCESSOR DELEGATION
+                                    processor.process(clazz);
+
+
+                                } catch (Exception e) {
+                                    LOGGER.warn("Unexpected error during processor delegation, <class=" + clazz.getName() + ">: ", e);
+                                }
+
+                            } else {
+                                throw new KasperException(
+                                            String.format("%s must have an annotation : %s",
+                                                    clazz.getName(), annotation.getSimpleName()));
+                            }
+
+                        } else {
+                            LOGGER.debug(String.format("Ignore unregistered class %s", clazz.getName()));
                         }
 
-                    } else {
-                        throw new KasperException(
-                                String.format("%s must extends/implements %s", clazz.getName(), tplClass.getName()));
                     }
                 }
             }
@@ -330,7 +348,7 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
     /**
      * Exclude own processors, can be useful for system isolation or testing purposes
      *
-     * @param doNotScanDefaultPrefix if true we will not our package name to the scanned ones
+     * @param doNotScanDefaultPrefix if true we will not add our package name to the scanned ones
      */
     public void setDoNotScanDefaultPrefix(final boolean doNotScanDefaultPrefix) {
         this.doNotScanDefaultPrefix = doNotScanDefaultPrefix;
@@ -338,15 +356,22 @@ public class AnnotationRootProcessor implements ApplicationContextAware {
 
     //-------------------------------------------------------------------------
 
+    public void setComponentsInstanceManager(final ComponentsInstanceManager instancesManager) {
+        this.instancesManager = instancesManager;
+    }
+
     /**
-     * Set Spring context if available
-     * Not mandatory
+     * Return the current instances manager, revert (create) to a simple map-backed one
+     * if no one has been provided
      *
-     * @see org.springframework.context.ApplicationContextAware#setApplicationContext(org.springframework.context.ApplicationContext)
+     * @return the components instance manager to use
      */
-    @Override
-    public void setApplicationContext(final ApplicationContext context) {
-        this.context = context;
+    private ComponentsInstanceManager getComponentsInstanceManager() {
+        if (null == this.instancesManager) {
+            LOGGER.info("No Components instance manager has been provided, revert back to simple one (default)");
+            this.instancesManager = new SimpleComponentsInstanceManager();
+        }
+        return this.instancesManager;
     }
 
 }

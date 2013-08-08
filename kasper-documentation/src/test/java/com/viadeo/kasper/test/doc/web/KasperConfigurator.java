@@ -1,7 +1,7 @@
 package com.viadeo.kasper.test.doc.web;
 
 import com.viadeo.kasper.core.boot.*;
-import com.viadeo.kasper.test.doc.KasperLibrary;
+import com.viadeo.kasper.doc.KasperLibrary;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

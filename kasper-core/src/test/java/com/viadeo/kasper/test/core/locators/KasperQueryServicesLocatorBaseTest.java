@@ -9,6 +9,9 @@ package com.viadeo.kasper.test.core.locators;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperServiceFilter;
+import com.viadeo.kasper.ddd.Domain;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -24,13 +27,16 @@ public class KasperQueryServicesLocatorBaseTest {
 
 	private DefaultQueryServicesLocator locator;
 
-	private static final class TestDTO implements QueryDTO {}
+    private static final class TestDomain implements Domain { }
+
+	private static final class TestResult implements QueryResult {}
 
 	private static final class TestQuery implements Query {}
 
-	private static class TestService implements QueryService<TestQuery, TestDTO> {
+    @XKasperQueryService( domain = TestDomain.class )
+	private static class TestService implements QueryService<TestQuery, TestResult> {
 		@Override
-		public TestDTO retrieve(final QueryMessage<TestQuery> message) {
+		public TestResult retrieve(final QueryMessage<TestQuery> message) {
 			throw new UnsupportedOperationException();
 		}
 	}
@@ -85,7 +91,10 @@ public class KasperQueryServicesLocatorBaseTest {
 
     // ------------------------------------------------------------------------
 
+    @XKasperServiceFilter
     private static class TestFilter implements ServiceFilter { }
+
+    @XKasperServiceFilter
     private static class TestFilter2 implements ServiceFilter { }
 
     @Test

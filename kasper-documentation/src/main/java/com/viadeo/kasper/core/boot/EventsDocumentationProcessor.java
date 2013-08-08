@@ -23,7 +23,14 @@ public class EventsDocumentationProcessor extends DocumentationProcessor<XKasper
 
 	// ------------------------------------------------------------------------
 
-	/**
+    /**
+     * Annotation is optional for events
+     */
+    public boolean isAnnotationMandatory() {
+        return false;
+    }
+
+    /**
 	 * Process Kasper event
 	 * 
 	 * @see com.viadeo.kasper.event.Event

@@ -12,8 +12,10 @@ import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
+import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -29,33 +31,37 @@ public class QueryFilterITest {
 
     // ------------------------------------------------------------------------
 
+    private class TestDomain implements Domain { }
+
     private class TestQuery implements Query {
         public int state = STATE_START;
     }
 
-    private class TestDTO implements QueryDTO {
+    private class TestResult implements QueryResult {
         public int state = STATE_START;
     }
 
-    private class TestService implements QueryService<TestQuery, TestDTO> {
+    private class TestService implements QueryService<TestQuery, TestResult> {
         @Override
-        public TestDTO retrieve(final QueryMessage message) throws Exception {
-            return new TestDTO();
+        public TestResult retrieve(final QueryMessage message) throws Exception {
+            return new TestResult();
         }
     }
 
-    private class TestFilter implements QueryFilter, DTOFilter {
+    @XKasperQueryService( domain = TestDomain.class )
+    private class TestFilter implements QueryFilter, ResultFilter {
         @Override
         public void filter(Context context, Query query) throws KasperQueryException {
             ((TestQuery) query).state = STATE_MODIFIED;
         }
 
         @Override
-        public void filter(Context context, QueryDTO dto) throws KasperQueryException {
-            ((TestDTO) dto).state = STATE_MODIFIED;
+        public void filter(Context context, QueryResult result) throws KasperQueryException {
+            ((TestResult) result).state = STATE_MODIFIED;
         }
     }
 
+    @XKasperQueryService( domain = TestDomain.class )
     private class TestFilterGlobal implements QueryFilter {
         @Override
         public void filter(Context context, Query query) throws KasperQueryException { }
@@ -84,14 +90,14 @@ public class QueryFilterITest {
         final TestQuery query = new TestQuery();
 
         // When
-        final TestDTO dto = gateway.retrieve(query, context);
+        final TestResult result = gateway.retrieve(query, context);
 
         // Then
         verify(filter).filter(eq(context), any(Query.class));
         assertEquals(STATE_MODIFIED, query.state);
 
-        verify(filter).filter(eq(context), any(QueryDTO.class));
-        assertEquals(STATE_MODIFIED, dto.state);
+        verify(filter).filter(eq(context), any(QueryResult.class));
+        assertEquals(STATE_MODIFIED, result.state);
 
         verify(filterGlobal).filter(eq(context), any(Query.class));
     }

@@ -7,10 +7,10 @@
 package com.viadeo.kasper.ddd.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.ddd.ComponentEntity;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.RootConcept;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedEntity;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
@@ -64,7 +64,7 @@ public abstract class AbstractComponentEntity<R extends RootConcept>
 
     @Override
 	public Domain getDomain() {
-		return domainLocator.getEntityDomain(this);
+		return domainLocator.getEntityDomain(this).get();
 	}
 
 	// ========================================================================
