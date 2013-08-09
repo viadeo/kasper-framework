@@ -9,6 +9,8 @@ package com.viadeo.kasper.tools;
 import java.io.IOException;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,6 +106,8 @@ public class ObjectMapperProvider {
         mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
         mapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+
+        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
 
         final Module kasperClientModule = new SimpleModule()
                 .addSerializer(KasperQueryException.class, new KasperQueryExceptionSerializer())
