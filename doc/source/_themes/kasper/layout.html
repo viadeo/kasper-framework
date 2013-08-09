@@ -81,7 +81,7 @@
                         {%- if logo %}<img class="logo" src="{{ pathto('_static/' + logo, 1) }}" alt="Logo"/>{%- endif %}
                         {%- endblock %}</a>
                     <a href="{{ pathto(master_doc) }}">{{ docstitle|striptags|e }}</a>
-                    <small>{{theme_tagline|striptags|e}} (version <b>{{version}}</b>)</small>
+                    <small>{{theme_tagline|striptags|e}} (version <b>{{release}}</b>)</small>
                 </h1>
             </header>
         </div>
