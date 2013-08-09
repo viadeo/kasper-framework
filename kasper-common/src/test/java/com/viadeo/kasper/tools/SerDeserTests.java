@@ -37,7 +37,8 @@ public class SerDeserTests {
     public static class ImmutableBean {
         private final String field;
 
-        public ImmutableBean() { field = null; }
+        /* Private constructor for ser/deser */
+        private ImmutableBean() { field = null; }
 
         public ImmutableBean(final String field) {
             this.field = field;
