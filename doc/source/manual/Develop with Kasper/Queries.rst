@@ -222,7 +222,6 @@ A global service filter can be domain-sticky (only executed on services of the s
 A non-global filter can then be associated to one or several services using the **@XKasperQueryService** annotation,
 filling the 'filters' field.
 
-
 **GetThingsQueryService.class** :
 
 .. code-block:: java
