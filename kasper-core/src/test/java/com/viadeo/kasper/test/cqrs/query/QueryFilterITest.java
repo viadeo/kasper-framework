@@ -78,7 +78,7 @@ public class QueryFilterITest {
         final TestFilterGlobal filterGlobal = spy(new TestFilterGlobal());
         final QueryServicesLocator locator = new DefaultQueryServicesLocator();
 
-        locator.registerService("testService", service);
+        locator.registerService("testService", service, TestDomain.class);
         locator.registerFilter("testFilter", filter);
         locator.registerFilter("testFilter2", filterGlobal, true);
         locator.registerFilterForService(service.getClass(), filter.getClass());

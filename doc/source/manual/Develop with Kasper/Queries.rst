@@ -216,6 +216,9 @@ A filter can be defined global (set the global flag (**global = true**) on the a
 
 Global filters will be applied after user-defined filters, and user-defined filters are applied in the order of their definition within the annotation.
 
+A global service filter can be domain-sticky (only executed on services of the specified domain) using the **domain** field of the
+**@XKasperQueryService** annotation.
+
 A non-global filter can then be associated to one or several services using the **@XKasperQueryService** annotation,
 filling the 'filters' field.
 

@@ -69,7 +69,7 @@ public class KasperQueryServicesLocatorBaseTest {
 	@Test
 	public void oneServiceRegistered() {
 		final TestService service = mock(TestService.class);
-		locator.registerService("test", service);
+		locator.registerService("test", service, TestDomain.class);
 		assertEquals(locator.getServices().size(), 1);
 
 		@SuppressWarnings("rawtypes")
@@ -84,7 +84,7 @@ public class KasperQueryServicesLocatorBaseTest {
 	@Test
 	public void registerNullService() {
 		thrown.expect(NullPointerException.class);
-		locator.registerService("", null);
+		locator.registerService("", null, TestDomain.class);
 	}
 
     // ------------------------------------------------------------------------
@@ -109,7 +109,7 @@ public class KasperQueryServicesLocatorBaseTest {
 
         // When
         locator.registerFilter("testFilter", filter);
-        locator.registerService("testService", service);
+        locator.registerService("testService", service, TestDomain.class);
         locator.registerFilterForService(serviceClass, filter.getClass());
 
         // Then
@@ -138,6 +138,41 @@ public class KasperQueryServicesLocatorBaseTest {
         // Then
         assertEquals(3, locator.getFiltersForServiceClass(serviceClass).size());
 
+    }
+
+    // ------------------------------------------------------------------------
+
+    private static final class TestDomain2 implements Domain { }
+
+    private static final class TestQuery2 implements Query {}
+
+    @XKasperQueryService( domain = TestDomain2.class )
+    private static class TestService2 implements QueryService<TestQuery2, TestResult> {
+        @Override
+        public TestResult retrieve(final QueryMessage<TestQuery2> message) {
+            throw new UnsupportedOperationException();
+        }
+    }
+
+    @XKasperServiceFilter
+    private static class TestFilterDomain implements ServiceFilter { }
+
+    @Test
+    public void registerStickyDomainFilter() {
+
+        // Given
+        final TestFilterDomain filter = new TestFilterDomain();
+        final TestService service = new TestService();
+        final TestService2 service2 = new TestService2();
+
+        // When
+        locator.registerFilter("testFilter", filter, true, TestDomain.class);
+        locator.registerService("testService", service, TestDomain.class);
+        locator.registerService("testService2", service2, TestDomain2.class);
+
+        // Then
+        assertEquals(1, locator.getFiltersForServiceClass(service.getClass()).size());
+        assertEquals(0, locator.getFiltersForServiceClass(service2.getClass()).size());
     }
 
 }

@@ -11,9 +11,11 @@ import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperServiceFilter;
+import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
 
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -47,7 +49,7 @@ public class QueryFiltersProcessorTest {
         processor.process(filter.getClass(), filter);
 
         // Then
-        verify(locator).registerFilter(eq(FILTER_NAME), eq(filter));
+        verify(locator).registerFilter(eq(FILTER_NAME), eq(filter), eq(false), (Class<? extends Domain>) isNull());
     }
 
      @Test
@@ -60,7 +62,7 @@ public class QueryFiltersProcessorTest {
         processor.process(filter.getClass(), filter);
 
         // Then
-        verify(locator).registerFilter(eq(filter.getClass().getSimpleName()), eq(filter));
+        verify(locator).registerFilter(eq(filter.getClass().getSimpleName()), eq(filter), eq(false), (Class<? extends Domain>) isNull());
     }
 
 }
