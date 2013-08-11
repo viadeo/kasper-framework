@@ -4,6 +4,8 @@
 //            Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
+apply plugin: 'sonar-runner'
+
 allprojects  {
   apply plugin: 'maven'
   apply plugin: 'eclipse'
@@ -168,6 +170,25 @@ subprojects {
     testCompile libraries.HAMCREST
   }
 
+  // Sonar configuration for sub-projects
+  sonarRunner {
+      sonarProperties {
+          property "sonar.sourceEncoding", "UTF-8"
+      }
+  }
+}
+
+// Sonar configuration for root project
+sonarRunner {
+    sonarProperties {
+        property "sonar.host.url", "http://hudson.mvn.viadeo.com/sonar"
+        property "sonar.jdbc.url", "jdbc:mysql://hudson.mvn.viadeo.com:3306/sonar?useUnicode=true&amp;characterEncoding=utf8"
+        property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
+        property "sonar.jdbc.username", "sonar"
+        property "sonar.jdbc.password", "sonar"
+        property "sonar.dynamicAnalysis", "true"
+        property "sonar.java.coveragePlugin", "cobertura"
+    }
 }
 
 // Build dependencies ---------------------------------------------------------

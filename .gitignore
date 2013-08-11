@@ -22,6 +22,7 @@ gradle/
 .gradle/
 application.log
 sql.log
+*.swp
 
 # Idea files
 *.iml
