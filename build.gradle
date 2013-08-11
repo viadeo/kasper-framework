@@ -181,8 +181,8 @@ subprojects {
 // Sonar configuration for root project
 sonarRunner {
     sonarProperties {
-        property "sonar.host.url", "http://hudson.mvn.viadeo.com/sonar"
-        property "sonar.jdbc.url", "jdbc:mysql://hudson.mvn.viadeo.com:3306/sonar?useUnicode=true&amp;characterEncoding=utf8"
+        property "sonar.host.url", "http://hudson.smallbusiness.local:8080/sonar/"
+        property "sonar.jdbc.url", "jdbc:mysql://hudson.smallbusiness.local:3306/sonar?useUnicode=true&amp;characterEncoding=utf8"
         property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
         property "sonar.jdbc.username", "sonar"
         property "sonar.jdbc.password", "sonar"
