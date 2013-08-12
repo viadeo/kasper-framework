@@ -9,13 +9,18 @@ package com.viadeo.kasper.test.cqrs.query;
 
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQuery;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperServiceFilter;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -31,16 +36,20 @@ public class QueryFilterITest {
 
     // ------------------------------------------------------------------------
 
+    @XKasperUnregistered
     private class TestDomain implements Domain { }
 
+    @XKasperUnregistered
     private class TestQuery implements Query {
         public int state = STATE_START;
     }
 
+    @XKasperUnregistered
     private class TestResult implements QueryResult {
         public int state = STATE_START;
     }
 
+    @XKasperUnregistered
     private class TestService implements QueryService<TestQuery, TestResult> {
         @Override
         public TestResult retrieve(final QueryMessage message) throws Exception {
@@ -48,7 +57,7 @@ public class QueryFilterITest {
         }
     }
 
-    @XKasperQueryService( domain = TestDomain.class )
+    @XKasperUnregistered
     private class TestFilter implements QueryFilter, ResultFilter {
         @Override
         public void filter(Context context, Query query) throws KasperQueryException {
@@ -61,7 +70,7 @@ public class QueryFilterITest {
         }
     }
 
-    @XKasperQueryService( domain = TestDomain.class )
+    @XKasperUnregistered
     private class TestFilterGlobal implements QueryFilter {
         @Override
         public void filter(Context context, Query query) throws KasperQueryException { }

@@ -6,11 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.test.core.boot;
 
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.boot.QueryServicesProcessor;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperServiceFilter;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
 
@@ -31,14 +33,19 @@ public class QueryServicesProcessorTest {
 
     // ------------------------------------------------------------------------
 
+    @XKasperUnregistered
     private class TestDomain implements Domain { }
+
+    @XKasperUnregistered
     private class TestQuery implements Query { }
+
+    @XKasperUnregistered
     private class TestResult implements QueryResult { }
 
-    @XKasperQueryService( domain = TestDomain.class )
+    @XKasperUnregistered
     private class TestFilter implements ServiceFilter { }
 
-    @XKasperQueryService( domain = TestDomain.class )
+    @XKasperUnregistered
     private class TestFilter2 implements ServiceFilter { }
 
     // ------------------------------------------------------------------------

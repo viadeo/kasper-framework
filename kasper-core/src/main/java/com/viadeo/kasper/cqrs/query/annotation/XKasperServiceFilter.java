@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.annotation;
 
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.Domain;
 
 import java.lang.annotation.ElementType;
@@ -20,8 +21,6 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface XKasperServiceFilter {
-
-
 
 	/**
 	 * @return the name of the service
@@ -40,7 +39,9 @@ public @interface XKasperServiceFilter {
      *
      * The filter will only be applied on services of this domain
      */
-    static final class NullDomain implements Domain { }
     Class<? extends Domain> domain() default NullDomain.class;
+
+    @XKasperUnregistered
+    static final class NullDomain implements Domain { }
 
 }
