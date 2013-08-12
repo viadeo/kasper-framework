@@ -37,8 +37,8 @@ public abstract class AbstractRootRelation<S extends RootConcept, T extends Root
 	protected void setId(final KasperID id, final KasperID sourceId, final KasperID targetId) {
 		super.setId(id);
 
-		this.sourceId = Preconditions.checkNotNull(sourceId);
 		this.targetId = Preconditions.checkNotNull(targetId);
+ 		this.sourceId = Preconditions.checkNotNull(sourceId);
 	}
 
 	// ------------------------------------------------------------------------
