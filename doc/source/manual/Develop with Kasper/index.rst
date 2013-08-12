@@ -60,6 +60,7 @@ And encourages you to use some software patterns in your developments :
     Model
     Events
     Queries
+    Context
     Helpers
 
 
