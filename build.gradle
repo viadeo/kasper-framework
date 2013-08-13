@@ -6,6 +6,10 @@
 
 apply plugin: 'sonar-runner'
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.7'
+}
+
 allprojects  {
   apply plugin: 'maven'
   apply plugin: 'eclipse'
