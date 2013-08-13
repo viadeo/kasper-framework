@@ -45,11 +45,11 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 					@SuppressWarnings("unchecked")
 					final Optional<Class<?>> optType = (Optional<Class<?>>) 
 							ReflectionGenericsResolver.getParameterTypeFromClass(
-									classType, List.class, 0);
+									property, componentClazz, Collection.class, 0);
 					
 					if (!optType.isPresent()) {
-						LOGGER.warn(String.format("Unable to find list type for field %s in class %s",
-								name, componentClazz.getSimpleName()));
+						LOGGER.warn(String.format("Unable to find collection enclosed type for field %s in class %s",
+                                name, componentClazz.getSimpleName()));
 						type = "unknown";
 					} else {
 						type = optType.get().getSimpleName();
@@ -61,10 +61,10 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 					@SuppressWarnings("unchecked")
 					final Optional<Class<?>> optType = (Optional<Class<?>>) 
 							ReflectionGenericsResolver.getParameterTypeFromClass(
-									classType, Map.class, 1);
+									property, componentClazz, Map.class, 1);
 					
  					if (!optType.isPresent()) {
-						LOGGER.warn(String.format("Unable to find list type for field %s in class %s",
+						LOGGER.warn(String.format("Unable to find map enclosed type for field %s in class %s",
 								name, componentClazz.getSimpleName()));
 						type = "unknown";
 					} else {
@@ -76,8 +76,10 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 					type = propClass.getSimpleName();
 					isList = false;
 				}
-				
-				this.add(new DocumentedProperty(name, type, isList));
+
+                if (!name.startsWith("this$")) {
+				    this.add(new DocumentedProperty(name, type, isList));
+                }
 			}
 		}
 		
@@ -85,14 +87,22 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 	
 	// ------------------------------------------------------------------------
 	
-	private static List<Field> getAllFields(final List<Field> fields, final Class<?> type) {
-        Collections.addAll(fields, type.getDeclaredFields());
+	private static List<Field> getAllFields(final List<Field> fields, final Type type) {
+        final Class<?> typeClass = extractClassFromType(type);
+        Collections.addAll(fields, typeClass.getDeclaredFields());
 
-	    if (type.getSuperclass() != null) {
-	        getAllFields(fields, type.getSuperclass());
+	    if (typeClass.getSuperclass() != null) {
+	        getAllFields(fields, typeClass.getGenericSuperclass());
 	    }
 
 	    return fields;
 	}
+
+    private static Class<?> extractClassFromType(final Type t) throws ClassCastException {
+        if (t instanceof Class<?>) {
+            return (Class<?>)t;
+        }
+        return (Class<?>)((ParameterizedType)t).getRawType();
+    }
 	
 }
