@@ -8,10 +8,10 @@
 package com.viadeo.kasper.client;
 
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.NullSafeTypeAdapter;
 import com.viadeo.kasper.query.exposition.QueryBuilder;
 import com.viadeo.kasper.query.exposition.QueryParser;
+import com.viadeo.kasper.query.exposition.TypeAdapter;
 import org.junit.Test;
 
 import java.util.Date;

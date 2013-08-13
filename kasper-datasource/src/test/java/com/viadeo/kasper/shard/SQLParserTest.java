@@ -6,9 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.shard;
 
-import com.viadeo.kasper.shard.Operation;
-import com.viadeo.kasper.shard.SQLParser;
-import com.viadeo.kasper.shard.SQLQuery;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;

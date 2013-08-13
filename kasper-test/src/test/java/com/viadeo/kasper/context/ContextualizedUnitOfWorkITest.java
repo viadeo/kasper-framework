@@ -26,7 +26,6 @@ import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.er.impl.AbstractRootConcept;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.domain.er.impl.AbstractRootConceptEvent;
-
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.repository.AggregateNotFoundException;
 import org.joda.time.DateTime;

@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.shard;
 
-import com.viadeo.kasper.shard.Operation;
-
 public class SQLQuery {
 
     private Operation operation;

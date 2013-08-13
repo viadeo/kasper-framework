@@ -7,7 +7,6 @@
 package com.viadeo.kasper.test.core.boot;
 
 import com.viadeo.kasper.core.boot.AnnotationProcessor;
-
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
 import junit.framework.TestCase;
 import org.junit.Test;

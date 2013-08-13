@@ -6,14 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.exceptions;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.exception.KasperException;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * The base Kasper query exception

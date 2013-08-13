@@ -6,10 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class KasperError {
 

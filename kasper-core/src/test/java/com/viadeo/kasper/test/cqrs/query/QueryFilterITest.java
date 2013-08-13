@@ -13,14 +13,9 @@ import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQuery;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryResult;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperServiceFilter;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;

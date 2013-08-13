@@ -1,19 +1,19 @@
 package com.viadeo.kasper.exposition;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandResult.Status;
 import com.viadeo.kasper.cqrs.command.CommandResult;
+import com.viadeo.kasper.cqrs.command.CommandResult.Status;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.platform.Platform;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
+
+import java.util.Arrays;
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

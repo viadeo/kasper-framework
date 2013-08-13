@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition;
 
-import java.util.*;
-
 import com.google.common.collect.ImmutableSet;
+
+import java.util.*;
 
 public class QueryParser implements Iterable<QueryParser> {
 

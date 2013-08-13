@@ -1,7 +1,14 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.test.doc.web;
 
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.doc.KasperLibrary;
+import com.viadeo.kasper.doc.configuration.DefaultAutoDocumentationConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,21 +21,6 @@ public class KasperConfigurator {
 	 */
 	private KasperLibrary kasperLibrary;
 
-	/**
-	 * The processors to register
-	 */
-	static final Class<?>[] PROCESSORS = {
-		CommandsDocumentationProcessor.class,
-		ConceptsDocumentationProcessor.class,
-		DomainsDocumentationProcessor.class,
-		EventsDocumentationProcessor.class,
-		HandlersDocumentationProcessor.class,
-		ListenersDocumentationProcessor.class,
-		RelationsDocumentationProcessor.class,
-		RepositoriesDocumentationProcessor.class,
-		QueryServicesDocumentationProcessor.class
-	};
-
 	// ------------------------------------------------------------------------
 
 	/**
@@ -39,22 +31,11 @@ public class KasperConfigurator {
 	 */
 	public KasperConfigurator() {
 
-        kasperLibrary = new KasperLibrary(); // Assign the static instance
-
         final AnnotationRootProcessor rootProcessor = new AnnotationRootProcessor();
 
-        for (final Class<?> processorClazz : PROCESSORS) {
-            final DocumentationProcessor<?,?> processor;
-            try {
-                processor = (DocumentationProcessor<?, ?>) processorClazz.newInstance();
-                processor.setKasperLibrary(kasperLibrary);
-                rootProcessor.registerProcessor(processor);
-            } catch (final InstantiationException e) {
-                e.printStackTrace();
-            } catch (final IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
+        final DefaultAutoDocumentationConfiguration docConf = new DefaultAutoDocumentationConfiguration();
+        docConf.registerToRootProcessor(rootProcessor);
+        this.kasperLibrary = docConf.getKasperLibrary();
 
         rootProcessor.addScanPrefix("com.viadeo.kasper.test"); // Scan test classes (test use case)
         rootProcessor.setDoNotScanDefaultPrefix(true); // Do not use default boot processors

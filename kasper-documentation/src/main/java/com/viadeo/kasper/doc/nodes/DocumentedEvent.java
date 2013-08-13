@@ -12,7 +12,6 @@ import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.domain.DomainEvent;
-import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.Collection;
@@ -41,18 +40,17 @@ public final class DocumentedEvent extends DocumentedDomainNode {
 		
 		// Get description ----------------------------------------------------
 		final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
-		final String description;
-  		final String annotatedAction;
+		String description = "";
+  		String annotatedAction = "";
 		if (annotation != null) {
-              description = annotation.description();
+            description = annotation.description();
             annotatedAction = annotation.action();
-        } else {
+        }
+
+        if (description.isEmpty()) {
 			description = String.format("The %s event", eventClazz.getSimpleName().replaceAll("Event", ""));
-            annotatedAction = "";
-		}
+        }
 
-
-		
 		// Set properties -----------------------------------------------------
 		this.setAction(annotatedAction);
 		this.setName(eventClazz.getSimpleName());

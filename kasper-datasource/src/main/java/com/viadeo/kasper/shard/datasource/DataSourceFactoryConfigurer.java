@@ -7,10 +7,8 @@
 package com.viadeo.kasper.shard.datasource;
 
 import com.google.common.base.Preconditions;
-
-import com.viadeo.kasper.shard.settings.*;
 import com.viadeo.kasper.exception.KasperException;
-
+import com.viadeo.kasper.shard.settings.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

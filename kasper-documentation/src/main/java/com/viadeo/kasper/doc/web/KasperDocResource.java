@@ -8,8 +8,8 @@ package com.viadeo.kasper.doc.web;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.doc.nodes.DocumentedDomainNode;
 import com.viadeo.kasper.doc.nodes.DocumentedDomain;
+import com.viadeo.kasper.doc.nodes.DocumentedDomainNode;
 import com.viadeo.kasper.doc.nodes.RetMap;
 import com.viadeo.kasper.doc.nodes.RetUnexistent;
 

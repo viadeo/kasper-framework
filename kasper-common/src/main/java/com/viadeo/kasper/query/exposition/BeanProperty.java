@@ -1,8 +1,8 @@
 package com.viadeo.kasper.query.exposition;
 
-import java.lang.annotation.Annotation;
-
 import com.google.common.reflect.TypeToken;
+
+import java.lang.annotation.Annotation;
 
 public class BeanProperty {
     private final String name;

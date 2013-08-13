@@ -46,6 +46,7 @@ public class KasperPlatform implements Platform {
 		return this.commandGateway;
 	}
 
+    @Override
 	public AnnotationRootProcessor getRootProcessor() {
 		return this.rootProcessor;
 	}

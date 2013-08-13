@@ -9,7 +9,7 @@ package com.viadeo.kasper.test.core.boot;
 import com.viadeo.kasper.core.boot.ServiceFiltersProcessor;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
-import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.query.ServiceFilter;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperServiceFilter;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;

@@ -6,17 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.platform.configuration;
 
-import com.google.common.base.Throwables;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
-import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
-import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
-import com.viadeo.kasper.platform.components.commandbus.KasperCommandBus;
-import com.viadeo.kasper.platform.components.eventbus.KasperHybridEventBus;
 import com.viadeo.kasper.platform.impl.KasperPlatform;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
@@ -24,123 +19,112 @@ import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventhandling.annotation.AnnotationEventListenerBeanPostProcessor;
 import org.springframework.context.annotation.Bean;
 
-public class DefaultPlatformSpringConfiguration {
+public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfiguration {
 
     @Bean
+    @Override
     public ComponentsInstanceManager getComponentsInstanceManager() {
-        final SpringComponentsInstanceManager sman = new SpringComponentsInstanceManager();
-        return sman;
+        return super.getComponentsInstanceManager();
     }
 
     @Bean
+    @Override
     public AnnotationRootProcessor annotationRootProcessor(final ComponentsInstanceManager instancesManager){
-        final AnnotationRootProcessor rootProcessor =  new AnnotationRootProcessor();
-        rootProcessor.setComponentsInstanceManager(instancesManager);
-        return rootProcessor;
+        return super.annotationRootProcessor(instancesManager);
     }
 
     @Bean(initMethod = "boot")
+    @Override
     public KasperPlatform kasperPlatform(final CommandGateway commandGateway
             , final QueryGateway queryGateway
             , final EventBus eventBus
             , final AnnotationRootProcessor annotationRootProcessor
     ) {
-        final KasperPlatform kasperPlatform = new KasperPlatform();
-        kasperPlatform.setCommandGateway(commandGateway);
-        kasperPlatform.setQueryGateway(queryGateway);
-        kasperPlatform.setRootProcessor(annotationRootProcessor);
-        kasperPlatform.setEventBus(eventBus);
-        return kasperPlatform;
+        return super.kasperPlatform(commandGateway, queryGateway, eventBus, annotationRootProcessor);
     }
 
     @Bean
+    @Override
     public EventBus eventBus(){
-        return new KasperHybridEventBus();
+        return super.eventBus();
     }
 
     @Bean
+    @Override
     public CommandGateway commandGateway(final CommandGatewayFactoryBean commandGatewayFactoryBean){
-        try {
-            return (CommandGateway) commandGatewayFactoryBean.getObject();
-        } catch (Exception e) {
-            throw Throwables.propagate(e);
-        }
+        return super.commandGateway(commandGatewayFactoryBean);
     }
 
     @Bean
+    @Override
     public AnnotationEventListenerBeanPostProcessor annotationEventListenerBeanPostProcessor(final EventBus eventBus){
-        AnnotationEventListenerBeanPostProcessor annotationEventListenerBeanPostProcessor = new AnnotationEventListenerBeanPostProcessor();
-        annotationEventListenerBeanPostProcessor.setEventBus(eventBus);
-        return annotationEventListenerBeanPostProcessor;
+        return super.annotationEventListenerBeanPostProcessor(eventBus);
     }
 
     @Bean
+    @Override
     public CommandBus commandBus(){
-        return  new KasperCommandBus();
+        return super.commandBus();
     }
 
     @Bean @SuppressWarnings("unchecked")
+    @Override
     public CommandGatewayFactoryBean commandGatewayFactoryBean(final CommandBus commandBus){
-        final CommandGatewayFactoryBean commandGatewayFactoryBean = new CommandGatewayFactoryBean();
-        commandGatewayFactoryBean.setCommandBus(commandBus);
-        commandGatewayFactoryBean.setGatewayInterface(CommandGateway.class);
-        return commandGatewayFactoryBean;
+        return super.commandGatewayFactoryBean(commandBus);
     }
 
     @Bean
-    public DomainLocator domainLocator(){
-        return new DefaultDomainLocator();
+    @Override
+    public DomainLocator domainLocator() {
+        return super.domainLocator();
     }
 
     @Bean
+    @Override
     public QueryServicesLocator queryServicesLocator(){
-        return new DefaultQueryServicesLocator();
+        return super.queryServicesLocator();
     }
 
     @Bean
+    @Override
     public CommandHandlersProcessor commandHandlersProcessor(final CommandBus commandBus, final DomainLocator domainLocator){
-        CommandHandlersProcessor commandHandlersProcessor = new CommandHandlersProcessor();
-        commandHandlersProcessor.setCommandBus(commandBus);
-        commandHandlersProcessor.setDomainLocator(domainLocator);
-        return commandHandlersProcessor;
+        return super.commandHandlersProcessor(commandBus, domainLocator);
     }
 
     @Bean
+    @Override
     public RepositoriesProcessor repositoriesProcessor(final DomainLocator locator, final EventBus eventBus){
-        final RepositoriesProcessor repositoriesProcessor = new RepositoriesProcessor();
-        repositoriesProcessor.setDomainLocator(locator);
-        repositoriesProcessor.setEventBus(eventBus);
-        return repositoriesProcessor;
+        return super.repositoriesProcessor(locator, eventBus);
     }
 
     @Bean
+    @Override
+    public ServiceFiltersProcessor serviceFiltersProcessor(QueryServicesLocator locator) {
+        return super.serviceFiltersProcessor(locator);
+    }
+
+    @Bean
+    @Override
     public EventListenersProcessor eventListenersProcessor(final EventBus eventBus){
-        final EventListenersProcessor eventListenersProcessor = new EventListenersProcessor();
-        eventListenersProcessor.setEventBus(eventBus);
-        return eventListenersProcessor;
+        return super.eventListenersProcessor(eventBus);
     }
 
-
     @Bean
+    @Override
     public QueryServicesProcessor queryServicesProcessor(final QueryServicesLocator locator){
-        final QueryServicesProcessor queryServicesProcessor = new QueryServicesProcessor();
-        queryServicesProcessor.setQueryServicesLocator(locator);
-        return queryServicesProcessor;
+        return super.queryServicesProcessor(locator);
     }
 
     @Bean
+    @Override
     public DomainsProcessor domainsProcessor(final DomainLocator domainLocator){
-        final DomainsProcessor domainsProcessor = new DomainsProcessor();
-        domainsProcessor.setDomainLocator(domainLocator);
-        return domainsProcessor;
+        return super.domainsProcessor(domainLocator);
     }
 
-
     @Bean
+    @Override
     public DefaultQueryGateway queryGateway(final QueryServicesLocator locator){
-        final DefaultQueryGateway defaultQueryGateway = new DefaultQueryGateway();
-        defaultQueryGateway.setQueryServicesLocator(locator);
-        return defaultQueryGateway;
+        return super.queryGateway(locator);
     }
 
 }

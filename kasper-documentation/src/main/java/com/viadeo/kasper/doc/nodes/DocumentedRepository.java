@@ -7,8 +7,8 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.AggregateRoot;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;

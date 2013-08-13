@@ -9,7 +9,9 @@ you can use any database library, or use MyBatis as you prefer to use it..*
 How to use MyBatis
 ------------------
 
-1. import **kasper-datasource** with MyBatis dependencies
+1. import **kasper-datasource**, with MyBatis dependencies
+    *  MYBATIS               : 'org.mybatis:mybatis:3.2.2',
+    *  MYBATIS_SPRING        : 'org.mybatis:mybatis-spring:1.2.0',
 2. create an instance of **SqlSessionFactory**
     * using `MyBatis <http://mybatis.github.io/mybatis-3/java-api.html#sqlSessions>`_
     * for instance using a standard java **DataSource** instance (see `reference <http://docs.oracle.com/javase/tutorial/jdbc/basics/sqldatasources.html>`_) :

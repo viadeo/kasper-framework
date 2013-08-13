@@ -12,7 +12,6 @@ import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.configuration.DefaultPlatformSpringConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 public abstract class AbstractPlatformTests {
 

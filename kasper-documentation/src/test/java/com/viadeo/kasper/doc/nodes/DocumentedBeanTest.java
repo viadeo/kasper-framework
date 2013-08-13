@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.Collection;

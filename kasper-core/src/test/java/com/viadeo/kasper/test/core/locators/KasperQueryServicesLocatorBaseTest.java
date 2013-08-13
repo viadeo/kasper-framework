@@ -7,6 +7,7 @@
 package com.viadeo.kasper.test.core.locators;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
@@ -27,10 +28,13 @@ public class KasperQueryServicesLocatorBaseTest {
 
 	private DefaultQueryServicesLocator locator;
 
+    @XKasperUnregistered
     private static final class TestDomain implements Domain { }
 
+    @XKasperUnregistered
 	private static final class TestResult implements QueryResult {}
 
+    @XKasperUnregistered
 	private static final class TestQuery implements Query {}
 
     @XKasperQueryService( domain = TestDomain.class )
@@ -142,8 +146,10 @@ public class KasperQueryServicesLocatorBaseTest {
 
     // ------------------------------------------------------------------------
 
+    @XKasperUnregistered
     private static final class TestDomain2 implements Domain { }
 
+    @XKasperUnregistered
     private static final class TestQuery2 implements Query {}
 
     @XKasperQueryService( domain = TestDomain2.class )

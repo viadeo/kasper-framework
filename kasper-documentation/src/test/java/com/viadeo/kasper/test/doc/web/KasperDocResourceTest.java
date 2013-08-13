@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.test.doc.web;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
@@ -9,7 +15,7 @@ import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.viadeo.kasper.doc.web.KasperDocResource;
-import com.viadeo.kasper.doc.web.ObjectMapperCustomResolver;
+import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
 import difflib.Delta;
 import difflib.DiffUtils;
 import difflib.Patch;
@@ -25,10 +31,7 @@ import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.ws.rs.GET;
 import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.MediaType;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -94,7 +97,7 @@ public class KasperDocResourceTest extends JerseyTest {
 
         public TestConfiguration() {
             super(WrappedDocResource.class);
-            getProviderSingletons().add(new JacksonJsonProvider(new ObjectMapperCustomResolver().getContext(null)));
+            getProviderSingletons().add(new JacksonJsonProvider(new ObjectMapperKasperResolver().getContext(null)));
         }
     }
 

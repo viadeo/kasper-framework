@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.tools;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectReader;
 import org.junit.Test;
 

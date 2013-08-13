@@ -7,11 +7,7 @@
 package com.viadeo.kasper.query.exposition;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.ObjectArrays;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 import com.google.common.reflect.TypeToken;
 import com.thoughtworks.paranamer.*;
 import com.viadeo.kasper.cqrs.query.Query;

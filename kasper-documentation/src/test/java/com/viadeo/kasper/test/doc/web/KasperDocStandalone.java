@@ -1,19 +1,22 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.test.doc.web;
 
 import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
-import com.sun.jersey.api.container.grizzly2.servlet.GrizzlyWebContainerFactory;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.viadeo.kasper.doc.web.KasperDocResource;
-import com.viadeo.kasper.doc.web.ObjectMapperCustomResolver;
+import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 
 import java.io.IOException;
 
 public class KasperDocStandalone extends KasperConfigurator {
-
-
 
     public static void main(String [] args) throws IOException, InterruptedException {
         final String baseUri = "http://localhost:9998/";
@@ -25,7 +28,7 @@ public class KasperDocStandalone extends KasperConfigurator {
 
         final ResourceConfig rc = new PackagesResourceConfig("com.viadeo.kasper.test.doc.web");
         rc.getSingletons().add(res);
-        rc.getProviderClasses().add(ObjectMapperCustomResolver.class);
+        rc.getProviderClasses().add(ObjectMapperKasperResolver.class);
 
         System.out.println("Starting grizzly...");
 
