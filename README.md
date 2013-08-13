@@ -25,3 +25,5 @@ KASPER - Kasper is the treasure keeper
 2. Make your changes in a separate branch
 3. Rebase your branch on viadeo **develop** branch
 4. Submit a pull request on **develop** branch
+
+[Access lastest master Kasper framework documentation](http://doc01.infra.paris.apvo/kasper-framework/latest/)
