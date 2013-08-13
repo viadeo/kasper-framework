@@ -6,13 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.KasperError;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Base Kasper command result implementation

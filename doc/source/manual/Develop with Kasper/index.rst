@@ -53,13 +53,14 @@ And encourages you to use some software patterns in your developments :
 
 .. toctree::
     :maxdepth: 2
-    
+
     General
     Domains
     Commands
     Model
     Events
     Queries
-
+    Context
+    Helpers
 
 

@@ -7,7 +7,6 @@
 package com.viadeo.kasper.shard.util;
 
 
-import com.viadeo.kasper.shard.util.ResourcesUtils;
 import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Ignore;

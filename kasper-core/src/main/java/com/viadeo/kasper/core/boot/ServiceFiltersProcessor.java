@@ -11,6 +11,7 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.ServiceFilter;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperServiceFilter;
+import com.viadeo.kasper.ddd.Domain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,8 +50,15 @@ public class ServiceFiltersProcessor extends SingletonAnnotationProcessor<XKaspe
 			filterName = annotation.name();
 		}
 
+        Class<? extends Domain> stickyDomainClass = null;
+        if (!annotation.domain().equals(XKasperServiceFilter.NullDomain.class)) {
+            stickyDomainClass = annotation.domain();
+        }
+
+        final boolean isGlobal = annotation.global();
+
         //- Register the query filter to the locator -------------------------
-		this.queryServicesLocator.registerFilter(filterName, queryFilter);
+		this.queryServicesLocator.registerFilter(filterName, queryFilter, isGlobal, stickyDomainClass);
 	}
 
 	// ------------------------------------------------------------------------

@@ -14,6 +14,6 @@ import com.viadeo.kasper.event.domain.RootEntityEvent;
  * Event on Kasper Concept
  *
  */
-public interface ConceptRootEvent<D extends Domain, C> extends RootEntityEvent<D, C> {
+public interface RootConceptEvent<D extends Domain, C> extends RootEntityEvent<D, C> {
 
 }

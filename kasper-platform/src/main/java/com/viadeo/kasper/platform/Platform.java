@@ -22,6 +22,7 @@ public interface Platform {
 	
 	void boot();
 	void setRootProcessor(AnnotationRootProcessor rootProcessor);
+    AnnotationRootProcessor getRootProcessor();
 
 	/** Commands */
 	

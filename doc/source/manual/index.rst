@@ -12,6 +12,7 @@ User Manual
     :maxdepth: 1
 
     Architecture and principles/index
+    Configuration
     Develop with Kasper/index
     Access Kasper platform/index
     Auto-documentation

@@ -11,6 +11,7 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.ServiceFilter;
+import com.viadeo.kasper.ddd.Domain;
 
 import java.util.Collection;
 
@@ -18,7 +19,15 @@ import java.util.Collection;
 public interface QueryServicesLocator {
 
 	/** @param service the service to be registered */
-	void registerService(String name, QueryService<?, ?> service);
+	void registerService(String name, QueryService<?, ?> service, Class<? extends Domain> domainClass);
+
+    /**
+     * @param filterName the name of the query filter to be registered
+     * @param queryFilter the filter instance to be registered
+     * @param isGlobal sets TRUE if this filter must be applied to all services
+     * @param stickyDomainClass the domain class to be sticky (if global) : filter will only be applied of this domain services
+     */
+    void registerFilter(String filterName, ServiceFilter queryFilter, boolean isGlobal, Class<? extends Domain> stickyDomainClass);
 
     /**
      * @param filterName the name of the query filter to be registered

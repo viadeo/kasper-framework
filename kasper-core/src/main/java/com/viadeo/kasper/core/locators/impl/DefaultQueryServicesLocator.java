@@ -8,15 +8,13 @@
 package com.viadeo.kasper.core.locators.impl;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ClassToInstanceMap;
-import com.google.common.collect.Lists;
-import com.google.common.collect.MutableClassToInstanceMap;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.ServiceFilter;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +38,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 	@SuppressWarnings("rawtypes")
     private final ClassToInstanceMap<QueryService> services = MutableClassToInstanceMap.create();
     private final ClassToInstanceMap<ServiceFilter> filters = MutableClassToInstanceMap.create();
+    private final Map<Class<? extends QueryService>, Class<? extends Domain>> serviceDomains = Maps.newHashMap();
 
     /** Global filters **/
     private final List<Class<? extends ServiceFilter>> globalFilters = Lists.newArrayList();
@@ -51,15 +50,16 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 	@SuppressWarnings("rawtypes")
 	private final Map<String, QueryService> serviceNames = newHashMap();
 
-    /** Association of filters per service **/
+    /** Association of filters per service and domains **/
     private final Map<Class<? extends QueryService<?, ?>>, List<Class<? extends ServiceFilter>>> appliedFilters = newHashMap();
     private final Map<Class<? extends QueryService<?, ?>>, List<ServiceFilter>> instanceFilters = newHashMap();
+    private final Map<Class<? extends ServiceFilter>, Class<? extends Domain>> isDomainSticky = Maps.newHashMap();
 
 	// ------------------------------------------------------------------------
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public void registerService(final String name, final QueryService service) {
+	public void registerService(final String name, final QueryService<?,?> service, final Class<? extends Domain> domainClass) {
 		checkNotNull(name);
 		checkNotNull(service);
 
@@ -91,13 +91,14 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 		this.serviceQueryClasses.put(queryClass, service);
 		this.serviceNames.put(name, service);
 		this.services.put(serviceClass, service);
+        this.serviceDomains.put(serviceClass, domainClass);
 	}
 
     // ------------------------------------------------------------------------
 
     /* Filter name is not currently used in the locator */
     @Override
-    public void registerFilter(final String name, final ServiceFilter queryFilter, final boolean isGlobal) {
+    public void registerFilter(final String name, final ServiceFilter queryFilter, final boolean isGlobal, final Class<? extends Domain> stickyDomainClass) {
         checkNotNull(name);
         checkNotNull(queryFilter);
 
@@ -105,19 +106,28 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 			throw new KasperQueryException("Name of service filters cannot be empty : " + queryFilter.getClass());
 		}
 
+
 		final Class<? extends ServiceFilter> filterClass = queryFilter.getClass();
 		this.filters.put(filterClass, queryFilter);
 
         if (isGlobal) {
             this.globalFilters.add(filterClass);
             this.instanceFilters.clear(); // Drop all service instances caches
+            if (null != stickyDomainClass) {
+                this.isDomainSticky.put(queryFilter.getClass(),stickyDomainClass);
+            }
         }
 
     }
 
     @Override
+    public void registerFilter(final String name, final ServiceFilter queryFilter, boolean isGlobal) {
+        this.registerFilter(name, queryFilter, isGlobal, null);
+    }
+
+    @Override
     public void registerFilter(final String name, final ServiceFilter queryFilter) {
-        this.registerFilter(name, queryFilter, false);
+        this.registerFilter(name, queryFilter, false, null);
     }
 
     // ------------------------------------------------------------------------
@@ -185,11 +195,28 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
             return EMPTY_FILTERS;
         }
 
+
         // Ensure instances has been collected, lazy loading
         if (!this.instanceFilters.containsKey(serviceClass)) {
-            final List<Class<? extends ServiceFilter>> filtersToApply = this.appliedFilters.get(serviceClass);
-            filtersToApply.addAll(this.globalFilters); // Add Global filters
+            List<Class<? extends ServiceFilter>> filtersToApply = this.appliedFilters.get(serviceClass);
 
+            if (null == filtersToApply) {
+                filtersToApply = Lists.newArrayList();
+            }
+
+            // Apply required global filters
+            for (final Class<? extends ServiceFilter> globalFilterClass : this.globalFilters) {
+                if (this.isDomainSticky.containsKey(globalFilterClass)) {
+                    final Class<? extends Domain> stickyDomainClass = this.isDomainSticky.get(globalFilterClass);
+                    if ((null != stickyDomainClass) && stickyDomainClass.equals(this.serviceDomains.get(serviceClass))) {
+                        filtersToApply.add(globalFilterClass);
+                    }
+                } else {
+                    filtersToApply.add(globalFilterClass);
+                }
+            }
+
+            // Copy required filters instances to this service cache
             final List<ServiceFilter> instances = newArrayList();
             for (Class<? extends ServiceFilter> filterClass : Sets.newHashSet(filtersToApply)) {
                 if (this.filters.containsKey(filterClass)) {

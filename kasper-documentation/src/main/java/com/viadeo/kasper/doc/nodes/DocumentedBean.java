@@ -8,11 +8,15 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
+import java.util.*;
 
+/*
+ * FIXME: use the same fields inference mechanisms than jackson serializer..
+ * FIXME: improve Map resolution : the two types must be extracted
+ * FIXME: add tests
+ */
 public class DocumentedBean extends ArrayList<DocumentedProperty> {
 	private static final long serialVersionUID = 4149894288444871301L;
 
@@ -32,41 +36,50 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 				}
 				
 				final Boolean isList;
-				final Class<?> classType = property.getType();
+				final Type classType = property.getGenericType();
+                final Class<?> propClass = property.getType();
 				final String type;
-				
-				if (List.class.isAssignableFrom(classType)) {
-					
+
+				if (Collection.class.isAssignableFrom(propClass)) {
+
 					@SuppressWarnings("unchecked")
 					final Optional<Class<?>> optType = (Optional<Class<?>>) 
 							ReflectionGenericsResolver.getParameterTypeFromClass(
-									classType, List.class, 0);
+									property, componentClazz, Collection.class, 0);
 					
 					if (!optType.isPresent()) {
-						LOGGER.error(String.format("Unable to find list type for field %s in class %s", 
-								name, componentClazz.getSimpleName()));
+						LOGGER.warn(String.format("Unable to find collection enclosed type for field %s in class %s",
+                                name, componentClazz.getSimpleName()));
 						type = "unknown";
 					} else {
 						type = optType.get().getSimpleName();
 					}
 					isList = true;
 					
-				} else if (Map.class.isAssignableFrom(classType)) {
+				} else if (Map.class.isAssignableFrom(propClass)) {
 
 					@SuppressWarnings("unchecked")
 					final Optional<Class<?>> optType = (Optional<Class<?>>) 
 							ReflectionGenericsResolver.getParameterTypeFromClass(
-									classType, Map.class, 1);
+									property, componentClazz, Map.class, 1);
 					
-					type = optType.get().getSimpleName();
+ 					if (!optType.isPresent()) {
+						LOGGER.warn(String.format("Unable to find map enclosed type for field %s in class %s",
+								name, componentClazz.getSimpleName()));
+						type = "unknown";
+					} else {
+						type = optType.get().getSimpleName();
+					}
 					isList = true;					
 					
 				} else {
-					type = classType.getSimpleName();
+					type = propClass.getSimpleName();
 					isList = false;
 				}
-				
-				this.add(new DocumentedProperty(name, type, isList));
+
+                if (!name.startsWith("this$")) {
+				    this.add(new DocumentedProperty(name, type, isList));
+                }
 			}
 		}
 		
@@ -74,14 +87,22 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 	
 	// ------------------------------------------------------------------------
 	
-	private static List<Field> getAllFields(final List<Field> fields, final Class<?> type) {
-        Collections.addAll(fields, type.getDeclaredFields());
+	private static List<Field> getAllFields(final List<Field> fields, final Type type) {
+        final Class<?> typeClass = extractClassFromType(type);
+        Collections.addAll(fields, typeClass.getDeclaredFields());
 
-	    if (type.getSuperclass() != null) {
-	        getAllFields(fields, type.getSuperclass());
+	    if (typeClass.getSuperclass() != null) {
+	        getAllFields(fields, typeClass.getGenericSuperclass());
 	    }
 
 	    return fields;
 	}
+
+    private static Class<?> extractClassFromType(final Type t) throws ClassCastException {
+        if (t instanceof Class<?>) {
+            return (Class<?>)t;
+        }
+        return (Class<?>)((ParameterizedType)t).getRawType();
+    }
 	
 }

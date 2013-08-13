@@ -7,7 +7,9 @@
 package com.viadeo.kasper.tools;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -45,6 +47,59 @@ public final class ReflectionGenericsResolver {
 		// Boot recursive process with an empty bindings maps
 		return getParameterTypeFromClass(
                 runtimeType, targetType, nbParameter, new HashMap<Type, Type>());
+
+	}
+
+    /**
+     * Can be used to analyze a field, taking into account the generic parameters of its declaring class
+     *
+     * @param runtimeField the runtime field to be analyzed
+	 * @param targetType the target type to resolve the runtimeType against
+	 * @param nbParameter the generic parameter position on the targetType
+	 *
+	 * @return the (optional) type of the resolved parameter at specific position
+     */
+ 	@SuppressWarnings("rawtypes")
+	public static Optional<? extends Class> getParameterTypeFromClass(final Field runtimeField,
+                                                                      final Type targetType,
+			                                                          final Integer nbParameter) {
+        final Map<Type, Type> bindings = Maps.newHashMap();
+        fillBindingsFromClass(runtimeField.getDeclaringClass(), bindings);
+
+		// Boot recursive process with an empty bindings maps
+		return getParameterTypeFromClass(
+                runtimeField.getGenericType(), targetType, nbParameter, bindings);
+
+	}
+
+     /**
+     * Can be used to analyze a field, taking into account the generic parameters of the specified declaring type
+     *
+     * @param runtimeField the runtime field to be analyzed
+     * @param declaringType the declaring type to take into account for generic parameters analysis
+	 * @param targetType the target type to resolve the runtimeType against
+	 * @param nbParameter the generic parameter position on the targetType
+	 *
+	 * @return the (optional) type of the resolved parameter at specific position
+     */
+ 	@SuppressWarnings("rawtypes")
+	public static Optional<? extends Class> getParameterTypeFromClass(final Field runtimeField,
+                                                                      final Type declaringType,
+                                                                      final Type targetType,
+			                                                          final Integer nbParameter) {
+        final Map<Type, Type> bindings = Maps.newHashMap();
+        fillBindingsFromClass(declaringType, bindings);
+
+        Optional<Class> clazz = getClass(declaringType);
+        while (clazz.isPresent()) {
+            final Type parent = clazz.get().getGenericSuperclass();
+            fillBindingsFromClass(parent, bindings);
+            clazz = getClass(parent);
+        }
+
+		// Boot recursive process with an empty bindings maps
+		return getParameterTypeFromClass(
+                runtimeField.getGenericType(), targetType, nbParameter, bindings);
 
 	}
 

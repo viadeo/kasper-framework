@@ -14,9 +14,9 @@ import javax.ws.rs.ext.ContextResolver;
 import javax.ws.rs.ext.Provider;
 
 @Provider
-public class ObjectMapperCustomResolver implements ContextResolver<ObjectMapper> {
+public class ObjectMapperKasperResolver implements ContextResolver<ObjectMapper> {
     private final ObjectMapper mapper;
-    public ObjectMapperCustomResolver() {
+    public ObjectMapperKasperResolver() {
         mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, true);
         mapper.configure(MapperFeature.AUTO_DETECT_CREATORS, true);

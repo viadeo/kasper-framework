@@ -6,14 +6,15 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition;
 
-import java.util.HashMap;
-import java.util.List;
-
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.cqrs.query.Query;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import java.util.HashMap;
+import java.util.List;
+
+import static org.junit.Assert.assertArrayEquals;
+import static org.junit.Assert.assertEquals;
 
 public class TestTypeAdapterRoundTrips {
 

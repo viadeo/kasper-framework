@@ -1,10 +1,17 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper;
 
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.configuration.DefaultPlatformSpringConfiguration;
 import org.springframework.context.ApplicationContext;
-import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public abstract class AbstractPlatformTests {
 
@@ -24,8 +31,8 @@ public abstract class AbstractPlatformTests {
     public AbstractPlatformTests(final boolean uniquePlatform) {
 
         if (null == context) {
-            System.setProperty("spring_files", "classpath*:config/spring/cache/spring-cache-*.xml");
-            context = new ClassPathXmlApplicationContext("spring/kasper/kasper-platform.xml");
+            // System.setProperty("spring_files", "classpath*:config/spring/cache/spring-cache-*.xml");
+            context = new AnnotationConfigApplicationContext(DefaultPlatformSpringConfiguration.class);
         }
 
         if (null == staticPlatform) {

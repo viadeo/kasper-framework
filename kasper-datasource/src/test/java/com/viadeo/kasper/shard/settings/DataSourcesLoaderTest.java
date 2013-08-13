@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.shard.settings;
 
-import com.viadeo.kasper.shard.settings.DataSourcesLoader;
-import com.viadeo.kasper.shard.settings.DataSourcesSettings;
 import org.junit.Test;
 
 import java.io.IOException;

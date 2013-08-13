@@ -6,15 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.tools;
 
-import java.io.IOException;
-import java.util.List;
-
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
-import com.fasterxml.jackson.datatype.joda.JodaModule;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
@@ -22,10 +15,16 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
+import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.util.List;
 
 public class ObjectMapperProvider {
     private static final String ERROR = "error";

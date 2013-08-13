@@ -14,7 +14,6 @@ import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.command.CommandResult.ResultBuilder;
 import com.viadeo.kasper.cqrs.command.CommandResult.Status;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

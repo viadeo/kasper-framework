@@ -9,10 +9,10 @@ package com.viadeo.kasper.test.cqrs.query;
 
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
@@ -31,16 +31,20 @@ public class QueryFilterITest {
 
     // ------------------------------------------------------------------------
 
+    @XKasperUnregistered
     private class TestDomain implements Domain { }
 
+    @XKasperUnregistered
     private class TestQuery implements Query {
         public int state = STATE_START;
     }
 
+    @XKasperUnregistered
     private class TestResult implements QueryResult {
         public int state = STATE_START;
     }
 
+    @XKasperUnregistered
     private class TestService implements QueryService<TestQuery, TestResult> {
         @Override
         public TestResult retrieve(final QueryMessage message) throws Exception {
@@ -48,7 +52,7 @@ public class QueryFilterITest {
         }
     }
 
-    @XKasperQueryService( domain = TestDomain.class )
+    @XKasperUnregistered
     private class TestFilter implements QueryFilter, ResultFilter {
         @Override
         public void filter(Context context, Query query) throws KasperQueryException {
@@ -61,7 +65,7 @@ public class QueryFilterITest {
         }
     }
 
-    @XKasperQueryService( domain = TestDomain.class )
+    @XKasperUnregistered
     private class TestFilterGlobal implements QueryFilter {
         @Override
         public void filter(Context context, Query query) throws KasperQueryException { }
@@ -78,7 +82,7 @@ public class QueryFilterITest {
         final TestFilterGlobal filterGlobal = spy(new TestFilterGlobal());
         final QueryServicesLocator locator = new DefaultQueryServicesLocator();
 
-        locator.registerService("testService", service);
+        locator.registerService("testService", service, TestDomain.class);
         locator.registerFilter("testFilter", filter);
         locator.registerFilter("testFilter2", filterGlobal, true);
         locator.registerFilterForService(service.getClass(), filter.getClass());

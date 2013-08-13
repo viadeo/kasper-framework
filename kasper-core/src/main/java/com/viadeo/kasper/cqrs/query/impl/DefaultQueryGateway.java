@@ -28,6 +28,7 @@ public class DefaultQueryGateway implements QueryGateway {
     // -----------------------------------------------------------------------
 
     @Override
+    @SuppressWarnings("unchecked")
     public <Q extends Query, RES extends QueryResult> RES retrieve(final Q query, final Context context)
             throws Exception {
 

@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.core.boot;
 
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.boot.QueryServicesProcessor;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
@@ -31,14 +32,19 @@ public class QueryServicesProcessorTest {
 
     // ------------------------------------------------------------------------
 
+    @XKasperUnregistered
     private class TestDomain implements Domain { }
+
+    @XKasperUnregistered
     private class TestQuery implements Query { }
+
+    @XKasperUnregistered
     private class TestResult implements QueryResult { }
 
-    @XKasperQueryService( domain = TestDomain.class )
+    @XKasperUnregistered
     private class TestFilter implements ServiceFilter { }
 
-    @XKasperQueryService( domain = TestDomain.class )
+    @XKasperUnregistered
     private class TestFilter2 implements ServiceFilter { }
 
     // ------------------------------------------------------------------------
@@ -79,7 +85,7 @@ public class QueryServicesProcessorTest {
         processor.process(service.getClass(), service);
 
         // Then
-        verify(locator).registerService(eq(SERVICE_NAME), eq(service));
+        verify(locator).registerService(eq(SERVICE_NAME), eq(service), eq(TestDomain.class));
 
     }
 
@@ -93,7 +99,7 @@ public class QueryServicesProcessorTest {
         processor.process(service.getClass(), service);
 
         // Then
-        verify(locator).registerService(eq(service.getClass().getSimpleName()), eq(service));
+        verify(locator).registerService(eq(service.getClass().getSimpleName()), eq(service), eq(TestDomain.class));
 
     }
 
@@ -107,7 +113,7 @@ public class QueryServicesProcessorTest {
         processor.process(service.getClass(), service);
 
         // Then
-        verify(locator).registerService(any(String.class), any(QueryService.class));
+        verify(locator).registerService(any(String.class), any(QueryService.class), eq(TestDomain.class));
         verify(locator).registerFilterForService(eq(service.getClass()), eq(TestFilter.class));
 
     }
@@ -122,7 +128,7 @@ public class QueryServicesProcessorTest {
         processor.process(service.getClass(), service);
 
         // Then
-        verify(locator).registerService(any(String.class), any(QueryService.class));
+        verify(locator).registerService(any(String.class), any(QueryService.class), eq(TestDomain.class));
         verify(locator).registerFilterForService(eq(service.getClass()), eq(TestFilter.class));
         verify(locator).registerFilterForService(eq(service.getClass()), eq(TestFilter2.class));
     }

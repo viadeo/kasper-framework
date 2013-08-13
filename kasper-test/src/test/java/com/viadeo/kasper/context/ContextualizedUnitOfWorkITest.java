@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.context;
 
 import com.google.common.base.Optional;
@@ -19,9 +25,7 @@ import com.viadeo.kasper.ddd.impl.Repository;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.er.impl.AbstractRootConcept;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
-import com.viadeo.kasper.event.domain.er.impl.AbstractConceptRootEvent;
-import com.viadeo.kasper.event.domain.impl.AbstractDomainEvent;
-
+import com.viadeo.kasper.event.domain.er.impl.AbstractRootConceptEvent;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.repository.AggregateNotFoundException;
 import org.joda.time.DateTime;
@@ -92,7 +96,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     }
 
     @XKasperEvent(action = "test")
-    public static class ContextTestEvent extends AbstractConceptRootEvent<ContextTestDomain, ContextTestAGR> {
+    public static class ContextTestEvent extends AbstractRootConceptEvent<ContextTestDomain, ContextTestAGR> {
         private static final long serialVersionUID = 7017358308867238442L;
 
         public ContextTestEvent(final KasperID id) {

@@ -59,7 +59,7 @@ public class QueryServicesProcessor extends SingletonAnnotationProcessor<XKasper
         }
 
 		//- Register the query service to the locator -------------------------
-		this.queryServicesLocator.registerService(serviceName, queryService);
+		this.queryServicesLocator.registerService(serviceName, queryService, annotation.domain());
 	}
 
 	// ------------------------------------------------------------------------

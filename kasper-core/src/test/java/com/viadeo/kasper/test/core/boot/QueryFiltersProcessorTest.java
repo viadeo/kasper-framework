@@ -9,11 +9,13 @@ package com.viadeo.kasper.test.core.boot;
 import com.viadeo.kasper.core.boot.ServiceFiltersProcessor;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
-import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.query.ServiceFilter;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperServiceFilter;
+import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
 
 import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -30,10 +32,14 @@ public class QueryFiltersProcessorTest {
     // ------------------------------------------------------------------------
 
     @XKasperServiceFilter( name = FILTER_NAME )
-    private static final class TestFilter implements ServiceFilter { }
+    private static final class TestFilterSimple implements ServiceFilter {
+        TestFilterSimple() {}
+    }
 
     @XKasperServiceFilter
-    private static final class TestFilterNoName implements ServiceFilter { }
+    private static final class TestFilterNoName implements ServiceFilter {
+        TestFilterNoName() {}
+    }
 
     // ------------------------------------------------------------------------
 
@@ -41,13 +47,13 @@ public class QueryFiltersProcessorTest {
     public void processorShouldRegisterFilterWithName() {
 
         // Given
-        final TestFilter filter = new TestFilter();
+        final TestFilterSimple filter = new TestFilterSimple();
 
         // When
         processor.process(filter.getClass(), filter);
 
         // Then
-        verify(locator).registerFilter(eq(FILTER_NAME), eq(filter));
+        verify(locator).registerFilter(eq(FILTER_NAME), eq(filter), eq(false), (Class<? extends Domain>) isNull());
     }
 
      @Test
@@ -60,7 +66,7 @@ public class QueryFiltersProcessorTest {
         processor.process(filter.getClass(), filter);
 
         // Then
-        verify(locator).registerFilter(eq(filter.getClass().getSimpleName()), eq(filter));
+        verify(locator).registerFilter(eq(filter.getClass().getSimpleName()), eq(filter), eq(false), (Class<? extends Domain>) isNull());
     }
 
 }

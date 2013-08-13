@@ -133,7 +133,7 @@ packages hierarchy :
 +----------------------------------+----------+---------------+--------------------------------------------------------+
 | Repositories                     |   DATA   |    COMMAND    |  *com.viadeo.platform*.<domain>.command.data.          |
 +----------------------------------+----------+---------------+--------------------------------------------------------+
-| MyBatis mappers                  |   DATA   |    ALL        |  *com.viadeo.platform*.<domain>.<area>.data.           |
+| MyBatis mappers                  |   DATA   |    ALL        |  *com.viadeo.platform*.<domain>.<area>.data.mapper     |
 +----------------------------------+----------+---------------+--------------------------------------------------------+
 
 

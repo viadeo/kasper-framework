@@ -1,8 +1,8 @@
 package com.viadeo.kasper.test.timelines.entities;
 
-import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.ComponentConcept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.test.timelines.Timelines;
