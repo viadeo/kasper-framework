@@ -13,7 +13,7 @@ allprojects  {
   apply plugin: 'idea'
 
   group = 'com.viadeo.kasper'
-  version = '0.0.10-SNAPSHOT'
+  version = '0.0.11-SNAPSHOT'
 
   // Remote Maven repositories ---------
   repositories {
