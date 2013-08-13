@@ -9,7 +9,6 @@ package com.viadeo.kasper.test.ddd.specification;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.ddd.specification.ISpecification;
 import com.viadeo.kasper.ddd.specification.SpecificationErrorMessage;
-import com.viadeo.kasper.ddd.specification.impl.DefaultSpecificationErrorMessage;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -88,7 +87,7 @@ public class SpecificationTest {
     @Test
     public void testFailingSpecification() {
         // Given
-        final SpecificationErrorMessage message = new DefaultSpecificationErrorMessage();
+        final SpecificationErrorMessage message = new SpecificationErrorMessage();
 
         // When
         isTest.isSatisfiedBy("xyz", message);
@@ -104,7 +103,7 @@ public class SpecificationTest {
     @Test
     public void testFailingSpecificationWithDescription() {
         // Given
-        final SpecificationErrorMessage message = new DefaultSpecificationErrorMessage();
+        final SpecificationErrorMessage message = new SpecificationErrorMessage();
         final ISpecification<String> failingSpecWithDescription = new SpecificationFailError();
 
         // When
@@ -121,7 +120,7 @@ public class SpecificationTest {
     @Test
     public void testFailingSpecificationWithError() {
         // Given
-        final SpecificationErrorMessage message = new DefaultSpecificationErrorMessage();
+        final SpecificationErrorMessage message = new SpecificationErrorMessage();
         final ISpecification<String> failingSpecWithError = new SpecificationFailAnnotatedError();
 
         // When

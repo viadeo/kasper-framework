@@ -7,8 +7,8 @@
 package com.viadeo.kasper.ddd.specification.impl;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.specification.ISpecification;
 import com.viadeo.kasper.ddd.specification.SpecificationErrorMessage;
+import com.viadeo.kasper.ddd.specification.ISpecification;
 
 /**
  *
@@ -42,10 +42,10 @@ public class AndSpecification<T> extends AbstractCompositeSpecification<T> {
 	@Override
 	public boolean isSatisfiedBy(final T object, final SpecificationErrorMessage errorMessage) {
 		
-		final com.viadeo.kasper.ddd.specification.SpecificationErrorMessage errorMessage1 = new DefaultSpecificationErrorMessage();
+		final com.viadeo.kasper.ddd.specification.SpecificationErrorMessage errorMessage1 = new SpecificationErrorMessage();
 		final boolean isSatisfied1 = this.spec1.isSatisfiedBy(object, errorMessage1);
 
-		final com.viadeo.kasper.ddd.specification.SpecificationErrorMessage errorMessage2 = new DefaultSpecificationErrorMessage();
+		final com.viadeo.kasper.ddd.specification.SpecificationErrorMessage errorMessage2 = new SpecificationErrorMessage();
 		final boolean isSatisfied2 = this.spec2.isSatisfiedBy(object, errorMessage2);
 
 		if (isSatisfied1 && isSatisfied2) {

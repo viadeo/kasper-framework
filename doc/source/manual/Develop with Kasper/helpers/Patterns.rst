@@ -57,7 +57,7 @@ You can get an error message from a not met specification using a slightly modif
 .. code-block:: java
     :linenos:
 
-    final SpecificationErrorMessage message = new DefaultSpecificationErrorMessage();
+    final SpecificationErrorMessage message = new SpecificationErrorMessage();
     stringContainsLetterA.isSatisfiedBy("Bob is awesome", message);
     assertEquals("SpecificationStringContains specification was not met for value Bob is awesome");
 
@@ -71,7 +71,7 @@ Specifying a **description** on your specification you'll get a clearer error me
         ...
     }
 
-    final SpecificationErrorMessage message = new DefaultSpecificationErrorMessage();
+    final SpecificationErrorMessage message = new SpecificationErrorMessage();
     stringContainsLetterA.isSatisfiedBy("Bob is awesome", message);
     assertEquals("Specification not met : checks that a string contains some pattern for value Bob is awesome");
 
@@ -86,7 +86,7 @@ Or a dedicated error message, with the **errorMessage** property :
         ...
     }
 
-    final SpecificationErrorMessage message = new DefaultSpecificationErrorMessage();
+    final SpecificationErrorMessage message = new SpecificationErrorMessage();
     stringContainsLetterA.isSatisfiedBy("Bob is awesome", message);
     assertEquals("string does not contain the specified pattern for value Bob is awesome");
 
