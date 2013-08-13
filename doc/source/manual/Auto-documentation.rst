@@ -180,7 +180,7 @@ If you are using a Servlet 3.0 container, the static UI is available in the **ka
 the `new Servlet 3.0 modularity capabilities <http://alexismp.wordpress.com/2010/04/28/web-inflib-jarmeta-infresources/>`_.
 
 In a non-Servlet-3.0-compliant container
-.......................................
+........................................
 
 The static files are available inside **META-INF/resources** directory of the artifact, you have to deploy them somewhere
 in your application where they will be accessible to end-user.

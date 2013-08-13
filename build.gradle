@@ -6,6 +6,10 @@
 
 apply plugin: 'sonar-runner'
 
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.7'
+}
+
 allprojects  {
   apply plugin: 'maven'
   apply plugin: 'eclipse'
@@ -13,7 +17,7 @@ allprojects  {
   apply plugin: 'idea'
 
   group = 'com.viadeo.kasper'
-  version = '0.0.10'
+  version = '0.0.11-SNAPSHOT'
 
   // Remote Maven repositories ---------
   repositories {
