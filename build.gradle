@@ -15,6 +15,7 @@ allprojects  {
   apply plugin: 'eclipse'
   apply plugin: 'cobertura'
   apply plugin: 'idea'
+  apply plugin: 'findbugs'
 
   group = 'com.viadeo.kasper'
   version = '0.0.11-SNAPSHOT'
@@ -180,6 +181,17 @@ subprojects {
           property "sonar.sourceEncoding", "UTF-8"
       }
   }
+
+  // FindBugs
+  findbugs {
+      toolVersion = "2.0.1"
+      sourceSets = [sourceSets.main]
+      ignoreFailures = true
+      reportsDir = file("$project.buildDir/findbugsReports")
+      effort = "max"
+      reportLevel = "high"
+  }
+
 }
 
 // Sonar configuration for root project
