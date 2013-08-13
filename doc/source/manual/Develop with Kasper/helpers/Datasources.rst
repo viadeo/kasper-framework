@@ -15,11 +15,13 @@ How to use MyBatis
 2. create an instance of **SqlSessionFactory**
     * using `MyBatis <http://mybatis.github.io/mybatis-3/java-api.html#sqlSessions>`_
     * for instance using a standard java **DataSource** instance (see `reference <http://docs.oracle.com/javase/tutorial/jdbc/basics/sqldatasources.html>`_) :
+
     .. code-block:: java
         :linenos:
 
         final SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
         sqlSessionFactory.setDataSource(dataSource);
+
 4. create your mapper (see below)
 5. get a reference to your mapper
 6. use it !
@@ -48,7 +50,7 @@ MapperBuilder.createMapper(sessionFactory, mapperClass)
 How to create a mapper
 ----------------------
 
-see `MyBatis JAVA API <http://mybatis.github.io/mybatis-3/java-api.html> `_ for additional information about creating mappers.
+see `MyBatis JAVA API <http://mybatis.github.io/mybatis-3/java-api.html>`_ for additional information about creating mappers.
 
 Kasper encourage you to use the following way to create mappers :
 

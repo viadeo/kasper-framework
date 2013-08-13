@@ -6,11 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.specification;
 
-import com.viadeo.kasper.ddd.Entity;
-
 /**
  *
- * An entity specification
+ * A specification pattern implementation
  *
  ******
  * In computer programming, the specification pattern is a particular software design pattern, whereby business rules can
@@ -24,42 +22,40 @@ import com.viadeo.kasper.ddd.Entity;
  * (source: Wikipedia)
  ******
  *
- * @param <E> Entity
- * 
- * @see com.viadeo.kasper.ddd.Domain
- * @see com.viadeo.kasper.ddd.Entity
+ * @param <T> The object class on which this specification operates
+ *
  */
-public interface EntitySpecification<E extends Entity> {
+public interface ISpecification<T> {
 
 	/**
 	 * @param entity the entity on which to check specification satisfaction
 	 * @return true if the entity satisfies the specification
 	 */
-	boolean isSatisfiedBy(E entity);
+	boolean isSatisfiedBy(T entity);
 
 	/**
 	 * @param entity entity the entity on which to check specification satisfaction
 	 * @param errorMessage the error message instance to be set if an error occurs
 	 * @return true if the entity satisfies the specification
 	 */
-	boolean isSatisfiedBy(E entity, SpecificationErrorMessage errorMessage);
+	boolean isSatisfiedBy(T entity, SpecificationErrorMessage errorMessage);
 	
 	/**
 	 * @param specification to compose with AND operator
 	 * @return a new composed specification
 	 */
-	EntitySpecification<E> and(EntitySpecification<E> specification);
+	ISpecification<T> and(ISpecification<T> specification);
 
 	/**
 	 * @param specification to compose with OR operator
 	 * @return a new composed specification
 	 */
-	EntitySpecification<E> or(EntitySpecification<E> specification);
+	ISpecification<T> or(ISpecification<T> specification);
 
 	/**
 	 * @param specification to inverse
 	 * @return a new inversed specification
 	 */
-	EntitySpecification<E> not(EntitySpecification<E> specification);
+	ISpecification<T> not();
 
 }

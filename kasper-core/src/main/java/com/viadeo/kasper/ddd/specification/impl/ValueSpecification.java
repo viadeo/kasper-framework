@@ -4,24 +4,19 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.ddd.specification;
+package com.viadeo.kasper.ddd.specification.impl;
 
-import com.google.common.base.Optional;
+import com.viadeo.kasper.ddd.values.Value;
 
 /**
- * A simple class to store a specification error
  *
+ * An entity specification
+ *
+ * @param <V> Value
+ * 
+ * @see com.viadeo.kasper.ddd.Domain
+ * @see com.viadeo.kasper.ddd.values.Value
  */
-public interface SpecificationErrorMessage {
+public abstract class ValueSpecification<V extends Value> extends Specification<V> {
 
-	/**
-	 * @param message the error message
-	 */
-	void setMessage(String message);
-
-	/**
-	 * @return the error message
-	 */
-	Optional<String> getMessage();
-	
 }

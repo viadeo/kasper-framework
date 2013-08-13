@@ -112,7 +112,12 @@ using the **@XKasperConcept** or **@XKasperRelation** annotations.
 Four abstract classes are also provided, as a default implementation of some methods of these interfaces : **AbstractRootConcept**, **AbstractRootRelation**,
 **AbstractComponentConcept** and **AbstractComponentRelation**.
 
-Kasper proposes you two strategies for writing your aggregates : :ref:`writing-aggregates`.
+Kasper proposes you two strategies for writing your aggregates :
+
+.. toctree::
+    :maxdepth: 2
+
+    Aggregates
 
 RootConcept
 """""""""""
