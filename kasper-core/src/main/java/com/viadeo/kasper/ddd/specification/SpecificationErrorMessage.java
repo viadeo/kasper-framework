@@ -4,24 +4,36 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
+
 package com.viadeo.kasper.ddd.specification;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 
 /**
- * A simple class to store a specification error
+ * A basic implementation 
  *
  */
-public interface SpecificationErrorMessage {
+public class SpecificationErrorMessage {
 
+	private String message;
+	
+	// ------------------------------------------------------------------------
+	
 	/**
-	 * @param message the error message
+	 * @see com.viadeo.kasper.ddd.specification.SpecificationErrorMessage#getMessage()
 	 */
-	void setMessage(String message);
+	public Optional<String> getMessage() {
+		return Optional.fromNullable(this.message);
+	}
 
+	// ------------------------------------------------------------------------
+	
 	/**
-	 * @return the error message
+	 * @see com.viadeo.kasper.ddd.specification.SpecificationErrorMessage#setMessage(java.lang.String)
 	 */
-	Optional<String> getMessage();
+	public void setMessage(final String message) {
+		this.message = Preconditions.checkNotNull(message);
+	}
 	
 }
