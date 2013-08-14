@@ -54,7 +54,9 @@ public class SpringComponentsInstanceManager implements ComponentsInstanceManage
 
         try {
 
-            objInstance = context.getBean(clazz);
+            if (null != context) {
+                objInstance = context.getBean(clazz);
+            }
 
         } catch (final NoSuchBeanDefinitionException e) {
 
