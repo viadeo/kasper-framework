@@ -18,7 +18,11 @@ allprojects  {
   apply plugin: 'findbugs'
 
   group = 'com.viadeo.kasper'
-  version = '0.0.11.1'
+<<<<<<< HEAD
+  version = '0.0.12-SNAPSHOT'
+=======
+  version = '0.0.12-SNAPSHOT'
+>>>>>>> Upgraded to version 0.0.12-SNAPSHOT
 
   // Remote Maven repositories ---------
   repositories {
