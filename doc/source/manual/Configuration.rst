@@ -83,9 +83,7 @@ in your Spring context, overriding it if necessary with your own bean retrieval 
     @Configuration
     @Import({ DefaultPlatformSpringConfiguration.class})
     public class MyApplicationSpringRuntime {
-
         ...
-
     }
 
 **Override it in order to specify your own implementation of some components** :
@@ -106,4 +104,3 @@ in your Spring context, overriding it if necessary with your own bean retrieval 
         }
 
     }
-

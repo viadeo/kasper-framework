@@ -27,7 +27,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
 
     @Override
     public ComponentsInstanceManager getComponentsInstanceManager() {
-        final SpringComponentsInstanceManager sman = new SpringComponentsInstanceManager();
+        final SimpleComponentsInstanceManager sman = new SimpleComponentsInstanceManager();
         return sman;
     }
 
