@@ -366,7 +366,7 @@ public class AnnotationRootProcessor {
      *
      * @return the components instance manager to use
      */
-    private ComponentsInstanceManager getComponentsInstanceManager() {
+    public ComponentsInstanceManager getComponentsInstanceManager() {
         if (null == this.instancesManager) {
             LOGGER.info("No Components instance manager has been provided, revert back to simple one (default)");
             this.instancesManager = new SimpleComponentsInstanceManager();
