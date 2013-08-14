@@ -23,12 +23,81 @@ import static junit.framework.Assert.fail;
 
 public class PlatformConfigurationTest {
 
+    @Test
+    public void testDefaultPlatformConfiguration() throws Exception {
+        this.testPlatformConfiguration(new DefaultPlatformConfiguration());
+    }
+
+    @Test
+    public void testDefaultSpringPlatformConfiguration() throws Exception {
+        this.testPlatformConfiguration(new DefaultPlatformSpringConfiguration());
+    }
+
+    // ------------------------------------------------------------------------
+
+    @SuppressWarnings("unused")
     private void testPlatformConfiguration(final PlatformConfiguration platformConfiguration) throws Exception {
 
+        final CommandBus commandBus =
+                this.testCommandBus(platformConfiguration);
+
+        final CommandGatewayFactoryBean commandGatewayFactoryBean =
+                this.testCommandGatewayFactoryBean(platformConfiguration, commandBus);
+
+        final CommandGateway commandGateway =
+                this.testCommandGateway(platformConfiguration, commandGatewayFactoryBean);
+
+        final QueryServicesLocator queryServicesLocator=
+                this.testQueryServicesLocator(platformConfiguration);
+
+        final QueryGateway queryGateway =
+                this.testQueryGateway(platformConfiguration, queryServicesLocator);
+
+        final EventBus eventBus =
+                this.testEventBus(platformConfiguration);
+
+        final ComponentsInstanceManager componentsInstanceManager =
+                this.testComponentsInstanceManager(platformConfiguration);
+
+        final AnnotationRootProcessor annotationRootProcessor =
+                this.testAnnotationRootProcessor(platformConfiguration, componentsInstanceManager);
+
+        final DomainLocator domainLocator =
+                this.testDomainLocator(platformConfiguration);
+
+        final CommandHandlersProcessor commandHandlersProcessor =
+                this.testCommandHandlersProcessor(platformConfiguration, commandBus, domainLocator);
+
+        final DomainsProcessor domainsProcessor =
+                this.testDomainsProcessor(platformConfiguration, domainLocator);
+
+        final EventListenersProcessor eventListenersProcessor =
+                this.testEventListenersProcessor(platformConfiguration, eventBus);
+
+        final QueryServicesProcessor queryServicesProcessor =
+                this.testQueryServicesProcessor(platformConfiguration, queryServicesLocator);
+
+        final RepositoriesProcessor repositoriesProcessor=
+                this.testRepositoriesProcessor(platformConfiguration, domainLocator, eventBus);
+
+        final ServiceFiltersProcessor serviceFiltersProcessor=
+                this.testServiceFiltersProcessor(platformConfiguration, queryServicesLocator);
+
+        final Platform platform =
+                this.testPlatform(platformConfiguration, commandGateway, queryGateway, eventBus, annotationRootProcessor);
+    }
+
+    // ------------------------------------------------------------------------
+
+    private CommandBus testCommandBus(final PlatformConfiguration platformConfiguration) {
         final CommandBus commandBus = platformConfiguration.commandBus();
         assertSame(commandBus, platformConfiguration.commandBus());
+        return commandBus;
+    }
 
-        // --------------------------------------------------------------------
+    // ------------------------------------------------------------------------
+
+    private CommandGatewayFactoryBean testCommandGatewayFactoryBean(final PlatformConfiguration platformConfiguration, final CommandBus commandBus) throws Exception {
 
         try {
             platformConfiguration.commandGatewayFactoryBean();
@@ -49,6 +118,7 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
+        /* For test purposes */
         try {
             /* Spring will initialize this with a BeanPostProcessor */
             if (!DefaultPlatformSpringConfiguration.class.isAssignableFrom(platformConfiguration.getClass())) {
@@ -58,7 +128,13 @@ public class PlatformConfigurationTest {
             throw new KasperException("Unable to bind the gateway", e);
         }
 
-        // --------------------------------------------------------------------
+        return cmdGtwFactoryBean;
+    }
+
+    // ------------------------------------------------------------------------
+
+    private CommandGateway testCommandGateway(final PlatformConfiguration platformConfiguration,
+                                              final CommandGatewayFactoryBean commandGatewayFactoryBean) {
 
         try {
             platformConfiguration.commandGateway();
@@ -67,23 +143,32 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
-        final CommandGateway commandGateway = platformConfiguration.commandGateway(cmdGtwFactoryBean);
+        final CommandGateway commandGateway = platformConfiguration.commandGateway(commandGatewayFactoryBean);
         assertSame(commandGateway, platformConfiguration.commandGateway());
 
         try {
-            platformConfiguration.commandGateway(cmdGtwFactoryBean);
+            platformConfiguration.commandGateway(commandGatewayFactoryBean);
             fail();
         } catch (final KasperException e) {
             // Ignore
         }
 
-        // --------------------------------------------------------------------
+        return commandGateway;
+    }
 
+    // ------------------------------------------------------------------------
+
+    private QueryServicesLocator testQueryServicesLocator(final PlatformConfiguration platformConfiguration) {
         final QueryServicesLocator queryServicesLocator = platformConfiguration.queryServicesLocator();
         assertSame(queryServicesLocator, platformConfiguration.queryServicesLocator());
 
-        // --------------------------------------------------------------------
+        return queryServicesLocator;
+    }
 
+    // ------------------------------------------------------------------------
+
+    private QueryGateway testQueryGateway(final PlatformConfiguration platformConfiguration,
+                                          final QueryServicesLocator queryServicesLocator) {
         try {
             platformConfiguration.queryGateway();
             fail();
@@ -101,18 +186,31 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
-        // --------------------------------------------------------------------
+        return queryGateway;
+    }
 
+    // ------------------------------------------------------------------------
+
+    private EventBus testEventBus(final PlatformConfiguration platformConfiguration) {
         final EventBus eventBus = platformConfiguration.eventBus();
         assertSame(eventBus, platformConfiguration.eventBus());
 
-        // --------------------------------------------------------------------
+        return eventBus;
+    }
 
+    // ------------------------------------------------------------------------
+
+    private ComponentsInstanceManager testComponentsInstanceManager(final PlatformConfiguration platformConfiguration) {
         final ComponentsInstanceManager componentsInstanceManager = platformConfiguration.getComponentsInstanceManager();
         assertSame(componentsInstanceManager, platformConfiguration.getComponentsInstanceManager());
 
-        // --------------------------------------------------------------------
+        return componentsInstanceManager;
+    }
 
+    // --------------------------------------------------------------------
+
+    private AnnotationRootProcessor testAnnotationRootProcessor(final PlatformConfiguration platformConfiguration,
+                                                                final ComponentsInstanceManager componentsInstanceManager) {
         try {
             platformConfiguration.annotationRootProcessor();
             fail();
@@ -130,13 +228,23 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
-        // --------------------------------------------------------------------
+        return annotationRootProcessor;
+    }
 
+    // ------------------------------------------------------------------------
+
+    private DomainLocator testDomainLocator(final PlatformConfiguration platformConfiguration) {
         final DomainLocator domainLocator = platformConfiguration.domainLocator();
         assertSame(domainLocator, platformConfiguration.domainLocator());
 
-        // --------------------------------------------------------------------
+        return domainLocator;
+    }
 
+    // ------------------------------------------------------------------------
+
+    private CommandHandlersProcessor testCommandHandlersProcessor(final PlatformConfiguration platformConfiguration,
+                                                                  final CommandBus commandBus,
+                                                                  final DomainLocator domainLocator) {
         try {
             platformConfiguration.commandHandlersProcessor();
             fail();
@@ -154,8 +262,13 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
-        // --------------------------------------------------------------------
+        return commandHandlersProcessor;
+    }
 
+    // ------------------------------------------------------------------------
+
+    private DomainsProcessor testDomainsProcessor(final PlatformConfiguration platformConfiguration,
+                                                  final DomainLocator domainLocator) {
         try {
             platformConfiguration.domainsProcessor();
             fail();
@@ -173,8 +286,13 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
-        // --------------------------------------------------------------------
+        return domainsProcessor;
+    }
 
+    // ------------------------------------------------------------------------
+
+    private EventListenersProcessor testEventListenersProcessor(final PlatformConfiguration platformConfiguration,
+                                                                final EventBus eventBus) {
         try {
             platformConfiguration.eventListenersProcessor();
             fail();
@@ -192,8 +310,13 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
-        // --------------------------------------------------------------------
+        return eventListenersProcessor;
+    }
 
+    // ------------------------------------------------------------------------
+
+    private QueryServicesProcessor testQueryServicesProcessor(final PlatformConfiguration platformConfiguration,
+                                                              final QueryServicesLocator queryServicesLocator){
         try {
             platformConfiguration.queryServicesProcessor();
             fail();
@@ -211,8 +334,14 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
-        // --------------------------------------------------------------------
+        return queryServicesProcessor;
+    }
 
+    // ------------------------------------------------------------------------
+
+    private RepositoriesProcessor testRepositoriesProcessor(final PlatformConfiguration platformConfiguration,
+                                                            final DomainLocator domainLocator,
+                                                            final EventBus eventBus) {
         try {
             platformConfiguration.repositoriesProcessor();
             fail();
@@ -230,8 +359,13 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
-        // --------------------------------------------------------------------
+        return repositoriesProcessor;
+    }
 
+    // ------------------------------------------------------------------------
+
+    private ServiceFiltersProcessor testServiceFiltersProcessor(final PlatformConfiguration platformConfiguration,
+                                                                final QueryServicesLocator queryServicesLocator) {
         try {
             platformConfiguration.serviceFiltersProcessor();
             fail();
@@ -249,8 +383,16 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
-        // --------------------------------------------------------------------
+        return serviceFiltersProcessor;
+    }
 
+    // ------------------------------------------------------------------------
+
+    private Platform testPlatform(final PlatformConfiguration platformConfiguration,
+                                  final CommandGateway commandGateway,
+                                  final QueryGateway queryGateway,
+                                  final EventBus eventBus,
+                                  final AnnotationRootProcessor annotationRootProcessor) {
         try {
             platformConfiguration.kasperPlatform();
             fail();
@@ -268,18 +410,7 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
-    }
-
-    // ------------------------------------------------------------------------
-
-    @Test
-    public void testDefaultPlatformConfiguration() throws Exception {
-        this.testPlatformConfiguration(new DefaultPlatformConfiguration());
-    }
-
-    @Test
-    public void testDefaultSpringPlatformConfiguration() throws Exception {
-        this.testPlatformConfiguration(new DefaultPlatformSpringConfiguration());
+        return platform;
     }
 
 }
