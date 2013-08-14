@@ -31,7 +31,6 @@ public abstract class AbstractPlatformTests {
     public AbstractPlatformTests(final boolean uniquePlatform) {
 
         if (null == context) {
-            // System.setProperty("spring_files", "classpath*:config/spring/cache/spring-cache-*.xml");
             context = new AnnotationConfigApplicationContext(DefaultPlatformSpringConfiguration.class);
         }
 
