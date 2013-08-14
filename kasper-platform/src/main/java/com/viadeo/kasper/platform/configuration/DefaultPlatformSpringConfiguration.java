@@ -24,7 +24,8 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
     @Bean
     @Override
     public ComponentsInstanceManager getComponentsInstanceManager() {
-        return super.getComponentsInstanceManager();
+        final SpringComponentsInstanceManager sman = new SpringComponentsInstanceManager();
+        return sman;
     }
 
     @Bean
