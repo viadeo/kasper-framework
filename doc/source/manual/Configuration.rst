@@ -75,6 +75,11 @@ In order to boot the platform without Spring, you can use the **PlatformFactory*
     final PlatformFactory pf = new PlatformFactory();
     final Platform kasper = pf.getPlatform(true);
 
+    /* Once booted you can then get references to the different platform components */
+    /* You'll get exceptions if you try to get references to parameterized components */
+    /* before the platform boot */
+    final CommandBus = pf.commandBus();
+
 
 Boot Kasper platform with Spring
 ................................

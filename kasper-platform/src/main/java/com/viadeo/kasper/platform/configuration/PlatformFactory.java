@@ -19,16 +19,20 @@ import org.axonframework.eventhandling.EventBus;
 
 public class PlatformFactory {
 
-    private final PlatformConfiguration pc;
+    private final PlatformConfiguration platformConfiguration;
 
     // ------------------------------------------------------------------------
 
     public PlatformFactory() {
-        pc = new DefaultPlatformConfiguration();
+        platformConfiguration = new DefaultPlatformConfiguration();
     }
 
     public PlatformFactory(final PlatformConfiguration pc) {
-        this.pc = pc;
+        this.platformConfiguration = pc;
+    }
+
+    public PlatformConfiguration getPlatformConfiguration() {
+        return this.platformConfiguration;
     }
 
     // ------------------------------------------------------------------------
@@ -40,48 +44,51 @@ public class PlatformFactory {
     public Platform getPlatform(final boolean bootPlatform) {
 
         // -- COMMAND
-        final CommandBus commandBus = pc.commandBus();
-        final CommandGatewayFactoryBean cmdGtwFactoryBean = pc.commandGatewayFactoryBean(commandBus);
+        final CommandBus commandBus = platformConfiguration.commandBus();
+        final CommandGatewayFactoryBean cmdGtwFactoryBean = platformConfiguration.commandGatewayFactoryBean(commandBus);
         try {
-            cmdGtwFactoryBean.afterPropertiesSet();
+            /* Spring will initialize this with a BeanPostProcessor */
+            if (!DefaultPlatformSpringConfiguration.class.isAssignableFrom(this.platformConfiguration.getClass())) {
+                cmdGtwFactoryBean.afterPropertiesSet();
+            }
         } catch (final Exception e) {
             throw new KasperException("Unable to bind the gateway", e);
         }
-        final CommandGateway commandGateway = pc.commandGateway(cmdGtwFactoryBean);
+        final CommandGateway commandGateway = platformConfiguration.commandGateway(cmdGtwFactoryBean);
 
         // -- QUERY
-        final QueryServicesLocator queryServicesLocator = pc.queryServicesLocator();
-        final QueryGateway queryGateway = pc.queryGateway(queryServicesLocator);
+        final QueryServicesLocator queryServicesLocator = platformConfiguration.queryServicesLocator();
+        final QueryGateway queryGateway = platformConfiguration.queryGateway(queryServicesLocator);
 
         // -- EVENT
-        final EventBus eventBus = pc.eventBus();
+        final EventBus eventBus = platformConfiguration.eventBus();
 
         // -- ROOT PROCESSING
-        final ComponentsInstanceManager componentsInstanceManager = pc.getComponentsInstanceManager();
-        final AnnotationRootProcessor annotationRootProcessor = pc.annotationRootProcessor(componentsInstanceManager);
+        final ComponentsInstanceManager componentsInstanceManager = platformConfiguration.getComponentsInstanceManager();
+        final AnnotationRootProcessor annotationRootProcessor = platformConfiguration.annotationRootProcessor(componentsInstanceManager);
 
-        final DomainLocator domainLocator = pc.domainLocator();
+        final DomainLocator domainLocator = platformConfiguration.domainLocator();
 
-        final CommandHandlersProcessor commandHandlersProcessor = pc.commandHandlersProcessor(commandBus, domainLocator);
+        final CommandHandlersProcessor commandHandlersProcessor = platformConfiguration.commandHandlersProcessor(commandBus, domainLocator);
         annotationRootProcessor.registerProcessor(commandHandlersProcessor);
 
-        final DomainsProcessor domainsProcessor = pc.domainsProcessor(domainLocator);
+        final DomainsProcessor domainsProcessor = platformConfiguration.domainsProcessor(domainLocator);
         annotationRootProcessor.registerProcessor(domainsProcessor);
 
-        final EventListenersProcessor eventListenersProcessor = pc.eventListenersProcessor(eventBus);
+        final EventListenersProcessor eventListenersProcessor = platformConfiguration.eventListenersProcessor(eventBus);
         annotationRootProcessor.registerProcessor(eventListenersProcessor);
 
-        final QueryServicesProcessor queryServicesProcessor = pc.queryServicesProcessor(queryServicesLocator);
+        final QueryServicesProcessor queryServicesProcessor = platformConfiguration.queryServicesProcessor(queryServicesLocator);
         annotationRootProcessor.registerProcessor(queryServicesProcessor);
 
-        final RepositoriesProcessor repositoriesProcessor = pc.repositoriesProcessor(domainLocator, eventBus);
+        final RepositoriesProcessor repositoriesProcessor = platformConfiguration.repositoriesProcessor(domainLocator, eventBus);
         annotationRootProcessor.registerProcessor(repositoriesProcessor);
 
-        final ServiceFiltersProcessor serviceFiltersProcessor = pc.serviceFiltersProcessor(queryServicesLocator);
+        final ServiceFiltersProcessor serviceFiltersProcessor = platformConfiguration.serviceFiltersProcessor(queryServicesLocator);
         annotationRootProcessor.registerProcessor(serviceFiltersProcessor);
 
         // -- PLATFORM
-        final Platform platform = pc.kasperPlatform(commandGateway, queryGateway, eventBus, annotationRootProcessor);
+        final Platform platform = platformConfiguration.kasperPlatform(commandGateway, queryGateway, eventBus, annotationRootProcessor);
 
         if (bootPlatform) {
             platform.boot();

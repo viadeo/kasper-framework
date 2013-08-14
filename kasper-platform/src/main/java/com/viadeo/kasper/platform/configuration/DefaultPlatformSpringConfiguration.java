@@ -21,12 +21,27 @@ import org.springframework.context.annotation.Bean;
 
 public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfiguration {
 
+    private ComponentsInstanceManager instancesManager;
+
     @Bean
     @Override
     public ComponentsInstanceManager getComponentsInstanceManager() {
-        final SpringComponentsInstanceManager sman = new SpringComponentsInstanceManager();
-        return sman;
+        if (null != this.instancesManager) {
+            return this.instancesManager;
+        } else {
+            final SpringComponentsInstanceManager sman = new SpringComponentsInstanceManager();
+            this.instancesManager = sman;
+            return sman;
+        }
     }
+
+    public AnnotationEventListenerBeanPostProcessor annotationEventListenerBeanPostProcessor(final EventBus eventBus){
+        final AnnotationEventListenerBeanPostProcessor annotationEventListenerBeanPostProcessor = new AnnotationEventListenerBeanPostProcessor();
+        annotationEventListenerBeanPostProcessor.setEventBus(eventBus);
+        return annotationEventListenerBeanPostProcessor;
+    }
+
+    // ------------------------------------------------------------------------
 
     @Bean
     @Override
@@ -54,12 +69,6 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
     @Override
     public CommandGateway commandGateway(final CommandGatewayFactoryBean commandGatewayFactoryBean){
         return super.commandGateway(commandGatewayFactoryBean);
-    }
-
-    @Bean
-    @Override
-    public AnnotationEventListenerBeanPostProcessor annotationEventListenerBeanPostProcessor(final EventBus eventBus){
-        return super.annotationEventListenerBeanPostProcessor(eventBus);
     }
 
     @Bean
@@ -124,7 +133,7 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public DefaultQueryGateway queryGateway(final QueryServicesLocator locator){
+    public QueryGateway queryGateway(final QueryServicesLocator locator){
         return super.queryGateway(locator);
     }
 

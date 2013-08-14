@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.platform.configuration;
 
+import com.viadeo.kasper.platform.Platform;
 import org.junit.Test;
 
 public class PlatformFactoryTest {
@@ -13,7 +14,7 @@ public class PlatformFactoryTest {
     @Test
     public void platformShouldBeBuiltByFactoryWithoutError() {
        final PlatformFactory factory = new PlatformFactory();
-       factory.getPlatform();
+       final Platform platform = factory.getPlatform();
     }
 
 }
