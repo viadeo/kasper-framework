@@ -53,7 +53,6 @@ public interface ISpecification<T> {
 	ISpecification<T> or(ISpecification<T> specification);
 
 	/**
-	 * @param specification to inverse
 	 * @return a new inversed specification
 	 */
 	ISpecification<T> not();

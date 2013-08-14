@@ -9,7 +9,6 @@ KASPER - Kasper is the treasure keeper
 * **kasper-client**                 : Java client to access a Kasper platform
 * **kasper-common**                 : Common code to be shared between api and core modules
 * **kasper-core**                   : Kasper core : bootstrap, DDD modelisation, CQRS framework
-* **kasper-datasource**             : A datasource implementation using MyBatis
 * **kasper-documentation**          : Automated documentation
 * **kasper-platform**               : The Kasper platform
 * **kasper-security**               : Security framework
@@ -25,3 +24,5 @@ KASPER - Kasper is the treasure keeper
 2. Make your changes in a separate branch
 3. Rebase your branch on viadeo **develop** branch
 4. Submit a pull request on **develop** branch
+
+[Access lastest master Kasper framework documentation](http://doc01.infra.paris.apvo/kasper-framework/latest/)

@@ -34,6 +34,10 @@ public class PlatformFactory {
     // ------------------------------------------------------------------------
 
     public Platform getPlatform() {
+        return this.getPlatform(false);
+    }
+
+    public Platform getPlatform(final boolean bootPlatform) {
 
         // -- COMMAND
         final CommandBus commandBus = pc.commandBus();
@@ -78,6 +82,10 @@ public class PlatformFactory {
 
         // -- PLATFORM
         final Platform platform = pc.kasperPlatform(commandGateway, queryGateway, eventBus, annotationRootProcessor);
+
+        if (bootPlatform) {
+            platform.boot();
+        }
 
         return platform;
     }

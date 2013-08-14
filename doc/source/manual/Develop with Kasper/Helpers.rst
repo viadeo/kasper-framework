@@ -9,6 +9,5 @@ Kasper provides you some helpers in order to ease many parts of your development
     :maxdepth: 2
 
     helpers/Tests
-    helpers/Datasources
     helpers/Scala
     helpers/Patterns
