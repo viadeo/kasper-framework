@@ -24,7 +24,7 @@ public class PlatformFactory {
     // ------------------------------------------------------------------------
 
     public PlatformFactory() {
-        pc = new DefaultPlatformSpringConfiguration();
+        pc = new DefaultPlatformConfiguration();
     }
 
     public PlatformFactory(final PlatformConfiguration pc) {
