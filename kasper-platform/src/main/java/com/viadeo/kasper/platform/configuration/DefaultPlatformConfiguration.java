@@ -29,16 +29,16 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     private static final String INSTANCE_NOT_YET_AVAILABLE = "Component %s cannot be retrieved : it has not yet been instanciated (platform not yet booted ?)";
     private static final String INSTANCE_ALREADY_CREATED = "Component %s has already been created !";
 
-    private final MutableClassToInstanceMap<Object> components = MutableClassToInstanceMap.create();
+    protected final MutableClassToInstanceMap<Object> components = MutableClassToInstanceMap.create();
 
-    private <T> T getAvailableInstance(final Class<T> clazz) {
+    protected <T> T getAvailableInstance(final Class<T> clazz) {
         if (components.containsKey(clazz)) {
             return components.getInstance(clazz);
         }
         throw new KasperException(String.format(INSTANCE_NOT_YET_AVAILABLE, clazz.getSimpleName()));
     }
 
-    private void ensureNotPresent(final Class<?> clazz) {
+    protected void ensureNotPresent(final Class<?> clazz) {
         if (components.containsKey(clazz)) {
             throw new KasperException(String.format(INSTANCE_ALREADY_CREATED, clazz.getSimpleName()));
         }
@@ -105,7 +105,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public EventBus eventBus(){
+    public EventBus eventBus() {
         if (components.containsKey(EventBus.class)) {
             return components.getInstance(EventBus.class);
         } else {
@@ -121,17 +121,18 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public CommandGateway commandGateway(final CommandGatewayFactoryBean commandGatewayFactoryBean){
+    public CommandGateway commandGateway(final CommandBus commandBus) {
         this.ensureNotPresent(CommandGateway.class);
 
         try {
 
+            final CommandGatewayFactoryBean commandGatewayFactoryBean = commandGatewayFactoryBean(commandBus);
             final CommandGateway commandGateway = (CommandGateway) commandGatewayFactoryBean.getObject();
-            components.putInstance(CommandGateway.class, commandGateway);
 
+            components.putInstance(CommandGateway.class, commandGateway);
             return commandGateway;
 
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw Throwables.propagate(e);
         }
     }
@@ -158,22 +159,22 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
 
     // ------------------------------------------------------------------------
 
-    @Override
     @SuppressWarnings("unchecked")
-    public CommandGatewayFactoryBean commandGatewayFactoryBean(final CommandBus commandBus){
+    protected CommandGatewayFactoryBean commandGatewayFactoryBean(final CommandBus commandBus) {
         this.ensureNotPresent(CommandGatewayFactoryBean.class);
 
         final CommandGatewayFactoryBean commandGatewayFactoryBean = new CommandGatewayFactoryBean();
         commandGatewayFactoryBean.setCommandBus(commandBus);
         commandGatewayFactoryBean.setGatewayInterface(CommandGateway.class);
 
+        try {
+            commandGatewayFactoryBean.afterPropertiesSet();
+        } catch (final Exception e) {
+            throw new KasperException("Unable to bind Axon Command Gateway", e);
+        }
+
         components.putInstance(CommandGatewayFactoryBean.class, commandGatewayFactoryBean);
         return commandGatewayFactoryBean;
-    }
-
-    @Override
-    public CommandGatewayFactoryBean commandGatewayFactoryBean(){
-        return this.getAvailableInstance(CommandGatewayFactoryBean.class);
     }
 
     // ------------------------------------------------------------------------

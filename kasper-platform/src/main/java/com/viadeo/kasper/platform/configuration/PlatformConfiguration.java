@@ -13,7 +13,6 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.platform.impl.KasperPlatform;
 import org.axonframework.commandhandling.CommandBus;
-import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.axonframework.eventhandling.EventBus;
 
 /**
@@ -70,10 +69,10 @@ interface PlatformConfiguration {
     /**
      * Warning : override the two methods at once
      *
-     * @param commandGatewayFactoryBean the command gateway factory bean (Axon) to be used
+     * @param commandBus the command bus to be used
      * @return the command gateway
      */
-     CommandGateway commandGateway(CommandGatewayFactoryBean commandGatewayFactoryBean);
+     CommandGateway commandGateway(CommandBus commandBus);
      CommandGateway commandGateway();
 
     /**
@@ -89,15 +88,6 @@ interface PlatformConfiguration {
      * @return the command bus
      */
      CommandBus commandBus();
-
-    /**
-     * Warning : override the two methods at once
-     *
-     * @param commandBus the command bus to be used
-     * @return the Axon's command gateway factory bean
-     */
-     CommandGatewayFactoryBean commandGatewayFactoryBean(CommandBus commandBus);
-     CommandGatewayFactoryBean commandGatewayFactoryBean();
 
     /**
      * @return the domain locator

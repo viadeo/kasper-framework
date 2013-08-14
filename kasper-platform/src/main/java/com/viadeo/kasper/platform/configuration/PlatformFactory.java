@@ -11,10 +11,8 @@ import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
-import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.platform.Platform;
 import org.axonframework.commandhandling.CommandBus;
-import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.axonframework.eventhandling.EventBus;
 
 public class PlatformFactory {
@@ -45,16 +43,7 @@ public class PlatformFactory {
 
         // -- COMMAND
         final CommandBus commandBus = platformConfiguration.commandBus();
-        final CommandGatewayFactoryBean cmdGtwFactoryBean = platformConfiguration.commandGatewayFactoryBean(commandBus);
-        try {
-            /* Spring will initialize this with a BeanPostProcessor */
-            if (!DefaultPlatformSpringConfiguration.class.isAssignableFrom(this.platformConfiguration.getClass())) {
-                cmdGtwFactoryBean.afterPropertiesSet();
-            }
-        } catch (final Exception e) {
-            throw new KasperException("Unable to bind the gateway", e);
-        }
-        final CommandGateway commandGateway = platformConfiguration.commandGateway(cmdGtwFactoryBean);
+        final CommandGateway commandGateway = platformConfiguration.commandGateway(commandBus);
 
         // -- QUERY
         final QueryServicesLocator queryServicesLocator = platformConfiguration.queryServicesLocator();

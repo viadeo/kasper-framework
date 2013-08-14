@@ -14,7 +14,6 @@ import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.platform.Platform;
 import org.axonframework.commandhandling.CommandBus;
-import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.axonframework.eventhandling.EventBus;
 import org.junit.Test;
 
@@ -41,11 +40,8 @@ public class PlatformConfigurationTest {
         final CommandBus commandBus =
                 this.testCommandBus(platformConfiguration);
 
-        final CommandGatewayFactoryBean commandGatewayFactoryBean =
-                this.testCommandGatewayFactoryBean(platformConfiguration, commandBus);
-
         final CommandGateway commandGateway =
-                this.testCommandGateway(platformConfiguration, commandGatewayFactoryBean);
+                this.testCommandGateway(platformConfiguration, commandBus);
 
         final QueryServicesLocator queryServicesLocator=
                 this.testQueryServicesLocator(platformConfiguration);
@@ -84,7 +80,9 @@ public class PlatformConfigurationTest {
                 this.testServiceFiltersProcessor(platformConfiguration, queryServicesLocator);
 
         final Platform platform =
-                this.testPlatform(platformConfiguration, commandGateway, queryGateway, eventBus, annotationRootProcessor);
+                this.testPlatform(platformConfiguration,
+                                  commandGateway, queryGateway,
+                                  eventBus, annotationRootProcessor);
     }
 
     // ------------------------------------------------------------------------
@@ -97,44 +95,8 @@ public class PlatformConfigurationTest {
 
     // ------------------------------------------------------------------------
 
-    private CommandGatewayFactoryBean testCommandGatewayFactoryBean(final PlatformConfiguration platformConfiguration, final CommandBus commandBus) throws Exception {
-
-        try {
-            platformConfiguration.commandGatewayFactoryBean();
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        final CommandGatewayFactoryBean cmdGtwFactoryBean = platformConfiguration.commandGatewayFactoryBean(commandBus);
-        /* Required by Axon automagic Gateway generation, for this test, as we are not in a real Spring context */
-        cmdGtwFactoryBean.afterPropertiesSet();
-        assertSame(cmdGtwFactoryBean, platformConfiguration.commandGatewayFactoryBean());
-
-        try {
-            platformConfiguration.commandGatewayFactoryBean(commandBus);
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        /* For test purposes */
-        try {
-            /* Spring will initialize this with a BeanPostProcessor */
-            if (!DefaultPlatformSpringConfiguration.class.isAssignableFrom(platformConfiguration.getClass())) {
-                cmdGtwFactoryBean.afterPropertiesSet();
-            }
-        } catch (final Exception e) {
-            throw new KasperException("Unable to bind the gateway", e);
-        }
-
-        return cmdGtwFactoryBean;
-    }
-
-    // ------------------------------------------------------------------------
-
     private CommandGateway testCommandGateway(final PlatformConfiguration platformConfiguration,
-                                              final CommandGatewayFactoryBean commandGatewayFactoryBean) {
+                                              final CommandBus commandBus) {
 
         try {
             platformConfiguration.commandGateway();
@@ -143,11 +105,11 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
-        final CommandGateway commandGateway = platformConfiguration.commandGateway(commandGatewayFactoryBean);
+        final CommandGateway commandGateway = platformConfiguration.commandGateway(commandBus);
         assertSame(commandGateway, platformConfiguration.commandGateway());
 
         try {
-            platformConfiguration.commandGateway(commandGatewayFactoryBean);
+            platformConfiguration.commandGateway(commandBus);
             fail();
         } catch (final KasperException e) {
             // Ignore

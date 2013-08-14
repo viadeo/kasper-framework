@@ -13,7 +13,6 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.platform.impl.KasperPlatform;
 import org.axonframework.commandhandling.CommandBus;
-import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventhandling.annotation.AnnotationEventListenerBeanPostProcessor;
 import org.springframework.context.annotation.Bean;
@@ -34,7 +33,9 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
         }
     }
 
-    public AnnotationEventListenerBeanPostProcessor annotationEventListenerBeanPostProcessor(final EventBus eventBus){
+    /* FIXME: see https://github.com/viadeo/kasper-framework/issues/49 */
+    @Bean
+    public AnnotationEventListenerBeanPostProcessor annotationEventListenerBeanPostProcessor(final EventBus eventBus) {
         final AnnotationEventListenerBeanPostProcessor annotationEventListenerBeanPostProcessor = new AnnotationEventListenerBeanPostProcessor();
         annotationEventListenerBeanPostProcessor.setEventBus(eventBus);
         return annotationEventListenerBeanPostProcessor;
@@ -66,20 +67,14 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public CommandGateway commandGateway(final CommandGatewayFactoryBean commandGatewayFactoryBean){
-        return super.commandGateway(commandGatewayFactoryBean);
+    public CommandGateway commandGateway(final CommandBus commandBus) {
+        return super.commandGateway(commandBus);
     }
 
     @Bean
     @Override
     public CommandBus commandBus(){
         return super.commandBus();
-    }
-
-    @Bean @SuppressWarnings("unchecked")
-    @Override
-    public CommandGatewayFactoryBean commandGatewayFactoryBean(final CommandBus commandBus){
-        return super.commandGatewayFactoryBean(commandBus);
     }
 
     @Bean
