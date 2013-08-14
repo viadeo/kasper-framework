@@ -8,7 +8,6 @@ package com.viadeo.kasper.doc.configuration;
 
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.doc.KasperLibrary;
-import org.springframework.context.annotation.Bean;
 
 public class DefaultAutoDocumentationConfiguration implements AutoDocumentationConfiguration {
 
