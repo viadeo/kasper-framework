@@ -9,7 +9,6 @@ KASPER - Kasper is the treasure keeper
 * **kasper-client**                 : Java client to access a Kasper platform
 * **kasper-common**                 : Common code to be shared between api and core modules
 * **kasper-core**                   : Kasper core : bootstrap, DDD modelisation, CQRS framework
-* **kasper-datasource**             : A datasource implementation using MyBatis
 * **kasper-documentation**          : Automated documentation
 * **kasper-platform**               : The Kasper platform
 * **kasper-security**               : Security framework

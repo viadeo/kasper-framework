@@ -62,10 +62,9 @@ In order to boot the platform without Spring, you can use the **PlatformFactory*
     kasper.getRootProcessor().addScanPrefix("com.company.project");
     kasper.boot();
 
-    /* Or provides Kasper with some own created instance */
+    /* Or provides Kasper with some own created instances */
     final PlatformFactory pf = new PlatformFactory();
     final Platform kasper = pf.getPlatform();
-
 
     final ComponentsInstanceManager sman = kasper.getRootProcessor().getComponentsInstanceManager();
     sman.register(MyRepository.class, MyRepositoryFactory.build());
@@ -118,7 +117,7 @@ in your Spring context, overriding it if necessary with your own bean retrieval 
         @Bean
         @Override
         public ComponentsInstanceManager getComponentsInstanceManager() {
-            final SpringComponentsInstanceManager sman = new SpringComponentsInstanceManager();
+            final SpringComponentsInstanceManager sman = super.getComponentsInstanceManager();
             /* No bean will be created by the instance manager, they should exist in the context */
             sman.setBeansMustExists(true);
             return sman;
