@@ -56,6 +56,27 @@ In order to boot the platform without Spring, you can use the **PlatformFactory*
     final Platform kasper = pf.getPlatform();
     kasper.boot();
 
+    /* You can manually add some packages to be scanned */
+    final PlatformFactory pf = new PlatformFactory();
+    final Platform kasper = pf.getPlatform();
+    kasper.getRootProcessor().addScanPrefix("com.company.project");
+    kasper.boot();
+
+    /* Or provides Kasper with some own created instance */
+    final PlatformFactory pf = new PlatformFactory();
+    final Platform kasper = pf.getPlatform();
+
+
+    final ComponentsInstanceManager sman = kasper.getRootProcessor().getComponentsInstanceManager();
+    sman.register(MyRepository.class, MyRepositoryFactory.build());
+
+    kasper.boot();
+
+    /* Platform can be booted during the creation process */
+    final PlatformFactory pf = new PlatformFactory();
+    final Platform kasper = pf.getPlatform(true);
+
+
 Boot Kasper platform with Spring
 ................................
 
