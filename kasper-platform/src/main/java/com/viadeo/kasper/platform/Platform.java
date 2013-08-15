@@ -7,6 +7,7 @@
 package com.viadeo.kasper.platform;
 
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
+import com.viadeo.kasper.core.boot.ComponentsInstanceManager;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.event.Event;
@@ -19,24 +20,24 @@ import org.axonframework.eventhandling.EventBus;
 public interface Platform {
 
 	/** Boot */
-	
 	void boot();
+    boolean isBooted();
+
+    /** Root processor */
 	void setRootProcessor(AnnotationRootProcessor rootProcessor);
     AnnotationRootProcessor getRootProcessor();
+    ComponentsInstanceManager getComponentsInstanceManager();
 
 	/** Commands */
-	
 	CommandGateway getCommandGateway();
 	void setCommandGateway(CommandGateway commandGateway);
 
-	/** Events */
-	
-	void setEventBus(EventBus eventBus);
-	void publishEvent(Event event);
-	
 	/** Queries */
-	
 	void setQueryGateway(QueryGateway queryGateway);
 	QueryGateway getQueryGateway();
-	
+
+ 	/** Events */
+	void setEventBus(EventBus eventBus);
+	void publishEvent(Event event);
+
 }

@@ -28,7 +28,7 @@ import org.axonframework.eventhandling.EventBus;
  * You can subclass it to use your own component implementations
  *
  */
-interface PlatformConfiguration {
+public interface PlatformConfiguration {
 
      /**
       * @return the manager responsible to keep a reference to all Kasper platform

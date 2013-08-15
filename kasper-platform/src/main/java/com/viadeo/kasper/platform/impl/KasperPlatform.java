@@ -11,10 +11,12 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
+import com.viadeo.kasper.core.boot.ComponentsInstanceManager;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.configuration.PlatformConfiguration;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
 
@@ -26,6 +28,7 @@ public class KasperPlatform implements Platform {
 	protected QueryGateway queryGateway;
 	protected AnnotationRootProcessor rootProcessor;
 	protected EventBus eventBus;
+
 	private volatile Boolean _booted = false;
     private final Boolean sync = true;
 
@@ -41,6 +44,11 @@ public class KasperPlatform implements Platform {
         }
 	}
 
+    @Override
+    public boolean isBooted() {
+        return _booted;
+    }
+
 	@Override
 	public CommandGateway getCommandGateway() {
 		return this.commandGateway;
@@ -50,6 +58,11 @@ public class KasperPlatform implements Platform {
 	public AnnotationRootProcessor getRootProcessor() {
 		return this.rootProcessor;
 	}
+
+    @Override
+    public ComponentsInstanceManager getComponentsInstanceManager() {
+        return this.rootProcessor.getComponentsInstanceManager();
+    }
 
 	@Override
 	public QueryGateway getQueryGateway() {
