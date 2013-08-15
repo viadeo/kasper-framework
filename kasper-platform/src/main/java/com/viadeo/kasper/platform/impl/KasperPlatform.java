@@ -39,7 +39,7 @@ public class KasperPlatform implements Platform {
     protected EventBus eventBus;
 
     private volatile Boolean _booted = false;
-    private final Boolean sync = true;
+    private final Integer sync = 42;
 
     // ------------------------------------------------------------------------
 

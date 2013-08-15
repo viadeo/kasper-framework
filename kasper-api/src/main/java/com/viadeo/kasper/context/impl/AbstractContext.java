@@ -17,7 +17,9 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Simple implementation of a IContext
+ * Default implementation of the Context
+ *
+ * Provides the Kasper correlation id
  *
  */
 public abstract class AbstractContext implements Context {
