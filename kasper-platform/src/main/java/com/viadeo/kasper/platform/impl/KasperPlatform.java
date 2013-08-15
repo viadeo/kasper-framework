@@ -33,25 +33,25 @@ import java.util.Map;
 public class KasperPlatform implements Platform {
 
     /** The platform components **/
-	protected CommandGateway commandGateway;
-	protected QueryGateway queryGateway;
-	protected AnnotationRootProcessor rootProcessor;
-	protected EventBus eventBus;
+    protected CommandGateway commandGateway;
+    protected QueryGateway queryGateway;
+    protected AnnotationRootProcessor rootProcessor;
+    protected EventBus eventBus;
 
-	private volatile Boolean _booted = false;
+    private volatile Boolean _booted = false;
     private final Boolean sync = true;
 
-	// ------------------------------------------------------------------------
+    // ------------------------------------------------------------------------
 
-	@Override
-	public void boot() {
-	    synchronized (sync) {
-	        if (!_booted) {
-	            this.rootProcessor.boot();
-	            _booted = true;
-	        }
+    @Override
+    public void boot() {
+        synchronized (sync) {
+            if (!_booted) {
+                this.rootProcessor.boot();
+                _booted = true;
+            }
         }
-	}
+    }
 
     @Override
     public boolean isBooted() {
@@ -60,15 +60,15 @@ public class KasperPlatform implements Platform {
 
     // ------------------------------------------------------------------------
 
- 	@Override
-	public void setCommandGateway(final CommandGateway commandGateway) {
-		this.commandGateway = Preconditions.checkNotNull(commandGateway);
-	}
+    @Override
+    public void setCommandGateway(final CommandGateway commandGateway) {
+        this.commandGateway = Preconditions.checkNotNull(commandGateway);
+    }
 
-	@Override
-	public CommandGateway getCommandGateway() {
-		return this.commandGateway;
-	}
+    @Override
+    public CommandGateway getCommandGateway() {
+        return this.commandGateway;
+    }
 
     @Override
     public void sendCommand(final Command command, final Context context) throws Exception {
@@ -78,14 +78,14 @@ public class KasperPlatform implements Platform {
     // ------------------------------------------------------------------------
 
     @Override
-	public AnnotationRootProcessor getRootProcessor() {
-		return this.rootProcessor;
-	}
+    public AnnotationRootProcessor getRootProcessor() {
+        return this.rootProcessor;
+    }
 
- 	@Override
-	public void setRootProcessor(final AnnotationRootProcessor rootProcessor) {
-		this.rootProcessor = Preconditions.checkNotNull(rootProcessor);
-	}
+    @Override
+    public void setRootProcessor(final AnnotationRootProcessor rootProcessor) {
+        this.rootProcessor = Preconditions.checkNotNull(rootProcessor);
+    }
 
     @Override
     public ComponentsInstanceManager getComponentsInstanceManager() {
@@ -94,15 +94,15 @@ public class KasperPlatform implements Platform {
 
     // ------------------------------------------------------------------------
 
- 	@Override
-	public void setQueryGateway(final QueryGateway queryGateway) {
-		this.queryGateway = Preconditions.checkNotNull(queryGateway);
-	}
+    @Override
+    public void setQueryGateway(final QueryGateway queryGateway) {
+        this.queryGateway = Preconditions.checkNotNull(queryGateway);
+    }
 
-	@Override
-	public QueryGateway getQueryGateway() {
-		return this.queryGateway;
-	}
+    @Override
+    public QueryGateway getQueryGateway() {
+        return this.queryGateway;
+    }
 
     @Override
     public <RES extends QueryResult> RES retrieve(final Query query, final Context context) throws Exception {
@@ -111,10 +111,10 @@ public class KasperPlatform implements Platform {
 
     // ------------------------------------------------------------------------
 
- 	@Override
-	public void setEventBus(final EventBus eventBus) {
-		this.eventBus = Preconditions.checkNotNull(eventBus);
-	}
+    @Override
+    public void setEventBus(final EventBus eventBus) {
+        this.eventBus = Preconditions.checkNotNull(eventBus);
+    }
 
     @Override
     public EventBus getEventBus() {
@@ -122,11 +122,11 @@ public class KasperPlatform implements Platform {
     }
 
     @Override
-	public void publishEvent(final Event event) {
-		Preconditions.checkNotNull(event);
-		Preconditions.checkState(event.getContext().isPresent(), "Context must be present !");
+    public void publishEvent(final Event event) {
+        Preconditions.checkNotNull(event);
+        Preconditions.checkState(event.getContext().isPresent(), "Context must be present !");
 
-		final Context context = event.getContext().get();
+        final Context context = event.getContext().get();
 
         /* Sets a valid Kasper correlation id if required */
         if (AbstractContext.class.isAssignableFrom(context.getClass())) {
@@ -134,14 +134,14 @@ public class KasperPlatform implements Platform {
             kasperContext.setValidKasperCorrelationId();
         }
 
-		final Map<String, Object> metaData = Maps.newHashMap();
-		metaData.put(Context.METANAME, Preconditions.checkNotNull(context));
+        final Map<String, Object> metaData = Maps.newHashMap();
+        metaData.put(Context.METANAME, Preconditions.checkNotNull(context));
 
-		final GenericEventMessage<Event> eventMessageAxon =
-				new GenericEventMessage<>(event, metaData);
+        final GenericEventMessage<Event> eventMessageAxon =
+                new GenericEventMessage<>(event, metaData);
 
-		this.eventBus.publish(eventMessageAxon);
-	}
+        this.eventBus.publish(eventMessageAxon);
+    }
 
     @Override
     public void publishEvent(final Event event, final Context context) {
