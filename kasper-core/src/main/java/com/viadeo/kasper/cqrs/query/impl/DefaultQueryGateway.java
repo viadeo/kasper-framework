@@ -8,6 +8,9 @@ package com.viadeo.kasper.cqrs.query.impl;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.impl.AbstractContext;
+import com.viadeo.kasper.context.impl.DefaultKasperId;
+import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.exception.KasperException;
@@ -15,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -29,17 +33,18 @@ public class DefaultQueryGateway implements QueryGateway {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <Q extends Query, RES extends QueryResult> RES retrieve(final Q query, final Context context)
+    public <RES extends QueryResult> RES retrieve(final Query query, final Context context)
             throws Exception {
 
         checkNotNull(context);
         checkNotNull(query);
 
+        CurrentContext.set(context);
+
         // Search for associated service --------------------------------------
         LOGGER.debug("Retrieve service for query " + query.getClass().getSimpleName());
 
-        @SuppressWarnings("rawtypes")
-        // Safe
+        @SuppressWarnings("rawtypes") // Safe
         final Optional<QueryService> optService = queryServicesLocator.getServiceFromQueryClass(query.getClass());
 
         if (!optService.isPresent()) {
@@ -63,9 +68,10 @@ public class DefaultQueryGateway implements QueryGateway {
 
         /* Call the service */
         RES ret;
-        try {
-            LOGGER.info("Call service " + optService.get().getClass().getSimpleName());
+        try { LOGGER.info("Call service " + optService.get().getClass().getSimpleName());
+
             ret = (RES) service.retrieve(message);
+
         } catch (final UnsupportedOperationException e) {
             if (AbstractQueryService.class.isAssignableFrom(service.getClass())) {
                 ret = (RES) ((AbstractQueryService) service).retrieve(message.getQuery());

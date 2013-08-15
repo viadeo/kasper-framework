@@ -44,12 +44,12 @@ public interface CommandGateway {
      */
     @Timeout(value = DEFAULT_TIMEOUT_SEC, unit = TimeUnit.SECONDS)
     CommandResult sendCommandAndWaitForAResultWithException(Command command, @MetaData(Context.METANAME) Context context)
-            throws Exception, TimeoutException, InterruptedException;
+            throws Exception;
 
     /**
      * Wait for command execution
      */
     void sendCommandAndWait(Command command, @MetaData(Context.METANAME) Context context, long timeout, TimeUnit unit)
-            throws Exception, TimeoutException, InterruptedException;
+            throws Exception;
 
 }

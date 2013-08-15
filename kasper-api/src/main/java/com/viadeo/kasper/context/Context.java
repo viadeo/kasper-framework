@@ -15,7 +15,7 @@ import java.util.Map;
 
 /**
  *
- * Execution context for commands, events & Queries
+ * Execution context for commands, events & queries
  *
  */
 public interface Context extends Serializable  {
@@ -24,6 +24,8 @@ public interface Context extends Serializable  {
 	 * The name of the context key when stored in meta data maps
 	 */
 	String METANAME = "context";
+
+    // ------------------------------------------------------------------------
 
 	/**
 	 * @return the associated ID of the current user
@@ -36,7 +38,9 @@ public interface Context extends Serializable  {
 	 * @return the current {@link Context} instance
 	 */
 	Context setUserId(KasperID userId);
-	
+
+    // ------------------------------------------------------------------------
+
 	/**
 	 * @return the user default language
 	 */
@@ -46,6 +50,45 @@ public interface Context extends Serializable  {
 	 * @param lang user default language
 	 */
 	void setUserLang(String lang);
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Sets the correlation if associated with an application request
+     *
+     * For one application-side request, several Kasper actions can be made
+     * this correlation id can be used in order to track all Kasper actions
+     * made for one application request
+     *
+     * @param requestCorrelationId the correlation id
+     */
+    void setRequestCorrelationId(KasperID requestCorrelationId);
+
+    /**
+     * @return the application request correlation id
+     */
+    KasperID getRequestCorrelationId();
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Sets the session correlation id
+     *
+     * For one application user session, several requests are sent, for each
+     * application request several Kasper actions can be made. This correlation id
+     * can be used in order to track all Kasper actions made during one application
+     * user session
+     *
+     * @param sessionCorrelationId
+     */
+    void setSessionCorrelationId(KasperID sessionCorrelationId);
+
+    /**
+     * @return the application session correlation id
+     */
+    KasperID getSessionCorrelationId();
+
+    // ------------------------------------------------------------------------
 	
 	/**
 	 * Sets a new context property

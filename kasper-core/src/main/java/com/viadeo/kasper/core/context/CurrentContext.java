@@ -8,6 +8,7 @@ package com.viadeo.kasper.core.context;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.impl.AbstractContext;
 
 /**
  * UnitOfWork decorator to handle context
@@ -28,6 +29,13 @@ public final class CurrentContext {
 	// ------------------------------------------------------------------------
 	
 	public static void set(final Context context) {
+
+        // Sets the Kasper correlation id if it has not been set before -------
+        if (AbstractContext.class.isAssignableFrom(context.getClass())) {
+            final AbstractContext kasperContext = (AbstractContext) context;
+            kasperContext.setValidKasperCorrelationId();
+        }
+
 		CONTEXT.set(context);
 	}
 	
