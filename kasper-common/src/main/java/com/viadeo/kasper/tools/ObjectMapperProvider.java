@@ -27,9 +27,15 @@ import java.io.IOException;
 import java.util.List;
 
 public class ObjectMapperProvider {
+
     private static final String ERROR = "error";
     private static final String ERRORS = "errors";
     private static final String MESSAGE = "message";
+
+    public static final ObjectMapperProvider INSTANCE = new ObjectMapperProvider();
+
+    private final ObjectMapper mapper;
+
 
     // ------------------------------------------------------------------------
 
@@ -87,12 +93,6 @@ public class ObjectMapperProvider {
             return new KasperQueryException(message, null, errors);
         }
     }
-
-    // ------------------------------------------------------------------------
-
-    public static final ObjectMapperProvider instance = new ObjectMapperProvider();
-
-    private final ObjectMapper mapper;
 
     // ------------------------------------------------------------------------
 

@@ -41,7 +41,7 @@ public final class DefaultTypeAdapters {
 
     // --
 
-	public static final TypeAdapter<Long> Long_ADAPTER = new TypeAdapter<Long>() {
+	public static final TypeAdapter<Long> LONG_ADAPTER = new TypeAdapter<Long>() {
 		@Override
 		public void adapt(final Long value, final QueryBuilder builder) {
 			builder.add(value);

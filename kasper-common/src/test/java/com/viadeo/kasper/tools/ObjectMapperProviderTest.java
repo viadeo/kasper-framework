@@ -43,10 +43,10 @@ public class ObjectMapperProviderTest {
         // Given
         final KasperQueryException expected = new KasperQueryException("some message", null,
                 Arrays.asList(new KasperError("aCode", "aMessage")));
-        final ObjectReader objectReader = ObjectMapperProvider.instance.objectReader();
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
 
         //When
-        final String json = ObjectMapperProvider.instance.objectWriter().writeValueAsString(expected);
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(expected);
         final KasperQueryException actual = objectReader.readValue(objectReader.getFactory().createJsonParser(json),
                 KasperQueryException.class);
 
@@ -65,8 +65,8 @@ public class ObjectMapperProviderTest {
         final KasperError expected = new KasperError(KasperError.UNKNOWN_ERROR, "some error");
 
         // When
-        final String json = ObjectMapperProvider.instance.objectWriter().writeValueAsString(expected);
-        final ObjectReader objectReader = ObjectMapperProvider.instance.objectReader();
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(expected);
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
         final KasperError actual = objectReader.readValue(objectReader.getFactory().createJsonParser(json),
                 KasperError.class);
 
@@ -82,8 +82,8 @@ public class ObjectMapperProviderTest {
         final CommandResult expectedResult = CommandResult.error().addError(expectedError).create();
 
         //When
-        final String json = ObjectMapperProvider.instance.objectWriter().writeValueAsString(expectedResult);
-        final ObjectReader objectReader = ObjectMapperProvider.instance.objectReader();
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(expectedResult);
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
         final CommandResult actualResult = objectReader.readValue(objectReader.getFactory().createJsonParser(json),
                 CommandResult.class);
 
@@ -102,8 +102,8 @@ public class ObjectMapperProviderTest {
         final CommandResult expectedResult = CommandResult.error().addErrors(expectedErrors).create();
 
         // When
-        final String json = ObjectMapperProvider.instance.objectWriter().writeValueAsString(expectedResult);
-        final ObjectReader objectReader = ObjectMapperProvider.instance.objectReader();
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(expectedResult);
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
         final CommandResult actualResult = objectReader.readValue(objectReader.getFactory().createJsonParser(json),
                 CommandResult.class);
 
@@ -123,8 +123,8 @@ public class ObjectMapperProviderTest {
         final CommandResult expectedResult = CommandResult.error().create();
 
         // When
-        final String json = ObjectMapperProvider.instance.objectWriter().writeValueAsString(expectedResult);
-        final ObjectReader objectReader = ObjectMapperProvider.instance.objectReader();
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(expectedResult);
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
         final CommandResult actualResult = objectReader.readValue(objectReader.getFactory().createJsonParser(json),
                 CommandResult.class);
 
@@ -140,8 +140,8 @@ public class ObjectMapperProviderTest {
         result.setList(Arrays.asList(new SomeResult(), new SomeResult()));
 
         // When
-        final String json = ObjectMapperProvider.instance.objectWriter().writeValueAsString(result);
-        final ObjectReader objectReader = ObjectMapperProvider.instance.objectReader();
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(result);
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
         final SomeCollectionResult actual = objectReader.readValue(objectReader.getFactory().createJsonParser(json),
                 SomeCollectionResult.class);
 
@@ -155,7 +155,7 @@ public class ObjectMapperProviderTest {
         final DateTime dateTime = new DateTime(2013, 8, 6, 7, 35, 0, 123, DateTimeZone.UTC);
 
         // When
-        final String actual = ObjectMapperProvider.instance.mapper().writeValueAsString(dateTime);
+        final String actual = ObjectMapperProvider.INSTANCE.mapper().writeValueAsString(dateTime);
 
         // Then
         assertEquals("\"2013-08-06T07:35:00.123Z\"", actual);
@@ -167,7 +167,7 @@ public class ObjectMapperProviderTest {
         final String jsonIso8601 = "\"2013-08-06T07:35:00.123Z\"";
 
         // When
-        final DateTime actual = ObjectMapperProvider.instance.mapper().readValue(jsonIso8601, DateTime.class);
+        final DateTime actual = ObjectMapperProvider.INSTANCE.mapper().readValue(jsonIso8601, DateTime.class);
 
         // Then
         final DateTime expectedDateTime = new DateTime(2013, 8, 6, 7, 35, 0, 123, DateTimeZone.UTC);

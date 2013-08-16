@@ -52,7 +52,7 @@ public interface PlatformConfiguration {
      * @param queryGateway the query gateway to be used
      * @param eventBus the event bus to be used
      * @param annotationRootProcessor the annotation root processor to be used
-     * @return
+     * @return the built Kasper platform
      */
      KasperPlatform kasperPlatform(CommandGateway commandGateway
             ,  QueryGateway queryGateway

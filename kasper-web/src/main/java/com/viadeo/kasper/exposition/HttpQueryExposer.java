@@ -47,7 +47,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     public HttpQueryExposer(final Platform platform, final QueryServicesLocator queryLocator) {
-        this(platform, queryLocator, new QueryFactoryBuilder().create(), ObjectMapperProvider.instance.mapper());
+        this(platform, queryLocator, new QueryFactoryBuilder().create(), ObjectMapperProvider.INSTANCE.mapper());
     }
 
     public HttpQueryExposer(final Platform platform, final QueryServicesLocator queryServicesLocator,

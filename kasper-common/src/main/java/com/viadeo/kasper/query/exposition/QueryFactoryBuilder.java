@@ -93,8 +93,8 @@ public class QueryFactoryBuilder {
 		// and last define default adapters
 		adapters.putIfAbsent(int.class, nullSafe(DefaultTypeAdapters.INT_ADAPTER));
 		adapters.putIfAbsent(Integer.class, nullSafe(DefaultTypeAdapters.INT_ADAPTER));
-		adapters.putIfAbsent(long.class, nullSafe(DefaultTypeAdapters.Long_ADAPTER));
-		adapters.putIfAbsent(Long.class, nullSafe(DefaultTypeAdapters.Long_ADAPTER));
+		adapters.putIfAbsent(long.class, nullSafe(DefaultTypeAdapters.LONG_ADAPTER));
+		adapters.putIfAbsent(Long.class, nullSafe(DefaultTypeAdapters.LONG_ADAPTER));
 		adapters.putIfAbsent(double.class, nullSafe(DefaultTypeAdapters.DOUBLE_ADAPTER));
 		adapters.putIfAbsent(Double.class, nullSafe(DefaultTypeAdapters.DOUBLE_ADAPTER));
 		adapters.putIfAbsent(float.class, nullSafe(DefaultTypeAdapters.FLOAT_ADAPTER));

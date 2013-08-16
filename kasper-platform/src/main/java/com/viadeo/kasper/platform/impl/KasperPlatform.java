@@ -15,13 +15,11 @@ import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
 import com.viadeo.kasper.core.boot.ComponentsInstanceManager;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
-import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.configuration.PlatformConfiguration;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
 
@@ -39,13 +37,13 @@ public class KasperPlatform implements Platform {
     protected EventBus eventBus;
 
     private volatile Boolean _booted = false;
-    private final Integer sync = 42;
+    private static final Integer SYNC = 42;
 
     // ------------------------------------------------------------------------
 
     @Override
     public void boot() {
-        synchronized (sync) {
+        synchronized (SYNC) {
             if (!_booted) {
                 this.rootProcessor.boot();
                 _booted = true;

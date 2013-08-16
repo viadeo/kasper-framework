@@ -22,9 +22,8 @@ public interface ResultFilter extends ServiceFilter {
      *
      * @param result the Result to be returned by the service
      * @param context the context used to execute the service
-     * @throws com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException
      */
-    void filter(Context context, QueryResult result) throws KasperQueryException;
+    void filter(Context context, QueryResult result);
 
 }
 

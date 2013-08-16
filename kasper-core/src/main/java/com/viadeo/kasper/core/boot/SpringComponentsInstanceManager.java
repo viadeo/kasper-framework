@@ -115,7 +115,7 @@ public class SpringComponentsInstanceManager implements ComponentsInstanceManage
     // ------------------------------------------------------------------------
 
     @Override
-    public void setApplicationContext(final ApplicationContext context) throws BeansException {
+    public void setApplicationContext(final ApplicationContext context) {
         this.context = context;
     }
 

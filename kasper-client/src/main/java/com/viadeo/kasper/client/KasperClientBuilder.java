@@ -169,7 +169,7 @@ public class KasperClientBuilder {
     // ------------------------------------------------------------------------
 
     ObjectMapper defaultMapper() {
-        return ObjectMapperProvider.instance.mapper();
+        return ObjectMapperProvider.INSTANCE.mapper();
     }
 
 }

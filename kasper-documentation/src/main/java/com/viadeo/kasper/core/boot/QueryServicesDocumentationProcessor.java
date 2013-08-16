@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import org.slf4j.Logger;
@@ -15,7 +14,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Process Kasper command dynamic registration at platform boot
  *
- * @see XKasperCommand
+ * @see QueryService
  */
 public class QueryServicesDocumentationProcessor extends DocumentationProcessor<XKasperQueryService, QueryService<?,?>> {
 

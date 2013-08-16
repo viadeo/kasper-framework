@@ -185,7 +185,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
     // ------------------------------------------------------------------------
 
-    private final static Collection<ServiceFilter> EMPTY_FILTERS = unmodifiableCollection(new ArrayList<ServiceFilter>());
+    private static final Collection<ServiceFilter> EMPTY_FILTERS = unmodifiableCollection(new ArrayList<ServiceFilter>());
 
     @Override
     public Collection<ServiceFilter> getFiltersForServiceClass(Class<? extends QueryService<?, ?>> serviceClass) {

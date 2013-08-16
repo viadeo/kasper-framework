@@ -34,7 +34,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
      * org.axonframework.unitofwork.UnitOfWork)
      */
     @Override
-    final public Object handle(final CommandMessage<C> message, final UnitOfWork uow) throws Throwable {
+    public final Object handle(final CommandMessage<C> message, final UnitOfWork uow) throws Throwable {
         final KasperCommandMessage<C> kmessage = new DefaultKasperCommandMessage<>(message);
         CurrentContext.set(kmessage.getContext());
 

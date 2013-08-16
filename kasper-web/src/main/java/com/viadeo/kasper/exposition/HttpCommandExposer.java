@@ -45,7 +45,7 @@ public class HttpCommandExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     public HttpCommandExposer(final Platform platform, final DomainLocator domainLocator) {
-        this(platform, domainLocator, ObjectMapperProvider.instance.mapper());
+        this(platform, domainLocator, ObjectMapperProvider.INSTANCE.mapper());
     }
     
     public HttpCommandExposer(final Platform platform, final DomainLocator domainLocator, final ObjectMapper mapper) {

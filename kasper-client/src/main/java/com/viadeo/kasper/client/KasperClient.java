@@ -108,7 +108,7 @@ public class KasperClient {
     private final URL queryBaseLocation;
 
     @VisibleForTesting
-    final QueryFactory queryFactory;
+    protected final QueryFactory queryFactory;
 
     // ------------------------------------------------------------------------
 
