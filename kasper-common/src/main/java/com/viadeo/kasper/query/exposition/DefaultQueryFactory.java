@@ -14,7 +14,6 @@ import com.viadeo.kasper.cqrs.query.Query;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Type;
 import java.util.*;
@@ -150,19 +149,18 @@ public class DefaultQueryFactory implements QueryFactory {
                     .resolveType(accessorEntry.getValue().getGenericReturnType());
 
             final Method mutator = mutators.get(accessorEntry.getKey());
-            final BeanConstructorProperty ctrProperty = creator.parameters.get(accessorEntry
-                    .getKey());
+            final BeanConstructorProperty ctrProperty = creator.parameters().get(accessorEntry.getKey());
 
             PropertyAdapter propertyAdapter;
 
             // we have a ctr with args, this property will be set using the ctr
             // => do not use the mutator
             if (null != ctrProperty) {
-                final TypeToken<?> ctrTypeToken = typeToken.resolveType(ctrProperty.type);
+                final TypeToken<?> ctrTypeToken = typeToken.resolveType(ctrProperty.type());
 
                 // FIXME do we want to check it or be more permissive?
                 if (!accessorType.equals(ctrTypeToken)) {
-                    throw new KasperQueryAdapterException("Type of parameter[" + ctrProperty.name
+                    throw new KasperQueryAdapterException("Type of parameter[" + ctrProperty.name()
                             + "] of type[" + ctrTypeToken.getRawType() + "] and accessor["
                             + accessorEntry.getValue().getName() + "] of type["
                             + accessorType.getRawType() + "] in "
@@ -170,7 +168,7 @@ public class DefaultQueryFactory implements QueryFactory {
                 }
 
                 propertyAdapter = createPropertyAdapter(mutator, accessorEntry.getValue(),
-                        ctrProperty.name, accessorType);
+                        ctrProperty.name(), accessorType);
 
                 if (!retAdapters.contains(propertyAdapter)) {
                     retAdapters.add(propertyAdapter);
@@ -395,59 +393,7 @@ public class DefaultQueryFactory implements QueryFactory {
 
     // ------------------------------------------------------------------------
 
-    private static class BeanQueryMapper implements TypeAdapter<Query> {
-        private final Set<PropertyAdapter> adapters;
-        private final BeanConstructor queryCtr;
-
-        public BeanQueryMapper(final BeanConstructor queryCtr, final Set<PropertyAdapter> adapters) {
-            this.adapters = ImmutableSet.copyOf(adapters);
-            this.queryCtr = queryCtr;
-        }
-
-        @Override
-        public void adapt(final Query value, final QueryBuilder builder) throws Exception {
-            for (final PropertyAdapter adapter : adapters) {
-                adapter.adapt(value, builder);
-            }
-        }
-
-        @Override
-        public Query adapt(final QueryParser parser) throws Exception {
-            final Object[] ctrParams = new Object[queryCtr.parameters.size()];
-            final List<Pair<PropertyAdapter, Object>> valuesToSet = new ArrayList<Pair<PropertyAdapter, Object>>();
-
-            for (final PropertyAdapter adapter : adapters) {
-                /*
-                 * we have to check if the property exists in th sream if it
-                 * doesn't we should not override it in case of setters (for the
-                 * ctr we have no choice as we can't pass null to primitive
-                 * args)
-                 */
-                final boolean exists = adapter.existsInQuery(parser);
-                final Object value = adapter.adapt(parser);
-                final BeanConstructorProperty ctrParam = queryCtr.parameters.get(adapter.getName());
-
-                if (ctrParam != null) {
-                    ctrParams[ctrParam.position] = value;
-                } else {
-                    if (exists) {
-                        valuesToSet.add(new Pair<PropertyAdapter, Object>(adapter, value));
-                    }
-                }
-            }
-
-            final Object queryInstance = queryCtr.create(ctrParams);
-            for (final Pair<PropertyAdapter, Object> pair : valuesToSet) {
-                pair.firstValue().mutate(queryInstance, pair.secondValue());
-            }
-
-            return (Query) queryInstance;
-        }
-    }
-
-    // --
-
-    private static class Pair<F, S> {
+    static class Pair<F, S> {
         private F firstValue;
         private S secondValue;
 
@@ -462,58 +408,6 @@ public class DefaultQueryFactory implements QueryFactory {
 
         public S secondValue() {
             return secondValue;
-        }
-    }
-
-    // --
-
-    private static class BeanConstructor {
-        private final Constructor<Object> ctr;
-        private final Map<String, BeanConstructorProperty> parameters;
-
-        public BeanConstructor(final Constructor<Object> ctr,
-                final Map<String, BeanConstructorProperty> parameters) {
-            this.ctr = ctr;
-            this.parameters = parameters;
-        }
-
-        public Object create(final Object[] params) {
-            try {
-
-                return ctr.newInstance(params);
-
-            } catch (final IllegalArgumentException e) {
-                throw couldNotInstanciateQuery(e);
-            } catch (final InstantiationException e) {
-                throw couldNotInstanciateQuery(e);
-            } catch (final IllegalAccessException e) {
-                throw couldNotInstanciateQuery(e);
-            } catch (final InvocationTargetException e) {
-                throw couldNotInstanciateQuery(e);
-            }
-        }
-
-        private KasperQueryAdapterException couldNotInstanciateQuery(final Exception e) {
-            return new KasperQueryAdapterException("Failed to instanciate query of type "
-                    + ctr.getDeclaringClass(), e);
-        }
-    }
-
-    // --
-
-    private static class BeanConstructorProperty {
-        private final int position;
-        @SuppressWarnings("unused")
-        private final Annotation[] annotations;
-        private final String name;
-        private final Type type;
-
-        public BeanConstructorProperty(final int position, final Annotation[] annotations,
-                final String name, final Type type) {
-            this.position = position;
-            this.annotations = annotations;
-            this.name = name;
-            this.type = type;
         }
     }
 
