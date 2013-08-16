@@ -7,8 +7,6 @@
 
 package com.viadeo.kasper.platform.components.eventbus;
 
-import com.viadeo.kasper.core.context.CurrentContext;
-import org.axonframework.domain.EventMessage;
 import org.axonframework.eventhandling.ClusteringEventBus;
 import org.axonframework.eventhandling.EventBusTerminal;
 

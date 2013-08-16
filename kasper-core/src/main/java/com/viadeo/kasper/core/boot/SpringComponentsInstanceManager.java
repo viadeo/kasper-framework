@@ -9,7 +9,6 @@ package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.exception.KasperException;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;

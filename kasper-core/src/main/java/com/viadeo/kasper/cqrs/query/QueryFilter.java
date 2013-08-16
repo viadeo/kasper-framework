@@ -8,7 +8,6 @@
 package com.viadeo.kasper.cqrs.query;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 
 /**
  * A Kasper query filter

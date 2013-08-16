@@ -12,7 +12,6 @@ import org.axonframework.common.annotation.MetaData;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 /**
  * Axon interface definition for CommandGateway

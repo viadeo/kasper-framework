@@ -37,13 +37,15 @@ public class KasperPlatform implements Platform {
     protected EventBus eventBus;
 
     private volatile Boolean _booted = false;
-    private static final Integer SYNC = 42;
+
+    private static final Lock LOCK = new Lock();
+    private static class Lock { }
 
     // ------------------------------------------------------------------------
 
     @Override
     public void boot() {
-        synchronized (SYNC) {
+        synchronized (LOCK) {
             if (!_booted) {
                 this.rootProcessor.boot();
                 _booted = true;

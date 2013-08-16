@@ -8,8 +8,6 @@ package com.viadeo.kasper.cqrs.query.impl;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.AbstractContext;
-import com.viadeo.kasper.context.impl.DefaultKasperId;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
@@ -18,7 +16,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
