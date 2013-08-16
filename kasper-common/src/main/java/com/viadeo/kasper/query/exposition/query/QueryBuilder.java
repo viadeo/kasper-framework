@@ -143,20 +143,15 @@ public class QueryBuilder {
         return this;
     }
 
+    // ------------------------------------------------------------------------
+
     /**
      * Writes a single pair name/value.
      * 
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder add(final Number value) {
-        checkNotNull(value);
-
-        if (null == actualName) {
-            throwFirstCallBeginWithPropertyName();
-        }
-        map.put(actualName, value.toString());
-
-        return this;
+        return this.add((Object) value);
     }
 
     /**
@@ -165,14 +160,7 @@ public class QueryBuilder {
      * @throws IllegalStateException if begin(name) was not called.
      */
     public QueryBuilder add(final Boolean value) {
-        checkNotNull(value);
-
-        if (null == actualName) {
-            throwFirstCallBeginWithPropertyName();
-        }
-        map.put(actualName, value.toString());
-
-        return this;
+        return this.add((Object) value);
     }
 
     /**
@@ -181,14 +169,7 @@ public class QueryBuilder {
      * @throws IllegalStateException if begin(name) was not called.
      */
     public QueryBuilder add(final String value) {
-        checkNotNull(value);
-
-        if (null == actualName) {
-            throwFirstCallBeginWithPropertyName();
-        }
-        map.put(actualName, value);
-
-        return this;
+        return this.add((Object) value);
     }
 
     /**
@@ -197,13 +178,19 @@ public class QueryBuilder {
      * @throws IllegalStateException if begin(name) was not called.
      */
     public QueryBuilder add(final String... values) {
+        return this.add((Object[]) values);
+    }
+
+    // --
+
+    protected QueryBuilder add(final Object... values) {
         checkNotNull(values);
 
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
-        for (final String value : values) {
-            map.put(actualName, value);
+        for (final Object value : values) {
+            map.put(actualName, value.toString());
         }
 
         return this;
