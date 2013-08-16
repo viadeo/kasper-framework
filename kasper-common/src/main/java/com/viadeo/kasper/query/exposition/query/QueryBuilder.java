@@ -164,15 +164,6 @@ public class QueryBuilder {
     }
 
     /**
-     * Add a value for current key.
-     * 
-     * @throws IllegalStateException if begin(name) was not called.
-     */
-    public QueryBuilder add(final String value) {
-        return this.add((Object) value);
-    }
-
-    /**
      * Add a list of values for current key.
      * 
      * @throws IllegalStateException if begin(name) was not called.
