@@ -43,7 +43,7 @@ public class SimpleComponentsInstanceManager implements ComponentsInstanceManage
             try {
                 objInstance = clazz.newInstance();
             } catch (final InstantiationException|IllegalAccessException e) {
-                throw new KasperException(String.format(ERROR_INSTANCE, clazz));
+                throw new KasperException(String.format(ERROR_INSTANCE, clazz), e);
             }
             this.instances.put(clazz, objInstance);
         }

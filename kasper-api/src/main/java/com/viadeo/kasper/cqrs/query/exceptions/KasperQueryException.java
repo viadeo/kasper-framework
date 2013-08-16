@@ -43,8 +43,9 @@ public class KasperQueryException extends KasperException {
         }
 
         public ExceptionBuilder addError(final KasperError... error) {
-            for (KasperError e : error)
+            for (KasperError e : error) {
                 errors.add(e);
+            }
             return this;
         }
 

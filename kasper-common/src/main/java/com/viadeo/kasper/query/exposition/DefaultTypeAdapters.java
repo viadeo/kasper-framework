@@ -22,6 +22,8 @@ import static java.lang.System.arraycopy;
 
 public final class DefaultTypeAdapters {
 
+    private static final Integer PARSER_ARRAY_STARTING_SIZE = 10;
+
 	private DefaultTypeAdapters() { /* singleton */
 	}
 
@@ -198,7 +200,7 @@ public final class DefaultTypeAdapters {
 
 		@Override
 		public Object adapt(final QueryParser parser) throws Exception {
-			int size = 10;
+			int size = PARSER_ARRAY_STARTING_SIZE;
 			Object array = Array.newInstance(componentClass, size);
 			int idx = 0;
 

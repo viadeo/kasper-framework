@@ -36,7 +36,7 @@ public class KasperPlatform implements Platform {
     protected AnnotationRootProcessor rootProcessor;
     protected EventBus eventBus;
 
-    private volatile Boolean _booted = false;
+    private volatile Boolean booted = false;
 
     private static final Lock LOCK = new Lock();
     private static class Lock { }
@@ -46,16 +46,16 @@ public class KasperPlatform implements Platform {
     @Override
     public void boot() {
         synchronized (LOCK) {
-            if (!_booted) {
+            if (!booted) {
                 this.rootProcessor.boot();
-                _booted = true;
+                booted = true;
             }
         }
     }
 
     @Override
     public boolean isBooted() {
-        return _booted;
+        return booted;
     }
 
     // ------------------------------------------------------------------------

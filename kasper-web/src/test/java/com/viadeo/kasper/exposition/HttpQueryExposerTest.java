@@ -189,7 +189,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         try {
             client().query(query, SomeCollectionResult.class);
             fail();
-        } catch (KasperQueryException e) {
+        } catch (final KasperQueryException e) {
             // Then
             assertEquals(query.getaValue(), e.getMessage());
             for (int i = 0; i < query.getErrorCodes().size(); i++) {

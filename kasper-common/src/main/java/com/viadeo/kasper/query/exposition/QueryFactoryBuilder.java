@@ -32,8 +32,9 @@ public class QueryFactoryBuilder {
 	// ------------------------------------------------------------------------
 
 	public QueryFactoryBuilder bundle(Bundle... extensions) {
-	    for (Bundle bundle : extensions)
+	    for (Bundle bundle : extensions) {
 	        bundles.add(bundle);
+        }
 	    return this;
 	}
 	
@@ -87,8 +88,9 @@ public class QueryFactoryBuilder {
         }
 		
 		// after registering user extensions (must be prefered to bundles), setup with the bundles
-		for (Bundle bundle : bundles)
+		for (Bundle bundle : bundles) {
 		    bundle.setup(this);
+        }
 
 		// and last define default adapters
 		adapters.putIfAbsent(int.class, nullSafe(DefaultTypeAdapters.INT_ADAPTER));

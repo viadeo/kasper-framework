@@ -381,7 +381,7 @@ public class KasperClient {
         final Status status = response.getClientResponseStatus();
         
         // handle errors
-        if (status.getStatusCode() == 200) {
+        if (status.equals(Status.OK)) {
             return response.getEntity(new GenericType<T>(mapTo.getType()));
         } else {
             final KasperQueryException exception = response.getEntity(KasperQueryException.class);

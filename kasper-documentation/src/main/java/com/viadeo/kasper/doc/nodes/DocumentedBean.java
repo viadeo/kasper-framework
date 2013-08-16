@@ -20,7 +20,9 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 	private static final long serialVersionUID = 4149894288444871301L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentedBean.class);
-	
+
+    // ------------------------------------------------------------------------
+
 	DocumentedBean(final Class<?> componentClazz) {
 		final List<Field> properties = Lists.newArrayList();
 		getAllFields(properties, componentClazz);
@@ -35,7 +37,6 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 				}
 				
 				final Boolean isList;
-				final Type classType = property.getGenericType();
                 final Class<?> propClass = property.getType();
 				final String type;
 

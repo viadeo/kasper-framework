@@ -41,7 +41,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class QueryBuilder {
 
     // use a linkedhashmap to keep insertion order, nice to have when building the query.
-    class MapOfLists extends LinkedHashMap<String, List<String>> {
+    static class MapOfLists extends LinkedHashMap<String, List<String>> {
         private static final long serialVersionUID = -9221826712691674905L;
 
         void putSingle(final String key, final String value) {
@@ -289,11 +289,13 @@ public class QueryBuilder {
             final Entry<String, List<String>> entry = it.next();
             for (final Iterator<String> valueIt = entry.getValue().iterator(); valueIt.hasNext();) {
                 sb.append(entry.getKey()).append('=').append(valueIt.next());
-                if (valueIt.hasNext())
+                if (valueIt.hasNext()) {
                     sb.append('&');
+                }
             }
-            if (it.hasNext())
+            if (it.hasNext()) {
                 sb.append('&');
+            }
         }
 
         try {

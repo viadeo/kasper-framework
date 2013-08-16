@@ -137,19 +137,19 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
         checkNotNull(queryServiceClass);
         checkNotNull(filterClass);
 
-        final List<Class<? extends ServiceFilter>> filters;
+        final List<Class<? extends ServiceFilter>> serviceFilters;
 
         if (!this.appliedFilters.containsKey(queryServiceClass)) {
-            filters = newArrayList();
-            this.appliedFilters.put(queryServiceClass, filters);
+            serviceFilters = newArrayList();
+            this.appliedFilters.put(queryServiceClass, serviceFilters);
         } else if (!this.appliedFilters.get(queryServiceClass).contains(filterClass)) {
-            filters = this.appliedFilters.get(queryServiceClass);
+            serviceFilters = this.appliedFilters.get(queryServiceClass);
         } else {
-            filters = null;
+            serviceFilters = null;
         }
 
-        if (null != filters) {
-            filters.add(filterClass);
+        if (null != serviceFilters) {
+            serviceFilters.add(filterClass);
             this.instanceFilters.remove(queryServiceClass); // Drop cache of instances
         }
     }

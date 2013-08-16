@@ -100,7 +100,7 @@ public class SpringComponentsInstanceManager implements ComponentsInstanceManage
                     context.getBean(objInstance.getClass());
                     throw new KasperException(String.format(ALREADY_REGISTERED, objInstance.getClass()));
                 } else {
-                    throw new NoSuchBeanDefinitionException("");
+                    throw e;
                 }
 
             } catch (final NoSuchBeanDefinitionException e2) {

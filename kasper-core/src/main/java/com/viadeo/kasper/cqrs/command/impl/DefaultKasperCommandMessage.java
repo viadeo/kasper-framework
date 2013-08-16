@@ -29,7 +29,7 @@ public class DefaultKasperCommandMessage<C extends Command> implements KasperCom
 	/**
 	 * Decored Axon command message
 	 */
-	private final transient CommandMessage<C> decoredMessage;
+	private final CommandMessage<C> decoredMessage;
 
 	/**
 	 * (Optional) default context builder, only used if required (no context available)

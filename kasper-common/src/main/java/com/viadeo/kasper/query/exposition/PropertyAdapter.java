@@ -17,7 +17,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 class PropertyAdapter {
 
-    private final Map<Class<?>, Object> DEFAULT_VALUES_FOR_PRIMITIVES = Maps.newHashMap();
+    private static final Map<Class<?>, Object> DEFAULT_VALUES_FOR_PRIMITIVES = Maps.newHashMap();
     {
         DEFAULT_VALUES_FOR_PRIMITIVES.put(int.class, 0);
         DEFAULT_VALUES_FOR_PRIMITIVES.put(double.class, 0d);

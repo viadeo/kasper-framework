@@ -12,11 +12,11 @@ import java.util.*;
 
 public class QueryParser implements Iterable<QueryParser> {
 
-    private class Scope {
+    private static class Scope {
         private String actualName;
-        private LinkedList<String> actualValues;
+        private Deque<String> actualValues;
 
-        public Scope(final String actualName, final LinkedList<String> actualValues) {
+        public Scope(final String actualName, final Deque<String> actualValues) {
             this.actualName = actualName;
             this.actualValues = actualValues;
         }
@@ -66,32 +66,32 @@ public class QueryParser implements Iterable<QueryParser> {
     }
 
     public String name() {
-        _checkContextNotEmpty();
+        checkContextNotEmpty();
         return ctx.peek().actualName;
     }
 
     public String value() {
-        _checkContextNotEmpty();
+        checkContextNotEmpty();
         return actualValue;
     }
 
     public int intValue() {
-        _checkContextNotEmpty();
+        checkContextNotEmpty();
         return Integer.valueOf(actualValue);
     }
 
     public double doubleValue() {
-        _checkContextNotEmpty();
+        checkContextNotEmpty();
         return Double.valueOf(actualValue);
     }
 
     public long longValue() {
-        _checkContextNotEmpty();
+        checkContextNotEmpty();
         return Long.valueOf(actualValue);
     }
 
     public boolean booleanValue() {
-        _checkContextNotEmpty();
+        checkContextNotEmpty();
         return Boolean.valueOf(actualValue);
     }
 
@@ -120,7 +120,7 @@ public class QueryParser implements Iterable<QueryParser> {
         return this;
     }
 
-    private void _checkContextNotEmpty() {
+    private void checkContextNotEmpty() {
         if (ctx.isEmpty()) {
             throw new IllegalStateException("Call begin before trying to get a value.");
         }

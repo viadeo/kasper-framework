@@ -233,11 +233,12 @@ public class DefaultQueryFactory implements QueryFactory {
         // I prefer avoiding to add more and more classes until we really need
         // it
         // deleting code is harder than writing!
-        if (mutator == null)
+        if (mutator == null) {
             propertyAnnotations = accessor.getAnnotations();
-        else
+        } else {
             propertyAnnotations = ObjectArrays.concat(mutator.getAnnotations(),
                     accessor.getAnnotations(), Annotation.class);
+        }
 
         final BeanProperty property = new BeanProperty(name, accessor.getDeclaringClass(),
                 propertyAnnotations, propertyType);
@@ -394,7 +395,7 @@ public class DefaultQueryFactory implements QueryFactory {
 
     // ------------------------------------------------------------------------
 
-    private class BeanQueryMapper implements TypeAdapter<Query> {
+    private static class BeanQueryMapper implements TypeAdapter<Query> {
         private final Set<PropertyAdapter> adapters;
         private final BeanConstructor queryCtr;
 
@@ -437,7 +438,7 @@ public class DefaultQueryFactory implements QueryFactory {
 
             final Object queryInstance = queryCtr.create(ctrParams);
             for (final Pair<PropertyAdapter, Object> pair : valuesToSet) {
-                pair.firstValue.mutate(queryInstance, pair.secondValue);
+                pair.firstValue().mutate(queryInstance, pair.secondValue());
             }
 
             return (Query) queryInstance;
@@ -446,7 +447,7 @@ public class DefaultQueryFactory implements QueryFactory {
 
     // --
 
-    private class Pair<F, S> {
+    private static class Pair<F, S> {
         private F firstValue;
         private S secondValue;
 
@@ -454,11 +455,19 @@ public class DefaultQueryFactory implements QueryFactory {
             this.firstValue = firstValue;
             this.secondValue = secondValue;
         }
+
+        public F firstValue() {
+            return firstValue;
+        }
+
+        public S secondValue() {
+            return secondValue;
+        }
     }
 
     // --
 
-    private class BeanConstructor {
+    private static class BeanConstructor {
         private final Constructor<Object> ctr;
         private final Map<String, BeanConstructorProperty> parameters;
 
@@ -492,7 +501,7 @@ public class DefaultQueryFactory implements QueryFactory {
 
     // --
 
-    private class BeanConstructorProperty {
+    private static class BeanConstructorProperty {
         private final int position;
         @SuppressWarnings("unused")
         private final Annotation[] annotations;

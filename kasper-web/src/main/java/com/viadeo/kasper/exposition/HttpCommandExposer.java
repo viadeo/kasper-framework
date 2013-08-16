@@ -37,9 +37,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class HttpCommandExposer extends HttpExposer {
     private static final long serialVersionUID = 8444284922303895624L;
-    protected final Logger REQUEST_LOGGER = LoggerFactory.getLogger(getClass());
+    protected transient static final Logger REQUEST_LOGGER = LoggerFactory.getLogger(HttpCommandExposer.class);
+
     private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
-    private final DomainLocator domainLocator;
+    private transient final DomainLocator domainLocator;
     private final ObjectMapper mapper;
 
     // ------------------------------------------------------------------------
@@ -62,10 +63,11 @@ public class HttpCommandExposer extends HttpExposer {
         for (final CommandHandler<? extends Command> handler : domainLocator.getHandlers()) {
             expose(handler);
         }
-        if (exposedCommands.isEmpty())
+        if (exposedCommands.isEmpty()) {
             LOGGER.warn("No Command has been exposed.");
-        else
+        } else {
             LOGGER.info("Total exposed " + exposedCommands.size() + " commands.");
+        }
         LOGGER.info("=================================================");
     }
 

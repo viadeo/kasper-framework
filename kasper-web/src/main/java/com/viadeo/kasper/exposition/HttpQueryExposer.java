@@ -38,10 +38,11 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
-    protected final Logger QUERY_LOGGER = LoggerFactory.getLogger(getClass());
+    protected transient static final Logger QUERY_LOGGER = LoggerFactory.getLogger(HttpQueryExposer.class);
+
     private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
-    private final QueryServicesLocator queryServicesLocator;
-    private final QueryFactory queryAdapterFactory;
+    private transient final QueryServicesLocator queryServicesLocator;
+    private transient final QueryFactory queryAdapterFactory;
     private final ObjectMapper mapper;
     
     // ------------------------------------------------------------------------
@@ -66,10 +67,11 @@ public class HttpQueryExposer extends HttpExposer {
                 .getServices()) {
             expose(queryService);
         }
-        if (exposedQueries.isEmpty())
+        if (exposedQueries.isEmpty()) {
             LOGGER.warn("No Query has been exposed.");
-        else
+        } else {
             LOGGER.info("Total exposed " + exposedQueries.size() + " queries.");
+        }
         LOGGER.info("=================================================");
     }
 
@@ -220,16 +222,17 @@ public class HttpQueryExposer extends HttpExposer {
         final ObjectWriter writer = mapper.writer();
 
         final KasperQueryException queryException;
-        if (exception instanceof KasperQueryException)
+        if (exception instanceof KasperQueryException) {
             queryException = (KasperQueryException) exception;
+        }
         // FIXME I am not sure if we should get the most precise cause here by descending recursively in the stack 
         // trace or just send the message
         else {
             if (exception != null) {
                 queryException = KasperQueryException.exception(message).reason(exception).create();
-            } else
+            } else {
                 queryException = KasperQueryException.exception(message).create();
-
+            }
             queryException.fillInStackTrace();
         }
 
