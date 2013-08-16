@@ -4,7 +4,10 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.query.exposition;
+package com.viadeo.kasper.query.exposition.query;
+
+import com.google.common.collect.*;
+import com.viadeo.kasper.query.exposition.exception.KasperQueryAdapterException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -40,37 +43,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class QueryBuilder {
 
-    // use a linkedhashmap to keep insertion order, nice to have when building the query.
-    static class MapOfLists extends LinkedHashMap<String, List<String>> {
-        private static final long serialVersionUID = -9221826712691674905L;
-
-        void putSingle(final String key, final String value) {
-            getAndPutIfAbsent(key).add(value);
-        }
-
-        void add(final String key, final String value) {
-            getAndPutIfAbsent(key).add(value);
-        }
-
-        String first(final String key) {
-            final List<String> values = get(key);
-            if ((null != values) && (values.size() > 0)) {
-                return values.get(0);
-            }
-            return null;
-        }
-
-        List<String> getAndPutIfAbsent(final String key) {
-            List<String> values = get(key);
-            if (null == values) {
-                values = new ArrayList<String>();
-                put(key, values);
-            }
-            return values;
-        }
-    }
-
-    private final MapOfLists map = new MapOfLists();
+    private final SetMultimap<String, String> map = LinkedHashMultimap.create();
     private final Deque<String> names = new ArrayDeque<String>();
     private String actualName;
 
@@ -125,7 +98,7 @@ public class QueryBuilder {
         if (has(name)) {
             throwDuplicate(name);
         }
-        map.putSingle(name, value);
+        map.put(name, value);
 
         return this;
     }
@@ -142,14 +115,14 @@ public class QueryBuilder {
         if (has(name)) {
             throwDuplicate(name);
         }
-        map.putSingle(name, value.toString());
+        map.put(name, value.toString());
 
         return this;
     }
 
     public QueryBuilder singleNull() {
         // lets just forbid nulls for the moment by removing them
-        map.remove(actualName);
+        map.removeAll(actualName);
         return this;
     }
 
@@ -165,7 +138,7 @@ public class QueryBuilder {
         if (has(name)) {
             throwDuplicate(name);
         }
-        map.putSingle(name, value.toString());
+        map.put(name, value.toString());
 
         return this;
     }
@@ -181,7 +154,7 @@ public class QueryBuilder {
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
-        map.add(actualName, value.toString());
+        map.put(actualName, value.toString());
 
         return this;
     }
@@ -197,7 +170,7 @@ public class QueryBuilder {
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
-        map.add(actualName, value.toString());
+        map.put(actualName, value.toString());
 
         return this;
     }
@@ -213,7 +186,7 @@ public class QueryBuilder {
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
-        map.add(actualName, value);
+        map.put(actualName, value);
 
         return this;
     }
@@ -230,7 +203,7 @@ public class QueryBuilder {
             throwFirstCallBeginWithPropertyName();
         }
         for (final String value : values) {
-            map.add(actualName, value);
+            map.put(actualName, value);
         }
 
         return this;
@@ -257,21 +230,21 @@ public class QueryBuilder {
      * @throws NoSuchElementException if there is no value mapped to this key.
      */
     public String first(final String name) {
-        if (!map.containsKey(name)) {
+        if (!map.containsKey(name) && (map.get(name).size() > 0)) {
             throw new NoSuchElementException();
         }
-        return map.first(name);
+        return map.get(name).iterator().next();
     }
 
     /**
      * @return all the values linked to this name.
      * @throws NoSuchElementException if there is no value mapped to this key.
      */
-    public List<String> values(final String name) {
+    public Collection<String> values(final String name) {
         if (!map.containsKey(name)) {
             throw new NoSuchElementException();
         }
-        return map.get(name);
+        return new ImmutableList.Builder<String>().addAll(map.get(name)).build();
     }
 
     // ------------------------------------------------------------------------
@@ -285,33 +258,27 @@ public class QueryBuilder {
     public URI build(URI path) {
         final StringBuilder sb = new StringBuilder();
 
-        for (final Iterator<Entry<String, List<String>>> it = map.entrySet().iterator(); it.hasNext();) {
-            final Entry<String, List<String>> entry = it.next();
-            for (final Iterator<String> valueIt = entry.getValue().iterator(); valueIt.hasNext();) {
-                sb.append(entry.getKey()).append('=').append(valueIt.next());
-                if (valueIt.hasNext()) {
-                    sb.append('&');
-                }
-            }
+        for (final Iterator<Entry<String, String>> it = map.entries().iterator(); it.hasNext();) {
+            final Entry<String, String> entry = it.next();
+            sb.append(entry.getKey()).append('=').append(entry.getValue());
             if (it.hasNext()) {
                 sb.append('&');
             }
         }
 
         try {
-            return new URI(path.getScheme(), path.getUserInfo(), path.getHost(), path.getPort(), path.getPath(),
+
+            return new URI(path.getScheme(), path.getUserInfo(),
+                           path.getHost(), path.getPort(), path.getPath(),
                            sb.toString(), path.getFragment());
+
         } catch (final URISyntaxException e) {
             throw new KasperQueryAdapterException("Could not create query.", e);
         }
     }
 
-    public Map<String, List<String>> build() {
-        final HashMap<String, List<String>> copyMap = new HashMap<String, List<String>>();
-        for (final Map.Entry<String, List<String>> e : map.entrySet()) {
-            copyMap.put(e.getKey(), new ArrayList<String>(e.getValue()));
-        }
-        return copyMap;
+    public SetMultimap<String, String> build() {
+        return ImmutableSetMultimap.copyOf(map);
     }
 
     // ------------------------------------------------------------------------

@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.query.exposition;
+package com.viadeo.kasper.query.exposition.query;
 
 import java.lang.reflect.Member;
 import java.lang.reflect.Modifier;
@@ -71,7 +71,8 @@ public final class VisibilityFilter {
 
             if ((m & JAVA_MODIFIERS) == 0) {
                 throw new IllegalArgumentException(
-                        "One of the modifiers is not a standard java modifier.");
+                        "One of the modifiers is not a standard java modifier : "
+                        + Modifier.toString(m));
             }
             
             filter = filter | m;

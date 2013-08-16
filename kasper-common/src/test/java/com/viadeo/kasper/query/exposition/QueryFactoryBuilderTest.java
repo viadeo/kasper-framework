@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition;
 
+import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
 import org.junit.Test;
 
 import static org.junit.Assert.fail;

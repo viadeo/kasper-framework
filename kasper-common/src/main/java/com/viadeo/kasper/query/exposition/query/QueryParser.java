@@ -4,9 +4,9 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.query.exposition;
+package com.viadeo.kasper.query.exposition.query;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.*;
 
 import java.util.*;
 
@@ -23,13 +23,17 @@ public class QueryParser implements Iterable<QueryParser> {
     }
 
     private final Deque<Scope> ctx = new ArrayDeque<Scope>();
-    private final Map<String, List<String>> queryMap;
+    private final Multimap<String, String> queryMap;
     private String actualValue;
 
     // ------------------------------------------------------------------------
 
-    public QueryParser(final Map<String, List<String>> queryMap) {
-        this.queryMap = new HashMap<String, List<String>>(queryMap);
+    public QueryParser() {
+        this.queryMap = LinkedHashMultimap.create();
+    }
+
+    public QueryParser(final SetMultimap<String, String> queryMap) {
+        this.queryMap = LinkedHashMultimap.create(queryMap);
     }
 
     // ------------------------------------------------------------------------
@@ -39,16 +43,18 @@ public class QueryParser implements Iterable<QueryParser> {
     }
 
     public QueryParser begin(final String key) {
-        final List<String> values = queryMap.get(key);
+        final Collection<String> values = queryMap.get(key);
 
         if (values == null) {
             throw new NoSuchElementException("No value found for key[" + key + "].");
         }
-        if (values.size() == 1) {
-            actualValue = values.get(0);
+
+        if (1 == values.size()) {
+            actualValue = values.iterator().next();
         }
+
         ctx.push(new Scope(key, new LinkedList<String>(values)));
-        queryMap.remove(key);
+        queryMap.removeAll(key);
 
         return this;
     }
@@ -62,7 +68,7 @@ public class QueryParser implements Iterable<QueryParser> {
     }
 
     public Set<String> names() {
-        return ImmutableSet.copyOf(queryMap.keySet());
+        return  ImmutableSet.copyOf(queryMap.keySet());
     }
 
     public String name() {
@@ -110,12 +116,11 @@ public class QueryParser implements Iterable<QueryParser> {
         if (!ctx.isEmpty()) {
             actualValue = ctx.peek().actualValues.pop();
         }
-        // else {
-        /*
+        /* // -- else { --
          * no need to handle here iteration over key/values, as the access
          * order does not matter
+         * // -- } --
          */
-        // }
 
         return this;
     }

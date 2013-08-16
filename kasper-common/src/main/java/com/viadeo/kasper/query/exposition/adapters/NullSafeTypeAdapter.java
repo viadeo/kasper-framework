@@ -1,7 +1,11 @@
 /*
  * Copyright 2013 Viadeo.com
  */
-package com.viadeo.kasper.query.exposition;
+package com.viadeo.kasper.query.exposition.adapters;
+
+import com.viadeo.kasper.query.exposition.TypeAdapter;
+import com.viadeo.kasper.query.exposition.query.QueryBuilder;
+import com.viadeo.kasper.query.exposition.query.QueryParser;
 
 /**
  * Allows to not worry about null values in TypeAdapters. It is used by wrapping
@@ -12,6 +16,7 @@ package com.viadeo.kasper.query.exposition;
  *            the type of objects this adapter is dealing with.
  */
 public class NullSafeTypeAdapter<T> implements TypeAdapter<T> {
+
 	private final TypeAdapter<T> decoratedAdapter;
 
     // ------------------------------------------------------------------------

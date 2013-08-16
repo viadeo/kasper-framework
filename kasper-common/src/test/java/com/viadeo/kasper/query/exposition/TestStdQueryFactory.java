@@ -10,8 +10,11 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.query.exposition.query.*;
+import com.viadeo.kasper.query.exposition.adapters.DefaultTypeAdapters;
+import com.viadeo.kasper.query.exposition.adapters.NullSafeTypeAdapter;
+import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
 import org.joda.time.DateTime;
-import org.junit.Before;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
@@ -21,22 +24,11 @@ import static org.junit.Assert.*;
 
 public class TestStdQueryFactory {
 
-    private QueryBuilder builder;
-
-    // ------------------------------------------------------------------------
-
     public static class SomeQuery implements Query {
         private static final long serialVersionUID = -6763165103363988454L;
 
         public int getDummy() { return 1; }
         public void setDummy(final int dummyInt) { }
-    }
-
-    // ------------------------------------------------------------------------
-
-    @Before
-    public void init() {
-        builder = new QueryBuilder();
     }
 
     // ------------------------------------------------------------------------
@@ -62,6 +54,7 @@ public class TestStdQueryFactory {
 
         // Given
         final TypeAdapter<SomeQuery> adapter = create();
+        final QueryBuilder builder = new QueryBuilder();
 
         // When
         createQueryFactory(adapter).create(TypeToken.of(SomeQuery.class)).adapt(new SomeQuery(), builder);
@@ -74,6 +67,7 @@ public class TestStdQueryFactory {
     public void testBeanQueryAdapterOutputWithPrimitiveIntAdapter() throws Exception {
 
         // Given
+        final QueryBuilder builder = new QueryBuilder();
         final TypeAdapter<SomeQuery> adapter = new DefaultQueryFactory(
                 ImmutableMap.<Type, TypeAdapter<?>> of(int.class, DefaultTypeAdapters.INT_ADAPTER),
                 ImmutableMap.<Type, BeanAdapter<?>> of(),
@@ -91,6 +85,7 @@ public class TestStdQueryFactory {
     public void testQueryFactoryOutputWithCollectionAdapter() throws Exception {
 
         // Given
+        final QueryBuilder builder = new QueryBuilder();
         final DateTime firstDate = new DateTime();
         final DateTime secondDate = new DateTime();
         final QueryOfDateTimeCollection query = new QueryOfDateTimeCollection(Arrays.asList(firstDate, secondDate));
@@ -100,17 +95,19 @@ public class TestStdQueryFactory {
         queryFactory.create(TypeToken.of(QueryOfDateTimeCollection.class)).adapt(query, builder);
 
         // Then
-        assertEquals("" + firstDate.getMillis(), builder.values("listOfDateTime").get(0));
-        assertEquals("" + secondDate.getMillis(), builder.values("listOfDateTime").get(1));
+        final Iterator<String> it = builder.values("listOfDateTime").iterator();
+        assertEquals("" + firstDate.getMillis(), it.next());
+        assertEquals("" + secondDate.getMillis(), it.next());
     }
 
     @Test
     public void testCustomTypeAdapterFactoryWithDeepGenerics() throws Exception {
 
         // Given
+        final QueryBuilder builder = new QueryBuilder();
         final String key1 = "key1";
         final String key2 = "key2";
-        final List<DateTime> key1Values = Arrays.asList(new DateTime(), new DateTime());
+        final List<DateTime> key1Values = Arrays.asList(new DateTime(), new DateTime().plusDays(1));
         final QueryWithMap query = new QueryWithMap(ImmutableMap.of(key1, key1Values, key2, new ArrayList<DateTime>()));
         final QueryFactory factory = createQueryFactory(createTypeAdapterFactory(), DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY, DefaultTypeAdapters.DATETIME_ADAPTER);
 
@@ -120,8 +117,14 @@ public class TestStdQueryFactory {
         // Then
         assertFalse(builder.has(key2));
         assertTrue(builder.has(key1));
-        for (int i = 0; i < key1Values.size(); i++) {
-            assertEquals("" + key1Values.get(i).getMillis(), builder.values(key1).get(i));
+
+        final Collection<String> builderValues = builder.values(key1);
+        assertEquals(2, builderValues.size());
+
+        final Iterator<DateTime> itDateTime = key1Values.iterator();
+        final Iterator<String> itKey1 = builderValues.iterator();
+        while (itDateTime.hasNext()) {
+            assertEquals(String.valueOf(itDateTime.next().getMillis()), itKey1.next());
         }
     }
 
@@ -199,7 +202,7 @@ public class TestStdQueryFactory {
         private final Map<String, List<DateTime>> mapOfDateTime;
 
         public QueryWithMap(final Map<String, List<DateTime>> mapOfDateTime) {
-            this.mapOfDateTime = mapOfDateTime;
+            this.mapOfDateTime = ImmutableMap.copyOf(mapOfDateTime);
         }
 
         public Map<String, List<DateTime>> getMapOfDateTime() {
@@ -209,7 +212,6 @@ public class TestStdQueryFactory {
 
     public static class QueryOfDateTimeCollection implements Query {
         private static final long serialVersionUID = -6933354147082294343L;
-
         private final List<DateTime> listOfDateTime;
 
         public QueryOfDateTimeCollection(final List<DateTime> listOfDateTime) {

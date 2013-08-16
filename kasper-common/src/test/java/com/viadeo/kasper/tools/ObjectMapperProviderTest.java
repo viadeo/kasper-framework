@@ -47,7 +47,8 @@ public class ObjectMapperProviderTest {
 
         //When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(expected);
-        final KasperQueryException actual = objectReader.readValue(objectReader.getFactory().createJsonParser(json),
+        final KasperQueryException actual = objectReader.readValue(
+                objectReader.getFactory().createJsonParser(json),
                 KasperQueryException.class);
 
         // Then

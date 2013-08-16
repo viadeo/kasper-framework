@@ -75,7 +75,7 @@ public class SpecificationTest {
     @Test
     public void testSpecificationNot() {
         // Given
-        final ISpecification isNotTest = isTest.not();
+        final ISpecification<String> isNotTest = isTest.not();
 
         // Then
         assertTrue(isNotTest.isSatisfiedBy("xyz"));

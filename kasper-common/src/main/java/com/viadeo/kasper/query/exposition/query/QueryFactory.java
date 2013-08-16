@@ -4,10 +4,10 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
-package com.viadeo.kasper.query.exposition;
+package com.viadeo.kasper.query.exposition.query;
 
 import com.google.common.reflect.TypeToken;
+import com.viadeo.kasper.query.exposition.TypeAdapter;
 
 public interface QueryFactory {
 

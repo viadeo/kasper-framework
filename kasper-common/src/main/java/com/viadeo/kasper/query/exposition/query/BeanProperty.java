@@ -1,22 +1,35 @@
-package com.viadeo.kasper.query.exposition;
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
+package com.viadeo.kasper.query.exposition.query;
 
 import com.google.common.reflect.TypeToken;
 
 import java.lang.annotation.Annotation;
 
 public class BeanProperty {
+
     private final String name;
     private final Class<?> declaringClass;
     private final Annotation[] annotations;
     private final TypeToken<?> typeToken;
-    
-    public BeanProperty(String name, Class<?> declaringClass, Annotation[] annotations, TypeToken<?> typeToken) {
+
+    // ------------------------------------------------------------------------
+
+    public BeanProperty(final String name, final Class<?> declaringClass,
+                        final Annotation[] annotations, final TypeToken<?> typeToken) {
         super();
+
         this.name = name;
         this.declaringClass = declaringClass;
         this.annotations = annotations;
         this.typeToken = typeToken;
     }
+
+    // ------------------------------------------------------------------------
 
     public String getName() {
         return name;
@@ -34,7 +47,6 @@ public class BeanProperty {
         return typeToken;
     }
 
-
     @Override
     public int hashCode() {
         return name.hashCode();
@@ -42,6 +54,7 @@ public class BeanProperty {
 
     @Override
     public boolean equals(final Object obj) {
+
         if (this == obj) {
             return true;
         }

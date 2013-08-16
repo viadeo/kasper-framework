@@ -4,17 +4,20 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.query.exposition;
+package com.viadeo.kasper.query.exposition.query;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 class BeanConstructorProperty {
+
     private final int position;
     @SuppressWarnings("unused")
     private final Annotation[] annotations;
     private final String name;
     private final Type type;
+
+    // ------------------------------------------------------------------------
 
     public BeanConstructorProperty(final int position, final Annotation[] annotations,
                                    final String name, final Type type) {
@@ -23,6 +26,8 @@ class BeanConstructorProperty {
         this.name = name;
         this.type = type;
     }
+
+    // ------------------------------------------------------------------------
 
     public int position() {
         return position;
@@ -39,4 +44,5 @@ class BeanConstructorProperty {
     public Type type() {
         return type;
     }
+
 }

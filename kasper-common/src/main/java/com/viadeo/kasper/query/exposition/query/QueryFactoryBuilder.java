@@ -4,12 +4,17 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.query.exposition;
+package com.viadeo.kasper.query.exposition.query;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
+import com.viadeo.kasper.query.exposition.Bundle;
+import com.viadeo.kasper.query.exposition.adapters.DefaultTypeAdapters;
+import com.viadeo.kasper.query.exposition.adapters.NullSafeTypeAdapter;
+import com.viadeo.kasper.query.exposition.TypeAdapter;
+import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
 import org.joda.time.DateTime;
 
 import java.lang.reflect.Type;
@@ -20,9 +25,10 @@ import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.query.exposition.NullSafeTypeAdapter.nullSafe;
+import static com.viadeo.kasper.query.exposition.adapters.NullSafeTypeAdapter.nullSafe;
 
 public class QueryFactoryBuilder {
+
 	private ConcurrentMap<Type, TypeAdapter<?>> adapters = Maps.newConcurrentMap();
 	private ConcurrentMap<Type, BeanAdapter<?>> beanAdapters = Maps.newConcurrentMap();
 	private List<TypeAdapterFactory<?>> factories = Lists.newArrayList();
@@ -31,13 +37,13 @@ public class QueryFactoryBuilder {
 	
 	// ------------------------------------------------------------------------
 
-	public QueryFactoryBuilder bundle(Bundle... extensions) {
-	    for (Bundle bundle : extensions) {
+	public QueryFactoryBuilder bundle(final Bundle... extensions) {
+	    for (final Bundle bundle : extensions) {
 	        bundles.add(bundle);
         }
 	    return this;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public QueryFactoryBuilder use(final TypeAdapter<?> adapter) {
 		checkNotNull(adapter);
@@ -74,21 +80,23 @@ public class QueryFactoryBuilder {
 		return this;
 	}
 
+    // ------------------------------------------------------------------------
+
 	public QueryFactory create() {
-		for (TypeAdapter<?> adapter : loadServices(TypeAdapter.class)) {
+		for (final TypeAdapter<?> adapter : loadServices(TypeAdapter.class)) {
 			use(adapter);
         }
 		
-		for (BeanAdapter<?> beanAdapter : loadServices(BeanAdapter.class)) {
+		for (final BeanAdapter<?> beanAdapter : loadServices(BeanAdapter.class)) {
             use(beanAdapter);
         }
 		
-		for (TypeAdapterFactory<?> adapterFactory : loadServices(TypeAdapterFactory.class)) {
+		for (final TypeAdapterFactory<?> adapterFactory : loadServices(TypeAdapterFactory.class)) {
             use(adapterFactory);
         }
 		
 		// after registering user extensions (must be prefered to bundles), setup with the bundles
-		for (Bundle bundle : bundles) {
+		for (final Bundle bundle : bundles) {
 		    bundle.setup(this);
         }
 
@@ -116,11 +124,15 @@ public class QueryFactoryBuilder {
 
 		return new DefaultQueryFactory(adapters, beanAdapters, factories, visibilityFilter);
 	}
-	
+
+    // ------------------------------------------------------------------------
+
 	@VisibleForTesting
-	<T> List<T> loadServices(Class<T> serviceClass) {
-	    final ServiceLoader<T> serviceLoader = ServiceLoader.load(
-	            serviceClass, serviceClass.getClassLoader());
+    public <T> List<T> loadServices(final Class<T> serviceClass) {
+	    final ServiceLoader<T> serviceLoader =
+                ServiceLoader.load(serviceClass, serviceClass.getClassLoader());
+
         return Lists.newArrayList(serviceLoader.iterator());
 	}
+
 }

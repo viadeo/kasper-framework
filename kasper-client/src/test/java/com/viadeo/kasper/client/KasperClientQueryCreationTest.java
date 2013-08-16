@@ -9,8 +9,8 @@ package com.viadeo.kasper.client;
 
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.query.exposition.QueryBuilder;
-import com.viadeo.kasper.query.exposition.QueryParser;
+import com.viadeo.kasper.query.exposition.query.QueryBuilder;
+import com.viadeo.kasper.query.exposition.query.QueryParser;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import org.joda.time.DateTime;
 import org.junit.Test;

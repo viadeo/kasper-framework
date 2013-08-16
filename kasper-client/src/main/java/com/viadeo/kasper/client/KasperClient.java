@@ -4,12 +4,12 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.SetMultimap;
 import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
@@ -25,9 +25,9 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.query.exposition.KasperQueryAdapterException;
-import com.viadeo.kasper.query.exposition.QueryBuilder;
-import com.viadeo.kasper.query.exposition.QueryFactory;
+import com.viadeo.kasper.query.exposition.exception.KasperQueryAdapterException;
+import com.viadeo.kasper.query.exposition.query.QueryBuilder;
+import com.viadeo.kasper.query.exposition.query.QueryFactory;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 
 import javax.ws.rs.core.MediaType;
@@ -37,6 +37,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -124,8 +125,8 @@ public class KasperClient {
 
     // --
 
-    KasperClient(final QueryFactory queryFactory, final ObjectMapper mapper, final URL commandBaseUrl,
-            final URL queryBaseUrl) {
+    KasperClient(final QueryFactory queryFactory, final ObjectMapper mapper,
+                 final URL commandBaseUrl, final URL queryBaseUrl) {
 
         final DefaultClientConfig cfg = new DefaultClientConfig();
         cfg.getSingletons().add(new JacksonJsonProvider(mapper));
@@ -138,7 +139,8 @@ public class KasperClient {
 
     // --
 
-    KasperClient(final QueryFactory queryFactory, final Client client, final URL commandBaseUrl, final URL queryBaseUrl) {
+    KasperClient(final QueryFactory queryFactory, final Client client,
+                 final URL commandBaseUrl, final URL queryBaseUrl) {
 
         this.client = client;
         this.commandBaseLocation = commandBaseUrl;
@@ -184,7 +186,9 @@ public class KasperClient {
         checkNotNull(command);
 
         final Future<ClientResponse> futureResponse = client.asyncResource(resolveCommandPath(command.getClass()))
-                .accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON).put(ClientResponse.class, command);
+                .accept(MediaType.APPLICATION_JSON)
+                .type(MediaType.APPLICATION_JSON)
+                .put(ClientResponse.class, command);
 
         // we need to decorate the Future returned by jersey in order to handle
         // exceptions and populate according to it the command result
@@ -235,7 +239,8 @@ public class KasperClient {
                                     try {
                                         callback.done(handleResponse(f.get()));
                                     } catch (final ExecutionException e) {
-                                        throw new KasperException("ERROR handling command [" + command.getClass() + "]", e);
+                                        throw new KasperException(String.format(
+                                                "ERROR handling command [%s]", command.getClass()), e);
                                     }
                                 }
                             }, command);
@@ -347,7 +352,6 @@ public class KasperClient {
      * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command, com.viadeo.kasper.client.lib.Callback)
      */
     public <T extends QueryResult> void queryAsync(final Query query, final Class<T> mapTo, final Callback<T> callback) {
-
         queryAsync(query, TypeToken.of(mapTo), callback);
     }
 
@@ -395,21 +399,29 @@ public class KasperClient {
 
     MultivaluedMap<String, String> prepareQueryParams(final Query query) {
         try {
+
             @SuppressWarnings("unchecked")
-            final TypeAdapter<Query> adapter = (TypeAdapter<Query>) queryFactory.create(TypeToken.of(query.getClass()));
+            final TypeAdapter<Query> adapter = (TypeAdapter<Query>)
+                    queryFactory.create(TypeToken.of(query.getClass()));
 
             final QueryBuilder queryBuilder = new QueryBuilder();
             adapter.adapt(query, queryBuilder);
 
             final MultivaluedMap<String, String> map = new MultivaluedMapImpl();
-            map.putAll(queryBuilder.build());
+            final SetMultimap<String, String> queryMap= queryBuilder.build();
+
+            for (final Map.Entry<String, String> entry : queryMap.entries()) {
+                map.add(entry.getKey(), entry.getValue());
+            }
 
             return map;
 
         } catch (final KasperQueryAdapterException ex) {
-            throw new KasperException("ERROR generating query string for [" + query.getClass() + "]", ex);
+            throw new KasperException(
+                    String.format("ERROR generating query string for [%s]", query.getClass()), ex);
         } catch (final Exception ex) {
-            throw new KasperException("ERROR generating query string for [" + query.getClass() + "]", ex);
+            throw new KasperException(
+                    String.format("ERROR generating query string for [%s]", query.getClass()), ex);
         }
     }
 

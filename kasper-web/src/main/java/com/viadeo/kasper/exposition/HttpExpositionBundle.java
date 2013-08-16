@@ -16,6 +16,7 @@ import com.yammer.dropwizard.config.Environment;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class HttpExpositionBundle implements Bundle {
+
     private final Platform platform;
     private final QueryServicesLocator queryServiceLocator;
     private final DomainLocator domainLocator;
@@ -24,8 +25,9 @@ public class HttpExpositionBundle implements Bundle {
 
     // ------------------------------------------------------------------------
 
-    public HttpExpositionBundle(Platform platform, QueryServicesLocator queryServiceLocator,
-            DomainLocator domainLocator, String queryUrlPattern, String commandUrlPattern) {
+    public HttpExpositionBundle(final Platform platform, final QueryServicesLocator queryServiceLocator,
+                                final DomainLocator domainLocator, final String queryUrlPattern,
+                                final String commandUrlPattern) {
         this.platform = platform;
         this.queryServiceLocator = queryServiceLocator;
         this.domainLocator = domainLocator;
@@ -36,7 +38,7 @@ public class HttpExpositionBundle implements Bundle {
     // ------------------------------------------------------------------------
 
     @Override
-    public void initialize(final Bootstrap<?> bootstrap) { }
+    public void initialize(final Bootstrap<?> bootstrap) { /* do nothing */ }
 
     @Override
     public void run(final Environment environment) {
@@ -79,8 +81,12 @@ public class HttpExpositionBundle implements Bundle {
         }
 
         public HttpExpositionBundle create() {
-            return new HttpExpositionBundle(checkNotNull(platform), checkNotNull(queryServiceLocator),
-                    checkNotNull(domainLocator), checkNotNull(queryUrlPattern), checkNotNull(commandUrlPattern));
+            return new HttpExpositionBundle(
+                    checkNotNull(platform),
+                    checkNotNull(queryServiceLocator),
+                    checkNotNull(domainLocator),
+                    checkNotNull(queryUrlPattern),
+                    checkNotNull(commandUrlPattern));
         }
     }
 

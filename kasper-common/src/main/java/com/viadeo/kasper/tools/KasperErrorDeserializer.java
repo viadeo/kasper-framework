@@ -38,18 +38,17 @@ public class KasperErrorDeserializer extends JsonDeserializer<KasperError> {
             final String name = jp.getCurrentName();
             jp.nextToken();
 
-            if (CODE.equals(name)) {
+            if (name.contentEquals(CODE)) {
                 code = jp.getValueAsString();
-            } else if (MESSAGE.equals(name)) {
+            } else if (name.contentEquals(MESSAGE)) {
                 message = jp.getValueAsString();
-            }
-
-            if (USERMESSAGE.equals(name)) {
+            } else if (name.contentEquals(USERMESSAGE)) {
                 userMessage = jp.getValueAsString();
             } else {
                 LOGGER.warn("Unknown property {} when default mapping KasperError ", name);
                 // FIXME do we just ignore unknown properties or take some action?
             }
+
         }
 
         return new KasperError(code, message, userMessage);

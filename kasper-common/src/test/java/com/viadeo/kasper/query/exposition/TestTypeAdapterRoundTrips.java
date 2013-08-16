@@ -6,12 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition;
 
+import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.query.exposition.query.QueryBuilder;
+import com.viadeo.kasper.query.exposition.query.QueryFactory;
+import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
+import com.viadeo.kasper.query.exposition.query.QueryParser;
 import org.junit.Test;
-
-import java.util.HashMap;
-import java.util.List;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertEquals;
@@ -23,7 +25,7 @@ public class TestTypeAdapterRoundTrips {
 	@Test public void testQueryWithDefaultValues() throws Exception {
 	    final TypeAdapter<QueryWithDefaultValue> adapter = factory.create(TypeToken.of(QueryWithDefaultValue.class));
 	    
-	    QueryWithDefaultValue query = adapter.adapt(new QueryParser(new HashMap<String, List<String>>()));
+	    QueryWithDefaultValue query = adapter.adapt(new QueryParser());
 	    
 	    assertEquals(10, query.getValue());
 	}
@@ -39,7 +41,10 @@ public class TestTypeAdapterRoundTrips {
 
         // When
 		adapter.adapt(expected, qBuilder);
-		PrimitiveArrayQuery actual = adapter.adapt(new QueryParser(qBuilder.build()));
+
+        //  Adapt a new mutable map
+		PrimitiveArrayQuery actual = adapter.adapt(new QueryParser(
+                LinkedHashMultimap.create(qBuilder.build())));
 
         // Then
 		assertArrayEquals(expected.array, actual.array);

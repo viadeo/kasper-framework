@@ -10,7 +10,11 @@ package com.viadeo.kasper.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.query.exposition.*;
+import com.viadeo.kasper.query.exposition.query.QueryFactory;
+import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
+import com.viadeo.kasper.query.exposition.TypeAdapter;
+import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
+import com.viadeo.kasper.query.exposition.query.VisibilityFilter;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 
 import java.net.MalformedURLException;

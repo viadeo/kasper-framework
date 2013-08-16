@@ -67,14 +67,19 @@ public abstract class HttpExposer extends HttpServlet {
 		return platform;
 	}
 
+    // ------------------------------------------------------------------------
+
     protected String getFullRequestURI(final HttpServletRequest req){
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(req.getRequestURI());
-        String queryString = req.getQueryString();
+
+        final String queryString = req.getQueryString();
         if (StringUtils.hasText(queryString)){
             sb.append("?");
             sb.append(queryString);
         }
+
         return sb.toString();
     }
+
 }

@@ -4,10 +4,12 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.query.exposition;
+package com.viadeo.kasper.query.exposition.query;
 
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.query.exposition.TypeAdapter;
+import com.viadeo.kasper.query.exposition.exception.KasperQueryAdapterException;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -133,8 +135,9 @@ class PropertyAdapter {
     }
 
     private KasperQueryAdapterException cannotSetPropertyValue(final Object value, final Exception e) {
-        return new KasperQueryAdapterException("Unable to set property " + property.getName() + " from bean "
-                + accessor.getDeclaringClass() + " with value " + value, e);
+        return new KasperQueryAdapterException(
+                String.format("Unable to set property %s from bean %s with value %s",
+                property.getName(), accessor.getDeclaringClass(), value), e);
     }
 
     // ------------------------------------------------------------------------
@@ -142,4 +145,5 @@ class PropertyAdapter {
     public String getName() {
         return property.getName();
     }
+
 }

@@ -4,9 +4,11 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.query.exposition;
+package com.viadeo.kasper.query.exposition.exception;
 
-public class KasperQueryAdapterException extends RuntimeException {
+import com.viadeo.kasper.exception.KasperException;
+
+public class KasperQueryAdapterException extends KasperException {
 	private static final long serialVersionUID = 6584426866366107126L;
 
 	public KasperQueryAdapterException(final String message, final Throwable cause) {

@@ -6,11 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition;
 
+import com.google.common.collect.Multimap;
+import com.viadeo.kasper.query.exposition.query.QueryBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -57,8 +60,10 @@ public class QueryBuilderTest {
         assertTrue(builder.hasSingle(KEY));
         assertEquals(VALUE, builder.first(KEY));
         assertTrue(builder.values(ARRAY).size() == 2);
-        assertEquals("1", builder.values(ARRAY).get(0));
-        assertEquals("2", builder.values(ARRAY).get(1));
+
+        final Iterator<String> it = builder.values(ARRAY).iterator();
+        assertEquals("1", it.next());
+        assertEquals("2", it.next());
     }
 
     @Test(expected = IllegalStateException.class)
@@ -72,14 +77,20 @@ public class QueryBuilderTest {
         // Given
 
         // When
-        final Map<String, List<String>> map = builder.addSingle(KEY, VALUE).begin(ARRAY).add("1", "2").end().build();
+        final Multimap<String, String> map = builder
+                .addSingle(KEY, VALUE)
+                .begin(ARRAY)
+                .add("1", "2")
+                .end().build();
 
         // Then
         assertTrue(map.get(KEY).size() == 1);
-        assertEquals(VALUE, map.get(KEY).get(0));
+        assertEquals(VALUE, map.get(KEY).iterator().next());
+
         assertTrue(map.get(ARRAY).size() == 2);
-        assertEquals("1", map.get(ARRAY).get(0));
-        assertEquals("2", map.get(ARRAY).get(1));
+        final Iterator<String> it= map.get(ARRAY).iterator();
+        assertEquals("1", it.next());
+        assertEquals("2", it.next());
     }
 
     @Test
@@ -87,14 +98,21 @@ public class QueryBuilderTest {
         // Given
 
         // When
-        final Map<String, List<String>> map = builder.begin("14").add(1).begin("23").add(2).add(3).end().add(4).end()
-                .build();
+        final Multimap<String, String> map = builder
+                .begin("14")
+                .add(1)
+                .begin("23")
+                .add(2).add(3).end().add(4)
+                .end().build();
 
         // Then
-        assertEquals("1", map.get("14").get(0));
-        assertEquals("4", map.get("14").get(1));
-        assertEquals("2", map.get("23").get(0));
-        assertEquals("3", map.get("23").get(1));
+        final Iterator<String> it14 = map.get("14").iterator();
+        assertEquals("1", it14.next());
+        assertEquals("4", it14.next());
+
+        final  Iterator<String> it23 = map.get("23").iterator();
+        assertEquals("2", it23.next());
+        assertEquals("3", it23.next());
     }
 
     @Test

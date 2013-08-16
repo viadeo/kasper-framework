@@ -29,14 +29,13 @@ public final class KasperCommandResultDeserializer extends JsonDeserializer<Comm
 
     // ------------------------------------------------------------------------
 
-    public KasperCommandResultDeserializer() {
-    }
+    public KasperCommandResultDeserializer() { }
 
     // ------------------------------------------------------------------------
 
     @Override
     public CommandResult deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException {
-        ResultBuilder result = new ResultBuilder();
+        final ResultBuilder result = new ResultBuilder();
 
         while ((null != jp.nextToken()) && !jp.getCurrentToken().equals(JsonToken.END_OBJECT)) {
             final String name = jp.getCurrentName();
@@ -55,9 +54,7 @@ public final class KasperCommandResultDeserializer extends JsonDeserializer<Comm
                     }
                 }
             }
-            if (ERROR.equals(name)) {
-                // just ignore
-            } else {
+            if (!ERROR.equals(name)) {
                 LOGGER.warn("Unknown property when default mapping to a Result");
                 // FIXME do we just ignore unknown properties or take some action?
             }
@@ -65,4 +62,5 @@ public final class KasperCommandResultDeserializer extends JsonDeserializer<Comm
 
         return result.create();
     }
+
 }
