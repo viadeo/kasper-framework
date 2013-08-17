@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.exposition;
 
 import com.viadeo.kasper.KasperError;
@@ -20,11 +26,10 @@ import static org.junit.Assert.assertNotNull;
 
 public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExposer> {
 
-    public HttpCommandExposerTest() {
-    }
+    public HttpCommandExposerTest() { }
 
     @Override
-    protected HttpCommandExposer createExposer(ApplicationContext ctx) {
+    protected HttpCommandExposer createExposer(final ApplicationContext ctx) {
         return new HttpCommandExposer(ctx.getBean(Platform.class), ctx.getBean(DomainLocator.class));
     }
 
@@ -114,7 +119,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
             return errors;
         }
 
-        public void setErrors(List<KasperError> errors) {
+        public void setErrors(final List<KasperError> errors) {
             this.errors = errors;
         }
 
@@ -131,7 +136,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
             if (command.isThrowException())
                 throw new KasperException("Something bad happened!");
             if (command.getErrors() != null)
-                return CommandResult.error().addErrors(command.getErrors()).create();
+                return CommandResult.error().addErrors(command.getErrors()).build();
             createAccountCommandName = command.getName();
             return CommandResult.ok();
         }

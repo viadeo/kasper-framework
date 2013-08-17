@@ -11,9 +11,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.query.exposition.Bundle;
+import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.adapters.DefaultTypeAdapters;
 import com.viadeo.kasper.query.exposition.adapters.NullSafeTypeAdapter;
-import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
 import org.joda.time.DateTime;
 

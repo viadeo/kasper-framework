@@ -41,7 +41,6 @@ import java.util.*;
  * TODO: allow user to specify classpath as a list of URLs or at least as Reflections helpers
  */
 public class AnnotationRootProcessor {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationRootProcessor.class);
 
     /**

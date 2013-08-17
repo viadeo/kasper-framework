@@ -36,6 +36,7 @@ public class DefaultQueryGateway implements QueryGateway {
         checkNotNull(context);
         checkNotNull(query);
 
+        /* Sets current thread context */
         CurrentContext.set(context);
 
         // Search for associated service --------------------------------------

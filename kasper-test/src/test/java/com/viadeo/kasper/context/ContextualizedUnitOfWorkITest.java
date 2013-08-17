@@ -67,12 +67,10 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     // -- Test components -----------------------------------------------------
 
     @XKasperDomain(label = "test domain", prefix = "ctx")
-    public static class ContextTestDomain implements Domain {
-    }
+    public static class ContextTestDomain implements Domain { }
 
     @XKasperCommand
-    public static class ContextTestCommand implements Command {
-    }
+    public static class ContextTestCommand implements Command { }
 
     @XKasperCommandHandler(domain = ContextTestDomain.class)
     public static class ContextTestHandler extends AbstractEntityCommandHandler<ContextTestCommand, ContextTestAGR> {

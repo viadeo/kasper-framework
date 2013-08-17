@@ -10,14 +10,16 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.annotation.Immutable;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Base Kasper command result implementation
  */
-public class CommandResult {
+public class CommandResult implements Serializable, Immutable {
 
     /**
      * Accepted values for command result statuses
@@ -36,19 +38,19 @@ public class CommandResult {
 
     // ------------------------------------------------------------------------
 
-    public static class ResultBuilder {
+    public static class Builder {
         private final List<KasperError> errors = new ArrayList<KasperError>();
         private Status status = Status.OK;
 
-        public ResultBuilder addError(final String code, final String message) {
+        public Builder addError(final String code, final String message) {
             return addError(new KasperError(code, message));
         }
 
-        public ResultBuilder addError(final String code, final String message, final String userMessage) {
+        public Builder addError(final String code, final String message, final String userMessage) {
             return addError(new KasperError(code, message, userMessage));
         }
 
-        public ResultBuilder addError(final KasperError... errors) {
+        public Builder addError(final KasperError... errors) {
             if (status == Status.OK) {
                 status = Status.ERROR;
             }
@@ -58,14 +60,14 @@ public class CommandResult {
             return this;
         }
 
-        public ResultBuilder addErrors(final List<KasperError> errors) {
+        public Builder addErrors(final List<KasperError> errors) {
             for (final KasperError error : errors){
                 addError(error);
             }
             return this;
         }
 
-        public ResultBuilder status(final Status status) {
+        public Builder status(final Status status) {
             this.status = status;
             return this;
         }
@@ -74,7 +76,7 @@ public class CommandResult {
             return Status.OK != status;
         }
 
-        public CommandResult create() {
+        public CommandResult build() {
             return new CommandResult(status, errors);
         }
 
@@ -82,16 +84,16 @@ public class CommandResult {
 
     // ------------------------------------------------------------------------
 
-    public static ResultBuilder error() {
-        return new ResultBuilder().status(Status.ERROR);
+    public static Builder error() {
+        return new Builder().status(Status.ERROR);
     }
 
-    public static ResultBuilder refused() {
-        return new ResultBuilder().status(Status.REFUSED);
+    public static Builder refused() {
+        return new Builder().status(Status.REFUSED);
     }
 
     public static CommandResult ok() {
-        return new ResultBuilder().status(Status.OK).create();
+        return new Builder().status(Status.OK).build();
     }
 
 

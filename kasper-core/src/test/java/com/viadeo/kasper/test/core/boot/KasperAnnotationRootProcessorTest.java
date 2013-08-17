@@ -51,33 +51,39 @@ public class KasperAnnotationRootProcessorTest extends TestCase {
 	
 	@Test
 	public void testShouldRunProcessOnNewRegisterProcessor() {
+        // Given
 		final AnnotationRootProcessor rootProcessor = new AnnotationRootProcessor();
 		
 		final TestProcessor realProcessor = new TestProcessor();
 		final AnnotationProcessor<?,?> processor = spy(realProcessor);
-		
+
+        // When
 		rootProcessor.registerProcessor(processor);
 		rootProcessor.setDoNotScanDefaultPrefix(true);
 		rootProcessor.addScanPrefix(this.getClass().getPackage().getName());
 
 		rootProcessor.boot();
-		
+
+        // Then
 		verify(processor).process(TestClass.class);
         verify(processor).process(TestChildClass.class);
 	}
 
     @Test
     public void testShouldNotScanInPackageWithoutAnySetPrefix() {
+        // Given
         final AnnotationRootProcessor rootProcessor = new AnnotationRootProcessor();
 
         final TestProcessor realProcessor = new TestProcessor();
         final AnnotationProcessor<?,?> processor = spy(realProcessor);
 
+        // When
         rootProcessor.registerProcessor(processor);
         rootProcessor.setDoNotScanDefaultPrefix(true);
 
         rootProcessor.boot();
 
+        // Then
         verify(processor,never()).process(TestClass.class);
     }
 	

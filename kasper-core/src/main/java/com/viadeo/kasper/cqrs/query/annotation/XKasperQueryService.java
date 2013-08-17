@@ -27,8 +27,14 @@ public @interface XKasperQueryService {
 	 */
 	String name() default "";
 
+    /**
+     * @return the associated domain
+     */
 	Class<? extends Domain> domain();
 
+    /**
+     * @return the associated query service filters
+     */
     Class<? extends ServiceFilter>[] filters() default {};
 
 }

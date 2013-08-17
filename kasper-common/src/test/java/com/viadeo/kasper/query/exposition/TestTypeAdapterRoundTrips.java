@@ -23,10 +23,13 @@ public class TestTypeAdapterRoundTrips {
 	private QueryFactory factory = new QueryFactoryBuilder().create();
 	
 	@Test public void testQueryWithDefaultValues() throws Exception {
+        // Given
 	    final TypeAdapter<QueryWithDefaultValue> adapter = factory.create(TypeToken.of(QueryWithDefaultValue.class));
-	    
+
+        // When
 	    QueryWithDefaultValue query = adapter.adapt(new QueryParser());
-	    
+
+        // Then
 	    assertEquals(10, query.getValue());
 	}
 	

@@ -12,7 +12,6 @@ import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.command.CommandResult.ResultBuilder;
 import com.viadeo.kasper.cqrs.command.CommandResult.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +34,7 @@ public final class KasperCommandResultDeserializer extends JsonDeserializer<Comm
 
     @Override
     public CommandResult deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException {
-        final ResultBuilder result = new ResultBuilder();
+        final CommandResult.Builder result = new CommandResult.Builder();
 
         while ((null != jp.nextToken()) && !jp.getCurrentToken().equals(JsonToken.END_OBJECT)) {
             final String name = jp.getCurrentName();
@@ -60,7 +59,7 @@ public final class KasperCommandResultDeserializer extends JsonDeserializer<Comm
             }
         }
 
-        return result.create();
+        return result.build();
     }
 
 }

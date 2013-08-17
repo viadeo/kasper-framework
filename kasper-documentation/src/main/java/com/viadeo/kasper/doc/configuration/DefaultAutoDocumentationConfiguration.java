@@ -92,7 +92,6 @@ public class DefaultAutoDocumentationConfiguration implements AutoDocumentationC
         return this.registerProcessor(proc);
     }
 
-
     public ListenersDocumentationProcessor getListenersDocumentationProcessor(final KasperLibrary library) {
         final ListenersDocumentationProcessor proc = new ListenersDocumentationProcessor();
         proc.setKasperLibrary(library);

@@ -6,13 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.SetMultimap;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.query.exposition.query.BeanAdapter;
-import com.viadeo.kasper.query.exposition.query.BeanProperty;
-import com.viadeo.kasper.query.exposition.query.*;
 import com.viadeo.kasper.query.exposition.adapters.DefaultTypeAdapters;
+import com.viadeo.kasper.query.exposition.query.*;
 import org.junit.Before;
 import org.junit.Test;
 

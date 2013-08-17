@@ -6,7 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition.query;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.SetMultimap;
 import com.viadeo.kasper.query.exposition.exception.KasperQueryAdapterException;
 
 import java.net.URI;

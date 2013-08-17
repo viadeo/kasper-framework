@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
-
 public class RetError extends RetBase {
 	private static final long serialVersionUID = 8985310989912862924L;
 

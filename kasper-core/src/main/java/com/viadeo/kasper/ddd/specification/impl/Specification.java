@@ -24,7 +24,8 @@ public abstract class Specification<T> implements ISpecification<T> {
 	 * Cache for all specifications annotation (if present)
 	 */
 	@SuppressWarnings("rawtypes")
-	private static final Map<Class<? extends Specification>, XSpecification> ANNOTATIONS = Maps.newConcurrentMap();
+	private static final Map<Class<? extends Specification>, XSpecification> ANNOTATIONS =
+            Maps.newConcurrentMap();
 	
 	// ----------------------------------------------------------------------
 	

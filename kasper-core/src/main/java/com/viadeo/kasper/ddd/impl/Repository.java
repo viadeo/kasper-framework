@@ -67,8 +67,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	
 	// ========================================================================
 	
-	public Repository() {
-	}
+	public Repository() { }
 
 	@Override
 	public void init() {

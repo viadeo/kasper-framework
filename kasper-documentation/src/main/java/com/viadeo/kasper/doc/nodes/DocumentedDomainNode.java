@@ -47,7 +47,11 @@ public abstract class DocumentedDomainNode extends DocumentedNode {
 	
 	@Override
 	public String getURL() {
-		return String.format("/%s/%s/%s/%s", DocumentedDomain.TYPE_NAME, getDomain().getName(), getType(), getName());		
+		return String.format("/%s/%s/%s/%s",
+                DocumentedDomain.TYPE_NAME,
+                this.getDomain().getName(),
+                this.getType(),
+                this.getName());
 	}
 	
 }

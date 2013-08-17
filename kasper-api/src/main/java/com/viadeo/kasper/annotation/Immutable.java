@@ -4,15 +4,11 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.cqrs.query;
-
-import com.viadeo.kasper.annotation.Immutable;
-
-import java.io.Serializable;
+package com.viadeo.kasper.annotation;
 
 /**
- * The Kasper query marker interface
+ * Classes depending from this interface should be checked by root processor
+ * against immutability
  */
-public interface Query extends Serializable, Immutable {
-
+public interface Immutable {
 }

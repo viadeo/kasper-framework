@@ -16,7 +16,6 @@ import java.util.Iterator;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class AbstractQueryCollectionResult<RES extends QueryResult> implements QueryCollectionResult<RES> {
-
 	private static final long serialVersionUID = 5181041546682941845L;
 
 	private Collection<RES> innerCollection;
@@ -57,11 +56,11 @@ public abstract class AbstractQueryCollectionResult<RES extends QueryResult> imp
     // ------------------------------------------------------------------------
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) {
             return true;
         }
-        if (o == null || getClass() != o.getClass()) {
+        if ((null == o) || (getClass() != o.getClass())) {
             return false;
         }
 
@@ -71,9 +70,7 @@ public abstract class AbstractQueryCollectionResult<RES extends QueryResult> imp
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(
-                innerCollection
-        );
+        return Objects.hashCode(innerCollection);
     }
 
     @Override

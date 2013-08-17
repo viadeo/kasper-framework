@@ -4,7 +4,6 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.client;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
@@ -43,7 +42,6 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-
 
 public class KasperClientCommandTest extends JerseyTest {
 	
@@ -86,6 +84,8 @@ public class KasperClientCommandTest extends JerseyTest {
         }
     }
 
+    // --
+
     public static class CreateMemberCommand implements Command {
         private static final long serialVersionUID = -2618953642539379331L;
         private Status status;
@@ -108,7 +108,7 @@ public class KasperClientCommandTest extends JerseyTest {
     // ------------------------------------------------------------------------
 
     @BeforeClass public static void init() throws IOException {
-        ServerSocket socket = new ServerSocket(0);
+        final ServerSocket socket = new ServerSocket(0);
         port = socket.getLocalPort();
         socket.close();
     }
@@ -120,7 +120,7 @@ public class KasperClientCommandTest extends JerseyTest {
         @Produces(MediaType.APPLICATION_JSON)
         @Consumes(MediaType.APPLICATION_JSON)
         public CommandResult getMember(final CreateMemberCommand command) {
-            return new CommandResult.ResultBuilder().status(command.getStatus()).create();
+            return new CommandResult.Builder().status(command.getStatus()).build();
         }
     }
 
@@ -137,7 +137,7 @@ public class KasperClientCommandTest extends JerseyTest {
     }
 
     @Override
-    protected int getPort(int defaultPort) {
+    protected int getPort(final int defaultPort) {
         return port;
     }
     
@@ -186,7 +186,8 @@ public class KasperClientCommandTest extends JerseyTest {
     }
 
     @Test
-    public void testSendQueryAsyncCallback() throws MalformedURLException, InterruptedException, ExecutionException {
+    public void testSendQueryAsyncCallback()
+            throws MalformedURLException, InterruptedException, ExecutionException {
     	
     	// Given 
         final CountDownLatch latch = new CountDownLatch(1);

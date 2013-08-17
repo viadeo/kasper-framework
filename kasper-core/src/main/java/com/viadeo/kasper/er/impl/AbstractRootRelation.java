@@ -11,6 +11,7 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.impl.AbstractAggregateRoot;
 import com.viadeo.kasper.er.RootConcept;
 import com.viadeo.kasper.er.RootRelation;
+import com.viadeo.kasper.er.annotation.XBidirectional;
 
 /**
  *
@@ -64,8 +65,7 @@ public abstract class AbstractRootRelation<S extends RootConcept, T extends Root
 	 */
 	@Override
 	public boolean isBidirectional() {
-		// TODO
-		return false;
+        return (null != this.getClass().getAnnotation(XBidirectional.class));
 	}
 
 }

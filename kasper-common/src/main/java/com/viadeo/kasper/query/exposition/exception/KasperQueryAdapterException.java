@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition.exception;
 
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 
-public class KasperQueryAdapterException extends KasperException {
+public class KasperQueryAdapterException extends KasperQueryException {
 	private static final long serialVersionUID = 6584426866366107126L;
 
 	public KasperQueryAdapterException(final String message, final Throwable cause) {

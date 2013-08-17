@@ -24,6 +24,8 @@ public class DefaultContext extends AbstractContext {
     private KasperID requestCorrelationId;
     private KasperID sessionCorrelationId;
 
+    // ------------------------------------------------------------------------
+
     public DefaultContext() {
         super();
 

@@ -45,7 +45,7 @@ public class ObjectMapperProviderTest {
                 Arrays.asList(new KasperError("aCode", "aMessage")));
         final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
 
-        //When
+        // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(expected);
         final KasperQueryException actual = objectReader.readValue(
                 objectReader.getFactory().createJsonParser(json),
@@ -80,7 +80,7 @@ public class ObjectMapperProviderTest {
     public void deserializeErrorCommandResultWithSingleKasperError() throws IOException {
         // Given
         final KasperError expectedError = new KasperError(KasperError.UNKNOWN_ERROR, "some error");
-        final CommandResult expectedResult = CommandResult.error().addError(expectedError).create();
+        final CommandResult expectedResult = CommandResult.error().addError(expectedError).build();
 
         //When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(expectedResult);
@@ -100,7 +100,7 @@ public class ObjectMapperProviderTest {
         final List<KasperError> expectedErrors = Arrays.asList(new KasperError(KasperError.CONFLICT, "too late..."),
                 new KasperError(KasperError.UNKNOWN_ERROR, "some error"));
 
-        final CommandResult expectedResult = CommandResult.error().addErrors(expectedErrors).create();
+        final CommandResult expectedResult = CommandResult.error().addErrors(expectedErrors).build();
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(expectedResult);
@@ -121,7 +121,7 @@ public class ObjectMapperProviderTest {
     @Test
     public void deserializeErrorCommandResultWithNoKasperError() throws IOException {
         // Given
-        final CommandResult expectedResult = CommandResult.error().create();
+        final CommandResult expectedResult = CommandResult.error().build();
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(expectedResult);

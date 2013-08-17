@@ -4,7 +4,6 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
@@ -22,7 +21,6 @@ import org.slf4j.LoggerFactory;
  * @see com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService
  */
 public class ServiceFiltersProcessor extends SingletonAnnotationProcessor<XKasperServiceFilter, ServiceFilter> {
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceFiltersProcessor.class);
 
 	/**
@@ -71,4 +69,3 @@ public class ServiceFiltersProcessor extends SingletonAnnotationProcessor<XKaspe
 	}
 
 }
-

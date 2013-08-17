@@ -98,5 +98,4 @@ public class SerDeserTests {
         assertEquals(actualResult.field, bean.field);
     }
 
-
 }

@@ -4,7 +4,6 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.event.impl;
 
 import com.viadeo.kasper.context.Context;
@@ -20,7 +19,6 @@ import com.viadeo.kasper.event.Event;
  * @see com.viadeo.kasper.event.Event
  */
 public class DefaultEventMessage<E extends Event> implements com.viadeo.kasper.event.EventMessage<E> {
-
 	private static final long serialVersionUID = -214545825521867826L;
 
 	private final org.axonframework.domain.EventMessage<E> axonMessage;

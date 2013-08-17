@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
@@ -29,8 +35,9 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 		
 		for (final Field property : properties) {
 			property.setAccessible(true);
+
 			if (!Modifier.isTransient(property.getModifiers()) && !Modifier.isStatic(property.getModifiers())) {
-				String name = property.getName();				
+				final String name = property.getName();
 				
 				if (name.contentEquals("serialVersionUID")) {
 					continue;

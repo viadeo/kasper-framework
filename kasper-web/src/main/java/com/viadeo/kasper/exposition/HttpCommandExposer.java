@@ -108,7 +108,7 @@ public class HttpCommandExposer extends HttpExposer {
     private void handleCommand(final HttpServletRequest req, final HttpServletResponse resp)
             throws IOException {
 
-        REQUEST_LOGGER.info("Processing Command : "+req.getMethod()+" "+getFullRequestURI(req));
+        REQUEST_LOGGER.info("Processing Command : " + req.getMethod() + " " + getFullRequestURI(req));
 
         /* always respond with a json stream (even if empty) */
         resp.setContentType("application/json; charset=utf-8");
@@ -241,7 +241,7 @@ public class HttpCommandExposer extends HttpExposer {
         /* write also into the body the result as json */
         mapper.writer().writeValue(response.getOutputStream(),
                                    CommandResult.error().addError(
-                                           new KasperError(KasperError.UNKNOWN_ERROR, reason)).create());
+                                           new KasperError(KasperError.UNKNOWN_ERROR, reason)).build());
     }
 
     // ------------------------------------------------------------------------

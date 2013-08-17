@@ -14,8 +14,6 @@ import org.junit.Test;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -99,10 +97,10 @@ public class QueryBuilderTest {
 
         // When
         final Multimap<String, String> map = builder
-                .begin("14")
-                .add(1)
-                .begin("23")
-                .add(2).add(3).end().add(4)
+                .begin("14").add(1)
+                .begin("23").add(2).add(3)
+                .end()
+                .add(4)
                 .end().build();
 
         // Then
@@ -122,4 +120,5 @@ public class QueryBuilderTest {
         assertEquals(new URI("http://www.google.com/somepath?name=f%C3%A9e&names=foo&names=bar").toASCIIString(),
                 builder.build(new URI("http://www.google.com/somepath")).toASCIIString());
     }
+
 }

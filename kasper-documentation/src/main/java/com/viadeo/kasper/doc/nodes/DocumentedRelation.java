@@ -170,5 +170,6 @@ public final class DocumentedRelation extends DocumentedEntity {
 			} 
 		}
 		return super.getLabel();
-	}	
+	}
+
 }

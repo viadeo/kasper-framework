@@ -83,9 +83,6 @@ public abstract class AbstractComponentRelation<S extends RootConcept, T extends
 		if (this == Preconditions.checkNotNull(obj)) {
 			return true;
 		}
-		if (this == obj) {
-			return true;
-		}
 		if (AbstractComponentRelation.class.isAssignableFrom(obj.getClass())) {
 			@SuppressWarnings("unchecked") // Safe
 			final AbstractComponentRelation<S,T> other = (AbstractComponentRelation<S,T>) obj;

@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.exposition;
 
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
@@ -82,7 +88,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
             return errorCodes;
         }
 
-        public void setErrorCodes(List<String> errorCodes) {
+        public void setErrorCodes(final List<String> errorCodes) {
             this.errorCodes = errorCodes;
         }
     }
@@ -107,7 +113,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
             final SomeQuery q = message.getQuery();
 
             if (q.isDoThrowSomeException()) {
-                ExceptionBuilder builder = KasperQueryException.exception(q.aValue);
+                final ExceptionBuilder builder = KasperQueryException.exception(q.aValue);
                 if (q.getErrorCodes() != null) {
                     for (int i = 0; i < q.getErrorCodes().size(); i++)
                         builder.addError(q.getErrorCodes().get(i), "");
@@ -125,7 +131,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     // ------------------------------------------------------------------------
 
     @Override
-    protected HttpQueryExposer createExposer(ApplicationContext ctx) {
+    protected HttpQueryExposer createExposer(final ApplicationContext ctx) {
         return new HttpQueryExposer(ctx.getBean(Platform.class), ctx.getBean(QueryServicesLocator.class));
     }
 
@@ -169,7 +175,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         final SomeCollectionQuery query = new SomeCollectionQuery();
 
         // When
-        SomeCollectionResult result = client().query(query, SomeCollectionResult.class);
+        final SomeCollectionResult result = client().query(query, SomeCollectionResult.class);
 
         // Then
         assertEquals(1, result.getCount());

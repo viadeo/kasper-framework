@@ -35,7 +35,7 @@ public class DefaultKasperCommandMessage<C extends Command> implements KasperCom
 	 * (Optional) default context builder, only used if required (no context available)
 	 * If absent a default implementation will be used
 	 */
-	@Autowired
+	@Autowired // FIXME: remove this Autowired !! (??)
 	private transient ContextBuilder defaultContextBuilder;
 
 	// ------------------------------------------------------------------------
@@ -66,7 +66,7 @@ public class DefaultKasperCommandMessage<C extends Command> implements KasperCom
 			if (null != this.defaultContextBuilder) {
 				context = this.defaultContextBuilder.build();
 			} else {
-				DefaultKasperCommandMessage.LOGGER.warn("Defauting to base Kasper default context, no context has been provided and no Spring contextBuilder can be found ");
+				LOGGER.warn("Defauting to base Kasper default context, no context has been provided and no Spring contextBuilder can be found ");
 				context = new com.viadeo.kasper.context.impl.DefaultContextBuilder().build();
 			}
 		}

@@ -16,4 +16,5 @@ class SpecificationFailError extends Specification<String> {
     public boolean isSatisfiedBy(final String entity) {
         return false;
     }
+
 }

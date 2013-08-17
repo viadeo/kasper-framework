@@ -16,7 +16,6 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.Collection;
 
-
 public final class DocumentedEvent extends DocumentedDomainNode {
 	private static final long serialVersionUID = 6817858609739438236L;
 	

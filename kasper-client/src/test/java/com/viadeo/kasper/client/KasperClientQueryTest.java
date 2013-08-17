@@ -4,7 +4,6 @@
 //
 // Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.client;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
@@ -108,7 +107,8 @@ public class KasperClientQueryTest extends JerseyTest {
         @Path("/getMember")
         @GET
         @Produces(MediaType.APPLICATION_JSON)
-        public MemberResult getMember(@QueryParam("memberName") final String memberName, @QueryParam("ids") final List<Integer> ids) {
+        public MemberResult getMember(@QueryParam("memberName") final String memberName,
+                                      @QueryParam("ids") final List<Integer> ids) {
             return new MemberResult(memberName, ids);
         }
     }

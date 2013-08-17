@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.impl;
 
 import junit.framework.TestCase;
@@ -7,6 +13,8 @@ public class AbstractKasperIDTest extends TestCase {
 
 	private static final int INT_ID_A = 42;
 	private static final int INT_ID_B = 24;
+
+    // ------------------------------------------------------------------------
 	
 	private class TestID extends AbstractKasperID<Integer> {
 		private static final long serialVersionUID = -1463378777340827163L;

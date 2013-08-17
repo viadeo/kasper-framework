@@ -6,7 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition;
 
-import com.google.common.collect.*;
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.LinkedHashMultimap;
 import com.viadeo.kasper.query.exposition.query.QueryParser;
 import org.junit.Test;
 

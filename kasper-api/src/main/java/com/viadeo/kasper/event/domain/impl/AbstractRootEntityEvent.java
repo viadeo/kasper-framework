@@ -20,7 +20,8 @@ import org.joda.time.DateTime;
  * @see com.viadeo.kasper.event.domain.EntityEvent
  */
 public abstract class AbstractRootEntityEvent<D extends Domain, AGR>
-        extends AbstractEntityEvent<D, AGR> implements RootEntityEvent<D, AGR> {
+        extends AbstractEntityEvent<D, AGR>
+        implements RootEntityEvent<D, AGR> {
 
 	private static final long serialVersionUID = -1948165707419476422L;
 

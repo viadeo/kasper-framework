@@ -37,4 +37,5 @@ public class NotSpecification<T> extends Specification<T> {
 	public boolean isSatisfiedBy(final T entity) {
 		return !this.spec.isSatisfiedBy(Preconditions.checkNotNull(entity));
 	}
+
 }

@@ -20,4 +20,5 @@ class SpecificationStringContains extends Specification<String> {
     public boolean isSatisfiedBy(final String entity) {
         return entity.contains(this.containsPattern);
     }
+
 }

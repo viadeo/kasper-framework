@@ -14,7 +14,6 @@ import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
-
 public final class DocumentedListener extends DocumentedDomainNode {
 	private static final long serialVersionUID = 2245288475426783601L;
 	

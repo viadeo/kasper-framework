@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
  * @see QueryService
  */
 public class QueryServicesDocumentationProcessor extends DocumentationProcessor<XKasperQueryService, QueryService<?,?>> {
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueryServicesDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------
@@ -37,6 +36,5 @@ public class QueryServicesDocumentationProcessor extends DocumentationProcessor<
 		getKasperLibrary().recordQueryService((Class<? extends QueryService<?,?>>) queryServiceClazz);
 	}
 
-	
 }
 

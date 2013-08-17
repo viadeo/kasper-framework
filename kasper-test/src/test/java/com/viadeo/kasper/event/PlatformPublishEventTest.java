@@ -56,7 +56,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 	// ------------------------------------------------------------------------
 
 	@Test
-	public void test() {
+	public void testPublishEvent() {
 		final KasperID id = KasperTestIdGenerator.get();
 		final Event event = new TestEvent(id, new DateTime());
 		event.setContext(this.newContext());

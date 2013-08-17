@@ -20,4 +20,5 @@ class SpecificationStringIs extends Specification<String> {
     public boolean isSatisfiedBy(final String entity) {
         return entity.contentEquals(this.isPattern);
     }
+
 }

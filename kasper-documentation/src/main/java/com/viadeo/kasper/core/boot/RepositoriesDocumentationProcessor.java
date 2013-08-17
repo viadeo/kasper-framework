@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
  * @see XKasperRepository
  */
 public class RepositoriesDocumentationProcessor extends DocumentationProcessor<XKasperRepository, IRepository<?>> {
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(RepositoriesDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------
@@ -37,7 +36,6 @@ public class RepositoriesDocumentationProcessor extends DocumentationProcessor<X
 		//- Register the domain to the locator --------------------------------
 		getKasperLibrary().recordRepository((Class<? extends IRepository<?>>) repositoryClazz);
 	}
-
 
 }
 

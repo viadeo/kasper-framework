@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
  * @see XKasperRelation
  */
 public class RelationsDocumentationProcessor extends DocumentationProcessor<XKasperRelation, Relation<?,?>> {
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(RelationsDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------

@@ -64,7 +64,7 @@ public class DefaultDomainLocator implements DomainLocator {
     // ------------------------------------------------------------------------
 
     @Override
-    public void registerHandler(CommandHandler<? extends Command> commandHandler) {
+    public void registerHandler(final CommandHandler<? extends Command> commandHandler) {
         handlers.add(commandHandler);
     }
 
@@ -205,9 +205,11 @@ public class DefaultDomainLocator implements DomainLocator {
     @Override
     public String getDomainPrefix(final Domain domain) {
         Preconditions.checkNotNull(domain);
+
         if (this.domains.containsKey(domain.getClass())) {
             return this.domains.get(domain.getClass()).get("prefix");
         }
+
         throw new KasperException("Domain has not been recorded : " + domain.getClass().getName());
     }
 
@@ -217,9 +219,11 @@ public class DefaultDomainLocator implements DomainLocator {
     @Override
     public String getDomainName(final Domain domain) {
         Preconditions.checkNotNull(domain);
+
         if (this.domains.containsKey(domain.getClass())) {
             return this.domains.get(domain.getClass()).get("name");
         }
+
         throw new KasperException("Domain has not been recorded : " + domain.getClass().getName());
     }
 

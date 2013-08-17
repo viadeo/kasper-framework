@@ -6,6 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.event.impl;
 
+/**
+ * Base proposed ontology for events
+ */
 public final class EventBaseOntology {
 
 	private EventBaseOntology() { /* singleton */ }

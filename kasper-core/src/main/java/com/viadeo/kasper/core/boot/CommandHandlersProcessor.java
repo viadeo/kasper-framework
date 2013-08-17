@@ -4,7 +4,6 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Optional;
@@ -48,13 +47,13 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 	 *
 	 * @param <C> the Kasper command type handled
 	 */
-	private static class CommandCastor<C extends Command> {
+	private static class AxonCommandCastor<C extends Command> {
 
 		private final transient Class<? extends C> payload;
 		private final transient org.axonframework.commandhandling.CommandHandler handler;
 
 		@SuppressWarnings("unchecked") // Safe by previous parent class typing
-		CommandCastor(final Class<?> bean, final org.axonframework.commandhandling.CommandHandler container) {
+        AxonCommandCastor(final Class<?> bean, final org.axonframework.commandhandling.CommandHandler container) {
 			this.payload = (Class<? extends C>) bean;
 			this.handler = container;
 		}
@@ -96,8 +95,8 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 			domainLocator.registerHandler(commandHandler);
             
 			//- Dynamic type command class and command handler for Axon -------
-			final CommandCastor<Command> castor =
-					new CommandCastor<>(commandClass.get(), commandHandler);
+			final AxonCommandCastor<Command> castor =
+					new AxonCommandCastor<>(commandClass.get(), commandHandler);
 
 			//- Subscribe the handler to this command type (Axon) -------------
 			this.commandBus.subscribe(castor.getBeanClass().getName(), castor.getContainerClass());
@@ -124,4 +123,3 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 	}
 
 }
-

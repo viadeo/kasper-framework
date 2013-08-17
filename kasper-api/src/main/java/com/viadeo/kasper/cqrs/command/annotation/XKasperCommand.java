@@ -24,4 +24,5 @@ public @interface XKasperCommand {
      * @return the command description
      */
     String description() default "";
+
 }

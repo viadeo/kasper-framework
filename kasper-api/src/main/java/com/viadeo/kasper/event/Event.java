@@ -7,6 +7,7 @@
 package com.viadeo.kasper.event;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.annotation.Immutable;
 import com.viadeo.kasper.context.Context;
 
 import java.io.Serializable;
@@ -16,7 +17,7 @@ import java.io.Serializable;
  * The Kasper event
  *
  */
-public interface Event extends Serializable {
+public interface Event extends Serializable, Immutable {
 
 	/**
 	 * @return the event's context

@@ -28,6 +28,7 @@ public class QueryServicesProcessorTest {
 
     final QueryServicesLocator locator = spy(new DefaultQueryServicesLocator());
     final QueryServicesProcessor processor = new QueryServicesProcessor();
+
     { processor.setQueryServicesLocator(locator); }
 
     // ------------------------------------------------------------------------

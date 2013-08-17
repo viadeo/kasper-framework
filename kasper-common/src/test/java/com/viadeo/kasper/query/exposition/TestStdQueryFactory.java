@@ -10,10 +10,10 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.query.exposition.query.*;
 import com.viadeo.kasper.query.exposition.adapters.DefaultTypeAdapters;
 import com.viadeo.kasper.query.exposition.adapters.NullSafeTypeAdapter;
 import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
+import com.viadeo.kasper.query.exposition.query.*;
 import org.joda.time.DateTime;
 import org.junit.Test;
 

@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
  * @see XKasperCommand
  */
 public class CommandsDocumentationProcessor extends DocumentationProcessor<XKasperCommand, Command> {
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommandsDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------

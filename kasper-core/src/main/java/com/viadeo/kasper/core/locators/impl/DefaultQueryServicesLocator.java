@@ -4,7 +4,6 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.core.locators.impl;
 
 import com.google.common.base.Optional;
@@ -31,8 +30,10 @@ import static java.util.Collections.unmodifiableCollection;
 
 /** Base implementation for query services locator */
 public class DefaultQueryServicesLocator implements QueryServicesLocator {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultQueryServicesLocator.class);
+
+    private static final Collection<ServiceFilter> EMPTY_FILTERS =
+        unmodifiableCollection(new ArrayList<ServiceFilter>());
 
 	/** Registered services and filters */
 	@SuppressWarnings("rawtypes")
@@ -106,7 +107,6 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 			throw new KasperQueryException("Name of service filters cannot be empty : " + queryFilter.getClass());
 		}
 
-
 		final Class<? extends ServiceFilter> filterClass = queryFilter.getClass();
 		this.filters.put(filterClass, queryFilter);
 
@@ -158,8 +158,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Optional<QueryService> getServiceFromClass(
-			final Class<? extends QueryService<?, ?>> serviceClass) {
+	public Optional<QueryService> getServiceFromClass(final Class<? extends QueryService<?, ?>> serviceClass) {
 		final QueryService service = this.services.getInstance(serviceClass);
 		return Optional.fromNullable(service);
 	}
@@ -173,7 +172,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
     @Override
 	@SuppressWarnings("rawtypes")
-	public Optional<QueryService> getServiceFromQueryClass(Class<? extends Query> queryClass) {
+	public Optional<QueryService> getServiceFromQueryClass(final Class<? extends Query> queryClass) {
 		final QueryService service = this.serviceQueryClasses.get(queryClass);
 		return Optional.fromNullable(service);
 	}
@@ -185,10 +184,8 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
     // ------------------------------------------------------------------------
 
-    private static final Collection<ServiceFilter> EMPTY_FILTERS = unmodifiableCollection(new ArrayList<ServiceFilter>());
-
     @Override
-    public Collection<ServiceFilter> getFiltersForServiceClass(Class<? extends QueryService<?, ?>> serviceClass) {
+    public Collection<ServiceFilter> getFiltersForServiceClass(final Class<? extends QueryService<?, ?>> serviceClass) {
 
         // Ensure service has filters
         if (!this.appliedFilters.containsKey(serviceClass) && this.globalFilters.isEmpty()) {

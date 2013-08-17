@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
+import com.viadeo.kasper.annotation.Immutable;
+
 import java.io.Serializable;
 
 /**
@@ -16,4 +18,6 @@ import java.io.Serializable;
  * Can be used to store some properties of a root entity which can be later the
  * base entity of a Kasper CQRS domain entity command.
  */
-public interface QueryResult extends Serializable {}
+public interface QueryResult extends Serializable, Immutable {
+
+}

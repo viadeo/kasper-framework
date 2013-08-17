@@ -14,8 +14,8 @@ import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.thoughtworks.paranamer.*;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.query.exposition.adapters.NullSafeTypeAdapter;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
+import com.viadeo.kasper.query.exposition.adapters.NullSafeTypeAdapter;
 import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
 import com.viadeo.kasper.query.exposition.exception.KasperQueryAdapterException;
 

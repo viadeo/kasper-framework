@@ -8,6 +8,7 @@ package com.viadeo.kasper;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -30,11 +31,11 @@ public final class KasperError {
 
     // ------------------------------------------------------------------------
     
-    public KasperError(String code, String message) {
+    public KasperError(final String code, final String message) {
         this(code, message, null);
     }
     
-    public KasperError(String code, String message, String userMessage) {
+    public KasperError(final String code, final String message, final String userMessage) {
         this.code = checkNotNull(code);
         this.message = checkNotNull(message);
         this.userMessage = Optional.fromNullable(userMessage);
@@ -63,11 +64,8 @@ public final class KasperError {
 
     @Override
     public boolean equals(final Object obj) {
-        if (this == obj) {
+        if (this == Preconditions.checkNotNull(obj)) {
             return true;
-        }
-        if (null == obj) {
-            return false;
         }
         if (getClass() != obj.getClass()) {
             return false;

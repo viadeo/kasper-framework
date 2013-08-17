@@ -42,6 +42,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
 
         CommandResult ret;
         try {
+
             try {
                 ret = this.handle(kmessage);
             } catch (final UnsupportedOperationException e) {
@@ -51,9 +52,8 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
                     ret = this.handle(message.getPayload());
                 }
             }
+
         } catch (final Exception e) {
-            // FIXME I let the log for the moment, but I am not convinced that the low level layer should log errors
-            // IMO this should be done only once at a top level (for example auto expo).
             LOGGER.error("Error command [{}]", message.getPayload().getClass(), e);
             
             if (uow.isStarted()) {

@@ -41,6 +41,9 @@ public @interface XKasperServiceFilter {
      */
     Class<? extends Domain> domain() default NullDomain.class;
 
+    /**
+     * Static default (null) domain
+     */
     @XKasperUnregistered
     static final class NullDomain implements Domain { }
 
