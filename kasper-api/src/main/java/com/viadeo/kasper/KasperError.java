@@ -10,9 +10,11 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
+import java.io.Serializable;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class KasperError {
+public final class KasperError implements Serializable {
 
     public static final String REQUIRED_INPUT = "REQUIRED_INPUT";
     public static final String INVALID_INPUT = "INVALID_INPUT";
