@@ -39,11 +39,11 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
-    protected transient static final Logger QUERY_LOGGER = LoggerFactory.getLogger(HttpQueryExposer.class);
+    protected static final transient Logger QUERY_LOGGER = LoggerFactory.getLogger(HttpQueryExposer.class);
 
     private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
-    private transient final QueryServicesLocator queryServicesLocator;
-    private transient final QueryFactory queryAdapterFactory;
+    private final transient QueryServicesLocator queryServicesLocator;
+    private final transient QueryFactory queryAdapterFactory;
     private final ObjectMapper mapper;
     
     // ------------------------------------------------------------------------

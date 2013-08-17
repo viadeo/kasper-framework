@@ -37,10 +37,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class HttpCommandExposer extends HttpExposer {
     private static final long serialVersionUID = 8444284922303895624L;
-    protected transient static final Logger REQUEST_LOGGER = LoggerFactory.getLogger(HttpCommandExposer.class);
+    protected static final transient Logger REQUEST_LOGGER = LoggerFactory.getLogger(HttpCommandExposer.class);
 
     private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
-    private transient final DomainLocator domainLocator;
+    private final transient DomainLocator domainLocator;
     private final ObjectMapper mapper;
 
     // ------------------------------------------------------------------------
