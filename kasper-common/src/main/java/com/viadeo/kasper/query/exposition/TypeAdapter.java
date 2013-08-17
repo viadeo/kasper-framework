@@ -11,8 +11,10 @@ import com.viadeo.kasper.query.exposition.query.QueryParser;
 
 /**
  * A type adapter allows to define how to build a query for a particular type of objects.
+ *
  * Suppose for example you want to define some custom behavior for all instances of Lists of UUID.
  * Then you can just implement a custom TypeAdapter:
+ *
  * <pre>
  * class ListOfUUIDTypeAdapter implements TypeAdapter&lt;List&lt;UUID>> {
  *       public void adapt(List&lt;UUID> listOfUUID, QueryBuilder builder) {

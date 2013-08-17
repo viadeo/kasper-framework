@@ -13,7 +13,9 @@ import com.viadeo.kasper.query.exposition.query.QueryFactory;
 
 /**
  * The TypeAdapterFactory is useful when you want to mix custom serialization while still letting the
- * lib handle the rest. This is done by asking {@link com.viadeo.kasper.query.exposition.query.QueryFactory} adapterFactory an instance of a TypeAdapter for a specific type.
+ * lib handle the rest. This is done by asking {@link com.viadeo.kasper.query.exposition.query.QueryFactory} 
+ * adapterFactory an instance of a TypeAdapter for a specific type.
+ *
  * For example consider you want to always give the same name to all lists of DateTime:
  * <pre>
  * class MyTypeAdapterFactory implements TypeAdapterFactory&lt;MyPojo> {

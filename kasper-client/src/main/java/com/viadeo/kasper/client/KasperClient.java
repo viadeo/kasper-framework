@@ -47,22 +47,23 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * <p>
- * KasperClient allows to submit commands and queries to a remote kasper platform. It actually wraps all the logic of
- * communication, errors and resources location resolution.
+ *      KasperClient allows to submit commands and queries to a remote kasper platform. It actually wraps all the logic of
+ *      communication, errors and resources location resolution.
  * </p>
  * <p>
- * Instances of <strong>KasperClient are thread safe and should be reused</strong> as internally some caching is done in
- * order to improve performances (mainly to avoid java introspection overhead).
+ *      Instances of <strong>KasperClient are thread safe and should be reused</strong> as internally some caching is done in
+ *      order to improve performances (mainly to avoid java introspection overhead).
  * </p>
  * <p>
- * <strong>Usage</strong><br />
- * KasperClient supports synchronous and asynchronous requests. Sending asynchronous requests can be done by asking for
- * a java Future or by passing a {@link com.viadeo.kasper.client.lib.Callback callback} argument. For example submitting a command asynchronously
- * with a callback (we will use here a client with its default configuration). <br/>
- * Command and query methods can throw KasperClientException, which are unchecked exceptions in order to avoid
- * boilerplate code.
+ *      <strong>Usage</strong><br />
+ *
+ *      KasperClient supports synchronous and asynchronous requests. Sending asynchronous requests can be done by asking for
+ *      a java Future or by passing a {@link com.viadeo.kasper.client.lib.Callback callback} argument. For example submitting a command asynchronously
+ *      with a callback (we will use here a client with its default configuration). <br/>
+ *      Command and query methods can throw KasperClientException, which are unchecked exceptions in order to avoid
+ *      boilerplate code.
  * 
- * <pre>
+ *      <pre>
  *      KasperClient client = new KasperClient();
  *      
  *      client.sendAsync(someCommand, new ICallback&lt;ICommandResult&gt;() {
@@ -80,25 +81,27 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *      
  *      // block until the result is obtained
  *      ICommandResult commandResult = futureCommandResult.get();
- * </pre>
+ *      </pre>
  * 
- * Using a similar pattern you can submit a query.
+ *      Using a similar pattern you can submit a query.
  * </p>
  * <p>
- * <strong>Customization</strong><br />
- * To customize a KasperClient instance you can use the {@link KasperClientBuilder}, implementing the builder pattern in
- * order to allow a fluent and intuitive construction of KasperClient instances.
+ *      <strong>Customization</strong><br />
+ *
+ *      To customize a KasperClient instance you can use the {@link KasperClientBuilder}, implementing the builder pattern in
+ *      order to allow a fluent and intuitive construction of KasperClient instances.
  * </p>
  * <p>
- * <strong>Important notes</strong><br />
- * <ul>
- * <li>Query implementations must be composed only of simple types (serialized to litterals), if you need a complex
- * query or some type used in your query is not supported you should ask the team responsible of maintaining the kasper
- * platform to implement a custom {@link com.viadeo.kasper.query.exposition.TypeAdapter} for that specific type.</li>
- * <li>At the moment the Result to which the result should be mapped is free, but take care it must match the resulting
- * stream. This will probably change in the future by making IQuery parameterized with a Result. Thus query methods
- * signature could change.</li>
- * </ul>
+ *      <strong>Important notes</strong><br />
+ *
+ *      <ul>
+ *          <li>Query implementations must be composed only of simple types (serialized to litterals), if you need a complex
+ *          query or some type used in your query is not supported you should ask the team responsible of maintaining the kasper
+ *          platform to implement a custom {@link com.viadeo.kasper.query.exposition.TypeAdapter} for that specific type.</li>
+ *          <li>At the moment the Result to which the result should be mapped is free, but take care it must match the resulting
+ *          stream. This will probably change in the future by making IQuery parameterized with a Result. Thus query methods
+ *          signature could change.</li>
+ *      </ul>
  * </p>
  */
 public class KasperClient {

@@ -22,25 +22,31 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Low level class allowing to build a query. Suppose you want to have the following parameters into a query : name =
  * foo nicknames = bar, foo bar, toto It would be done using the QueryBuilder like that:
+ *
  * <p/>
  * 
  * <pre>
- * QueryBuilder builder = new QueryBuilder();
+ *      QueryBuilder builder = new QueryBuilder();
  * 
- * builder.begin(&quot;nicknames&quot;)
- *          .add(&quot;bar&quot;, &quot;foo bar&quot;, &quot;toto&quot;)
+ *      builder.begin(&quot;nicknames&quot;)
+ *        .add(&quot;bar&quot;, &quot;foo bar&quot;, &quot;toto&quot;)
  *        .end()
  *        .addSingle(&quot;name&quot;, &quot;foo&quot;);
  * </pre>
+ * 
  * <p/>
+ * 
  * The builder can then be used to create a query string and combine it with an URI pointing to some resource.
+ *
  * <p/>
  * 
  * <pre>
- * // will equal to http://www.google.com/somepath?bar=foo%20bar&amp;bar=too&amp;name=foo
- * URI resourceWithQueryString = builder.build(new URI(&quot;http://www.google.com/somepath&quot;));
+ *      // will equal to http://www.google.com/somepath?bar=foo%20bar&amp;bar=too&amp;name=foo
+ *      URI resourceWithQueryString = builder.build(new URI(&quot;http://www.google.com/somepath&quot;));
  * </pre>
+ * 
  * <p/>
+ * 
  * It will also make sure that the query is consistent by forbidding you to overwrite a pair of key/value(s) that has
  * been written. The query builder also keeps the order the key/values have been added to.
  */
