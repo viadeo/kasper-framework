@@ -46,7 +46,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 
         // Then
         assertEquals(Status.ERROR, result.getStatus());
-        assertNotNull(result.getErrors().get().get(0).getMessage());
+        assertNotNull(result.getErrors().get(0).getMessage());
     }
 
     // ------------------------------------------------------------------------
@@ -95,7 +95,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         // Then
         assertEquals(Status.ERROR, result.getStatus());
         for (int i = 0; i < command.getErrors().size(); i++)
-            assertEquals(command.getErrors().get(i), result.getErrors().get().get(i));
+            assertEquals(command.getErrors().get(i), result.getErrors().get(i));
     }
 
     // ------------------------------------------------------------------------

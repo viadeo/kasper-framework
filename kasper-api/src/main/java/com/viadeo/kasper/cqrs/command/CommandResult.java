@@ -102,7 +102,7 @@ public class CommandResult implements Serializable, Immutable {
     private CommandResult(final Status status, final List<KasperError> errors) {
         this.status = Preconditions.checkNotNull(status);
         if (null != errors) {
-            this.errors = errors;
+            this.errors = new ArrayList<KasperError>(errors);
         } else {
             this.errors = ImmutableList.of();
         }
@@ -120,8 +120,8 @@ public class CommandResult implements Serializable, Immutable {
     /**
      * @return a list of errors or empty if command succeeded.
      */
-    public Optional<List<KasperError>> getErrors() {
-        return Optional.<List<KasperError>> fromNullable(ImmutableList.copyOf(errors));
+    public List<KasperError> getErrors() {
+        return new ArrayList<KasperError>(ImmutableList.copyOf(errors));
     }
 
     /**

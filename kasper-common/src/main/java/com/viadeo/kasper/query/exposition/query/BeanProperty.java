@@ -9,6 +9,9 @@ package com.viadeo.kasper.query.exposition.query;
 import com.google.common.reflect.TypeToken;
 
 import java.lang.annotation.Annotation;
+import java.util.Arrays;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class BeanProperty {
 
@@ -23,10 +26,10 @@ public class BeanProperty {
                         final Annotation[] annotations, final TypeToken<?> typeToken) {
         super();
 
-        this.name = name;
-        this.declaringClass = declaringClass;
-        this.annotations = annotations;
-        this.typeToken = typeToken;
+        this.name = checkNotNull(name);
+        this.declaringClass = checkNotNull(declaringClass);
+        this.annotations = Arrays.copyOf(checkNotNull(annotations), annotations.length);
+        this.typeToken = checkNotNull(typeToken);
     }
 
     // ------------------------------------------------------------------------
@@ -40,7 +43,7 @@ public class BeanProperty {
     }
 
     public Annotation[] getAnnotations() {
-        return annotations;
+        return Arrays.copyOf(annotations, annotations.length);
     }
 
     public TypeToken<?> getTypeToken() {

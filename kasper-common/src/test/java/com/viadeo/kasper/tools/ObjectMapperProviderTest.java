@@ -90,8 +90,8 @@ public class ObjectMapperProviderTest {
 
         // Then
         assertEquals(expectedResult.getStatus(), actualResult.getStatus());
-        assertEquals(expectedResult.getErrors().get().get(0).getCode(), actualResult.getErrors().get().get(0).getCode());
-        assertEquals(expectedResult.getErrors().get().get(0).getMessage(), actualResult.getErrors().get().get(0).getMessage());
+        assertEquals(expectedResult.getErrors().get(0).getCode(), actualResult.getErrors().get(0).getCode());
+        assertEquals(expectedResult.getErrors().get(0).getMessage(), actualResult.getErrors().get(0).getMessage());
     }
 
     @Test
@@ -110,11 +110,11 @@ public class ObjectMapperProviderTest {
 
         // Then
         assertEquals(expectedResult.getStatus(), actualResult.getStatus());
-        assertEquals(expectedErrors.size(), actualResult.getErrors().get().size());
+        assertEquals(expectedErrors.size(), actualResult.getErrors().size());
 
         for (int i = 0; i < expectedErrors.size(); i++) {
-            assertEquals(expectedResult.getErrors().get().get(i).getCode(), actualResult.getErrors().get().get(i).getCode());
-            assertEquals(expectedResult.getErrors().get().get(i).getMessage(), actualResult.getErrors().get().get(i).getMessage());
+            assertEquals(expectedResult.getErrors().get(i).getCode(), actualResult.getErrors().get(i).getCode());
+            assertEquals(expectedResult.getErrors().get(i).getMessage(), actualResult.getErrors().get(i).getMessage());
         }
     }
 
@@ -131,7 +131,7 @@ public class ObjectMapperProviderTest {
 
         // Then
         assertEquals(expectedResult.getStatus(), actualResult.getStatus());
-        assertEquals(expectedResult.getErrors().get().size(), actualResult.getErrors().get().size());
+        assertEquals(expectedResult.getErrors().size(), actualResult.getErrors().size());
     }
 
     @Test
