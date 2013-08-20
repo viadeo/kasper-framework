@@ -24,15 +24,15 @@ import com.viadeo.kasper.cqrs.query.QueryService;
  * @param <Q> the query
  * @param <RES> the Result
  */
-public abstract class AbstractQueryService<Q extends Query, RES extends QueryResult>
+public abstract class AbstractQueryService<Q extends Query, RES>
         implements QueryService<Q, RES> {
 
     @Override
-    public RES retrieve(final QueryMessage<Q> message) throws Exception {
+    public QueryResult<RES> retrieve(final QueryMessage<Q> message) throws Exception {
         return retrieve(message.getQuery());
     }
 
-    public RES retrieve(final Q query) throws Exception {
+    public QueryResult<RES> retrieve(final Q query) throws Exception {
         throw new UnsupportedOperationException();
     }
 

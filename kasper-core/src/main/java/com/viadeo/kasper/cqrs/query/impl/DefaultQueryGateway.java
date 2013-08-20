@@ -30,7 +30,7 @@ public class DefaultQueryGateway implements QueryGateway {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <RES extends QueryResult> RES retrieve(final Query query, final Context context)
+    public <RES> QueryResult<RES> retrieve(final Query query, final Context context)
             throws Exception {
 
         checkNotNull(context);
@@ -50,7 +50,7 @@ public class DefaultQueryGateway implements QueryGateway {
         }
 
         // Apply filters and call service -------------------------------------
-        @SuppressWarnings({ "rawtypes", "unchecked" }) // Safe
+        @SuppressWarnings({ "rawtypes"}) // Safe
         final com.viadeo.kasper.cqrs.query.QueryMessage message = new DefaultQueryMessage(context, query);
         final QueryService service = optService.get();
 
@@ -65,21 +65,23 @@ public class DefaultQueryGateway implements QueryGateway {
         }
 
         /* Call the service */
-        RES ret;
+        QueryResult<RES> ret;
         try { LOGGER.info("Call service " + optService.get().getClass().getSimpleName());
 
-            ret = (RES) service.retrieve(message);
+            ret = (QueryResult<RES>) service.retrieve(message);
 
         } catch (final UnsupportedOperationException e) {
             if (AbstractQueryService.class.isAssignableFrom(service.getClass())) {
-                ret = (RES) ((AbstractQueryService) service).retrieve(message.getQuery());
+                ret = (QueryResult<RES>) ((AbstractQueryService) service).retrieve(message.getQuery());
             } else {
                 throw e;
             }
         }
+        
+        checkNotNull(ret);
 
         /* Apply Result filters if needed */
-        if (null != ret) {
+        if (null != ret.getResult()) {
             for (final ServiceFilter filter : filters) {
                 if (ResultFilter.class.isAssignableFrom(filter.getClass())) {
                     LOGGER.info(String.format("Apply Result filter %s", filter.getClass().getSimpleName()));

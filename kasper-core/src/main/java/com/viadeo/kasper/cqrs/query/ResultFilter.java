@@ -21,7 +21,7 @@ public interface ResultFilter extends ServiceFilter {
      * @param result the Result to be returned by the service
      * @param context the context used to execute the service
      */
-    void filter(Context context, QueryResult result);
+    <RES> void filter(final Context context, final QueryResult<RES> result);
 
 }
 

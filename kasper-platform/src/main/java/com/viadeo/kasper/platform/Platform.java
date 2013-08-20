@@ -121,7 +121,7 @@ public interface Platform {
      * @return the result generated after processing of the query
      * @throws Exception when something bad occurs
      */
-    <RES extends QueryResult> RES retrieve(Query query, Context context) throws Exception;
+    <RES> QueryResult<RES> retrieve(Query query, Context context) throws Exception;
 
  	/** == Events ========================================================== */
 

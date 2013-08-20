@@ -6,21 +6,33 @@
 // ============================================================================
 package com.viadeo.kasper.tools;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.module.SimpleDeserializers;
 import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 
 public class ObjectMapperProvider {
 
     static final String ERROR = "error";
     static final String ERRORS = "errors";
     static final String MESSAGE = "message";
+    static final String CODE = "code";
+    static final String USERMESSAGE = "userMessage";
+    static final String STATUS = "status";
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class); 
 
     public static final ObjectMapperProvider INSTANCE = new ObjectMapperProvider();
 
@@ -31,7 +43,7 @@ public class ObjectMapperProvider {
     private ObjectMapperProvider() {
         mapper = new ObjectMapper();
 
-         /* Generic features */
+        /* Generic features */
         mapper.configure(MapperFeature.AUTO_DETECT_CREATORS, true);
         mapper.configure(MapperFeature.AUTO_DETECT_FIELDS, true);
         mapper.configure(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS, true);
@@ -49,11 +61,27 @@ public class ObjectMapperProvider {
         mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
 
         /* Register a specific module for Kasper Ser/Deser */
-        final Module kasperClientModule = new SimpleModule()
-                .addSerializer(KasperQueryException.class, new KasperQueryExceptionSerializer())
-                .addDeserializer(CommandResult.class, new KasperCommandResultDeserializer())
-                .addDeserializer(KasperError.class, new KasperErrorDeserializer())
-                .addDeserializer(KasperQueryException.class, new KasperQueryExceptionDeserializer());
+        final SimpleModule kasperClientModule = new SimpleModule()
+                .addSerializer(CommandResult.class, new CommandResultSerializer())
+                .addDeserializer(CommandResult.class, new CommandResultDeserializer())
+                .addSerializer(QueryResult.class, new QueryResultSerializer());
+
+        kasperClientModule.setDeserializers(new SimpleDeserializers() {
+            private static final long serialVersionUID = 1995270375280248186L;
+
+            @Override
+            public JsonDeserializer<?> findBeanDeserializer(JavaType type,
+                    DeserializationConfig config, BeanDescription beanDesc)
+                    throws JsonMappingException {
+                if (type.hasRawClass(QueryResult.class)) {
+                    return new QueryResultDeserializer(type.containedType(0));
+                } else if (type.hasRawClass(CommandResult.class)) {
+                    return new CommandResultDeserializer();
+                } else
+                    return super.findBeanDeserializer(type, config, beanDesc);
+            }
+        });
+
         mapper.registerModule(kasperClientModule);
 
         /* Third-party modules */
@@ -63,6 +91,22 @@ public class ObjectMapperProvider {
 
     // ------------------------------------------------------------------------
 
+    static KasperError translateOldErrorToKasperError(ObjectNode root) {
+        String globalCode = root.get(ObjectMapperProvider.MESSAGE).asText();
+        List<String> messages = new ArrayList<String>();
+        for (JsonNode node : root.get(ObjectMapperProvider.ERRORS)) {
+            String code = node.get(ObjectMapperProvider.CODE).asText();
+            String message = node.get(ObjectMapperProvider.MESSAGE).asText();
+            if (globalCode.equals(code)) {
+                messages.add(message);
+            } else {
+                LOGGER.warn("Global code[{}] does not match error code[{}] with message[{}]",
+                        globalCode, code, message);
+            }
+        }
+        return new KasperError(globalCode, messages);
+    }
+    
     /**
      * @return the configured instance of ObjectWriter to use.
      */

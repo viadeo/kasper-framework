@@ -7,15 +7,19 @@
 package com.viadeo.kasper;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableList;
+import com.viadeo.kasper.annotation.Immutable;
 
 import java.io.Serializable;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class KasperError implements Serializable {
+public final class KasperError implements Serializable, Immutable {
 
+    private static final long serialVersionUID = 7839349411722371919L;
+    
     public static final String REQUIRED_INPUT = "REQUIRED_INPUT";
     public static final String INVALID_INPUT = "INVALID_INPUT";
     public static final String TOO_MANY_ENTRIES = "TOO_MANY_ENTRIES";
@@ -28,19 +32,18 @@ public final class KasperError implements Serializable {
     public static final String INVALID_ID = "INVALID_ID";
     
     private final String code;
-    private final String message;
-    private final Optional<String> userMessage;
+    private final List<String> messages;
 
     // ------------------------------------------------------------------------
     
-    public KasperError(final String code, final String message) {
-        this(code, message, null);
+    public KasperError(final String code, final String...messages) {
+        this.code = checkNotNull(code);
+        this.messages = ImmutableList.copyOf(messages);
     }
     
-    public KasperError(final String code, final String message, final String userMessage) {
+    public KasperError(final String code, final List<String> messages) {
         this.code = checkNotNull(code);
-        this.message = checkNotNull(message);
-        this.userMessage = Optional.fromNullable(userMessage);
+        this.messages = ImmutableList.copyOf(messages);
     }
 
     // ------------------------------------------------------------------------
@@ -49,19 +52,19 @@ public final class KasperError implements Serializable {
         return code;
     }
 
-    public String getMessage() {
-        return message;
+    public List<String> getMessages() {
+        return messages;
     }
-
-    public Optional<String> getUserMessage() {
-        return userMessage;
+    
+    public boolean hasMessage(String message) {
+        return messages.contains(message);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(this.code, this.message, this.userMessage);
+        return Objects.hashCode(this.code, this.messages);
     }
 
     @Override
@@ -76,16 +79,14 @@ public final class KasperError implements Serializable {
         final KasperError other = (KasperError) obj;
 
         return Objects.equal(this.code, other.code) &&
-                Objects.equal(this.message, other.message) &&
-                 Objects.equal(this.userMessage, other.userMessage);
+                Objects.equal(this.messages, other.messages);
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
                 .addValue(this.code)
-                .addValue(this.message)
-                .addValue(this.userMessage)
+                .addValue(this.messages)
                 .toString();
     }
 

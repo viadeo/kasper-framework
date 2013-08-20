@@ -7,17 +7,15 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.google.common.base.Objects;
-import com.viadeo.kasper.cqrs.query.QueryCollectionResult;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.CollectionResult;
 
 import java.util.Collection;
 import java.util.Iterator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class AbstractQueryCollectionResult<RES extends QueryResult> implements QueryCollectionResult<RES> {
-	private static final long serialVersionUID = 5181041546682941845L;
-
+public abstract class AbstractQueryCollectionResult<RES> implements CollectionResult<RES> {
+    
 	private Collection<RES> innerCollection;
 
     // ------------------------------------------------------------------------
@@ -64,7 +62,7 @@ public abstract class AbstractQueryCollectionResult<RES extends QueryResult> imp
             return false;
         }
 
-        final AbstractQueryCollectionResult that = (AbstractQueryCollectionResult) o;
+        final AbstractQueryCollectionResult<?> that = (AbstractQueryCollectionResult<?>) o;
         return Objects.equal(this.innerCollection, that.innerCollection);
     }
 
