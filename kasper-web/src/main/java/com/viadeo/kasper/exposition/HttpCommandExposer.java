@@ -240,8 +240,7 @@ public class HttpCommandExposer extends HttpExposer {
 
         /* write also into the body the result as json */
         mapper.writer().writeValue(response.getOutputStream(),
-                                   CommandResult.error().addError(
-                                           new KasperError(KasperError.UNKNOWN_ERROR, reason)).build());
+                                   CommandResult.error(new KasperError(KasperError.UNKNOWN_ERROR, reason)));
     }
 
     // ------------------------------------------------------------------------

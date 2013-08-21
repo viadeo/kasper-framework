@@ -10,6 +10,6 @@ package com.viadeo.kasper.cqrs.query;
  * An ordered KasperQuery
  *
  */
-public interface OrderedQueryResult extends QueryResult {
+public interface OrderedResult {
 
 }

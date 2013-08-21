@@ -105,7 +105,7 @@ public class KasperPlatform implements Platform {
     }
 
     @Override
-    public <RES extends QueryResult> RES retrieve(final Query query, final Context context) throws Exception {
+    public <RES> QueryResult<RES> retrieve(final Query query, final Context context) throws Exception {
         return this.queryGateway.retrieve(query, context);
     }
 

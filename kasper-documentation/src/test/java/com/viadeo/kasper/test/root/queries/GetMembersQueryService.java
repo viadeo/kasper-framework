@@ -1,5 +1,7 @@
 package com.viadeo.kasper.test.root.queries;
 
+import java.io.Serializable;
+
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryMessage;
@@ -16,7 +18,7 @@ public class GetMembersQueryService implements QueryService<GetMembersQueryServi
 		public String name;
 	}
 	
-	public static class Result implements QueryResult {
+	public static class Result implements Serializable {
 		private static final long serialVersionUID = -2174693040511999516L;
 		public String lastName;
 		public String firstName;
@@ -24,7 +26,7 @@ public class GetMembersQueryService implements QueryService<GetMembersQueryServi
 	}
 
 	@Override
-	public Result retrieve(final QueryMessage<Q> message) throws Exception {
+	public QueryResult<Result> retrieve(final QueryMessage<Q> message) throws Exception {
 		return null;
 	}
 	

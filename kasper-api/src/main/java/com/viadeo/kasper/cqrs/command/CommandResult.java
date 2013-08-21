@@ -6,15 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import static com.google.common.base.Preconditions.*;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.annotation.Immutable;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Base Kasper command result implementation
@@ -30,82 +26,37 @@ public class CommandResult implements Serializable, Immutable {
         ERROR       /** Just error in command handling or domain business */
     }
 
+    private static final long serialVersionUID = -938831661655150085L;
+
     /**
      * The current command status
      */
     private final Status status;
-    private final List<KasperError> errors;
-
+    private final KasperError error;
+    
     // ------------------------------------------------------------------------
 
-    public static class Builder {
-        private final List<KasperError> errors = new ArrayList<KasperError>();
-        private Status status = Status.OK;
-
-        public Builder addError(final String code, final String message) {
-            return addError(new KasperError(code, message));
-        }
-
-        public Builder addError(final String code, final String message, final String userMessage) {
-            return addError(new KasperError(code, message, userMessage));
-        }
-
-        public Builder addError(final KasperError... errors) {
-            if (status == Status.OK) {
-                status = Status.ERROR;
-            }
-            for (final KasperError error : errors) {
-                this.errors.add(error);
-            }
-            return this;
-        }
-
-        public Builder addErrors(final List<KasperError> errors) {
-            for (final KasperError error : errors){
-                addError(error);
-            }
-            return this;
-        }
-
-        public Builder status(final Status status) {
-            this.status = status;
-            return this;
-        }
-
-        public boolean isError() {
-            return Status.OK != status;
-        }
-
-        public CommandResult build() {
-            return new CommandResult(status, errors);
-        }
-
+    public static CommandResult error(KasperError error) {
+        return new CommandResult(Status.ERROR, error);
     }
 
-    // ------------------------------------------------------------------------
-
-    public static Builder error() {
-        return new Builder().status(Status.ERROR);
-    }
-
-    public static Builder refused() {
-        return new Builder().status(Status.REFUSED);
+    public static CommandResult refused(KasperError error) {
+        return new CommandResult(Status.REFUSED, error);
     }
 
     public static CommandResult ok() {
-        return new Builder().status(Status.OK).build();
+        return new CommandResult(Status.OK, null);
     }
 
-
     // ------------------------------------------------------------------------
-
-    private CommandResult(final Status status, final List<KasperError> errors) {
-        this.status = Preconditions.checkNotNull(status);
-        if (null != errors) {
-            this.errors = new ArrayList<KasperError>(errors);
-        } else {
-            this.errors = ImmutableList.of();
-        }
+    
+    public CommandResult(final Status status, final KasperError error) {
+        this.status = checkNotNull(status);
+        
+        if (status != Status.OK && error == null) throw new IllegalStateException("status != Status.OK && error == null");
+        if (status == Status.OK && error != null) throw new IllegalStateException("status == Status.OK && error != null");
+        
+        this.error = error;
     }
 
     // ------------------------------------------------------------------------
@@ -120,15 +71,15 @@ public class CommandResult implements Serializable, Immutable {
     /**
      * @return a list of errors or empty if command succeeded.
      */
-    public List<KasperError> getErrors() {
-        return new ArrayList<KasperError>(ImmutableList.copyOf(errors));
+    public KasperError getError() {
+        return error;
     }
 
     /**
      * @return true if this command has resulted to an error
      */
     public boolean isError() {
-        return this.status.equals(Status.ERROR);
+        return this.status != Status.OK;
     }
 
 }

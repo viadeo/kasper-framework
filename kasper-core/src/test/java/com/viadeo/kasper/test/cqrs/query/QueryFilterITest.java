@@ -39,15 +39,15 @@ public class QueryFilterITest {
     }
 
     @XKasperUnregistered
-    private class TestResult implements QueryResult {
+    private class TestResult {
         public int state = STATE_START;
     }
 
     @XKasperUnregistered
     private class TestService implements QueryService<TestQuery, TestResult> {
         @Override
-        public TestResult retrieve(final QueryMessage message) throws Exception {
-            return new TestResult();
+        public QueryResult<TestResult> retrieve(final QueryMessage message) throws Exception {
+            return new QueryResult<TestResult>(new TestResult());
         }
     }
 
@@ -60,7 +60,7 @@ public class QueryFilterITest {
 
         @Override
         public void filter(final Context context, final QueryResult result) throws KasperQueryException {
-            ((TestResult) result).state = STATE_MODIFIED;
+            ((TestResult) result.getResult()).state = STATE_MODIFIED;
         }
     }
 
@@ -93,14 +93,14 @@ public class QueryFilterITest {
         final TestQuery query = new TestQuery();
 
         // When
-        final TestResult result = gateway.retrieve(query, context);
+        final QueryResult<TestResult> queryResult = gateway.retrieve(query, context);
 
         // Then
         verify(filter).filter(eq(context), any(Query.class));
         assertEquals(STATE_MODIFIED, query.state);
 
         verify(filter).filter(eq(context), any(QueryResult.class));
-        assertEquals(STATE_MODIFIED, result.state);
+        assertEquals(STATE_MODIFIED, queryResult.getResult().state);
 
         verify(filterGlobal).filter(eq(context), any(Query.class));
     }

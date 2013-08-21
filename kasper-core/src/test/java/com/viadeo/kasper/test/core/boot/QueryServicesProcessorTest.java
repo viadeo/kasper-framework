@@ -40,9 +40,6 @@ public class QueryServicesProcessorTest {
     private class TestQuery implements Query { }
 
     @XKasperUnregistered
-    private class TestResult implements QueryResult { }
-
-    @XKasperUnregistered
     private class TestFilter implements ServiceFilter { }
 
     @XKasperUnregistered
@@ -51,27 +48,27 @@ public class QueryServicesProcessorTest {
     // ------------------------------------------------------------------------
 
     @XKasperQueryService( name = SERVICE_NAME, domain = TestDomain.class )
-    private class TestService implements QueryService<TestQuery, TestResult> {
+    private class TestService implements QueryService<TestQuery, Object> {
         @Override
-        public TestResult retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResult<Object> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperQueryService( domain = TestDomain.class )
-    private class TestServiceNoName implements QueryService<TestQuery, TestResult> {
+    private class TestServiceNoName implements QueryService<TestQuery, Object> {
         @Override
-        public TestResult retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResult<Object> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperQueryService( domain = TestDomain.class, filters = TestFilter.class )
-    private class TestServiceOneFilter implements QueryService<TestQuery, TestResult> {
+    private class TestServiceOneFilter implements QueryService<TestQuery, Object> {
         @Override
-        public TestResult retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResult<Object> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperQueryService( domain = TestDomain.class, filters = { TestFilter.class, TestFilter2.class } )
-    private class TestServiceMultipleFilters implements QueryService<TestQuery, TestResult> {
+    private class TestServiceMultipleFilters implements QueryService<TestQuery, Object> {
         @Override
-        public TestResult retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResult<Object> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     // ------------------------------------------------------------------------
