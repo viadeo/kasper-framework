@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.tools;
 
-import com.fasterxml.jackson.core.JsonParseException;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
@@ -22,7 +21,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class CommandResultDeserializer extends JsonDeserializer<CommandResult> {
-    
     static final Logger LOGGER = LoggerFactory.getLogger(CommandResultDeserializer.class);
 
     // ------------------------------------------------------------------------
@@ -55,7 +53,7 @@ public final class CommandResultDeserializer extends JsonDeserializer<CommandRes
         return new CommandResult(status, error);
     }
 
-    private KasperError readKasperError(final JsonParser jp) throws JsonParseException, IOException {
+    private KasperError readKasperError(final JsonParser jp) throws IOException {
         String globalCode = null;
         List<String> messages = new ArrayList<String>();
         
@@ -78,4 +76,5 @@ public final class CommandResultDeserializer extends JsonDeserializer<CommandRes
         
         return globalCode != null ? new KasperError(globalCode, messages) : null;
     }
+
 }

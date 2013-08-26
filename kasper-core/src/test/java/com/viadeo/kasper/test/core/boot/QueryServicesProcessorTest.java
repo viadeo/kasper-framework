@@ -45,30 +45,32 @@ public class QueryServicesProcessorTest {
     @XKasperUnregistered
     private class TestFilter2 implements ServiceFilter { }
 
+    private class TestPayload implements QueryPayload { }
+
     // ------------------------------------------------------------------------
 
     @XKasperQueryService( name = SERVICE_NAME, domain = TestDomain.class )
-    private class TestService implements QueryService<TestQuery, Object> {
+    private class TestService implements QueryService<TestQuery, TestPayload> {
         @Override
-        public QueryResult<Object> retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperQueryService( domain = TestDomain.class )
-    private class TestServiceNoName implements QueryService<TestQuery, Object> {
+    private class TestServiceNoName implements QueryService<TestQuery, TestPayload> {
         @Override
-        public QueryResult<Object> retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperQueryService( domain = TestDomain.class, filters = TestFilter.class )
-    private class TestServiceOneFilter implements QueryService<TestQuery, Object> {
+    private class TestServiceOneFilter implements QueryService<TestQuery, TestPayload> {
         @Override
-        public QueryResult<Object> retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperQueryService( domain = TestDomain.class, filters = { TestFilter.class, TestFilter2.class } )
-    private class TestServiceMultipleFilters implements QueryService<TestQuery, Object> {
+    private class TestServiceMultipleFilters implements QueryService<TestQuery, TestPayload> {
         @Override
-        public QueryResult<Object> retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     // ------------------------------------------------------------------------

@@ -4,16 +4,12 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.query.exposition.scala;
+package com.viadeo.kasper.cqrs.query;
 
-import com.viadeo.kasper.query.exposition.Bundle;
-import com.viadeo.kasper.query.exposition.QueryFactoryBuilder;
+/**
+ * An ordered KasperQuery
+ *
+ */
+public interface OrderedQueryPayload extends QueryPayload {
 
-public class ScalaBundle implements Bundle {
-
-    @Override
-    public void setup(final QueryFactoryBuilder builder) {
-        
-    }
-    
 }

@@ -17,6 +17,7 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
+import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.platform.Platform;
@@ -105,7 +106,7 @@ public class KasperPlatform implements Platform {
     }
 
     @Override
-    public <RES> QueryResult<RES> retrieve(final Query query, final Context context) throws Exception {
+    public <PAYLOAD extends QueryPayload> QueryResult<PAYLOAD> retrieve(final Query query, final Context context) throws Exception {
         return this.queryGateway.retrieve(query, context);
     }
 

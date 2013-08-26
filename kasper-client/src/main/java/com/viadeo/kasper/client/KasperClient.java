@@ -22,6 +22,7 @@ import com.viadeo.kasper.client.lib.Callback;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
@@ -138,7 +139,7 @@ public class KasperClient {
     // --
 
     KasperClient(final QueryFactory queryFactory, final ObjectMapper mapper,
-            final URL commandBaseUrl, final URL queryBaseUrl) {
+                 final URL commandBaseUrl, final URL queryBaseUrl) {
 
         final DefaultClientConfig cfg = new DefaultClientConfig();
         cfg.getSingletons().add(new JacksonJsonProvider(mapper));
@@ -179,8 +180,10 @@ public class KasperClient {
     public CommandResult send(final Command command) {
         checkNotNull(command);
 
-        final ClientResponse response = client.resource(resolveCommandPath(command.getClass()))
-                .accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON)
+        final ClientResponse response = client
+                .resource(resolveCommandPath(command.getClass()))
+                .accept(MediaType.APPLICATION_JSON)
+                .type(MediaType.APPLICATION_JSON)
                 .put(ClientResponse.class, command);
 
         return handleResponse(response);
@@ -204,7 +207,8 @@ public class KasperClient {
 
         final Future<ClientResponse> futureResponse = client
                 .asyncResource(resolveCommandPath(command.getClass()))
-                .accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .type(MediaType.APPLICATION_JSON)
                 .put(ClientResponse.class, command);
 
         // we need to decorate the Future returned by jersey in order to handle
@@ -286,7 +290,7 @@ public class KasperClient {
      * @throws KasperException
      *             if something went wrong.
      */
-    public <T> QueryResult<T> query(final Query query, final Class<T> mapTo) {
+    public <P extends QueryPayload> QueryResult<P> query(final Query query, final Class<P> mapTo) {
         return query(query, TypeToken.of(mapTo));
     }
 
@@ -315,20 +319,23 @@ public class KasperClient {
      * @throws KasperException
      *             if something went wrong.
      */
-    public <T> QueryResult<T> query(final Query query, final TypeToken<T> mapTo) {
+    public <P extends QueryPayload> QueryResult<P> query(final Query query, final TypeToken<P> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
-        final ClientResponse response = client.resource(resolveQueryPath(query.getClass()))
-                .queryParams(prepareQueryParams(query)).accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+        final ClientResponse response = client
+                .resource(resolveQueryPath(query.getClass()))
+                .queryParams(prepareQueryParams(query))
+                .accept(MediaType.APPLICATION_JSON)
+                .type(MediaType.APPLICATION_JSON)
+                .get(ClientResponse.class);
 
         return handleQueryResponse(response, mapTo);
     }
 
     // --
 
-    public <T> Future<QueryResult<T>> queryAsync(final Query query, final Class<T> mapTo) {
+    public <P extends QueryPayload> Future<QueryResult<P>> queryAsync(final Query query, final Class<P> mapTo) {
         return queryAsync(query, TypeToken.of(mapTo));
     }
 
@@ -339,16 +346,18 @@ public class KasperClient {
      * @see KasperClient#query(com.viadeo.kasper.cqrs.query.Query, Class)
      * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command)
      */
-    public <T> Future<QueryResult<T>> queryAsync(final Query query, final TypeToken<T> mapTo) {
+    public <P extends QueryPayload> Future<QueryResult<P>> queryAsync(final Query query, final TypeToken<P> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
         final Future<ClientResponse> futureResponse = client
                 .asyncResource(resolveQueryPath(query.getClass()))
-                .queryParams(prepareQueryParams(query)).accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON).get(ClientResponse.class);
+                .queryParams(prepareQueryParams(query))
+                .accept(MediaType.APPLICATION_JSON)
+                .type(MediaType.APPLICATION_JSON)
+                .get(ClientResponse.class);
 
-        return new Future<QueryResult<T>>() {
+        return new Future<QueryResult<P>>() {
             public boolean cancel(final boolean mayInterruptIfRunning) {
                 return futureResponse.cancel(mayInterruptIfRunning);
             }
@@ -361,11 +370,11 @@ public class KasperClient {
                 return futureResponse.isDone();
             }
 
-            public QueryResult<T> get() throws InterruptedException, ExecutionException {
+            public QueryResult<P> get() throws InterruptedException, ExecutionException {
                 return handleQueryResponse(futureResponse.get(), mapTo);
             }
 
-            public QueryResult<T> get(final long timeout, final TimeUnit unit)
+            public QueryResult<P> get(final long timeout, final TimeUnit unit)
                     throws InterruptedException, ExecutionException, TimeoutException {
                 return handleQueryResponse(futureResponse.get(timeout, unit), mapTo);
             }
@@ -379,8 +388,8 @@ public class KasperClient {
      * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command,
      *      com.viadeo.kasper.client.lib.Callback)
      */
-    public <T> void queryAsync(final Query query, final Class<T> mapTo,
-            final Callback<QueryResult<T>> callback) {
+    public <P extends QueryPayload> void queryAsync(final Query query, final Class<P> mapTo,
+                                                    final Callback<QueryResult<P>> callback) {
         queryAsync(query, TypeToken.of(mapTo), callback);
     }
 
@@ -389,13 +398,14 @@ public class KasperClient {
      * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command,
      *      com.viadeo.kasper.client.lib.Callback)
      */
-    public <T> void queryAsync(final Query query, final TypeToken<T> mapTo,
-            final Callback<QueryResult<T>> callback) {
+    public <P extends QueryPayload> void queryAsync(final Query query, final TypeToken<P> mapTo,
+                                                    final Callback<QueryResult<P>> callback) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
         client.asyncResource(resolveQueryPath(query.getClass()))
-                .queryParams(prepareQueryParams(query)).accept(MediaType.APPLICATION_JSON)
+                .queryParams(prepareQueryParams(query))
+                .accept(MediaType.APPLICATION_JSON)
                 .type(MediaType.APPLICATION_JSON)
                 .get(new TypeListener<ClientResponse>(ClientResponse.class) {
                     @Override
@@ -413,13 +423,14 @@ public class KasperClient {
                 });
     }
 
-    private <T> QueryResult<T> handleQueryResponse(final ClientResponse response,
-            final TypeToken<T> mapTo) {
-        TypeToken<?> mappedType = new TypeToken<QueryResult<T>>() {
-            private static final long serialVersionUID = -6868146773459098496L;
-        }.where(new TypeParameter<T>() {
-        }, mapTo);
-        return response.getEntity(new GenericType<QueryResult<T>>(mappedType.getType()));
+    private <P extends QueryPayload> QueryResult<P> handleQueryResponse(final ClientResponse response,
+            final TypeToken<P> mapTo) {
+
+        final TypeToken<?> mappedType = new TypeToken<QueryResult<P>>() {
+                private static final long serialVersionUID = -6868146773459098496L;
+            }.where(new TypeParameter<P>() { }, mapTo);
+
+        return response.getEntity(new GenericType<QueryResult<P>>(mappedType.getType()));
     }
 
     // --
@@ -428,8 +439,8 @@ public class KasperClient {
         try {
 
             @SuppressWarnings("unchecked")
-            final TypeAdapter<Query> adapter = (TypeAdapter<Query>) queryFactory.create(TypeToken
-                    .of(query.getClass()));
+            final TypeAdapter<Query> adapter = (TypeAdapter<Query>) queryFactory.create(
+                                                    TypeToken.of(query.getClass()));
 
             final QueryBuilder queryBuilder = new QueryBuilder();
             adapter.adapt(query, queryBuilder);

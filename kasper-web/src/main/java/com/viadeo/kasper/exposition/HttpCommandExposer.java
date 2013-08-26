@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.reflect.TypeToken;
+import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -114,7 +115,7 @@ public class HttpCommandExposer extends HttpExposer {
         resp.setContentType("application/json; charset=utf-8");
 
         // FIXME can throw an error ensure to respond a json stream
-        String commandName = resourceName(req.getRequestURI());
+        final String commandName = resourceName(req.getRequestURI());
 
         /* locate corresponding command class */
         final Class<? extends Command> commandClass = exposedCommands.get(commandName);
@@ -240,7 +241,7 @@ public class HttpCommandExposer extends HttpExposer {
 
         /* write also into the body the result as json */
         mapper.writer().writeValue(response.getOutputStream(),
-                                   CommandResult.error(new KasperError(KasperError.UNKNOWN_ERROR, reason)));
+                                   CommandResult.error(new KasperError(CoreErrorCode.UNKNOWN_ERROR, reason)));
     }
 
     // ------------------------------------------------------------------------

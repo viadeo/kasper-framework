@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import java.util.List;
-
 import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -20,6 +18,8 @@ import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.platform.Platform;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;

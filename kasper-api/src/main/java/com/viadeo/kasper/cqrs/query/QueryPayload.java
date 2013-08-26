@@ -6,13 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
-/** A paginated Kasper query */
-public interface PaginatedQueryResult {
+import com.viadeo.kasper.annotation.Immutable;
 
-	/** The requested number of elements. */
-	int getCount();
+import java.io.Serializable;
 
-	/** The requested index of the first element in the page. Starts at {@code 0}. */
-	int getStartIndex();
+public interface QueryPayload extends Serializable, Immutable {
 
 }

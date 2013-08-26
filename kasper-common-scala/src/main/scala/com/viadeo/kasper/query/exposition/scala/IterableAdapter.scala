@@ -1,8 +1,11 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.query.exposition.scala
 
-import com.viadeo.kasper.query.exposition.{ TypeAdapter, QueryBuilder, QueryParser }
-import scala.collection.mutable.ArrayBuffer
-import scala.collection.JavaConversions
 
 class IterableAdapter[T](val valueAdapter: TypeAdapter[T]) extends TypeAdapter[Iterable[T]] {
 

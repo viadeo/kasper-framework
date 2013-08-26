@@ -8,10 +8,12 @@ package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.cqrs.command.CommandResult;
+import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionResult;
+import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionPayload;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
@@ -24,14 +26,14 @@ import static org.junit.Assert.*;
 public class ObjectMapperProviderTest {
     final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
 
-    static class SomeResult {
+    static class SomePayload implements QueryPayload {
         private String str;
 
-        public SomeResult() {
+        public SomePayload() {
             
         }
         
-        public SomeResult(String str) {
+        public SomePayload(String str) {
             this.str = str;
         }
 
@@ -44,7 +46,7 @@ public class ObjectMapperProviderTest {
         }
     }
 
-    static class SomeCollectionResult extends AbstractQueryCollectionResult<SomeResult> {
+    static class SomeCollectionResult extends AbstractQueryCollectionPayload<SomePayload> {
     }
 
     // ------------------------------------------------------------------------
@@ -52,31 +54,30 @@ public class ObjectMapperProviderTest {
     @Test
     public void queryResultSuccessRoundTrip() throws IOException {
         // Given
-        final QueryResult<SomeResult> expected = new QueryResult<SomeResult>(new SomeResult("foo"));
+        final QueryResult<SomePayload> expected = new QueryResult<SomePayload>(new SomePayload("foo"));
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
                 expected);
 
-        final QueryResult<SomeResult> actual = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), new TypeReference<QueryResult<SomeResult>>() {});
+        final QueryResult<SomePayload> actual = objectReader.readValue(objectReader.getFactory()
+                .createJsonParser(json), new TypeReference<QueryResult<SomePayload>>() {});
         
         assertFalse(actual.isError());
         assertNull(actual.getError());
-        assertEquals(expected.getResult().getStr(), actual.getResult().getStr());
+        assertEquals(expected.getPayload().getStr(), actual.getPayload().getStr());
     }
 
     @Test
     public void queryResultErrorRoundTrip() throws IOException {
         // Given
-        final QueryResult<Object> expected = new QueryResult<Object>(new KasperError("CODE",
-                "aCode", "aMessage"));
+        final QueryResult<?> expected = QueryResult.of(new KasperError("CODE", "aCode", "aMessage"));
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
                 expected);
         @SuppressWarnings("unchecked")
-        final QueryResult<Object> actual = objectReader.readValue(objectReader.getFactory()
+        final QueryResult<?> actual = objectReader.readValue(objectReader.getFactory()
                 .createJsonParser(json), QueryResult.class);
 
         // Then
@@ -94,7 +95,7 @@ public class ObjectMapperProviderTest {
     @Test
     public void deserializeErrorCommandResultWithSingleKasperError() throws IOException {
         // Given
-        final KasperError expectedError = new KasperError(KasperError.UNKNOWN_ERROR, "some error");
+        final KasperError expectedError = new KasperError(CoreErrorCode.UNKNOWN_ERROR, "some error");
         final CommandResult expectedResult = CommandResult.error(expectedError);
 
         // When
@@ -113,7 +114,7 @@ public class ObjectMapperProviderTest {
     @Test
     public void deserializeErrorCommandResultWithMultipleKasperError() throws IOException {
         // Given
-        final KasperError expectedError = new KasperError(KasperError.CONFLICT, "too late...",
+        final KasperError expectedError = new KasperError(CoreErrorCode.CONFLICT, "too late...",
                 "some error");
 
         final CommandResult expectedResult = CommandResult.error(expectedError);
@@ -141,7 +142,7 @@ public class ObjectMapperProviderTest {
     public void dontFailOnUnknownProperty() throws IOException {
         // Given
         final SomeCollectionResult result = new SomeCollectionResult();
-        result.setList(Arrays.asList(new SomeResult("foo"), new SomeResult("bar")));
+        result.setList(Arrays.asList(new SomePayload("foo"), new SomePayload("bar")));
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(result);

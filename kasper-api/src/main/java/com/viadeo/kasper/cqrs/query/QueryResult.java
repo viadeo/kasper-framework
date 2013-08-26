@@ -11,6 +11,8 @@ import com.viadeo.kasper.annotation.Immutable;
 
 import java.io.Serializable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Data Transfer Object
  *
@@ -19,42 +21,46 @@ import java.io.Serializable;
  * Can be used to store some properties of a root entity which can be later the
  * base entity of a Kasper CQRS domain entity command.
  */
-// FIXME should result be serializable and immutable?
-public class QueryResult<Result> implements Serializable, Immutable {
-
+public class QueryResult<PAYLOAD extends QueryPayload> implements Serializable, Immutable {
     private static final long serialVersionUID = -6543664128786160837L;
-    private final Result result;
-    // downside => allows only one kind of error
+
+    private final PAYLOAD payload;
     private final KasperError error;
-    
-    public QueryResult(Result result) {
-        this.result = result;
+
+    // ------------------------------------------------------------------------
+
+    public static <P extends QueryPayload> QueryResult<P> of(final KasperError error) {
+        return new QueryResult<P>(error);
+    }
+
+    public static <P extends QueryPayload> QueryResult<P> of(final P result) {
+        return new QueryResult<P>(result);
+    }
+
+    // ------------------------------------------------------------------------
+
+    public QueryResult(final PAYLOAD payload) {
+        this.payload = checkNotNull(payload);
         this.error = null;
     }
     
-    public QueryResult(KasperError error) {
-        this.result = null;
-        this.error = error;
+    public QueryResult(final KasperError error) {
+        this.payload = null;
+        this.error = checkNotNull(error);
     }
-    
-    // allows to reduce code removes the need of <XXX> in new QueryResult<XXX>(result);
-    public static <R> QueryResult<R> of(KasperError error) {
-        return new QueryResult<R>(error);
-    }
-    
-    public static <R> QueryResult<R> of(R result) {
-        return new QueryResult<R>(result);
-    }
-    
+
+    // ------------------------------------------------------------------------
+
     public KasperError getError() {
         return error;
     }
     
-    public Result getResult() {
-        return result;
+    public PAYLOAD getPayload() {
+        return payload;
     }
     
     public boolean isError() {
         return error != null;
     }
+
 }

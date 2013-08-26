@@ -7,24 +7,24 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.google.common.base.Objects;
-import com.viadeo.kasper.cqrs.query.CollectionResult;
+import com.viadeo.kasper.cqrs.query.CollectionQueryPayload;
 
 import java.util.Collection;
 import java.util.Iterator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class AbstractQueryCollectionResult<RES> implements CollectionResult<RES> {
+public abstract class AbstractQueryCollectionPayload<RES> implements CollectionQueryPayload<RES> {
     
 	private Collection<RES> innerCollection;
 
     // ------------------------------------------------------------------------
 
-    protected AbstractQueryCollectionResult() {
+    protected AbstractQueryCollectionPayload() {
         /* Jackson */
     }
 
-	protected AbstractQueryCollectionResult(final Collection<RES> innerCollection) {
+	protected AbstractQueryCollectionPayload(final Collection<RES> innerCollection) {
 		this.innerCollection = checkNotNull(innerCollection);
 	}
 
@@ -62,7 +62,7 @@ public abstract class AbstractQueryCollectionResult<RES> implements CollectionRe
             return false;
         }
 
-        final AbstractQueryCollectionResult<?> that = (AbstractQueryCollectionResult<?>) o;
+        final AbstractQueryCollectionPayload<?> that = (AbstractQueryCollectionPayload<?>) o;
         return Objects.equal(this.innerCollection, that.innerCollection);
     }
 

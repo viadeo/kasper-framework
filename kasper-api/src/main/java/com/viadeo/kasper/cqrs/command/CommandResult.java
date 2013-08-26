@@ -6,16 +6,19 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import static com.google.common.base.Preconditions.*;
+import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.annotation.Immutable;
 
 import java.io.Serializable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Base Kasper command result implementation
  */
 public class CommandResult implements Serializable, Immutable {
+    private static final long serialVersionUID = -938831661655150085L;
 
     /**
      * Accepted values for command result statuses
@@ -26,23 +29,41 @@ public class CommandResult implements Serializable, Immutable {
         ERROR       /** Just error in command handling or domain business */
     }
 
-    private static final long serialVersionUID = -938831661655150085L;
-
     /**
      * The current command status
      */
     private final Status status;
     private final KasperError error;
-    
+
     // ------------------------------------------------------------------------
 
-    public static CommandResult error(KasperError error) {
+    public static CommandResult error(final KasperError error) {
         return new CommandResult(Status.ERROR, error);
     }
 
-    public static CommandResult refused(KasperError error) {
+    public static CommandResult error(final String code, final String message) {
+        return error(new KasperError(code, message));
+    }
+
+    public static CommandResult error(final CoreErrorCode code, final String message) {
+        return error(new KasperError(checkNotNull(code).toString(), message));
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static CommandResult refused(final KasperError error) {
         return new CommandResult(Status.REFUSED, error);
     }
+
+    public static CommandResult refused(final String code, final String message) {
+        return refused(new KasperError(code, message));
+    }
+
+    public static CommandResult refused(final CoreErrorCode code, final String message) {
+        return refused(new KasperError(code, message));
+    }
+
+    // ------------------------------------------------------------------------
 
     public static CommandResult ok() {
         return new CommandResult(Status.OK, null);
@@ -53,8 +74,13 @@ public class CommandResult implements Serializable, Immutable {
     public CommandResult(final Status status, final KasperError error) {
         this.status = checkNotNull(status);
         
-        if (status != Status.OK && error == null) throw new IllegalStateException("status != Status.OK && error == null");
-        if (status == Status.OK && error != null) throw new IllegalStateException("status == Status.OK && error != null");
+        if (!status.equals(Status.OK) && (null == error)) {
+            throw new IllegalStateException("Please provide an error to the command result");
+        }
+
+        if (status.equals(Status.OK) && (null != error)) {
+            throw new IllegalStateException("Invalid command result OK provided with an error");
+        }
         
         this.error = error;
     }

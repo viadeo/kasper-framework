@@ -12,38 +12,44 @@ import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.annotation.Immutable;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class KasperError implements Serializable, Immutable {
-
     private static final long serialVersionUID = 7839349411722371919L;
-    
-    public static final String REQUIRED_INPUT = "REQUIRED_INPUT";
-    public static final String INVALID_INPUT = "INVALID_INPUT";
-    public static final String TOO_MANY_ENTRIES = "TOO_MANY_ENTRIES";
-    public static final String CONFLICT = "CONFLICT";
-    public static final String REQUIRE_AUTHENTICATION = "REQUIRE_AUTHENTICATION";
-    public static final String REQUIRE_AUTHORIZATION = "REQUIRE_AUTHORIZATION";
-    public static final String UNKNOWN_ERROR = "UNKNOWN_ERROR";
-    public static final String INTERNAL_COMPONENT_TIMEOUT = "INTERNAL_COMPONENT_TIMEOUT";
-    public static final String INTERNAL_COMPONENT_ERROR = "INTERNAL_COMPONENT_ERROR";
-    public static final String INVALID_ID = "INVALID_ID";
     
     private final String code;
     private final List<String> messages;
 
     // ------------------------------------------------------------------------
-    
+
+    public KasperError(final String code, final String message) {
+        this.code = checkNotNull(code);
+        this.messages = new ImmutableList.Builder<String>().add(message).build();
+    }
+
     public KasperError(final String code, final String...messages) {
         this.code = checkNotNull(code);
         this.messages = ImmutableList.copyOf(messages);
     }
     
-    public KasperError(final String code, final List<String> messages) {
+    public KasperError(final String code, final Collection<String> messages) {
         this.code = checkNotNull(code);
         this.messages = ImmutableList.copyOf(messages);
+    }
+
+    public KasperError(final CoreErrorCode code, final String message) {
+        this(checkNotNull(code).toString(), message);
+    }
+
+    public KasperError(final CoreErrorCode code, final String...messages) {
+        this(checkNotNull(code).toString(), messages);
+    }
+
+    public KasperError(final CoreErrorCode code, final Collection<String> messages) {
+        this(checkNotNull(code).toString(), messages);
     }
 
     // ------------------------------------------------------------------------
@@ -72,7 +78,7 @@ public final class KasperError implements Serializable, Immutable {
         if (this == Preconditions.checkNotNull(obj)) {
             return true;
         }
-        if (getClass() != obj.getClass()) {
+        if (!getClass().equals(obj.getClass())) {
             return false;
         }
 

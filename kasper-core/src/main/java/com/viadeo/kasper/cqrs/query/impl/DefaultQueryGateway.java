@@ -30,7 +30,7 @@ public class DefaultQueryGateway implements QueryGateway {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <RES> QueryResult<RES> retrieve(final Query query, final Context context)
+    public <PAYLOAD extends QueryPayload> QueryResult<PAYLOAD> retrieve(final Query query, final Context context)
             throws Exception {
 
         checkNotNull(context);
@@ -65,14 +65,14 @@ public class DefaultQueryGateway implements QueryGateway {
         }
 
         /* Call the service */
-        QueryResult<RES> ret;
+        QueryResult<PAYLOAD> ret;
         try { LOGGER.info("Call service " + optService.get().getClass().getSimpleName());
 
-            ret = (QueryResult<RES>) service.retrieve(message);
+            ret = (QueryResult<PAYLOAD>) service.retrieve(message);
 
         } catch (final UnsupportedOperationException e) {
             if (AbstractQueryService.class.isAssignableFrom(service.getClass())) {
-                ret = (QueryResult<RES>) ((AbstractQueryService) service).retrieve(message.getQuery());
+                ret = (QueryResult<PAYLOAD>) ((AbstractQueryService) service).retrieve(message.getQuery());
             } else {
                 throw e;
             }
@@ -81,7 +81,7 @@ public class DefaultQueryGateway implements QueryGateway {
         checkNotNull(ret);
 
         /* Apply Result filters if needed */
-        if (null != ret.getResult()) {
+        if (null != ret.getPayload()) {
             for (final ServiceFilter filter : filters) {
                 if (ResultFilter.class.isAssignableFrom(filter.getClass())) {
                     LOGGER.info(String.format("Apply Result filter %s", filter.getClass().getSimpleName()));

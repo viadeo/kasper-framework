@@ -13,6 +13,7 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
+import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.event.Event;
 import org.axonframework.eventhandling.EventBus;
@@ -121,7 +122,7 @@ public interface Platform {
      * @return the result generated after processing of the query
      * @throws Exception when something bad occurs
      */
-    <RES> QueryResult<RES> retrieve(Query query, Context context) throws Exception;
+    <PAYLOAD extends QueryPayload> QueryResult<PAYLOAD> retrieve(Query query, Context context) throws Exception;
 
  	/** == Events ========================================================== */
 

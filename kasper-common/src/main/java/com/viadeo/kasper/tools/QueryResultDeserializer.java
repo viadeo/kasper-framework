@@ -1,24 +1,26 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.tools;
+
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.*;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JavaType;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.viadeo.kasper.KasperError;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-
-public class QueryResultDeserializer extends JsonDeserializer<QueryResult<Object>> {
+public class QueryResultDeserializer extends JsonDeserializer<QueryResult<?>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class); 
 
     private final JavaType resultType;
@@ -28,7 +30,7 @@ public class QueryResultDeserializer extends JsonDeserializer<QueryResult<Object
     }
 
     @Override
-    public QueryResult<Object> deserialize(JsonParser jp, DeserializationContext ctxt)
+    public QueryResult<?> deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException, JsonProcessingException {
 
         ObjectNode root = jp.readValueAs(ObjectNode.class);
@@ -49,7 +51,7 @@ public class QueryResultDeserializer extends JsonDeserializer<QueryResult<Object
             return QueryResult.of(new KasperError(globalCode, messages));
         } else {
             // not very efficient but will be fine for now
-            return QueryResult.of(((ObjectMapper) jp.getCodec()).convertValue(root, resultType));
+            return QueryResult.of((QueryPayload) ((ObjectMapper) jp.getCodec()).convertValue(root, resultType));
         }
     }
 

@@ -18,7 +18,7 @@ import java.util.Collection;
  * 
  * @see QueryResult
  */
-public interface CollectionResult<RES> extends Iterable<RES> {
+public interface CollectionQueryPayload<RES> extends Iterable<RES>, QueryPayload {
 
 	/** Generic parameter position for Data Transfer Object */
 	int PARAMETER_RESULT_POSITION = 0;
