@@ -160,7 +160,7 @@ Suppose you want to support URIs but there is no default adapter for this type:
     }
 
 To make your TypeAdapter automatically discovered you can use `Java service loader mechanism <http://docs.oracle.com/javase/tutorial/ext/basics/spi.html#register-service-providers>`_.
-Just create a file named **com.viadeo.kasper.query.exposition.ITypeAdapter** in **META-INF/services** (*must be exported in the final jar*)
+Just create a file named **com.viadeo.kasper.query.exposition.TypeAdapter** in **META-INF/services** (*must be exported in the final jar*)
 and write the full name of each custom TypeAdapter (one per line) ::
 
     com.viadeo.somepackage.URITypeAdapter
@@ -198,7 +198,7 @@ To support it you will have to create a custom BeanAdapter.
 .. code-block:: java
   :linenos:
 
-  class ListOfFilterAdapter extends BeanAdapter<List<Filter>> {
+  class ListOfFilterAdapter implements BeanAdapter<List<Filter>> {
 
     @Override
     public void adapt(final List<Filter> filters, final QueryBuilder builder, final BeanProperty property) {
@@ -225,7 +225,7 @@ To support it you will have to create a custom BeanAdapter.
   }
 
 Then to register it, use the same mechanism as for TypeAdapters, the only difference here is that you must 
-put your adapter into a file named **com.viadeo.kasper.query.exposition.BeanAdapter**.
+put your adapter into a file named **com.viadeo.kasper.query.exposition.query.BeanAdapter**.
 
 ..  _Error_codes:
 
