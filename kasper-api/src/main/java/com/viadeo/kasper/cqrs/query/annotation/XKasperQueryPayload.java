@@ -13,15 +13,15 @@ import java.lang.annotation.Target;
 
 /**
  *
- * Base marker for Kasper commands
+ * Base marker for Kasper query payloads
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface XKasperQueryResult {
+public @interface XKasperQueryPayload {
 
     /**
-     * @return the query description
+     * @return the query payload description
      */
     String description() default "";
 

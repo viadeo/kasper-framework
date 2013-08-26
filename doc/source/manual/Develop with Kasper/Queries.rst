@@ -8,7 +8,7 @@ Implementing queries consists on implementing four Kasper components :
 
 - one **event listener** used to listen for accurate events and index data
 - one **query** used by the client to send a request to the platform
-- one **query result** used by the platform to send results back to the client
+- one **query result** (with payload) used by the platform to send results back to the client
 - one **query service** which query the data according to the received query and sends back a result
 
 Kasper does not say anything about your indexation process, but you are heavily encouraged to :
@@ -19,7 +19,7 @@ Kasper does not say anything about your indexation process, but you are heavily 
 About implementing event listeners, see :ref:`events`.
 
 Kasper queries uses the **Command pattern**, the client does not ask a service for data, it sends queries to the
-platform and expects for a result.
+platform and expects for a result with payload.
 
 Queries
 -------
@@ -66,27 +66,27 @@ Some interfaces are available as a standard way to add some features to the quer
 - **OrderedQuery** can be implemented when the result can be ordered
 - **PaginatedQuery** can be implemented when the result can be paginated
 
-Query results
--------------
+Query result payloads
+---------------------
 
-A Kasper query result is an immutable, anemic object used by a query service to send back data
-to the requesting client, it ends with the suffix '**QueryResult**' (recommended).
+A Kasper query result payload is an immutable, anemic object used by a query service to send back data
+to the requesting client, it ends with the suffix '**QueryPayload**' (recommended).
 
-**A Query result is part of a domain API**.
+**A Query result payload is part of a domain API**.
 
-A Kasper query result has to implement the interface **QueryResult** and can optionally defines some metadata
-using the **@XKasperQueryResult** annotation.
+A Kasper query result has to implement the interface **QueryPayload** and can optionally defines some metadata
+using the **@XKasperQueryPayload** annotation.
 
 **usage**
 
 .. code-block:: java
     :linenos:
 
-    @XKasperQueryResult( description = "A simple thing" )
-    public class ThingsQueryResult implements QueryResult {
+    @XKasperQueryPayload( description = "A simple thing" )
+    public class ThingsQueryPayload implements QueryPayload {
         private final String name;
 
-        public ThingsQueryResult(final String nameOfThing) {
+        public ThingsQueryPayload(final String nameOfThing) {
             this.name = nameOfThing;
         }
 
@@ -95,34 +95,34 @@ using the **@XKasperQueryResult** annotation.
         }
     }
 
-The interface **QueryCollectionResult** can be used to return a list of some other unit results.
+The interface **QueryCollectionPayload** can be used to return a list of some other unit result payloads.
 
-The abstract class **AbstractQueryCollectionResult** is provided as a default implementation of the list methods
-required by the **QueryCollectionResult** interface.
+The abstract class **AbstractQueryCollectionPayload** is provided as a default implementation of the list methods
+required by the **QueryCollectionPayload** interface.
 
 **usage**
 
 .. code-block:: java
     :linenos:
 
-    @XKasperQueryResult( description = "A List of things" )
-    public class ThingsListQueryResult extends AbstractQueryCollectionResult<ThingsQueryResult> {
+    @XKasperQueryPayload( description = "A List of things" )
+    public class ThingsListQueryPayload extends AbstractQueryCollectionPayload<ThingsQueryPayload> {
         // Nothing more needs to be declared
     }
 
-Some interfaces are available as a standard way to add some features to the query result :
+Some interfaces are available as a standard way to add some features to the query result payloads :
 
-- **OrderedQueryResult** can be implemented when the result can be ordered
-- **PaginatedQueryResult** can be implemented when the result can be paginated
+- **OrderedQueryPayload** can be implemented when the result payload can be ordered
+- **PaginatedQueryPayload** can be implemented when the result payload can be paginated
 
 Query services
 --------------
 
-A Kasper query service is I/O component using a **Query** as input and responsible to return a **QueryResult**.
+A Kasper query service is I/O component using a **Query** as input and responsible to return a **QueryPayload**.
 
 **A Query service is part of the QUERY architectural area**.
 
-It has to implement the **QueryService<Query, QueryResult>** interface and specify its owning domain with the **@XKasperQueryService**
+It has to implement the **QueryService<Query, QueryPayload>** interface and specify its owning domain with the **@XKasperQueryService**
 annotation and ends with the '**QueryService**' suffix (recommended).
 
 **usage**
@@ -131,10 +131,10 @@ annotation and ends with the '**QueryService**' suffix (recommended).
     :linenos:
 
     @XKasperQueryService( domain = ThingsDomain.class )
-    public class GetThingsQueryService implements QueryService<GetThingsQuery, ThingsListQueryResult> {
+    public class GetThingsQueryService implements QueryService<GetThingsQuery, ThingsListQueryPayload> {
 
         @Override
-        public ThingsListQueryResult retrieve(final QueryMessage<GetThingsQuery> message) throws KasperQueryException {
+        public QueryResult<ThingsListQueryPayload> retrieve(final QueryMessage<GetThingsQuery> message) throws KasperQueryException {
             ...
         }
 
@@ -149,10 +149,10 @@ when other message informations are not required :
     :linenos:
 
     @XKasperQueryService( domain = ThingsDomain.class )
-    public class GetThingsQueryService extends AbstractQueryService<GetThingsQuery, ThingsListQueryResult> {
+    public class GetThingsQueryService extends AbstractQueryService<GetThingsQuery, ThingsListQueryPayload> {
 
         @Override
-        public ThingsListQueryResult retrieve(final GetThingsQuery query) throws KasperQueryException {
+        public QueryResult<ThingsListQueryPayload> retrieve(final GetThingsQuery query) throws KasperQueryException {
             ...
         }
 
@@ -206,9 +206,9 @@ A filter can be defined global (set the global flag (**global = true**) on the a
     public class IdEraserResultFilter implements ResultFilter {
 
         @Override
-        public void filter(final Context context, final Result dto) throws KasperQueryException {
-            if (HasAnIdResult.class.isAssignableFrom(dto)) {
-                ((HasAnIdResult) dto).id = "";
+        public void filter(final Context context, final QueryResult<HasAnIdPayload> dto) throws KasperQueryException {
+            if (HasAnIdPayload.class.isAssignableFrom(dto.getPayload())) {
+                ((HasAnIdResult) dto.getPayload()).id = "";
             }
         }
 
@@ -228,10 +228,10 @@ filling the 'filters' field.
     :linenos:
 
     @XKasperQueryService( ... , filters = ValidateIdQueryFilter.class )
-    public class GetThingsQueryService extends AbstractQueryService<GetThingsQuery, ThingsListQueryResult> {
+    public class GetThingsQueryService extends AbstractQueryService<GetThingsQuery, ThingsListQueryPayload> {
 
         @Override
-        public ThingsListQueryResult retrieve(final GetThingsQuery query) throws KasperQueryException {
+        public QueryResult<ThingsListQueryPayload> retrieve(final GetThingsQuery query) throws KasperQueryException {
             ...
         }
 

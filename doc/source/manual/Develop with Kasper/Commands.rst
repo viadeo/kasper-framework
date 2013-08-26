@@ -119,6 +119,8 @@ If you need to retrieve a different repository, use the platform domain locator 
             if (null != this.getThing()) {
                 final User user = new User(command.getIdToUse(), command.getUsername());
                 userRepository.add(user);
+            } else {
+                return CommandResult.error(CoreErrorCode.INVALID_INPUT, "Thing was not found");
             }
 
             return CommandResult.ok();
