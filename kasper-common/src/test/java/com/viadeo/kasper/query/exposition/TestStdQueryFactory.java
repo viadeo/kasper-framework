@@ -87,7 +87,7 @@ public class TestStdQueryFactory {
         // Given
         final QueryBuilder builder = new QueryBuilder();
         final DateTime firstDate = new DateTime();
-        final DateTime secondDate = new DateTime();
+        final DateTime secondDate = new DateTime().plusDays(1);
         final QueryOfDateTimeCollection query = new QueryOfDateTimeCollection(Arrays.asList(firstDate, secondDate));
         final QueryFactory queryFactory = createQueryFactory(DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY, DefaultTypeAdapters.DATETIME_ADAPTER);
 
