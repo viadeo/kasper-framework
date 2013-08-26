@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.lib;
+package com.viadeo.kasper.client;
 
 /**
  * A callback class used in {@link com.viadeo.kasper.client.KasperClient} for async commands/queries.

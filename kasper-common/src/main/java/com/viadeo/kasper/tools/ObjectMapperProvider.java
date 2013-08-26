@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ObjectMapperProvider {
+public final class ObjectMapperProvider {
 
     static final String ERROR = "error";
     static final String ERRORS = "errors";

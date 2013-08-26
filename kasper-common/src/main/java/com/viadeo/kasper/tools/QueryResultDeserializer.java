@@ -31,7 +31,7 @@ public class QueryResultDeserializer extends JsonDeserializer<QueryResult<?>> {
 
     @Override
     public QueryResult<?> deserialize(JsonParser jp, DeserializationContext ctxt)
-            throws IOException, JsonProcessingException {
+            throws IOException {
 
         ObjectNode root = jp.readValueAs(ObjectNode.class);
 

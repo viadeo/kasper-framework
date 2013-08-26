@@ -69,9 +69,7 @@ public final class CommandResultDeserializer extends JsonDeserializer<CommandRes
                 }
             } else if (ObjectMapperProvider.MESSAGE.equals(name)) {
                 messages.add(jp.nextTextValue());
-            } else {
-                // lets just ignore usermessage and others...
-            }
+            } // else lets just ignore usermessage and others...
         }
         
         return globalCode != null ? new KasperError(globalCode, messages) : null;

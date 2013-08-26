@@ -214,12 +214,10 @@ public class DefaultQueryFactory implements QueryFactory {
                     }
 
                 }
-                // else {
-                /*
+                /* else --
                  * for the moment just lets ignore silently methods that have a
                  * set method and no get, and the inverse
                  */
-                // }
             }
         }
 
@@ -389,16 +387,16 @@ public class DefaultQueryFactory implements QueryFactory {
 
     private boolean isAccessor(final Method method) {
 
-        final boolean get_method = method.getName().startsWith(PREFIX_METHOD_GET)
+        final boolean getMethod = method.getName().startsWith(PREFIX_METHOD_GET)
                                    && (method.getName().length() > PREFIX_METHOD_GET_LEN);
 
-        final boolean is_method = !get_method /* optimization */
+        final boolean isMethod = !getMethod /* optimization */
                                   && method.getName().startsWith(PREFIX_METHOD_IS)
                                   && method.getName().length() > PREFIX_METHOD_IS_LEN;
 
-        final boolean no_parameters = method.getParameterTypes().length == 0;
+        final boolean hasNoParameters = method.getParameterTypes().length == 0;
 
-        return (get_method || is_method) && no_parameters;
+        return (getMethod || isMethod) && hasNoParameters;
     }
 
     // --
