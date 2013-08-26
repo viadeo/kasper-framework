@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.exposition;
 
 import com.viadeo.kasper.client.KasperClient;
@@ -16,12 +22,14 @@ import org.springframework.web.context.support.AnnotationConfigWebApplicationCon
 import java.net.URL;
 
 public abstract class BaseHttpExposerTest<T extends HttpExposer> {
+
 	private Server server;
 	private int port;
 	private KasperClient cli;
 
-	protected BaseHttpExposerTest() {
-	}
+    // ------------------------------------------------------------------------
+
+	protected BaseHttpExposerTest() { }
 
     // ------------------------------------------------------------------------
 

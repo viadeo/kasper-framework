@@ -63,8 +63,8 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
 				(Optional<Class<? extends QueryResult>>)
 						ReflectionGenericsResolver.getParameterTypeFromClass(
 								queryServiceClazz, QueryService.class, QueryService.PARAMETER_RESULT_POSITION);
+
 		this.response = new DocumentedBean(optQueryResultClass.get());
-		
 	}
 
 	// ------------------------------------------------------------------------

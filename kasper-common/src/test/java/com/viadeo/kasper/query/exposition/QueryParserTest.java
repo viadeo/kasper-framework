@@ -6,7 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition;
 
-import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.LinkedHashMultimap;
+import com.viadeo.kasper.query.exposition.query.QueryParser;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -18,8 +20,17 @@ import static org.junit.Assert.*;
 
 public class QueryParserTest {
     
-    @Test public void testConcurrentModificationOfNames() {
-        final QueryParser parser = new QueryParser(ImmutableMap.of("key_1", Arrays.asList("a", "b"), "key_2", Arrays.asList("a", "b"), "key2", Arrays.asList("1")));
+    @Test
+    public void testConcurrentModificationOfNames() {
+        final QueryParser parser = new QueryParser(
+                LinkedHashMultimap.create(
+                    new ImmutableSetMultimap.Builder<String, String>()
+                            .put("key_1", "a")
+                            .put("key_1", "b")
+                            .put("key_2", "a")
+                            .put("key_2", "b")
+                            .put("key2", "1")
+                            .build()));
 
         for (String name : parser.names()) {
             if (name.startsWith("key_")) {
@@ -35,7 +46,12 @@ public class QueryParserTest {
 
     @Test
     public void testExists() {
-        final QueryParser parser = new QueryParser(ImmutableMap.of("someKey", Arrays.asList("foo", "bar")));
+        final QueryParser parser = new QueryParser(
+                LinkedHashMultimap.create(
+                    new ImmutableSetMultimap.Builder<String, String>()
+                        .put("someKey", "foo")
+                        .put("someKey", "bar")
+                    .build()));
 
         assertTrue(parser.exists("someKey"));
         assertFalse(parser.exists("doesNotExist"));
@@ -43,7 +59,12 @@ public class QueryParserTest {
 
     @Test
     public void testIterateOverNames() {
-        final QueryParser parser = new QueryParser(ImmutableMap.of("someKey", Arrays.asList("foo", "bar")));
+        final QueryParser parser = new QueryParser(
+                LinkedHashMultimap.create(
+                    new ImmutableSetMultimap.Builder<String, String>()
+                            .put("someKey", "foo")
+                            .put("someKey", "bar")
+                            .build()));
 
         assertTrue(parser.names().contains("someKey"));
     }
@@ -51,7 +72,11 @@ public class QueryParserTest {
     @Test
     public void testParseArray() {
         final List<String> expected = Arrays.asList("foo", "bar");
-        final QueryParser parser = new QueryParser(ImmutableMap.of("someKey", expected));
+        final QueryParser parser = new QueryParser(
+                LinkedHashMultimap.create(
+                        new ImmutableSetMultimap.Builder<String, String>()
+                                .putAll("someKey", expected)
+                                .build()));
 
         final List<String> values = new ArrayList<String>();
         for (final QueryParser next : parser.begin("someKey")) {
@@ -66,7 +91,11 @@ public class QueryParserTest {
 
     @Test(expected = NoSuchElementException.class)
     public void testNoSuchElementException() {
-        final QueryParser parser = new QueryParser(ImmutableMap.of("someKey", Arrays.asList("foobar")));
+        final QueryParser parser = new QueryParser(
+                LinkedHashMultimap.create(
+                    new ImmutableSetMultimap.Builder<String, String>()
+                            .putAll("someKey", Arrays.asList("foobar"))
+                            .build()));
 
         assertTrue(parser.hasNext());
 
@@ -84,7 +113,11 @@ public class QueryParserTest {
 
     @Test(expected = IllegalStateException.class)
     public void testIllegalCallEndWithoutBegin() {
-        final QueryParser parser = new QueryParser(ImmutableMap.of("someKey", Arrays.asList("foobar")));
+        final QueryParser parser = new QueryParser(
+                LinkedHashMultimap.create(
+                    new ImmutableSetMultimap.Builder<String, String>()
+                            .putAll("someKey", Arrays.asList("foobar"))
+                            .build()));
         parser.end();
     }
 

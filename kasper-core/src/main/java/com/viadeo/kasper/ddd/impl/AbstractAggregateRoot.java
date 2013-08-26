@@ -52,6 +52,7 @@ public abstract class AbstractAggregateRoot
         @SuppressWarnings("unchecked")
         final IRepository<E> repo = (IRepository<E>)
             this.getDomainLocator().getEntityRepository(this.getClass()).get();
+
         return repo;
 	}
 	

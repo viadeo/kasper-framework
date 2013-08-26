@@ -6,12 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
+import com.viadeo.kasper.annotation.Immutable;
+
 import java.io.Serializable;
 
-
 /**
- * The Kasper query interface
+ * The Kasper query marker interface
  */
-public interface Query extends Serializable {
+public interface Query extends Serializable, Immutable {
 
 }

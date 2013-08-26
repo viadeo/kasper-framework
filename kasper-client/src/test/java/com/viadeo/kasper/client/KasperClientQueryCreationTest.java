@@ -4,14 +4,13 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.client;
 
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.query.exposition.QueryBuilder;
-import com.viadeo.kasper.query.exposition.QueryParser;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
+import com.viadeo.kasper.query.exposition.query.QueryBuilder;
+import com.viadeo.kasper.query.exposition.query.QueryParser;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
@@ -40,6 +39,8 @@ public class KasperClientQueryCreationTest {
 		}
 	}
 
+    // --
+
 	public static class ComplexQuery implements Query {
 		private static final long serialVersionUID = -5681649437512129142L;
 		private final SomePojo complexPojo;
@@ -53,6 +54,8 @@ public class KasperClientQueryCreationTest {
 		}
 	}
 
+    // --
+
 	static class SomePojo {
 		private final String value;
 
@@ -65,6 +68,8 @@ public class KasperClientQueryCreationTest {
 		}
 	}
 
+    // --
+
 	public static class MoreComplexQuery implements Query {
 		private static final long serialVersionUID = -1376553638435430921L;
 
@@ -76,8 +81,8 @@ public class KasperClientQueryCreationTest {
 		private final DateTime[] multipleDates;
 
 		public MoreComplexQuery(final String aStr, final int aPrimitiveInt,
-				final Integer aInteger, final boolean aPrimitiveBoolean,
-				final Date aDate, final DateTime[] multipleDates) {
+				                final Integer aInteger, final boolean aPrimitiveBoolean,
+				                final Date aDate, final DateTime[] multipleDates) {
 			super();
 
 			this.aStr = aStr;

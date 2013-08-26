@@ -23,6 +23,8 @@ public class SpringComponentsInstanceManagerTest {
     private SpringComponentsInstanceManager sman;
     private GenericApplicationContext ctx;
 
+    // ------------------------------------------------------------------------
+
     @Before
     public void setUp() {
         this.sman = new SpringComponentsInstanceManager();

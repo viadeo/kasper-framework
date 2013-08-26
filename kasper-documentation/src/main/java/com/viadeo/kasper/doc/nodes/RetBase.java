@@ -12,6 +12,8 @@ import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.google.common.base.Charsets;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -20,6 +22,8 @@ import java.io.UnsupportedEncodingException;
 
 public abstract class RetBase implements Serializable {
 	private static final long serialVersionUID = 1864387214923151069L;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(RetBase.class);
 
 	private static ObjectMapper mapper = new ObjectMapper();
 	static {
@@ -59,20 +63,20 @@ public abstract class RetBase implements Serializable {
 		try {
 			mapper.writeValue(os, this);
 		} catch (final JsonGenerationException e) {
-			e.printStackTrace();
+            LOGGER.error("", e);
 			return "";
 		} catch (final JsonMappingException e) {
-			e.printStackTrace();
+            LOGGER.error("", e);
 			return "";
 		} catch (final IOException e) {
-			e.printStackTrace();
+            LOGGER.error("", e);
 			return "";
 		}
 
 		try {
 			return os.toString(Charsets.UTF_8.name());
 		} catch (final UnsupportedEncodingException e) {
-			e.printStackTrace();
+            LOGGER.error("", e);
 			return "";
 		}
 	}

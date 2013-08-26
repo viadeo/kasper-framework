@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class ListenersDocumentationProcessor extends DocumentationProcessor<XKasperEventListener, EventListener<?>> {
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(ListenersDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------

@@ -7,8 +7,13 @@
 package com.viadeo.kasper.query.exposition;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.LinkedHashMultimap;
+import com.google.common.collect.SetMultimap;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.query.exposition.adapters.DefaultTypeAdapters;
+import com.viadeo.kasper.query.exposition.query.*;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,8 +41,13 @@ public class TestStdQueryFactoryDeser {
 
         // Given
         final TypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
-        final Map<String, List<String>> given = ImmutableMap.of("name", Arrays.asList("foo"), "age",
-                Arrays.asList("1"), "list", Arrays.asList("bar", "barfoo", "foobar"));
+        final SetMultimap<String, String> given =
+                LinkedHashMultimap.create(
+                    new ImmutableSetMultimap.Builder<String, String>()
+                            .put("name", "foo")
+                            .put("age", "1")
+                            .putAll("list", Arrays.asList("bar", "barfoo", "foobar"))
+                            .build());
 
         // When
         final SimpleQuery query = adapter.adapt(new QueryParser(given));
@@ -52,8 +62,15 @@ public class TestStdQueryFactoryDeser {
     public void testComposedQuery() throws Exception {
 
         // Given
-        final Map<String, List<String>> given = ImmutableMap.of("field", Arrays.asList("someValue"), "name",
-                Arrays.asList("foo"), "age", Arrays.asList("1"), "list", Arrays.asList("bar", "barfoo", "foobar"));
+        final SetMultimap<String, String> given =
+                LinkedHashMultimap.create(
+                    new ImmutableSetMultimap.Builder<String, String>()
+                        .put("field", "someValue")
+                        .put("name", "foo")
+                        .put("age", "1")
+                        .putAll("list", Arrays.asList("bar", "barfoo", "foobar"))
+                        .build());
+
         final TypeAdapter<ComposedQuery> adapter = factory.create(TypeToken.of(ComposedQuery.class));
 
         // When
@@ -73,8 +90,12 @@ public class TestStdQueryFactoryDeser {
         final TypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
 
         // When
-        final SimpleQuery query = adapter.adapt(new QueryParser(ImmutableMap.of("field", Arrays.asList("someValue"),
-                "name", Arrays.asList("foo"))));
+        final SimpleQuery query = adapter.adapt(new QueryParser(
+                LinkedHashMultimap.create(
+                    new ImmutableSetMultimap.Builder<String, String>()
+                            .put("field", "someValue")
+                            .put("name", "foo")
+                            .build())));
 
         // Then
         assertEquals("foo", query.name);
@@ -90,7 +111,11 @@ public class TestStdQueryFactoryDeser {
         final TypeAdapter<BaseQuery> adapter = factory.create(TypeToken.of(BaseQuery.class));
 
         // When
-        final BaseQuery q = adapter.adapt(new QueryParser(ImmutableMap.of("list_foo", Arrays.asList("bar"))));
+        final BaseQuery q = adapter.adapt(new QueryParser(
+                LinkedHashMultimap.create(
+                    new ImmutableSetMultimap.Builder<String, String>()
+                            .put("list_foo", "bar")
+                            .build())));
 
         // Then
         assertNotNull(q.list);
@@ -132,7 +157,7 @@ public class TestStdQueryFactoryDeser {
 
     // ------------------------------------------------------------------------
 
-    public static class SomeBeanAdapter extends BeanAdapter<List<SomeBean>> {
+    public static class SomeBeanAdapter implements BeanAdapter<List<SomeBean>> {
 
         @Override
         public void adapt(List<SomeBean> value, QueryBuilder builder, BeanProperty property) {

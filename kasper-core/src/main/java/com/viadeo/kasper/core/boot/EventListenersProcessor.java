@@ -4,7 +4,6 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
@@ -23,8 +22,7 @@ import org.slf4j.LoggerFactory;
  * @see XKasperEventListener
  */
 public class EventListenersProcessor extends SingletonAnnotationProcessor<XKasperEventListener, EventListener> {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(EventListenersProcessor.class);	
+	private static final Logger LOGGER = LoggerFactory.getLogger(EventListenersProcessor.class);
 	
 	/**
 	 * The event bus to register event listeners on
@@ -66,4 +64,3 @@ public class EventListenersProcessor extends SingletonAnnotationProcessor<XKaspe
     }
 	
 }
-

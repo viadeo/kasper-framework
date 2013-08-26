@@ -4,19 +4,18 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.cqrs.query;
 
 /**
  * A Kasper query service
  *
  * @param <Q> the associated Query
- * @param <RES> the associated Data Transfer Object
+ * @param <PAYLOAD> the associated Data Transfer Object
  *
  * @see QueryResult
  * @see Query
  */
-public interface QueryService<Q extends Query, RES extends QueryResult> {
+public interface QueryService<Q extends Query, PAYLOAD extends QueryPayload> {
 
 	/**
 	 * Generic parameter position for Data Query Object
@@ -37,7 +36,7 @@ public interface QueryService<Q extends Query, RES extends QueryResult> {
 	 * @param message a message encapsulating the query to answer
 	 * @return a filled Result
 	 */
-	RES retrieve(QueryMessage<Q> message) throws Exception;
+	QueryResult<PAYLOAD> retrieve(QueryMessage<Q> message) throws Exception;
 
 }
 

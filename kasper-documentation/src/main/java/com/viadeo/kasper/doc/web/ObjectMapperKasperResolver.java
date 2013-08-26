@@ -23,11 +23,11 @@ public class ObjectMapperKasperResolver implements ContextResolver<ObjectMapper>
         mapper.configure(MapperFeature.AUTO_DETECT_FIELDS, true);
         mapper.configure(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS, true);
         mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
-        
     }
     
     @Override
     public ObjectMapper getContext(Class<?> type) {
         return mapper;
     }
+
 }

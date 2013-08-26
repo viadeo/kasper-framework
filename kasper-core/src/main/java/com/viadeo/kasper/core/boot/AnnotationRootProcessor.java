@@ -41,7 +41,6 @@ import java.util.*;
  * TODO: allow user to specify classpath as a list of URLs or at least as Reflections helpers
  */
 public class AnnotationRootProcessor {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationRootProcessor.class);
 
     /**
@@ -256,7 +255,8 @@ public class AnnotationRootProcessor {
                 LOGGER.info(String.format("Delegate for %s to %s", tplClass.getSimpleName(), processor.getClass().getSimpleName()));
 
                 final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(annotation);
-                final Set<Class<?>> conformClasses = (Set<Class<?>>) reflections.getSubTypesOf(tplClass);
+                @SuppressWarnings({ "unchecked", "rawtypes" })
+                final Set<Class<?>> conformClasses = (Set) reflections.getSubTypesOf(tplClass);
                 conformClasses.addAll(annotatedClasses);
 
                 // For all suitable classes

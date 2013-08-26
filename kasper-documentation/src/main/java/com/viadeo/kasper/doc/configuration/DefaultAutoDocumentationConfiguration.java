@@ -8,12 +8,11 @@ package com.viadeo.kasper.doc.configuration;
 
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.doc.KasperLibrary;
-import org.springframework.context.annotation.Bean;
 
 public class DefaultAutoDocumentationConfiguration implements AutoDocumentationConfiguration {
 
     private AnnotationRootProcessor rootProcessor;
-    private KasperLibrary library;
+    private KasperLibrary kasperLibrary;
 
     // ------------------------------------------------------------------------
 
@@ -45,10 +44,10 @@ public class DefaultAutoDocumentationConfiguration implements AutoDocumentationC
     // ------------------------------------------------------------------------
 
     public KasperLibrary getKasperLibrary() {
-        if (null == this.library) {
-            this.library = new KasperLibrary();
+        if (null == this.kasperLibrary) {
+            this.kasperLibrary = new KasperLibrary();
         }
-        return this.library;
+        return this.kasperLibrary;
     }
 
     public DomainsDocumentationProcessor getDomainsDocumentationProcessor(final KasperLibrary library) {
@@ -92,7 +91,6 @@ public class DefaultAutoDocumentationConfiguration implements AutoDocumentationC
         proc.setKasperLibrary(library);
         return this.registerProcessor(proc);
     }
-
 
     public ListenersDocumentationProcessor getListenersDocumentationProcessor(final KasperLibrary library) {
         final ListenersDocumentationProcessor proc = new ListenersDocumentationProcessor();

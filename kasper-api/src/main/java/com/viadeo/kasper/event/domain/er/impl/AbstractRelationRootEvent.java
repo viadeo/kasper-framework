@@ -34,7 +34,9 @@ public abstract class AbstractRelationRootEvent<D extends Domain, R>
 
 	protected AbstractRelationRootEvent(final Context context,
                                         final KasperID id,
-                                        final KasperID sourceId, final KasperID targetId, final DateTime lastModificationDate) {
+                                        final KasperID sourceId,
+                                        final KasperID targetId,
+                                        final DateTime lastModificationDate) {
 		super(context, id, lastModificationDate);
 
 		this.sourceId = Preconditions.checkNotNull(sourceId);

@@ -4,7 +4,6 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
  * @see XKasperDomain
  */
 public class DomainsProcessor extends SingletonAnnotationProcessor<XKasperDomain, Domain> {
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(DomainsProcessor.class);
 
 	/**

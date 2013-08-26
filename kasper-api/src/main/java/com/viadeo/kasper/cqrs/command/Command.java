@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
+import com.viadeo.kasper.annotation.Immutable;
+
 import java.io.Serializable;
 
 /**
@@ -13,6 +15,6 @@ import java.io.Serializable;
  * Base marker for Kasper commands
  *
  */
-public interface Command extends Serializable {
+public interface Command extends Serializable, Immutable {
 	
 }

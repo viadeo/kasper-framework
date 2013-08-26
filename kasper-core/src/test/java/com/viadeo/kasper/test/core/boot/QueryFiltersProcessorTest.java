@@ -44,6 +44,7 @@ public class QueryFiltersProcessorTest {
     // ------------------------------------------------------------------------
 
     @Test
+    @SuppressWarnings("unchecked")
     public void processorShouldRegisterFilterWithName() {
 
         // Given
@@ -56,7 +57,8 @@ public class QueryFiltersProcessorTest {
         verify(locator).registerFilter(eq(FILTER_NAME), eq(filter), eq(false), (Class<? extends Domain>) isNull());
     }
 
-     @Test
+    @Test
+    @SuppressWarnings("unchecked")
     public void processorShouldRegisterFilterWithoutName() {
 
         // Given

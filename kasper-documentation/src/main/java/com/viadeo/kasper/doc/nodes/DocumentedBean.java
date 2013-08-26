@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
@@ -15,28 +21,29 @@ import java.util.*;
 /*
  * FIXME: use the same fields inference mechanisms than jackson serializer..
  * FIXME: improve Map resolution : the two types must be extracted
- * FIXME: add tests
  */
 public class DocumentedBean extends ArrayList<DocumentedProperty> {
 	private static final long serialVersionUID = 4149894288444871301L;
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentedBean.class);
-	
+
+    // ------------------------------------------------------------------------
+
 	DocumentedBean(final Class<?> componentClazz) {
 		final List<Field> properties = Lists.newArrayList();
 		getAllFields(properties, componentClazz);
 		
 		for (final Field property : properties) {
 			property.setAccessible(true);
+
 			if (!Modifier.isTransient(property.getModifiers()) && !Modifier.isStatic(property.getModifiers())) {
-				String name = property.getName();				
+				final String name = property.getName();
 				
 				if (name.contentEquals("serialVersionUID")) {
 					continue;
 				}
 				
 				final Boolean isList;
-				final Type classType = property.getGenericType();
                 final Class<?> propClass = property.getType();
 				final String type;
 
@@ -98,7 +105,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 	    return fields;
 	}
 
-    private static Class<?> extractClassFromType(final Type t) throws ClassCastException {
+    private static Class<?> extractClassFromType(final Type t) {
         if (t instanceof Class<?>) {
             return (Class<?>)t;
         }

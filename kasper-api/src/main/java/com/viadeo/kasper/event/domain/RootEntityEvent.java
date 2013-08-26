@@ -15,8 +15,6 @@ import org.joda.time.DateTime;
  * A Kasper event related to an entity
  *
  */
-
-
 public interface RootEntityEvent<D extends Domain, AGR> extends EntityEvent<D, AGR> {
 
 	/**

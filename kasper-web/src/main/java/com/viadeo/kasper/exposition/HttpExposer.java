@@ -20,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class HttpExposer extends HttpServlet {
 	private static final long serialVersionUID = 8448984922303895424L;
-	protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
+	protected static final Logger LOGGER = LoggerFactory.getLogger(HttpExposer.class);
 	        
 	private Platform platform;
 
@@ -67,14 +67,19 @@ public abstract class HttpExposer extends HttpServlet {
 		return platform;
 	}
 
+    // ------------------------------------------------------------------------
+
     protected String getFullRequestURI(final HttpServletRequest req){
-        StringBuilder sb = new StringBuilder();
+        final StringBuilder sb = new StringBuilder();
         sb.append(req.getRequestURI());
-        String queryString = req.getQueryString();
+
+        final String queryString = req.getQueryString();
         if (StringUtils.hasText(queryString)){
             sb.append("?");
             sb.append(queryString);
         }
+
         return sb.toString();
     }
+
 }

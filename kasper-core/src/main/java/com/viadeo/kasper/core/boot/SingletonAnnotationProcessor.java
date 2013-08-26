@@ -20,7 +20,6 @@ import java.lang.annotation.Annotation;
  * @param <I> The required interface to be implemented by the processed class
  */
 public abstract class SingletonAnnotationProcessor<T extends Annotation, I> implements AnnotationProcessor<T,I> {
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(SingletonAnnotationProcessor.class);
 	
     /**
@@ -67,7 +66,7 @@ public abstract class SingletonAnnotationProcessor<T extends Annotation, I> impl
         this.process(clazz, instance);
 	}
 	
-	protected abstract void process(Class<?> clazz, I instance);
+	protected abstract void process(final Class<?> clazz, I instance);
 	
 	// ------------------------------------------------------------------------
 

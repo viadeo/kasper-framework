@@ -33,9 +33,6 @@ public abstract class AbstractCreateCommand implements CreateCommand {
 
 	// ------------------------------------------------------------------------
 
-	/**
-	 * @see com.viadeo.kasper.cqrs.command.CreateCommand#setIdToUse(com.viadeo.kasper.KasperID)
-	 */
 	@SuppressWarnings("unchecked") // To be ensured by caller
 	@Override
 	public <C extends CreateCommand> C  setIdToUse(final KasperID providedId) {
@@ -43,9 +40,6 @@ public abstract class AbstractCreateCommand implements CreateCommand {
 		return (C) this;
 	}
 
-	/**
-	 * @see com.viadeo.kasper.cqrs.command.CreateCommand#getIdToUse()
-	 */
 	@Override
 	public Optional<KasperID> getIdToUse() {
 		return Optional.fromNullable(this.idToUse);

@@ -21,8 +21,7 @@ public final class DocumentedCommand extends DocumentedDomainNode {
 
 	// ------------------------------------------------------------------------
 
-	DocumentedCommand(final KasperLibrary kl) { // Used as empty command to
-												// populate
+	DocumentedCommand(final KasperLibrary kl) { // Used as empty command to populate
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 	}
 
@@ -78,8 +77,10 @@ public final class DocumentedCommand extends DocumentedDomainNode {
 	// ------------------------------------------------------------------------
 	
 	public DocumentedNode getDomain() {
-		final Optional<DocumentedHandler> handler = this.getKasperLibrary().getHandlerForCommand(this.getName());
-		if (handler.isPresent()) {
+		final Optional<DocumentedHandler> handler =
+                this.getKasperLibrary().getHandlerForCommand(this.getName());
+
+        if (handler.isPresent()) {
 			return new DocumentedNode(handler.get().getDomain());
 		}
 		return null;

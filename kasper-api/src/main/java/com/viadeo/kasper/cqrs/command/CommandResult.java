@@ -6,18 +6,19 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableList;
+import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.annotation.Immutable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.Serializable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Base Kasper command result implementation
  */
-public class CommandResult {
+public class CommandResult implements Serializable, Immutable {
+    private static final long serialVersionUID = -938831661655150085L;
 
     /**
      * Accepted values for command result statuses
@@ -32,78 +33,56 @@ public class CommandResult {
      * The current command status
      */
     private final Status status;
-    private final List<KasperError> errors;
+    private final KasperError error;
 
     // ------------------------------------------------------------------------
 
-    public static class ResultBuilder {
-        private final List<KasperError> errors = new ArrayList<KasperError>();
-        private Status status = Status.OK;
+    public static CommandResult error(final KasperError error) {
+        return new CommandResult(Status.ERROR, error);
+    }
 
-        public ResultBuilder addError(final String code, final String message) {
-            return addError(new KasperError(code, message));
-        }
+    public static CommandResult error(final String code, final String message) {
+        return error(new KasperError(code, message));
+    }
 
-        public ResultBuilder addError(final String code, final String message, final String userMessage) {
-            return addError(new KasperError(code, message, userMessage));
-        }
-
-        public ResultBuilder addError(final KasperError... errors) {
-            if (status == Status.OK) {
-                status = Status.ERROR;
-            }
-            for (final KasperError error : errors) {
-                this.errors.add(error);
-            }
-            return this;
-        }
-
-        public ResultBuilder addErrors(final List<KasperError> errors) {
-            for (final KasperError error : errors){
-                addError(error);
-            }
-            return this;
-        }
-
-        public ResultBuilder status(final Status status) {
-            this.status = status;
-            return this;
-        }
-
-        public boolean isError() {
-            return Status.OK != status;
-        }
-
-        public CommandResult create() {
-            return new CommandResult(status, errors);
-        }
-
+    public static CommandResult error(final CoreErrorCode code, final String message) {
+        return error(new KasperError(checkNotNull(code).toString(), message));
     }
 
     // ------------------------------------------------------------------------
 
-    public static ResultBuilder error() {
-        return new ResultBuilder().status(Status.ERROR);
+    public static CommandResult refused(final KasperError error) {
+        return new CommandResult(Status.REFUSED, error);
     }
 
-    public static ResultBuilder refused() {
-        return new ResultBuilder().status(Status.REFUSED);
+    public static CommandResult refused(final String code, final String message) {
+        return refused(new KasperError(code, message));
     }
+
+    public static CommandResult refused(final CoreErrorCode code, final String message) {
+        return refused(new KasperError(code, message));
+    }
+
+    // ------------------------------------------------------------------------
 
     public static CommandResult ok() {
-        return new ResultBuilder().status(Status.OK).create();
+        return new CommandResult(Status.OK, null);
     }
 
-
     // ------------------------------------------------------------------------
-
-    private CommandResult(final Status status, final List<KasperError> errors) {
-        this.status = Preconditions.checkNotNull(status);
-        if (null != errors) {
-            this.errors = errors;
-        } else {
-            this.errors = ImmutableList.of();
+    
+    public CommandResult(final Status status, final KasperError error) {
+        this.status = checkNotNull(status);
+        
+        if (!status.equals(Status.OK) && (null == error)) {
+            throw new IllegalStateException("Please provide an error to the command result");
         }
+
+        if (status.equals(Status.OK) && (null != error)) {
+            throw new IllegalStateException("Invalid command result OK provided with an error");
+        }
+        
+        this.error = error;
     }
 
     // ------------------------------------------------------------------------
@@ -118,15 +97,15 @@ public class CommandResult {
     /**
      * @return a list of errors or empty if command succeeded.
      */
-    public Optional<List<KasperError>> getErrors() {
-        return Optional.<List<KasperError>> fromNullable(ImmutableList.copyOf(errors));
+    public KasperError getError() {
+        return error;
     }
 
     /**
      * @return true if this command has resulted to an error
      */
     public boolean isError() {
-        return this.status.equals(Status.ERROR);
+        return this.status != Status.OK;
     }
 
 }

@@ -11,7 +11,6 @@ import com.viadeo.kasper.KasperID;
 
 import java.io.Serializable;
 
-
 /**
  * Simple IKasperID parameterizable implementation
  *

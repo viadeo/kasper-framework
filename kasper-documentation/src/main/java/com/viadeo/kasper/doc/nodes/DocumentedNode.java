@@ -51,6 +51,8 @@ public class DocumentedNode extends RetBase {
 		this.kasperLibrary = node.getKasperLibrary();		
 	}
 
+    // ------------------------------------------------------------------------
+
 	public DocumentedNode toSimpleNode() {
 		if (DocumentedNode.class.equals(this.getClass())) {
 			return this;

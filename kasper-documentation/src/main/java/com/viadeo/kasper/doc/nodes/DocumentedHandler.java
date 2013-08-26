@@ -15,7 +15,6 @@ import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
-
 public final class DocumentedHandler extends DocumentedDomainNode {
 	private static final long serialVersionUID = 2245288475776783642L;
 	
@@ -80,4 +79,5 @@ public final class DocumentedHandler extends DocumentedDomainNode {
 	public String getCommandName(){
 		return this.commandName;
 	}
+
 }

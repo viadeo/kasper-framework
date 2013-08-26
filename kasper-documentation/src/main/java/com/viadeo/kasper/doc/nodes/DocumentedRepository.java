@@ -18,7 +18,6 @@ import com.viadeo.kasper.er.annotation.XKasperRelation;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
-
 public final class DocumentedRepository extends DocumentedDomainNode {
 	private static final long serialVersionUID = 2245288475776783601L;
 	

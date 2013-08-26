@@ -103,4 +103,5 @@ public final class DocumentedDomain extends DocumentedNode {
 		final KasperLibrary kl = this.getKasperLibrary();
 		return kl.simpleNodesFrom( kl.getQueryServices(getName()) ).values();
 	}
+
 }

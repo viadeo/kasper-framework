@@ -8,19 +8,21 @@ package com.viadeo.kasper.exposition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
+import com.viadeo.kasper.CoreErrorCode;
+import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryService;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.query.exposition.QueryFactory;
-import com.viadeo.kasper.query.exposition.QueryFactoryBuilder;
-import com.viadeo.kasper.query.exposition.QueryParser;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
+import com.viadeo.kasper.query.exposition.query.QueryFactory;
+import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
+import com.viadeo.kasper.query.exposition.query.QueryParser;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.beans.Introspector;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
@@ -38,38 +42,47 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
-    protected final Logger QUERY_LOGGER = LoggerFactory.getLogger(getClass());
+
+    protected static final transient Logger QUERY_LOGGER = LoggerFactory.getLogger(HttpQueryExposer.class);
+
     private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
-    private final QueryServicesLocator queryServicesLocator;
-    private final QueryFactory queryAdapterFactory;
+    private final transient QueryServicesLocator queryServicesLocator;
+    private final transient QueryFactory queryAdapterFactory;
     private final ObjectMapper mapper;
-    
+
     // ------------------------------------------------------------------------
 
     public HttpQueryExposer(final Platform platform, final QueryServicesLocator queryLocator) {
-        this(platform, queryLocator, new QueryFactoryBuilder().create(), ObjectMapperProvider.instance.mapper());
+        this(platform, queryLocator, new QueryFactoryBuilder().create(), ObjectMapperProvider.INSTANCE.mapper());
     }
 
-    public HttpQueryExposer(final Platform platform, final QueryServicesLocator queryServicesLocator,
-            final QueryFactory queryAdapterFactory, final ObjectMapper mapper) {
+    public HttpQueryExposer(final Platform platform,
+                            final QueryServicesLocator queryServicesLocator,
+                            final QueryFactory queryAdapterFactory, final ObjectMapper mapper) {
         super(platform);
+
         this.queryServicesLocator = queryServicesLocator;
         this.queryAdapterFactory = queryAdapterFactory;
         this.mapper = mapper;
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing queries ===============");
-        // expose all registered queries and commands
-        for (final QueryService<? extends Query, ? extends QueryResult> queryService : queryServicesLocator
-                .getServices()) {
+
+        /* expose all registered queries and commands */
+        for (final QueryService<? extends Query, ?> queryService : queryServicesLocator.getServices()) {
             expose(queryService);
         }
-        if (exposedQueries.isEmpty())
+
+        if (exposedQueries.isEmpty()) {
             LOGGER.warn("No Query has been exposed.");
-        else
+        } else {
             LOGGER.info("Total exposed " + exposedQueries.size() + " queries.");
+        }
+
         LOGGER.info("=================================================");
     }
 
@@ -77,15 +90,15 @@ public class HttpQueryExposer extends HttpExposer {
 
     // again can not use sendError
     @Override
-    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
-        QUERY_LOGGER.info("Processing Query : "+req.getMethod()+" "+getFullRequestURI(req));
+    protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
+            throws ServletException, IOException {
+        QUERY_LOGGER.info("Processing Query : " + req.getMethod() + " " + getFullRequestURI(req));
 
         // TODO we should think of providing some more information to client in
         // case of failure. We also need to be sure that those infos a really
         // useful
 
-        // always respond with a json stream (even if empty)
+        /* always respond with a json stream (even if empty) */
         resp.setContentType("application/json; charset=utf-8");
 
         /*
@@ -96,19 +109,21 @@ public class HttpQueryExposer extends HttpExposer {
             final String queryName = resourceName(req.getRequestURI());
             final Query query = parseQuery(queryName, req, resp);
 
-            QueryResult result = null;
+            QueryResult<?> result = null;
             if (!resp.isCommitted()) {
                 result = handleQuery(queryName, query, resp);
             }
 
-            // need to check again as something might go wrong in handleQuery
+            /* need to check again as something might go wrong in handleQuery */
             if (!resp.isCommitted()) {
                 sendResult(queryName, result, resp);
             }
 
         } catch (final Throwable t) {
-            sendError(SC_INTERNAL_SERVER_ERROR, "Could not handle query[" + req.getRequestURI() + "] and parameters["
-                    + req.getQueryString() + "]", resp, t);
+            sendError(
+                    SC_INTERNAL_SERVER_ERROR,
+                    String.format("Could not handle query [%s] with parameters [%s]",
+                            req.getRequestURI(), req.getQueryString()), resp, t);
 
         }
 
@@ -124,33 +139,34 @@ public class HttpQueryExposer extends HttpExposer {
         Query query = null;
         final Class<? extends Query> queryClass = exposedQueries.get(queryName);
 
-        if (queryClass == null) {
+        if (null == queryClass) {
 
             sendError(HttpServletResponse.SC_NOT_FOUND, "No such query[" + queryName + "].", resp, null);
 
         } else {
 
             final TypeAdapter<? extends Query> adapter = queryAdapterFactory.create(TypeToken.of(queryClass));
-            final Map<String, List<String>> queryParams = new HashMap<>();
+
+            final ImmutableSetMultimap.Builder<String, String> queryParams = new ImmutableSetMultimap.Builder<>();
 
             final Enumeration<String> keys = req.getParameterNames();
             while (keys.hasMoreElements()) {
-                final String key = (String) keys.nextElement();
-                queryParams.put(key, Arrays.asList(req.getParameterValues(key)));
+                final String key = keys.nextElement();
+                queryParams.putAll(key, Arrays.asList(req.getParameterValues(key)));
             }
 
             try {
 
-                query = adapter.adapt(new QueryParser(queryParams));
+                query = adapter.adapt(new QueryParser(queryParams.build()));
 
             } catch (final Throwable t) {
                 /*
                  * OK lets catch any exception that could occur during
                  * deserialization and try to send back
                  */
-                sendError(SC_BAD_REQUEST,
-                        "Unable to parse Query[" + queryName + "] and parameters [" + req.getQueryString() + "].",
-                        resp, t);
+                sendError(SC_BAD_REQUEST, String.format(
+                        "Unable to parse Query [%s] with parameters [%s]", queryName,
+                        req.getQueryString()), resp, t);
             }
         }
 
@@ -160,10 +176,10 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     // can not use sendError it is forcing response to text/html
-    protected QueryResult handleQuery(final String queryName, final Query query, final HttpServletResponse resp)
+    protected QueryResult<?> handleQuery(final String queryName, final Query query, final HttpServletResponse resp)
             throws IOException {
 
-        QueryResult result = null;
+        QueryResult<?> result = null;
 
         try {
 
@@ -178,7 +194,8 @@ public class HttpQueryExposer extends HttpExposer {
              * it is ok to eat all kind of exceptions as they occur at parsing
              * level so we know what approximatively failed.
              */
-            sendError(SC_INTERNAL_SERVER_ERROR, "ERROR Submiting query[" + queryName + "] to Kasper platform.", resp, e);
+            sendError(SC_INTERNAL_SERVER_ERROR,
+                      String.format("ERROR Submiting query[%s] to Kasper platform.", queryName), resp, e);
         }
 
         return result;
@@ -187,7 +204,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     // can not use sendError it is forcing response to text/html
-    protected void sendResult(final String queryName, final QueryResult result, final HttpServletResponse resp)
+    protected void sendResult(final String queryName, final QueryResult<?> result, final HttpServletResponse resp)
             throws IOException {
 
         final ObjectWriter writer = mapper.writer();
@@ -195,19 +212,24 @@ public class HttpQueryExposer extends HttpExposer {
         try {
 
             writer.writeValue(resp.getOutputStream(), result);
-            resp.setStatus(HttpServletResponse.SC_OK);
+            if (result.isError()) {
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            } else {
+                resp.setStatus(HttpServletResponse.SC_OK);
+            }
 
         } catch (final Throwable t) {
-            sendError(SC_INTERNAL_SERVER_ERROR, "ERROR sending Result[" + result.getClass().getSimpleName() + "] for query["
-                    + queryName + "].", resp, t);
+            sendError(SC_INTERNAL_SERVER_ERROR,
+                      String.format("ERROR sending Result [%s] for query [%s]", result.getClass().getSimpleName(),queryName),
+                      resp, t);
         }
     }
 
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("deprecation")
-    protected void sendError(final int status, final String message, final HttpServletResponse resp,
-            final Throwable exception) throws IOException {
+    protected void sendError(final int status, final String message, final HttpServletResponse resp, final Throwable exception)
+            throws IOException {
 
         if (exception != null) {
             LOGGER.error(message, exception);
@@ -219,21 +241,14 @@ public class HttpQueryExposer extends HttpExposer {
 
         final ObjectWriter writer = mapper.writer();
 
-        final KasperQueryException queryException;
-        if (exception instanceof KasperQueryException)
-            queryException = (KasperQueryException) exception;
-        // FIXME I am not sure if we should get the most precise cause here by descending recursively in the stack 
-        // trace or just send the message
-        else {
-            if (exception != null) {
-                queryException = KasperQueryException.exception(message).reason(exception).create();
-            } else
-                queryException = KasperQueryException.exception(message).create();
-
-            queryException.fillInStackTrace();
+        final KasperError error;
+        if (exception != null) {
+            error = new KasperError(CoreErrorCode.UNKNOWN_ERROR, message, exception.getMessage());
+        } else {
+            error = new KasperError(CoreErrorCode.UNKNOWN_ERROR, message);
         }
 
-        writer.writeValue(resp.getOutputStream(), queryException);
+        writer.writeValue(resp.getOutputStream(), new QueryResult<>(error));
 
         resp.flushBuffer();
     }
@@ -241,16 +256,20 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    HttpQueryExposer expose(final QueryService<? extends Query, ? extends QueryResult> queryService) {
+    HttpQueryExposer expose(final QueryService<? extends Query, ?> queryService) {
         checkNotNull(queryService);
 
         final TypeToken<? extends QueryService> typeToken = TypeToken.of(queryService.getClass());
-        final Class<? super Query> queryClass = (Class<? super Query>) typeToken.getSupertype(QueryService.class)
-                .resolveType(QueryService.class.getTypeParameters()[0]).getRawType();
+        final Class<? super Query> queryClass = (Class<? super Query>) typeToken
+                .getSupertype(QueryService.class)
+                .resolveType(QueryService.class.getTypeParameters()[0])
+                .getRawType();
 
         final String queryPath = queryToPath(queryClass);
-        LOGGER.info("Exposing query[{}] at path[/{}]", queryClass.getSimpleName(), getServletContext().getContextPath()
-                + queryPath);
+
+        LOGGER.info("-> Exposing query[{}] at path[/{}]", queryClass.getSimpleName(),
+                    getServletContext().getContextPath() + queryPath);
+
         putKey(queryPath, queryClass, exposedQueries);
 
         return this;

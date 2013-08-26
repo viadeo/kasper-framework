@@ -17,6 +17,7 @@ import java.util.*;
 /**
  *
  * Utility class used to retrieve types of parameterized classes
+ * @author Mglcel <ldiasdasilva@viadeoteam.com>
  *
  */
 public final class ReflectionGenericsResolver {

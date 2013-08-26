@@ -4,11 +4,9 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.cqrs.query;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 
 /**
  * A Kasper query filter
@@ -22,9 +20,8 @@ public interface ResultFilter extends ServiceFilter {
      *
      * @param result the Result to be returned by the service
      * @param context the context used to execute the service
-     * @throws com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException
      */
-    void filter(Context context, QueryResult result) throws KasperQueryException;
+    <PAYLOAD extends QueryPayload> void filter(final Context context, final QueryResult<PAYLOAD> result);
 
 }
 

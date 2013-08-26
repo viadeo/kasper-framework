@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.doc.web;
 
-import com.viadeo.kasper.core.boot.*;
+import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.doc.configuration.DefaultAutoDocumentationConfiguration;
 import org.slf4j.Logger;

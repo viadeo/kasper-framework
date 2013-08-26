@@ -19,5 +19,5 @@ public class KasperHybridEventBus extends ClusteringEventBus  {
     public KasperHybridEventBus(final EventBusTerminal terminal) {
         super(terminal);
     }
-	
+
 }

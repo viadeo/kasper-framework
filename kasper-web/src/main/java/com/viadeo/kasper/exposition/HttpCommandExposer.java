@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.reflect.TypeToken;
+import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -37,19 +38,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class HttpCommandExposer extends HttpExposer {
     private static final long serialVersionUID = 8444284922303895624L;
-    protected final Logger REQUEST_LOGGER = LoggerFactory.getLogger(getClass());
+    protected static final transient Logger REQUEST_LOGGER = LoggerFactory.getLogger(HttpCommandExposer.class);
+
     private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
-    private final DomainLocator domainLocator;
+    private final transient DomainLocator domainLocator;
     private final ObjectMapper mapper;
 
     // ------------------------------------------------------------------------
 
     public HttpCommandExposer(final Platform platform, final DomainLocator domainLocator) {
-        this(platform, domainLocator, ObjectMapperProvider.instance.mapper());
+        this(platform, domainLocator, ObjectMapperProvider.INSTANCE.mapper());
     }
     
     public HttpCommandExposer(final Platform platform, final DomainLocator domainLocator, final ObjectMapper mapper) {
         super(platform);
+
         this.domainLocator = checkNotNull(domainLocator);
         this.mapper = mapper;
     }
@@ -59,53 +62,63 @@ public class HttpCommandExposer extends HttpExposer {
     @Override
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing commands ===============");
+
         for (final CommandHandler<? extends Command> handler : domainLocator.getHandlers()) {
             expose(handler);
         }
-        if (exposedCommands.isEmpty())
+
+        if (exposedCommands.isEmpty()) {
             LOGGER.warn("No Command has been exposed.");
-        else
+        } else {
             LOGGER.info("Total exposed " + exposedCommands.size() + " commands.");
+        }
+
         LOGGER.info("=================================================");
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp)
+            throws ServletException, IOException {
 
         handleCommand(req, resp);
 
-        // must be last call to ensure that everything is sent to the client
-        // (even if an error occurred)
+        /*
+         * must be last call to ensure that everything is sent to the client
+         * (even if an error occurred)
+         */
         resp.flushBuffer();
     }
 
     @Override
-    protected void doPut(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException,
-            IOException {
+    protected void doPut(final HttpServletRequest req, final HttpServletResponse resp)
+            throws ServletException, IOException {
 
         handleCommand(req, resp);
 
-        // must be last call to ensure that everything is sent to the client
-        // (even if an error occurred)
+        /*
+         * must be last call to ensure that everything is sent to the client
+         *(even if an error occurred)
+         */
         resp.flushBuffer();
     }
 
     // ------------------------------------------------------------------------
 
-    private void handleCommand(final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
-        REQUEST_LOGGER.info("Processing Command : "+req.getMethod()+" "+getFullRequestURI(req));
+    private void handleCommand(final HttpServletRequest req, final HttpServletResponse resp)
+            throws IOException {
 
-        // always respond with a json stream (even if empty)
+        REQUEST_LOGGER.info("Processing Command : " + req.getMethod() + " " + getFullRequestURI(req));
+
+        /* always respond with a json stream (even if empty) */
         resp.setContentType("application/json; charset=utf-8");
 
         // FIXME can throw an error ensure to respond a json stream
-        String commandName = resourceName(req.getRequestURI());
+        final String commandName = resourceName(req.getRequestURI());
 
-        // locate corresponding command class
-        Class<? extends Command> commandClass = exposedCommands.get(commandName);
+        /* locate corresponding command class */
+        final Class<? extends Command> commandClass = exposedCommands.get(commandName);
         if (null == commandClass) {
             sendError(resp, HttpServletResponse.SC_NOT_FOUND, "Command[" + commandName + "] not found.");
             return;
@@ -118,23 +131,23 @@ public class HttpCommandExposer extends HttpExposer {
 
             if (!req.getContentType().contains("application/json")) {
                 sendError(resp, HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
-                        "Accepting and producing only application/json");
+                          "Accepting and producing only application/json");
                 return;
             }
 
             final ObjectReader reader = mapper.reader();
 
-            // parse the input stream to that command, no utility method for inputstream+type??
+            /* parse the input stream to that command, no utility method for inputstream+type?? */
             parser = reader.getFactory().createJsonParser(req.getInputStream());
-            Command command = reader.readValue(parser, commandClass);
+            final Command command = reader.readValue(parser, commandClass);
 
             // FIXME 1 use context from request
             // FIXME 2 does it make sense to have async commands here? In any
             // case the user is expecting a result success or failure
 
-            // send now that command to the platform and wait for the result
-            result = platform().getCommandGateway().sendCommandAndWaitForAResult(command,
-                    new DefaultContextBuilder().build());
+            /* send now that command to the platform and wait for the result */
+            result = platform().getCommandGateway().sendCommandAndWaitForAResult(
+                        command, new DefaultContextBuilder().build());
 
         } catch (final IOException e) {
 
@@ -158,9 +171,11 @@ public class HttpCommandExposer extends HttpExposer {
             }
         }
 
-        // if the result is null this means that we handled the error previously
-        // so nothing can be done anymore
-        if (result != null) {
+        /*
+         * if the result is null this means that we handled the error previously
+         * so nothing can be done anymore
+         */
+        if (null != result) {
             sendResponse(result, resp, commandClass);
         }
     }
@@ -168,14 +183,14 @@ public class HttpCommandExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     protected void sendResponse(final CommandResult result, final HttpServletResponse resp,
-            final Class<? extends Command> commandClass) throws IOException {
+                                final Class<? extends Command> commandClass) throws IOException {
 
         final ObjectWriter writer = mapper.writer();
         JsonGenerator generator = null;
 
         try {
 
-            // try writing the response
+            /* try writing the response */
             generator = writer.getJsonFactory().createJsonGenerator(resp.getOutputStream());
             writer.writeValue(generator, result);
 
@@ -186,17 +201,11 @@ public class HttpCommandExposer extends HttpExposer {
             }
 
         } catch (final JsonGenerationException e) {
-            sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Error outputing command result to json for command [" + commandClass.getName() + "] and result ["
-                            + result + "] error=" + e.getMessage());
+            this.internalCommandError(resp, commandClass, result, e);
         } catch (final JsonMappingException e) {
-            sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Error mapping command result to json for command [" + commandClass.getName() + "] and result ["
-                            + result + "] error=" + e.getMessage());
+            this.internalCommandError(resp, commandClass, result, e);
         } catch (final IOException e) {
-            sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                    "Error outputing command result to json for command [" + commandClass.getName() + "] and result ["
-                            + result + "] error=" + e.getMessage());
+            this.internalCommandError(resp, commandClass, result, e);
         } finally {
             if (generator != null) {
                 generator.flush();
@@ -205,25 +214,34 @@ public class HttpCommandExposer extends HttpExposer {
         }
     }
 
+    private void internalCommandError(final HttpServletResponse resp, final Class<? extends Command> commandClass,
+                                      final CommandResult result, final Exception e) throws IOException {
+         this.sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+                  String.format("Error outputting result to JSON for command [%s] and result [%s]error = %s",
+                          commandClass.getSimpleName(), result, e.getMessage()));
+    }
+
     // ------------------------------------------------------------------------
 
     /**
      * Will try to send an error by setting the right http status and writing a json response in the body. If it fails
      * there will be no json body.
-     */
-    /*
+     *
      * we need to use setStatus because sendError commits the response,
      * preventing us from writing the respone as json it also forces response to
      * text/html.
      */
     @SuppressWarnings("deprecation")
-    protected void sendError(HttpServletResponse response, int status, String reason) throws IOException {
+    protected void sendError(final HttpServletResponse response, final int status, final String reason)
+            throws IOException {
         LOGGER.error(reason);
-        // set an error status and a message
+
+        /* set an error status and a message */
         response.setStatus(status, reason);
-        // write also into the body the result as json
+
+        /* write also into the body the result as json */
         mapper.writer().writeValue(response.getOutputStream(),
-                CommandResult.error().addError(new KasperError(KasperError.UNKNOWN_ERROR, reason)).create());
+                                   CommandResult.error(new KasperError(CoreErrorCode.UNKNOWN_ERROR, reason)));
     }
 
     // ------------------------------------------------------------------------
@@ -231,14 +249,22 @@ public class HttpCommandExposer extends HttpExposer {
     @SuppressWarnings({ "rawtypes", "unchecked" })
     HttpExposer expose(final CommandHandler<? extends Command> commandHandler) {
         checkNotNull(commandHandler);
+
         final TypeToken<? extends CommandHandler> typeToken = TypeToken.of(commandHandler.getClass());
+
         final Class<? super Command> commandClass = (Class<? super Command>) typeToken
-                .getSupertype(CommandHandler.class).resolveType(CommandHandler.class.getTypeParameters()[0])
+                .getSupertype(CommandHandler.class)
+                .resolveType(CommandHandler.class.getTypeParameters()[0])
                 .getRawType();
+
         final String commandPath = commandToPath(commandClass);
-        LOGGER.info("Exposing command[{}] at path[/{}]", commandClass.getSimpleName(), getServletContext()
-                .getContextPath() + commandPath);
+
+        LOGGER.info("-> Exposing command[{}] at path[/{}]",
+                    commandClass.getSimpleName(),
+                    getServletContext().getContextPath() + commandPath);
+
         putKey(commandPath, commandClass, exposedCommands);
+
         return this;
     }
 

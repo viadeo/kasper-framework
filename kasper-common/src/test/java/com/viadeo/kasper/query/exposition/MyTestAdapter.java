@@ -6,6 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition;
 
+import com.viadeo.kasper.query.exposition.query.QueryBuilder;
+import com.viadeo.kasper.query.exposition.query.QueryParser;
+
 public class MyTestAdapter implements TypeAdapter<MyTestAdapter.MyTestPayload> {
 
     static class MyTestPayload {}

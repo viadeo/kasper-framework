@@ -7,8 +7,8 @@
 package com.viadeo.kasper.exception;
 
 /**
- * The base Kasper runtime exception, KasperQueryException and KasperCommandException should be preferred to this one as
- * they are more specific.
+ * The base Kasper runtime exception, KasperQueryException and KasperCommandException
+ * should be preferred to this one as they are more specific.
  */
 public class KasperException extends RuntimeException {
 

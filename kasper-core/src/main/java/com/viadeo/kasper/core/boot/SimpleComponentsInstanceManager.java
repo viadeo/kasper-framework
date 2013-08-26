@@ -4,7 +4,6 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Optional;
@@ -15,7 +14,6 @@ import com.viadeo.kasper.exception.KasperException;
  * Base implementation for a components instance manager based on a simple map
  */
 public class SimpleComponentsInstanceManager implements ComponentsInstanceManager {
-
     private final MutableClassToInstanceMap<Object> instances;
 
     private static final String ERROR_INSTANCE = "Unable to create a new instance of class %s";
@@ -43,7 +41,7 @@ public class SimpleComponentsInstanceManager implements ComponentsInstanceManage
             try {
                 objInstance = clazz.newInstance();
             } catch (final InstantiationException|IllegalAccessException e) {
-                throw new KasperException(String.format(ERROR_INSTANCE, clazz));
+                throw new KasperException(String.format(ERROR_INSTANCE, clazz), e);
             }
             this.instances.put(clazz, objInstance);
         }
@@ -67,4 +65,3 @@ public class SimpleComponentsInstanceManager implements ComponentsInstanceManage
     }
 
 }
-

@@ -4,12 +4,12 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.exception.KasperException;
-import org.springframework.beans.BeansException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -20,6 +20,7 @@ import org.springframework.context.ApplicationContextAware;
  * Base implementation for a components instance manager based on the current Spring context
  */
 public class SpringComponentsInstanceManager implements ComponentsInstanceManager, ApplicationContextAware {
+    private static final Logger LOGGER = LoggerFactory.getLogger(SpringComponentsInstanceManager.class);
 
     /**
      * The injected Spring context (ApplicationContextAware)
@@ -52,15 +53,21 @@ public class SpringComponentsInstanceManager implements ComponentsInstanceManage
     public <E> Optional<E> getInstanceFromClass(final Class<? extends E> clazz) {
         E objInstance = null;
 
+        LOGGER.debug("Retrieve instance {}", clazz.getSimpleName());
+
         try {
 
             if (null != context) {
                 objInstance = context.getBean(clazz);
+                LOGGER.debug("Found in Spring context {}", clazz.getSimpleName());
             }
 
         } catch (final NoSuchBeanDefinitionException e) {
 
+            LOGGER.debug("Not found in bean context {}", clazz.getSimpleName());
+
             if (!this.beansMustExists) {
+                LOGGER.debug("Create a new instance {}", clazz.getSimpleName());
                 final ConfigurableBeanFactory cfb = (ConfigurableBeanFactory) this.context.getAutowireCapableBeanFactory();
                 objInstance = ((AutowireCapableBeanFactory) cfb).createBean(clazz);
                 cfb.registerSingleton(clazz.getSimpleName(), objInstance);
@@ -86,6 +93,8 @@ public class SpringComponentsInstanceManager implements ComponentsInstanceManage
      */
     @Override
     public void recordInstance(final Class<?> clazz, final Object objInstance) {
+        LOGGER.debug("Record Spring instance {}", clazz.getSimpleName());
+
         try {
 
             /* Try with the supplied class */
@@ -101,7 +110,7 @@ public class SpringComponentsInstanceManager implements ComponentsInstanceManage
                     context.getBean(objInstance.getClass());
                     throw new KasperException(String.format(ALREADY_REGISTERED, objInstance.getClass()));
                 } else {
-                    throw new NoSuchBeanDefinitionException("");
+                    throw e;
                 }
 
             } catch (final NoSuchBeanDefinitionException e2) {
@@ -115,7 +124,7 @@ public class SpringComponentsInstanceManager implements ComponentsInstanceManage
     // ------------------------------------------------------------------------
 
     @Override
-    public void setApplicationContext(final ApplicationContext context) throws BeansException {
+    public void setApplicationContext(final ApplicationContext context) {
         this.context = context;
     }
 

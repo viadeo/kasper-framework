@@ -1,5 +1,12 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.exposition;
 
+import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -12,7 +19,6 @@ import com.viadeo.kasper.platform.Platform;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
-import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -20,11 +26,10 @@ import static org.junit.Assert.assertNotNull;
 
 public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExposer> {
 
-    public HttpCommandExposerTest() {
-    }
+    public HttpCommandExposerTest() { }
 
     @Override
-    protected HttpCommandExposer createExposer(ApplicationContext ctx) {
+    protected HttpCommandExposer createExposer(final ApplicationContext ctx) {
         return new HttpCommandExposer(ctx.getBean(Platform.class), ctx.getBean(DomainLocator.class));
     }
 
@@ -41,7 +46,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 
         // Then
         assertEquals(Status.ERROR, result.getStatus());
-        assertNotNull(result.getErrors().get().get(0).getMessage());
+        assertNotNull(result.getError().getMessages().get(0));
     }
 
     // ------------------------------------------------------------------------
@@ -82,15 +87,17 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
     public void testCommandResultWithListOfErrors() throws Exception {
         // Given valid input
         final CreateAccountCommand command = new CreateAccountCommand();
-        command.errors = Arrays.asList(new KasperError("a", "aa", "aaa"), new KasperError("c", "cc"));
+        command.code = "code";
+        command.messages = ImmutableList.of("a", "aa", "aaa");
 
         // When
         final CommandResult result = client().send(command);
 
         // Then
         assertEquals(Status.ERROR, result.getStatus());
-        for (int i = 0; i < command.getErrors().size(); i++)
-            assertEquals(command.getErrors().get(i), result.getErrors().get().get(i));
+        assertEquals(command.getCode(), result.getError().getCode());
+        for (int i = 0; i < command.getMessages().size(); i++)
+            assertEquals(command.getMessages().get(i), result.getError().getMessages().get(i));
     }
 
     // ------------------------------------------------------------------------
@@ -100,7 +107,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 
         private String name;
         private boolean throwException;
-        private List<KasperError> errors;
+        private String code;
+        private List<String> messages;
 
         public String getName() {
             return this.name;
@@ -110,12 +118,20 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
             return throwException;
         }
 
-        public List<KasperError> getErrors() {
-            return errors;
+        public String getCode() {
+            return code;
         }
 
-        public void setErrors(List<KasperError> errors) {
-            this.errors = errors;
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public List<String> getMessages() {
+            return messages;
+        }
+
+        public void setMessages(List<String> messages) {
+            this.messages = messages;
         }
 
     }
@@ -130,8 +146,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         public CommandResult handle(final CreateAccountCommand command) throws Exception {
             if (command.isThrowException())
                 throw new KasperException("Something bad happened!");
-            if (command.getErrors() != null)
-                return CommandResult.error().addErrors(command.getErrors()).create();
+            if (command.getCode() != null)
+                return CommandResult.error(new KasperError(command.getCode(), command.getMessages()));
             createAccountCommandName = command.getName();
             return CommandResult.ok();
         }

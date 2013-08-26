@@ -62,8 +62,8 @@ public class SerDeserTests {
         final SimpleBean bean = new SimpleBean("test");
 
         // When
-        final String json = ObjectMapperProvider.instance.objectWriter().writeValueAsString(bean);
-        final ObjectReader objectReader = ObjectMapperProvider.instance.objectReader();
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(bean);
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
         final SimpleBean actualResult = objectReader.readValue(objectReader.getFactory().createJsonParser(json), SimpleBean.class);
 
         // Then
@@ -76,8 +76,8 @@ public class SerDeserTests {
         final ImmutableBean bean = new ImmutableBean("test");
 
         // When
-        final String json = ObjectMapperProvider.instance.objectWriter().writeValueAsString(bean);
-        final ObjectReader objectReader = ObjectMapperProvider.instance.objectReader();
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(bean);
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
         final ImmutableBean actualResult = objectReader.readValue(objectReader.getFactory().createJsonParser(json), ImmutableBean.class);
 
         // Then
@@ -90,13 +90,12 @@ public class SerDeserTests {
         final NoSettersBean bean = new NoSettersBean("test");
 
         // When
-        final String json = ObjectMapperProvider.instance.objectWriter().writeValueAsString(bean);
-        final ObjectReader objectReader = ObjectMapperProvider.instance.objectReader();
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(bean);
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
         final NoSettersBean actualResult = objectReader.readValue(objectReader.getFactory().createJsonParser(json), NoSettersBean.class);
 
         // Then
         assertEquals(actualResult.field, bean.field);
     }
-
 
 }
