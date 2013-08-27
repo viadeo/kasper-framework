@@ -20,7 +20,7 @@ public class QueryResultSerializer extends JsonSerializer<QueryResult> {
     
     @Override
     public void serialize(QueryResult value, JsonGenerator jgen, SerializerProvider provider)
-            throws IOException, JsonProcessingException {
+            throws IOException {
         if (value.isError()) {
             jgen.writeStartObject();
 

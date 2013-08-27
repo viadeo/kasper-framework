@@ -18,7 +18,6 @@ import com.sun.jersey.api.client.GenericType;
 import com.sun.jersey.api.client.async.TypeListener;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import com.viadeo.kasper.client.lib.Callback;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.query.Query;
@@ -40,8 +39,6 @@ import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -61,7 +58,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * 
  * KasperClient supports synchronous and asynchronous requests. Sending
  * asynchronous requests can be done by asking for a java Future or by passing a
- * {@link com.viadeo.kasper.client.lib.Callback callback} argument. For example
+ * {@link Callback callback} argument. For example
  * submitting a command asynchronously with a callback (we will use here a
  * client with its default configuration). <br/>
  * Command and query methods can throw KasperClientException, which are
@@ -213,28 +210,8 @@ public class KasperClient {
 
         // we need to decorate the Future returned by jersey in order to handle
         // exceptions and populate according to it the command result
-        return new Future<CommandResult>() {
-            public boolean cancel(final boolean mayInterruptIfRunning) {
-                return futureResponse.cancel(mayInterruptIfRunning);
-            }
+        return new CommandResultFuture(this, futureResponse);
 
-            public boolean isCancelled() {
-                return futureResponse.isCancelled();
-            }
-
-            public boolean isDone() {
-                return futureResponse.isDone();
-            }
-
-            public CommandResult get() throws InterruptedException, ExecutionException {
-                return handleResponse(futureResponse.get());
-            }
-
-            public CommandResult get(final long timeout, final TimeUnit unit)
-                    throws InterruptedException, ExecutionException, TimeoutException {
-                return handleResponse(futureResponse.get(timeout, unit));
-            }
-        };
     }
 
     // --
@@ -255,7 +232,8 @@ public class KasperClient {
         checkNotNull(command);
 
         client.asyncResource(resolveCommandPath(command.getClass()))
-                .accept(MediaType.APPLICATION_JSON).type(MediaType.APPLICATION_JSON)
+                .accept(MediaType.APPLICATION_JSON)
+                .type(MediaType.APPLICATION_JSON)
                 .put(new TypeListener<ClientResponse>(ClientResponse.class) {
                     @Override
                     public void onComplete(final Future<ClientResponse> f)
@@ -270,7 +248,7 @@ public class KasperClient {
                 }, command);
     }
 
-    private CommandResult handleResponse(final ClientResponse response) {
+    CommandResult handleResponse(final ClientResponse response) {
         // handle errors
         return response.getEntity(CommandResult.class);
     }
@@ -357,28 +335,7 @@ public class KasperClient {
                 .type(MediaType.APPLICATION_JSON)
                 .get(ClientResponse.class);
 
-        return new Future<QueryResult<P>>() {
-            public boolean cancel(final boolean mayInterruptIfRunning) {
-                return futureResponse.cancel(mayInterruptIfRunning);
-            }
-
-            public boolean isCancelled() {
-                return futureResponse.isCancelled();
-            }
-
-            public boolean isDone() {
-                return futureResponse.isDone();
-            }
-
-            public QueryResult<P> get() throws InterruptedException, ExecutionException {
-                return handleQueryResponse(futureResponse.get(), mapTo);
-            }
-
-            public QueryResult<P> get(final long timeout, final TimeUnit unit)
-                    throws InterruptedException, ExecutionException, TimeoutException {
-                return handleQueryResponse(futureResponse.get(timeout, unit), mapTo);
-            }
-        };
+        return new QueryResultFuture(this, futureResponse, mapTo);
     }
 
     // --
@@ -386,7 +343,7 @@ public class KasperClient {
     /**
      * @see KasperClient#query(com.viadeo.kasper.cqrs.query.Query, Class)
      * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command,
-     *      com.viadeo.kasper.client.lib.Callback)
+     *      Callback)
      */
     public <P extends QueryPayload> void queryAsync(final Query query, final Class<P> mapTo,
                                                     final Callback<QueryResult<P>> callback) {
@@ -396,7 +353,7 @@ public class KasperClient {
     /**
      * @see KasperClient#query(com.viadeo.kasper.cqrs.query.Query, Class)
      * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command,
-     *      com.viadeo.kasper.client.lib.Callback)
+     *      Callback)
      */
     public <P extends QueryPayload> void queryAsync(final Query query, final TypeToken<P> mapTo,
                                                     final Callback<QueryResult<P>> callback) {
@@ -423,8 +380,8 @@ public class KasperClient {
                 });
     }
 
-    private <P extends QueryPayload> QueryResult<P> handleQueryResponse(final ClientResponse response,
-            final TypeToken<P> mapTo) {
+    <P extends QueryPayload> QueryResult<P> handleQueryResponse(final ClientResponse response,
+                                                                final TypeToken<P> mapTo) {
 
         final TypeToken<?> mappedType = new TypeToken<QueryResult<P>>() {
                 private static final long serialVersionUID = -6868146773459098496L;

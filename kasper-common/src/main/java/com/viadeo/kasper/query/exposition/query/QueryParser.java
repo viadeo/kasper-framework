@@ -119,10 +119,9 @@ public class QueryParser implements Iterable<QueryParser> {
         if (!ctx.isEmpty()) {
             actualValue = ctx.peek().actualValues.pop();
         }
-        /* // -- else { --
+        /* else --
          * no need to handle here iteration over key/values, as the access
          * order does not matter
-         * // -- } --
          */
 
         return this;
