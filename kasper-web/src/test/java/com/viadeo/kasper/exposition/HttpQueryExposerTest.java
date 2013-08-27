@@ -150,6 +150,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
 
     // ------------------------------------------------------------------------
 
+    @Test
     public void testQueryServiceThrowingException() {
         // Given
         final SomeQuery query = new SomeQuery();

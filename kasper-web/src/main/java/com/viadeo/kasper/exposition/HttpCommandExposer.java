@@ -192,13 +192,14 @@ public class HttpCommandExposer extends HttpExposer {
 
             /* try writing the response */
             generator = writer.getJsonFactory().createJsonGenerator(resp.getOutputStream());
-            writer.writeValue(generator, result);
 
             if (result.isError()) {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             } else {
                 resp.setStatus(HttpServletResponse.SC_OK);
             }
+
+            writer.writeValue(generator, result);
 
         } catch (final JsonGenerationException e) {
             this.internalCommandError(resp, commandClass, result, e);

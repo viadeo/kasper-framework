@@ -211,12 +211,13 @@ public class HttpQueryExposer extends HttpExposer {
 
         try {
 
-            writer.writeValue(resp.getOutputStream(), result);
             if (result.isError()) {
                 resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             } else {
                 resp.setStatus(HttpServletResponse.SC_OK);
             }
+
+            writer.writeValue(resp.getOutputStream(), result);
 
         } catch (final Throwable t) {
             sendError(SC_INTERNAL_SERVER_ERROR,
