@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.event.impl;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
@@ -28,6 +30,12 @@ public abstract class AbstractEventListener<E extends Event>
 		implements EventListener<E> {
 
     private static final MetricRegistry metrics = KasperMetrics.getRegistry();
+    private static final Histogram metricClassHandleTimes = metrics.histogram(name(EventListener.class, "handle-times"));
+    private static final Meter metricClassHandles = metrics.meter(name(EventListener.class, "handles"));
+
+    private final Timer metricTimer;
+    private final Histogram metricHandleTimes;
+    private final Meter metricHandles;
 
 	private final Class<? extends Event> eventClass;
 	private CommandGateway commandGateway;
@@ -46,6 +54,11 @@ public abstract class AbstractEventListener<E extends Event>
 		} else {
 			throw new KasperException("Unable to identify event class for " + this.getClass());
 		}
+
+        /* Start timer */
+        metricTimer = metrics.timer(name(this.getClass(), "handle-time"));
+        metricHandleTimes = metrics.histogram(name(this.getClass(), "handle-times"));
+        metricHandles = metrics.meter(name(this.getClass(), "handles"));
 	}
 	
 	// ------------------------------------------------------------------------
@@ -82,8 +95,9 @@ public abstract class AbstractEventListener<E extends Event>
 		final com.viadeo.kasper.event.EventMessage<E> message = new DefaultEventMessage(eventMessage);
 
         /* Start timer */
-        final Timer.Context timer = metrics.timer(name(this.getClass(), "handle-time")).time();
+        final Timer.Context timer = metricTimer.time();
 
+        /* Handle event */
         try {
 			this.handle(message);
 		} catch (final UnsupportedOperationException e) {
@@ -92,11 +106,10 @@ public abstract class AbstractEventListener<E extends Event>
 
         /* Stop timer and record a tick */
         final long time = timer.stop();
-        metrics.histogram(name(EventListener.class, "handle-times")).update(time);
-        metrics.histogram(name(this.getClass(), "handle-times")).update(time);
-
-        metrics.meter(name(EventListener.class, "handles")).mark();
-        metrics.meter(name(this.getClass(), "handles")).mark();
+        metricClassHandleTimes.update(time);
+        metricHandleTimes.update(time);
+        metricClassHandles.mark();
+        metricHandles.mark();
 	}
 
 	// ------------------------------------------------------------------------

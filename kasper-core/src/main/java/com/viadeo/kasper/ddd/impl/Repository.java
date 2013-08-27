@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.impl;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
@@ -47,57 +49,86 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	private class AxonRepository extends org.axonframework.repository.AbstractRepository<AGR> {
 
 		private final Repository<AGR> kasperRepository;
+
+        private final Histogram metricClassSaveTimes = metrics.histogram(name(IRepository.class, "save-times"));
+        private final Meter metricClassSaves = metrics.meter(name(IRepository.class, "saves"));
+        private final Histogram metricClassLoadTimes = metrics.histogram(name(IRepository.class, "load-times"));
+        private final Meter metricClassLoads = metrics.meter(name(IRepository.class, "loads"));
+        private final Histogram metricClassDeleteTimes = metrics.histogram(name(IRepository.class, "delete-times"));
+        private final Meter metricClassDeletes= metrics.meter(name(IRepository.class, "deletes"));
+
+        private final Timer metricTimerSave;
+        private final Histogram metricSaveTimes;
+        private final Meter metricSaves;
+
+        private final Timer metricTimerLoad;
+        private final Histogram metricLoadTimes;
+        private final Meter metricLoads;
+
+        private final Timer metricTimerDelete;
+        private final Histogram metricDeleteTimes;
+        private final Meter metricDeletes;
+
+        // --------------------------------------------------------------------
 		
 		protected AxonRepository(final Repository<AGR> kasperRepository, final Class<AGR> aggregateType) {
 			super(aggregateType);
 			this.kasperRepository = kasperRepository;
+
+            metricTimerSave = metrics.timer(name(kasperRepository.getClass(), "save-time"));
+            metricSaveTimes = metrics.histogram(name(kasperRepository.getClass(), "save-times"));
+            metricSaves = metrics.meter(name(kasperRepository.getClass(), "saves"));
+
+            metricTimerLoad = metrics.timer(name(kasperRepository.getClass(), "load-time"));
+            metricLoadTimes = metrics.histogram(name(kasperRepository.getClass(), "load-times"));
+            metricLoads = metrics.meter(name(kasperRepository.getClass(), "loads"));
+
+            metricTimerDelete = metrics.timer(name(kasperRepository.getClass(), "delete-time"));
+            metricDeleteTimes = metrics.histogram(name(kasperRepository.getClass(), "delete-times"));
+            metricDeletes = metrics.meter(name(kasperRepository.getClass(), "deletes"));
 		}
+
+        // --------------------------------------------------------------------
 
 		@Override
 		protected void doSave(final AGR aggregate) {
-            final Timer.Context timer = metrics.timer(name(kasperRepository.getClass(), "save-time")).time();
+            final Timer.Context timer = metricTimerSave.time();
 
-            /* delegate */
 			this.kasperRepository.doSave(aggregate);
 
             final long time = timer.stop();
-
-            metrics.histogram(name(kasperRepository.getClass(), "save-times")).update(time);
-            metrics.histogram(name(IRepository.class, "save-times")).update(time);
-            metrics.meter(name(kasperRepository.getClass(), "saves")).mark();
-            metrics.meter(name(IRepository.class, "saves")).mark();
+            metricSaveTimes.update(time);
+            metricClassSaveTimes.update(time);
+            metricSaves.mark();
+            metricClassSaves.mark();
 		}
 
 		@Override
 		protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
-             final Timer.Context timer = metrics.timer(name(kasperRepository.getClass(), "load-time")).time();
+             final Timer.Context timer = metricTimerLoad.time();
 
-            /* delegate */
             final AGR agr = this.kasperRepository.doLoad(aggregateIdentifier, expectedVersion);
 
             final long time = timer.stop();
-
-            metrics.histogram(name(kasperRepository.getClass(), "load-times")).update(time);
-            metrics.histogram(name(IRepository.class, "load-times")).update(time);
-            metrics.meter(name(kasperRepository.getClass(), "loads")).mark();
-            metrics.meter(name(IRepository.class, "loads")).mark();
+            metricLoadTimes.update(time);
+            metricClassLoadTimes.update(time);
+            metricLoads.mark();
+            metricClassLoads.mark();
 
             return agr;
 		}
 
 		@Override
 		protected void doDelete(final AGR aggregate) {
-            final Timer.Context timer = metrics.timer(name(kasperRepository.getClass(), "delete-time")).time();
+            final Timer.Context timer = metricTimerDelete.time();
 
-            /* delegate */
  			this.kasperRepository.doDelete(aggregate);
 
             final long time = timer.stop();
-
-            metrics.histogram(name(kasperRepository.getClass(), "delete-times")).update(time);
-            metrics.histogram(name(IRepository.class, "delete-times")).update(time);
-            metrics.meter(name(kasperRepository.getClass(), "deletes")).mark();
-            metrics.meter(name(IRepository.class, "deletes")).mark();
+            metricDeleteTimes.update(time);
+            metricClassDeleteTimes.update(time);
+            metricDeletes.mark();
+            metricClassDeletes.mark();
 		}
 		
 	}

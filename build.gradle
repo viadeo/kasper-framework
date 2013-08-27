@@ -18,7 +18,7 @@ allprojects  {
   apply plugin: 'findbugs'
 
   group = 'com.viadeo.kasper'
-  version = '0.0.12.1'
+  version = '0.0.12-metrics'
 
   // Remote Maven repositories ---------
   repositories {
@@ -47,7 +47,7 @@ allprojects  {
 
     // Currently deleted, see http://issues.gradle.org/browse/GRADLE-2034
     // Refer to epantera or ldiasdasilva for questions
-    // mavenLocal()
+    mavenLocal()
   }
 
   cobertura {
