@@ -134,7 +134,7 @@ public interface Platform {
 	void setEventBus(EventBus eventBus);
 
     /**
-     * @return the event bus usedby the platform
+     * @return the event bus used by the platform
      */
     EventBus getEventBus();
 

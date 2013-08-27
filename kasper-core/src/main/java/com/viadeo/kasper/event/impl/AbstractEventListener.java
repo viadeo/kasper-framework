@@ -6,12 +6,17 @@
 // ============================================================================
 package com.viadeo.kasper.event.impl;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+
+import static com.codahale.metrics.MetricRegistry.name;
 
 /**
  *
@@ -21,6 +26,8 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
  */
 public abstract class AbstractEventListener<E extends Event>
 		implements EventListener<E> {
+
+    private static final MetricRegistry metrics = KasperMetrics.getRegistry();
 
 	private final Class<? extends Event> eventClass;
 	private CommandGateway commandGateway;
@@ -73,12 +80,23 @@ public abstract class AbstractEventListener<E extends Event>
 		}
 		
 		final com.viadeo.kasper.event.EventMessage<E> message = new DefaultEventMessage(eventMessage);
-		
-		try {
+
+        /* Start timer */
+        final Timer.Context timer = metrics.timer(name(EventListener.class, "handle-time")).time();
+
+        try {
 			this.handle(message);
 		} catch (final UnsupportedOperationException e) {
 			this.handle((E) eventMessage.getPayload());
 		}
+
+        /* Stop timer and record a tick */
+        final long time = timer.stop();
+        metrics.histogram(name(EventListener.class, "handled-times")).update(time);
+        metrics.histogram(name(this.getClass(), "handled-times")).update(time);
+
+        metrics.meter(name(EventListener.class, "handled")).mark();
+        metrics.meter(name(this.getClass(), "handled")).mark();
 	}
 
 	// ------------------------------------------------------------------------

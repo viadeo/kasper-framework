@@ -6,22 +6,26 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.cqrs.command.*;
+import com.viadeo.kasper.cqrs.query.QueryGateway;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.unitofwork.UnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.codahale.metrics.MetricRegistry.name;
 
 /**
  * @param <C> Command
  */
 public abstract class AbstractCommandHandler<C extends Command> implements CommandHandler<C> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommandHandler.class);
+    private static final MetricRegistry metrics = KasperMetrics.getRegistry();
 
     private transient DomainLocator domainLocator;
 
@@ -38,7 +42,12 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         final KasperCommandMessage<C> kmessage = new DefaultKasperCommandMessage<>(message);
         CurrentContext.set(kmessage.getContext());
 
-        AbstractCommandHandler.LOGGER.debug("Handle command " + message.getPayload().getClass().getSimpleName());
+        final Class<?> commandClass = message.getPayload().getClass();
+
+        AbstractCommandHandler.LOGGER.debug("Handle command " + commandClass.getSimpleName());
+
+        /* Start timer */
+        final Timer.Context timer = metrics.timer(name(commandClass, "requests-time")).time();
 
         CommandResult ret;
         try {
@@ -54,15 +63,33 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
             }
 
         } catch (final Exception e) {
-            LOGGER.error("Error command [{}]", message.getPayload().getClass(), e);
-            
+            LOGGER.error("Error command [{}]", commandClass, e);
+
+            /* rollback uow on failure */
             if (uow.isStarted()) {
                 uow.rollback(e);
                 uow.start();
             }
-            // FIXME I hesitate, should we transform to a command result or just rollback and propagate the exception as is
-            // let's propagate the error as is and keep CommandResult for business operation result (success and failure).
+            /*
+             * FIXME should we transform to a command result or just rollback and propagate the exception as is
+             * let's propagate the error as is and keep CommandResult for business operation result (success and failure) ?
+             */
+
+            /* Stop timer on error and propage exception */
+            timer.close();
             throw e;
+        }
+
+        /* Monitor the request calls */
+        final long time = timer.stop();
+        metrics.histogram(name(CommandGateway.class, "requests-times")).update(time);
+        metrics.histogram(name(commandClass, "requests-times")).update(time);
+
+        metrics.meter(name(CommandGateway.class, "requests")).mark();
+        metrics.meter(name(commandClass, "requests")).mark();
+        if (ret.isError()) {
+            metrics.meter(name(CommandGateway.class, "errors")).mark();
+            metrics.meter(name(commandClass, "errors")).mark();
         }
 
         return ret;

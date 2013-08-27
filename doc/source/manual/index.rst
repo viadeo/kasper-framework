@@ -16,3 +16,4 @@ User Manual
     Develop with Kasper/index
     Access Kasper platform/index
     Auto-documentation
+    Metrics
