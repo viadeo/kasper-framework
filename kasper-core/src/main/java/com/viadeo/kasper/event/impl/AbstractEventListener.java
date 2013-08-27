@@ -18,7 +18,7 @@ import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
-import static com.codahale.metrics.MetricRegistry.name;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /**
  *

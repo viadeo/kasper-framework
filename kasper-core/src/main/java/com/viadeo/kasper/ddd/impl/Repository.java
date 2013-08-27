@@ -21,9 +21,9 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.repository.AggregateNotFoundException;
 
-import static com.codahale.metrics.MetricRegistry.name;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
-/** 
+/**
  * 
  * Base Kasper repository implementation
  * 

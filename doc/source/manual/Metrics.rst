@@ -35,6 +35,9 @@ using the global registry available through **KasperMetrics** :
                                                             .convertDurationsTo(TimeUnit.MILLISECONDS)
                                                             .build();
             reporter.start(1, TimeUnit.MINUTES);
+
+            /* Sets an optional prefix for metrics names */
+            KasperMetrics.setNamePrefix(System.getenv("PLATFORM_ENV"));
         }
 
     }
@@ -49,6 +52,8 @@ The following table lists all metrics directly provided by the framework :
 +=================+===========+======================================================================+===========================================================+
 | Command gateway | Timer     | <Command Class>.**requests-time**                                    | Time to handle the command                                |
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
+| Command gateway | Timer     | com.viadeo.kasper.cqrs.command.CommandGateway.**requests-time**      | Time to handle the command (all)                          |
++-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
 | Command gateway | Histogram | <Command Class>.**requests-times**                                   | Distribution of request handling time for this command    |
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
 | Command gateway | Histogram | com.viadeo.kasper.cqrs.command.CommandGateway.**requests-times**     | Distribution of request handling time for all commands    |
@@ -62,6 +67,8 @@ The following table lists all metrics directly provided by the framework :
 | Command gateway | Meter     | com.viadeo.kasper.cqrs.command.CommandGateway.**errors**             | Rate of failed requests for all commands                  |
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
 | Query gateway   | Timer     | <Query Class>.**requests-time**                                      | Time to handle the query                                  |
++-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
+| Query gateway   | Timer     | com.viadeo.kasper.cqrs.query.QueryGateway.**requests-time**          | Time to handle the query (all)                            |
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
 | Query gateway   | Timer     | <Query Class>.**requests-result-filters-time**                       | Time to filter the query filters                          |
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+

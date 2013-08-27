@@ -23,8 +23,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 
-import static com.codahale.metrics.MetricRegistry.name;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /** The Kasper gateway base implementation */
 public class DefaultQueryGateway implements QueryGateway {

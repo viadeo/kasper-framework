@@ -22,7 +22,7 @@ import org.axonframework.unitofwork.UnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.codahale.metrics.MetricRegistry.name;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /**
  * @param <C> Command
