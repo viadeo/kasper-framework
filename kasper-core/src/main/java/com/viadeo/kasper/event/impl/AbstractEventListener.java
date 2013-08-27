@@ -82,7 +82,7 @@ public abstract class AbstractEventListener<E extends Event>
 		final com.viadeo.kasper.event.EventMessage<E> message = new DefaultEventMessage(eventMessage);
 
         /* Start timer */
-        final Timer.Context timer = metrics.timer(name(EventListener.class, "handle-time")).time();
+        final Timer.Context timer = metrics.timer(name(this.getClass(), "handle-time")).time();
 
         try {
 			this.handle(message);
@@ -92,11 +92,11 @@ public abstract class AbstractEventListener<E extends Event>
 
         /* Stop timer and record a tick */
         final long time = timer.stop();
-        metrics.histogram(name(EventListener.class, "handled-times")).update(time);
-        metrics.histogram(name(this.getClass(), "handled-times")).update(time);
+        metrics.histogram(name(EventListener.class, "handle-times")).update(time);
+        metrics.histogram(name(this.getClass(), "handle-times")).update(time);
 
-        metrics.meter(name(EventListener.class, "handled")).mark();
-        metrics.meter(name(this.getClass(), "handled")).mark();
+        metrics.meter(name(EventListener.class, "handles")).mark();
+        metrics.meter(name(this.getClass(), "handles")).mark();
 	}
 
 	// ------------------------------------------------------------------------

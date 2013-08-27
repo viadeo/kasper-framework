@@ -63,9 +63,9 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
             final long time = timer.stop();
 
             metrics.histogram(name(kasperRepository.getClass(), "save-times")).update(time);
-            metrics.histogram(name(Repository.class, "save-times")).update(time);
+            metrics.histogram(name(IRepository.class, "save-times")).update(time);
             metrics.meter(name(kasperRepository.getClass(), "saves")).mark();
-            metrics.meter(name(Repository.class, "saves")).mark();
+            metrics.meter(name(IRepository.class, "saves")).mark();
 		}
 
 		@Override
@@ -78,9 +78,9 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
             final long time = timer.stop();
 
             metrics.histogram(name(kasperRepository.getClass(), "load-times")).update(time);
-            metrics.histogram(name(Repository.class, "load-times")).update(time);
+            metrics.histogram(name(IRepository.class, "load-times")).update(time);
             metrics.meter(name(kasperRepository.getClass(), "loads")).mark();
-            metrics.meter(name(Repository.class, "loads")).mark();
+            metrics.meter(name(IRepository.class, "loads")).mark();
 
             return agr;
 		}
@@ -95,9 +95,9 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
             final long time = timer.stop();
 
             metrics.histogram(name(kasperRepository.getClass(), "delete-times")).update(time);
-            metrics.histogram(name(Repository.class, "delete-times")).update(time);
+            metrics.histogram(name(IRepository.class, "delete-times")).update(time);
             metrics.meter(name(kasperRepository.getClass(), "deletes")).mark();
-            metrics.meter(name(Repository.class, "deletes")).mark();
+            metrics.meter(name(IRepository.class, "deletes")).mark();
 		}
 		
 	}
