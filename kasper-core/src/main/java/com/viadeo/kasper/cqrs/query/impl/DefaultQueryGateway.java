@@ -15,7 +15,6 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
@@ -31,10 +30,10 @@ public class DefaultQueryGateway implements QueryGateway {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultQueryGateway.class);
     private static final MetricRegistry metrics = KasperMetrics.getRegistry();
 
-    private static final Timer metricClassTimer = metrics.timer(name(CommandGateway.class, "requests-time"));
-    private static final Histogram metricClassRequestsTimes = metrics.histogram(name(CommandGateway.class, "requests-times"));
-    private static final Meter metricClassRequests = metrics.meter(name(CommandGateway.class, "requests"));
-    private static final Meter metricClassErrors = metrics.meter(name(CommandGateway.class, "errors"));
+    private static final Timer metricClassTimer = metrics.timer(name(QueryGateway.class, "requests-time"));
+    private static final Histogram metricClassRequestsTimes = metrics.histogram(name(QueryGateway.class, "requests-times"));
+    private static final Meter metricClassRequests = metrics.meter(name(QueryGateway.class, "requests"));
+    private static final Meter metricClassErrors = metrics.meter(name(QueryGateway.class, "errors"));
 
     private QueryServicesLocator queryServicesLocator;
 
