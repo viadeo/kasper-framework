@@ -363,7 +363,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
                     .convertDurationsTo(TimeUnit.MILLISECONDS)
                     .convertRatesTo(TimeUnit.SECONDS)
                     .build();
-            reporter.start(1, TimeUnit.MINUTES);
+            reporter.start(20, TimeUnit.SECONDS);
         }
 
     }

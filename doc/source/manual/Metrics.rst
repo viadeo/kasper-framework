@@ -14,7 +14,7 @@ Kasper framework uses a global **MetricRegistry** used to record all provided me
 This **MetricRegistry** has to be set up in one or several Metrics reporters.
 
 The framework defines by default an SLF4J reporter with log level set to DEBUG, through the **Platform**
-class logger.
+class logger, publishing metrics every 20 seconds.
 
 You can override or augment this configuration in your own **PlatformConfiguration** (see :ref:`Configuration`),
 using the global registry available through **KasperMetrics** :
@@ -96,6 +96,10 @@ The following table lists all metrics directly provided by the framework :
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
 | Repository      | Meter     | com.viadeo.kasper.ddd.IRepository.**saves**                          | Rate of save operations for all repositories              |
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
+| Repository      | Meter     | <Repository Class>.**save-errors**                                   | Rate of errors during save operations for all repositories|
++-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
+| Repository      | Meter     | com.viadeo.kasper.ddd.IRepository.**save-errors**                    | Rate of errors during save operations for this repository |
++-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
 | Repository      | Timer     | <Repository Class>.**load-time**                                     | Time to load entity for this repository                   |
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
 | Repository      | Histogram | <Repository Class>.**load-times**                                    | Distribution of time to load for this repository          |
@@ -105,6 +109,10 @@ The following table lists all metrics directly provided by the framework :
 | Repository      | Meter     | <Repository Class>.**loads**                                         | Rate of load operations for this repository               |
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
 | Repository      | Meter     | com.viadeo.kasper.ddd.IRepository.**loads**                          | Rate of load operations for all repositories              |
++-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
+| Repository      | Meter     | <Repository Class>.**load-errors**                                   | Rate of errors during load operations for all repositories|
++-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
+| Repository      | Meter     | com.viadeo.kasper.ddd.IRepository.**load-errors**                    | Rate of errors during load operations for this repository |
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
 | Repository      | Timer     | <Repository Class>.**delete-time**                                   | Time to delete for this repository                        |
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
@@ -116,6 +124,10 @@ The following table lists all metrics directly provided by the framework :
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
 | Repository      | Meter     | com.viadeo.kasper.ddd.IRepository.**deletes**                        | Rate of delete operations for all repositories            |
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
+| Repository      | Meter     | <Repository Class>.**delete-errors**                                 | Rate of errors during delete operations for all repositories|
++-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
+| Repository      | Meter     | com.viadeo.kasper.ddd.IRepository.**delete-errors**                  | Rate of errors during delete operations for this repository|
++-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
 | Event listeners | Timer     | <Listener Class>.**handle-time**                                     | Time to handle an listened event                          |
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
 | Event listeners | Histogram | <Listener Class>.**handle-times**                                    | Distribution of time to handle an event for this listener |
@@ -124,7 +136,11 @@ The following table lists all metrics directly provided by the framework :
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
 | Event listeners | Meter     | <Listener Class>.**handles**                                         | Rate of event handling operations for this listener       |
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
-| Event listeners | Meter     | com.viadeo.kasper.event.EventListener.**handles**                    | Rate of event handling operations for all listener        |
+| Event listeners | Meter     | com.viadeo.kasper.event.EventListener.**handles**                    | Rate of event handling operations for all listeners       |
++-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
+| Event listeners | Meter     | <Listener Class>.**errors**                                          | Rate of errors handling events for this listener          |
++-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
+| Event listeners | Meter     | com.viadeo.kasper.event.EventListener.**errors**                     | Rate of errors handling events for all listeners         |
 +-----------------+-----------+----------------------------------------------------------------------+-----------------------------------------------------------+
 
 Use Metrics in your developments

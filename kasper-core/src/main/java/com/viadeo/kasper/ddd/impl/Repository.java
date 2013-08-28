@@ -52,40 +52,54 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
         private final Histogram metricClassSaveTimes = metrics.histogram(name(IRepository.class, "save-times"));
         private final Meter metricClassSaves = metrics.meter(name(IRepository.class, "saves"));
+        private final Meter metricClassSaveErrors = metrics.meter(name(IRepository.class, "save-errors"));
+
         private final Histogram metricClassLoadTimes = metrics.histogram(name(IRepository.class, "load-times"));
         private final Meter metricClassLoads = metrics.meter(name(IRepository.class, "loads"));
+        private final Meter metricClassLoadErrors = metrics.meter(name(IRepository.class, "load-errors"));
+
         private final Histogram metricClassDeleteTimes = metrics.histogram(name(IRepository.class, "delete-times"));
         private final Meter metricClassDeletes= metrics.meter(name(IRepository.class, "deletes"));
+        private final Meter metricClassDeleteErrors = metrics.meter(name(IRepository.class, "delete-errors"));
 
         private final Timer metricTimerSave;
         private final Histogram metricSaveTimes;
         private final Meter metricSaves;
+        private final Meter metricSaveErrors;
 
         private final Timer metricTimerLoad;
         private final Histogram metricLoadTimes;
         private final Meter metricLoads;
+        private final Meter metricLoadErrors;
 
         private final Timer metricTimerDelete;
         private final Histogram metricDeleteTimes;
         private final Meter metricDeletes;
+        private final Meter metricDeleteErrors;
 
         // --------------------------------------------------------------------
 		
 		protected AxonRepository(final Repository<AGR> kasperRepository, final Class<AGR> aggregateType) {
 			super(aggregateType);
+
+            final Class<?> kasperRepositoryClass = kasperRepository.getClass();
+
 			this.kasperRepository = kasperRepository;
 
-            metricTimerSave = metrics.timer(name(kasperRepository.getClass(), "save-time"));
-            metricSaveTimes = metrics.histogram(name(kasperRepository.getClass(), "save-times"));
-            metricSaves = metrics.meter(name(kasperRepository.getClass(), "saves"));
+            metricTimerSave = metrics.timer(name(kasperRepositoryClass, "save-time"));
+            metricSaveTimes = metrics.histogram(name(kasperRepositoryClass, "save-times"));
+            metricSaves = metrics.meter(name(kasperRepositoryClass, "saves"));
+            metricSaveErrors = metrics.meter(name(kasperRepositoryClass, "save-errors"));
 
-            metricTimerLoad = metrics.timer(name(kasperRepository.getClass(), "load-time"));
-            metricLoadTimes = metrics.histogram(name(kasperRepository.getClass(), "load-times"));
-            metricLoads = metrics.meter(name(kasperRepository.getClass(), "loads"));
+            metricTimerLoad = metrics.timer(name(kasperRepositoryClass, "load-time"));
+            metricLoadTimes = metrics.histogram(name(kasperRepositoryClass, "load-times"));
+            metricLoads = metrics.meter(name(kasperRepositoryClass, "loads"));
+            metricLoadErrors = metrics.meter(name(kasperRepositoryClass, "load-errors"));
 
-            metricTimerDelete = metrics.timer(name(kasperRepository.getClass(), "delete-time"));
-            metricDeleteTimes = metrics.histogram(name(kasperRepository.getClass(), "delete-times"));
-            metricDeletes = metrics.meter(name(kasperRepository.getClass(), "deletes"));
+            metricTimerDelete = metrics.timer(name(kasperRepositoryClass, "delete-time"));
+            metricDeleteTimes = metrics.histogram(name(kasperRepositoryClass, "delete-times"));
+            metricDeletes = metrics.meter(name(kasperRepositoryClass, "deletes"));
+            metricDeleteErrors = metrics.meter(name(kasperRepositoryClass, "delete-errors"));
 		}
 
         // --------------------------------------------------------------------
@@ -94,26 +108,40 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 		protected void doSave(final AGR aggregate) {
             final Timer.Context timer = metricTimerSave.time();
 
-			this.kasperRepository.doSave(aggregate);
+            try {
+			    this.kasperRepository.doSave(aggregate);
+            } catch (final RuntimeException e) {
+                metricClassSaveErrors.mark();
+                metricSaveErrors.mark();
+                throw e;
+            } finally {
+                final long time = timer.stop();
+                metricSaveTimes.update(time);
+                metricClassSaveTimes.update(time);
+                metricSaves.mark();
+                metricClassSaves.mark();
+            }
 
-            final long time = timer.stop();
-            metricSaveTimes.update(time);
-            metricClassSaveTimes.update(time);
-            metricSaves.mark();
-            metricClassSaves.mark();
 		}
 
 		@Override
 		protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
              final Timer.Context timer = metricTimerLoad.time();
 
-            final AGR agr = this.kasperRepository.doLoad(aggregateIdentifier, expectedVersion);
-
-            final long time = timer.stop();
-            metricLoadTimes.update(time);
-            metricClassLoadTimes.update(time);
-            metricLoads.mark();
-            metricClassLoads.mark();
+            final AGR agr;
+            try {
+                agr = this.kasperRepository.doLoad(aggregateIdentifier, expectedVersion);
+             } catch (final RuntimeException e) {
+                metricClassLoadErrors.mark();
+                metricLoadErrors.mark();
+                throw e;
+            } finally {
+                final long time = timer.stop();
+                metricLoadTimes.update(time);
+                metricClassLoadTimes.update(time);
+                metricLoads.mark();
+                metricClassLoads.mark();
+            }
 
             return agr;
 		}
@@ -122,13 +150,20 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 		protected void doDelete(final AGR aggregate) {
             final Timer.Context timer = metricTimerDelete.time();
 
- 			this.kasperRepository.doDelete(aggregate);
+            try {
+ 			    this.kasperRepository.doDelete(aggregate);
+             } catch (final RuntimeException e) {
+                metricClassDeleteErrors.mark();
+                metricDeleteErrors.mark();
+                throw e;
+            } finally {
+                final long time = timer.stop();
+                metricDeleteTimes.update(time);
+                metricClassDeleteTimes.update(time);
+                metricDeletes.mark();
+                metricClassDeletes.mark();
+            }
 
-            final long time = timer.stop();
-            metricDeleteTimes.update(time);
-            metricClassDeleteTimes.update(time);
-            metricDeletes.mark();
-            metricClassDeletes.mark();
 		}
 		
 	}

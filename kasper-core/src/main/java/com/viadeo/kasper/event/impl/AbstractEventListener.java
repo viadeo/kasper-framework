@@ -32,10 +32,12 @@ public abstract class AbstractEventListener<E extends Event>
     private static final MetricRegistry metrics = KasperMetrics.getRegistry();
     private static final Histogram metricClassHandleTimes = metrics.histogram(name(EventListener.class, "handle-times"));
     private static final Meter metricClassHandles = metrics.meter(name(EventListener.class, "handles"));
+    private static final Meter metricClassErrors = metrics.meter(name(EventListener.class, "errors"));
 
     private final Timer metricTimer;
     private final Histogram metricHandleTimes;
     private final Meter metricHandles;
+    private final Meter metricErrors;
 
 	private final Class<? extends Event> eventClass;
 	private CommandGateway commandGateway;
@@ -59,6 +61,7 @@ public abstract class AbstractEventListener<E extends Event>
         metricTimer = metrics.timer(name(this.getClass(), "handle-time"));
         metricHandleTimes = metrics.histogram(name(this.getClass(), "handle-times"));
         metricHandles = metrics.meter(name(this.getClass(), "handles"));
+        metricErrors = metrics.meter(name(this.getClass(), "errors"));
 	}
 	
 	// ------------------------------------------------------------------------
@@ -99,17 +102,23 @@ public abstract class AbstractEventListener<E extends Event>
 
         /* Handle event */
         try {
-			this.handle(message);
-		} catch (final UnsupportedOperationException e) {
-			this.handle((E) eventMessage.getPayload());
-		}
-
-        /* Stop timer and record a tick */
-        final long time = timer.stop();
-        metricClassHandleTimes.update(time);
-        metricHandleTimes.update(time);
-        metricClassHandles.mark();
-        metricHandles.mark();
+            try {
+                this.handle(message);
+            } catch (final UnsupportedOperationException e) {
+                this.handle((E) eventMessage.getPayload());
+            }
+        } catch (final RuntimeException e) {
+            metricClassErrors.mark();
+            metricErrors.mark();
+            throw e;
+        } finally {
+            /* Stop timer and record a tick */
+            final long time = timer.stop();
+            metricClassHandleTimes.update(time);
+            metricHandleTimes.update(time);
+            metricClassHandles.mark();
+            metricHandles.mark();
+        }
 	}
 
 	// ------------------------------------------------------------------------

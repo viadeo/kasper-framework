@@ -88,10 +88,15 @@ public class DefaultQueryGateway implements QueryGateway {
         }
 
         /* Call the service */
-        QueryResult<PAYLOAD> ret;
+        RuntimeException runtimeException = null;
+        QueryResult<PAYLOAD> ret = null;
         try { LOGGER.info("Call service " + optService.get().getClass().getSimpleName());
 
-            ret = (QueryResult<PAYLOAD>) service.retrieve(message);
+            try {
+                ret = (QueryResult<PAYLOAD>) service.retrieve(message);
+            } catch (final RuntimeException e) {
+                runtimeException = e;
+            }
 
         } catch (final UnsupportedOperationException e) {
             if (AbstractQueryService.class.isAssignableFrom(service.getClass())) {
@@ -102,19 +107,21 @@ public class DefaultQueryGateway implements QueryGateway {
                 throw e;
             }
         }
-        
-        checkNotNull(ret);
 
-        /* Apply Result filters if needed */
-        if ((null != ret.getPayload()) && !filters.isEmpty()) {
-            final Timer.Context timerFilters = metrics.timer(name(queryClass, "requests-result-filters-time")).time();
-            for (final ServiceFilter filter : filters) {
-                if (ResultFilter.class.isAssignableFrom(filter.getClass())) {
-                    LOGGER.info(String.format("Apply Result filter %s", filter.getClass().getSimpleName()));
-                    ((ResultFilter) filter).filter(context, ret);
+        if (null == runtimeException) {
+            checkNotNull(ret);
+
+            /* Apply Result filters if needed */
+            if ((null != ret.getPayload()) && !filters.isEmpty()) {
+                final Timer.Context timerFilters = metrics.timer(name(queryClass, "requests-result-filters-time")).time();
+                for (final ServiceFilter filter : filters) {
+                    if (ResultFilter.class.isAssignableFrom(filter.getClass())) {
+                        LOGGER.info(String.format("Apply Result filter %s", filter.getClass().getSimpleName()));
+                        ((ResultFilter) filter).filter(context, ret);
+                    }
                 }
+                timerFilters.stop();
             }
-            timerFilters.stop();
         }
 
         /* Monitor the request calls */
@@ -124,9 +131,13 @@ public class DefaultQueryGateway implements QueryGateway {
         metrics.histogram(name(queryClass, "requests-times")).update(time);
         metricClassRequests.mark();
         metrics.meter(name(queryClass, "requests")).mark();
-        if (ret.isError()) {
+        if ((null != runtimeException) || ret.isError()) {
             metricClassErrors.mark();
             metrics.meter(name(queryClass, "errors")).mark();
+        }
+
+        if (null != runtimeException) {
+            throw runtimeException;
         }
 
         return ret;

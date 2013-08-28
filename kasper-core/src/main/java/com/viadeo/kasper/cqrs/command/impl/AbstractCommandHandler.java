@@ -16,12 +16,14 @@ import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.*;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
+import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.unitofwork.UnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /**
@@ -83,8 +85,11 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         final Timer.Context classTimer = metricClassTimer.time();
         final Timer.Context timer = metricTimer.time();
 
-        CommandResult ret;
+        CommandResult ret = null;
+        RuntimeException runtimeException = null;
         try {
+
+            try {
 
             try {
                 ret = this.handle(kmessage);
@@ -94,6 +99,10 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
                 } catch (final UnsupportedOperationException e2) {
                     ret = this.handle(message.getPayload());
                 }
+            }
+
+            } catch (final RuntimeException e) {
+                runtimeException = e;
             }
 
         } catch (final Exception e) {
@@ -115,6 +124,10 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
             throw e;
         }
 
+        if (null == runtimeException) {
+            checkNotNull(ret);
+        }
+
         /* Monitor the request calls */
         timer.close();
         final long time = classTimer.stop();
@@ -122,9 +135,13 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         metricRequestsTimes.update(time);
         metricClassRequests.mark();
         metricRequests.mark();
-        if (ret.isError()) {
+        if ((null != runtimeException) || ret.isError()) {
             metricClassErrors.mark();
             metricErrors.mark();
+        }
+
+        if (null != runtimeException) {
+            throw runtimeException;
         }
 
         return ret;
