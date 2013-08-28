@@ -13,9 +13,13 @@ public final class KasperMetrics {
     private static final MetricRegistry metricRegistry = new MetricRegistry();
     private static String namePrefix = "";
 
+    // ------------------------------------------------------------------------
+
     public static MetricRegistry getRegistry() {
         return metricRegistry;
     }
+
+    // ------------------------------------------------------------------------
 
     public static void setNamePrefix(final String prefix) {
         namePrefix = prefix;
