@@ -6,24 +6,63 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.base.Optional;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.cqrs.command.*;
+import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
+import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.unitofwork.UnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /**
  * @param <C> Command
  */
 public abstract class AbstractCommandHandler<C extends Command> implements CommandHandler<C> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommandHandler.class);
+    private static final MetricRegistry metrics = KasperMetrics.getRegistry();
+
+    private static final Timer metricClassTimer = metrics.timer(name(CommandGateway.class, "requests-time"));
+    private static final Histogram metricClassRequestsTimes = metrics.histogram(name(CommandGateway.class, "requests-times"));
+    private static final Meter metricClassRequests = metrics.meter(name(CommandGateway.class, "requests"));
+    private static final Meter metricClassErrors = metrics.meter(name(CommandGateway.class, "errors"));
+
+    private final Timer metricTimer;
+    private final Histogram metricRequestsTimes;
+    private final Meter metricRequests;
+    private final Meter metricErrors;
 
     private transient DomainLocator domainLocator;
+
+    // ------------------------------------------------------------------------
+
+    protected AbstractCommandHandler() {
+        @SuppressWarnings("unchecked") // Safe
+        final Optional<Class<C>> commandClass =
+                (Optional<Class<C>>) (ReflectionGenericsResolver.getParameterTypeFromClass(
+                        this.getClass(), CommandHandler.class, CommandHandler.COMMAND_PARAMETER_POSITION));
+
+        if (!commandClass.isPresent()) {
+            throw new KasperCommandException("Unable to determine Command class for "
+                    + this.getClass().getSimpleName());
+        }
+
+        metricTimer = metrics.timer(name(commandClass.get(), "requests-time"));
+        metricRequestsTimes = metrics.histogram(name(commandClass.get(), "requests-times"));
+        metricRequests = metrics.meter(name(commandClass.get(), "requests"));
+        metricErrors = metrics.meter(name(commandClass.get(), "errors"));
+    }
 
     // ------------------------------------------------------------------------
 
@@ -38,9 +77,16 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         final KasperCommandMessage<C> kmessage = new DefaultKasperCommandMessage<>(message);
         CurrentContext.set(kmessage.getContext());
 
-        AbstractCommandHandler.LOGGER.debug("Handle command " + message.getPayload().getClass().getSimpleName());
+        final Class<?> commandClass = message.getPayload().getClass();
 
-        CommandResult ret;
+        AbstractCommandHandler.LOGGER.debug("Handle command " + commandClass.getSimpleName());
+
+        /* Start timer */
+        final Timer.Context classTimer = metricClassTimer.time();
+        final Timer.Context timer = metricTimer.time();
+
+        CommandResult ret = null;
+        Exception exception = null;
         try {
 
             try {
@@ -54,15 +100,43 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
             }
 
         } catch (final Exception e) {
-            LOGGER.error("Error command [{}]", message.getPayload().getClass(), e);
-            
+            LOGGER.error("Error command [{}]", commandClass, e);
+
+            exception = e;
+
+            /* rollback uow on failure */
             if (uow.isStarted()) {
                 uow.rollback(e);
                 uow.start();
             }
-            // FIXME I hesitate, should we transform to a command result or just rollback and propagate the exception as is
-            // let's propagate the error as is and keep CommandResult for business operation result (success and failure).
-            throw e;
+            /*
+             * FIXME should we transform to a command result or just rollback and propagate the exception as is
+             * let's propagate the error as is and keep CommandResult for business operation result (success and failure) ?
+             */
+
+            /* Stop timer on error and propage exception */
+            classTimer.close();
+            timer.close();
+        }
+
+        if (null == exception) {
+            checkNotNull(ret);
+        }
+
+        /* Monitor the request calls */
+        timer.close();
+        final long time = classTimer.stop();
+        metricClassRequestsTimes.update(time);
+        metricRequestsTimes.update(time);
+        metricClassRequests.mark();
+        metricRequests.mark();
+        if ((null != exception) || ret.isError()) {
+            metricClassErrors.mark();
+            metricErrors.mark();
+        }
+
+        if (null != exception) {
+            throw exception;
         }
 
         return ret;

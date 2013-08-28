@@ -155,4 +155,15 @@ public interface PlatformConfiguration {
      ServiceFiltersProcessor serviceFiltersProcessor(QueryServicesLocator locator);
      ServiceFiltersProcessor serviceFiltersProcessor();
 
+    /**
+     * Initialize one or several Yammer metrics reporters
+     *
+     * Register KasperMetrics.getRegistry() in your reporter
+     * cf http://metrics.codahale.com/
+     *
+     * Must be called by kasperPlatform()
+     *
+     */
+    void initializeMetricsReporters();
+
 }

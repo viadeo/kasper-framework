@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.platform.configuration;
 
+import com.codahale.metrics.Slf4jReporter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.MutableClassToInstanceMap;
 import com.viadeo.kasper.core.boot.*;
@@ -13,16 +14,23 @@ import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.components.commandbus.KasperCommandBus;
 import com.viadeo.kasper.platform.components.eventbus.KasperHybridEventBus;
 import com.viadeo.kasper.platform.impl.KasperPlatform;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.axonframework.eventhandling.EventBus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.slf4j.MarkerFactory;
+
+import java.util.concurrent.TimeUnit;
 
 public class DefaultPlatformConfiguration implements PlatformConfiguration {
 
@@ -94,6 +102,10 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         kasperPlatform.setEventBus(eventBus);
 
         components.putInstance(KasperPlatform.class, kasperPlatform);
+
+         /* Initialize metrics reporters */
+        this.initializeMetricsReporters();
+
         return kasperPlatform;
     }
 
@@ -331,6 +343,29 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     @Override
     public QueryGateway queryGateway() {
         return this.getAvailableInstance(QueryGateway.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Default Metrics reporter : SLF4J(DEBUG) reported once per minute
+     */
+    @Override
+    public void initializeMetricsReporters() {
+
+        final Logger platformLogger = LoggerFactory.getLogger(Platform.class);
+
+        if (platformLogger.isDebugEnabled()) {
+            final Slf4jReporter reporter = Slf4jReporter
+                    .forRegistry(KasperMetrics.getRegistry())
+                    .outputTo(platformLogger)
+                    .markWith(MarkerFactory.getMarker("DEBUG"))
+                    .convertDurationsTo(TimeUnit.MILLISECONDS)
+                    .convertRatesTo(TimeUnit.SECONDS)
+                    .build();
+            reporter.start(20, TimeUnit.SECONDS);
+        }
+
     }
 
 }
