@@ -54,20 +54,24 @@ public class QueryFilterITest {
     @XKasperUnregistered
     private class TestFilter implements QueryFilter, ResultFilter {
         @Override
-        public void filter(final Context context, final Query query) throws KasperQueryException {
+        public Query filter(final Context context, final Query query) throws KasperQueryException {
             ((TestQuery) query).state = STATE_MODIFIED;
+            return query;
         }
 
         @Override
-        public void filter(final Context context, final QueryResult result) throws KasperQueryException {
+        public QueryResult filter(final Context context, final QueryResult result) throws KasperQueryException {
             ((TestResult) result.getPayload()).state = STATE_MODIFIED;
+            return result;
         }
     }
 
     @XKasperUnregistered
     private class TestFilterGlobal implements QueryFilter {
         @Override
-        public void filter(final Context context, final Query query) throws KasperQueryException { }
+        public Query filter(final Context context, final Query query) throws KasperQueryException {
+            return query;
+        }
     }
 
     // ------------------------------------------------------------------------

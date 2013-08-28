@@ -41,12 +41,13 @@ public class DefaultQueryGateway implements QueryGateway {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <PAYLOAD extends QueryPayload> QueryResult<PAYLOAD> retrieve(final Query query, final Context context)
+    public <PAYLOAD extends QueryPayload> QueryResult<PAYLOAD> retrieve(final Query originalQuery, final Context context)
             throws Exception {
 
         checkNotNull(context);
-        checkNotNull(query);
+        checkNotNull(originalQuery);
 
+        Query query = originalQuery; // Query can mutated by filters
         final Class<? extends Query> queryClass = query.getClass();
 
         /* Start request timer */
@@ -81,7 +82,9 @@ public class DefaultQueryGateway implements QueryGateway {
             for (final ServiceFilter filter : filters) {
                 if (QueryFilter.class.isAssignableFrom(filter.getClass())) {
                     LOGGER.info(String.format("Apply query filter %s", filter.getClass().getSimpleName()));
-                    ((QueryFilter) filter).filter(context, query);
+
+                    /* Apply filter */
+                    query = ((QueryFilter) filter).filter(context, query);
                 }
             }
             timerFilters.stop();
@@ -118,7 +121,9 @@ public class DefaultQueryGateway implements QueryGateway {
                 for (final ServiceFilter filter : filters) {
                     if (ResultFilter.class.isAssignableFrom(filter.getClass())) {
                         LOGGER.info(String.format("Apply Result filter %s", filter.getClass().getSimpleName()));
-                        ((ResultFilter) filter).filter(context, ret);
+
+                        /* Apply filter */
+                        ret = ((ResultFilter) filter).filter(context, ret);
                     }
                 }
                 timerFilters.stop();

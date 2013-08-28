@@ -185,12 +185,13 @@ ex :
     public class ValidateIdQueryFilter implements QueryFilter {
 
         @Override
-        public void filter(final Context context, final Query query) throws KasperQueryException {
+        public Query filter(final Context context, final Query query) throws KasperQueryException {
             if (HasAnIdQuery.class.isAssignableFrom(query)) {
                 if (((HasAnIdQuery) query).id > 42) {
                     throw new KasperQueryException("The id cannot be greater than 42 !");
                 }
             }
+            return query;
         }
 
     }
@@ -206,10 +207,12 @@ A filter can be defined global (set the global flag (**global = true**) on the a
     public class IdEraserResultFilter implements ResultFilter {
 
         @Override
-        public void filter(final Context context, final QueryResult<HasAnIdPayload> dto) throws KasperQueryException {
-            if (HasAnIdPayload.class.isAssignableFrom(dto.getPayload())) {
-                ((HasAnIdResult) dto.getPayload()).id = "";
+        public QueryResult<HasAnIdPayload> filter(final Context context, final QueryResult<HasAnIdPayload> dto) throws KasperQueryException {
+            QueryResult<HasAnIdPayload res = dto; /* Payload DTO should be immutable */
+            if (!res.isError() && HasAnIdPayload.class.isAssignableFrom(dto.getPayload())) {
+                res = QueryResult.of(new HasAnIdPayload.Builder(dto.getPayload()).setId("").build());
             }
+            return res;
         }
 
     }
