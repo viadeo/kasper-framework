@@ -18,7 +18,7 @@ allprojects  {
   apply plugin: 'findbugs'
 
   group = 'com.viadeo.kasper'
-  version = '0.0.12.1'
+  version = '0.0.13'
 
   // Remote Maven repositories ---------
   repositories {
@@ -47,7 +47,7 @@ allprojects  {
 
     // Currently deleted, see http://issues.gradle.org/browse/GRADLE-2034
     // Refer to epantera or ldiasdasilva for questions
-    // mavenLocal()
+    mavenLocal()
   }
 
   cobertura {
@@ -141,6 +141,8 @@ subprojects {
       SPRING_WEB            : 'org.springframework:spring-web:3.1.4.RELEASE',
 
       DROPWIZARD_CORE       : 'com.yammer.dropwizard:dropwizard-core:0.6.2',
+
+      YAMMER_METRICS        : 'com.codahale.metrics:metrics-core:3.0.0',
 
       AXON_TEST             : 'org.axonframework:axon-test:2.0.2',
       AXON_CORE             : [

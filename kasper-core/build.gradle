@@ -16,4 +16,5 @@ dependencies {
     compile libraries.REFLECTIONS
     compile libraries.SPRING_CONTEXT
     compile libraries.AXON_CORE
+    compile libraries.YAMMER_METRICS
 }

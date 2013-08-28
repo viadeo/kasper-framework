@@ -1,3 +1,5 @@
+..  _Configuration:
+
 Kasper configuration
 ====================
 
