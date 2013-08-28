@@ -88,27 +88,28 @@ public class DefaultQueryGateway implements QueryGateway {
         }
 
         /* Call the service */
-        RuntimeException runtimeException = null;
+        Exception exception = null;
         QueryResult<PAYLOAD> ret = null;
-        try { LOGGER.info("Call service " + optService.get().getClass().getSimpleName());
 
-            try {
+        try {
+            try { LOGGER.info("Call service " + optService.get().getClass().getSimpleName());
+
                 ret = (QueryResult<PAYLOAD>) service.retrieve(message);
-            } catch (final RuntimeException e) {
-                runtimeException = e;
-            }
 
-        } catch (final UnsupportedOperationException e) {
-            if (AbstractQueryService.class.isAssignableFrom(service.getClass())) {
-                ret = (QueryResult<PAYLOAD>) ((AbstractQueryService) service).retrieve(message.getQuery());
-            } else {
-                timer.close();
-                classTimer.close();
-                throw e;
+            } catch (final UnsupportedOperationException e) {
+                if (AbstractQueryService.class.isAssignableFrom(service.getClass())) {
+                    ret = (QueryResult<PAYLOAD>) ((AbstractQueryService) service).retrieve(message.getQuery());
+                } else {
+                    timer.close();
+                    classTimer.close();
+                    throw e;
+                }
             }
+        } catch (final Exception e) {
+            exception = e;
         }
 
-        if (null == runtimeException) {
+        if (null == exception) {
             checkNotNull(ret);
 
             /* Apply Result filters if needed */
@@ -131,13 +132,13 @@ public class DefaultQueryGateway implements QueryGateway {
         metrics.histogram(name(queryClass, "requests-times")).update(time);
         metricClassRequests.mark();
         metrics.meter(name(queryClass, "requests")).mark();
-        if ((null != runtimeException) || ret.isError()) {
+        if ((null != exception) || ret.isError()) {
             metricClassErrors.mark();
             metrics.meter(name(queryClass, "errors")).mark();
         }
 
-        if (null != runtimeException) {
-            throw runtimeException;
+        if (null != exception) {
+            throw exception;
         }
 
         return ret;

@@ -86,10 +86,8 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         final Timer.Context timer = metricTimer.time();
 
         CommandResult ret = null;
-        RuntimeException runtimeException = null;
+        Exception exception = null;
         try {
-
-            try {
 
             try {
                 ret = this.handle(kmessage);
@@ -101,12 +99,10 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
                 }
             }
 
-            } catch (final RuntimeException e) {
-                runtimeException = e;
-            }
-
         } catch (final Exception e) {
             LOGGER.error("Error command [{}]", commandClass, e);
+
+            exception = e;
 
             /* rollback uow on failure */
             if (uow.isStarted()) {
@@ -121,10 +117,9 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
             /* Stop timer on error and propage exception */
             classTimer.close();
             timer.close();
-            throw e;
         }
 
-        if (null == runtimeException) {
+        if (null == exception) {
             checkNotNull(ret);
         }
 
@@ -135,13 +130,13 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         metricRequestsTimes.update(time);
         metricClassRequests.mark();
         metricRequests.mark();
-        if ((null != runtimeException) || ret.isError()) {
+        if ((null != exception) || ret.isError()) {
             metricClassErrors.mark();
             metricErrors.mark();
         }
 
-        if (null != runtimeException) {
-            throw runtimeException;
+        if (null != exception) {
+            throw exception;
         }
 
         return ret;
