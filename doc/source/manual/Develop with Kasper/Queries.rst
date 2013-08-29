@@ -95,6 +95,10 @@ using the **@XKasperQueryPayload** annotation.
         }
     }
 
+.. hint::
+    The interface **QueryEntityPayload** and proposed default implementation **AbstractQueryEntityPayload** should be used for each
+    payload which is an entity (with an id, a type and optionally but preferably a last modification time)
+
 The interface **QueryCollectionPayload** can be used to return a list of some other unit result payloads.
 
 The abstract class **AbstractQueryCollectionPayload** is provided as a default implementation of the list methods
