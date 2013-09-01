@@ -355,11 +355,11 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
 
         final Logger platformLogger = LoggerFactory.getLogger(Platform.class);
 
-        if (platformLogger.isDebugEnabled()) {
+        if (platformLogger.isTraceEnabled()) {
             final Slf4jReporter reporter = Slf4jReporter
                     .forRegistry(KasperMetrics.getRegistry())
                     .outputTo(platformLogger)
-                    .markWith(MarkerFactory.getMarker("DEBUG"))
+                    .markWith(MarkerFactory.getMarker("TRACE"))
                     .convertDurationsTo(TimeUnit.MILLISECONDS)
                     .convertRatesTo(TimeUnit.SECONDS)
                     .build();
