@@ -13,7 +13,7 @@ Kasper framework uses a global **MetricRegistry** used to record all provided me
 
 This **MetricRegistry** has to be set up in one or several Metrics reporters.
 
-The framework defines by default an SLF4J reporter with log level set to DEBUG, through the **Platform**
+The framework defines by default an SLF4J reporter with log level set to TRACE, through the **Platform**
 class logger, publishing metrics every 20 seconds.
 
 You can override or augment this configuration in your own **PlatformConfiguration** (see :ref:`Configuration`),
