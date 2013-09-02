@@ -16,7 +16,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class AbstractQueryCollectionPayload<RES> implements CollectionQueryPayload<RES> {
     
-	private Collection<RES> innerCollection;
+	private Collection<RES> list;
 
     // ------------------------------------------------------------------------
 
@@ -24,31 +24,31 @@ public abstract class AbstractQueryCollectionPayload<RES> implements CollectionQ
         /* Jackson */
     }
 
-	protected AbstractQueryCollectionPayload(final Collection<RES> innerCollection) {
-		this.innerCollection = checkNotNull(innerCollection);
+	protected AbstractQueryCollectionPayload(final Collection<RES> list) {
+		this.list = checkNotNull(list);
 	}
 
     // ------------------------------------------------------------------------
 
 	@Override
 	public Iterator<RES> iterator() {
-		return this.innerCollection.iterator();
+		return this.list.iterator();
 	}
 
     // ------------------------------------------------------------------------
 
 	@Override
 	public int getCount() {
-		return this.innerCollection.size();
+		return this.list.size();
 	}
 
     @Override
 	public Collection<RES> getList() {
-		return this.innerCollection;
+		return this.list;
 	}
 
-    public void setList(final Collection<RES> innerCollection) {
-        this.innerCollection = innerCollection;
+    public void setList(final Collection<RES> list) {
+        this.list = list;
     }
 
     // ------------------------------------------------------------------------
@@ -63,18 +63,18 @@ public abstract class AbstractQueryCollectionPayload<RES> implements CollectionQ
         }
 
         final AbstractQueryCollectionPayload<?> that = (AbstractQueryCollectionPayload<?>) o;
-        return Objects.equal(this.innerCollection, that.innerCollection);
+        return Objects.equal(this.list, that.list);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hashCode(innerCollection);
+        return Objects.hashCode(list);
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("innerCollection", innerCollection)
+                .add("list", list)
                 .toString();
     }
 
