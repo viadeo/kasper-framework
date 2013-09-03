@@ -31,6 +31,10 @@ public class SerDeserTests {
             this.field = field;
         }
 
+        public String getField() {
+            return this.field;
+        }
+
     }
 
     public static class ImmutableBean {
@@ -42,6 +46,10 @@ public class SerDeserTests {
         public ImmutableBean(final String field) {
             this.field = field;
         }
+
+        public String getField(){
+            return this.field;
+        }
     }
 
     public static class NoSettersBean {
@@ -51,6 +59,10 @@ public class SerDeserTests {
 
         public NoSettersBean(final String field) {
             this.field = field;
+        }
+
+        public String getField() {
+            return this.field;
         }
     }
 
