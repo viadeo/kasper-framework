@@ -10,6 +10,7 @@ import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.command.CommandResult.Status;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
@@ -30,7 +31,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 
     @Override
     protected HttpCommandExposer createExposer(final ApplicationContext ctx) {
-        return new HttpCommandExposer(ctx.getBean(Platform.class), ctx.getBean(DomainLocator.class));
+        return new HttpCommandExposer(ctx.getBean(CommandGateway.class), ctx.getBean(DomainLocator.class));
     }
 
     // ------------------------------------------------------------------------

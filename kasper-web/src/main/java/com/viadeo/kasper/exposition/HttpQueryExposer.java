@@ -16,6 +16,7 @@ import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.platform.Platform;
@@ -49,18 +50,19 @@ public class HttpQueryExposer extends HttpExposer {
     private final transient QueryServicesLocator queryServicesLocator;
     private final transient QueryFactory queryAdapterFactory;
     private final ObjectMapper mapper;
+    private final QueryGateway queryGateway;
 
     // ------------------------------------------------------------------------
 
-    public HttpQueryExposer(final Platform platform, final QueryServicesLocator queryLocator) {
-        this(platform, queryLocator, new QueryFactoryBuilder().create(), ObjectMapperProvider.INSTANCE.mapper());
+    public HttpQueryExposer(final QueryGateway queryGateway, final QueryServicesLocator queryLocator) {
+        this(queryGateway, queryLocator, new QueryFactoryBuilder().create(), ObjectMapperProvider.INSTANCE.mapper());
     }
 
-    public HttpQueryExposer(final Platform platform,
+    public HttpQueryExposer(final QueryGateway queryGateway,
                             final QueryServicesLocator queryServicesLocator,
                             final QueryFactory queryAdapterFactory, final ObjectMapper mapper) {
-        super(platform);
 
+        this.queryGateway = queryGateway;
         this.queryServicesLocator = queryServicesLocator;
         this.queryAdapterFactory = queryAdapterFactory;
         this.mapper = mapper;
@@ -187,7 +189,7 @@ public class HttpQueryExposer extends HttpExposer {
              * checking if the response has not been sent, if it is true this
              * means that an error happened and has been handled
              */
-            result = platform().getQueryGateway().retrieve(query, new DefaultContextBuilder().build());
+            result = queryGateway.retrieve(query, new DefaultContextBuilder().build());
 
         } catch (final Throwable e) {
             /*
