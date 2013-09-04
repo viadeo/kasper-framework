@@ -19,9 +19,9 @@ import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,16 +43,16 @@ public class HttpCommandExposer extends HttpExposer {
     private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
     private final transient DomainLocator domainLocator;
     private final ObjectMapper mapper;
+    private final CommandGateway commandGateway;
 
     // ------------------------------------------------------------------------
 
-    public HttpCommandExposer(final Platform platform, final DomainLocator domainLocator) {
-        this(platform, domainLocator, ObjectMapperProvider.INSTANCE.mapper());
+    public HttpCommandExposer(final CommandGateway commandGateway, final DomainLocator domainLocator) {
+        this(commandGateway, domainLocator, ObjectMapperProvider.INSTANCE.mapper());
     }
     
-    public HttpCommandExposer(final Platform platform, final DomainLocator domainLocator, final ObjectMapper mapper) {
-        super(platform);
-
+    public HttpCommandExposer(final CommandGateway commandGateway, final DomainLocator domainLocator, final ObjectMapper mapper) {
+        this.commandGateway = commandGateway;
         this.domainLocator = checkNotNull(domainLocator);
         this.mapper = mapper;
     }
@@ -146,8 +146,8 @@ public class HttpCommandExposer extends HttpExposer {
             // case the user is expecting a result success or failure
 
             /* send now that command to the platform and wait for the result */
-            result = platform().getCommandGateway().sendCommandAndWaitForAResult(
-                        command, new DefaultContextBuilder().build());
+            result = commandGateway.sendCommandAndWaitForAResult(
+                    command, new DefaultContextBuilder().build());
 
         } catch (final IOException e) {
 
