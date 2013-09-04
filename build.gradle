@@ -128,6 +128,8 @@ subprojects {
       JERSEY_TEST_HTTP      : 'com.sun.jersey.jersey-test-framework:jersey-test-framework-http:1.16',
       JERSEY_TEST_GRIZZLY   : 'org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2:2.0',
 
+      JETTY_SERVLET         : 'org.eclipse.jetty:jetty-servlet:8.1.10.v20130312',
+
       PARANAMER             : 'com.thoughtworks.paranamer:paranamer:2.5.2',
       REFLECTIONS           : 'org.reflections:reflections:0.9.9-RC1',
       MYSQL                 : 'mysql:mysql-connector-java:5.1.24',
@@ -139,8 +141,6 @@ subprojects {
       SPRING_CORE           : 'org.springframework:spring-core:3.1.4.RELEASE',
       SPRING_CONTEXT        : 'org.springframework:spring-context:3.1.4.RELEASE',
       SPRING_WEB            : 'org.springframework:spring-web:3.1.4.RELEASE',
-
-      DROPWIZARD_CORE       : 'com.yammer.dropwizard:dropwizard-core:0.6.2',
 
       YAMMER_METRICS        : 'com.codahale.metrics:metrics-core:3.0.0',
 

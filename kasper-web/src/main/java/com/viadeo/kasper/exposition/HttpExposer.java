@@ -21,14 +21,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class HttpExposer extends HttpServlet {
 	private static final long serialVersionUID = 8448984922303895424L;
 	protected static final Logger LOGGER = LoggerFactory.getLogger(HttpExposer.class);
-	        
-	private Platform platform;
-
-    // ------------------------------------------------------------------------
-
-	protected HttpExposer(final Platform platform) {
-	    this.platform = platform;
-	}
 
     // ------------------------------------------------------------------------
 
@@ -59,12 +51,6 @@ public abstract class HttpExposer extends HttpServlet {
 		}
 
         return Introspector.decapitalize(resName);
-	}
-
-    // ------------------------------------------------------------------------
-
-	protected final Platform platform() {
-		return platform;
 	}
 
     // ------------------------------------------------------------------------
