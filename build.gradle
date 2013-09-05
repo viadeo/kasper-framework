@@ -82,10 +82,10 @@ subprojects {
   uploadArchives {
       repositories.mavenDeployer {
           configuration = configurations.deployerJars
-          repository(url: "http://deploy.mvn.viadeo.com/content/repositories/kasper-releases") {
+          repository(url: "http://nexus01.infra.paris.apvo/content/repositories/kasper-releases") {
               authentication(userName: nexus_username, password: nexus_password)
           }
-          snapshotRepository(url: "http://deploy.mvn.viadeo.com/content/repositories/kasper-snapshots") {
+          snapshotRepository(url: "http://nexus01.infra.paris.apvo/content/repositories/kasper-snapshots") {
               authentication(userName: nexus_username, password: nexus_password)
           }
       }
