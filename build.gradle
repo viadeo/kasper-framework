@@ -23,22 +23,22 @@ allprojects  {
   // Remote Maven repositories ---------
   repositories {
 
-    maven { url "http://nexus.mvn.viadeo.com/content/groups/public"
+    maven { url "http://nexus01.infra.paris.apvo/content/groups/public"
         credentials.username nexus_username
         credentials.password nexus_password
     }
 
-    maven { url "http://nexus.mvn.viadeo.com/content/groups/public-snapshots"
+    maven { url "http://nexus01.infra.paris.apvo/content/groups/public-snapshots"
         credentials.username nexus_username
         credentials.password nexus_password
     }
 
-    maven { url "http://nexus.mvn.viadeo.com/content/repositories/snapshots"
+    maven { url "http://nexus01.infra.paris.apvo/content/repositories/snapshots"
         credentials.username nexus_username
         credentials.password nexus_password
     }
 
-    maven { url "http://nexus.mvn.viadeo.com/content/repositories/releases"
+    maven { url "http://nexus01.infra.paris.apvo/content/repositories/releases"
         credentials.username nexus_username
         credentials.password nexus_password
     }
@@ -220,7 +220,7 @@ tasks.withType(FindBugs) {
 // Build dependencies ---------------------------------------------------------
 buildscript {
     repositories {
-        maven { url "http://nexus.mvn.viadeo.com/content/groups/public"
+        maven { url "http://nexus01.infra.paris.apvo/content/groups/public"
             credentials.username nexus_username
             credentials.password nexus_password
         }
