@@ -34,41 +34,41 @@ public class QueryServicesProcessorTest {
     // ------------------------------------------------------------------------
 
     @XKasperUnregistered
-    private class TestDomain implements Domain { }
+    public class TestDomain implements Domain { }
 
     @XKasperUnregistered
-    private class TestQuery implements Query { }
+    public class TestQuery implements Query { }
 
     @XKasperUnregistered
-    private class TestFilter implements ServiceFilter { }
+    public class TestFilter implements ServiceFilter { }
 
     @XKasperUnregistered
-    private class TestFilter2 implements ServiceFilter { }
+    public class TestFilter2 implements ServiceFilter { }
 
-    private class TestPayload implements QueryPayload { }
+    public class TestPayload implements QueryPayload { }
 
     // ------------------------------------------------------------------------
 
     @XKasperQueryService( name = SERVICE_NAME, domain = TestDomain.class )
-    private class TestService implements QueryService<TestQuery, TestPayload> {
+    public class TestService implements QueryService<TestQuery, TestPayload> {
         @Override
         public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperQueryService( domain = TestDomain.class )
-    private class TestServiceNoName implements QueryService<TestQuery, TestPayload> {
+    public class TestServiceNoName implements QueryService<TestQuery, TestPayload> {
         @Override
         public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperQueryService( domain = TestDomain.class, filters = TestFilter.class )
-    private class TestServiceOneFilter implements QueryService<TestQuery, TestPayload> {
+    public class TestServiceOneFilter implements QueryService<TestQuery, TestPayload> {
         @Override
         public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperQueryService( domain = TestDomain.class, filters = { TestFilter.class, TestFilter2.class } )
-    private class TestServiceMultipleFilters implements QueryService<TestQuery, TestPayload> {
+    public class TestServiceMultipleFilters implements QueryService<TestQuery, TestPayload> {
         @Override
         public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
     }

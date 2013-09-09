@@ -21,7 +21,7 @@ import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.platform.components.commandbus.KasperCommandBus;
-import com.viadeo.kasper.platform.components.eventbus.KasperHybridEventBus;
+import com.viadeo.kasper.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.platform.impl.KasperPlatform;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
@@ -122,7 +122,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
             return components.getInstance(EventBus.class);
         } else {
 
-            final EventBus eventBus = new KasperHybridEventBus();
+            final EventBus eventBus = new KasperEventBus();
 
             components.putInstance(EventBus.class, eventBus);
             return eventBus;

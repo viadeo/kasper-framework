@@ -99,7 +99,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
                 }
             }
 
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             LOGGER.error("Error command [{}]", commandClass, e);
 
             exception = e;

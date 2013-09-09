@@ -110,7 +110,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
             try {
 			    this.kasperRepository.doSave(aggregate);
-            } catch (final Exception e) {
+            } catch (final RuntimeException e) {
                 metricClassSaveErrors.mark();
                 metricSaveErrors.mark();
                 throw e;
@@ -131,7 +131,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
             final AGR agr;
             try {
                 agr = this.kasperRepository.doLoad(aggregateIdentifier, expectedVersion);
-             } catch (final Exception e) {
+             } catch (final RuntimeException e) {
                 metricClassLoadErrors.mark();
                 metricLoadErrors.mark();
                 throw e;
@@ -152,7 +152,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
             try {
  			    this.kasperRepository.doDelete(aggregate);
-             } catch (final Exception e) {
+             } catch (final RuntimeException e) {
                 metricClassDeleteErrors.mark();
                 metricDeleteErrors.mark();
                 throw e;

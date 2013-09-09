@@ -19,7 +19,7 @@ specified in parenthesis):
         * CommandBus (*KasperCommandBus*)
     * QueryGateway (*DefaultQueryGateway*)
         * QueryServicesLocator (*DefaultQueryServicesLocator*)
-    * EventBus (*KasperHybridEventBus*)
+    * EventBus (*KasperEventBus*)
     * RootProcessor (*AnnotationRootProcessor*)
         * ComponentsInstanceManager (*SimpleComponentsInstanceManager*)
         * CommandHandlersProcessor

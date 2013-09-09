@@ -24,6 +24,8 @@ import com.viadeo.kasper.cqrs.query.*;
 public abstract class AbstractQueryService<Q extends Query, PAYLOAD extends QueryPayload>
         implements QueryService<Q, PAYLOAD> {
 
+    protected AbstractQueryService() { }
+
     @Override
     public QueryResult<PAYLOAD> retrieve(final QueryMessage<Q> message) throws Exception {
         return retrieve(message.getQuery());
