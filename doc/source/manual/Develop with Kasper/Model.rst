@@ -618,14 +618,11 @@ You are encouraged to add the suffix **Service** to your class names.
 
     }
 
-Share services between query and command inside a domain
---------------------------------------------------------
-
 A service can be used to share a business logic between a query and a command inside a domain.
 
-Below a nice pattern to share this logic, keeping the command and query's models separated while keep having an OOP approach:
+A good pattern is to enclose the service calls inside your business models on command an query sides, keeping a correct OOP approach
+while centralizing business algorithms :
 
 .. edit this drawing here: https://docs.google.com/a/viadeoteam.com/drawings/d/1-wHZytGl6HkbwoOrBUG0Sir_oK2TyJKpLRCp3CjFE-k/edit?usp=sharing
 .. image:: ../img/shared_services.png
-
 
