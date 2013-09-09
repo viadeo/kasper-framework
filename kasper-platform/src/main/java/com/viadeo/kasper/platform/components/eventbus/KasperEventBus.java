@@ -27,10 +27,13 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /*
  * Default Kasper event bus based on Axon's Cluster
  *
- * FIXME: Work in progress
+ * FIXME: work in progress
+ * FIXME: Work on better configuration handling and different default policies
  *
  */
 public class KasperEventBus extends ClusteringEventBus {
@@ -43,16 +46,48 @@ public class KasperEventBus extends ClusteringEventBus {
     private static final long KEEP_ALIVE_TIME = 60L;
     private static final TimeUnit TIME_UNIT = TimeUnit.MINUTES;
 
-    private static final Policy DEFAULT_POLICY = Policy.ASYNCHRONOUS;
     public static enum Policy {
-        SYNCHRONOUS, ASYNCHRONOUS
+        SYNCHRONOUS, ASYNCHRONOUS, USER
+    }
+    private static final Policy DEFAULT_POLICY = Policy.ASYNCHRONOUS;
+
+    private final Policy currentPolicy;
+
+    // ------------------------------------------------------------------------
+
+    /*
+     * Return a default error handler
+     */
+    public static ErrorHandler getDefaultErrorHandler() {
+        return new DefaultErrorHandler(RetryPolicy.proceed()) {
+                        @Override
+                        public RetryPolicy handleError(final Throwable exception,
+                                                       final EventMessage<?> eventMessage,
+                                                       final EventListener eventListener) {
+                            /* TODO: store the error, generate error event */
+                            LOGGER.error(String.format("Error %s occured during processing of event %s in listener %s ",
+                                        exception.getMessage(),
+                                        eventMessage.getPayload().getClass().getName(),
+                                        eventListener.getClass().getName()
+                            ));
+                            return super.handleError(exception, eventMessage, eventListener);
+                        }
+                   };
     }
 
     /*
-     * TODO: make configurable
-     * TODO: provides EventBusPolicy in order to configure the behaviour of the event bus
+     * Return a default cluster selector
      */
-    private static ClusterSelector getCluster(final Policy busPolicy) {
+    public static ClusterSelector getCluster(final Policy busPolicy) {
+        return getCluster(busPolicy, getDefaultErrorHandler());
+    }
+
+    /*
+     * Return a default cluster selector using the specified error handler
+     * FIXME: eventually manage with a correct transaction manager
+     */
+    public static ClusterSelector getCluster(final Policy busPolicy, final ErrorHandler errorHandler) {
+
         if (Policy.ASYNCHRONOUS.equals(busPolicy)) {
             return new DefaultClusterSelector(
                 new AsynchronousCluster(
@@ -66,44 +101,67 @@ public class KasperEventBus extends ClusteringEventBus {
                     ),
                     new DefaultUnitOfWorkFactory(new NoTransactionManager()),
                     new SequentialPolicy(),
-                    new DefaultErrorHandler(RetryPolicy.proceed()) {
-                        @Override
-                        public RetryPolicy handleError(final Throwable exception,
-                                                       final EventMessage<?> eventMessage,
-                                                       final EventListener eventListener) {
-                            /* TODO: store the error, generate error event */
-                            LOGGER.error(String.format("Error %s occured during processing of event %s in listener %s ",
-                                        exception.getMessage(),
-                                        eventMessage.getPayload().getClass().getName(),
-                                        eventListener.getClass().getName()
-                            ));
-                            return super.handleError(exception, eventMessage, eventListener);
-                        }
-                    }
+                    errorHandler
                 )
             );
         }
+
         if (Policy.SYNCHRONOUS.equals(busPolicy)) {
             return new DefaultClusterSelector();
         }
 
-        throw new KasperException("Unmanaged Event bus policy " + busPolicy.toString());
+        throw new KasperException("Unmanaged explicit event bus policy " + busPolicy.toString());
     }
 
     // ------------------------------------------------------------------------
 
-    public KasperEventBus(final Policy busPolicy) {
-        super(getCluster(busPolicy));
-    }
-
+    /*
+     * Build a default synchronous event bus
+     */
     public KasperEventBus() {
         super(getCluster(DEFAULT_POLICY));
+        this.currentPolicy = DEFAULT_POLICY;
+    }
+
+    /*
+     * Build a Kasper event bus using the specified policy
+     */
+    public KasperEventBus(final Policy busPolicy) {
+        super(getCluster(checkNotNull(busPolicy)));
+        this.currentPolicy = busPolicy;
+    }
+
+    /*
+     * Build a Kasper event bus from the specified axon ClusterSelector
+     */
+    public KasperEventBus(final ClusterSelector axonClusterSelector) {
+        super(checkNotNull(axonClusterSelector));
+        this.currentPolicy = Policy.USER;
+    }
+
+    /*
+     * Build a Kasper event bus from the specified axon Cluster with default cluster selector
+     */
+    public KasperEventBus(final Cluster cluster) {
+        super(new DefaultClusterSelector(checkNotNull(cluster)));
+        this.currentPolicy = Policy.USER;
+    }
+
+    /*
+     * Build an asynchronous Kasper event bus with the specified error handler
+     */
+    public KasperEventBus(final ErrorHandler errorHandler) {
+        super(getCluster(Policy.ASYNCHRONOUS, errorHandler));
+        this.currentPolicy = Policy.ASYNCHRONOUS;
     }
 
     // ------------------------------------------------------------------------
 
+    /*
+     * Publish a contextualized Kasper event
+     */
     public void publish(final Event event) {
-        Preconditions.checkNotNull(event);
+        checkNotNull(event);
         Preconditions.checkState(event.getContext().isPresent(), "Context must be present !");
 
         final Context context = event.getContext().get();
@@ -115,16 +173,19 @@ public class KasperEventBus extends ClusteringEventBus {
         }
 
         final Map<String, Object> metaData = Maps.newHashMap();
-        metaData.put(Context.METANAME, Preconditions.checkNotNull(context));
+        metaData.put(Context.METANAME, checkNotNull(context));
 
-        final GenericEventMessage<Event> eventMessageAxon =
-                new GenericEventMessage<>(event, metaData);
+        final GenericEventMessage<Event> eventMessageAxon = new GenericEventMessage<>(event, metaData);
 
         this.publish(eventMessageAxon);
     }
 
+    /*
+     * Publish a Kasper event using the specified context
+     * Warning : The provided context will override eventually set one of the provided event
+     */
     public void publish(final Event event, final Context context) {
-        Preconditions.checkNotNull(event).setContext(context);
+        checkNotNull(event).setContext(context);
         this.publish(event);
     }
 
