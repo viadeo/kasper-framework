@@ -133,7 +133,7 @@ public final class DefaultTypeAdapters {
 
 		@Override
 		public Date adapt(final QueryParser parser) {
-			return new Date(parser.longValue());
+			return parse(parser).toDate();
 		}
 	};
 
@@ -147,9 +147,17 @@ public final class DefaultTypeAdapters {
 
 		@Override
 		public DateTime adapt(final QueryParser parser) {
-			return new DateTime(parser.longValue());
+			return parse(parser);
 		}
 	};
+	
+	private static DateTime parse(QueryParser parser) {
+	    try {
+	        return new DateTime(parser.longValue());
+	    } catch (NumberFormatException nfe) {
+	        return new DateTime(parser.value());
+	    }
+	}
 
 	// --
 
