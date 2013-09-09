@@ -20,8 +20,10 @@ public interface QueryFilter extends ServiceFilter {
      *
      * @param query the query to be processed
      * @param context the context used to execute the service
+     *
+     * @return the filtered query
      */
-	void filter(Context context, Query query);
+	<QS extends Query, QT extends QS> QT filter(Context context, QS query);
 
 }
 

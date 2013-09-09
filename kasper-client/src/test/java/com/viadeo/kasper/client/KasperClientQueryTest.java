@@ -46,7 +46,8 @@ public class KasperClientQueryTest extends JerseyTest {
     // ------------------------------------------------------------------------
 
     public static class MemberPayload implements QueryPayload {
-
+        private static final long serialVersionUID = 5377830561251071588L;
+        
         private String memberName;
         private List<Integer> ids;
 

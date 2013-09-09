@@ -55,8 +55,8 @@ public final class ObjectMapperProvider {
         /* De-Serialization features */
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
 
-        /* Change visibility of properties if needed */
-        mapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+        /* Change visibility of constructors if needed */
+        mapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.ANY);
 
         /* Register a specific module for Kasper Ser/Deser */
         final SimpleModule kasperClientModule = new SimpleModule()

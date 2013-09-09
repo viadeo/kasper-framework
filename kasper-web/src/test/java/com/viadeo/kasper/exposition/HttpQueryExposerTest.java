@@ -128,7 +128,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
 
     @Override
     protected HttpQueryExposer createExposer(final ApplicationContext ctx) {
-        return new HttpQueryExposer(ctx.getBean(Platform.class), ctx.getBean(QueryServicesLocator.class));
+        return new HttpQueryExposer(ctx.getBean(QueryGateway.class), ctx.getBean(QueryServicesLocator.class));
     }
 
     @Test

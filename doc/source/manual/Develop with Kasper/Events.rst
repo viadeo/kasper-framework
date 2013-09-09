@@ -175,3 +175,31 @@ and have a name ending with '**EventListener**' (recommended).
 A common job of event listeners is to send new commands to the command gateway concerning its domain or another.
 If you use the **AbstractEventListener**, you can access the **getCommandGateway()** getter in order to retrieve an (optional)
 reference to the command gateway.
+
+Events hierarchies
+------------------
+
+Kasper event listeners are parameterized with an event class, this imply they can listen for events hierarchies.
+
+You are then heavily encouraged to define at least one global event interface for each domain.
+
+Sub-hierarchies can then also be created for functional sub-areas, operations, etc..
+
+**ex** :
+
+- Event
+    - CarsOperationFinishedEvent
+    - CarsEvent
+        - CarLoansEvent
+            - CarLoanCreatedEvent
+            - CarLoanCancelledEvent
+            - CarLoanUpdatedEvent
+            - CarLoanFinishedEvent (+CarsOperationFinishedEvent)
+        - CarWashEvent
+            - CarWashOrderedEvent
+            - CarWashCancelledEvent
+            - CarWashedEvent (+CasOperationFinishedEvent)
+
+A listener can then listen for all finished operations on cars, for all car loan events, all car wash events or even all
+events occured on the Cars domain.
+

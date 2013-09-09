@@ -12,12 +12,12 @@ dependencies {
     compile project(':kasper-platform')
 
     // Third-party dependencies
-    compile libraries.DROPWIZARD_CORE
     compile libraries.SPRING_WEB
     compile libraries.SERVLET
 
     // Test projects
     testCompile project(':kasper-client')
+    testCompile libraries.JETTY_SERVLET
 
     // Test dependencies
 
