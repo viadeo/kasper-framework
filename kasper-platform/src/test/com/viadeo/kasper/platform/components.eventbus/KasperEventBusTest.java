@@ -30,13 +30,8 @@ public class KasperEventBusTest {
     @Captor
     ArgumentCaptor<GenericEventMessage<Event>> captor;
 
-    class DummyEvent extends AbstractEvent {
-        public String foo;
-
-        public DummyEvent(String bar) {
-            this.foo = bar;
-        }
-    }
+    @XKasperUnregistered
+    private static class TestEvent extends AbstractEvent { }
 
     // ------------------------------------------------------------------------
 
@@ -51,7 +46,7 @@ public class KasperEventBusTest {
     public void nominal() throws Exception {
         // Given
         final KasperEventBus eventBus = spy(new KasperEventBus());
-        final DummyEvent dummyEvent = new DummyEvent("bar");
+        final TestEvent dummyEvent = new TestEvent();
         final Context context = new DefaultContextBuilder().build();
         dummyEvent.setContext(context);
 
@@ -70,15 +65,11 @@ public class KasperEventBusTest {
     @Test(expected = IllegalStateException.class)
     public void contextAbsent() {
         final KasperEventBus eventBus = new KasperEventBus();
-        final DummyEvent dummyEvent = new DummyEvent("bar");
+        final TestEvent dummyEvent = new TestEvent();
         eventBus.publish(dummyEvent);
     }
 
     // ------------------------------------------------------------------------
-
-    @XKasperUnregistered
-    private static class TestEvent extends AbstractEvent { }
-
 
     @XKasperUnregistered
     private static class TestEventListener extends AbstractEventListener<TestEvent> {
