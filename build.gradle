@@ -20,6 +20,13 @@ allprojects  {
   group = 'com.viadeo.kasper'
   version = '0.0.14-SNAPSHOT'
 
+  idea {
+    module {
+      downloadJavadoc = true
+      downloadSources = true
+    }
+  }
+
   // Remote Maven repositories ---------
   repositories {
 
