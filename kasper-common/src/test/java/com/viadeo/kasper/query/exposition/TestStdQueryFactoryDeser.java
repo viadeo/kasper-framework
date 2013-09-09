@@ -36,26 +36,30 @@ public class TestStdQueryFactoryDeser {
         adapters.put(int.class, DefaultTypeAdapters.INT_ADAPTER);
 
         factory = new DefaultQueryFactory(adapters, ImmutableMap.<Type, BeanAdapter<?>> of(),
-                Arrays.asList(DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY),
-                VisibilityFilter.PACKAGE_PUBLIC);
+                                          Arrays.asList(DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY),
+                                          VisibilityFilter.PACKAGE_PUBLIC);
     }
 
     @Test
     public void testDeserDateTimeFromMillis() throws Exception {
-        DateTime now = DateTime.now();
+        final DateTime now = DateTime.now();
 
-        DateTime actual = DefaultTypeAdapters.DATETIME_ADAPTER.adapt(new QueryParser(Multimaps
-                .forMap(ImmutableMap.of("now", "" + now.getMillis()))).begin("now"));
+        final DateTime actual = DefaultTypeAdapters.DATETIME_ADAPTER.adapt(
+                                    new QueryParser(Multimaps.forMap(
+                                        ImmutableMap.of("now", "" + now.getMillis())
+                                    )).begin("now"));
 
         assertEquals(now, actual);
     }
     
     @Test
     public void testDeserDateTimeFromISO() throws Exception {
-        DateTime now = DateTime.now();
+        final DateTime now = DateTime.now();
 
-        DateTime actual = DefaultTypeAdapters.DATETIME_ADAPTER.adapt(new QueryParser(Multimaps
-                .forMap(ImmutableMap.of("now", now.toString()))).begin("now"));
+        final DateTime actual = DefaultTypeAdapters.DATETIME_ADAPTER.adapt(
+                                    new QueryParser(Multimaps.forMap(
+                                        ImmutableMap.of("now", now.toString())
+                                    )).begin("now"));
 
         assertEquals(now, actual);
     }
@@ -66,9 +70,11 @@ public class TestStdQueryFactoryDeser {
         // Given
         final TypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
         final SetMultimap<String, String> given = LinkedHashMultimap
-                .create(new ImmutableSetMultimap.Builder<String, String>().put("name", "foo")
-                        .put("age", "1").putAll("list", Arrays.asList("bar", "barfoo", "foobar"))
-                        .build());
+                .create(new ImmutableSetMultimap.Builder<String, String>()
+                            .put("name", "foo")
+                            .put("age", "1")
+                            .putAll("list", Arrays.asList("bar", "barfoo", "foobar"))
+                            .build());
 
         // When
         final SimpleQuery query = adapter.adapt(new QueryParser(given));
@@ -85,8 +91,11 @@ public class TestStdQueryFactoryDeser {
         // Given
         final SetMultimap<String, String> given = LinkedHashMultimap
                 .create(new ImmutableSetMultimap.Builder<String, String>()
-                        .put("field", "someValue").put("name", "foo").put("age", "1")
-                        .putAll("list", Arrays.asList("bar", "barfoo", "foobar")).build());
+                            .put("field", "someValue")
+                            .put("name", "foo")
+                            .put("age", "1")
+                            .putAll("list", Arrays.asList("bar", "barfoo", "foobar"))
+                            .build());
 
         final TypeAdapter<ComposedQuery> adapter = factory
                 .create(TypeToken.of(ComposedQuery.class));
@@ -108,9 +117,13 @@ public class TestStdQueryFactoryDeser {
         final TypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
 
         // When
-        final SimpleQuery query = adapter.adapt(new QueryParser(LinkedHashMultimap
-                .create(new ImmutableSetMultimap.Builder<String, String>()
-                        .put("field", "someValue").put("name", "foo").build())));
+        final SimpleQuery query = adapter.adapt(new QueryParser(LinkedHashMultimap.create(
+                                                        new ImmutableSetMultimap.Builder<String, String>()
+                                                            .put("field", "someValue")
+                                                            .put("name", "foo")
+                                                            .build()
+                                                    )
+                                                ));
 
         // Then
         assertEquals("foo", query.name);
@@ -127,9 +140,12 @@ public class TestStdQueryFactoryDeser {
         final TypeAdapter<BaseQuery> adapter = factory.create(TypeToken.of(BaseQuery.class));
 
         // When
-        final BaseQuery q = adapter.adapt(new QueryParser(LinkedHashMultimap
-                .create(new ImmutableSetMultimap.Builder<String, String>().put("list_foo", "bar")
-                        .build())));
+        final BaseQuery q = adapter.adapt(new QueryParser(LinkedHashMultimap.create(
+                                                    new ImmutableSetMultimap.Builder<String, String>()
+                                                        .put("list_foo", "bar")
+                                                        .build()
+                                              )
+                                         ));
 
         // Then
         assertNotNull(q.list);

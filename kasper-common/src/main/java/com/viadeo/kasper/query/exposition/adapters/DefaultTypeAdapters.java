@@ -151,10 +151,10 @@ public final class DefaultTypeAdapters {
 		}
 	};
 	
-	private static DateTime parse(QueryParser parser) {
+	private static DateTime parse(final QueryParser parser) {
 	    try {
 	        return new DateTime(parser.longValue());
-	    } catch (NumberFormatException nfe) {
+	    } catch (final NumberFormatException nfe) {
 	        return new DateTime(parser.value());
 	    }
 	}
