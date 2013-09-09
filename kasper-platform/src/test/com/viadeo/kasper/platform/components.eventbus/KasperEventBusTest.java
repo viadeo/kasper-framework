@@ -21,19 +21,14 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static com.mongodb.util.MyAsserts.assertEquals;
+import static com.viadeo.kasper.platform.components.eventbus.KasperEventBus.Policy;
+import static org.mockito.Mockito.spy;
 
 public class KasperEventBusTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBus.class);
 
     @Captor
     ArgumentCaptor<GenericEventMessage<Event>> captor;
-
-    @Mock
-    private EventBusTerminal terminal;
-
-    @InjectMocks
-    @Spy
-    private KasperEventBus eventBus = new KasperEventBus();
 
     class DummyEvent extends AbstractEvent {
         public String foo;
@@ -55,6 +50,7 @@ public class KasperEventBusTest {
     @Test
     public void nominal() throws Exception {
         // Given
+        final KasperEventBus eventBus = spy(new KasperEventBus());
         final DummyEvent dummyEvent = new DummyEvent("bar");
         final Context context = new DefaultContextBuilder().build();
         dummyEvent.setContext(context);
@@ -73,6 +69,7 @@ public class KasperEventBusTest {
 
     @Test(expected = IllegalStateException.class)
     public void contextAbsent() {
+        final KasperEventBus eventBus = new KasperEventBus();
         final DummyEvent dummyEvent = new DummyEvent("bar");
         eventBus.publish(dummyEvent);
     }
@@ -99,6 +96,10 @@ public class KasperEventBusTest {
                 Thread.sleep(LONG_RUNNING_TIME);
                 returns.add(THREAD_RETURNS);
                 LOGGER.info("Ended long running process");
+
+                /* Error should not be catched by client */
+                throw new RuntimeException("ERROR");
+
             } catch (final InterruptedException e) {
                 throw new RuntimeException(e);
             }
@@ -113,13 +114,13 @@ public class KasperEventBusTest {
     @Test
     public void asynchronous() throws InterruptedException {
         // Given
+        final KasperEventBus eventBus = new KasperEventBus();
         final List<Integer> returns = Lists.newLinkedList();
         final Event event = new TestEvent();
         final Context context = new DefaultContextBuilder().build();
 
-        eventBus.subscribe(new TestEventListener(returns));
-
         // When
+        eventBus.subscribe(new TestEventListener(returns));
         LOGGER.info("Publish event");
         eventBus.publish(event, context);
         LOGGER.info("Event published");
@@ -132,8 +133,31 @@ public class KasperEventBusTest {
         assertEquals(THREAD_RETURNS, returns.get(1));
     }
 
+    // ------------------------------------------------------------------------
+
+    @XKasperUnregistered
+    private static class TestEventErrorListener extends AbstractEventListener<TestEvent> {
+        @Override
+        public void handle(final EventMessage<TestEvent> eventMessage) {
+            throw new RuntimeException("ERROR");
+        }
+    }
+
+
     @Test
-    public void listeningError() {
+    public void listeningSyncError() {
+        // Given
+        final KasperEventBus syncEventBus = new KasperEventBus(Policy.SYNCHRONOUS);
+        final Event event = new TestEvent();
+        final Context context = new DefaultContextBuilder().build();
+
+        // When
+        syncEventBus.subscribe(new TestEventErrorListener());
+        try {
+            syncEventBus.publish(event, context);
+        } catch (final RuntimeException e) {
+            // Then ignore
+        }
     }
 
 }
