@@ -4,10 +4,10 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.platform.web;
+package com.viadeo.kasper.client.platform.web;
 
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.client.platform.Platform;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
 

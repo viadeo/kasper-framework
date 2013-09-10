@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.platform.configuration;
+package com.viadeo.kasper.client.platform.configuration;
 
 import com.codahale.metrics.Slf4jReporter;
 import com.google.common.base.Throwables;
@@ -19,10 +19,10 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.components.commandbus.KasperCommandBus;
-import com.viadeo.kasper.platform.components.eventbus.KasperEventBus;
-import com.viadeo.kasper.platform.impl.KasperPlatform;
+import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
+import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.slf4j.Logger;
@@ -346,6 +346,8 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
 
     // ------------------------------------------------------------------------
 
+    protected static final int DEFAULT_METRICS_TIMEOUT_SECONDS = 20;
+
     /**
      * Default Metrics reporter : SLF4J(DEBUG) reported once per minute
      */
@@ -362,7 +364,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
                     .convertDurationsTo(TimeUnit.MILLISECONDS)
                     .convertRatesTo(TimeUnit.SECONDS)
                     .build();
-            reporter.start(20, TimeUnit.SECONDS);
+            reporter.start(DEFAULT_METRICS_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         }
 
     }

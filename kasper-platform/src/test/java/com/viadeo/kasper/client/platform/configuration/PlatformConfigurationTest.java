@@ -4,15 +4,16 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.platform.configuration;
+package com.viadeo.kasper.client.platform.configuration;
 
+import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.platform.Platform;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.eventhandling.EventBus;
 import org.junit.Test;
@@ -49,7 +50,7 @@ public class PlatformConfigurationTest {
         final QueryGateway queryGateway =
                 this.testQueryGateway(platformConfiguration, queryServicesLocator);
 
-        final EventBus eventBus =
+        final KasperEventBus eventBus =
                 this.testEventBus(platformConfiguration);
 
         final ComponentsInstanceManager componentsInstanceManager =
@@ -153,8 +154,8 @@ public class PlatformConfigurationTest {
 
     // ------------------------------------------------------------------------
 
-    private EventBus testEventBus(final PlatformConfiguration platformConfiguration) {
-        final EventBus eventBus = platformConfiguration.eventBus();
+    private KasperEventBus testEventBus(final PlatformConfiguration platformConfiguration) {
+        final KasperEventBus eventBus = platformConfiguration.eventBus();
         assertSame(eventBus, platformConfiguration.eventBus());
 
         return eventBus;
@@ -254,7 +255,7 @@ public class PlatformConfigurationTest {
     // ------------------------------------------------------------------------
 
     private EventListenersProcessor testEventListenersProcessor(final PlatformConfiguration platformConfiguration,
-                                                                final EventBus eventBus) {
+                                                                final KasperEventBus eventBus) {
         try {
             platformConfiguration.eventListenersProcessor();
             fail();
@@ -303,7 +304,7 @@ public class PlatformConfigurationTest {
 
     private RepositoriesProcessor testRepositoriesProcessor(final PlatformConfiguration platformConfiguration,
                                                             final DomainLocator domainLocator,
-                                                            final EventBus eventBus) {
+                                                            final KasperEventBus eventBus) {
         try {
             platformConfiguration.repositoriesProcessor();
             fail();
@@ -353,7 +354,7 @@ public class PlatformConfigurationTest {
     private Platform testPlatform(final PlatformConfiguration platformConfiguration,
                                   final CommandGateway commandGateway,
                                   final QueryGateway queryGateway,
-                                  final EventBus eventBus,
+                                  final KasperEventBus eventBus,
                                   final AnnotationRootProcessor annotationRootProcessor) {
         try {
             platformConfiguration.kasperPlatform();

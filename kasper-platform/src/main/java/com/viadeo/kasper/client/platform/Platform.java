@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.platform;
+package com.viadeo.kasper.client.platform;
 
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
@@ -16,7 +16,7 @@ import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 
 /**
  * The Kasper platform

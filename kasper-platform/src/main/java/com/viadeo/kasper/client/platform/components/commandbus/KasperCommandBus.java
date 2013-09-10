@@ -1,4 +1,4 @@
-package com.viadeo.kasper.platform.components.commandbus;
+package com.viadeo.kasper.client.platform.components.commandbus;
 
 import org.axonframework.commandhandling.AsynchronousCommandBus;
 

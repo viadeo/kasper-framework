@@ -5,7 +5,7 @@
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper.platform.components.eventbus;
+package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -153,6 +153,12 @@ public class KasperEventBus extends ClusteringEventBus {
     public KasperEventBus(final ErrorHandler errorHandler) {
         super(getCluster(Policy.ASYNCHRONOUS, errorHandler));
         this.currentPolicy = Policy.ASYNCHRONOUS;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public Policy getCurrentPolicy() {
+        return this.currentPolicy;
     }
 
     // ------------------------------------------------------------------------

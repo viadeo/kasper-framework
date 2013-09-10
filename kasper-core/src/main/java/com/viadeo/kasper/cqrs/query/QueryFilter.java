@@ -13,7 +13,7 @@ import com.viadeo.kasper.context.Context;
  *
  * @see Query
  */
-public interface QueryFilter extends ServiceFilter {
+public interface QueryFilter<QS> extends ServiceFilter {
 
     /**
      * Filter a query before processing by its associated service
@@ -23,7 +23,7 @@ public interface QueryFilter extends ServiceFilter {
      *
      * @return the filtered query
      */
-	<QS extends Query, QT extends QS> QT filter(Context context, QS query);
+	QS filter(Context context, QS query);
 
 }
 

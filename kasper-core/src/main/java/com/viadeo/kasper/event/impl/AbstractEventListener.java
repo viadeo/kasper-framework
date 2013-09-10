@@ -29,10 +29,10 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 public abstract class AbstractEventListener<E extends Event>
 		implements EventListener<E> {
 
-    private static final MetricRegistry metrics = KasperMetrics.getRegistry();
-    private static final Histogram metricClassHandleTimes = metrics.histogram(name(EventListener.class, "handle-times"));
-    private static final Meter metricClassHandles = metrics.meter(name(EventListener.class, "handles"));
-    private static final Meter metricClassErrors = metrics.meter(name(EventListener.class, "errors"));
+    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
+    private static final Histogram METRICLASSHANDLETIMES = METRICS.histogram(name(EventListener.class, "handle-times"));
+    private static final Meter METRICLASSHANDLES = METRICS.meter(name(EventListener.class, "handles"));
+    private static final Meter METRICLASSERRORS = METRICS.meter(name(EventListener.class, "errors"));
 
     private final Timer metricTimer;
     private final Histogram metricHandleTimes;
@@ -58,10 +58,10 @@ public abstract class AbstractEventListener<E extends Event>
 		}
 
         /* Start timer */
-        metricTimer = metrics.timer(name(this.getClass(), "handle-time"));
-        metricHandleTimes = metrics.histogram(name(this.getClass(), "handle-times"));
-        metricHandles = metrics.meter(name(this.getClass(), "handles"));
-        metricErrors = metrics.meter(name(this.getClass(), "errors"));
+        metricTimer = METRICS.timer(name(this.getClass(), "handle-time"));
+        metricHandleTimes = METRICS.histogram(name(this.getClass(), "handle-times"));
+        metricHandles = METRICS.meter(name(this.getClass(), "handles"));
+        metricErrors = METRICS.meter(name(this.getClass(), "errors"));
 	}
 	
 	// ------------------------------------------------------------------------
@@ -108,15 +108,15 @@ public abstract class AbstractEventListener<E extends Event>
                 this.handle((E) eventMessage.getPayload());
             }
         } catch (final RuntimeException e) {
-            metricClassErrors.mark();
+            METRICLASSERRORS.mark();
             metricErrors.mark();
             throw e;
         } finally {
             /* Stop timer and record a tick */
             final long time = timer.stop();
-            metricClassHandleTimes.update(time);
+            METRICLASSHANDLETIMES.update(time);
             metricHandleTimes.update(time);
-            metricClassHandles.mark();
+            METRICLASSHANDLES.mark();
             metricHandles.mark();
         }
 	}

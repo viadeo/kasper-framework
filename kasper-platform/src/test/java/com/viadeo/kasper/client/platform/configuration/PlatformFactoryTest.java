@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.platform.configuration;
+package com.viadeo.kasper.client.platform.configuration;
 
 import org.junit.Test;
 

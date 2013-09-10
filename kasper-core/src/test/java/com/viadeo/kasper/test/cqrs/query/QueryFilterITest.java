@@ -39,35 +39,35 @@ public class QueryFilterITest {
     }
 
     @XKasperUnregistered
-    private class TestResult implements QueryPayload {
+    private class TestPayload implements QueryPayload {
         public int state = STATE_START;
     }
 
     @XKasperUnregistered
-    private class TestService implements QueryService<TestQuery, TestResult> {
+    private class TestService implements QueryService<TestQuery, TestPayload> {
         @Override
-        public QueryResult<TestResult> retrieve(final QueryMessage message) throws Exception {
-            return new QueryResult<TestResult>(new TestResult());
+        public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception {
+            return new QueryResult<>(new TestPayload());
         }
     }
 
     @XKasperUnregistered
-    private class TestFilter implements QueryFilter, ResultFilter {
+    private class TestFilter implements QueryFilter<TestQuery>, ResultFilter<TestPayload> {
         @Override
-        public Query filter(final Context context, final Query query) throws KasperQueryException {
-            ((TestQuery) query).state = STATE_MODIFIED;
-            return query;
-        }
-
-        @Override
-        public QueryResult filter(final Context context, final QueryResult result) throws KasperQueryException {
-            ((TestResult) result.getPayload()).state = STATE_MODIFIED;
+        public QueryResult<TestPayload> filter(final Context context, final QueryResult<TestPayload> result) {
+            result.getPayload().state = STATE_MODIFIED;
             return result;
         }
+
+        @Override
+        public TestQuery filter(Context context, TestQuery query) {
+            query.state = STATE_MODIFIED;
+            return query;
+        }
     }
 
     @XKasperUnregistered
-    private class TestFilterGlobal implements QueryFilter {
+    private class TestFilterGlobal implements QueryFilter<Query> {
         @Override
         public Query filter(final Context context, final Query query) throws KasperQueryException {
             return query;
@@ -77,6 +77,7 @@ public class QueryFilterITest {
     // ------------------------------------------------------------------------
 
     @Test
+    @SuppressWarnings("unchecked") // Safe
     public void queryFilterShouldBeCalled() throws Exception {
 
         // Given
@@ -97,10 +98,10 @@ public class QueryFilterITest {
         final TestQuery query = new TestQuery();
 
         // When
-        final QueryResult<TestResult> queryResult = gateway.retrieve(query, context);
+        final QueryResult<TestPayload> queryResult = gateway.retrieve(query, context);
 
         // Then
-        verify(filter).filter(eq(context), any(Query.class));
+        verify(filter).filter(eq(context), any(TestQuery.class));
         assertEquals(STATE_MODIFIED, query.state);
 
         verify(filter).filter(eq(context), any(QueryResult.class));

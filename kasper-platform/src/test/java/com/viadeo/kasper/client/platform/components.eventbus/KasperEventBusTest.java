@@ -1,4 +1,4 @@
-package com.viadeo.kasper.platform.components.eventbus;
+package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
@@ -11,17 +11,19 @@ import com.viadeo.kasper.event.impl.AbstractEvent;
 import com.viadeo.kasper.event.impl.AbstractEventListener;
 import junit.framework.Assert;
 import org.axonframework.domain.GenericEventMessage;
-import org.axonframework.eventhandling.EventBusTerminal;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 import static com.mongodb.util.MyAsserts.assertEquals;
-import static com.viadeo.kasper.platform.components.eventbus.KasperEventBus.Policy;
+import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus.Policy;
 import static org.mockito.Mockito.spy;
 
 public class KasperEventBusTest {

@@ -8,8 +8,8 @@ package com.viadeo.kasper.exposition;
 
 import com.viadeo.kasper.client.KasperClient;
 import com.viadeo.kasper.client.KasperClientBuilder;
-import com.viadeo.kasper.platform.configuration.DefaultPlatformSpringConfiguration;
-import com.viadeo.kasper.platform.web.KasperPlatformBootListener;
+import com.viadeo.kasper.client.platform.configuration.DefaultPlatformSpringConfiguration;
+import com.viadeo.kasper.client.platform.web.KasperPlatformBootListener;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;

@@ -38,6 +38,7 @@ public abstract class AbstractEvent implements Event {
 	 * @see com.viadeo.kasper.event.Event#setContext(com.viadeo.kasper.context.Context)
 	 */
 	@Override
+    @SuppressWarnings("unchecked") // Client must ensure correct type
 	public <E extends Event> E setContext(final Context context) {
 		this.context = context;
         return (E) this;

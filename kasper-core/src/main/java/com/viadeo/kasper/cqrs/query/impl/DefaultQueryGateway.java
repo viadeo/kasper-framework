@@ -28,12 +28,12 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 /** The Kasper gateway base implementation */
 public class DefaultQueryGateway implements QueryGateway {
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultQueryGateway.class);
-    private static final MetricRegistry metrics = KasperMetrics.getRegistry();
+    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
-    private static final Timer metricClassTimer = metrics.timer(name(QueryGateway.class, "requests-time"));
-    private static final Histogram metricClassRequestsTimes = metrics.histogram(name(QueryGateway.class, "requests-times"));
-    private static final Meter metricClassRequests = metrics.meter(name(QueryGateway.class, "requests"));
-    private static final Meter metricClassErrors = metrics.meter(name(QueryGateway.class, "errors"));
+    private static final Timer METRICLASSTIMER = METRICS.timer(name(QueryGateway.class, "requests-time"));
+    private static final Histogram METRICLASSREQUESTSTIME = METRICS.histogram(name(QueryGateway.class, "requests-times"));
+    private static final Meter METRICLASSREQUESTS = METRICS.meter(name(QueryGateway.class, "requests"));
+    private static final Meter METRICLASSERRORS = METRICS.meter(name(QueryGateway.class, "errors"));
 
     private QueryServicesLocator queryServicesLocator;
 
@@ -51,8 +51,8 @@ public class DefaultQueryGateway implements QueryGateway {
         final Class<? extends Query> queryClass = query.getClass();
 
         /* Start request timer */
-        final Timer.Context classTimer = metricClassTimer.time();
-        final Timer.Context timer = metrics.timer(name(queryClass, "requests-time")).time();
+        final Timer.Context classTimer = METRICLASSTIMER.time();
+        final Timer.Context timer = METRICS.timer(name(queryClass, "requests-time")).time();
 
         /* Sets current thread context */
         CurrentContext.set(context);
@@ -78,13 +78,13 @@ public class DefaultQueryGateway implements QueryGateway {
         final Class<? extends QueryService<?, ?>> serviceClass = (Class<? extends QueryService<?, ?>>) service.getClass();
         final Collection<ServiceFilter> filters = this.queryServicesLocator.getFiltersForServiceClass(serviceClass);
         if (!filters.isEmpty()) {
-            final Timer.Context timerFilters = metrics.timer(name(queryClass, "requests-query-filters-time")).time();
+            final Timer.Context timerFilters = METRICS.timer(name(queryClass, "requests-query-filters-time")).time();
             for (final ServiceFilter filter : filters) {
                 if (QueryFilter.class.isAssignableFrom(filter.getClass())) {
                     LOGGER.info(String.format("Apply query filter %s", filter.getClass().getSimpleName()));
 
                     /* Apply filter */
-                    query = ((QueryFilter) filter).filter(context, query);
+                    query = ((QueryFilter<Query>) filter).filter(context, query);
                 }
             }
             timerFilters.stop();
@@ -117,13 +117,13 @@ public class DefaultQueryGateway implements QueryGateway {
 
             /* Apply Result filters if needed */
             if ((null != ret.getPayload()) && !filters.isEmpty()) {
-                final Timer.Context timerFilters = metrics.timer(name(queryClass, "requests-result-filters-time")).time();
+                final Timer.Context timerFilters = METRICS.timer(name(queryClass, "requests-result-filters-time")).time();
                 for (final ServiceFilter filter : filters) {
                     if (ResultFilter.class.isAssignableFrom(filter.getClass())) {
                         LOGGER.info(String.format("Apply Result filter %s", filter.getClass().getSimpleName()));
 
                         /* Apply filter */
-                        ret = ((ResultFilter) filter).filter(context, ret);
+                        ret = ((ResultFilter<PAYLOAD>) filter).filter(context, ret);
                     }
                 }
                 timerFilters.stop();
@@ -133,13 +133,13 @@ public class DefaultQueryGateway implements QueryGateway {
         /* Monitor the request calls */
         timer.stop();
         final long time = classTimer.stop();
-        metricClassRequestsTimes.update(time);
-        metrics.histogram(name(queryClass, "requests-times")).update(time);
-        metricClassRequests.mark();
-        metrics.meter(name(queryClass, "requests")).mark();
+        METRICLASSREQUESTSTIME.update(time);
+        METRICS.histogram(name(queryClass, "requests-times")).update(time);
+        METRICLASSREQUESTS.mark();
+        METRICS.meter(name(queryClass, "requests")).mark();
         if ((null != exception) || ret.isError()) {
-            metricClassErrors.mark();
-            metrics.meter(name(queryClass, "errors")).mark();
+            METRICLASSERRORS.mark();
+            METRICS.meter(name(queryClass, "errors")).mark();
         }
 
         if (null != exception) {
