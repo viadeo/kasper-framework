@@ -21,10 +21,13 @@ import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.components.eventbus.KasperEventBus;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
 
 import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The default implementation for the Kasper platform
@@ -35,7 +38,7 @@ public class KasperPlatform implements Platform {
     protected CommandGateway commandGateway;
     protected QueryGateway queryGateway;
     protected AnnotationRootProcessor rootProcessor;
-    protected EventBus eventBus;
+    protected KasperEventBus eventBus;
 
     private volatile Boolean booted = false;
 
@@ -63,7 +66,7 @@ public class KasperPlatform implements Platform {
 
     @Override
     public void setCommandGateway(final CommandGateway commandGateway) {
-        this.commandGateway = Preconditions.checkNotNull(commandGateway);
+        this.commandGateway = checkNotNull(commandGateway);
     }
 
     @Override
@@ -73,7 +76,7 @@ public class KasperPlatform implements Platform {
 
     @Override
     public void sendCommand(final Command command, final Context context) throws Exception {
-        this.commandGateway.sendCommand(command, context);
+        this.commandGateway.sendCommand(checkNotNull(command), checkNotNull(context));
     }
 
     // ------------------------------------------------------------------------
@@ -85,7 +88,7 @@ public class KasperPlatform implements Platform {
 
     @Override
     public void setRootProcessor(final AnnotationRootProcessor rootProcessor) {
-        this.rootProcessor = Preconditions.checkNotNull(rootProcessor);
+        this.rootProcessor = checkNotNull(rootProcessor);
     }
 
     @Override
@@ -97,7 +100,7 @@ public class KasperPlatform implements Platform {
 
     @Override
     public void setQueryGateway(final QueryGateway queryGateway) {
-        this.queryGateway = Preconditions.checkNotNull(queryGateway);
+        this.queryGateway = checkNotNull(queryGateway);
     }
 
     @Override
@@ -107,46 +110,29 @@ public class KasperPlatform implements Platform {
 
     @Override
     public <PAYLOAD extends QueryPayload> QueryResult<PAYLOAD> retrieve(final Query query, final Context context) throws Exception {
-        return this.queryGateway.retrieve(query, context);
+        return this.queryGateway.retrieve(checkNotNull(query), checkNotNull(context));
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public void setEventBus(final EventBus eventBus) {
-        this.eventBus = Preconditions.checkNotNull(eventBus);
+    public void setEventBus(final KasperEventBus eventBus) {
+        this.eventBus = checkNotNull(eventBus);
     }
 
     @Override
-    public EventBus getEventBus() {
+    public KasperEventBus getEventBus() {
         return this.eventBus;
     }
 
     @Override
     public void publishEvent(final Event event) {
-        Preconditions.checkNotNull(event);
-        Preconditions.checkState(event.getContext().isPresent(), "Context must be present !");
-
-        final Context context = event.getContext().get();
-
-        /* Sets a valid Kasper correlation id if required */
-        if (AbstractContext.class.isAssignableFrom(context.getClass())) {
-            final AbstractContext kasperContext = (AbstractContext) context;
-            kasperContext.setValidKasperCorrelationId();
-        }
-
-        final Map<String, Object> metaData = Maps.newHashMap();
-        metaData.put(Context.METANAME, Preconditions.checkNotNull(context));
-
-        final GenericEventMessage<Event> eventMessageAxon =
-                new GenericEventMessage<>(event, metaData);
-
-        this.eventBus.publish(eventMessageAxon);
+        this.eventBus.publish(checkNotNull(event));
     }
 
     @Override
     public void publishEvent(final Event event, final Context context) {
-        Preconditions.checkNotNull(event).setContext(context);
+        checkNotNull(event).setContext(context);
         this.publishEvent(event);
     }
 

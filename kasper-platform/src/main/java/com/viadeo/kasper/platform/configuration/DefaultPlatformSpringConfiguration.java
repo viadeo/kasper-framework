@@ -11,6 +11,7 @@ import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
+import com.viadeo.kasper.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.platform.impl.KasperPlatform;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.eventhandling.EventBus;
@@ -53,7 +54,7 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
     @Override
     public KasperPlatform kasperPlatform(final CommandGateway commandGateway
             , final QueryGateway queryGateway
-            , final EventBus eventBus
+            , final KasperEventBus eventBus
             , final AnnotationRootProcessor annotationRootProcessor
     ) {
         return super.kasperPlatform(commandGateway, queryGateway, eventBus, annotationRootProcessor);
@@ -61,7 +62,7 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public EventBus eventBus(){
+    public KasperEventBus eventBus(){
         return super.eventBus();
     }
 
@@ -97,7 +98,7 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public RepositoriesProcessor repositoriesProcessor(final DomainLocator locator, final EventBus eventBus){
+    public RepositoriesProcessor repositoriesProcessor(final DomainLocator locator, final KasperEventBus eventBus){
         return super.repositoriesProcessor(locator, eventBus);
     }
 
@@ -109,7 +110,7 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public EventListenersProcessor eventListenersProcessor(final EventBus eventBus){
+    public EventListenersProcessor eventListenersProcessor(final KasperEventBus eventBus){
         return super.eventListenersProcessor(eventBus);
     }
 

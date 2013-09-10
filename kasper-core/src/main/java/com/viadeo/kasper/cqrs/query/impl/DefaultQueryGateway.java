@@ -108,7 +108,7 @@ public class DefaultQueryGateway implements QueryGateway {
                     throw e;
                 }
             }
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             exception = e;
         }
 

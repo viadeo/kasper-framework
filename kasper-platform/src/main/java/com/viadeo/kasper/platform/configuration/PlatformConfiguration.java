@@ -11,9 +11,9 @@ import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
+import com.viadeo.kasper.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.platform.impl.KasperPlatform;
 import org.axonframework.commandhandling.CommandBus;
-import org.axonframework.eventhandling.EventBus;
 
 /**
  * Kasper platform components configuration
@@ -56,7 +56,7 @@ public interface PlatformConfiguration {
      */
      KasperPlatform kasperPlatform(CommandGateway commandGateway
             ,  QueryGateway queryGateway
-            ,  EventBus eventBus
+            ,  KasperEventBus eventBus
             ,  AnnotationRootProcessor annotationRootProcessor
      );
      KasperPlatform kasperPlatform();
@@ -64,7 +64,7 @@ public interface PlatformConfiguration {
     /**
      * @return the event bus
      */
-     EventBus eventBus();
+     KasperEventBus eventBus();
 
     /**
      * Warning : override the two methods at once
@@ -124,7 +124,7 @@ public interface PlatformConfiguration {
      * @param eventBus the event bus to be used
      * @return the processor
      */
-     EventListenersProcessor eventListenersProcessor(EventBus eventBus);
+     EventListenersProcessor eventListenersProcessor(KasperEventBus eventBus);
      EventListenersProcessor eventListenersProcessor();
 
     /**
@@ -143,7 +143,7 @@ public interface PlatformConfiguration {
      * @param eventBus the event bus to be used
      * @return the processor
      */
-     RepositoriesProcessor repositoriesProcessor(DomainLocator locator, EventBus eventBus);
+     RepositoriesProcessor repositoriesProcessor(DomainLocator locator, KasperEventBus eventBus);
      RepositoriesProcessor repositoriesProcessor();
 
     /**

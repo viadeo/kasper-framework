@@ -107,7 +107,7 @@ public abstract class AbstractEventListener<E extends Event>
             } catch (final UnsupportedOperationException e) {
                 this.handle((E) eventMessage.getPayload());
             }
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             metricClassErrors.mark();
             metricErrors.mark();
             throw e;
