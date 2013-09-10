@@ -12,6 +12,7 @@ import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.platform.Platform;
+import com.viadeo.kasper.platform.components.eventbus.KasperEventBus;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.eventhandling.EventBus;
 
@@ -50,7 +51,7 @@ public class PlatformFactory {
         final QueryGateway queryGateway = platformConfiguration.queryGateway(queryServicesLocator);
 
         // -- EVENT
-        final EventBus eventBus = platformConfiguration.eventBus();
+        final KasperEventBus eventBus = platformConfiguration.eventBus();
 
         // -- ROOT PROCESSING
         final ComponentsInstanceManager componentsInstanceManager = platformConfiguration.getComponentsInstanceManager();

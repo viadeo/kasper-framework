@@ -25,7 +25,6 @@ import com.viadeo.kasper.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.platform.impl.KasperPlatform;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
-import org.axonframework.eventhandling.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
@@ -90,7 +89,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     @Override
     public KasperPlatform kasperPlatform(final CommandGateway commandGateway
             , final QueryGateway queryGateway
-            , final EventBus eventBus
+            , final KasperEventBus eventBus
             , final AnnotationRootProcessor annotationRootProcessor) {
 
         this.ensureNotPresent(KasperPlatform.class);
@@ -117,14 +116,14 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public EventBus eventBus() {
-        if (components.containsKey(EventBus.class)) {
-            return components.getInstance(EventBus.class);
+    public KasperEventBus eventBus() {
+        if (components.containsKey(KasperEventBus.class)) {
+            return components.getInstance(KasperEventBus.class);
         } else {
 
-            final EventBus eventBus = new KasperEventBus();
+            final KasperEventBus eventBus = new KasperEventBus();
 
-            components.putInstance(EventBus.class, eventBus);
+            components.putInstance(KasperEventBus.class, eventBus);
             return eventBus;
 
         }
@@ -239,7 +238,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public RepositoriesProcessor repositoriesProcessor(final DomainLocator locator, final EventBus eventBus){
+    public RepositoriesProcessor repositoriesProcessor(final DomainLocator locator, final KasperEventBus eventBus){
         this.ensureNotPresent(RepositoriesProcessor.class);
 
         final RepositoriesProcessor repositoriesProcessor = new RepositoriesProcessor();
@@ -276,7 +275,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public EventListenersProcessor eventListenersProcessor(final EventBus eventBus){
+    public EventListenersProcessor eventListenersProcessor(final KasperEventBus eventBus){
         this.ensureNotPresent(EventListenersProcessor.class);
 
         final EventListenersProcessor eventListenersProcessor = new EventListenersProcessor();

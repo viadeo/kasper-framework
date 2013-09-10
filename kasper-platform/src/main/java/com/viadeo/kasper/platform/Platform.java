@@ -16,7 +16,7 @@ import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.event.Event;
-import org.axonframework.eventhandling.EventBus;
+import com.viadeo.kasper.platform.components.eventbus.KasperEventBus;
 
 /**
  * The Kasper platform
@@ -131,12 +131,12 @@ public interface Platform {
      *
      * @param eventBus the event bus to be used by the platform
      */
-	void setEventBus(EventBus eventBus);
+	void setEventBus(KasperEventBus eventBus);
 
     /**
      * @return the event bus used by the platform
      */
-    EventBus getEventBus();
+    KasperEventBus getEventBus();
 
     /**
      * Publish an event to the platform, the event must contains the context
