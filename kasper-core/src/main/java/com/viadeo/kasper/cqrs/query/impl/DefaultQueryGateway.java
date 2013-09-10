@@ -65,7 +65,7 @@ public class DefaultQueryGateway implements QueryGateway {
 
         if (!optService.isPresent()) {
             timer.close();
-            classTimer.close();;
+            classTimer.close();
             throw new KasperException("Unable to find the service implementing query class " + queryClass);
         }
 
