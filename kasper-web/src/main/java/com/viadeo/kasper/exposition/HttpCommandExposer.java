@@ -152,13 +152,15 @@ public class HttpCommandExposer extends HttpExposer {
         } catch (final IOException e) {
 
             LOGGER.error("Error parse command [" + commandClass.getName() + "]", e);
-            sendError(resp, HttpServletResponse.SC_BAD_REQUEST, e.getMessage());
+            final String errorMessage = (null == e.getMessage()) ? "Unknown" : e.getMessage();
+            sendError(resp, HttpServletResponse.SC_BAD_REQUEST, errorMessage);
 
         } catch (final Throwable th) {
 
             // we catch any other exception in order to still respond with json
             LOGGER.error("Error for command [" + commandClass.getName() + "]", th);
-            sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, th.getMessage());
+            final String errorMessage = (null == th.getMessage()) ? "Unknown" : th.getMessage();
+            sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
 
         } finally {
             if (null != parser) {
@@ -219,7 +221,7 @@ public class HttpCommandExposer extends HttpExposer {
                                       final CommandResult result, final Exception e) throws IOException {
          this.sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                   String.format("Error outputting result to JSON for command [%s] and result [%s]error = %s",
-                          commandClass.getSimpleName(), result, e.getMessage()));
+                          commandClass.getSimpleName(), result, e));
     }
 
     // ------------------------------------------------------------------------
@@ -238,11 +240,12 @@ public class HttpCommandExposer extends HttpExposer {
         LOGGER.error(reason);
 
         /* set an error status and a message */
-        response.setStatus(status, reason);
+        response.setStatus(status, checkNotNull(reason));
 
         /* write also into the body the result as json */
         mapper.writer().writeValue(response.getOutputStream(),
-                                   CommandResult.error(new KasperError(CoreErrorCode.UNKNOWN_ERROR, reason)));
+                                   CommandResult.error(
+                                          new KasperError(CoreErrorCode.UNKNOWN_ERROR, reason)));
     }
 
     // ------------------------------------------------------------------------

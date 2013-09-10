@@ -244,7 +244,7 @@ public class HttpQueryExposer extends HttpExposer {
         final ObjectWriter writer = mapper.writer();
 
         final KasperError error;
-        if (exception != null) {
+        if ((null != exception) && (null != exception.getMessage())) {
             error = new KasperError(CoreErrorCode.UNKNOWN_ERROR, message, exception.getMessage());
         } else {
             error = new KasperError(CoreErrorCode.UNKNOWN_ERROR, message);

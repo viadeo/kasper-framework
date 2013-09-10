@@ -27,29 +27,29 @@ public final class KasperError implements Serializable, Immutable {
 
     public KasperError(final String code, final String message) {
         this.code = checkNotNull(code);
-        this.messages = new ImmutableList.Builder<String>().add(message).build();
+        this.messages = new ImmutableList.Builder<String>().add(checkNotNull(message)).build();
     }
 
     public KasperError(final String code, final String...messages) {
         this.code = checkNotNull(code);
-        this.messages = ImmutableList.copyOf(messages);
+        this.messages = ImmutableList.copyOf(checkNotNull(messages));
     }
     
     public KasperError(final String code, final Collection<String> messages) {
         this.code = checkNotNull(code);
-        this.messages = ImmutableList.copyOf(messages);
+        this.messages = ImmutableList.copyOf(checkNotNull(messages));
     }
 
     public KasperError(final CoreErrorCode code, final String message) {
-        this(checkNotNull(code).toString(), message);
+        this(checkNotNull(code).toString(), checkNotNull(message));
     }
 
     public KasperError(final CoreErrorCode code, final String...messages) {
-        this(checkNotNull(code).toString(), messages);
+        this(checkNotNull(code).toString(), checkNotNull(messages));
     }
 
     public KasperError(final CoreErrorCode code, final Collection<String> messages) {
-        this(checkNotNull(code).toString(), messages);
+        this(checkNotNull(code).toString(), checkNotNull(messages));
     }
 
     // ------------------------------------------------------------------------
