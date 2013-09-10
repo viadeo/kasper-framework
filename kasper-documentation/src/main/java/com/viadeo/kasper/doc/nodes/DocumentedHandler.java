@@ -55,7 +55,6 @@ public final class DocumentedHandler extends DocumentedDomainNode {
 		this.setName(handlerClazz.getSimpleName());
 		this.setDescription(description);
 		this.setDomainName(domainName);
-		this.getKasperLibrary().registerHandler(this, this.commandName);
 	}	
 	
 	// ------------------------------------------------------------------------

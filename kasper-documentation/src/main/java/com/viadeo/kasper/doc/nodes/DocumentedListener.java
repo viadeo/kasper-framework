@@ -53,7 +53,6 @@ public final class DocumentedListener extends DocumentedDomainNode {
 		this.setName(listenerClazz.getSimpleName());
 		this.setDescription(description);
 		this.setDomainName(domainName);
-		this.getKasperLibrary().registerListener(this, this.eventName);
 	}	
 	
 	// ------------------------------------------------------------------------
@@ -72,5 +71,11 @@ public final class DocumentedListener extends DocumentedDomainNode {
 			.setDescription("[Not resolved]")
 			.toSimpleNode();
 	}
-	
+
+    // ------------------------------------------------------------------------
+
+    public String getEventName(){
+        return this.eventName;
+    }
+
 }

@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 
 /**
  *
- * Base marker for Kasper commands
+ * Base marker for Kasper queries
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)
