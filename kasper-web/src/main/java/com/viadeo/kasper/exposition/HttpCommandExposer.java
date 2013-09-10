@@ -43,7 +43,7 @@ public class HttpCommandExposer extends HttpExposer {
     private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
     private final transient DomainLocator domainLocator;
     private final ObjectMapper mapper;
-    private final CommandGateway commandGateway;
+    private final transient CommandGateway commandGateway;
 
     // ------------------------------------------------------------------------
 

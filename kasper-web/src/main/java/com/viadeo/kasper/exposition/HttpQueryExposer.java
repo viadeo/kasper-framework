@@ -49,7 +49,7 @@ public class HttpQueryExposer extends HttpExposer {
     private final transient QueryServicesLocator queryServicesLocator;
     private final transient QueryFactory queryAdapterFactory;
     private final ObjectMapper mapper;
-    private final QueryGateway queryGateway;
+    private final transient QueryGateway queryGateway;
 
     // ------------------------------------------------------------------------
 
