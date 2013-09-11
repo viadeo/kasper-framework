@@ -10,6 +10,12 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQuery;
 import com.viadeo.kasper.doc.KasperLibrary;
+import com.viadeo.kasper.exception.KasperException;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public final class DocumentedQuery extends DocumentedDomainNode{
 
@@ -58,15 +64,9 @@ public final class DocumentedQuery extends DocumentedDomainNode{
 
     // ----------------------------------------------------------------------
 
-    public DocumentedNode getQueryService(){
+    public Collection<DocumentedNode> getQueryService(){
         final KasperLibrary kl=this.getKasperLibrary();
-        final Optional<DocumentedQueryService> queryService=kl.getQueryServiceForQuery(getName());
-
-        if (queryService.isPresent()){
-            return kl.getSimpleNodeFrom(queryService.get());
-        }
-
-        return null;
+        return kl.simpleNodesFrom( kl.getQueryServicesForQuery(getName()) ).values();
     }
 
     // ----------------------------------------------------------------------
@@ -78,11 +78,19 @@ public final class DocumentedQuery extends DocumentedDomainNode{
     // ----------------------------------------------------------------------
 
     public DocumentedNode getDomain(){
-        final Optional<DocumentedQueryService> queryService=
-                this.getKasperLibrary().getQueryServiceForQuery(this.getName());
+        final List<DocumentedQueryService> queryServices=
+                this.getKasperLibrary().getQueryServicesForQuery(this.getName());
 
-        if (queryService.isPresent()){
-            return new DocumentedNode(queryService.get().getDomain());
+        Set<DocumentedNode> domains=new HashSet<DocumentedNode>();
+        for (DocumentedQueryService queryService:queryServices){
+            domains.add(queryService.getDomain());
+        }
+        if (!domains.isEmpty()){
+            if (1==domains.size()){
+                return domains.iterator().next();
+            } else {
+                throw new KasperException("More than one domain found");
+            }
         }
         return null;
     }

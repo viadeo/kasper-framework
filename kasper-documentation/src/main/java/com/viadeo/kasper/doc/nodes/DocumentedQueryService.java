@@ -9,6 +9,7 @@ package com.viadeo.kasper.doc.nodes;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
@@ -23,8 +24,9 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
 	public static final String PLURAL_TYPE_NAME = "queryservices";
 
     private String queryName;
+	private String queryPayloadName;
 	//private DocumentedBean query = null;
-	private DocumentedBean response = null;
+	//private DocumentedBean response = null;
 	
 	// ------------------------------------------------------------------------
 
@@ -36,7 +38,7 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
 	public DocumentedQueryService(final KasperLibrary kl, final Class<? extends QueryService<?,?>> queryServiceClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 
-        // Extract command type from handler -----------------------------------------
+        // Extract query type from queryService -----------------------------------------
         @SuppressWarnings("unchecked") // Safe
         final Optional<Class<? extends Query>> queryClazz=
                 (Optional<Class<? extends Query>>)
@@ -44,7 +46,17 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
                         queryServiceClazz, QueryService.class, QueryService.PARAMETER_QUERY_POSITION);
 
         if (!queryClazz.isPresent()){
-            throw new KasperException("Unable to find query type for handler" + queryClazz.getClass());
+            throw new KasperException("Unable to find query type for queryService" + queryServiceClazz.getClass());
+        }
+
+        @SuppressWarnings("unchecked") // Safe
+        final Optional<Class<? extends QueryPayload>> queryPayloadClazz=
+                (Optional<Class<? extends QueryPayload>>)
+                        ReflectionGenericsResolver.getParameterTypeFromClass(
+                                queryServiceClazz, QueryService.class,QueryService.PARAMETER_RESULT_POSITION);
+
+        if (!queryPayloadClazz.isPresent()){
+            throw new KasperException("Unable to find queryPayload type for queryService" + queryServiceClazz.getClasses());
         }
 
         final XKasperQueryService annotation = queryServiceClazz.getAnnotation(XKasperQueryService.class);
@@ -74,15 +86,15 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
 								queryServiceClazz, QueryService.class, QueryService.PARAMETER_QUERY_POSITION);
 		this.query = new DocumentedBean(optQueryClass.get());*/
         this.queryName=queryClazz.get().getSimpleName();
-		
+		this.queryPayloadName=queryPayloadClazz.get().getSimpleName();
 		// - the Result -------------------------------------------------------
-		@SuppressWarnings("unchecked") // Safe
+		/*@SuppressWarnings("unchecked") // Safe
 		final Optional<Class<? extends QueryResult>> optQueryResultClass =
 				(Optional<Class<? extends QueryResult>>)
 						ReflectionGenericsResolver.getParameterTypeFromClass(
 								queryServiceClazz, QueryService.class, QueryService.PARAMETER_RESULT_POSITION);
 
-		this.response = new DocumentedBean(optQueryResultClass.get());
+		this.response = new DocumentedBean(optQueryResultClass.get());*/
 	}
 
 	// ------------------------------------------------------------------------
@@ -108,8 +120,23 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
 
 	// ------------------------------------------------------------------------
 
-	public DocumentedBean getResponse() {
-		return this.response;
-	}	
+    public DocumentedNode getQueryPayload(){
+        final KasperLibrary kl=this.getKasperLibrary();
+        final Optional<DocumentedQueryPayload> queryPayload=kl.getQueryPayload(this.queryPayloadName);
+
+        if (queryPayload.isPresent()){
+            return kl.getSimpleNodeFrom(queryPayload.get());
+        }
+
+        return new DocumentedQueryPayload(getKasperLibrary())
+                .setDomainName(getDomainName())
+                .setName(this.queryPayloadName)
+                .setDescription("[Not resolved]")
+                .toSimpleNode();
+    }
+    @JsonIgnore
+    public String getQueryPayloadName(){
+        return this.queryPayloadName;
+    }
 
 }

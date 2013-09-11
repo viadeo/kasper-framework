@@ -68,4 +68,9 @@ public class DefaultAutoDocumentationSpringConfiguration extends DefaultAutoDocu
         return super.getQueriesDocumentationProcessor(library);
     }
 
+    @Bean
+    public QueryPayloadsDocumentationProcessor getQueryPayloadsDocumentationProcessor(final KasperLibrary library){
+        return super.getQueryPayloadsDocumentationProcessor(library);
+    }
+
 }
