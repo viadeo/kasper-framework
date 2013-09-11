@@ -14,6 +14,8 @@ import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.thoughtworks.paranamer.*;
 import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.query.exposition.Feature;
+import com.viadeo.kasper.query.exposition.FeatureConfiguration;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.adapters.NullSafeTypeAdapter;
 import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
@@ -56,6 +58,7 @@ public class DefaultQueryFactory implements QueryFactory {
     private final ConcurrentMap<Type, TypeAdapter<?>> adapters;
     private final Map<Type, BeanAdapter<?>> beanAdapters;
     private final List<TypeAdapterFactory<?>> factories;
+    private final FeatureConfiguration features;
 
     private final VisibilityFilter visibilityFilter;
     private final Paranamer paranamer = new CachingParanamer(new AdaptiveParanamer(
@@ -63,11 +66,11 @@ public class DefaultQueryFactory implements QueryFactory {
 
     // ------------------------------------------------------------------------
 
-    public DefaultQueryFactory(final Map<Type, TypeAdapter<?>> adapters,
+    public DefaultQueryFactory(final FeatureConfiguration features, final Map<Type, TypeAdapter<?>> adapters,
                                final Map<Type, BeanAdapter<?>> beanAdapters,
                                final List<? extends TypeAdapterFactory<?>> factories,
                                final VisibilityFilter visibilityFilter) {
-
+        this.features = checkNotNull(features);
         this.visibilityFilter = checkNotNull(visibilityFilter);
         this.factories = Lists.newArrayList(checkNotNull(factories));
 
@@ -221,7 +224,7 @@ public class DefaultQueryFactory implements QueryFactory {
             }
         }
 
-        if (retAdapters.isEmpty()) {
+        if (features.has(Feature.FAIL_ON_EMPTY_BEANS) && retAdapters.isEmpty()) {
             throw new KasperQueryAdapterException("No property has been discovered for query "
                     + typeToken.getRawType());
         }
