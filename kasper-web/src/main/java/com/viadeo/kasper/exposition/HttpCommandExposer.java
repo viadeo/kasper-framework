@@ -25,6 +25,7 @@ import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +34,7 @@ import java.beans.Introspector;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -108,7 +110,10 @@ public class HttpCommandExposer extends HttpExposer {
 
     private void handleCommand(final HttpServletRequest req, final HttpServletResponse resp)
             throws IOException {
-
+        String uuid = UUID.randomUUID().toString();
+        long start = System.currentTimeMillis();
+        MDC.put("correlationId", uuid);
+        resp.addHeader("UUID",uuid);
         REQUEST_LOGGER.info("Processing Command : " + req.getMethod() + " " + getFullRequestURI(req));
 
         /* always respond with a json stream (even if empty) */
@@ -120,6 +125,7 @@ public class HttpCommandExposer extends HttpExposer {
         /* locate corresponding command class */
         final Class<? extends Command> commandClass = exposedCommands.get(commandName);
         if (null == commandClass) {
+            REQUEST_LOGGER.info("Response: '{}' Execution Time '{}' ms ",HttpServletResponse.SC_NOT_FOUND, System.currentTimeMillis() - start );
             sendError(resp, HttpServletResponse.SC_NOT_FOUND, "Command[" + commandName + "] not found.");
             return;
         }
@@ -130,6 +136,7 @@ public class HttpCommandExposer extends HttpExposer {
         try {
 
             if (!req.getContentType().contains("application/json")) {
+                REQUEST_LOGGER.info("Response: '{}' Execution Time '{}' ms ",HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE, System.currentTimeMillis() - start );
                 sendError(resp, HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
                           "Accepting and producing only application/json");
                 return;
@@ -150,18 +157,14 @@ public class HttpCommandExposer extends HttpExposer {
                     command, new DefaultContextBuilder().build());
 
         } catch (final IOException e) {
-
             LOGGER.error("Error parse command [" + commandClass.getName() + "]", e);
             final String errorMessage = (null == e.getMessage()) ? "Unknown" : e.getMessage();
             sendError(resp, HttpServletResponse.SC_BAD_REQUEST, errorMessage);
-
         } catch (final Throwable th) {
-
             // we catch any other exception in order to still respond with json
             LOGGER.error("Error for command [" + commandClass.getName() + "]", th);
             final String errorMessage = (null == th.getMessage()) ? "Unknown" : th.getMessage();
             sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
-
         } finally {
             if (null != parser) {
                 /*
@@ -179,6 +182,7 @@ public class HttpCommandExposer extends HttpExposer {
          */
         if (null != result) {
             sendResponse(result, resp, commandClass);
+            REQUEST_LOGGER.info("Response: '"+resp.getStatus()+"' Execution Time '"+(System.currentTimeMillis() - start)+"' ms ");
         }
     }
 
