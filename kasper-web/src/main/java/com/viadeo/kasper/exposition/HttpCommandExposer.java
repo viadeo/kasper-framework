@@ -16,7 +16,9 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.context.impl.DefaultKasperId;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
@@ -25,6 +27,7 @@ import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -33,6 +36,7 @@ import java.beans.Introspector;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -61,7 +65,7 @@ public class HttpCommandExposer extends HttpExposer {
 
     @Override
     public void init() throws ServletException {
-        LOGGER.info("=============== Exposing commands ===============");
+        LOGGER.info("\n=============== Exposing commands ===============");
 
         for (final CommandHandler<? extends Command> handler : domainLocator.getHandlers()) {
             expose(handler);
@@ -73,7 +77,7 @@ public class HttpCommandExposer extends HttpExposer {
             LOGGER.info("Total exposed " + exposedCommands.size() + " commands.");
         }
 
-        LOGGER.info("=================================================");
+        LOGGER.info("=================================================\n");
     }
 
     // ------------------------------------------------------------------------
@@ -109,7 +113,14 @@ public class HttpCommandExposer extends HttpExposer {
     private void handleCommand(final HttpServletRequest req, final HttpServletResponse resp)
             throws IOException {
 
-        REQUEST_LOGGER.info("Processing Command : " + req.getMethod() + " " + getFullRequestURI(req));
+        /* Create a request correlation id */
+        final UUID requestCorrelationUUID = UUID.randomUUID();
+        MDC.put("requestCorrelationId", requestCorrelationUUID.toString());
+        resp.addHeader("UUID", requestCorrelationUUID.toString());
+
+        /* Log starting request */
+        REQUEST_LOGGER.info("Processing HTTP Command [{}] : {} {}", requestCorrelationUUID, req.getMethod(), getFullRequestURI(req));
+        long startTime = System.currentTimeMillis();
 
         /* always respond with a json stream (even if empty) */
         resp.setContentType("application/json; charset=utf-8");
@@ -120,7 +131,9 @@ public class HttpCommandExposer extends HttpExposer {
         /* locate corresponding command class */
         final Class<? extends Command> commandClass = exposedCommands.get(commandName);
         if (null == commandClass) {
-            sendError(resp, HttpServletResponse.SC_NOT_FOUND, "Command[" + commandName + "] not found.");
+            sendError(resp, HttpServletResponse.SC_NOT_FOUND,
+                      "Command[" + commandName + "] not found.",
+                      requestCorrelationUUID, startTime);
             return;
         }
 
@@ -131,7 +144,8 @@ public class HttpCommandExposer extends HttpExposer {
 
             if (!req.getContentType().contains("application/json")) {
                 sendError(resp, HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
-                          "Accepting and producing only application/json");
+                          "Accepting and producing only application/json",
+                          requestCorrelationUUID, startTime);
                 return;
             }
 
@@ -144,24 +158,22 @@ public class HttpCommandExposer extends HttpExposer {
             // FIXME 1 use context from request
             // FIXME 2 does it make sense to have async commands here? In any
             // case the user is expecting a result success or failure
+            final Context context = new DefaultContextBuilder().build();
 
             /* send now that command to the platform and wait for the result */
-            result = commandGateway.sendCommandAndWaitForAResult(
-                    command, new DefaultContextBuilder().build());
+            context.setRequestCorrelationId(new DefaultKasperId(requestCorrelationUUID));
+
+            result = commandGateway.sendCommandAndWaitForAResult(command, context);
 
         } catch (final IOException e) {
-
             LOGGER.error("Error parse command [" + commandClass.getName() + "]", e);
             final String errorMessage = (null == e.getMessage()) ? "Unknown" : e.getMessage();
-            sendError(resp, HttpServletResponse.SC_BAD_REQUEST, errorMessage);
-
+            sendError(resp, HttpServletResponse.SC_BAD_REQUEST, errorMessage, requestCorrelationUUID, startTime);
         } catch (final Throwable th) {
-
             // we catch any other exception in order to still respond with json
             LOGGER.error("Error for command [" + commandClass.getName() + "]", th);
             final String errorMessage = (null == th.getMessage()) ? "Unknown" : th.getMessage();
-            sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
-
+            sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage, requestCorrelationUUID, startTime);
         } finally {
             if (null != parser) {
                 /*
@@ -178,50 +190,57 @@ public class HttpCommandExposer extends HttpExposer {
          * so nothing can be done anymore
          */
         if (null != result) {
-            sendResponse(result, resp, commandClass);
+            sendResponse(result, resp, commandClass, requestCorrelationUUID, startTime);
         }
     }
 
     // ------------------------------------------------------------------------
 
     protected void sendResponse(final CommandResult result, final HttpServletResponse resp,
-                                final Class<? extends Command> commandClass) throws IOException {
+                                final Class<? extends Command> commandClass,
+                                final UUID requestCorrelationUUID, final long startTime)
+            throws IOException {
 
         final ObjectWriter writer = mapper.writer();
         JsonGenerator generator = null;
+
+        final int status;
+        if (result.isError()) {
+            status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+        } else {
+            status = HttpServletResponse.SC_OK;
+        }
 
         try {
 
             /* try writing the response */
             generator = writer.getJsonFactory().createJsonGenerator(resp.getOutputStream());
-
-            if (result.isError()) {
-                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            } else {
-                resp.setStatus(HttpServletResponse.SC_OK);
-            }
-
+            resp.setStatus(status);
             writer.writeValue(generator, result);
 
-        } catch (final JsonGenerationException e) {
-            this.internalCommandError(resp, commandClass, result, e);
-        } catch (final JsonMappingException e) {
-            this.internalCommandError(resp, commandClass, result, e);
-        } catch (final IOException e) {
-            this.internalCommandError(resp, commandClass, result, e);
+        } catch (final JsonGenerationException | JsonMappingException e) {
+
+            this.internalCommandError(resp, commandClass, result, e, requestCorrelationUUID, startTime);
+
         } finally {
             if (generator != null) {
                 generator.flush();
                 generator.close();
             }
+            /* Log request */
+            REQUEST_LOGGER.info("HTTP Response [{}]: '{}' Execution Time '{}' ms ",
+                                requestCorrelationUUID,
+                                status, System.currentTimeMillis() - startTime);
         }
     }
 
     private void internalCommandError(final HttpServletResponse resp, final Class<? extends Command> commandClass,
-                                      final CommandResult result, final Exception e) throws IOException {
+                                      final CommandResult result, final Exception e,
+                                      final UUID requestCorrelationUUId, final long startTime)
+            throws IOException {
          this.sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                   String.format("Error outputting result to JSON for command [%s] and result [%s]error = %s",
-                          commandClass.getSimpleName(), result, e));
+                          commandClass.getSimpleName(), result, e), requestCorrelationUUId, startTime);
     }
 
     // ------------------------------------------------------------------------
@@ -235,7 +254,8 @@ public class HttpCommandExposer extends HttpExposer {
      * text/html.
      */
     @SuppressWarnings("deprecation")
-    protected void sendError(final HttpServletResponse response, final int status, final String reason)
+    protected void sendError(final HttpServletResponse response, final int status, final String reason,
+                             final UUID requestCorrelationUUID, final long startTime)
             throws IOException {
         LOGGER.error(reason);
 
@@ -246,6 +266,11 @@ public class HttpCommandExposer extends HttpExposer {
         mapper.writer().writeValue(response.getOutputStream(),
                                    CommandResult.error(
                                           new KasperError(CoreErrorCode.UNKNOWN_ERROR, reason)));
+
+        /* Log request */
+        REQUEST_LOGGER.info("HTTP Response [{}]: '{}' Execution Time '{}' ms ",
+                            requestCorrelationUUID,
+                            status, System.currentTimeMillis() - startTime);
     }
 
     // ------------------------------------------------------------------------
