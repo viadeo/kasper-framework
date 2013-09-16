@@ -6,7 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.ImmutableSetMultimap;
@@ -19,6 +22,7 @@ import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.context.impl.DefaultKasperId;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryResult;
@@ -43,14 +47,19 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-import static javax.servlet.http.HttpServletResponse.SC_REQUESTED_RANGE_NOT_SATISFIABLE;
 
 public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
-
     protected static final transient Logger QUERY_LOGGER = LoggerFactory.getLogger(HttpQueryExposer.class);
+    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
+
+    private static final Timer METRICLASSTIMER = METRICS.timer(name(HttpQueryExposer.class, "requests-time"));
+    private static final Histogram METRICLASSREQUESTSTIME = METRICS.histogram(name(HttpQueryExposer.class, "requests-times"));
+    private static final Meter METRICLASSREQUESTS = METRICS.meter(name(HttpQueryExposer.class, "requests"));
+    private static final Meter METRICLASSERRORS = METRICS.meter(name(HttpQueryExposer.class, "errors"));
 
     private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
     private final transient QueryServicesLocator queryServicesLocator;
@@ -101,6 +110,8 @@ public class HttpQueryExposer extends HttpExposer {
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
 
+        /* Start request timer */
+        final Timer.Context classTimer = METRICLASSTIMER.time();
 
         /* Create a request correlation id */
         final UUID requestCorrelationUUID = UUID.randomUUID();
@@ -143,6 +154,11 @@ public class HttpQueryExposer extends HttpExposer {
                             req.getRequestURI(), req.getQueryString()), resp, t,
                             requestCorrelationUUID, startTime);
 
+        } finally {
+            /* Log metrics */
+            final long time = classTimer.stop();
+            METRICLASSREQUESTSTIME.update(time);
+            METRICLASSREQUESTS.mark();
         }
 
         resp.flushBuffer();
@@ -296,6 +312,9 @@ public class HttpQueryExposer extends HttpExposer {
         /* Log the request */
         QUERY_LOGGER.info("HTTP Response [{}]: '{}' Execution Time '{}' ms ",
                           requestCorrelationUUID, status, System.currentTimeMillis() - startTime);
+
+        /* Log error metric */
+        METRICLASSERRORS.mark();
     }
 
     // ------------------------------------------------------------------------

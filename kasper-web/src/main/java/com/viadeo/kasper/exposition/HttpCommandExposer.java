@@ -6,6 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
@@ -21,6 +25,7 @@ import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.context.impl.DefaultKasperId;
 import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -40,10 +45,17 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 public class HttpCommandExposer extends HttpExposer {
     private static final long serialVersionUID = 8444284922303895624L;
     protected static final transient Logger REQUEST_LOGGER = LoggerFactory.getLogger(HttpCommandExposer.class);
+    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
+
+    private static final Timer METRICLASSTIMER = METRICS.timer(name(HttpCommandExposer.class, "requests-time"));
+    private static final Histogram METRICLASSREQUESTSTIME = METRICS.histogram(name(HttpCommandExposer.class, "requests-times"));
+    private static final Meter METRICLASSREQUESTS = METRICS.meter(name(HttpCommandExposer.class, "requests"));
+    private static final Meter METRICLASSERRORS = METRICS.meter(name(HttpCommandExposer.class, "errors"));
 
     private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
     private final transient DomainLocator domainLocator;
@@ -113,6 +125,9 @@ public class HttpCommandExposer extends HttpExposer {
 
     private void handleCommand(final HttpServletRequest req, final HttpServletResponse resp)
             throws IOException {
+
+        /* Start request timer */
+        final Timer.Context classTimer = METRICLASSTIMER.time();
 
         /* Create a request correlation id */
         final UUID requestCorrelationUUID = UUID.randomUUID();
@@ -186,6 +201,11 @@ public class HttpCommandExposer extends HttpExposer {
                  */
                 parser.close();
             }
+
+            /* Log metrics */
+            final long time = classTimer.stop();
+            METRICLASSREQUESTSTIME.update(time);
+            METRICLASSREQUESTS.mark();
         }
 
         /*
@@ -230,6 +250,7 @@ public class HttpCommandExposer extends HttpExposer {
                 generator.flush();
                 generator.close();
             }
+
             /* Log request */
             REQUEST_LOGGER.info("HTTP Response [{}]: '{}' Execution Time '{}' ms ",
                                 requestCorrelationUUID,
@@ -274,6 +295,9 @@ public class HttpCommandExposer extends HttpExposer {
         REQUEST_LOGGER.info("HTTP Response [{}]: '{}' Execution Time '{}' ms ",
                             requestCorrelationUUID,
                             status, System.currentTimeMillis() - startTime);
+
+        /* Log error metric */
+        METRICLASSERRORS.mark();
     }
 
     // ------------------------------------------------------------------------
