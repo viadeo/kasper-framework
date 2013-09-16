@@ -23,12 +23,12 @@ public class DefaultKasperId extends AbstractKasperID<UUID> {
         super(UUID.randomUUID());
     }
 
-    public DefaultKasperId(final UUID userId) {
-        super(userId);
+    public DefaultKasperId(final UUID id) {
+        super(id);
     }
 
-    public DefaultKasperId(final String userId) {
-        super(UUID.fromString(userId));
+    public DefaultKasperId(final String id) {
+        super(UUID.fromString(id));
     }
 
 }
