@@ -15,6 +15,7 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.context.impl.DefaultKasperId;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
@@ -212,7 +213,9 @@ public class HttpQueryExposer extends HttpExposer {
              *
              */
             final Context context = new DefaultContextBuilder().build();
-            context.setRequestCorrelationId(new DefaultKasperId(requestCorrelationUUID));
+            if (AbstractContext.class.isAssignableFrom(context.getClass())) {
+                ((AbstractContext) context).setKasperCorrelationId(new DefaultKasperId(requestCorrelationUUID));
+            }
 
             result = queryGateway.retrieve(query, new DefaultContextBuilder().build());
 
