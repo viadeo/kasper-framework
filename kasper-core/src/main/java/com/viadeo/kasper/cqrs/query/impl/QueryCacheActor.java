@@ -12,24 +12,24 @@ import javax.cache.*;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
-public class QueryCacheProcessor<Q extends Query, P extends QueryPayload> implements RequestProcessor<Q, QueryResult<P>> {
+public class QueryCacheActor<Q extends Query, P extends QueryPayload> implements RequestActor<Q, QueryResult<P>> {
     private final Cache<Serializable, QueryResult<P>> cache;
     private final XKasperQueryCache cacheAnnotation;
     private final QueryCacheKeyGenerator<Q> keyGenerator;
 
-    public QueryCacheProcessor(XKasperQueryCache cacheAnnotation, Cache<Serializable, QueryResult<P>> cache, QueryCacheKeyGenerator<Q> keyGenerator) {
+    public QueryCacheActor(XKasperQueryCache cacheAnnotation, Cache<Serializable, QueryResult<P>> cache, QueryCacheKeyGenerator<Q> keyGenerator) {
         this.cache = cache;
         this.cacheAnnotation = cacheAnnotation;
         this.keyGenerator = keyGenerator;
     }
 
 
-    public static class AnnotationQueryCacheProcessorFactory {
-        private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationQueryCacheProcessorFactory.class);
+    public static class AnnotationQueryCacheActorFactory {
+        private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationQueryCacheActorFactory.class);
 
         private CacheManager cacheManager;
 
-        public AnnotationQueryCacheProcessorFactory() {
+        public AnnotationQueryCacheActorFactory() {
             // uses the default configured cache manager
             try {
                 this.cacheManager = Caching.getCacheManager();
@@ -38,11 +38,11 @@ public class QueryCacheProcessor<Q extends Query, P extends QueryPayload> implem
             }
         }
 
-        public AnnotationQueryCacheProcessorFactory(CacheManager cacheManager) {
+        public AnnotationQueryCacheActorFactory(CacheManager cacheManager) {
             this.cacheManager = cacheManager;
         }
 
-        public <QUERY extends Query, PAYLOAD extends QueryPayload> QueryCacheProcessor<QUERY, ? extends PAYLOAD> make(Class<QUERY> queryClass, Class<? extends QueryService<? extends Query, ? extends QueryPayload>> queryServiceClass) {
+        public <QUERY extends Query, PAYLOAD extends QueryPayload> QueryCacheActor<QUERY, ? extends PAYLOAD> make(Class<QUERY> queryClass, Class<? extends QueryService<? extends Query, ? extends QueryPayload>> queryServiceClass) {
             if (cacheManager != null) {
                 XKasperQueryService queryServiceAnnotation = queryServiceClass.getAnnotation(XKasperQueryService.class);
                 if (queryServiceAnnotation != null) {
@@ -53,7 +53,7 @@ public class QueryCacheProcessor<Q extends Query, P extends QueryPayload> implem
                                 .setStoreByValue(false)
                                 .setExpiry(CacheConfiguration.ExpiryType.MODIFIED, new CacheConfiguration.Duration(TimeUnit.SECONDS, kasperQueryCache.ttl()))
                                 .build();
-                        return new QueryCacheProcessor<QUERY, PAYLOAD>(kasperQueryCache, cache, createKeyGenerator(queryClass, kasperQueryCache.keyGenerator()));
+                        return new QueryCacheActor<QUERY, PAYLOAD>(kasperQueryCache, cache, createKeyGenerator(queryClass, kasperQueryCache.keyGenerator()));
                     }
                 }
             } else {
@@ -81,7 +81,7 @@ public class QueryCacheProcessor<Q extends Query, P extends QueryPayload> implem
 
 
     @Override
-    public QueryResult<P> process(Q q, Context context, RequestProcessorChain<Q, QueryResult<P>> chain) throws
+    public QueryResult<P> process(Q q, Context context, RequestActorChain<Q, QueryResult<P>> chain) throws
             Exception {
         final Serializable key = keyGenerator.computeKey(cacheAnnotation, q);
 

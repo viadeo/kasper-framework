@@ -13,19 +13,19 @@ import static org.junit.Assert.*;
 
 import javax.cache.Caching;
 
-public class QueryCacheProcessorTest {
+public class QueryCacheActorTest {
 
     final static long TTL = 1;
 
-    private QueryCacheProcessor.AnnotationQueryCacheProcessorFactory factory;
-    private RequestProcessorChain<DummyQuery, QueryResult<DummyPayload>> chain;
+    private QueryCacheActor.AnnotationQueryCacheActorFactory factory;
+    private RequestActorChain<DummyQuery, QueryResult<DummyPayload>> chain;
 
     @Before
     public void setUp() {
-        factory = new QueryCacheProcessor.AnnotationQueryCacheProcessorFactory(Caching.getCacheManager());
-        chain = RequestProcessorChain.makeChain(
-                (QueryCacheProcessor<DummyQuery, DummyPayload>) factory.make(DummyQuery.class, WithCacheQueryService.class),
-                new QueryServiceProcessor<DummyQuery, DummyPayload>(new WithCacheQueryService()));
+        factory = new QueryCacheActor.AnnotationQueryCacheActorFactory(Caching.getCacheManager());
+        chain = RequestActorChain.makeChain(
+                (QueryCacheActor<DummyQuery, DummyPayload>) factory.make(DummyQuery.class, WithCacheQueryService.class),
+                new QueryServiceActor<DummyQuery, DummyPayload>(new WithCacheQueryService()));
     }
 
     @Test
@@ -35,7 +35,7 @@ public class QueryCacheProcessorTest {
 
     @Test
     public void testFactoryForQueryServiceWithCache() {
-        assertEquals(QueryCacheProcessor.class, factory.make(DummyQuery.class, WithCacheQueryService.class).getClass());
+        assertEquals(QueryCacheActor.class, factory.make(DummyQuery.class, WithCacheQueryService.class).getClass());
     }
 
     @Test
@@ -69,9 +69,9 @@ public class QueryCacheProcessorTest {
 
     @Test
     public void testKeyGeneratedBasedOnSetOfFields() throws Exception {
-        chain = RequestProcessorChain.makeChain(
-                (QueryCacheProcessor<DummyQuery, DummyPayload>) factory.make(DummyQuery.class, WithFilteredFieldsCacheQueryService.class),
-                new QueryServiceProcessor<>(new WithFilteredFieldsCacheQueryService()));
+        chain = RequestActorChain.makeChain(
+                (QueryCacheActor<DummyQuery, DummyPayload>) factory.make(DummyQuery.class, WithFilteredFieldsCacheQueryService.class),
+                new QueryServiceActor<>(new WithFilteredFieldsCacheQueryService()));
 
         QueryResult<DummyPayload> expected = chain.next(new DummyQuery("aa", 2), new DefaultContext());
         QueryResult<DummyPayload> actual = chain.next(new DummyQuery("aa", 3333), new DefaultContext());

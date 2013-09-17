@@ -20,8 +20,6 @@ import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
@@ -58,7 +56,7 @@ public class DefaultQueryGateway implements QueryGateway {
 
         // Search for associated service --------------------------------------
         LOGGER.debug("Retrieve request processor chain for query " + queryClass.getSimpleName());
-        Optional<RequestProcessorChain<Query, QueryResult<QueryPayload>>> optionalRequestChain = queryServicesLocator.getRequestProcessorChain(queryClass);
+        Optional<RequestActorChain<Query, QueryResult<QueryPayload>>> optionalRequestChain = queryServicesLocator.getRequestActorChain(queryClass);
 
         if (!optionalRequestChain.isPresent()) {
             timer.close();
@@ -70,7 +68,7 @@ public class DefaultQueryGateway implements QueryGateway {
         QueryResult<PAYLOAD> ret = null;
 
         try {
-                LOGGER.info("Call request processor chain for query " + queryClass.getSimpleName());
+                LOGGER.info("Call actor chain for query " + queryClass.getSimpleName());
                 ret = (QueryResult<PAYLOAD>) optionalRequestChain.get().next(query, context);
         } catch (final RuntimeException e) {
             exception = e;

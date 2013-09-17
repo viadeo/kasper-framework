@@ -6,17 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.core.locators.impl;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.collect.*;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.cqrs.query.impl.QueryCacheProcessor;
-import com.viadeo.kasper.cqrs.query.impl.QueryFilterProcessor;
-import com.viadeo.kasper.cqrs.query.impl.QueryServiceProcessor;
+import com.viadeo.kasper.cqrs.query.impl.QueryCacheActor;
+import com.viadeo.kasper.cqrs.query.impl.QueryFiltersActor;
+import com.viadeo.kasper.cqrs.query.impl.QueryServiceActor;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.slf4j.Logger;
@@ -73,13 +70,13 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     private final Map<Class<? extends QueryService<?, ?>>, List<ServiceFilter>> instanceFilters = newHashMap();
     private final Map<Class<? extends ServiceFilter>, Class<? extends Domain>> isDomainSticky = Maps.newHashMap();
 
-    private final QueryCacheProcessor.AnnotationQueryCacheProcessorFactory queryCacheFactory;
+    private final QueryCacheActor.AnnotationQueryCacheActorFactory queryCacheFactory;
 
     public DefaultQueryServicesLocator() {
-        queryCacheFactory = new QueryCacheProcessor.AnnotationQueryCacheProcessorFactory();
+        queryCacheFactory = new QueryCacheActor.AnnotationQueryCacheActorFactory();
     }
 
-    public DefaultQueryServicesLocator(QueryCacheProcessor.AnnotationQueryCacheProcessorFactory queryCacheFactory) {
+    public DefaultQueryServicesLocator(QueryCacheActor.AnnotationQueryCacheActorFactory queryCacheFactory) {
         this.queryCacheFactory = queryCacheFactory;
     }
 
@@ -205,7 +202,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     }
 
     @Override
-    public Optional<RequestProcessorChain<Query, QueryResult<QueryPayload>>> getRequestProcessorChain(Class<? extends Query> queryClass) {
+    public Optional<RequestActorChain<Query, QueryResult<QueryPayload>>> getRequestActorChain(Class<? extends Query> queryClass) {
         Optional<QueryService> optionalQS = getServiceFromQueryClass(queryClass);
         if (optionalQS.isPresent()) {
             QueryService<Query, QueryPayload> qs = optionalQS.get();
@@ -213,24 +210,24 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
             Collection<ServiceFilter> serviceFilters = getFiltersForServiceClass((Class<? extends QueryService<?, ?>>) qs.getClass());
 
-            List<RequestProcessor<Query, QueryResult<QueryPayload>>> requestProcessors = Lists.newArrayList(
-                    (RequestProcessor<Query, QueryResult<QueryPayload>>) queryCacheFactory.make(queryClass, qsClass),
-                    filtersProcessor(serviceFilters),
-                    new QueryServiceProcessor<Query, QueryPayload>((QueryService<Query, QueryPayload>) qs));
+            List<RequestActor<Query, QueryResult<QueryPayload>>> requestActors = Lists.newArrayList(
+                    (RequestActor<Query, QueryResult<QueryPayload>>) queryCacheFactory.make(queryClass, qsClass),
+                    filtersActor(serviceFilters),
+                    new QueryServiceActor<Query, QueryPayload>((QueryService<Query, QueryPayload>) qs));
 
-            return Optional.of(RequestProcessorChain.makeChain(requestProcessors));
+            return Optional.of(RequestActorChain.makeChain(requestActors));
         }
         return Optional.absent();
     }
 
 
     @SuppressWarnings("rawtypes")
-    QueryFilterProcessor<Query, QueryPayload> filtersProcessor(final Collection<ServiceFilter> serviceFilters) {
+    QueryFiltersActor<Query, QueryPayload> filtersActor(final Collection<ServiceFilter> serviceFilters) {
 
         Collection<QueryFilter> queryFilters = Lists.newArrayList(Iterables.filter(serviceFilters, QueryFilter.class));
         Collection<ResultFilter> resultFilters = Lists.newArrayList(Iterables.filter(serviceFilters, ResultFilter.class));
 
-        return new QueryFilterProcessor(queryFilters, resultFilters);
+        return new QueryFiltersActor(queryFilters, resultFilters);
     }
 
     @Override

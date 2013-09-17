@@ -1,7 +1,5 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.viadeo.kasper.context.Context;
@@ -12,21 +10,21 @@ import org.slf4j.LoggerFactory;
 
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
-public class QueryServiceProcessor<Q extends Query, PAYLOAD extends QueryPayload> implements RequestProcessor<Q, QueryResult<PAYLOAD>> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueryServiceProcessor.class);
+public class QueryServiceActor<Q extends Query, PAYLOAD extends QueryPayload> implements RequestActor<Q, QueryResult<PAYLOAD>> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryServiceActor.class);
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
-    private static final Timer METRICLASSTIMER = METRICS.timer(name(QueryServiceProcessor.class, "requests-time"));
+    private static final Timer METRICLASSTIMER = METRICS.timer(name(QueryServiceActor.class, "requests-time"));
 
     private final QueryService<Q, PAYLOAD> queryService;
 
 
-    public QueryServiceProcessor(QueryService<Q, PAYLOAD> queryService) {
+    public QueryServiceActor(QueryService<Q, PAYLOAD> queryService) {
         this.queryService = queryService;
     }
 
     @Override
-    public QueryResult<PAYLOAD> process(Q query, Context context, RequestProcessorChain<Q, QueryResult<PAYLOAD>> chain) throws Exception {
+    public QueryResult<PAYLOAD> process(Q query, Context context, RequestActorChain<Q, QueryResult<PAYLOAD>> chain) throws Exception {
         /* Call the service */
         Exception exception = null;
         QueryResult<PAYLOAD> ret = null;

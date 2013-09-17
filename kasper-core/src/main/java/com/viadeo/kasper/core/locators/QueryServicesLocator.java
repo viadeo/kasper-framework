@@ -54,7 +54,7 @@ public interface QueryServicesLocator {
 	@SuppressWarnings("rawtypes")
 	Optional<QueryService> getServiceFromQueryClass(Class<? extends Query> queryClass);
 
-    Optional<RequestProcessorChain<Query, QueryResult<QueryPayload>>> getRequestProcessorChain(Class<? extends Query> queryClass);
+    Optional<RequestActorChain<Query, QueryResult<QueryPayload>>> getRequestActorChain(Class<? extends Query> queryClass);
 
 	/**
 	 * Retrieve a service instance from its class
