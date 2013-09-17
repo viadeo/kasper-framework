@@ -39,6 +39,6 @@ public @interface XKasperQueryService {
      * Whether the result of this query service should be cached.
      * False by default.
      */
-    XKasperQueryCache cache() default @XKasperQueryCache(false);
+    XKasperQueryCache cache() default @XKasperQueryCache(enabled = false);
 
 }

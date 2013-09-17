@@ -1,6 +1,7 @@
 package com.viadeo.kasper.cqrs.query;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 
 import java.util.Iterator;
@@ -8,7 +9,8 @@ import java.util.Iterator;
 public class RequestProcessorChain<INPUT, OUTPUT> {
 
     private static final RequestProcessorChain TAIL = new RequestProcessorChain(null) {
-        public Object next(Object input, Context context, RequestProcessorChain chain) {
+        @Override
+        public Object next(Object i, Context context) throws Exception {
             throw new IllegalStateException("Reached chain tail without handling the input request");
         }
     };
@@ -17,6 +19,10 @@ public class RequestProcessorChain<INPUT, OUTPUT> {
     final RequestProcessor<INPUT, OUTPUT> processor;
     @VisibleForTesting
     final RequestProcessorChain next;
+
+    public static <I, O> RequestProcessorChain<I, O> makeChain(RequestProcessor<I, O>... chain) {
+        return makeChain(Lists.newArrayList(chain));
+    }
 
     public static <I, O> RequestProcessorChain<I, O> makeChain(Iterable<? extends RequestProcessor<I, O>> chain) {
         return makeChain(chain.iterator());

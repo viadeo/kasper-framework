@@ -16,7 +16,7 @@ public @interface XKasperQueryCache {
     /**
      * @return true if the cache should be enabled for this QueryService. True by default.
      */
-    boolean value() default true;
+    boolean enabled() default true;
 
     /**
      * @return The duration in seconds instances of that cache should live (they can still by evicted if other entries are preferred).
