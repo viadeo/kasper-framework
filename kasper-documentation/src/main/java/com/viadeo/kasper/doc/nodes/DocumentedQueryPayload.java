@@ -7,7 +7,6 @@
 
 package com.viadeo.kasper.doc.nodes;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryPayload;
 import com.viadeo.kasper.doc.KasperLibrary;
@@ -26,7 +25,7 @@ public class DocumentedQueryPayload  extends DocumentedDomainNode{
     public static final String TYPE_NAME="queryPayload";
     public static final String PLURAL_TYPE_NAME="queryPayloads";
 
-    private DocumentedBean properties=null;
+    private DocumentedProperties properties=null;
 
     // ----------------------------------------------------------------------------------------
 
@@ -51,7 +50,7 @@ public class DocumentedQueryPayload  extends DocumentedDomainNode{
 
         this.setName(queryPayloadClazz.getSimpleName());
         this.setDescription(description);
-        this.properties=new DocumentedBean(queryPayloadClazz);
+        this.properties=new DocumentedProperties(queryPayloadClazz);
     }
 
     // -------------------------------------------------------------------------------
@@ -69,7 +68,7 @@ public class DocumentedQueryPayload  extends DocumentedDomainNode{
     }
 
     // -------------------------------------------------------------------------------
-    public DocumentedBean getProperties(){
+    public DocumentedProperties getProperties(){
         return this.properties;
     }
 

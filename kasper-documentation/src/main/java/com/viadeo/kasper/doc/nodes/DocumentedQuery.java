@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQuery;
 import com.viadeo.kasper.doc.KasperLibrary;
@@ -24,7 +23,7 @@ public final class DocumentedQuery extends DocumentedDomainNode{
     public static final String TYPE_NAME="query";
     public static final String PLURAL_TYPE_NAME="queries";
 
-    private DocumentedBean properties = null;
+    private DocumentedProperties properties = null;
 
     // ----------------------------------------------------------------------------------
 
@@ -50,7 +49,7 @@ public final class DocumentedQuery extends DocumentedDomainNode{
         // - Register the domain to the locator -------------------------
         this.setName(queryClazz.getSimpleName());
         this.setDescription(description);
-        this.properties=new DocumentedBean(queryClazz);
+        this.properties=new DocumentedProperties(queryClazz);
     }
 
     // ----------------------------------------------------------------------
@@ -71,7 +70,7 @@ public final class DocumentedQuery extends DocumentedDomainNode{
 
     // ----------------------------------------------------------------------
 
-    public DocumentedBean getProperties(){
+    public DocumentedProperties getProperties(){
         return this.properties;
     }
 
