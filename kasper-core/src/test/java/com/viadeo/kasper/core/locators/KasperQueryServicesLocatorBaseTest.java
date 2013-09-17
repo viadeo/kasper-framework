@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.test.core.locators;
+package com.viadeo.kasper.core.locators;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;

@@ -4,17 +4,21 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.test.ddd.specification;
+package com.viadeo.kasper.ddd.specification;
 
-import com.viadeo.kasper.ddd.specification.annotation.XSpecification;
 import com.viadeo.kasper.ddd.specification.impl.Specification;
 
-@XSpecification( description = "this specification should always fail", errorMessage = "it has failed" )
-class SpecificationFailAnnotatedError extends Specification<String> {
+class SpecificationStringContains extends Specification<String> {
+
+    final private String containsPattern;
+
+    public SpecificationStringContains(final String containsPattern) {
+        this.containsPattern = containsPattern;
+    }
 
     @Override
     public boolean isSatisfiedBy(final String entity) {
-        return false;
+        return entity.contains(this.containsPattern);
     }
 
 }

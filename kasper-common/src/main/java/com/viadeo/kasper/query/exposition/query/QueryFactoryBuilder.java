@@ -11,6 +11,8 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.query.exposition.Bundle;
+import com.viadeo.kasper.query.exposition.Feature;
+import com.viadeo.kasper.query.exposition.FeatureConfiguration;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.adapters.DefaultTypeAdapters;
 import com.viadeo.kasper.query.exposition.adapters.NullSafeTypeAdapter;
@@ -18,10 +20,7 @@ import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
 import org.joda.time.DateTime;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.ServiceLoader;
+import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -34,7 +33,8 @@ public class QueryFactoryBuilder {
 	private List<TypeAdapterFactory<?>> factories = Lists.newArrayList();
 	private VisibilityFilter visibilityFilter = VisibilityFilter.PACKAGE_PUBLIC;
 	private List<Bundle> bundles = new ArrayList<Bundle>();
-	
+	private FeatureConfiguration features = new FeatureConfiguration();
+
 	// ------------------------------------------------------------------------
 
 	public QueryFactoryBuilder bundle(final Bundle... extensions) {
@@ -80,6 +80,11 @@ public class QueryFactoryBuilder {
 		return this;
 	}
 
+    public QueryFactoryBuilder use(FeatureConfiguration configuration) {
+        features = checkNotNull(configuration);
+        return this;
+    }
+
     // ------------------------------------------------------------------------
 
 	public QueryFactory create() {
@@ -122,7 +127,7 @@ public class QueryFactoryBuilder {
 		factories.add(DefaultTypeAdapters.ARRAY_ADAPTER_FACTORY);
 		factories.add(DefaultTypeAdapters.ENUM_ADAPTER_FACTORY);
 
-		return new DefaultQueryFactory(adapters, beanAdapters, factories, visibilityFilter);
+		return new DefaultQueryFactory(features, adapters, beanAdapters, factories, visibilityFilter);
 	}
 
     // ------------------------------------------------------------------------
