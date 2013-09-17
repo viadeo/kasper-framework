@@ -3,6 +3,8 @@ package com.viadeo.kasper.cqrs.query;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.cqrs.query.impl.QueryCacheProcessor;
+import com.viadeo.kasper.cqrs.query.impl.QueryServiceProcessor;
 
 import java.util.Iterator;
 
@@ -20,7 +22,7 @@ public class RequestProcessorChain<INPUT, OUTPUT> {
     @VisibleForTesting
     final RequestProcessorChain next;
 
-    public static <I, O> RequestProcessorChain<I, O> makeChain(RequestProcessor<I, O>... chain) {
+    public static <I, O> RequestProcessorChain<I, O> makeChain(RequestProcessor<I, O>...chain) {
         return makeChain(Lists.newArrayList(chain));
     }
 

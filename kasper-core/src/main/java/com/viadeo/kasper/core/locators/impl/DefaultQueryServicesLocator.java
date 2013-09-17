@@ -14,6 +14,7 @@ import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
+import com.viadeo.kasper.cqrs.query.impl.QueryCacheProcessor;
 import com.viadeo.kasper.cqrs.query.impl.QueryFilterProcessor;
 import com.viadeo.kasper.cqrs.query.impl.QueryServiceProcessor;
 import com.viadeo.kasper.ddd.Domain;
@@ -71,6 +72,16 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     private final Map<Class<? extends QueryService<?, ?>>, List<Class<? extends ServiceFilter>>> appliedFilters = newHashMap();
     private final Map<Class<? extends QueryService<?, ?>>, List<ServiceFilter>> instanceFilters = newHashMap();
     private final Map<Class<? extends ServiceFilter>, Class<? extends Domain>> isDomainSticky = Maps.newHashMap();
+
+    private final QueryCacheProcessor.AnnotationQueryCacheProcessorFactory queryCacheFactory;
+
+    public DefaultQueryServicesLocator() {
+        queryCacheFactory = new QueryCacheProcessor.AnnotationQueryCacheProcessorFactory();
+    }
+
+    public DefaultQueryServicesLocator(QueryCacheProcessor.AnnotationQueryCacheProcessorFactory queryCacheFactory) {
+        this.queryCacheFactory = queryCacheFactory;
+    }
 
     // ------------------------------------------------------------------------
 
@@ -198,14 +209,18 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
         Optional<QueryService> optionalQS = getServiceFromQueryClass(queryClass);
         if (optionalQS.isPresent()) {
             QueryService<Query, QueryPayload> qs = optionalQS.get();
+            Class<? extends QueryService<Query, QueryPayload>> qsClass = (Class<? extends QueryService<Query, QueryPayload>>) qs.getClass();
 
             Collection<ServiceFilter> serviceFilters = getFiltersForServiceClass((Class<? extends QueryService<?, ?>>) qs.getClass());
 
-            List<RequestProcessor<Query, QueryResult<QueryPayload>>> requestProcessors = Lists.newArrayList(filtersProcessor(serviceFilters), new QueryServiceProcessor<Query, QueryPayload>(qs));
+            List<RequestProcessor<Query, QueryResult<QueryPayload>>> requestProcessors = Lists.newArrayList(
+                    (RequestProcessor<Query, QueryResult<QueryPayload>>) queryCacheFactory.make(queryClass, qsClass),
+                    filtersProcessor(serviceFilters),
+                    new QueryServiceProcessor<Query, QueryPayload>((QueryService<Query, QueryPayload>) qs));
 
             return Optional.of(RequestProcessorChain.makeChain(requestProcessors));
         }
-        return Optional.absent();  //To change body of implemented methods use File | Settings | File Templates.
+        return Optional.absent();
     }
 
 

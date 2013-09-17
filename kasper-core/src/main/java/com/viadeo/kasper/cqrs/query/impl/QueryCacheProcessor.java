@@ -5,6 +5,8 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.cache.*;
 import java.io.Serializable;
@@ -23,25 +25,41 @@ public class QueryCacheProcessor<Q extends Query, P extends QueryPayload> implem
 
 
     public static class AnnotationQueryCacheProcessorFactory {
-        private final CacheManager cacheManager;
+        private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationQueryCacheProcessorFactory.class);
+
+        private CacheManager cacheManager;
+
+        public AnnotationQueryCacheProcessorFactory() {
+            // uses the default configured cache manager
+            try {
+                this.cacheManager = Caching.getCacheManager();
+            } catch (IllegalStateException ise) {
+                LOGGER.warn("No cache manager available, if you want to enable cache support please provide an implementation of JCache - jsr 107.");
+            }
+        }
 
         public AnnotationQueryCacheProcessorFactory(CacheManager cacheManager) {
             this.cacheManager = cacheManager;
         }
 
-        public <QUERY extends Query, PAYLOAD extends QueryPayload> RequestProcessor<QUERY, QueryResult<PAYLOAD>> make(Class<QUERY> queryClass, Class<? extends QueryService<QUERY, PAYLOAD>> queryServiceClass) {
-            XKasperQueryService queryServiceAnnotation = queryServiceClass.getAnnotation(XKasperQueryService.class);
-            XKasperQueryCache kasperQueryCache = queryServiceAnnotation.cache();
+        public <QUERY extends Query, PAYLOAD extends QueryPayload> QueryCacheProcessor<QUERY, ? extends PAYLOAD> make(Class<QUERY> queryClass, Class<? extends QueryService<? extends Query, ? extends QueryPayload>> queryServiceClass) {
+            if (cacheManager != null) {
+                XKasperQueryService queryServiceAnnotation = queryServiceClass.getAnnotation(XKasperQueryService.class);
+                if (queryServiceAnnotation != null) {
+                    XKasperQueryCache kasperQueryCache = queryServiceAnnotation.cache();
 
-            if (kasperQueryCache.enabled()) {
-                Cache<Serializable, QueryResult<PAYLOAD>> cache = cacheManager.<Serializable, QueryResult<PAYLOAD>>createCacheBuilder(queryClass.getName())
-                        .setStoreByValue(false)
-                        .setExpiry(CacheConfiguration.ExpiryType.MODIFIED, new CacheConfiguration.Duration(TimeUnit.SECONDS, kasperQueryCache.ttl()))
-                        .build();
-                return new QueryCacheProcessor<QUERY, PAYLOAD>(kasperQueryCache, cache, createKeyGenerator(queryClass, kasperQueryCache.keyGenerator()));
+                    if (kasperQueryCache.enabled()) {
+                        Cache<Serializable, QueryResult<PAYLOAD>> cache = cacheManager.<Serializable, QueryResult<PAYLOAD>>createCacheBuilder(queryClass.getName())
+                                .setStoreByValue(false)
+                                .setExpiry(CacheConfiguration.ExpiryType.MODIFIED, new CacheConfiguration.Duration(TimeUnit.SECONDS, kasperQueryCache.ttl()))
+                                .build();
+                        return new QueryCacheProcessor<QUERY, PAYLOAD>(kasperQueryCache, cache, createKeyGenerator(queryClass, kasperQueryCache.keyGenerator()));
+                    }
+                }
+            } else {
+                LOGGER.warn("No cache manager available, if you want to enable cache support please provide an implementation of JCache - jsr 107.");
             }
-
-            return new DelegatingRequestProcessor<>();
+            return null;
         }
 
         private <QUERY extends Query> QueryCacheKeyGenerator<QUERY> createKeyGenerator(Class<QUERY> queryClass, Class<? extends QueryCacheKeyGenerator> keyGenClass) {

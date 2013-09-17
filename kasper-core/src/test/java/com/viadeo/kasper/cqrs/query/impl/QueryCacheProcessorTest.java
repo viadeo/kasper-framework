@@ -24,13 +24,13 @@ public class QueryCacheProcessorTest {
     public void setUp() {
         factory = new QueryCacheProcessor.AnnotationQueryCacheProcessorFactory(Caching.getCacheManager());
         chain = RequestProcessorChain.makeChain(
-                factory.make(DummyQuery.class, WithCacheQueryService.class),
-                new QueryServiceProcessor<>(new WithCacheQueryService()));
+                (QueryCacheProcessor<DummyQuery, DummyPayload>) factory.make(DummyQuery.class, WithCacheQueryService.class),
+                new QueryServiceProcessor<DummyQuery, DummyPayload>(new WithCacheQueryService()));
     }
 
     @Test
     public void testFactoryForQueryServiceWithoutCache() {
-        assertEquals(RequestProcessor.DelegatingRequestProcessor.class, factory.make(DummyQuery.class, WithoutCacheQueryService.class).getClass());
+        assertNull(factory.make(DummyQuery.class, WithoutCacheQueryService.class));
     }
 
     @Test
@@ -70,7 +70,7 @@ public class QueryCacheProcessorTest {
     @Test
     public void testKeyGeneratedBasedOnSetOfFields() throws Exception {
         chain = RequestProcessorChain.makeChain(
-                factory.make(DummyQuery.class, WithFilteredFieldsCacheQueryService.class),
+                (QueryCacheProcessor<DummyQuery, DummyPayload>) factory.make(DummyQuery.class, WithFilteredFieldsCacheQueryService.class),
                 new QueryServiceProcessor<>(new WithFilteredFieldsCacheQueryService()));
 
         QueryResult<DummyPayload> expected = chain.next(new DummyQuery("aa", 2), new DefaultContext());
