@@ -4,11 +4,9 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.test.ddd.specification;
+package com.viadeo.kasper.ddd.specification;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.ddd.specification.ISpecification;
-import com.viadeo.kasper.ddd.specification.SpecificationErrorMessage;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
