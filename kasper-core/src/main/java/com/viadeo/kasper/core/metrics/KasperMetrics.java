@@ -10,13 +10,17 @@ import com.codahale.metrics.MetricRegistry;
 
 public final class KasperMetrics {
 
-    private static final MetricRegistry metricRegistry = new MetricRegistry();
+    private static final MetricRegistry REGISTRY = new MetricRegistry();
     private static String namePrefix = "";
 
     // ------------------------------------------------------------------------
 
+    private KasperMetrics() { /* Utility class */ }
+
+    // ------------------------------------------------------------------------
+
     public static MetricRegistry getRegistry() {
-        return metricRegistry;
+        return REGISTRY;
     }
 
     // ------------------------------------------------------------------------

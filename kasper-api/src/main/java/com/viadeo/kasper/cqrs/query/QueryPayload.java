@@ -7,7 +7,6 @@
 package com.viadeo.kasper.cqrs.query;
 
 import com.viadeo.kasper.annotation.Immutable;
-import org.joda.time.DateTime;
 
 import java.io.Serializable;
 

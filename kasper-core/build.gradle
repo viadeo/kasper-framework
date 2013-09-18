@@ -17,4 +17,7 @@ dependencies {
     compile libraries.SPRING_CONTEXT
     compile libraries.AXON_CORE
     compile libraries.YAMMER_METRICS
+    compile libraries.JCACHE
+
+    testCompile libraries.JCACHE_EHCACHE
 }

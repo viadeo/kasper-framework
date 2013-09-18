@@ -7,10 +7,7 @@
 package com.viadeo.kasper.cqrs.query;
 
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.annotation.Immutable;
 import org.joda.time.DateTime;
-
-import java.io.Serializable;
 
 public interface QueryEntityPayload extends QueryPayload {
 

@@ -276,9 +276,10 @@ public class AnnotationRootProcessor {
                                     // PROCESSOR DELEGATION
                                     processor.process(clazz);
 
-
-                                } catch (Exception e) {
-                                    LOGGER.warn("Unexpected error during processor delegation, <class=" + clazz.getName() + ">: ", e);
+                                } catch (final Exception e) {
+                                    final String message = "Unexpected error during processor delegationfor class " + clazz.getName();
+                                    LOGGER.warn(message, e);
+                                    throw new KasperException(message, e);
                                 }
 
                             } else {
