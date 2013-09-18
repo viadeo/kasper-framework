@@ -20,6 +20,7 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
@@ -276,7 +277,8 @@ public class AnnotationRootProcessor {
                                     // PROCESSOR DELEGATION
                                     processor.process(clazz);
 
-
+                                } catch (BeanCurrentlyInCreationException e) {
+                                    throw new KasperException(String.format("Unable to process component : %s", clazz), e);
                                 } catch (Exception e) {
                                     LOGGER.warn("Unexpected error during processor delegation, <class=" + clazz.getName() + ">: ", e);
                                 }
