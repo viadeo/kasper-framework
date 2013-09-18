@@ -15,8 +15,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 
- *         Query service marker
+ * Query service marker
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)

@@ -26,6 +26,8 @@ public abstract class AbstractQueryService<Q extends Query, PAYLOAD extends Quer
 
     protected AbstractQueryService() { }
 
+    // ------------------------------------------------------------------------
+
     @Override
     public QueryResult<PAYLOAD> retrieve(final QueryMessage<Q> message) throws Exception {
         return retrieve(message.getQuery());

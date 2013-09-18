@@ -15,12 +15,14 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.RequestActorsChain;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryGateway;
+import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
@@ -41,13 +43,12 @@ public class DefaultQueryGateway implements QueryGateway {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <PAYLOAD extends QueryPayload> QueryResult<PAYLOAD> retrieve(final Query originalQuery, final Context context)
+    public <PAYLOAD extends QueryPayload> QueryResult<PAYLOAD> retrieve(final Query query, final Context context)
             throws Exception {
 
         checkNotNull(context);
-        checkNotNull(originalQuery);
+        checkNotNull(query);
 
-        Query query = originalQuery; // Query can mutated by filters
         final Class<? extends Query> queryClass = query.getClass();
 
         /* Start request timer */
@@ -58,76 +59,26 @@ public class DefaultQueryGateway implements QueryGateway {
         CurrentContext.set(context);
 
         // Search for associated service --------------------------------------
-        LOGGER.debug("Retrieve service for query " + queryClass.getSimpleName());
+        LOGGER.debug("Retrieve request processor chain for query " + queryClass.getSimpleName());
+        Optional<RequestActorsChain<Query, QueryResult<QueryPayload>>> optionalRequestChain =
+                queryServicesLocator.getRequestActorChain(queryClass);
 
-        @SuppressWarnings("rawtypes") // Safe
-        final Optional<QueryService> optService = queryServicesLocator.getServiceFromQueryClass(queryClass);
-
-        if (!optService.isPresent()) {
+        if (!optionalRequestChain.isPresent()) {
             timer.close();
             classTimer.close();
             throw new KasperException("Unable to find the service implementing query class " + queryClass);
         }
 
-        // Apply filters and call service -------------------------------------
-        @SuppressWarnings({ "rawtypes"}) // Safe
-        final com.viadeo.kasper.cqrs.query.QueryMessage message = new DefaultQueryMessage(context, query);
-        final QueryService service = optService.get();
-
-        /* Apply query filters if needed */
-        final Class<? extends QueryService<?, ?>> serviceClass = (Class<? extends QueryService<?, ?>>) service.getClass();
-        final Collection<ServiceFilter> filters = this.queryServicesLocator.getFiltersForServiceClass(serviceClass);
-        if (!filters.isEmpty()) {
-            final Timer.Context timerFilters = METRICS.timer(name(queryClass, "requests-query-filters-time")).time();
-            for (final ServiceFilter filter : filters) {
-                if (QueryFilter.class.isAssignableFrom(filter.getClass())) {
-                    LOGGER.info(String.format("Apply query filter %s", filter.getClass().getSimpleName()));
-
-                    /* Apply filter */
-                    query = ((QueryFilter<Query>) filter).filter(context, query);
-                }
-            }
-            timerFilters.stop();
-        }
-
-        /* Call the service */
         Exception exception = null;
         QueryResult<PAYLOAD> ret = null;
 
         try {
-            try { LOGGER.info("Call service " + optService.get().getClass().getSimpleName());
-
-                ret = (QueryResult<PAYLOAD>) service.retrieve(message);
-
-            } catch (final UnsupportedOperationException e) {
-                if (AbstractQueryService.class.isAssignableFrom(service.getClass())) {
-                    ret = (QueryResult<PAYLOAD>) ((AbstractQueryService) service).retrieve(message.getQuery());
-                } else {
-                    timer.close();
-                    classTimer.close();
-                    throw e;
-                }
-            }
+            LOGGER.info("Call actor chain for query " + queryClass.getSimpleName());
+            ret = (QueryResult<PAYLOAD>) optionalRequestChain.get().next(query, context);
         } catch (final RuntimeException e) {
             exception = e;
-        }
-
-        if (null == exception) {
-            checkNotNull(ret);
-
-            /* Apply Result filters if needed */
-            if ((null != ret.getPayload()) && !filters.isEmpty()) {
-                final Timer.Context timerFilters = METRICS.timer(name(queryClass, "requests-result-filters-time")).time();
-                for (final ServiceFilter filter : filters) {
-                    if (ResultFilter.class.isAssignableFrom(filter.getClass())) {
-                        LOGGER.info(String.format("Apply Result filter %s", filter.getClass().getSimpleName()));
-
-                        /* Apply filter */
-                        ret = ((ResultFilter<PAYLOAD>) filter).filter(context, ret);
-                    }
-                }
-                timerFilters.stop();
-            }
+        } catch (final Exception e) {
+            exception = e;
         }
 
         /* Monitor the request calls */

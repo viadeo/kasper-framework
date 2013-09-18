@@ -4,10 +4,9 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.test.core.boot;
+package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.boot.SpringComponentsInstanceManager;
 import com.viadeo.kasper.exception.KasperException;
 import org.junit.Before;
 import org.junit.Test;

@@ -4,9 +4,8 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.test.core.boot;
+package com.viadeo.kasper.core.boot;
 
-import com.viadeo.kasper.core.boot.ServiceFiltersProcessor;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.ServiceFilter;

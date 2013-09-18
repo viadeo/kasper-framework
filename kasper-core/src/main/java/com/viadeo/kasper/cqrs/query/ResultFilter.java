@@ -13,7 +13,7 @@ import com.viadeo.kasper.context.Context;
  *
  * @see Query
  */
-public interface ResultFilter<QP extends QueryPayload> extends ServiceFilter {
+public interface ResultFilter<P extends QueryPayload> extends ServiceFilter {
 
     /**
      * Filter a Result after processing by its associated service
@@ -23,7 +23,7 @@ public interface ResultFilter<QP extends QueryPayload> extends ServiceFilter {
      *
      * @return the filtered result
      */
-    QueryResult<QP> filter(final Context context, final QueryResult<QP> result);
+    <R extends QueryResult<P>> R filter(final Context context, final R result);
 
 }
 
