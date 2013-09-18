@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.codahale.metrics.MetricRegistry;
@@ -6,10 +12,7 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.RequestActor;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,13 +26,17 @@ public class QueryServiceActor<Q extends Query, PAYLOAD extends QueryPayload> im
 
     private final QueryService<Q, PAYLOAD> queryService;
 
+    // ------------------------------------------------------------------------
 
-    public QueryServiceActor(QueryService<Q, PAYLOAD> queryService) {
+    public QueryServiceActor(final QueryService<Q, PAYLOAD> queryService) {
         this.queryService = queryService;
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public QueryResult<PAYLOAD> process(Q query, Context context, RequestActorsChain<Q, QueryResult<PAYLOAD>> chain) throws Exception {
+    public QueryResult<PAYLOAD> process(final Q query, final Context context,
+                                        final RequestActorsChain<Q, QueryResult<PAYLOAD>> chain) throws Exception {
         /* Call the service */
         Exception exception = null;
         QueryResult<PAYLOAD> ret = null;
@@ -37,13 +44,13 @@ public class QueryServiceActor<Q extends Query, PAYLOAD extends QueryPayload> im
         final Timer.Context classTimer = METRICLASSTIMER.time();
         final Timer.Context timer = METRICS.timer(name(query.getClass(), "requests-time")).time();
 
-        final com.viadeo.kasper.cqrs.query.QueryMessage message = new DefaultQueryMessage(context, query);
+        final QueryMessage message = new DefaultQueryMessage(context, query);
 
         try {
             try {
-                LOGGER.info("Call service " + queryService.getClass().getSimpleName());
 
-                ret = (QueryResult<PAYLOAD>) queryService.retrieve(message);
+                LOGGER.info("Call service " + queryService.getClass().getSimpleName());
+                ret = queryService.retrieve(message);
 
             } catch (final UnsupportedOperationException e) {
                 if (AbstractQueryService.class.isAssignableFrom(queryService.getClass())) {
@@ -56,17 +63,18 @@ public class QueryServiceActor<Q extends Query, PAYLOAD extends QueryPayload> im
             }
         } catch (final RuntimeException e) {
             exception = e;
-        } catch (Exception e) {
+        } catch (final Exception e) {
             exception = e;
         }
 
         /* Monitor the request calls */
         timer.stop();
-        final long time = classTimer.stop();
+        classTimer.stop();
 
         if (exception != null)
             throw exception;
 
         return ret;
     }
+
 }

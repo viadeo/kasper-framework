@@ -59,7 +59,7 @@ public class QueryAttributesKeyGenerator implements QueryCacheKeyGenerator {
                 return true;
             }
 
-            if ((null == o) || !getClass().equals(o.getClass())) {
+            if (!getClass().equals(o.getClass())) {
                 return false;
             }
 
