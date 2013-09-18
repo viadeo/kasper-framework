@@ -21,7 +21,12 @@ import static org.junit.Assert.assertEquals;
 public class TestTypeAdapterRoundTrips {
 
 	private QueryFactory factory = new QueryFactoryBuilder().create();
-	
+
+    // issue #67
+    @Test public void testNoExceptionOnBeanWithNoDiscoveredProperties() {
+        factory.create(TypeToken.of(EmptyBean.class));
+    }
+
 	@Test public void testQueryWithDefaultValues() throws Exception {
         // Given
 	    final TypeAdapter<QueryWithDefaultValue> adapter = factory.create(TypeToken.of(QueryWithDefaultValue.class));
@@ -54,6 +59,10 @@ public class TestTypeAdapterRoundTrips {
 	}
 	
     // ------------------------------------------------------------------------
+
+    public static class EmptyBean implements Query {
+
+    }
 
 	public static class QueryWithDefaultValue implements Query {
         private static final long serialVersionUID = 6077221562941902221L;

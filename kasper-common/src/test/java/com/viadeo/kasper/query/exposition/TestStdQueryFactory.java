@@ -27,8 +27,12 @@ public class TestStdQueryFactory {
     public static class SomeQuery implements Query {
         private static final long serialVersionUID = -6763165103363988454L;
 
-        public int getDummy() { return 1; }
-        public void setDummy(final int dummyInt) { }
+        public int getDummy() {
+            return 1;
+        }
+
+        public void setDummy(final int dummyInt) {
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -69,8 +73,9 @@ public class TestStdQueryFactory {
         // Given
         final QueryBuilder builder = new QueryBuilder();
         final TypeAdapter<SomeQuery> adapter = new DefaultQueryFactory(
-                ImmutableMap.<Type, TypeAdapter<?>> of(int.class, DefaultTypeAdapters.INT_ADAPTER),
-                ImmutableMap.<Type, BeanAdapter<?>> of(),
+                new FeatureConfiguration(),
+                ImmutableMap.<Type, TypeAdapter<?>>of(int.class, DefaultTypeAdapters.INT_ADAPTER),
+                ImmutableMap.<Type, BeanAdapter<?>>of(),
                 new ArrayList<TypeAdapterFactory<?>>(),
                 VisibilityFilter.PACKAGE_PUBLIC).create(TypeToken.of(SomeQuery.class));
 
@@ -129,13 +134,14 @@ public class TestStdQueryFactory {
     }
 
     // ========================================================================
-    
+
     private TypeAdapterFactory<Map<String, List<DateTime>>> createTypeAdapterFactory() {
         return new TypeAdapterFactory<Map<String, List<DateTime>>>() {
             @Override
             public Optional<TypeAdapter<Map<String, List<DateTime>>>> create(TypeToken<Map<String, List<DateTime>>> typeToken, final QueryFactory adapterFactory) {
                 @SuppressWarnings("serial")
-                final TypeAdapter<List<DateTime>> dateTimeListAdapter = adapterFactory.create(new TypeToken<List<DateTime>>() {});
+                final TypeAdapter<List<DateTime>> dateTimeListAdapter = adapterFactory.create(new TypeToken<List<DateTime>>() {
+                });
 
                 final TypeAdapter<Map<String, List<DateTime>>> adapter = new TypeAdapter<Map<String, List<DateTime>>>() {
                     @Override
@@ -146,10 +152,10 @@ public class TestStdQueryFactory {
                             builder.end();
                         }
                     }
-                    
+
                     @Override
                     public Map<String, List<DateTime>> adapt(QueryParser parser) {
-                    	return null;
+                        return null;
                     }
                 };
                 return Optional.of(adapter);
@@ -160,7 +166,7 @@ public class TestStdQueryFactory {
     private QueryFactory createQueryFactory(final Object... queryFactoryParameters) {
         final Map<Type, TypeAdapter<?>> adaptersMap = new HashMap<Type, TypeAdapter<?>>();
         final List<TypeAdapterFactory<?>> factories = new ArrayList<TypeAdapterFactory<?>>();
-        
+
         for (final Object parameter : queryFactoryParameters) {
             if (parameter instanceof TypeAdapter) {
                 final TypeAdapter<?> adapter = (TypeAdapter<?>) parameter;
@@ -172,10 +178,11 @@ public class TestStdQueryFactory {
                 throw new IllegalArgumentException("Only TypeAdapter or TypeAdapter factories are allowed.");
             }
         }
-        
+
         return new DefaultQueryFactory(
+                new FeatureConfiguration(),
                 adaptersMap,
-                ImmutableMap.<Type, BeanAdapter<?>> of(),
+                ImmutableMap.<Type, BeanAdapter<?>>of(),
                 factories,
                 VisibilityFilter.PACKAGE_PUBLIC);
     }
@@ -189,10 +196,10 @@ public class TestStdQueryFactory {
                 }
                 builder.addSingle("foo", "bar");
             }
-            
+
             @Override
             public SomeQuery adapt(final QueryParser parser) {
-            	return null;
+                return null;
             }
         };
     }

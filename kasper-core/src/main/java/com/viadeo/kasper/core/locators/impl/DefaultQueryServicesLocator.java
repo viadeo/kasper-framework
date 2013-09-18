@@ -9,10 +9,11 @@ package com.viadeo.kasper.core.locators.impl;
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryService;
-import com.viadeo.kasper.cqrs.query.ServiceFilter;
+import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
+import com.viadeo.kasper.cqrs.query.impl.QueryCacheActor;
+import com.viadeo.kasper.cqrs.query.impl.QueryFiltersActor;
+import com.viadeo.kasper.cqrs.query.impl.QueryServiceActor;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.slf4j.Logger;
@@ -28,72 +29,95 @@ import static com.google.common.collect.Lists.newArrayList;
 import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.unmodifiableCollection;
 
-/** Base implementation for query services locator */
+/**
+ * Base implementation for query services locator
+ */
 public class DefaultQueryServicesLocator implements QueryServicesLocator {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultQueryServicesLocator.class);
 
     private static final Collection<ServiceFilter> EMPTY_FILTERS =
-        unmodifiableCollection(new ArrayList<ServiceFilter>());
+            unmodifiableCollection(new ArrayList<ServiceFilter>());
 
-	/** Registered services and filters */
-	@SuppressWarnings("rawtypes")
+    /**
+     * Registered services and filters
+     */
+    @SuppressWarnings("rawtypes")
     private final ClassToInstanceMap<QueryService> services = MutableClassToInstanceMap.create();
     private final ClassToInstanceMap<ServiceFilter> filters = MutableClassToInstanceMap.create();
     private final Map<Class<? extends QueryService>, Class<? extends Domain>> serviceDomains = Maps.newHashMap();
 
-    /** Global filters **/
+    /**
+     * Global filters *
+     */
     private final List<Class<? extends ServiceFilter>> globalFilters = Lists.newArrayList();
 
-	/** Registered query classes and associated service instances */
-	private final Map<Class<? extends Query>, QueryService<?,?>> serviceQueryClasses = newHashMap();
+    /**
+     * Registered query classes and associated service instances
+     */
+    private final Map<Class<? extends Query>, QueryService<?, ?>> serviceQueryClasses = newHashMap();
 
-	/** Registered services names and associated service instances */
-	@SuppressWarnings("rawtypes")
-	private final Map<String, QueryService> serviceNames = newHashMap();
+    /**
+     * Registered services names and associated service instances
+     */
+    @SuppressWarnings("rawtypes")
+    private final Map<String, QueryService> serviceNames = newHashMap();
 
-    /** Association of filters per service and domains **/
+    /**
+     * Association of filters per service and domains *
+     */
     private final Map<Class<? extends QueryService<?, ?>>, List<Class<? extends ServiceFilter>>> appliedFilters = newHashMap();
     private final Map<Class<? extends QueryService<?, ?>>, List<ServiceFilter>> instanceFilters = newHashMap();
     private final Map<Class<? extends ServiceFilter>, Class<? extends Domain>> isDomainSticky = Maps.newHashMap();
 
-	// ------------------------------------------------------------------------
+    private final QueryCacheActor.AnnotationQueryCacheActorFactory queryCacheFactory;
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public void registerService(final String name, final QueryService<?,?> service, final Class<? extends Domain> domainClass) {
-		checkNotNull(name);
-		checkNotNull(service);
+    public DefaultQueryServicesLocator() {
+        queryCacheFactory = new QueryCacheActor.AnnotationQueryCacheActorFactory();
+    }
 
-		if (name.isEmpty()) {
-			throw new KasperQueryException("Name of services cannot be empty : " + service.getClass());
-		}
+    public DefaultQueryServicesLocator(QueryCacheActor.AnnotationQueryCacheActorFactory queryCacheFactory) {
+        this.queryCacheFactory = queryCacheFactory;
+    }
 
-		final Class<? extends QueryService> serviceClass = service.getClass();
+    // ------------------------------------------------------------------------
 
-		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends Query>> optQueryClass =
-				(Optional<Class<? extends Query>>)
-						ReflectionGenericsResolver.getParameterTypeFromClass(
-								service.getClass(), QueryService.class, QueryService.PARAMETER_QUERY_POSITION);
+    @SuppressWarnings("rawtypes")
+    @Override
+    public void registerService(final String name, final QueryService<?, ?> service, final Class<? extends Domain> domainClass) {
+        checkNotNull(name);
+        checkNotNull(service);
 
-		if (!optQueryClass.isPresent()) {
-			throw new KasperQueryException("Unable to find query class for service " + service.getClass());
-		}
+        if (name.isEmpty()) {
+            throw new KasperQueryException("Name of services cannot be empty : " + service.getClass());
+        }
 
-		final Class<? extends Query> queryClass = optQueryClass.get();
-		if (this.serviceQueryClasses.containsKey(queryClass)) {
-			throw new KasperQueryException("A service for the same query class is already registered : " + queryClass);
-		}
+        final Class<? extends QueryService> serviceClass = service.getClass();
 
-		if (this.serviceNames.containsKey(name)) {
-			throw new KasperQueryException("A service by the same name is already registered : " + name);
-		}
+        @SuppressWarnings("unchecked") // Safe
+        final Optional<Class<? extends Query>> optQueryClass =
+                (Optional<Class<? extends Query>>)
+                        ReflectionGenericsResolver.getParameterTypeFromClass(
+                                service.getClass(), QueryService.class, QueryService.PARAMETER_QUERY_POSITION);
 
-		this.serviceQueryClasses.put(queryClass, service);
-		this.serviceNames.put(name, service);
-		this.services.put(serviceClass, service);
+        if (!optQueryClass.isPresent()) {
+            throw new KasperQueryException("Unable to find query class for service " + service.getClass());
+        }
+
+        final Class<? extends Query> queryClass = optQueryClass.get();
+        if (this.serviceQueryClasses.containsKey(queryClass)) {
+            throw new KasperQueryException("A service for the same query class is already registered : " + queryClass);
+        }
+
+        if (this.serviceNames.containsKey(name)) {
+            throw new KasperQueryException("A service by the same name is already registered : " + name);
+        }
+
+        this.serviceQueryClasses.put(queryClass, service);
+        this.serviceNames.put(name, service);
+        this.services.put(serviceClass, service);
         this.serviceDomains.put(serviceClass, domainClass);
-	}
+    }
 
     // ------------------------------------------------------------------------
 
@@ -103,18 +127,18 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
         checkNotNull(name);
         checkNotNull(queryFilter);
 
-		if (name.isEmpty()) {
-			throw new KasperQueryException("Name of service filters cannot be empty : " + queryFilter.getClass());
-		}
+        if (name.isEmpty()) {
+            throw new KasperQueryException("Name of service filters cannot be empty : " + queryFilter.getClass());
+        }
 
-		final Class<? extends ServiceFilter> filterClass = queryFilter.getClass();
-		this.filters.put(filterClass, queryFilter);
+        final Class<? extends ServiceFilter> filterClass = queryFilter.getClass();
+        this.filters.put(filterClass, queryFilter);
 
         if (isGlobal) {
             this.globalFilters.add(filterClass);
             this.instanceFilters.clear(); // Drop all service instances caches
             if (null != stickyDomainClass) {
-                this.isDomainSticky.put(queryFilter.getClass(),stickyDomainClass);
+                this.isDomainSticky.put(queryFilter.getClass(), stickyDomainClass);
             }
         }
 
@@ -156,31 +180,60 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
     // ------------------------------------------------------------------------
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Optional<QueryService> getServiceFromClass(final Class<? extends QueryService<?, ?>> serviceClass) {
-		final QueryService service = this.services.getInstance(serviceClass);
-		return Optional.fromNullable(service);
-	}
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Optional<QueryService> getServiceFromClass(final Class<? extends QueryService<?, ?>> serviceClass) {
+        final QueryService service = this.services.getInstance(serviceClass);
+        return Optional.fromNullable(service);
+    }
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Optional<QueryService> getServiceByName(final String serviceName) {
-		final QueryService service = this.serviceNames.get(serviceName);
-		return Optional.fromNullable(service);
-	}
+    @SuppressWarnings("rawtypes")
+    @Override
+    public Optional<QueryService> getServiceByName(final String serviceName) {
+        final QueryService service = this.serviceNames.get(serviceName);
+        return Optional.fromNullable(service);
+    }
 
     @Override
-	@SuppressWarnings("rawtypes")
-	public Optional<QueryService> getServiceFromQueryClass(final Class<? extends Query> queryClass) {
-		final QueryService service = this.serviceQueryClasses.get(queryClass);
-		return Optional.fromNullable(service);
-	}
+    @SuppressWarnings("rawtypes")
+    public Optional<QueryService> getServiceFromQueryClass(final Class<? extends Query> queryClass) {
+        final QueryService service = this.serviceQueryClasses.get(queryClass);
+        return Optional.fromNullable(service);
+    }
 
-	@Override
-	public Collection<QueryService<?, ?>> getServices() {
-		return unmodifiableCollection(this.serviceQueryClasses.values());
-	}
+    @Override
+    public Optional<RequestActorChain<Query, QueryResult<QueryPayload>>> getRequestActorChain(Class<? extends Query> queryClass) {
+        Optional<QueryService> optionalQS = getServiceFromQueryClass(queryClass);
+        if (optionalQS.isPresent()) {
+            QueryService<Query, QueryPayload> qs = optionalQS.get();
+            Class<? extends QueryService<Query, QueryPayload>> qsClass = (Class<? extends QueryService<Query, QueryPayload>>) qs.getClass();
+
+            Collection<ServiceFilter> serviceFilters = getFiltersForServiceClass((Class<? extends QueryService<?, ?>>) qs.getClass());
+
+            List<RequestActor<Query, QueryResult<QueryPayload>>> requestActors = Lists.newArrayList(
+                    (RequestActor<Query, QueryResult<QueryPayload>>) queryCacheFactory.make(queryClass, qsClass),
+                    filtersActor(serviceFilters),
+                    new QueryServiceActor<Query, QueryPayload>((QueryService<Query, QueryPayload>) qs));
+
+            return Optional.of(RequestActorChain.makeChain(requestActors));
+        }
+        return Optional.absent();
+    }
+
+
+    @SuppressWarnings("rawtypes")
+    QueryFiltersActor<Query, QueryPayload> filtersActor(final Collection<ServiceFilter> serviceFilters) {
+
+        Collection<QueryFilter> queryFilters = Lists.newArrayList(Iterables.filter(serviceFilters, QueryFilter.class));
+        Collection<ResultFilter> resultFilters = Lists.newArrayList(Iterables.filter(serviceFilters, ResultFilter.class));
+
+        return new QueryFiltersActor(queryFilters, resultFilters);
+    }
+
+    @Override
+    public Collection<QueryService<?, ?>> getServices() {
+        return unmodifiableCollection(this.serviceQueryClasses.values());
+    }
 
     // ------------------------------------------------------------------------
 
@@ -220,7 +273,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
                     instances.add(this.filters.get(filterClass));
                 } else {
                     LOGGER.error(String.format("Service %s asks to be filtered, but no instance of filter %s can be found in records",
-                                               serviceClass, filterClass));
+                            serviceClass, filterClass));
                 }
             }
             this.instanceFilters.put(serviceClass, instances);

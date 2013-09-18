@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.test.ddd.specification;
+package com.viadeo.kasper.ddd.specification;
 
 import com.viadeo.kasper.ddd.specification.annotation.XSpecification;
 import com.viadeo.kasper.ddd.specification.impl.Specification;

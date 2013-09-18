@@ -7,9 +7,7 @@
 package com.viadeo.kasper.core.locators;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryService;
-import com.viadeo.kasper.cqrs.query.ServiceFilter;
+import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.ddd.Domain;
 
 import java.util.Collection;
@@ -55,6 +53,8 @@ public interface QueryServicesLocator {
 	 */
 	@SuppressWarnings("rawtypes")
 	Optional<QueryService> getServiceFromQueryClass(Class<? extends Query> queryClass);
+
+    Optional<RequestActorChain<Query, QueryResult<QueryPayload>>> getRequestActorChain(Class<? extends Query> queryClass);
 
 	/**
 	 * Retrieve a service instance from its class
