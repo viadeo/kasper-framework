@@ -34,14 +34,6 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
         }
     }
 
-    /* FIXME: see https://github.com/viadeo/kasper-framework/issues/49 */
-    @Bean
-    public AnnotationEventListenerBeanPostProcessor annotationEventListenerBeanPostProcessor(final EventBus eventBus) {
-        final AnnotationEventListenerBeanPostProcessor annotationEventListenerBeanPostProcessor = new AnnotationEventListenerBeanPostProcessor();
-        annotationEventListenerBeanPostProcessor.setEventBus(eventBus);
-        return annotationEventListenerBeanPostProcessor;
-    }
-
     // ------------------------------------------------------------------------
 
     @Bean

@@ -49,26 +49,30 @@ public class QueryServicesProcessorTest {
 
     // ------------------------------------------------------------------------
 
+    @XKasperUnregistered
     @XKasperQueryService( name = SERVICE_NAME, domain = TestDomain.class )
-    public class TestService implements QueryService<TestQuery, TestPayload> {
+    public static class TestService implements QueryService<TestQuery, TestPayload> {
         @Override
         public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
+    @XKasperUnregistered
     @XKasperQueryService( domain = TestDomain.class )
-    public class TestServiceNoName implements QueryService<TestQuery, TestPayload> {
+    public static class TestServiceNoName implements QueryService<TestQuery, TestPayload> {
         @Override
         public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
+    @XKasperUnregistered
     @XKasperQueryService( domain = TestDomain.class, filters = TestFilter.class )
-    public class TestServiceOneFilter implements QueryService<TestQuery, TestPayload> {
+    public static class TestServiceOneFilter implements QueryService<TestQuery, TestPayload> {
         @Override
         public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
+    @XKasperUnregistered
     @XKasperQueryService( domain = TestDomain.class, filters = { TestFilter.class, TestFilter2.class } )
-    public class TestServiceMultipleFilters implements QueryService<TestQuery, TestPayload> {
+    public static class TestServiceMultipleFilters implements QueryService<TestQuery, TestPayload> {
         @Override
         public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
     }
