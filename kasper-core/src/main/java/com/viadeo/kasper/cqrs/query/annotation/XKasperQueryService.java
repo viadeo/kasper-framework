@@ -6,12 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.annotation;
 
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryCacheKeyGenerator;
 import com.viadeo.kasper.cqrs.query.ServiceFilter;
 import com.viadeo.kasper.ddd.Domain;
 
-import java.lang.annotation.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
  * Query service marker

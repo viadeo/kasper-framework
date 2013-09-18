@@ -7,6 +7,7 @@
 package com.viadeo.kasper.core.locators;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.ddd.Domain;
 
@@ -54,7 +55,14 @@ public interface QueryServicesLocator {
 	@SuppressWarnings("rawtypes")
 	Optional<QueryService> getServiceFromQueryClass(Class<? extends Query> queryClass);
 
-    Optional<RequestActorChain<Query, QueryResult<QueryPayload>>> getRequestActorChain(Class<? extends Query> queryClass);
+    /*
+     * Retrieve the actors chain for a specified query class
+     *
+     * @param queryClass the query class
+     * @return the computed actors chain
+     */
+    <Q extends Query, P extends QueryPayload, R extends QueryResult<P>>
+    Optional<RequestActorsChain<Q, R>> getRequestActorChain(Class<? extends Q> queryClass);
 
 	/**
 	 * Retrieve a service instance from its class

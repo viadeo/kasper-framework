@@ -11,7 +11,6 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.query.exposition.Bundle;
-import com.viadeo.kasper.query.exposition.Feature;
 import com.viadeo.kasper.query.exposition.FeatureConfiguration;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.adapters.DefaultTypeAdapters;
@@ -20,7 +19,10 @@ import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
 import org.joda.time.DateTime;
 
 import java.lang.reflect.Type;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.ServiceLoader;
 import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -80,7 +82,7 @@ public class QueryFactoryBuilder {
 		return this;
 	}
 
-    public QueryFactoryBuilder use(FeatureConfiguration configuration) {
+    public QueryFactoryBuilder use(final FeatureConfiguration configuration) {
         features = checkNotNull(configuration);
         return this;
     }
@@ -88,6 +90,7 @@ public class QueryFactoryBuilder {
     // ------------------------------------------------------------------------
 
 	public QueryFactory create() {
+
 		for (final TypeAdapter<?> adapter : loadServices(TypeAdapter.class)) {
 			use(adapter);
         }

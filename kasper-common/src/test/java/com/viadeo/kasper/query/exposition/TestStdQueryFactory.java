@@ -27,12 +27,10 @@ public class TestStdQueryFactory {
     public static class SomeQuery implements Query {
         private static final long serialVersionUID = -6763165103363988454L;
 
-        public int getDummy() {
-            return 1;
-        }
+        public int getDummy() { return 1; }
 
-        public void setDummy(final int dummyInt) {
-        }
+        public void setDummy(final int dummyInt) { }
+
     }
 
     // ------------------------------------------------------------------------
@@ -140,8 +138,9 @@ public class TestStdQueryFactory {
             @Override
             public Optional<TypeAdapter<Map<String, List<DateTime>>>> create(TypeToken<Map<String, List<DateTime>>> typeToken, final QueryFactory adapterFactory) {
                 @SuppressWarnings("serial")
-                final TypeAdapter<List<DateTime>> dateTimeListAdapter = adapterFactory.create(new TypeToken<List<DateTime>>() {
-                });
+                final TypeAdapter<List<DateTime>> dateTimeListAdapter = adapterFactory.create(
+                        new TypeToken<List<DateTime>>() { }
+                );
 
                 final TypeAdapter<Map<String, List<DateTime>>> adapter = new TypeAdapter<Map<String, List<DateTime>>>() {
                     @Override

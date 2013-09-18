@@ -19,5 +19,5 @@ dependencies {
     compile libraries.YAMMER_METRICS
     compile libraries.JCACHE
 
-    testCompile 'net.sf.ehcache:ehcache-jcache:1.5.0-0.5'
+    testCompile libraries.JCACHE_EHCACHE
 }

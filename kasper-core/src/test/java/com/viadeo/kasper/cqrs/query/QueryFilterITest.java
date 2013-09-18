@@ -11,7 +11,6 @@ import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
-import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
@@ -54,10 +53,9 @@ public class QueryFilterITest {
     @XKasperUnregistered
     private class TestFilter implements QueryFilter<TestQuery>, ResultFilter<TestPayload> {
         @Override
-        public QueryResult<TestPayload> filter(final Context context, final QueryResult<TestPayload> result) {
+        public <R extends QueryResult<TestPayload>> R filter(Context context, R result) {
             result.getPayload().state = STATE_MODIFIED;
-            return result;
-        }
+            return result;        }
 
         @Override
         public TestQuery filter(Context context, TestQuery query) {

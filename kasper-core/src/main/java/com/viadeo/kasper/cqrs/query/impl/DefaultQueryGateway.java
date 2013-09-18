@@ -15,7 +15,11 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.RequestActorsChain;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryGateway;
+import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,7 +60,8 @@ public class DefaultQueryGateway implements QueryGateway {
 
         // Search for associated service --------------------------------------
         LOGGER.debug("Retrieve request processor chain for query " + queryClass.getSimpleName());
-        Optional<RequestActorChain<Query, QueryResult<QueryPayload>>> optionalRequestChain = queryServicesLocator.getRequestActorChain(queryClass);
+        Optional<RequestActorsChain<Query, QueryResult<QueryPayload>>> optionalRequestChain =
+                queryServicesLocator.getRequestActorChain(queryClass);
 
         if (!optionalRequestChain.isPresent()) {
             timer.close();
@@ -68,8 +73,8 @@ public class DefaultQueryGateway implements QueryGateway {
         QueryResult<PAYLOAD> ret = null;
 
         try {
-                LOGGER.info("Call actor chain for query " + queryClass.getSimpleName());
-                ret = (QueryResult<PAYLOAD>) optionalRequestChain.get().next(query, context);
+            LOGGER.info("Call actor chain for query " + queryClass.getSimpleName());
+            ret = (QueryResult<PAYLOAD>) optionalRequestChain.get().next(query, context);
         } catch (final RuntimeException e) {
             exception = e;
         } catch (final Exception e) {
@@ -100,4 +105,5 @@ public class DefaultQueryGateway implements QueryGateway {
     public void setQueryServicesLocator(final QueryServicesLocator queryServicesLocator) {
         this.queryServicesLocator = queryServicesLocator;
     }
+
 }

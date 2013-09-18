@@ -9,9 +9,11 @@ package com.viadeo.kasper.core.locators.impl;
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.cqrs.RequestActor;
+import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.query.cache.impl.AnnotationQueryCacheActorFactory;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.cqrs.query.impl.QueryCacheActor;
 import com.viadeo.kasper.cqrs.query.impl.QueryFiltersActor;
 import com.viadeo.kasper.cqrs.query.impl.QueryServiceActor;
 import com.viadeo.kasper.ddd.Domain;
@@ -70,13 +72,18 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     private final Map<Class<? extends QueryService<?, ?>>, List<ServiceFilter>> instanceFilters = newHashMap();
     private final Map<Class<? extends ServiceFilter>, Class<? extends Domain>> isDomainSticky = Maps.newHashMap();
 
-    private final QueryCacheActor.AnnotationQueryCacheActorFactory queryCacheFactory;
+    /**
+     * The factory for caches
+     */
+    private final AnnotationQueryCacheActorFactory queryCacheFactory;
+
+    // ------------------------------------------------------------------------
 
     public DefaultQueryServicesLocator() {
-        queryCacheFactory = new QueryCacheActor.AnnotationQueryCacheActorFactory();
+        queryCacheFactory = new AnnotationQueryCacheActorFactory();
     }
 
-    public DefaultQueryServicesLocator(QueryCacheActor.AnnotationQueryCacheActorFactory queryCacheFactory) {
+    public DefaultQueryServicesLocator(final AnnotationQueryCacheActorFactory queryCacheFactory) {
         this.queryCacheFactory = queryCacheFactory;
     }
 
@@ -202,30 +209,45 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     }
 
     @Override
-    public Optional<RequestActorChain<Query, QueryResult<QueryPayload>>> getRequestActorChain(Class<? extends Query> queryClass) {
-        Optional<QueryService> optionalQS = getServiceFromQueryClass(queryClass);
+    @SuppressWarnings("unchecked")
+    public <Q extends Query, P extends QueryPayload, R extends QueryResult<P>>
+    Optional<RequestActorsChain<Q, R>> getRequestActorChain(Class<? extends Q> queryClass) {
+        final Optional<QueryService> optionalQS = getServiceFromQueryClass(queryClass);
+
         if (optionalQS.isPresent()) {
-            QueryService<Query, QueryPayload> qs = optionalQS.get();
-            Class<? extends QueryService<Query, QueryPayload>> qsClass = (Class<? extends QueryService<Query, QueryPayload>>) qs.getClass();
+            final QueryService<Q, P> qs = optionalQS.get();
+            final Class<? extends QueryService<Q, P>> qsClass = (Class<? extends QueryService<Q, P>>) qs.getClass();
 
-            Collection<ServiceFilter> serviceFilters = getFiltersForServiceClass((Class<? extends QueryService<?, ?>>) qs.getClass());
+            final Collection<ServiceFilter> serviceFilters = getFiltersForServiceClass(qsClass);
 
-            List<RequestActor<Query, QueryResult<QueryPayload>>> requestActors = Lists.newArrayList(
-                    (RequestActor<Query, QueryResult<QueryPayload>>) queryCacheFactory.make(queryClass, qsClass),
-                    filtersActor(serviceFilters),
-                    new QueryServiceActor<Query, QueryPayload>((QueryService<Query, QueryPayload>) qs));
+            final List<RequestActor<Q, R>> requestActors = Lists.newArrayList();
 
-            return Optional.of(RequestActorChain.makeChain(requestActors));
+            /* Add cache actor if required */
+            final Optional<RequestActor<Q, R>> cacheActor = queryCacheFactory.make(queryClass, qsClass);
+            if (cacheActor.isPresent()) {
+                requestActors.add((RequestActor<Q, R>) queryCacheFactory.make(queryClass, qsClass).get());
+            }
+
+            /* Add filters actor */
+            requestActors.add(filtersActor(serviceFilters));
+
+            /* Add service actor */
+            requestActors.add(new QueryServiceActor(qs));
+
+            return Optional.of(RequestActorsChain.makeChain(requestActors));
         }
         return Optional.absent();
     }
 
 
-    @SuppressWarnings("rawtypes")
-    QueryFiltersActor<Query, QueryPayload> filtersActor(final Collection<ServiceFilter> serviceFilters) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    private QueryFiltersActor filtersActor(final Collection<ServiceFilter> serviceFilters) {
 
-        Collection<QueryFilter> queryFilters = Lists.newArrayList(Iterables.filter(serviceFilters, QueryFilter.class));
-        Collection<ResultFilter> resultFilters = Lists.newArrayList(Iterables.filter(serviceFilters, ResultFilter.class));
+        final Collection<QueryFilter> queryFilters =
+                Lists.newArrayList(Iterables.filter(serviceFilters, QueryFilter.class));
+
+        final Collection<ResultFilter> resultFilters =
+                Lists.newArrayList(Iterables.filter(serviceFilters, ResultFilter.class));
 
         return new QueryFiltersActor(queryFilters, resultFilters);
     }

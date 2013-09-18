@@ -4,7 +4,12 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.RequestActor;
+import com.viadeo.kasper.cqrs.RequestActorsChain;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.QueryService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +29,7 @@ public class QueryServiceActor<Q extends Query, PAYLOAD extends QueryPayload> im
     }
 
     @Override
-    public QueryResult<PAYLOAD> process(Q query, Context context, RequestActorChain<Q, QueryResult<PAYLOAD>> chain) throws Exception {
+    public QueryResult<PAYLOAD> process(Q query, Context context, RequestActorsChain<Q, QueryResult<PAYLOAD>> chain) throws Exception {
         /* Call the service */
         Exception exception = null;
         QueryResult<PAYLOAD> ret = null;

@@ -1,7 +1,13 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.query.annotation;
 
-import com.viadeo.kasper.cqrs.query.QueryCacheKeyGenerator;
-import com.viadeo.kasper.cqrs.query.impl.QueryAttributesKeyGenerator;
+import com.viadeo.kasper.cqrs.query.cache.QueryCacheKeyGenerator;
+import com.viadeo.kasper.cqrs.query.cache.impl.QueryAttributesKeyGenerator;
 
 import java.lang.annotation.*;
 
@@ -13,6 +19,7 @@ import java.lang.annotation.*;
 @Target(ElementType.TYPE)
 @Inherited
 public @interface XKasperQueryCache {
+
     /**
      * @return true if the cache should be enabled for this QueryService. True by default.
      */
@@ -32,6 +39,6 @@ public @interface XKasperQueryCache {
     /**
      * @return The fields to use for building this caches key.
      */
-    // FIXME name it keys or fields? This corresponds to the set of fields to be used in computing the key
     String[] keys() default {};
+
 }

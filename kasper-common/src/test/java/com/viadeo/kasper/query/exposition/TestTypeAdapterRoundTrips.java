@@ -22,12 +22,13 @@ public class TestTypeAdapterRoundTrips {
 
 	private QueryFactory factory = new QueryFactoryBuilder().create();
 
-    // issue #67
-    @Test public void testNoExceptionOnBeanWithNoDiscoveredProperties() {
+    @Test
+    public void testNoExceptionOnBeanWithNoDiscoveredProperties() {
         factory.create(TypeToken.of(EmptyBean.class));
     }
 
-	@Test public void testQueryWithDefaultValues() throws Exception {
+	@Test
+    public void testQueryWithDefaultValues() throws Exception {
         // Given
 	    final TypeAdapter<QueryWithDefaultValue> adapter = factory.create(TypeToken.of(QueryWithDefaultValue.class));
 

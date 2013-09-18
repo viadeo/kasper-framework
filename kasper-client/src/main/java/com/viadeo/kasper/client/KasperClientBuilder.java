@@ -68,7 +68,7 @@ public class KasperClientBuilder {
         return this;
     }
 
-    public KasperClientBuilder features(FeatureConfiguration features) {
+    public KasperClientBuilder features(final FeatureConfiguration features) {
         this.qFactoryBuilder.use(features);
         return this;
     }
