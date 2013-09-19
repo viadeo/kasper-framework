@@ -25,8 +25,6 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
 
     private String queryName;
 	private String queryPayloadName;
-	//private DocumentedProperties query = null;
-	//private DocumentedProperties response = null;
 	
 	// ------------------------------------------------------------------------
 
@@ -78,23 +76,8 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
 		this.setLabel(label);
 		this.setDomainName(domainName);
 
-		// - the Query --------------------------------------------------------
-		/*@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends Query>> optQueryClass =
-				(Optional<Class<? extends Query>>)
-						ReflectionGenericsResolver.getParameterTypeFromClass(
-								queryServiceClazz, QueryService.class, QueryService.PARAMETER_QUERY_POSITION);
-		this.query = new DocumentedProperties(optQueryClass.get());*/
         this.queryName=queryClazz.get().getSimpleName();
 		this.queryPayloadName=queryPayloadClazz.get().getSimpleName();
-		// - the Result -------------------------------------------------------
-		/*@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends QueryResult>> optQueryResultClass =
-				(Optional<Class<? extends QueryResult>>)
-						ReflectionGenericsResolver.getParameterTypeFromClass(
-								queryServiceClazz, QueryService.class, QueryService.PARAMETER_RESULT_POSITION);
-
-		this.response = new DocumentedProperties(optQueryResultClass.get());*/
 	}
 
 	// ------------------------------------------------------------------------
