@@ -18,7 +18,11 @@ allprojects  {
   apply plugin: 'findbugs'
 
   group = 'com.viadeo.kasper'
+<<<<<<< HEAD
   version = '0.0.16-SNAPSHOT'
+=======
+  version = '0.0.16-SNAPSHOT'
+>>>>>>> master
 
   idea {
     module {

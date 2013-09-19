@@ -49,7 +49,7 @@ public class KasperEventBus extends ClusteringEventBus {
     public static enum Policy {
         SYNCHRONOUS, ASYNCHRONOUS, USER
     }
-    private static final Policy DEFAULT_POLICY = Policy.ASYNCHRONOUS;
+    private static final Policy DEFAULT_POLICY = Policy.SYNCHRONOUS;
 
     private final Policy currentPolicy;
 

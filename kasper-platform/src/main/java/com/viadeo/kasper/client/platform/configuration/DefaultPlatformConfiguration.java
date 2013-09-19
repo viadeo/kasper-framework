@@ -115,6 +115,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
 
     // ------------------------------------------------------------------------
 
+    // FIXME: put a configurable policy (then specific bean)
     @Override
     public KasperEventBus eventBus() {
         if (components.containsKey(KasperEventBus.class)) {

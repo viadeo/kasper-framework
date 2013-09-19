@@ -107,7 +107,7 @@ public class KasperEventBusTest {
     @Test
     public void asynchronous() throws InterruptedException {
         // Given
-        final KasperEventBus eventBus = new KasperEventBus();
+        final KasperEventBus eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
         final List<Integer> returns = Lists.newLinkedList();
         final Event event = new TestEvent();
         final Context context = new DefaultContextBuilder().build();

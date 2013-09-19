@@ -20,6 +20,7 @@ import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Modifier;
@@ -276,10 +277,14 @@ public class AnnotationRootProcessor {
                                     // PROCESSOR DELEGATION
                                     processor.process(clazz);
 
+                                } catch (final BeanCurrentlyInCreationException e) {
+                                    throw new KasperException(String.format("Unable to process component : %s", clazz), e);
+
                                 } catch (final Exception e) {
                                     final String message = "Unexpected error during processor delegationfor class " + clazz.getName();
                                     LOGGER.warn(message, e);
-                                    throw new KasperException(message, e);
+                                    // FIXME: should be enabled but platform must be a bit refactored before
+                                    // throw new KasperException(message, e);
                                 }
 
                             } else {
