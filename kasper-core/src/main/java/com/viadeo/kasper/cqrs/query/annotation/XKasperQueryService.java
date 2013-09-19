@@ -15,26 +15,31 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 
- *         Query service marker
+ * Query service marker
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface XKasperQueryService {
 
-	/**
-	 * @return the name of the service
-	 */
-	String name() default "";
+    /**
+     * @return the name of the service
+     */
+    String name() default "";
 
     /**
      * @return the associated domain
      */
-	Class<? extends Domain> domain();
+    Class<? extends Domain> domain();
 
     /**
      * @return the associated query service filters
      */
     Class<? extends ServiceFilter>[] filters() default {};
+
+    /**
+     * Whether the result of this query service should be cached.
+     * False by default.
+     */
+    XKasperQueryCache cache() default @XKasperQueryCache(enabled = false);
 
 }

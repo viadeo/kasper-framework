@@ -16,7 +16,6 @@ import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.*;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
-import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.unitofwork.UnitOfWork;
@@ -31,12 +30,12 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  */
 public abstract class AbstractCommandHandler<C extends Command> implements CommandHandler<C> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AbstractCommandHandler.class);
-    private static final MetricRegistry metrics = KasperMetrics.getRegistry();
+    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
-    private static final Timer metricClassTimer = metrics.timer(name(CommandGateway.class, "requests-time"));
-    private static final Histogram metricClassRequestsTimes = metrics.histogram(name(CommandGateway.class, "requests-times"));
-    private static final Meter metricClassRequests = metrics.meter(name(CommandGateway.class, "requests"));
-    private static final Meter metricClassErrors = metrics.meter(name(CommandGateway.class, "errors"));
+    private static final Timer METRICLASSTIMER = METRICS.timer(name(CommandGateway.class, "requests-time"));
+    private static final Histogram METRICLASSREQUESTSTIMES = METRICS.histogram(name(CommandGateway.class, "requests-times"));
+    private static final Meter METRICLASSREQUESTS = METRICS.meter(name(CommandGateway.class, "requests"));
+    private static final Meter METRICLASSERRORS = METRICS.meter(name(CommandGateway.class, "errors"));
 
     private final Timer metricTimer;
     private final Histogram metricRequestsTimes;
@@ -58,10 +57,10 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
                     + this.getClass().getSimpleName());
         }
 
-        metricTimer = metrics.timer(name(commandClass.get(), "requests-time"));
-        metricRequestsTimes = metrics.histogram(name(commandClass.get(), "requests-times"));
-        metricRequests = metrics.meter(name(commandClass.get(), "requests"));
-        metricErrors = metrics.meter(name(commandClass.get(), "errors"));
+        metricTimer = METRICS.timer(name(commandClass.get(), "requests-time"));
+        metricRequestsTimes = METRICS.histogram(name(commandClass.get(), "requests-times"));
+        metricRequests = METRICS.meter(name(commandClass.get(), "requests"));
+        metricErrors = METRICS.meter(name(commandClass.get(), "errors"));
     }
 
     // ------------------------------------------------------------------------
@@ -82,7 +81,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         AbstractCommandHandler.LOGGER.debug("Handle command " + commandClass.getSimpleName());
 
         /* Start timer */
-        final Timer.Context classTimer = metricClassTimer.time();
+        final Timer.Context classTimer = METRICLASSTIMER.time();
         final Timer.Context timer = metricTimer.time();
 
         CommandResult ret = null;
@@ -99,7 +98,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
                 }
             }
 
-        } catch (final Exception e) {
+        } catch (final RuntimeException e) {
             LOGGER.error("Error command [{}]", commandClass, e);
 
             exception = e;
@@ -126,12 +125,12 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         /* Monitor the request calls */
         timer.close();
         final long time = classTimer.stop();
-        metricClassRequestsTimes.update(time);
+        METRICLASSREQUESTSTIMES.update(time);
         metricRequestsTimes.update(time);
-        metricClassRequests.mark();
+        METRICLASSREQUESTS.mark();
         metricRequests.mark();
         if ((null != exception) || ret.isError()) {
-            metricClassErrors.mark();
+            METRICLASSERRORS.mark();
             metricErrors.mark();
         }
 

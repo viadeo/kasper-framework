@@ -27,6 +27,6 @@ public interface Event extends Serializable, Immutable {
 	/**
 	 * @param context the event's context
 	 */
-	void setContext(Context context);
+	<E extends Event> E setContext(Context context);
 
 }

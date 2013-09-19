@@ -186,14 +186,12 @@ ex :
     :linenos:
 
     @XKasperServiceFilter( name = "ValidateUniverseId" )
-    public class ValidateIdQueryFilter implements QueryFilter {
+    public class ValidateIdQueryFilter implements QueryFilter<HasAnIdQuery> {
 
         @Override
-        public Query filter(final Context context, final Query query) throws KasperQueryException {
-            if (HasAnIdQuery.class.isAssignableFrom(query)) {
-                if (((HasAnIdQuery) query).id > 42) {
-                    throw new KasperQueryException("The id cannot be greater than 42 !");
-                }
+        public HasAnIdQuery filter(final Context context, final HasAnIdQuery query) throws KasperQueryException {
+            if (query.id > 42) {
+                throw new KasperQueryException("The id cannot be greater than 42 !");
             }
             return query;
         }
@@ -208,7 +206,7 @@ A filter can be defined global (set the global flag (**global = true**) on the a
     :linenos:
 
     @XKasperServiceFilter( global = true ) // Will be applied to all query services
-    public class IdEraserResultFilter implements ResultFilter {
+    public class IdEraserResultFilter implements ResultFilter<HasAnIdPayload> {
 
         @Override
         public QueryResult<HasAnIdPayload> filter(final Context context, final QueryResult<HasAnIdPayload> dto) throws KasperQueryException {

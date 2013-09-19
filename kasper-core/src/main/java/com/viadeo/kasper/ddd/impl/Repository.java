@@ -37,7 +37,7 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  */
 public abstract class Repository<AGR extends AggregateRoot> implements IRepository<AGR> {
 
-    private static final MetricRegistry metrics = KasperMetrics.getRegistry();
+    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 	
 	/**
 	 * Decored axon repository
@@ -50,17 +50,17 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
 		private final Repository<AGR> kasperRepository;
 
-        private final Histogram metricClassSaveTimes = metrics.histogram(name(IRepository.class, "save-times"));
-        private final Meter metricClassSaves = metrics.meter(name(IRepository.class, "saves"));
-        private final Meter metricClassSaveErrors = metrics.meter(name(IRepository.class, "save-errors"));
+        private final Histogram metricClassSaveTimes = METRICS.histogram(name(IRepository.class, "save-times"));
+        private final Meter metricClassSaves = METRICS.meter(name(IRepository.class, "saves"));
+        private final Meter metricClassSaveErrors = METRICS.meter(name(IRepository.class, "save-errors"));
 
-        private final Histogram metricClassLoadTimes = metrics.histogram(name(IRepository.class, "load-times"));
-        private final Meter metricClassLoads = metrics.meter(name(IRepository.class, "loads"));
-        private final Meter metricClassLoadErrors = metrics.meter(name(IRepository.class, "load-errors"));
+        private final Histogram metricClassLoadTimes = METRICS.histogram(name(IRepository.class, "load-times"));
+        private final Meter metricClassLoads = METRICS.meter(name(IRepository.class, "loads"));
+        private final Meter metricClassLoadErrors = METRICS.meter(name(IRepository.class, "load-errors"));
 
-        private final Histogram metricClassDeleteTimes = metrics.histogram(name(IRepository.class, "delete-times"));
-        private final Meter metricClassDeletes= metrics.meter(name(IRepository.class, "deletes"));
-        private final Meter metricClassDeleteErrors = metrics.meter(name(IRepository.class, "delete-errors"));
+        private final Histogram metricClassDeleteTimes = METRICS.histogram(name(IRepository.class, "delete-times"));
+        private final Meter metricClassDeletes= METRICS.meter(name(IRepository.class, "deletes"));
+        private final Meter metricClassDeleteErrors = METRICS.meter(name(IRepository.class, "delete-errors"));
 
         private final Timer metricTimerSave;
         private final Histogram metricSaveTimes;
@@ -86,20 +86,20 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
 			this.kasperRepository = kasperRepository;
 
-            metricTimerSave = metrics.timer(name(kasperRepositoryClass, "save-time"));
-            metricSaveTimes = metrics.histogram(name(kasperRepositoryClass, "save-times"));
-            metricSaves = metrics.meter(name(kasperRepositoryClass, "saves"));
-            metricSaveErrors = metrics.meter(name(kasperRepositoryClass, "save-errors"));
+            metricTimerSave = METRICS.timer(name(kasperRepositoryClass, "save-time"));
+            metricSaveTimes = METRICS.histogram(name(kasperRepositoryClass, "save-times"));
+            metricSaves = METRICS.meter(name(kasperRepositoryClass, "saves"));
+            metricSaveErrors = METRICS.meter(name(kasperRepositoryClass, "save-errors"));
 
-            metricTimerLoad = metrics.timer(name(kasperRepositoryClass, "load-time"));
-            metricLoadTimes = metrics.histogram(name(kasperRepositoryClass, "load-times"));
-            metricLoads = metrics.meter(name(kasperRepositoryClass, "loads"));
-            metricLoadErrors = metrics.meter(name(kasperRepositoryClass, "load-errors"));
+            metricTimerLoad = METRICS.timer(name(kasperRepositoryClass, "load-time"));
+            metricLoadTimes = METRICS.histogram(name(kasperRepositoryClass, "load-times"));
+            metricLoads = METRICS.meter(name(kasperRepositoryClass, "loads"));
+            metricLoadErrors = METRICS.meter(name(kasperRepositoryClass, "load-errors"));
 
-            metricTimerDelete = metrics.timer(name(kasperRepositoryClass, "delete-time"));
-            metricDeleteTimes = metrics.histogram(name(kasperRepositoryClass, "delete-times"));
-            metricDeletes = metrics.meter(name(kasperRepositoryClass, "deletes"));
-            metricDeleteErrors = metrics.meter(name(kasperRepositoryClass, "delete-errors"));
+            metricTimerDelete = METRICS.timer(name(kasperRepositoryClass, "delete-time"));
+            metricDeleteTimes = METRICS.histogram(name(kasperRepositoryClass, "delete-times"));
+            metricDeletes = METRICS.meter(name(kasperRepositoryClass, "deletes"));
+            metricDeleteErrors = METRICS.meter(name(kasperRepositoryClass, "delete-errors"));
 		}
 
         // --------------------------------------------------------------------
@@ -110,7 +110,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
             try {
 			    this.kasperRepository.doSave(aggregate);
-            } catch (final Exception e) {
+            } catch (final RuntimeException e) {
                 metricClassSaveErrors.mark();
                 metricSaveErrors.mark();
                 throw e;
@@ -131,7 +131,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
             final AGR agr;
             try {
                 agr = this.kasperRepository.doLoad(aggregateIdentifier, expectedVersion);
-             } catch (final Exception e) {
+             } catch (final RuntimeException e) {
                 metricClassLoadErrors.mark();
                 metricLoadErrors.mark();
                 throw e;
@@ -152,7 +152,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
             try {
  			    this.kasperRepository.doDelete(aggregate);
-             } catch (final Exception e) {
+             } catch (final RuntimeException e) {
                 metricClassDeleteErrors.mark();
                 metricDeleteErrors.mark();
                 throw e;

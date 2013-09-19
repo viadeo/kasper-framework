@@ -610,11 +610,19 @@ You are encouraged to add the suffix **Service** to your class names.
 .. code-block:: java
     :linenos:
 
-    public class SendEmailsService implements DomainService {
+    public class PremiumService implements DomainService {
 
-        public void send(final EmailData data, final EmailTemplate template) {
+        public void businessRule(final int productId, final String toto) {
             ...
         }
 
     }
+
+A service can be used to share a business logic between a query and a command inside a domain.
+
+A good pattern is to enclose the service calls inside your business models on command an query sides, keeping a correct OOP approach
+while centralizing business algorithms :
+
+.. edit this drawing here: https://docs.google.com/a/viadeoteam.com/drawings/d/1-wHZytGl6HkbwoOrBUG0Sir_oK2TyJKpLRCp3CjFE-k/edit?usp=sharing
+.. image:: ../img/shared_services.png
 

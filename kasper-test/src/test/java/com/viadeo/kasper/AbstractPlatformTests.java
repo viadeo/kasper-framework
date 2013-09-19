@@ -6,10 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper;
 
+import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.client.platform.configuration.DefaultPlatformSpringConfiguration;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
-import com.viadeo.kasper.platform.Platform;
-import com.viadeo.kasper.platform.configuration.DefaultPlatformSpringConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 

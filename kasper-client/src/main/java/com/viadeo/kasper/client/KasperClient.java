@@ -335,7 +335,7 @@ public class KasperClient {
                 .type(MediaType.APPLICATION_JSON)
                 .get(ClientResponse.class);
 
-        return new QueryResultFuture(this, futureResponse, mapTo);
+        return new QueryResultFuture<P>(this, futureResponse, mapTo);
     }
 
     // --

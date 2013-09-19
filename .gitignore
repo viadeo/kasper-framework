@@ -5,6 +5,7 @@
 *.versionsBackup
 **/.settings
 **/.project
+**/.cache
 .settings
 .project
 .classpath

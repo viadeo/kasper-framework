@@ -9,6 +9,8 @@ package com.viadeo.kasper.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.query.exposition.Feature;
+import com.viadeo.kasper.query.exposition.FeatureConfiguration;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
@@ -63,6 +65,11 @@ public class KasperClientBuilder {
     public KasperClientBuilder use(final QueryFactory queryFactory) {
         checkNotNull(queryFactory);
         this.queryFactory = queryFactory;
+        return this;
+    }
+
+    public KasperClientBuilder features(final FeatureConfiguration features) {
+        this.qFactoryBuilder.use(features);
         return this;
     }
 

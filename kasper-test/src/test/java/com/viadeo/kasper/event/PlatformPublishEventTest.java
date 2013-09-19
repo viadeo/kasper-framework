@@ -12,6 +12,7 @@ import com.viadeo.kasper.KasperTestIdGenerator;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
+import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.er.impl.AbstractRootConcept;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
@@ -34,6 +35,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 	@XKasperDomain(label = "testDomain", prefix = "tst", description = "test domain")
 	public static class TestDomain implements Domain {}
 
+    @XKasperConcept(label = "test root concept", domain = TestDomain.class)
     public static class TestRootConcept extends AbstractRootConcept {}
 
 	@SuppressWarnings("serial")
@@ -49,24 +51,24 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 		@Override
 		public void handle(final EventMessage<TestEvent> eventMessage) {
 			received = true;
-			LOCK.unlock();
 		}
 	}
 
 	// ------------------------------------------------------------------------
 
 	@Test
-	public void testPublishEvent() {
+	public void testPublishEvent() throws InterruptedException {
+        // Given
 		final KasperID id = KasperTestIdGenerator.get();
 		final Event event = new TestEvent(id, new DateTime());
 		event.setContext(this.newContext());
 
-		LOCK.lock();
-		this.getPlatform().publishEvent(event);		
-		LOCK.lock();
+        // When
+		this.getPlatform().publishEvent(event);
+        Thread.sleep(1000);
 
+        // Then
 		assertTrue(received);
-		LOCK.unlock();
 	}
 
 }
