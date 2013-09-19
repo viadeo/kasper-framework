@@ -149,6 +149,20 @@
             {{/if}}
         </div>
         <!--/span-->
+
+        <div class="span4 well well-small">
+            <h2>Repositories</h2>
+            {{#if node.repositories}}
+            <ul>
+                {{#each node.repositories}}
+                <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <i>nothing declared</i>
+            {{/if}}
+        </div>
+        <!--/span-->
     </div>
     <!--/row-->
 
