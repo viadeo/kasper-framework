@@ -115,12 +115,11 @@ public class HttpQueryExposer extends HttpExposer {
 
         /* Create a request correlation id */
         final UUID requestCorrelationUUID = UUID.randomUUID();
-        MDC.put("requestCorrelationId", requestCorrelationUUID.toString());
+        MDC.put("correlationId", requestCorrelationUUID.toString());
         resp.addHeader("UUID", requestCorrelationUUID.toString());
 
         /* Log starting request */
-        QUERY_LOGGER.info("Processing HTTP Query [{}]: {} {}", requestCorrelationUUID, req.getMethod(), getFullRequestURI(req));
-        long startTime = System.currentTimeMillis();
+        QUERY_LOGGER.info("Processing HTTP Query '{}' '{}'", req.getMethod(), getFullRequestURI(req));
 
         // TODO we should think of providing some more information to client in
         // case of failure. We also need to be sure that those infos a really
@@ -135,28 +134,28 @@ public class HttpQueryExposer extends HttpExposer {
          */
         try {
             final String queryName = resourceName(req.getRequestURI());
-            final Query query = parseQuery(queryName, req, resp, requestCorrelationUUID, startTime);
+            final Query query = parseQuery(queryName, req, resp);
 
             QueryResult<?> result = null;
             if (!resp.isCommitted()) {
-                result = handleQuery(queryName, query, resp, requestCorrelationUUID, startTime);
+                result = handleQuery(queryName, query, resp, requestCorrelationUUID );
             }
 
             /* need to check again as something might go wrong in handleQuery */
             if (!resp.isCommitted()) {
-                sendResult(queryName, result, resp, requestCorrelationUUID, startTime);
+                sendResult(queryName, result, resp);
             }
 
         } catch (final Throwable t) {
             sendError(
                     SC_INTERNAL_SERVER_ERROR,
                     String.format("Could not handle query [%s] with parameters [%s]",
-                            req.getRequestURI(), req.getQueryString()), resp, t,
-                            requestCorrelationUUID, startTime);
+                            req.getRequestURI(), req.getQueryString()), resp, t);
 
         } finally {
             /* Log metrics */
             final long time = classTimer.stop();
+            QUERY_LOGGER.info("Execution Time '{}' ms",time);
             METRICLASSREQUESTSTIME.update(time);
             METRICLASSREQUESTS.mark();
         }
@@ -167,8 +166,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     // we can not use send error as it will send text/html response.
-    protected Query parseQuery(final String queryName, final HttpServletRequest req, final HttpServletResponse resp,
-                               final UUID requestCorrelationUUID, final long startTime)
+    protected Query parseQuery(final String queryName, final HttpServletRequest req, final HttpServletResponse resp)
             throws IOException {
 
         Query query = null;
@@ -178,7 +176,7 @@ public class HttpQueryExposer extends HttpExposer {
 
             sendError(HttpServletResponse.SC_NOT_FOUND,
                       "No such query[" + queryName + "].",
-                      resp, null, requestCorrelationUUID, startTime);
+                      resp, null);
 
         } else {
 
@@ -203,7 +201,7 @@ public class HttpQueryExposer extends HttpExposer {
                  */
                 sendError(SC_BAD_REQUEST, String.format(
                         "Unable to parse Query [%s] with parameters [%s]", queryName,
-                        req.getQueryString()), resp, t, requestCorrelationUUID, startTime);
+                        req.getQueryString()), resp, t);
             }
         }
 
@@ -214,7 +212,7 @@ public class HttpQueryExposer extends HttpExposer {
 
     // can not use sendError it is forcing response to text/html
     protected QueryResult<?> handleQuery(final String queryName, final Query query, final HttpServletResponse resp,
-                                         final UUID requestCorrelationUUID, final long startTime)
+                                         final UUID requestCorrelationUUID)
             throws IOException {
 
         QueryResult<?> result = null;
@@ -242,7 +240,7 @@ public class HttpQueryExposer extends HttpExposer {
              */
             sendError(SC_INTERNAL_SERVER_ERROR,
                       String.format("ERROR Submiting query[%s] to Kasper platform.", queryName),
-                      resp, e, requestCorrelationUUID, startTime);
+                      resp, e);
         }
 
         return result;
@@ -251,8 +249,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     // can not use sendError it is forcing response to text/html
-    protected void sendResult(final String queryName, final QueryResult<?> result, final HttpServletResponse resp,
-                              final UUID requestCorrelationUUID, final long startTime)
+    protected void sendResult(final String queryName, final QueryResult<?> result, final HttpServletResponse resp)
             throws IOException {
 
         final ObjectWriter writer = mapper.writer();
@@ -270,13 +267,12 @@ public class HttpQueryExposer extends HttpExposer {
             writer.writeValue(resp.getOutputStream(), result);
 
             /* Log the request */
-            QUERY_LOGGER.info("HTTP Response [{}]: '{}' Execution Time '{}' ms ",
-                              requestCorrelationUUID, status, System.currentTimeMillis() - startTime);
+            QUERY_LOGGER.info("HTTP Response : '{}'", status);
 
         } catch (final Throwable t) {
             sendError(SC_INTERNAL_SERVER_ERROR,
                       String.format("ERROR sending Result [%s] for query [%s]", result.getClass().getSimpleName(),queryName),
-                      resp, t, requestCorrelationUUID, startTime);
+                      resp, t);
         }
 
     }
@@ -284,8 +280,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("deprecation")
-    protected void sendError(final int status, final String message, final HttpServletResponse resp, final Throwable exception,
-                             final UUID requestCorrelationUUID, final long startTime)
+    protected void sendError(final int status, final String message, final HttpServletResponse resp, final Throwable exception)
             throws IOException {
 
         if (exception != null) {
@@ -310,8 +305,7 @@ public class HttpQueryExposer extends HttpExposer {
         resp.flushBuffer();
 
         /* Log the request */
-        QUERY_LOGGER.info("HTTP Response [{}]: '{}' Execution Time '{}' ms ",
-                          requestCorrelationUUID, status, System.currentTimeMillis() - startTime);
+        QUERY_LOGGER.info("HTTP Response : '{}'", status);
 
         /* Log error metric */
         METRICLASSERRORS.mark();

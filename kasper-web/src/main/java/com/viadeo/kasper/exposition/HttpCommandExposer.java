@@ -131,12 +131,11 @@ public class HttpCommandExposer extends HttpExposer {
 
         /* Create a request correlation id */
         final UUID requestCorrelationUUID = UUID.randomUUID();
-        MDC.put("requestCorrelationId", requestCorrelationUUID.toString());
+        MDC.put("correlationId", requestCorrelationUUID.toString());
         resp.addHeader("UUID", requestCorrelationUUID.toString());
 
         /* Log starting request */
-        REQUEST_LOGGER.info("Processing HTTP Command [{}] : {} {}", requestCorrelationUUID, req.getMethod(), getFullRequestURI(req));
-        long startTime = System.currentTimeMillis();
+        REQUEST_LOGGER.info("Processing HTTP Command '{}' '{}'", req.getMethod(), getFullRequestURI(req));
 
         /* always respond with a json stream (even if empty) */
         resp.setContentType("application/json; charset=utf-8");
@@ -148,8 +147,7 @@ public class HttpCommandExposer extends HttpExposer {
         final Class<? extends Command> commandClass = exposedCommands.get(commandName);
         if (null == commandClass) {
             sendError(resp, HttpServletResponse.SC_NOT_FOUND,
-                      "Command[" + commandName + "] not found.",
-                      requestCorrelationUUID, startTime);
+                      "Command[" + commandName + "] not found.");
             return;
         }
 
@@ -160,8 +158,7 @@ public class HttpCommandExposer extends HttpExposer {
 
             if (!req.getContentType().contains("application/json")) {
                 sendError(resp, HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
-                          "Accepting and producing only application/json",
-                          requestCorrelationUUID, startTime);
+                          "Accepting and producing only application/json");
                 return;
             }
 
@@ -186,12 +183,12 @@ public class HttpCommandExposer extends HttpExposer {
         } catch (final IOException e) {
             LOGGER.error("Error parse command [" + commandClass.getName() + "]", e);
             final String errorMessage = (null == e.getMessage()) ? "Unknown" : e.getMessage();
-            sendError(resp, HttpServletResponse.SC_BAD_REQUEST, errorMessage, requestCorrelationUUID, startTime);
+            sendError(resp, HttpServletResponse.SC_BAD_REQUEST, errorMessage);
         } catch (final Throwable th) {
             // we catch any other exception in order to still respond with json
             LOGGER.error("Error for command [" + commandClass.getName() + "]", th);
             final String errorMessage = (null == th.getMessage()) ? "Unknown" : th.getMessage();
-            sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage, requestCorrelationUUID, startTime);
+            sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
         } finally {
             if (null != parser) {
                 /*
@@ -204,6 +201,7 @@ public class HttpCommandExposer extends HttpExposer {
 
             /* Log metrics */
             final long time = classTimer.stop();
+            REQUEST_LOGGER.info("Execution Time '{}' ms",time);
             METRICLASSREQUESTSTIME.update(time);
             METRICLASSREQUESTS.mark();
         }
@@ -213,15 +211,14 @@ public class HttpCommandExposer extends HttpExposer {
          * so nothing can be done anymore
          */
         if (null != result) {
-            sendResponse(result, resp, commandClass, requestCorrelationUUID, startTime);
+            sendResponse(result, resp, commandClass);
         }
     }
 
     // ------------------------------------------------------------------------
 
     protected void sendResponse(final CommandResult result, final HttpServletResponse resp,
-                                final Class<? extends Command> commandClass,
-                                final UUID requestCorrelationUUID, final long startTime)
+                                final Class<? extends Command> commandClass)
             throws IOException {
 
         final ObjectWriter writer = mapper.writer();
@@ -243,7 +240,7 @@ public class HttpCommandExposer extends HttpExposer {
 
         } catch (final JsonGenerationException | JsonMappingException e) {
 
-            this.internalCommandError(resp, commandClass, result, e, requestCorrelationUUID, startTime);
+            this.internalCommandError(resp, commandClass, result, e);
 
         } finally {
             if (generator != null) {
@@ -252,19 +249,16 @@ public class HttpCommandExposer extends HttpExposer {
             }
 
             /* Log request */
-            REQUEST_LOGGER.info("HTTP Response [{}]: '{}' Execution Time '{}' ms ",
-                                requestCorrelationUUID,
-                                status, System.currentTimeMillis() - startTime);
+            REQUEST_LOGGER.info("HTTP Response : '{}'", status);
         }
     }
 
     private void internalCommandError(final HttpServletResponse resp, final Class<? extends Command> commandClass,
-                                      final CommandResult result, final Exception e,
-                                      final UUID requestCorrelationUUId, final long startTime)
+                                      final CommandResult result, final Exception e)
             throws IOException {
          this.sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                   String.format("Error outputting result to JSON for command [%s] and result [%s]error = %s",
-                          commandClass.getSimpleName(), result, e), requestCorrelationUUId, startTime);
+                          commandClass.getSimpleName(), result, e));
     }
 
     // ------------------------------------------------------------------------
@@ -278,8 +272,7 @@ public class HttpCommandExposer extends HttpExposer {
      * text/html.
      */
     @SuppressWarnings("deprecation")
-    protected void sendError(final HttpServletResponse response, final int status, final String reason,
-                             final UUID requestCorrelationUUID, final long startTime)
+    protected void sendError(final HttpServletResponse response, final int status, final String reason)
             throws IOException {
         LOGGER.error(reason);
 
@@ -292,9 +285,7 @@ public class HttpCommandExposer extends HttpExposer {
                                           new KasperError(CoreErrorCode.UNKNOWN_ERROR, reason)));
 
         /* Log request */
-        REQUEST_LOGGER.info("HTTP Response [{}]: '{}' Execution Time '{}' ms ",
-                            requestCorrelationUUID,
-                            status, System.currentTimeMillis() - startTime);
+        REQUEST_LOGGER.info("HTTP Response : '{}'", status);
 
         /* Log error metric */
         METRICLASSERRORS.mark();
