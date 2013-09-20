@@ -9,7 +9,7 @@ package com.viadeo.kasper.exposition;
 import com.viadeo.kasper.client.KasperClient;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.client.platform.configuration.DefaultPlatformSpringConfiguration;
-import com.viadeo.kasper.client.platform.web.KasperPlatformBootListener;
+import com.viadeo.kasper.web.KasperPlatformSpringBootListener;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -52,7 +52,7 @@ public abstract class BaseHttpExposerTest<T extends HttpExposer> {
         ctx.refresh();
 
 		servletContext.addEventListener(new ContextLoaderListener(ctx));
-		servletContext.addEventListener(new KasperPlatformBootListener());
+		servletContext.addEventListener(new KasperPlatformSpringBootListener());
 		servletContext.addServlet(new ServletHolder(createExposer(ctx)), "/rootpath/*");
 
 		server.start();

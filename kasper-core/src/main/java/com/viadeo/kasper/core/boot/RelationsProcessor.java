@@ -7,9 +7,7 @@
 
 package com.viadeo.kasper.core.boot;
 
-import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
-import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

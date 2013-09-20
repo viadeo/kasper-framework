@@ -68,7 +68,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *      KasperClient client = new KasperClient();
  *      
  *      client.sendAsync(someCommand, new ICallback&lt;ICommandResult&gt;() {
- *          public void done(ICommandResult result) {
+ *          public void done(final ICommandResult result) {
  *              // do something smart with my result
  *          }
  *      });
@@ -135,8 +135,8 @@ public class KasperClient {
 
     // --
 
-    KasperClient(final QueryFactory queryFactory, final ObjectMapper mapper,
-                 final URL commandBaseUrl, final URL queryBaseUrl) {
+    public KasperClient(final QueryFactory queryFactory, final ObjectMapper mapper,
+                        final URL commandBaseUrl, final URL queryBaseUrl) {
 
         final DefaultClientConfig cfg = new DefaultClientConfig();
         cfg.getSingletons().add(new JacksonJsonProvider(mapper));
@@ -149,8 +149,8 @@ public class KasperClient {
 
     // --
 
-    KasperClient(final QueryFactory queryFactory, final Client client, final URL commandBaseUrl,
-            final URL queryBaseUrl) {
+    public KasperClient(final QueryFactory queryFactory, final Client client,
+                        final URL commandBaseUrl, final URL queryBaseUrl) {
 
         this.client = client;
         this.commandBaseLocation = commandBaseUrl;

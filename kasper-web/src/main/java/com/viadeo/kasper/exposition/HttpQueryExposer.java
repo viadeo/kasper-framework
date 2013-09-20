@@ -23,10 +23,7 @@ import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.context.impl.DefaultKasperId;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryGateway;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
 import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
@@ -39,6 +36,7 @@ import org.slf4j.MDC;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 import java.beans.Introspector;
 import java.io.IOException;
 import java.util.Arrays;
@@ -53,6 +51,7 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 
 public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
+
     protected static final transient Logger QUERY_LOGGER = LoggerFactory.getLogger(HttpQueryExposer.class);
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
@@ -75,7 +74,8 @@ public class HttpQueryExposer extends HttpExposer {
 
     public HttpQueryExposer(final QueryGateway queryGateway,
                             final QueryServicesLocator queryServicesLocator,
-                            final QueryFactory queryAdapterFactory, final ObjectMapper mapper) {
+                            final QueryFactory queryAdapterFactory,
+                            final ObjectMapper mapper) {
 
         this.queryGateway = queryGateway;
         this.queryServicesLocator = queryServicesLocator;
@@ -105,7 +105,6 @@ public class HttpQueryExposer extends HttpExposer {
 
     // ------------------------------------------------------------------------
 
-    // again can not use sendError
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
@@ -113,7 +112,7 @@ public class HttpQueryExposer extends HttpExposer {
         /* Start request timer */
         final Timer.Context classTimer = METRICLASSTIMER.time();
 
-        /* Create a request correlation id */
+        /* Create a kasper correlation id */
         final UUID requestCorrelationUUID = UUID.randomUUID();
         MDC.put("correlationId", requestCorrelationUUID.toString());
         resp.addHeader("UUID", requestCorrelationUUID.toString());
@@ -121,18 +120,15 @@ public class HttpQueryExposer extends HttpExposer {
         /* Log starting request */
         QUERY_LOGGER.info("Processing HTTP Query '{}' '{}'", req.getMethod(), getFullRequestURI(req));
 
-        // TODO we should think of providing some more information to client in
-        // case of failure. We also need to be sure that those infos a really
-        // useful
-
         /* always respond with a json stream (even if empty) */
-        resp.setContentType("application/json; charset=utf-8");
+        resp.setContentType(MediaType.APPLICATION_JSON + "; charset=utf-8");
 
         /*
          * lets be very defensive and catch every thing in order to not break
          * the contract with clients = JSON only
          */
         try {
+
             final String queryName = resourceName(req.getRequestURI());
             final Query query = parseQuery(queryName, req, resp);
 
@@ -153,7 +149,7 @@ public class HttpQueryExposer extends HttpExposer {
                             req.getRequestURI(), req.getQueryString()), resp, t);
 
         } finally {
-            /* Log metrics */
+            /* Log & metrics */
             final long time = classTimer.stop();
             QUERY_LOGGER.info("Execution Time '{}' ms",time);
             METRICLASSREQUESTSTIME.update(time);
@@ -195,10 +191,6 @@ public class HttpQueryExposer extends HttpExposer {
                 query = adapter.adapt(new QueryParser(queryParams.build()));
 
             } catch (final Throwable t) {
-                /*
-                 * OK lets catch any exception that could occur during
-                 * deserialization and try to send back
-                 */
                 sendError(SC_BAD_REQUEST, String.format(
                         "Unable to parse Query [%s] with parameters [%s]", queryName,
                         req.getQueryString()), resp, t);
@@ -210,34 +202,24 @@ public class HttpQueryExposer extends HttpExposer {
 
     // ------------------------------------------------------------------------
 
-    // can not use sendError it is forcing response to text/html
     protected QueryResult<?> handleQuery(final String queryName, final Query query, final HttpServletResponse resp,
                                          final UUID requestCorrelationUUID)
             throws IOException {
 
         QueryResult<?> result = null;
 
+         /* TODO: handle context from request */
+        final Context context = new DefaultContextBuilder().build();
+        if (AbstractContext.class.isAssignableFrom(context.getClass())) {
+            ((AbstractContext) context).setKasperCorrelationId(new DefaultKasperId(requestCorrelationUUID));
+        }
+
         try {
 
-            /*
-             * checking if the response has not been sent, if it is true this
-             * means that an error happened and has been handled
-             *
-             * FIXME: handle context from request
-             *
-             */
-            final Context context = new DefaultContextBuilder().build();
-            if (AbstractContext.class.isAssignableFrom(context.getClass())) {
-                ((AbstractContext) context).setKasperCorrelationId(new DefaultKasperId(requestCorrelationUUID));
-            }
-
+            /* Forward the query to the gateway for handling */
             result = queryGateway.retrieve(query, new DefaultContextBuilder().build());
 
         } catch (final Throwable e) {
-            /*
-             * it is ok to eat all kind of exceptions as they occur at parsing
-             * level so we know what approximatively failed.
-             */
             sendError(SC_INTERNAL_SERVER_ERROR,
                       String.format("ERROR Submiting query[%s] to Kasper platform.", queryName),
                       resp, e);
@@ -248,7 +230,6 @@ public class HttpQueryExposer extends HttpExposer {
 
     // ------------------------------------------------------------------------
 
-    // can not use sendError it is forcing response to text/html
     protected void sendResult(final String queryName, final QueryResult<?> result, final HttpServletResponse resp)
             throws IOException {
 
@@ -283,7 +264,7 @@ public class HttpQueryExposer extends HttpExposer {
     protected void sendError(final int status, final String message, final HttpServletResponse resp, final Throwable exception)
             throws IOException {
 
-        if (exception != null) {
+        if (null != exception) {
             LOGGER.error(message, exception);
         } else {
             LOGGER.error(message);
@@ -314,7 +295,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    HttpQueryExposer expose(final QueryService<? extends Query, ?> queryService) {
+    protected HttpQueryExposer expose(final QueryService<? extends Query, ? extends QueryPayload> queryService) {
         checkNotNull(queryService);
 
         final TypeToken<? extends QueryService> typeToken = TypeToken.of(queryService.getClass());

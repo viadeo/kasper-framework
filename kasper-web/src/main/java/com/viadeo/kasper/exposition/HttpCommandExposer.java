@@ -38,6 +38,7 @@ import org.slf4j.MDC;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.core.MediaType;
 import java.beans.Introspector;
 import java.io.IOException;
 import java.util.HashMap;
@@ -68,7 +69,9 @@ public class HttpCommandExposer extends HttpExposer {
         this(commandGateway, domainLocator, ObjectMapperProvider.INSTANCE.mapper());
     }
     
-    public HttpCommandExposer(final CommandGateway commandGateway, final DomainLocator domainLocator, final ObjectMapper mapper) {
+    public HttpCommandExposer(final CommandGateway commandGateway,
+                              final DomainLocator domainLocator,
+                              final ObjectMapper mapper) {
         this.commandGateway = commandGateway;
         this.domainLocator = checkNotNull(domainLocator);
         this.mapper = mapper;
@@ -138,7 +141,7 @@ public class HttpCommandExposer extends HttpExposer {
         REQUEST_LOGGER.info("Processing HTTP Command '{}' '{}'", req.getMethod(), getFullRequestURI(req));
 
         /* always respond with a json stream (even if empty) */
-        resp.setContentType("application/json; charset=utf-8");
+        resp.setContentType(MediaType.APPLICATION_JSON + "; charset=utf-8");
 
         // FIXME can throw an error ensure to respond a json stream
         final String commandName = resourceName(req.getRequestURI());
@@ -156,9 +159,9 @@ public class HttpCommandExposer extends HttpExposer {
 
         try {
 
-            if (!req.getContentType().contains("application/json")) {
+            if (!req.getContentType().contains(MediaType.APPLICATION_JSON)) {
                 sendError(resp, HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
-                          "Accepting and producing only application/json");
+                          "Accepting and producing only " + MediaType.APPLICATION_JSON);
                 return;
             }
 
@@ -170,7 +173,7 @@ public class HttpCommandExposer extends HttpExposer {
 
             // FIXME 1 use context from request
             // FIXME 2 does it make sense to have async commands here? In any
-            // case the user is expecting a result success or failure
+            // FIXME   case the user is expecting a result success or failure
             final Context context = new DefaultContextBuilder().build();
 
             if (AbstractContext.class.isAssignableFrom(context.getClass())) {
@@ -186,7 +189,6 @@ public class HttpCommandExposer extends HttpExposer {
             sendError(resp, HttpServletResponse.SC_BAD_REQUEST, errorMessage);
 
         } catch (final Throwable th) {
-            // we catch any other exception in order to still respond with json
             LOGGER.error("Error in command [" + commandClass.getName() + "]", th);
             final String errorMessage = (null == th.getMessage()) ? "Unknown" : th.getMessage();
             sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
@@ -195,23 +197,19 @@ public class HttpCommandExposer extends HttpExposer {
             if (null != parser) {
                 /*
                  * FIXME check if jackson is closing the underlying inputstream,
-                 * we still must close it inorder to allow Jackson to recycle
+                 * we still must close it in order to allow Jackson to recycle
                  * its buffers
                  */
                 parser.close();
             }
 
-            /* Log metrics */
+            /* Log & metrics */
             final long time = classTimer.stop();
             REQUEST_LOGGER.info("Execution Time '{}' ms",time);
             METRICLASSREQUESTSTIME.update(time);
             METRICLASSREQUESTS.mark();
         }
 
-        /*
-         * if the result is null this means that we handled the error previously
-         * so nothing can be done anymore
-         */
         if (null != result) {
             sendResponse(result, resp, commandClass);
         }
@@ -245,6 +243,7 @@ public class HttpCommandExposer extends HttpExposer {
             this.internalCommandError(resp, commandClass, result, e);
 
         } finally {
+
             if (generator != null) {
                 generator.flush();
                 generator.close();
@@ -256,11 +255,11 @@ public class HttpCommandExposer extends HttpExposer {
     }
 
     private void internalCommandError(final HttpServletResponse resp, final Class<? extends Command> commandClass,
-                                      final CommandResult result, final Exception e)
-            throws IOException {
+                                      final CommandResult result, final Exception e) throws IOException {
          this.sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                   String.format("Error outputting result to JSON for command [%s] and result [%s]error = %s",
-                          commandClass.getSimpleName(), result, e));
+                          commandClass.getSimpleName(), result, e)
+         );
     }
 
     // ------------------------------------------------------------------------
@@ -284,7 +283,9 @@ public class HttpCommandExposer extends HttpExposer {
         /* write also into the body the result as json */
         mapper.writer().writeValue(response.getOutputStream(),
                                    CommandResult.error(
-                                          new KasperError(CoreErrorCode.UNKNOWN_ERROR, reason)));
+                                          new KasperError(CoreErrorCode.UNKNOWN_ERROR, reason)
+                                   )
+        );
 
         /* Log request */
         REQUEST_LOGGER.info("HTTP Response : '{}'", status);

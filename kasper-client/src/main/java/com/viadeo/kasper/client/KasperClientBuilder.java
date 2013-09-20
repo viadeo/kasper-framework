@@ -9,7 +9,6 @@ package com.viadeo.kasper.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.query.exposition.Feature;
 import com.viadeo.kasper.query.exposition.FeatureConfiguration;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
