@@ -130,9 +130,9 @@ public class HttpCommandExposer extends HttpExposer {
         final Timer.Context classTimer = METRICLASSTIMER.time();
 
         /* Create a request correlation id */
-        final UUID requestCorrelationUUID = UUID.randomUUID();
-        MDC.put("correlationId", requestCorrelationUUID.toString());
-        resp.addHeader("UUID", requestCorrelationUUID.toString());
+        final UUID kasperCorrelationUUID = UUID.randomUUID();
+        MDC.put("correlationId", kasperCorrelationUUID.toString());
+        resp.addHeader("UUID", kasperCorrelationUUID.toString());
 
         /* Log starting request */
         REQUEST_LOGGER.info("Processing HTTP Command '{}' '{}'", req.getMethod(), getFullRequestURI(req));
@@ -173,22 +173,24 @@ public class HttpCommandExposer extends HttpExposer {
             // case the user is expecting a result success or failure
             final Context context = new DefaultContextBuilder().build();
 
-            /* send now that command to the platform and wait for the result */
             if (AbstractContext.class.isAssignableFrom(context.getClass())) {
-                ((AbstractContext) context).setKasperCorrelationId(new DefaultKasperId(requestCorrelationUUID));
+                ((AbstractContext) context).setKasperCorrelationId(new DefaultKasperId(kasperCorrelationUUID));
             }
 
-            result = commandGateway.sendCommandAndWaitForAResult(command, context);
+            /* send now that command to the platform and wait for the result */
+            result = commandGateway.sendCommandAndWaitForAResultWithException(command, context);
 
         } catch (final IOException e) {
-            LOGGER.error("Error parse command [" + commandClass.getName() + "]", e);
+            LOGGER.error("Error in command [" + commandClass.getName() + "]", e);
             final String errorMessage = (null == e.getMessage()) ? "Unknown" : e.getMessage();
             sendError(resp, HttpServletResponse.SC_BAD_REQUEST, errorMessage);
+
         } catch (final Throwable th) {
             // we catch any other exception in order to still respond with json
-            LOGGER.error("Error for command [" + commandClass.getName() + "]", th);
+            LOGGER.error("Error in command [" + commandClass.getName() + "]", th);
             final String errorMessage = (null == th.getMessage()) ? "Unknown" : th.getMessage();
             sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
+
         } finally {
             if (null != parser) {
                 /*
