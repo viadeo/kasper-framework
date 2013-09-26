@@ -67,6 +67,7 @@ public class KasperEventBusTest {
     }
 
     @Test public void eventsShouldNotBeEmitedIfUnitOfWorkIsFailed() {
+        // Given
         final KasperEventBus eventBus = spy(new KasperEventBus());
         final TestEvent dummyEvent = new TestEvent();
         final Context context = new DefaultContextBuilder().build();
@@ -74,12 +75,16 @@ public class KasperEventBusTest {
         UnitOfWork unitOfWork = new DefaultUnitOfWork();
         unitOfWork.start();
 
+        // When
         eventBus.publish(dummyEvent);
 
+        // Then
         Mockito.verify(eventBus, new Times(0)).publish(captor.capture());
 
+        // When
         unitOfWork.rollback();
 
+        // Then
         Mockito.verify(eventBus, new Times(0)).publish(captor.capture());
     }
 

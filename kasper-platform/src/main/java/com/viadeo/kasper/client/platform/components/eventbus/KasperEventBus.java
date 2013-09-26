@@ -184,9 +184,10 @@ public class KasperEventBus extends ClusteringEventBus {
 
         final GenericEventMessage<Event> eventMessageAxon = new GenericEventMessage<>(event, metaData);
 
-        try {
+        /* Publish the event using the current unit of work if any is started */
+        if (CurrentUnitOfWork.isStarted()) {
             CurrentUnitOfWork.get().publishEvent(eventMessageAxon, this);
-        } catch (IllegalStateException ise) {
+        } else {
             publish(eventMessageAxon);
         }
     }
