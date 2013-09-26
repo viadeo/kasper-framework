@@ -11,12 +11,16 @@ import com.viadeo.kasper.event.impl.AbstractEvent;
 import com.viadeo.kasper.event.impl.AbstractEventListener;
 import junit.framework.Assert;
 import org.axonframework.domain.GenericEventMessage;
+import org.axonframework.unitofwork.DefaultUnitOfWork;
+import org.axonframework.unitofwork.UnitOfWork;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.mockito.internal.verification.Times;
+import org.mockito.verification.VerificationMode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +47,46 @@ public class KasperEventBusTest {
     }
 
     // ------------------------------------------------------------------------
+
+    @Test public void eventsShouldNotBeEmitedIfUnitOfWorkIsNotCommited() {
+        final KasperEventBus eventBus = spy(new KasperEventBus());
+        final TestEvent dummyEvent = new TestEvent();
+        final Context context = new DefaultContextBuilder().build();
+        dummyEvent.setContext(context);
+
+        UnitOfWork unitOfWork = new DefaultUnitOfWork();
+        unitOfWork.start();
+
+        eventBus.publish(dummyEvent);
+
+        Mockito.verify(eventBus, new Times(0)).publish(captor.capture());
+
+        unitOfWork.commit();
+
+        Mockito.verify(eventBus, new Times(1)).publish(captor.capture());
+    }
+
+    @Test public void eventsShouldNotBeEmitedIfUnitOfWorkIsFailed() {
+        // Given
+        final KasperEventBus eventBus = spy(new KasperEventBus());
+        final TestEvent dummyEvent = new TestEvent();
+        final Context context = new DefaultContextBuilder().build();
+        dummyEvent.setContext(context);
+        UnitOfWork unitOfWork = new DefaultUnitOfWork();
+        unitOfWork.start();
+
+        // When
+        eventBus.publish(dummyEvent);
+
+        // Then
+        Mockito.verify(eventBus, new Times(0)).publish(captor.capture());
+
+        // When
+        unitOfWork.rollback();
+
+        // Then
+        Mockito.verify(eventBus, new Times(0)).publish(captor.capture());
+    }
 
     @Test
     public void nominal() throws Exception {

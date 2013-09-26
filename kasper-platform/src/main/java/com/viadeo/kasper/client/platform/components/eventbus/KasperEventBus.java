@@ -17,6 +17,7 @@ import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.*;
 import org.axonframework.eventhandling.async.*;
+import org.axonframework.unitofwork.CurrentUnitOfWork;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.NoTransactionManager;
 import org.slf4j.Logger;
@@ -183,7 +184,12 @@ public class KasperEventBus extends ClusteringEventBus {
 
         final GenericEventMessage<Event> eventMessageAxon = new GenericEventMessage<>(event, metaData);
 
-        this.publish(eventMessageAxon);
+        /* Publish the event using the current unit of work if any is started */
+        if (CurrentUnitOfWork.isStarted()) {
+            CurrentUnitOfWork.get().publishEvent(eventMessageAxon, this);
+        } else {
+            publish(eventMessageAxon);
+        }
     }
 
     /*
