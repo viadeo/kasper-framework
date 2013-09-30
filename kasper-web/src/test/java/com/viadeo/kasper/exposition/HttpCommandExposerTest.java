@@ -16,13 +16,20 @@ import com.viadeo.kasper.cqrs.command.CommandResult.Status;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
 import com.viadeo.kasper.exception.KasperException;
+import lombok.Data;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExposer> {
 
@@ -100,6 +107,18 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
             assertEquals(command.getMessages().get(i), result.getError().getMessages().get(i));
     }
 
+    @Test public void testJSR303Validation() {
+        NeedValidationCommand command = new NeedValidationCommand();
+        command.setStr("");
+        command.setInnerObject(new InnerObject());
+
+        CommandResult result = client().send(command);
+
+        assertTrue(result.isError());
+        assertEquals("innerObject.age : doit être plus grand que 2", result.getError().getMessages().get(0));
+        assertEquals("str : la taille doit être entre 1 et 2147483647", result.getError().getMessages().get(1));
+    }
+
     // ------------------------------------------------------------------------
 
     public static class CreateAccountCommand implements Command {
@@ -153,6 +172,21 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         }
     }
 
+    @Data
+    public static class NeedValidationCommand implements Command {
+        @NotNull @Size(min = 1) private String str;
+        @Valid @NotNull private InnerObject innerObject;
+    }
+
+    @Data
+    public static class InnerObject {
+        @Min(2) @Max(5) private int age;
+    }
+
+    @XKasperCommandHandler(domain = AccountDomain.class)
+    public static class NeedValidationCommandHandler extends AbstractCommandHandler<NeedValidationCommand> {
+
+    }
 }
 
 
