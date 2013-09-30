@@ -16,11 +16,13 @@ import com.viadeo.kasper.cqrs.query.cache.impl.AnnotationQueryCacheActorFactory;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.QueryFiltersActor;
 import com.viadeo.kasper.cqrs.query.impl.QueryServiceActor;
+import com.viadeo.kasper.cqrs.query.validation.QueryValidationActor;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.Validation;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -227,6 +229,9 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
             if (cacheActor.isPresent()) {
                 requestActors.add((RequestActor<Q, R>) queryCacheFactory.make(queryClass, qsClass).get());
             }
+
+            // FIXME: do we want to apply validation before filters or after?
+            requestActors.add(new QueryValidationActor(Validation.buildDefaultValidatorFactory()));
 
             /* Add filters actor */
             requestActors.add(filtersActor(serviceFilters));
