@@ -20,4 +20,5 @@ dependencies {
     compile libraries.JCACHE
 
     testCompile libraries.JCACHE_EHCACHE
+    testCompile 'org.hibernate:hibernate-validator:5.0.1.Final'
 }

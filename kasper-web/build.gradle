@@ -14,11 +14,14 @@ dependencies {
     // Third-party dependencies
     compile libraries.SPRING_WEB
     compile libraries.SERVLET
+    compile libraries.VALIDATION_API
 
     // Test projects
     testCompile project(':kasper-client')
-    testCompile libraries.JETTY_SERVLET
 
     // Test dependencies
+    testCompile libraries.JETTY_SERVLET
+    testCompile 'org.hibernate:hibernate-validator:5.0.1.Final'
+    testCompile 'org.glassfish.web:javax.el:2.2.3'
 
 }

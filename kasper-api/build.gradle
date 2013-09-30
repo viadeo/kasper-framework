@@ -8,3 +8,8 @@ description = 'KASPER CQRS : API'
 
 sourceCompatibility = 1.6
 targetCompatibility = 1.6
+
+dependencies {
+    // this dep must be here, as validation annotations are supposed to be used on commands & queries
+    compile libraries.VALIDATION_API
+}
