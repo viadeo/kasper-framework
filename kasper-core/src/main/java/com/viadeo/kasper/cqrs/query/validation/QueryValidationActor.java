@@ -21,10 +21,6 @@ public class QueryValidationActor<Q extends Query, P extends QueryPayload> imple
 
     private final ValidatorFactory validatorFactory;
 
-    public QueryValidationActor() {
-        this(Validation.buildDefaultValidatorFactory());
-    }
-
     public QueryValidationActor(final ValidatorFactory validatorFactory) {
         this.validatorFactory = validatorFactory;
     }

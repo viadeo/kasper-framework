@@ -93,6 +93,7 @@ subprojects {
   // Use UTF-8 for reading xml (and other) data tests files
   tasks.withType(Test) { systemProperty "file.encoding", "UTF-8"  }
   tasks.withType(Compile) { options.encoding = "UTF-8" }
+  compileTestJava.options.encoding
 
   // Adding javadoc and sources jars, it is really nice to have! --------------  
   // custom tasks for creating source jar 

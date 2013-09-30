@@ -80,6 +80,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
      * The factory for caches
      */
     private final AnnotationQueryCacheActorFactory queryCacheFactory;
+    private final Map<Class<? extends Query>, RequestActorsChain<? extends Query, ? extends QueryResult>> requestActorChainCache = newHashMap();
 
     // ------------------------------------------------------------------------
 
@@ -216,38 +217,45 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     @SuppressWarnings("unchecked")
     public <Q extends Query, P extends QueryPayload, R extends QueryResult<P>>
     Optional<RequestActorsChain<Q, R>> getRequestActorChain(Class<? extends Q> queryClass) {
-        final Optional<QueryService> optionalQS = getServiceFromQueryClass(queryClass);
+        RequestActorsChain<Q, R> chain = (RequestActorsChain<Q, R>) requestActorChainCache.get(queryClass);
 
-        if (optionalQS.isPresent()) {
-            final QueryService<Q, P> qs = optionalQS.get();
-            final Class<? extends QueryService<Q, P>> qsClass = (Class<? extends QueryService<Q, P>>) qs.getClass();
+        if (chain == null) {
+            final Optional<QueryService> optionalQS = getServiceFromQueryClass(queryClass);
 
-            final Collection<ServiceFilter> serviceFilters = getFiltersForServiceClass(qsClass);
+            if (optionalQS.isPresent()) {
+                final QueryService<Q, P> qs = optionalQS.get();
+                final Class<? extends QueryService<Q, P>> qsClass = (Class<? extends QueryService<Q, P>>) qs.getClass();
 
-            final List<RequestActor<Q, R>> requestActors = Lists.newArrayList();
+                final Collection<ServiceFilter> serviceFilters = getFiltersForServiceClass(qsClass);
 
-            /* Add cache actor if required */
-            final Optional<RequestActor<Q, R>> cacheActor = queryCacheFactory.make(queryClass, qsClass);
-            if (cacheActor.isPresent()) {
-                requestActors.add((RequestActor<Q, R>) queryCacheFactory.make(queryClass, qsClass).get());
+                final List<RequestActor<Q, R>> requestActors = Lists.newArrayList();
+
+                /* Add cache actor if required */
+                final Optional<RequestActor<Q, R>> cacheActor = queryCacheFactory.make(queryClass, qsClass);
+                if (cacheActor.isPresent()) {
+                    requestActors.add((RequestActor<Q, R>) queryCacheFactory.make(queryClass, qsClass).get());
+                }
+
+                // FIXME: do we want to apply validation before filters or after?
+                try {
+                    requestActors.add(new QueryValidationActor(Validation.buildDefaultValidatorFactory()));
+                } catch (ValidationException ve) {
+                    LOGGER.info("No implementation found for BEAN VALIDATION - JSR 303", ve);
+                }
+
+                /* Add filters actor */
+                requestActors.add(filtersActor(serviceFilters));
+
+                /* Add service actor */
+                requestActors.add(new QueryServiceActor(qs));
+
+                chain = RequestActorsChain.makeChain(requestActors);
             }
 
-            // FIXME: do we want to apply validation before filters or after?
-            try {
-                requestActors.add(new QueryValidationActor(Validation.buildDefaultValidatorFactory()));
-            } catch (ValidationException ve) {
-                LOGGER.info("No implementation found for BEAN VALIDATION - JSR 303", ve);
-            }
-
-            /* Add filters actor */
-            requestActors.add(filtersActor(serviceFilters));
-
-            /* Add service actor */
-            requestActors.add(new QueryServiceActor(qs));
-
-            return Optional.of(RequestActorsChain.makeChain(requestActors));
+            requestActorChainCache.put(queryClass, chain);
         }
-        return Optional.absent();
+
+        return Optional.fromNullable(chain);
     }
 
 
