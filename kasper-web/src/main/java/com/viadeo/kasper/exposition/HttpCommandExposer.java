@@ -168,9 +168,9 @@ public class HttpCommandExposer extends HttpExposer {
             parser = reader.getFactory().createJsonParser(req.getInputStream());
             final Command command = reader.readValue(parser, commandClass);
 
-            // FIXME 1 use context from request
-            // FIXME 2 does it make sense to have async commands here? In any
-            // case the user is expecting a result success or failure
+            // FIXME 1 Use context from request
+            // FIXME 2 Does it make sense to have async commands here? In any
+            // FIXME 2 case the user is expecting a result success or failure
             final Context context = new DefaultContextBuilder().build();
 
             if (AbstractContext.class.isAssignableFrom(context.getClass())) {
@@ -198,11 +198,13 @@ public class HttpCommandExposer extends HttpExposer {
                     resp, commandClass);
 
         } catch (final IOException e) {
+
             LOGGER.error("Error in command [" + commandClass.getName() + "]", e);
             final String errorMessage = (null == e.getMessage()) ? "Unknown" : e.getMessage();
             sendError(resp, HttpServletResponse.SC_BAD_REQUEST, errorMessage);
 
         } catch (final Throwable th) {
+
             // we catch any other exception in order to still respond with json
             LOGGER.error("Error in command [" + commandClass.getName() + "]", th);
             final String errorMessage = (null == th.getMessage()) ? "Unknown" : th.getMessage();

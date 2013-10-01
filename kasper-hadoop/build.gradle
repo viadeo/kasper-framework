@@ -1,0 +1,112 @@
+
+description = "KASPER-HADOOP"
+
+apply plugin: 'groovy'
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+}
+
+repositories {
+    mavenRepo url: "https://repository.cloudera.com/artifactory/cloudera-repos/"
+    mavenRepo url: "http://clojars.org/repo"
+}
+
+// Dependency management -----------------------------------------------------
+ext.hadoop_libraries = [
+
+    PIG                   : 'org.apache.pig:pig:0.11.0-cdh4.3.0',
+    PIGUNIT               : 'org.apache.pig:pigunit:0.11.0-cdh4.3.0',
+
+    HIVETEST              : 'com.jointhegrid:hive_test:4.0.1-VIADEO-SNAPSHOT',
+    HIVE_SERVICE          : 'org.apache.hive:hive-service:0.13.0-VIADEO-SNAPSHOT',
+    HIVE_JDBC             : 'org.apache.hive:hive-jdbc:0.13.0-VIADEO-SNAPSHOT',
+
+    AVRO                  : 'org.apache.avro:avro:1.7.4',
+    AVRO_MAPRED           : 'org.apache.avro:avro-mapred:1.7.4:hadoop1',
+
+    HADOOP_COMMON         : 'org.apache.hadoop:hadoop-common:2.0.0-cdh4.3.0',
+    HADOOP_HDFS           : 'org.apache.hadoop:hadoop-hdfs:2.0.0-cdh4.3.0',
+
+    HADOOP_CORE           : 'org.apache.hadoop:hadoop-core:2.0.0-mr1-cdh4.3.0',
+    HADOOP_TEST           : 'org.apache.hadoop:hadoop-test:2.0.0-mr1-cdh4.3.0',
+    HADOOP_MINICLUSTER    : 'org.apache.hadoop:hadoop-minicluster:2.0.0-mr1-cdh4.3.0',
+    HADOOP_CLIENT         : 'org.apache.hadoop:hadoop-client:2.0.0-mr1-cdh4.3.0',
+
+    XMLPULL               : 'xmlpull:xmlpull:1.1.3.1',
+    CGLIB                 : 'cglib:cglib-nodep:2.2.2',
+    XSTREAM               : 'com.thoughtworks.xstream:xstream:1.4.4',
+    WSTX                  : 'org.codehaus.woodstox:wstx-asl:4.0.6',
+    XOM                   : 'xom:xom:1.2.5',
+    JDOM                  : 'org.jdom:jdom:1.1.3',
+    STAX                  : 'stax:stax:1.2.0',
+    ANTLR_RUNTIME         : 'org.antlr:antlr-runtime:3.5',
+
+    JACKSON_CORE_ASL      : 'org.codehaus.jackson:jackson-core-asl:1.8.8',
+    JACKSON_CORE_MAPPER   : 'org.codehaus.jackson:jackson-mapper-asl:1.8.8',
+    JSON_SIMPLE           : 'com.googlecode.json-simple:json-simple:1.1',
+
+    COMMONS_CLI           : 'commons-cli:commons-cli:1.2'
+]
+
+dependencies {
+    compile 'org.apache.maven:maven-artifact:2.2.1' // 3.x won't work
+    compile 'org.apache.avro:avro-compiler:1.7.4' // use Avro 1.7.4 to compile the Avro files
+    compile 'org.clojars.miguno:avro-gradle-plugin:1.7.2'
+
+    compile("commons-daemon:commons-daemon:1.0.5") {
+        // Force version 1.0.5 because of a known bug in the 1.0.3 pom file that results error
+        force = true
+    }
+
+    // force protobuf version
+    compile("com.google.protobuf:protobuf-java:2.4.0a") {
+        force = true
+    }
+    
+    compile libraries.GUAVA
+    compile libraries.SLF4J
+    compile libraries.REFLECTIONS
+    compile libraries.JODA_TIME
+
+    compile hadoop_libraries.HADOOP_CORE
+    compile hadoop_libraries.HADOOP_HDFS
+    compile hadoop_libraries.HADOOP_COMMON
+    compile hadoop_libraries.HADOOP_CLIENT
+    compile hadoop_libraries.PIG
+    compile hadoop_libraries.COMMONS_CLI
+    compile hadoop_libraries.HIVETEST
+
+    // ?
+    compile hadoop_libraries.JACKSON_CORE_ASL
+    compile hadoop_libraries.JACKSON_CORE_MAPPER
+    compile hadoop_libraries.JSON_SIMPLE
+
+    // hive
+    compile hadoop_libraries.HIVE_SERVICE
+    compile hadoop_libraries.HIVE_JDBC
+
+    // pig
+    compile hadoop_libraries.ANTLR_RUNTIME
+
+    // tests
+    compile hadoop_libraries.AVRO
+    compile hadoop_libraries.AVRO_MAPRED
+    compile hadoop_libraries.XMLPULL
+    compile hadoop_libraries.CGLIB
+    compile hadoop_libraries.XSTREAM
+    compile hadoop_libraries.WSTX
+    compile hadoop_libraries.XOM
+    compile hadoop_libraries.JDOM
+    compile hadoop_libraries.STAX
+
+    compile hadoop_libraries.PIGUNIT
+
+    compile hadoop_libraries.HADOOP_TEST
+    compile hadoop_libraries.HADOOP_MINICLUSTER
+}
+
+processResources{
+    from(zipTree("lib/ant-deb-0.0.1.jar"))
+}
