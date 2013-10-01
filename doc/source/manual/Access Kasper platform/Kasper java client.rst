@@ -31,13 +31,13 @@ KasperClient is thread safe and should be reused for optimal performances.
    :linenos:
 
    final KasperClient client = new KasperClient();
-   final QueryResult<SuperCoolResult> result = client.query(new SuperCoolQuery("what's up?"), SuperCoolResult.class);
+   final QueryResult<SuperCoolPayload> result = client.query(new SuperCoolQuery("what's up?"), SuperCoolPayload.class);
    if (result.isError()) {
-	KasperError error = result.getError();
-        // do something using the error code or the messages list
+       KasperError error = result.getError();
+       // do something using the error code or the messages list
    } else {
-     // if no error occured you can access the payload
-     SuperCoolResult payload = result.get();
+       // if no error occured you can access the payload
+       SuperCoolPayload payload = result.getPayload();
    }
 
 Hard to make it shorter! :)
@@ -54,8 +54,8 @@ If an error occurred during query processing on client side a **KasperQueryExcep
       :linenos:
 
       final KasperClient client = new KasperClientBuilder()
-                                        .queryBaseLocation("http://kasper-platform/query")
-                                        .commandBaseLocation("http://kasper-platform/command")
+                                        .queryBaseLocation("http://kasper-platform/kasper/query/")
+                                        .commandBaseLocation("http://kasper-platform/kasper/command/")
                                         .create();
                               
 **Sending a command** is also quite simple:
