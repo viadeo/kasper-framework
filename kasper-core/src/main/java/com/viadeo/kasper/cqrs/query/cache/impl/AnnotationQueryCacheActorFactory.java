@@ -87,8 +87,6 @@ public class AnnotationQueryCacheActorFactory<QUERY extends Query, PAYLOAD exten
                     );
                 }
             }
-        } else {
-            LOGGER.warn("No cache manager available, if you want to enable cache support please provide an implementation of JCache - jsr 107.");
         }
 
         return Optional.absent();

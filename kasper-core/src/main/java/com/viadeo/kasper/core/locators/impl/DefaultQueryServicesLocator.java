@@ -16,11 +16,14 @@ import com.viadeo.kasper.cqrs.query.cache.impl.AnnotationQueryCacheActorFactory;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.QueryFiltersActor;
 import com.viadeo.kasper.cqrs.query.impl.QueryServiceActor;
+import com.viadeo.kasper.cqrs.query.validation.QueryValidationActor;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.Validation;
+import javax.validation.ValidationException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -76,6 +79,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
      * The factory for caches
      */
     private final AnnotationQueryCacheActorFactory queryCacheFactory;
+    private final Map<Class<? extends Query>, RequestActorsChain<? extends Query, ? extends QueryResult>> requestActorChainCache = newHashMap();
 
     // ------------------------------------------------------------------------
 
@@ -212,31 +216,45 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     @SuppressWarnings("unchecked")
     public <Q extends Query, P extends QueryPayload, R extends QueryResult<P>>
     Optional<RequestActorsChain<Q, R>> getRequestActorChain(Class<? extends Q> queryClass) {
-        final Optional<QueryService> optionalQS = getServiceFromQueryClass(queryClass);
+        RequestActorsChain<Q, R> chain = (RequestActorsChain<Q, R>) requestActorChainCache.get(queryClass);
 
-        if (optionalQS.isPresent()) {
-            final QueryService<Q, P> qs = optionalQS.get();
-            final Class<? extends QueryService<Q, P>> qsClass = (Class<? extends QueryService<Q, P>>) qs.getClass();
+        if (chain == null) {
+            final Optional<QueryService> optionalQS = getServiceFromQueryClass(queryClass);
 
-            final Collection<ServiceFilter> serviceFilters = getFiltersForServiceClass(qsClass);
+            if (optionalQS.isPresent()) {
+                final QueryService<Q, P> qs = optionalQS.get();
+                final Class<? extends QueryService<Q, P>> qsClass = (Class<? extends QueryService<Q, P>>) qs.getClass();
 
-            final List<RequestActor<Q, R>> requestActors = Lists.newArrayList();
+                final Collection<ServiceFilter> serviceFilters = getFiltersForServiceClass(qsClass);
+                final List<RequestActor<Q, R>> requestActors = Lists.newArrayList();
 
-            /* Add cache actor if required */
-            final Optional<RequestActor<Q, R>> cacheActor = queryCacheFactory.make(queryClass, qsClass);
-            if (cacheActor.isPresent()) {
-                requestActors.add((RequestActor<Q, R>) queryCacheFactory.make(queryClass, qsClass).get());
+                /* Add cache actor if required */
+                final Optional<RequestActor<Q, R>> cacheActor = queryCacheFactory.make(queryClass, qsClass);
+                if (cacheActor.isPresent()) {
+                    requestActors.add((RequestActor<Q, R>) queryCacheFactory.make(queryClass, qsClass).get());
+                }
+
+                /* Add validation filter */
+                try {
+                    requestActors.add(new QueryValidationActor(Validation.buildDefaultValidatorFactory()));
+                } catch (final ValidationException ve) {
+                    LOGGER.warn("No implementation found for BEAN VALIDATION - JSR 303", ve);
+                }
+
+                /* Add filters actor */
+                requestActors.add(filtersActor(serviceFilters));
+
+                /* Add service actor */
+                requestActors.add(new QueryServiceActor(qs));
+
+                /* Finally build the actors chan */
+                chain = RequestActorsChain.makeChain(requestActors);
             }
 
-            /* Add filters actor */
-            requestActors.add(filtersActor(serviceFilters));
-
-            /* Add service actor */
-            requestActors.add(new QueryServiceActor(qs));
-
-            return Optional.of(RequestActorsChain.makeChain(requestActors));
+            requestActorChainCache.put(queryClass, chain);
         }
-        return Optional.absent();
+
+        return Optional.fromNullable(chain);
     }
 
 

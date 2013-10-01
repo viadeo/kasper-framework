@@ -24,14 +24,21 @@ import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
+import org.axonframework.commandhandling.interceptors.BeanValidationInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
 
+import javax.validation.Validation;
+import javax.validation.ValidationException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class DefaultPlatformConfiguration implements PlatformConfiguration {
+    private final static Logger LOGGER = LoggerFactory.getLogger(DefaultPlatformConfiguration.class);
 
     private static final String INSTANCE_NOT_YET_AVAILABLE = "Component %s cannot be retrieved : it has not yet been instanciated (platform not yet booted ?)";
     private static final String INSTANCE_ALREADY_CREATED = "Component %s has already been created !";
@@ -162,11 +169,22 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
             return components.getInstance(CommandBus.class);
         } else {
 
-            final CommandBus commandBus = new KasperCommandBus();
+            final KasperCommandBus commandBus = new KasperCommandBus();
+            commandBus.setHandlerInterceptors(commandHandlerInterceptors());
 
             components.putInstance(CommandBus.class, commandBus);
             return commandBus;
         }
+    }
+
+    protected List<CommandHandlerInterceptor> commandHandlerInterceptors() {
+        final List<CommandHandlerInterceptor> interceptors = new ArrayList<>();
+        try {
+            interceptors.add(new BeanValidationInterceptor(Validation.buildDefaultValidatorFactory()));
+        } catch (final ValidationException ve) {
+            LOGGER.warn("No implementation found for BEAN VALIDATION - JSR 303", ve);
+        }
+        return interceptors;
     }
 
     // ------------------------------------------------------------------------

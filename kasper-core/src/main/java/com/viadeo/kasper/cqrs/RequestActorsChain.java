@@ -43,6 +43,11 @@ public class RequestActorsChain<INPUT, OUTPUT> {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
+    public static <I, O> RequestActorsChain<I, O> tail() {
+        return TAIL;
+    }
+
     public static <I, O> RequestActorsChain<I, O> makeChain(final RequestActor<I, O>...chain) {
         return makeChain(Lists.newArrayList(checkNotNull(chain)));
     }

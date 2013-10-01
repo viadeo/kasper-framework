@@ -31,6 +31,7 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
+import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -38,11 +39,10 @@ import org.slf4j.MDC;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
 import java.beans.Introspector;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
@@ -179,6 +179,22 @@ public class HttpCommandExposer extends HttpExposer {
 
             /* send now that command to the platform and wait for the result */
             result = commandGateway.sendCommandAndWaitForAResultWithException(command, context);
+
+        } catch (final JSR303ViolationException validationException) {
+
+            final List<String> errorMessages = new ArrayList<>();
+            for (final ConstraintViolation<Object> violation : validationException.getViolations()) {
+                errorMessages.add(violation.getPropertyPath() + " : " + violation.getMessage());
+            }
+
+            sendResponse(
+                    CommandResult.error(
+                        new KasperError(
+                            CoreErrorCode.INVALID_INPUT.name(),
+                            errorMessages
+                        )
+                    ),
+                    resp, commandClass);
 
         } catch (final IOException e) {
             LOGGER.error("Error in command [" + commandClass.getName() + "]", e);

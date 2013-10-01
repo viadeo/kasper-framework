@@ -16,13 +16,20 @@ import com.viadeo.kasper.cqrs.command.CommandResult.Status;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
 import com.viadeo.kasper.exception.KasperException;
+import lombok.Data;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
+import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExposer> {
 
@@ -100,6 +107,31 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
             assertEquals(command.getMessages().get(i), result.getError().getMessages().get(i));
     }
 
+    @Test public void testJSR303Validation() {
+        // Given
+        Locale.setDefault(Locale.US);
+        final NeedValidationCommand command = new NeedValidationCommand();
+        command.setStr("");
+        command.setInnerObject(new InnerObject());
+
+        // When
+        final CommandResult result = client().send(command);
+
+        // Then
+        assertTrue(result.isError());
+        final List<String> errorStrings = new ArrayList<String>() {{
+            add("innerObject.age : must be greater than or equal to 2");
+            add("str : size must be between 1 and 2147483647");
+        }};
+        for (final String errorMessage : result.getError().getMessages()) {
+            if (!errorStrings.contains(errorMessage)) {
+                fail(String.format("Cannot find expected validation message : %s", errorMessage));
+            }
+            errorStrings.remove(errorMessage);
+        }
+        assertEquals(0, errorStrings.size());
+    }
+
     // ------------------------------------------------------------------------
 
     public static class CreateAccountCommand implements Command {
@@ -152,6 +184,20 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
             return CommandResult.ok();
         }
     }
+
+    @Data
+    public static class NeedValidationCommand implements Command {
+        @NotNull @Size(min = 1) private String str;
+        @Valid @NotNull private InnerObject innerObject;
+    }
+
+    @Data
+    public static class InnerObject {
+        @Min(2) @Max(5) private int age;
+    }
+
+    @XKasperCommandHandler(domain = AccountDomain.class)
+    public static class NeedValidationCommandHandler extends AbstractCommandHandler<NeedValidationCommand> { }
 
 }
 
