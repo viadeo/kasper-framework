@@ -18,7 +18,8 @@ dependencies {
     compile libraries.AXON_CORE
     compile libraries.YAMMER_METRICS
     compile libraries.JCACHE
+    compile libraries.VALIDATION_API
 
     testCompile libraries.JCACHE_EHCACHE
-    testCompile 'org.hibernate:hibernate-validator:5.0.1.Final'
+    testCompile libraries.HIBERNATE_VALIDATOR
 }
