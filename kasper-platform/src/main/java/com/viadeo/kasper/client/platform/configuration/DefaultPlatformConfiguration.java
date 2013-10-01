@@ -8,7 +8,6 @@ package com.viadeo.kasper.client.platform.configuration;
 
 import com.codahale.metrics.Slf4jReporter;
 import com.google.common.base.Throwables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.MutableClassToInstanceMap;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -179,11 +178,11 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     }
 
     protected List<CommandHandlerInterceptor> commandHandlerInterceptors() {
-        List<CommandHandlerInterceptor> interceptors = new ArrayList<>();
+        final List<CommandHandlerInterceptor> interceptors = new ArrayList<>();
         try {
             interceptors.add(new BeanValidationInterceptor(Validation.buildDefaultValidatorFactory()));
-        } catch (ValidationException ve) {
-            LOGGER.info("No implementation found for BEAN VALIDATION - JSR 303", ve);
+        } catch (final ValidationException ve) {
+            LOGGER.warn("No implementation found for BEAN VALIDATION - JSR 303", ve);
         }
         return interceptors;
     }

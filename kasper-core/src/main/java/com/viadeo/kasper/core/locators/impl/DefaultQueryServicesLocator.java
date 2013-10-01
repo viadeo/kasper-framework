@@ -19,7 +19,6 @@ import com.viadeo.kasper.cqrs.query.impl.QueryServiceActor;
 import com.viadeo.kasper.cqrs.query.validation.QueryValidationActor;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
-import org.axonframework.commandhandling.interceptors.BeanValidationInterceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -227,7 +226,6 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
                 final Class<? extends QueryService<Q, P>> qsClass = (Class<? extends QueryService<Q, P>>) qs.getClass();
 
                 final Collection<ServiceFilter> serviceFilters = getFiltersForServiceClass(qsClass);
-
                 final List<RequestActor<Q, R>> requestActors = Lists.newArrayList();
 
                 /* Add cache actor if required */
@@ -236,11 +234,11 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
                     requestActors.add((RequestActor<Q, R>) queryCacheFactory.make(queryClass, qsClass).get());
                 }
 
-                // FIXME: do we want to apply validation before filters or after?
+                /* Add validation filter */
                 try {
                     requestActors.add(new QueryValidationActor(Validation.buildDefaultValidatorFactory()));
-                } catch (ValidationException ve) {
-                    LOGGER.info("No implementation found for BEAN VALIDATION - JSR 303", ve);
+                } catch (final ValidationException ve) {
+                    LOGGER.warn("No implementation found for BEAN VALIDATION - JSR 303", ve);
                 }
 
                 /* Add filters actor */
@@ -249,6 +247,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
                 /* Add service actor */
                 requestActors.add(new QueryServiceActor(qs));
 
+                /* Finally build the actors chan */
                 chain = RequestActorsChain.makeChain(requestActors);
             }
 

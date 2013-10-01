@@ -180,12 +180,22 @@ public class HttpCommandExposer extends HttpExposer {
             /* send now that command to the platform and wait for the result */
             result = commandGateway.sendCommandAndWaitForAResultWithException(command, context);
 
-        } catch (JSR303ViolationException validationException) {
-            List<String> errorMessages = new ArrayList<>();
-            for (ConstraintViolation<Object> violation : validationException.getViolations()) {
+        } catch (final JSR303ViolationException validationException) {
+
+            final List<String> errorMessages = new ArrayList<>();
+            for (final ConstraintViolation<Object> violation : validationException.getViolations()) {
                 errorMessages.add(violation.getPropertyPath() + " : " + violation.getMessage());
             }
-            sendResponse(CommandResult.error(new KasperError(CoreErrorCode.INVALID_INPUT.name(), errorMessages)), resp, commandClass);
+
+            sendResponse(
+                    CommandResult.error(
+                        new KasperError(
+                            CoreErrorCode.INVALID_INPUT.name(),
+                            errorMessages
+                        )
+                    ),
+                    resp, commandClass);
+
         } catch (final IOException e) {
             LOGGER.error("Error in command [" + commandClass.getName() + "]", e);
             final String errorMessage = (null == e.getMessage()) ? "Unknown" : e.getMessage();

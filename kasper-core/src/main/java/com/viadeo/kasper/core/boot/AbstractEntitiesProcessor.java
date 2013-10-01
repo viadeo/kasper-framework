@@ -8,11 +8,7 @@
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Entity;
-import com.viadeo.kasper.ddd.impl.Repository;
-import com.viadeo.kasper.er.Concept;
-import com.viadeo.kasper.er.annotation.XKasperConcept;
 import org.axonframework.eventhandling.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
