@@ -34,14 +34,14 @@ then
     mkfifo "$FIFO"
 fi
 
-inotifywait --exclude "$DIR/_build/|.*/\..*" -me "$EVENTS" --timefmt '%Y-%m-%d %H:%M:%S' --format '%T %f' "$DIR" > "$FIFO" &
+inotifywait --exclude "$DIR/_build/|.*/\..*" -me "$EVENTS" --timefmt '%Y-%m-%d %H:%M:%S' -r --format '%T %f' "$DIR" > "$FIFO" &
 INOTIFY_PID=$!
 
 trap "on_exit" 2 3 15
 
 while read date time file
 do
-  (cd $DIR && make html) > /dev/null # let errors being displayed, can be usefu, 2>&1
+  (make html) > /dev/null # let errors being displayed, can be usefu, 2>&1
 done < "$FIFO"
 
 on_exit
