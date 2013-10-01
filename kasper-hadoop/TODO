@@ -1,5 +1,4 @@
-- rename to kasper-hadoop
-- rename other module as kasper-hadoop-sample
+- documentation
 - fine dependencies mgt + no transitives...
 - check packaging
 - check independant packaging : only Pig, then only Hive
