@@ -5,7 +5,7 @@ import org.gradle.api.tasks.TaskAction
 import groovy.io.FileType
 import groovy.util.AntBuilder
 
-class KasperIndexPackageTask extends DefaultTask {
+class KasperHadoopPackageTask extends DefaultTask {
 
     @TaskAction
     void assemble( ) {
@@ -36,7 +36,7 @@ class KasperIndexPackageTask extends DefaultTask {
 
         /* Iterate over each Pig script */
         def scriptDir = new File(tmpDir, "script") ; scriptDir.mkdir()
-        new File(project.projectDir, project.kasperIndexConf.pigSourceDir).eachFileRecurse (FileType.FILES) { pigFile ->
+        new File(project.projectDir, project.kasperHadoopConf.pigSourceDir).eachFileRecurse (FileType.FILES) { pigFile ->
             println "==> PIG SCRIPT : ${pigFile.name}"
 
             /* Retrieve required libs from pig script (PARSE) */
@@ -70,7 +70,7 @@ class KasperIndexPackageTask extends DefaultTask {
         }
 
         /* Iterate over Hive scripts */
-        new File(project.projectDir, project.kasperIndexConf.hiveSourceDir).eachFileRecurse (FileType.FILES) { hiveFile ->
+        new File(project.projectDir, project.kasperHadoopConf.hiveSourceDir).eachFileRecurse (FileType.FILES) { hiveFile ->
             println "==> HIVE SCRIPT : ${hiveFile.name}"
 
             project.copy {
@@ -82,9 +82,9 @@ class KasperIndexPackageTask extends DefaultTask {
         }
 
         /* Copy AVRO schemas */
-        def avroDir = new File(tmpDir, project.kasperIndexConf.avroSchemasDir) ; avroDir.mkdirs()
+        def avroDir = new File(tmpDir, project.kasperHadoopConf.avroSchemasDir) ; avroDir.mkdirs()
         project.copy {
-            from project.kasperIndexConf.avroSchemasDir
+            from project.kasperHadoopConf.avroSchemasDir
             into avroDir.absolutePath
             include "*.avsc"
         }
@@ -93,18 +93,18 @@ class KasperIndexPackageTask extends DefaultTask {
         def launchFile = new File(tmpDir, "launch")
         launchFile.withWriter  { out ->
             out.println "#!/bin/bash"
-            out.println "\$JAVA_HOME/bin/java -cp \$(find lib | xargs | sed -e 's/ /:/g'):script:. -Dlog4j.configuration=log4j-debian.xml com.viadeo.kasper.index.MainLauncher \$@"
+            out.println "\$JAVA_HOME/bin/java -cp \$(find lib | xargs | sed -e 's/ /:/g'):script:. -Dlog4j.configuration=log4j-debian.xml com.viadeo.kasper.index.hadoop.MainLauncher \$@"
         } 
 
         /* Build the deb file */
         def ant = new AntBuilder()
         ant.taskdef(name: 'deb', classname:'com.googlecode.ant_deb_task.Deb', classpath: project.buildscript.configurations.classpath.asPath)
         ant.deb( todir: project.buildDir, package: project.name, section: 'devel', version: project.version + "-" + mVersion ) {
-            description( synopsis: project.kasperIndexConf.debianDescription, project.name )
-            tarfileset( dir: tmpDir.absolutePath, prefix: project.kasperIndexConf.debianRootDir ) {
+            description( synopsis: project.kasperHadoopConf.debianDescription, project.name )
+            tarfileset( dir: tmpDir.absolutePath, prefix: project.kasperHadoopConf.debianRootDir ) {
                 exclude(name: launchFile.name)
             }
-            tarfileset( file: launchFile.absolutePath, prefix: project.kasperIndexConf.debianRootDir, filemode: '755' )
+            tarfileset( file: launchFile.absolutePath, prefix: project.kasperHadoopConf.debianRootDir, filemode: '755' )
         }
 
         /* Delete build directory */

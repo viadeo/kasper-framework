@@ -1,9 +1,9 @@
-package com.viadeo.kasper.index;
+package com.viadeo.kasper.index.hadoop;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.index.common.HadoopDependencies;
-import com.viadeo.kasper.index.common.HadoopJobConfiguration;
-import com.viadeo.kasper.index.common.HadoopLauncher;
+import com.viadeo.kasper.index.hadoop.common.HadoopDependencies;
+import com.viadeo.kasper.index.hadoop.common.HadoopJobConfiguration;
+import com.viadeo.kasper.index.hadoop.common.HadoopLauncher;
 import org.apache.commons.cli.*;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-import static com.viadeo.kasper.index.common.JavaHelpers.addClasspath;
-import static com.viadeo.kasper.index.common.JavaHelpers.cnn;
+import static com.viadeo.kasper.index.hadoop.common.JavaHelpers.addClasspath;
+import static com.viadeo.kasper.index.hadoop.common.JavaHelpers.cnn;
 
 /*
  * Main Pig launcher

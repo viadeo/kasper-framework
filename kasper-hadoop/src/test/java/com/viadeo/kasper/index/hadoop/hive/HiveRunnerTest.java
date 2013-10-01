@@ -1,4 +1,4 @@
-package com.viadeo.kasper.index.hive;
+package com.viadeo.kasper.index.hadoop.hive;
 
 import com.google.common.collect.Lists;
 import org.apache.hadoop.hive.service.HiveInterface;

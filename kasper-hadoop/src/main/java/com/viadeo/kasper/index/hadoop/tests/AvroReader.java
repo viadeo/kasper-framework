@@ -1,4 +1,4 @@
-package com.viadeo.kasper.index.tests;
+package com.viadeo.kasper.index.hadoop.tests;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;

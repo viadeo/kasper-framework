@@ -1,11 +1,11 @@
-package com.viadeo.kasper.index.pig;
+package com.viadeo.kasper.index.hadoop.pig;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.index.common.HadoopDependencies;
-import com.viadeo.kasper.index.common.HadoopJobConfiguration;
-import com.viadeo.kasper.index.common.HadoopLauncher;
+import com.viadeo.kasper.index.hadoop.common.HadoopDependencies;
+import com.viadeo.kasper.index.hadoop.common.HadoopJobConfiguration;
+import com.viadeo.kasper.index.hadoop.common.HadoopLauncher;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.pig.ExecType;
 import org.apache.pig.PigServer;
@@ -25,7 +25,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import static com.viadeo.kasper.index.common.JavaHelpers.cnn;
+import static com.viadeo.kasper.index.hadoop.common.JavaHelpers.cnn;
 
 /*
  * Main Pig launcher

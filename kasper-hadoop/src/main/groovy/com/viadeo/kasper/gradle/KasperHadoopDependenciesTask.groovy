@@ -3,7 +3,7 @@ package com.viadeo.kasper.gradle;
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
 
-class KasperIndexDependenciesTask extends DefaultTask {
+class KasperHadoopDependenciesTask extends DefaultTask {
 
     @TaskAction
     void copyDependencies( ) {

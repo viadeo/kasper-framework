@@ -1,8 +1,8 @@
-package com.viadeo.kasper.index.tests.pig;
+package com.viadeo.kasper.index.hadoop.tests.pig;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.index.common.HadoopDependencies;
-import com.viadeo.kasper.index.tests.HadoopTestFixture;
+import com.viadeo.kasper.index.hadoop.common.HadoopDependencies;
+import com.viadeo.kasper.index.hadoop.tests.HadoopTestFixture;
 import org.apache.hadoop.fs.Path;
 import org.apache.pig.pigunit.Cluster;
 import org.apache.pig.pigunit.PigTest;

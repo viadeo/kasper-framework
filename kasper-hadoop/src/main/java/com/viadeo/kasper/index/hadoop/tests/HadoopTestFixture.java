@@ -1,4 +1,4 @@
-package com.viadeo.kasper.index.tests;
+package com.viadeo.kasper.index.hadoop.tests;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

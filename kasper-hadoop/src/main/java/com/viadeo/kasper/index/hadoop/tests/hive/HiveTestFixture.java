@@ -1,11 +1,11 @@
-package com.viadeo.kasper.index.tests.hive;
+package com.viadeo.kasper.index.hadoop.tests.hive;
 
 import com.google.common.collect.Maps;
 import com.jointhegrid.hive_test.EnvironmentHack;
 import com.jointhegrid.hive_test.HiveTestService;
-import com.viadeo.kasper.index.common.HadoopDependencies;
-import com.viadeo.kasper.index.hive.HiveRunner;
-import com.viadeo.kasper.index.tests.HadoopTestFixture;
+import com.viadeo.kasper.index.hadoop.common.HadoopDependencies;
+import com.viadeo.kasper.index.hadoop.hive.HiveRunner;
+import com.viadeo.kasper.index.hadoop.tests.HadoopTestFixture;
 import org.apache.commons.io.FileUtils;
 import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;

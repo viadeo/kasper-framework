@@ -1,4 +1,4 @@
-package com.viadeo.kasper.index.common;
+package com.viadeo.kasper.index.hadoop.common;
 
 import com.google.common.collect.*;
 import org.apache.commons.io.FileUtils;
@@ -9,7 +9,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.net.URL;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;

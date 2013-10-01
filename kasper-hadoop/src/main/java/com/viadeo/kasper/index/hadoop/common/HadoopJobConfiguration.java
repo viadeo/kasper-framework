@@ -1,4 +1,4 @@
-package com.viadeo.kasper.index.common;
+package com.viadeo.kasper.index.hadoop.common;
 
 import org.apache.hadoop.fs.FileSystem;
 

@@ -1,11 +1,11 @@
-package com.viadeo.kasper.index.hive;
+package com.viadeo.kasper.index.hadoop.hive;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.index.common.HadoopDependencies;
-import com.viadeo.kasper.index.common.HadoopJobConfiguration;
-import com.viadeo.kasper.index.common.HadoopLauncher;
-import com.viadeo.kasper.index.common.JavaHelpers;
+import com.viadeo.kasper.index.hadoop.common.HadoopDependencies;
+import com.viadeo.kasper.index.hadoop.common.HadoopJobConfiguration;
+import com.viadeo.kasper.index.hadoop.common.HadoopLauncher;
+import com.viadeo.kasper.index.hadoop.common.JavaHelpers;
 import org.apache.hadoop.fs.FileSystem;
 import org.reflections.Reflections;
 import org.reflections.scanners.ResourcesScanner;
@@ -24,7 +24,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.index.common.JavaHelpers.cnn;
+import static com.viadeo.kasper.index.hadoop.common.JavaHelpers.cnn;
 
 /*
  * Main Pig launcher
