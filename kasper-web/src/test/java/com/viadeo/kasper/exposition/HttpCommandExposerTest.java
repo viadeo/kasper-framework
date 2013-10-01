@@ -25,11 +25,11 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExposer> {
 
@@ -108,15 +108,28 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
     }
 
     @Test public void testJSR303Validation() {
-        NeedValidationCommand command = new NeedValidationCommand();
+        // Given
+        Locale.setDefault(Locale.US);
+        final NeedValidationCommand command = new NeedValidationCommand();
         command.setStr("");
         command.setInnerObject(new InnerObject());
 
-        CommandResult result = client().send(command);
+        // When
+        final CommandResult result = client().send(command);
 
+        // Then
         assertTrue(result.isError());
-        assertEquals("innerObject.age : doit être plus grand que 2", result.getError().getMessages().get(0));
-        assertEquals("str : la taille doit être entre 1 et 2147483647", result.getError().getMessages().get(1));
+        final List<String> errorStrings = new ArrayList<String>() {{
+            add("innerObject.age : must be greater than or equal to 2");
+            add("str : size must be between 1 and 2147483647");
+        }};
+        for (final String errorMessage : result.getError().getMessages()) {
+            if (!errorStrings.contains(errorMessage)) {
+                fail(String.format("Cannot find expected validation message : %s", errorMessage));
+            }
+            errorStrings.remove(errorMessage);
+        }
+        assertEquals(0, errorStrings.size());
     }
 
     // ------------------------------------------------------------------------
@@ -184,9 +197,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
     }
 
     @XKasperCommandHandler(domain = AccountDomain.class)
-    public static class NeedValidationCommandHandler extends AbstractCommandHandler<NeedValidationCommand> {
+    public static class NeedValidationCommandHandler extends AbstractCommandHandler<NeedValidationCommand> { }
 
-    }
 }
 
 
