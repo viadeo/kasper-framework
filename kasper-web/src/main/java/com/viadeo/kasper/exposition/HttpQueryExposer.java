@@ -232,6 +232,7 @@ public class HttpQueryExposer extends HttpExposer {
             }
 
             result = queryGateway.retrieve(query, new DefaultContextBuilder().build());
+            checkNotNull(result);
 
         } catch (final Throwable e) {
             /*

@@ -179,6 +179,7 @@ public class HttpCommandExposer extends HttpExposer {
 
             /* send now that command to the platform and wait for the result */
             result = commandGateway.sendCommandAndWaitForAResultWithException(command, context);
+            checkNotNull(result);
 
         } catch (final JSR303ViolationException validationException) {
 
