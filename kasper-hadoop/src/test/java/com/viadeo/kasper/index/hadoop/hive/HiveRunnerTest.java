@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.index.hadoop.hive;
 
 import com.google.common.collect.Lists;
@@ -18,6 +24,8 @@ import static org.mockito.Mockito.mock;
 public class HiveRunnerTest {
     private static final Logger LOGGER = LoggerFactory.getLogger(HiveRunnerTest.class);
 
+    // ------------------------------------------------------------------------
+
     private final String script = "" +
             "SET A = 'b';\n" +
             "CREATE EXTERNAL TABLE Member\n" +
@@ -37,6 +45,8 @@ public class HiveRunnerTest {
                     "LOCATION '/user/mglcel/examples/input/' " +
                     "TBLPROPERTIES ( 'avro.schema.url'='${hiveconf:SCHEMA_AVRO_MEMBER}' )"
     };
+
+    // ------------------------------------------------------------------------
 
     @Test
     public void testsRunScript() throws Exception {

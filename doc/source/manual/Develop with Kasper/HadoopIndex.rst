@@ -105,12 +105,12 @@ Add your script in the corresponding directory :
 In order to allow the **MainLauncher** to discover the needed
 AVRO files, you'll need to add them as dependencies in your script :
 
-```
--- REQUIRE AVRO MemberInfo
--- REQUIRE AVRO Position
--- REQUIRE AVRO Member
--- REQUIRE AVRO SkillMemberScore
-```
+.. code-block::
+    -- REQUIRE AVRO MemberInfo
+    -- REQUIRE AVRO Position
+    -- REQUIRE AVRO Member
+    -- REQUIRE AVRO SkillMemberScore
+
 
 For each AVRO dependency, the launcher will pass a **DATA_AVRO_** TABLENAME argument holding the full path location of
 the targeted AVRO file and a **SCHEMA_AVRO_** TABLENAME argument holding the full path location of the AVRO file schema
@@ -119,9 +119,7 @@ that you can use in your Pig or Hive scripts.
 If you only need the corresponding schema and does not plan to read the associated file (for output for instance),
 add the schema dependency, only the **SCHEMA_AVRO_** TABLENAME argument will be set up :
 
-```
--- REQUIRE SCHEMA SeoRelevantMember
-```
+``-- REQUIRE SCHEMA SeoRelevantMember``
 
 In addition the launcher will provides you with the following standard script arguments :
 
