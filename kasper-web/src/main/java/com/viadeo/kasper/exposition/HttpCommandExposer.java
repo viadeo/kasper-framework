@@ -78,7 +78,7 @@ public class HttpCommandExposer extends HttpExposer {
 
     @Override
     public void init() throws ServletException {
-        LOGGER.info("\n=============== Exposing commands ===============");
+        LOGGER.info("=============== Exposing commands ===============");
 
         for (final CommandHandler<? extends Command> handler : domainLocator.getHandlers()) {
             expose(handler);

@@ -87,7 +87,7 @@ public class HttpQueryExposer extends HttpExposer {
 
     @Override
     public void init() throws ServletException {
-        LOGGER.info("\n=============== Exposing queries ===============");
+        LOGGER.info("=============== Exposing queries ===============");
 
         /* expose all registered queries and commands */
         for (final QueryService<? extends Query, ?> queryService : queryServicesLocator.getServices()) {
