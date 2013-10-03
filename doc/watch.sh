@@ -41,7 +41,7 @@ trap "on_exit" 2 3 15
 
 while read date time file
 do
-  (make html) > /dev/null # let errors being displayed, can be usefu, 2>&1
+  make html > /dev/null # let errors being displayed, can be usefu, 2>&1
 done < "$FIFO"
 
 on_exit
