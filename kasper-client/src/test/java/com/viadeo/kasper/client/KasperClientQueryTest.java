@@ -6,7 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.client;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.common.base.Function;
+import com.google.common.collect.*;
+import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
@@ -15,21 +20,29 @@ import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.query.exposition.query.QueryFactory;
+import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
+import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.ext.MessageBodyReader;
+import javax.ws.rs.ext.MessageBodyWriter;
+import javax.ws.rs.ext.Provider;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.lang.annotation.Annotation;
+import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
@@ -83,8 +96,11 @@ public class KasperClientQueryTest extends JerseyTest {
     public static class GetMemberQuery implements Query {
         private static final long serialVersionUID = -2618953632539379331L;
 
-        private final String memberName;
-        private final List<Integer> ids;
+        private String memberName;
+        private List<Integer> ids;
+
+        public GetMemberQuery() {
+        }
 
         public GetMemberQuery(final String memberName, final List<Integer> ids) {
             this.memberName = memberName;
@@ -98,18 +114,38 @@ public class KasperClientQueryTest extends JerseyTest {
         public List<Integer> getIds() {
             return this.ids;
         }
+
+        public void setIds(List<Integer> ids) {
+            this.ids = ids;
+        }
+
+        public void setMemberName(String memberName) {
+            this.memberName = memberName;
+        }
     }
 
     // ------------------------------------------------------------------------
 
-    @Path(value = "/")
+    @Path(value = "/getMember")
     public static class DummyResource {
-        @Path("/getMember")
         @GET
         @Produces(MediaType.APPLICATION_JSON)
+        @Consumes(MediaType.APPLICATION_JSON)
         public MemberPayload getMember(@QueryParam("memberName") final String memberName,
                                       @QueryParam("ids") final List<Integer> ids) {
             return new MemberPayload(memberName, ids);
+        }
+
+        @POST
+        @Produces(MediaType.APPLICATION_JSON)
+        @Consumes(MediaType.APPLICATION_JSON)
+        public MemberPayload getPostMember(ImmutableSetMultimap<String, String> query) {
+            return new MemberPayload(query.get("memberName").iterator().next(), Lists.newArrayList(Iterables.transform(query.get("ids"), new Function<String, Integer>() {
+                @Override
+                public Integer apply(String input) {
+                    return Integer.parseInt(input);
+                }
+            })));
         }
     }
     
@@ -139,7 +175,11 @@ public class KasperClientQueryTest extends JerseyTest {
     public static class TestConfiguration extends DefaultResourceConfig {
         public TestConfiguration() {
             super(DummyResource.class);
-            getProviderSingletons().add(new JacksonJsonProvider());
+        }
+
+        @Override
+        public Set<Object> getSingletons() {
+            return Sets.<Object>newHashSet(new JacksonJsonProvider(ObjectMapperProvider.INSTANCE.mapper()));
         }
     }
 
@@ -214,4 +254,16 @@ public class KasperClientQueryTest extends JerseyTest {
         checkRoundTrip(query, result.getValue());
     }
 
+    @Test public void testQueryUsingPost() throws MalformedURLException {
+        final KasperClient client = new KasperClientBuilder()
+                .queryBaseLocation(new URL("http://localhost:" + port + "/kasper/query/"))
+                .usePostForQueries(true)
+                .create();
+
+        final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
+
+        final QueryResult<MemberPayload> result = client.query(query, MemberPayload.class);
+
+        checkRoundTrip(query, result);
+    }
 }

@@ -10,10 +10,16 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.common.collect.SetMultimap;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
@@ -41,17 +47,52 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.beans.Introspector;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
 import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.servlet.http.HttpServletResponse.SC_NOT_ACCEPTABLE;
 
 public class HttpQueryExposer extends HttpExposer {
+
+
+    private final static TypeReference<ImmutableSetMultimap<String, String>> mapOfStringsType = new TypeReference<ImmutableSetMultimap<String, String>>() {};
+
+    interface QueryToQueryMap {
+        SetMultimap<String, String> toQueryMap(final HttpServletRequest req, final HttpServletResponse resp) throws IOException;
+    }
+
+    private final static QueryToQueryMap jsonBodyToQueryMap = new QueryToQueryMap() {
+
+        @Override
+        public SetMultimap<String, String> toQueryMap(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            ObjectMapper mapper = ObjectMapperProvider.INSTANCE.mapper();
+            JsonParser parser = mapper.reader().getFactory().createParser(req.getInputStream());
+
+            final SetMultimap<String, String> queryMap = mapper.reader().readValue(parser, mapOfStringsType);
+
+            return queryMap;
+        }
+    };
+
+    private final static QueryToQueryMap queryStringToMap = new QueryToQueryMap() {
+
+        @Override
+        public SetMultimap<String, String> toQueryMap(HttpServletRequest req, HttpServletResponse resp) throws IOException {
+            final ImmutableSetMultimap.Builder<String, String> queryParams = new ImmutableSetMultimap.Builder<>();
+
+            final Enumeration<String> keys = req.getParameterNames();
+            while (keys.hasMoreElements()) {
+                final String key = keys.nextElement();
+                queryParams.putAll(key, Arrays.asList(req.getParameterValues(key)));
+            }
+
+            return queryParams.build();
+        }
+    };
+
     private static final long serialVersionUID = 8448984922303895624L;
     protected static final transient Logger QUERY_LOGGER = LoggerFactory.getLogger(HttpQueryExposer.class);
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
@@ -105,12 +146,27 @@ public class HttpQueryExposer extends HttpExposer {
 
     // ------------------------------------------------------------------------
 
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        if (!req.getContentType().startsWith("application/json")) {
+            sendError(SC_NOT_ACCEPTABLE, "Accepting only application/json; charset=utf-8", resp, null);
+        } else {
+            handleQuery(jsonBodyToQueryMap, req, resp);
+        }
+    }
+
     // again can not use sendError
     @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
 
-        /* Start request timer */
+        handleQuery(queryStringToMap, req, resp);
+    }
+
+    // ------------------------------------------------------------------------
+
+    protected void handleQuery(final QueryToQueryMap queryMapper, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
+         /* Start request timer */
         final Timer.Context classTimer = METRICLASSTIMER.time();
 
         /* Create a request correlation id */
@@ -134,18 +190,17 @@ public class HttpQueryExposer extends HttpExposer {
          */
         try {
             final String queryName = resourceName(req.getRequestURI());
-            final Query query = parseQuery(queryName, req, resp);
+            final Query query = parseQuery(queryMapper.toQueryMap(req, resp), queryName, req, resp);
 
             QueryResult<?> result = null;
             if (!resp.isCommitted()) {
-                result = handleQuery(queryName, query, resp, requestCorrelationUUID );
+                result = handleQuery(queryName, query, resp, requestCorrelationUUID);
             }
 
             /* need to check again as something might go wrong in handleQuery */
             if (!resp.isCommitted()) {
                 sendResult(queryName, result, resp);
             }
-
         } catch (final Throwable t) {
             sendError(
                     SC_INTERNAL_SERVER_ERROR,
@@ -163,10 +218,8 @@ public class HttpQueryExposer extends HttpExposer {
         resp.flushBuffer();
     }
 
-    // ------------------------------------------------------------------------
-
     // we can not use send error as it will send text/html response.
-    protected Query parseQuery(final String queryName, final HttpServletRequest req, final HttpServletResponse resp)
+    protected Query parseQuery(final SetMultimap<String, String> queryMap, final String queryName, final HttpServletRequest req, final HttpServletResponse resp)
             throws IOException {
 
         Query query = null;
@@ -182,17 +235,9 @@ public class HttpQueryExposer extends HttpExposer {
 
             final TypeAdapter<? extends Query> adapter = queryAdapterFactory.create(TypeToken.of(queryClass));
 
-            final ImmutableSetMultimap.Builder<String, String> queryParams = new ImmutableSetMultimap.Builder<>();
-
-            final Enumeration<String> keys = req.getParameterNames();
-            while (keys.hasMoreElements()) {
-                final String key = keys.nextElement();
-                queryParams.putAll(key, Arrays.asList(req.getParameterValues(key)));
-            }
-
             try {
 
-                query = adapter.adapt(new QueryParser(queryParams.build()));
+                query = adapter.adapt(new QueryParser(queryMap));
 
             } catch (final Throwable t) {
                 /*
@@ -231,13 +276,13 @@ public class HttpQueryExposer extends HttpExposer {
                 ((AbstractContext) context).setKasperCorrelationId(new DefaultKasperId(requestCorrelationUUID));
             }
 
-            result = queryGateway.retrieve(query, new DefaultContextBuilder().build());
+            result = queryGateway.retrieve(query, context);
             checkNotNull(result);
 
         } catch (final Throwable e) {
             /*
              * it is ok to eat all kind of exceptions as they occur at parsing
-             * level so we know what approximatively failed.
+             * level so we know what approximately failed.
              */
             sendError(SC_INTERNAL_SERVER_ERROR,
                       String.format("ERROR Submiting query[%s] to Kasper platform.", queryName),
@@ -274,6 +319,8 @@ public class HttpQueryExposer extends HttpExposer {
             sendError(SC_INTERNAL_SERVER_ERROR,
                       String.format("ERROR sending Result [%s] for query [%s]", result.getClass().getSimpleName(),queryName),
                       resp, t);
+        } finally {
+            resp.getWriter().flush();
         }
 
     }

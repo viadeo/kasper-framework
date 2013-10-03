@@ -9,7 +9,6 @@ package com.viadeo.kasper.client;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.sun.jersey.api.client.Client;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.query.exposition.Feature;
 import com.viadeo.kasper.query.exposition.FeatureConfiguration;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
@@ -37,6 +36,7 @@ public class KasperClientBuilder {
     private URL queryBaseLocation;
     private QueryFactory queryFactory;
     private final QueryFactoryBuilder qFactoryBuilder = new QueryFactoryBuilder();
+    private boolean usePostForQueries;
 
     // ------------------------------------------------------------------------
 
@@ -128,6 +128,11 @@ public class KasperClientBuilder {
         return this;
     }
 
+    public KasperClientBuilder usePostForQueries(final boolean enabled) {
+        usePostForQueries = enabled;
+        return this;
+    }
+
     // FIXME: maybe make it public?
     KasperClientBuilder client(final Client client) {
         this.client = checkNotNull(client);
@@ -158,9 +163,9 @@ public class KasperClientBuilder {
         }
 
         if (null == client) {
-            return new KasperClient(queryFactory, mapper, commandBaseLocation, queryBaseLocation);
+            return new KasperClient(queryFactory, mapper, commandBaseLocation, queryBaseLocation, usePostForQueries);
         } else {
-            return new KasperClient(queryFactory, client, commandBaseLocation, queryBaseLocation);
+            return new KasperClient(queryFactory, client, commandBaseLocation, queryBaseLocation, usePostForQueries);
         }
     }
 
