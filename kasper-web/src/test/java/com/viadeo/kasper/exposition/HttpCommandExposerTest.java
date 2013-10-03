@@ -33,7 +33,9 @@ import static org.junit.Assert.*;
 
 public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExposer> {
 
-    public HttpCommandExposerTest() { }
+    public HttpCommandExposerTest() {
+        Locale.setDefault(Locale.US);
+    }
 
     @Override
     protected HttpCommandExposer createExposer(final ApplicationContext ctx) {
@@ -109,7 +111,6 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 
     @Test public void testJSR303Validation() {
         // Given
-        Locale.setDefault(Locale.US);
         final NeedValidationCommand command = new NeedValidationCommand();
         command.setStr("");
         command.setInnerObject(new InnerObject());
