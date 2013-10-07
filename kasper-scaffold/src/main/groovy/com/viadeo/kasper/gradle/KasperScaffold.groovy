@@ -15,6 +15,7 @@ class KasperScaffoldExtension {
     def String domainPrefix = "kviadeo"
     def String basePackage = "com.viadeo.platform"
     def String basePackageDir = "" // overriden
+    def String dependenciesHolder = "libraries"
 }
 
 class KasperScaffold implements Plugin<Project> {

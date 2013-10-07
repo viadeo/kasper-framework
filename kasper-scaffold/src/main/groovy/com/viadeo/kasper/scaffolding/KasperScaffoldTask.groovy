@@ -60,7 +60,6 @@ class KasperScaffoldTask {
             if (config.containsKey('params')) {
                 ask_params(config.params)
                 params = config.params
-                println params
             }
         }
 
@@ -74,20 +73,27 @@ class KasperScaffoldTask {
     // ========================================================================
 
     def ask_params(params) {
-        _ask_params(null, null, params)
+        _ask_params(null, null, params, [])
     }
 
-    def _ask_params(parent, name, value) {
+    def _ask_params(parent, name, value, stack) {
         if ((null != parent) && value.containsKey("value_ask")) {
 
-            BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
-            println value.value_ask + ": "
-            def newValue = br.readLine()
-            parent[name] = newValue
+            def varName = stack.join('.')
+
+            if (project.ext.properties.containsKey(varName)) {
+                parent[name] = project.ext.properties[varName]
+            } else {
+                BufferedReader br = new BufferedReader(new InputStreamReader(System.in))
+                println value.value_ask + ": "
+                parent[name] = br.readLine()
+            }
 
         } else {
             value.each { k, v -> 
-                _ask_params(value, k, v)
+                stack.add(k)
+                _ask_params(value, k, v, stack)
+                stack.pop()
             }
         }
     }
@@ -120,7 +126,7 @@ class KasperScaffoldTask {
             } else if (it.isFile()) {
                 println ":: mkfile " + (newOutFile.absolutePath - rootDirName)
 
-                def tplContents = engine.createTemplate(it.text).toString()
+                def tplContents = engine.createTemplate(it.text).make(params).toString()
                 newOutFile.withOutputStream { fos ->
                     fos << tplContents
                 }

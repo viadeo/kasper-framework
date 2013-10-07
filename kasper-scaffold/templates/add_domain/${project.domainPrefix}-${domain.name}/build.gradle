@@ -1,0 +1,7 @@
+
+
+dependencies {
+
+    compile ${project.dependenciesHolder}.KASPER_CORE
+
+}

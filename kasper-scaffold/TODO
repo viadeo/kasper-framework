@@ -1,5 +1,5 @@
-
-- add tests
+- allow to passe variable from the command line
 - add documentation
-- remove any dependency to Project in scaffolding/KasperScaffoldTask.groovy
 - clean code (magic numbers, ..)
+- add tests
+- platform init template
