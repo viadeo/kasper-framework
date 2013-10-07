@@ -14,9 +14,25 @@ ext.hadoop_libraries = [
 ]
 
 dependencies {
-    
     compile libraries.GUAVA
     compile libraries.SLF4J
     compile libraries.REFLECTIONS
     compile libraries.JODA_TIME
+}
+
+// Zip templates --------------------------------------------------------------
+task(['type': Zip], 'zipTemplates') {
+    baseName = 'templates'
+    extension = 'zip'
+    from "templates"
+}
+
+artifacts {
+    archives(project.zipTemplates)
+}
+
+jar {
+    dependsOn zipTemplates
+    from files(sourceSets.main.output.classesDir)
+    from file(project.zipTemplates.archivePath)
 }
