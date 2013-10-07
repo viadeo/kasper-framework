@@ -22,9 +22,11 @@ dependencies {
 
 // Zip templates --------------------------------------------------------------
 task(['type': Zip], 'zipTemplates') {
-    baseName = 'templates'
-    extension = 'zip'
+    archiveName = 'kasper-scaffold-templates.zip'
     from "templates"
+    doLast { task ->
+        ant.checksum file: task.archivePath
+    }
 }
 
 artifacts {
@@ -35,4 +37,7 @@ jar {
     dependsOn zipTemplates
     from files(sourceSets.main.output.classesDir)
     from file(project.zipTemplates.archivePath)
+    from file(project.zipTemplates.archivePath.absolutePath + ".MD5")
 }
+
+

@@ -9,8 +9,8 @@ dependencies {
 }
 
 repositories {
-    mavenRepo url: "https://repository.cloudera.com/artifactory/cloudera-repos/"
-    mavenRepo url: "http://clojars.org/repo"
+    maven { url = "https://repository.cloudera.com/artifactory/cloudera-repos/" }
+    maven { url = "http://clojars.org/repo" }
 }
 
 // Dependency management -----------------------------------------------------
