@@ -63,10 +63,7 @@
 
     <div class="container-fluid">
       <div class="row-fluid">
-        <div class="span3">
-          <div>
-            <img src="img/Kasper-White-Border.gif" /><br/><br/>
-          </div>          
+        <div class="span4">     
           <div class="well sidebar-nav">
             <ul class="nav nav-list">
               <li class="nav-header">Domains</li>
@@ -77,7 +74,7 @@
           </div><!--/.well -->
         </div><!--/span-->
 
-        <div id="tree_contents" class="span9">
+        <div id="tree_contents" class="span8">
 
           <div id="tree_contents_about" class="hero-unit hide">
             <h1>About Kasper autodoc</h1>
@@ -90,52 +87,8 @@
               &lt;<a href="mailto: architecture@viadeoteam.com">architecture@viadeoteam.com</a>&gt;</p>
           </div>
 
-          <!-- HOME CONTENTS CAROUSEL -->
-          <div id="tree_contents_home">
-            <div id="myCarousel" class="carousel slide center" style="width: 736px">
-              <ol class="carousel-indicators">
-                <li data-target="#myCarousel" data-slide-to="0" class="active"></li>
-                <li data-target="#myCarousel" data-slide-to="1"></li>
-                <li data-target="#myCarousel" data-slide-to="2"></li>
-              </ol>
-              <div class="carousel-inner">
-                <div class="item active">
-                  <img src="img/ddd.jpg" alt="">
-                  <div class="carousel-caption">
-                    <h4>Domain-Driven Design</h4>
-                    <p>Domain-driven design (DDD) is an approach to develop software for complex needs by connecting the implementation to an evolving model. The term was coined by Eric Evans in his book of the same title</p>
-                  </div>
-                </div>
-                <div class="item">
-                  <img src="img/axon-cqrs.png" alt="">
-                  <div class="carousel-caption">
-                    <h4>Command Query Responsibility Segregation</h4>
-                    <p>It's a software architecture principle of imperative computer programming. It states that every method should either be a command that performs an action, or a query that returns data to the caller, but not both. In other words, asking a question should not change the answer.</p>
-                  </div>
-                </div>
-                <div class="item">
-                  <img src="img/work_team.jpg" alt="">
-                  <div class="carousel-caption">
-                    <h4>It's a team work !</h4>
-                    <p>Everyone participates in Kasper ! Product Owners and Development teams are deeply involved into designing the
-                      model, helped by the architecture and software engineering departements to ensure a global coherency.</p>
-                  </div>
-                </div>
-              </div>
-              <a class="left carousel-control" href="#myCarousel" data-slide="prev">&lsaquo;</a>
-              <a class="right carousel-control" href="#myCarousel" data-slide="next">&rsaquo;</a>
-            </div>
-          </div>
-        </div><!--/span-->
-
+        </div>
       </div><!--/row-->
-
-      <hr>
-
-      <footer>
-        <p>Kasper is the treasure keeper -- &copy;APVO Corp. 2013</p>
-      </footer>
-
     </div><!--/fluid-->
 
 
@@ -210,14 +163,18 @@
                     
                     $.each(childTypes, function(n2, childType) { // Domain sections
                       if (domain[childType].length > 0) {
+
                         var section_id = "tree_domain_" + domain.name + "_" + childType;
                         var section_id_list = "tree_domain_" + domain.name + "_" + childType + "_list";
+
+                        domain_ids.push(section_id_list);
 
                         $("#"+domain_id_list).append("<li id='" + section_id + "'><a href=\"#\">" + childType + "</a></li>");
                         $("#"+section_id).append("<ul id='" + section_id_list + "'></ul>");
 
                         $.each(domain[childType], function(n3, element) { // Domain elements
                           var element_id = "tree_domain_" + domain.name + "_" + element.name;
+
 
                           element.domain = domain;
                           element.section = childType;
