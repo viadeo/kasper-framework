@@ -1,5 +1,3 @@
-- allow to passe variable from the command line
 - add documentation
 - clean code (magic numbers, ..)
-- add tests
 - platform init template

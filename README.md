@@ -14,6 +14,7 @@ KASPER - Kasper is the treasure keeper
 * **kasper-security**               : Security framework
 * **kasper-test**                   : Functional/Integration end to end testing
 * **kasper-web**                    : Web exposition and helpers
+* **kasper-scaffold**               : Scaffolding plugin for Gradle
 * **doc**                           : Kasper developers documentation (cf README)
 * **tools**                         : Some Kasper developer tools
 

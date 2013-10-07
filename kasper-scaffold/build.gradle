@@ -33,6 +33,19 @@ artifacts {
     archives(project.zipTemplates)
 }
 
+check {
+    dependsOn zipTemplates
+}
+
+
+sourceSets {
+    test {
+        resources {
+            srcDirs = [ 'src/test/resources', zipTemplates.destinationDir ]
+        }
+    }
+}
+
 jar {
     dependsOn zipTemplates
     from files(sourceSets.main.output.classesDir)
