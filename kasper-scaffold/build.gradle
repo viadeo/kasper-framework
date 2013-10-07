@@ -1,0 +1,22 @@
+
+description = "KASPER-SCAFFOLD"
+
+apply plugin: 'groovy'
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+}
+
+// Dependency management -----------------------------------------------------
+ext.hadoop_libraries = [
+
+]
+
+dependencies {
+    
+    compile libraries.GUAVA
+    compile libraries.SLF4J
+    compile libraries.REFLECTIONS
+    compile libraries.JODA_TIME
+}
