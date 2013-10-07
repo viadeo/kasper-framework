@@ -1,3 +1,6 @@
-- add documentation
+- terminate full true domain scaffolding
+- platform scaffolding
+- add list and show
+- improve documentation
 - clean code (magic numbers, ..)
 - platform init template
