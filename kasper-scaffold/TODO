@@ -1,0 +1,5 @@
+
+- add tests
+- add documentation
+- remove any dependency to Project in scaffolding/KasperScaffoldTask.groovy
+- clean code (magic numbers, ..)

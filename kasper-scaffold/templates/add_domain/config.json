@@ -1,9 +1,10 @@
 {
-    name: "Add a new domain",
-    params: {
-        "domain.name": {
-            name: "Name of the new domain",
-            value_type: "string"
+    "name": "Add a new domain",
+    "params": {
+        "domain": {
+            "name": {
+                "value_ask": "Name of the domain",
+            }
         }
     }
 }

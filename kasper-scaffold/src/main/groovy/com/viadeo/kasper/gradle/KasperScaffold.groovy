@@ -12,12 +12,16 @@ import org.gradle.api.Task;
 import com.viadeo.kasper.scaffolding.KasperScaffoldTask
 
 class KasperScaffoldExtension {
-
+    def String domainPrefix = "kviadeo"
+    def String basePackage = "com.viadeo.platform"
+    def String basePackageDir = "" // overriden
 }
 
 class KasperScaffold implements Plugin<Project> {
     void apply(Project project) {
         project.extensions.create("kasperScaffoldConf", KasperScaffoldExtension)
+
+        project.kasperScaffoldConf.basePackageDir = project.kasperScaffoldConf.basePackage.replaceAll('\\.', '/')
 
         project.tasks.addRule("Pattern: kasffold<TPL>") { String taskName ->
             if (taskName.startsWith("kasffold")) {
