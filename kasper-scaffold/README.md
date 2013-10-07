@@ -28,14 +28,13 @@ This Kasper module is a scaffolding module which can be used to initialize a pla
     ```
         $ gradle kasffoldAddDomain -Pdomain.name=test
     ```
+    (you will be prompted for parameters if not specified on command line)
 
 ### Use the scaffolding tasks
 
 #### List available tasks
 
-```
     $ gradle kasffoldList
-```
 
 NOT IMPLEMENTED
 
@@ -43,9 +42,7 @@ TODO
 
 #### Show details about a task
 
-```
     $ gradle kasffoldShowAddDomain
-```
 
 NOT IMPLEMENTED 
 
@@ -80,15 +77,15 @@ Add your new template hierarchy in the root **templates/** directory :
     ```
 * Create your directories hierarchy optionally using dynamic variables :
     ```
-        $ mkdir -p '${project.domainPrefix}-${domain.name}/src/main/java/${project.basePackageDir}'
+    $ mkdir -p '${project.domainPrefix}-${domain.name}/src/main/java/${project.basePackageDir}'
     ```
 * Add your files using dynamic variables :
     ```
-        $ echo 'this a file of the domain ${domain.name}' > '${project.domainPrefix}-${domain.name}/README'
+    $ echo 'this a file of the domain ${domain.name}' > '${project.domainPrefix}-${domain.name}/README'
     ```
 * Use your new template in any dependent Kasper project :
     ```
-        $ gradle kasffoldAddDomain
+    $ gradle kasffoldAddDomain
     ```
 
 ### Reference
@@ -98,20 +95,11 @@ Add your new template hierarchy in the root **templates/** directory :
 These properties can be defined in Kasper projects using the **kasperScaffoldConf** holder and are available inside
 your templates under the **project.** key.
 
-+-----------------------+--------------------------------------------------------------------------------------+
 | name                  | description                                                                          |
-+-----------------------+--------------------------------------------------------------------------------------+
+| --------------------- | ------------------------------------------------------------------------------------ |
 | domainPrefix          | The prefix used when naming your domains modules (default: 'kviadeo')                |
-+-----------------------+--------------------------------------------------------------------------------------+
 | basePackage           | The base Java package of your platform (default: 'com.viadeo.platform'               |
-+-----------------------+--------------------------------------------------------------------------------------+
 | basePackageDir        | OVERRIDEN: basePackage transl. into a directory way (default: 'com/viadeo/platform') |
-+-----------------------+--------------------------------------------------------------------------------------+
 | dependenciesHolder    | Gradle: the prefix to be used when defining dependencies (default: 'libraries')      |
-|                       |  eg: when defining a new dependency in your templates, use the following directive : |
-|                       |      "compile ${project.dependenciesHolder.KASPER_CORE}" for instance                |
-|                       |      the platform project will have to define "project.ext.libraries.KASPER_CORE"    |
-|                       |      as the correct dependency to Kasper core module.                                |
-+-----------------------+--------------------------------------------------------------------------------------+
 
 

@@ -1,6 +1,6 @@
+- create "domain.moduleName = project.domainPrefix-domain.name" if domain.name is specified
 - terminate full true domain scaffolding
 - platform scaffolding
 - add list and show
-- improve documentation
 - clean code (magic numbers, ..)
-- platform init template
+- documentation in sphinx doc
