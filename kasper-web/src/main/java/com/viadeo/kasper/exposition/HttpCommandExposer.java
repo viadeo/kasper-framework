@@ -146,7 +146,7 @@ public class HttpCommandExposer extends HttpExposer {
         /* locate corresponding command class */
         final Class<? extends Command> commandClass = exposedCommands.get(commandName);
         if (null == commandClass) {
-            sendError(resp, HttpServletResponse.SC_NOT_FOUND,
+            sendError(req, resp, HttpServletResponse.SC_NOT_FOUND,
                       "Command[" + commandName + "] not found.");
             return;
         }
@@ -157,7 +157,7 @@ public class HttpCommandExposer extends HttpExposer {
         try {
 
             if (!req.getContentType().contains("application/json")) {
-                sendError(resp, HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
+                sendError(req, resp, HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
                           "Accepting and producing only application/json");
                 return;
             }
@@ -195,20 +195,20 @@ public class HttpCommandExposer extends HttpExposer {
                             errorMessages
                         )
                     ),
-                    resp, commandClass);
+                    req, resp, commandClass);
 
         } catch (final IOException e) {
 
             LOGGER.error("Error in command [" + commandClass.getName() + "]", e);
             final String errorMessage = (null == e.getMessage()) ? "Unknown" : e.getMessage();
-            sendError(resp, HttpServletResponse.SC_BAD_REQUEST, errorMessage);
+            sendError(req, resp, HttpServletResponse.SC_BAD_REQUEST, errorMessage);
 
         } catch (final Throwable th) {
 
             // we catch any other exception in order to still respond with json
             LOGGER.error("Error in command [" + commandClass.getName() + "]", th);
             final String errorMessage = (null == th.getMessage()) ? "Unknown" : th.getMessage();
-            sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
+            sendError(req, resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
 
         } finally {
             if (null != parser) {
@@ -232,13 +232,14 @@ public class HttpCommandExposer extends HttpExposer {
          * so nothing can be done anymore
          */
         if (null != result) {
-            sendResponse(result, resp, commandClass);
+            sendResponse(result, req, resp, commandClass);
         }
     }
 
     // ------------------------------------------------------------------------
 
-    protected void sendResponse(final CommandResult result, final HttpServletResponse resp,
+    protected void sendResponse(final CommandResult result,
+                                final HttpServletRequest req, final HttpServletResponse resp,
                                 final Class<? extends Command> commandClass)
             throws IOException {
 
@@ -261,7 +262,7 @@ public class HttpCommandExposer extends HttpExposer {
 
         } catch (final JsonGenerationException | JsonMappingException e) {
 
-            this.internalCommandError(resp, commandClass, result, e);
+            this.internalCommandError(req, resp, commandClass, result, e);
 
         } finally {
             if (generator != null) {
@@ -270,14 +271,15 @@ public class HttpCommandExposer extends HttpExposer {
             }
 
             /* Log request */
-            REQUEST_LOGGER.info("HTTP Response : '{}'", status);
+            REQUEST_LOGGER.info("HTTP Response {} '{}' : {}", req.getMethod(), req.getRequestURI(), status);
         }
     }
 
-    private void internalCommandError(final HttpServletResponse resp, final Class<? extends Command> commandClass,
-                                      final CommandResult result, final Exception e)
+    private void internalCommandError(final HttpServletRequest req, final HttpServletResponse resp,
+                                      final Class<? extends Command> commandClass, final CommandResult result,
+                                      final Exception e)
             throws IOException {
-         this.sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+         this.sendError(req, resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                   String.format("Error outputting result to JSON for command [%s] and result [%s]error = %s",
                           commandClass.getSimpleName(), result, e));
     }
@@ -293,7 +295,7 @@ public class HttpCommandExposer extends HttpExposer {
      * text/html.
      */
     @SuppressWarnings("deprecation")
-    protected void sendError(final HttpServletResponse response, final int status, final String reason)
+    protected void sendError(final HttpServletRequest request, final HttpServletResponse response, final int status, final String reason)
             throws IOException {
         LOGGER.error(reason);
 
@@ -306,7 +308,7 @@ public class HttpCommandExposer extends HttpExposer {
                                           new KasperError(CoreErrorCode.UNKNOWN_ERROR, reason)));
 
         /* Log request */
-        REQUEST_LOGGER.info("HTTP Response : '{}'", status);
+        REQUEST_LOGGER.info("HTTP Response {} '{}' : {} {}", request.getMethod(), request.getRequestURI(), status, reason);
 
         /* Log error metric */
         METRICLASSERRORS.mark();
