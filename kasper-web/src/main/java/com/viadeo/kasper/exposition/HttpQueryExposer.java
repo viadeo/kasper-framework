@@ -138,19 +138,19 @@ public class HttpQueryExposer extends HttpExposer {
 
             QueryResult<?> result = null;
             if (!resp.isCommitted()) {
-                result = handleQuery(queryName, query, resp, requestCorrelationUUID );
+                result = handleQuery(queryName, query, req, resp, requestCorrelationUUID );
             }
 
             /* need to check again as something might go wrong in handleQuery */
             if (!resp.isCommitted()) {
-                sendResult(queryName, result, resp);
+                sendResult(queryName, result, req, resp);
             }
 
         } catch (final Throwable t) {
             sendError(
                     SC_INTERNAL_SERVER_ERROR,
-                    String.format("Could not handle query [%s] with parameters [%s]",
-                            req.getRequestURI(), req.getQueryString()), resp, t);
+                    String.format("Could not handle query [%s] with parameters [%s]", req.getRequestURI(), req.getQueryString()),
+                    req, resp, t);
 
         } finally {
             /* Log metrics */
@@ -176,7 +176,7 @@ public class HttpQueryExposer extends HttpExposer {
 
             sendError(HttpServletResponse.SC_NOT_FOUND,
                       "No such query[" + queryName + "].",
-                      resp, null);
+                      req, resp, null);
 
         } else {
 
@@ -201,7 +201,7 @@ public class HttpQueryExposer extends HttpExposer {
                  */
                 sendError(SC_BAD_REQUEST, String.format(
                         "Unable to parse Query [%s] with parameters [%s]", queryName,
-                        req.getQueryString()), resp, t);
+                        req.getQueryString()), req, resp, t);
             }
         }
 
@@ -211,8 +211,8 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     // can not use sendError it is forcing response to text/html
-    protected QueryResult<?> handleQuery(final String queryName, final Query query, final HttpServletResponse resp,
-                                         final UUID requestCorrelationUUID)
+    protected QueryResult<?> handleQuery(final String queryName, final Query query, final HttpServletRequest req,
+                                         final HttpServletResponse resp, final UUID requestCorrelationUUID)
             throws IOException {
 
         QueryResult<?> result = null;
@@ -241,7 +241,7 @@ public class HttpQueryExposer extends HttpExposer {
              */
             sendError(SC_INTERNAL_SERVER_ERROR,
                       String.format("ERROR Submiting query[%s] to Kasper platform.", queryName),
-                      resp, e);
+                      req, resp, e);
         }
 
         return result;
@@ -250,7 +250,8 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     // can not use sendError it is forcing response to text/html
-    protected void sendResult(final String queryName, final QueryResult<?> result, final HttpServletResponse resp)
+    protected void sendResult(final String queryName, final QueryResult<?> result, final HttpServletRequest req,
+                              final HttpServletResponse resp)
             throws IOException {
 
         final ObjectWriter writer = mapper.writer();
@@ -268,12 +269,12 @@ public class HttpQueryExposer extends HttpExposer {
             writer.writeValue(resp.getOutputStream(), result);
 
             /* Log the request */
-            QUERY_LOGGER.info("HTTP Response : '{}'", status);
+            QUERY_LOGGER.info("HTTP Response {} '{}' : {}", req.getMethod(), req.getRequestURI(), status);
 
         } catch (final Throwable t) {
             sendError(SC_INTERNAL_SERVER_ERROR,
                       String.format("ERROR sending Result [%s] for query [%s]", result.getClass().getSimpleName(),queryName),
-                      resp, t);
+                      req, resp, t);
         }
 
     }
@@ -281,7 +282,8 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("deprecation")
-    protected void sendError(final int status, final String message, final HttpServletResponse resp, final Throwable exception)
+    protected void sendError(final int status, final String message, final HttpServletRequest req,
+                             final HttpServletResponse resp, final Throwable exception)
             throws IOException {
 
         if (exception != null) {
@@ -306,7 +308,7 @@ public class HttpQueryExposer extends HttpExposer {
         resp.flushBuffer();
 
         /* Log the request */
-        QUERY_LOGGER.info("HTTP Response : '{}'", status);
+        QUERY_LOGGER.info("HTTP Response {} '{}' : {} {}", req.getMethod(), req.getRequestURI(), status, message, exception);
 
         /* Log error metric */
         METRICLASSERRORS.mark();
