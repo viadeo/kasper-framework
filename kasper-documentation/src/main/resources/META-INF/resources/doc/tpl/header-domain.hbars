@@ -1,81 +1,170 @@
 <div>
 
-  {{#if node.parent}}
-  	<div class="well well-small">
-  		<h2><small>Parent domain :</small> <a class="klink" href="#{{node.parent.name}}">{{node.parent.label}}</a></h2>
-  	</div>
-  {{/if}}
+    {{#if node.parent}}
+    <div class="well well-small">
+        <h2>
+            <small>Parent domain :</small>
+            <a class="klink" href="#{{node.parent.name}}">{{node.parent.label}}</a></h2>
+    </div>
+    {{/if}}
 
-  <div class="row-fluid">
+    <div class="row-fluid">
+        <div class="span4 well well-small">
+            <h2>Concepts</h2>
+            {{#if node.concepts}}
+            <ul>
+                {{#each node.concepts}}
+                <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <i>nothing declared</i>
+            {{/if}}
+        </div>
+        <!--/span-->
 
-    <div class="span4 well well-small">
-      <h2>Concepts</h2>
-      {{#if node.concepts}}
-      	<ul>
-      	{{#each node.concepts}}
-      		<li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
-      	{{/each}}
-      	</ul>
-      {{else}}
-      	<i>nothing declared</i>
-      {{/if}}
-    </div><!--/span-->
+        <div class="span4 well well-small">
+            <h2>Relations</h2>
+            {{#if node.relations}}
+            <ul>
+                {{#each node.relations}}
+                <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <i>nothing declared</i>
+            {{/if}}
+        </div>
+        <!--/span-->
+    </div>
+    <!--/row-->
 
-    <div class="span4 well well-small">
-      <h2>Relations</h2>
-      {{#if node.relations}}
-      	<ul>
-      	{{#each node.relations}}
-      		<li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
-      	{{/each}}
-      	</ul>
-      {{else}}
-      	<i>nothing declared</i>
-      {{/if}}      
-    </div><!--/span-->
+    <div class="row-fluid">
+        <div class="span4 well well-small">
+            <h2>Events</h2>
+            {{#if node.events}}
+            <ul>
+                {{#each node.events}}
+                <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <i>nothing declared</i>
+            {{/if}}
+        </div>
+        <!--/span-->
+        <div class="span4 well well-small">
+            <h2>Listeners</h2>
+            {{#if node.listeners}}
+            <ul>
+                {{#each node.listeners}}
+                <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <i>nothing declared</i>
+            {{/if}}
+        </div>
+        <!--/span-->
+    </div>
+    <!--/row-->
 
-    <div class="span4 well well-small">
-      <h2>Events</h2>
-      {{#if node.events}}
-      	<ul>
-      	{{#each node.events}}
-      		<li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
-      	{{/each}}
-      	</ul>
-      {{else}}
-      	<i>nothing declared</i>
-      {{/if}}      
-    </div><!--/span-->
+    <div class="row-fluid">
 
-  </div><!--/row-->
+        <div class="span4 well well-small">
+            <h2>Commands</h2>
+            {{#if node.commands}}
+            <ul>
+                {{#each node.commands}}
+                <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <i>nothing declared</i>
+            {{/if}}
+        </div>
+        <!--/span-->
+        <div class="span4 well well-small">
+            <h2>Handlers</h2>
+            {{#if node.handlers}}
+            <ul>
+                {{#each node.handlers}}
+                <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <i>nothing declared</i>
+            {{/if}}
+        </div>
+        <!--/span-->
 
-  <div class="row-fluid">
-  
-    <div class="span4 well well-small">
-      <h2>Commands</h2>
-      {{#if node.commands}}
-      	<ul>
-      	{{#each node.commands}}
-      		<li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
-      	{{/each}}
-      	</ul>
-      {{else}}
-      	<i>nothing declared</i>
-      {{/if}}
-    </div><!--/span-->
+    </div>
+    <!--/row-->
 
-    <div class="span4 well well-small">
-      <h2>Listeners</h2>
-      {{#if node.listeners}}
-      	<ul>
-      	{{#each node.listeners}}
-      		<li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
-      	{{/each}}
-      	</ul>
-      {{else}}
-      	<i>nothing declared</i>
-      {{/if}}      
-    </div><!--/span-->
+    <div class="row-fluid">
 
-  </div><!--/row-->  
+        <div class="span4 well well-small">
+            <h2>Query Services</h2>
+            {{#if node.queryServices}}
+            <ul>
+                {{#each node.queryServices}}
+                <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <i>nothing declared</i>
+            {{/if}}
+        </div>
+        <!--/span-->
+        <div class="span4 well well-small">
+            <h2>Queries</h2>
+            {{#if node.queries}}
+            <ul>
+                {{#each node.queries}}
+                <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <i>nothing declared</i>
+            {{/if}}
+        </div>
+        <!--/span-->
+
+    </div>
+    <!--/row-->
+
+
+    <div class="row-fluid">
+
+        <div class="span4 well well-small">
+            <h2>QueryPayloads</h2>
+            {{#if node.queryPayloads}}
+            <ul>
+                {{#each node.queryPayloads}}
+                <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <i>nothing declared</i>
+            {{/if}}
+        </div>
+        <!--/span-->
+
+        <div class="span4 well well-small">
+            <h2>Repositories</h2>
+            {{#if node.repositories}}
+            <ul>
+                {{#each node.repositories}}
+                <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <i>nothing declared</i>
+            {{/if}}
+        </div>
+        <!--/span-->
+    </div>
+    <!--/row-->
+
+
 </div>

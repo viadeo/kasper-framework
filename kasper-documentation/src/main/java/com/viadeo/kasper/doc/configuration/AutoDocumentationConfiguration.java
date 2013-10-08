@@ -31,4 +31,8 @@ interface AutoDocumentationConfiguration {
 
      HandlersDocumentationProcessor getHandlersDocumentationProcessor( KasperLibrary library);
 
+     QueriesDocumentationProcessor getQueriesDocumentationProcessor( KasperLibrary library);
+
+     QueryPayloadsDocumentationProcessor getQueryPayloadsDocumentationProcessor( KasperLibrary library);
+
 }

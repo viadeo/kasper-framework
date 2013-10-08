@@ -1,0 +1,5 @@
+{{#if node.queryServices}}
+<div class="well well-small">
+    <h2><small>QueryServices :</small> <a class="klink" href="#{{node.queryService.name}}">{{node.queryServices.label}}</a></h2>
+</div>
+{{/if}}
