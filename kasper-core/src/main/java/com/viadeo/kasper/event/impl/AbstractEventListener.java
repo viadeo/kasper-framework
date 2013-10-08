@@ -18,6 +18,7 @@ import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /**
@@ -73,7 +74,7 @@ public abstract class AbstractEventListener<E extends Event>
     // ------------------------------------------------------------------------
 
     public void setCommandGateway(final CommandGateway commandGateway) {
-        this.commandGateway = commandGateway;
+        this.commandGateway = checkNotNull(commandGateway);
     }
 
     protected Optional<CommandGateway> getCommandGateway() {

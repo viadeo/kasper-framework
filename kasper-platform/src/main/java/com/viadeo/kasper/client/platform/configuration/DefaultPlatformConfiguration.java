@@ -294,11 +294,12 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public EventListenersProcessor eventListenersProcessor(final KasperEventBus eventBus){
+    public EventListenersProcessor eventListenersProcessor(final KasperEventBus eventBus, final CommandGateway commandGateway){
         this.ensureNotPresent(EventListenersProcessor.class);
 
         final EventListenersProcessor eventListenersProcessor = new EventListenersProcessor();
         eventListenersProcessor.setEventBus(eventBus);
+        eventListenersProcessor.setCommandGateway(commandGateway);
 
         components.putInstance(EventListenersProcessor.class, eventListenersProcessor);
         return eventListenersProcessor;
