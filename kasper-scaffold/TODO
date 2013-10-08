@@ -1,3 +1,4 @@
+- possibilite de definir un config.json a chaque niveau de repertoire avec une option 'create=true/false', default false
 - create "domain.moduleName = project.domainPrefix-domain.name" if domain.name is specified
 - terminate full true domain scaffolding
 - platform scaffolding
