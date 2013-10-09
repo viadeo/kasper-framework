@@ -4,9 +4,11 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.ddd;
+package com.viadeo.kasper.test.ddd;
 
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
+import com.viadeo.kasper.ddd.AggregateRoot;
+import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.impl.Repository;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventsourcing.EventSourcingRepository;

@@ -66,7 +66,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *      KasperClient client = new KasperClient();
  *      
  *      client.sendAsync(someCommand, new ICallback&lt;ICommandResult&gt;() {
- *          public void done(ICommandResult result) {
+ *          public void done(final ICommandResult result) {
  *              // do something smart with my result
  *          }
  *      });

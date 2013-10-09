@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.web;
+package com.viadeo.kasper.web;
 
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.exception.KasperException;
@@ -15,7 +15,10 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-public class KasperPlatformBootListener implements ServletContextListener {
+/*
+ * This is a servlet listener that can be used to boot a Spring-configured platform
+ */
+public class KasperPlatformSpringBootListener implements ServletContextListener {
 
     @Override
     public void contextDestroyed(final ServletContextEvent sce) {
