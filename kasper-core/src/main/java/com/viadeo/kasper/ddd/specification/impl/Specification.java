@@ -80,7 +80,9 @@ public abstract class Specification<T> implements ISpecification<T> {
 			errorMessage = getDefaultErrorMessage(entity);
 		}
 
-        errorMessage += " for value " + entity.toString();
+        if (String.class.equals(entity.getClass())) {
+            errorMessage += " for value " + entity.toString();
+        }
 		
 		return errorMessage;
 	}
