@@ -68,7 +68,7 @@ public class PlatformConfigurationTest {
                 this.testDomainsProcessor(platformConfiguration, domainLocator);
 
         final EventListenersProcessor eventListenersProcessor =
-                this.testEventListenersProcessor(platformConfiguration, eventBus);
+                this.testEventListenersProcessor(platformConfiguration, eventBus, commandGateway);
 
         final QueryServicesProcessor queryServicesProcessor =
                 this.testQueryServicesProcessor(platformConfiguration, queryServicesLocator);
@@ -254,7 +254,8 @@ public class PlatformConfigurationTest {
     // ------------------------------------------------------------------------
 
     private EventListenersProcessor testEventListenersProcessor(final PlatformConfiguration platformConfiguration,
-                                                                final KasperEventBus eventBus) {
+                                                                final KasperEventBus eventBus,
+                                                                final CommandGateway commandGateway) {
         try {
             platformConfiguration.eventListenersProcessor();
             fail();
@@ -262,11 +263,12 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
-        final EventListenersProcessor eventListenersProcessor = platformConfiguration.eventListenersProcessor(eventBus);
+        final EventListenersProcessor eventListenersProcessor =
+                platformConfiguration.eventListenersProcessor(eventBus, commandGateway);
         assertSame(eventListenersProcessor, platformConfiguration.eventListenersProcessor());
 
         try {
-            platformConfiguration.eventListenersProcessor(eventBus);
+            platformConfiguration.eventListenersProcessor(eventBus, commandGateway);
             fail();
         } catch (final KasperException e) {
             // Ignore

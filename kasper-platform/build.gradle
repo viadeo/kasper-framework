@@ -13,5 +13,4 @@ dependencies {
 
     // Third perty dependencies
     compile libraries.AXON_MONGO
-
 }

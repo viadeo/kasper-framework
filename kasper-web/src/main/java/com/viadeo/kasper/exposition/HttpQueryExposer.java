@@ -10,10 +10,13 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Maps;
+import com.google.common.collect.SetMultimap;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
@@ -46,8 +49,7 @@ import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+import static javax.servlet.http.HttpServletResponse.*;
 
 public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
@@ -60,6 +62,51 @@ public class HttpQueryExposer extends HttpExposer {
     private static final Meter METRICLASSREQUESTS = METRICS.meter(name(HttpQueryExposer.class, "requests"));
     private static final Meter METRICLASSERRORS = METRICS.meter(name(HttpQueryExposer.class, "errors"));
 
+    // ------------------------------------------------------------------------
+
+    private final static TypeReference<ImmutableSetMultimap<String, String>> mapOfStringsType = new TypeReference<ImmutableSetMultimap<String, String>>() {};
+
+    interface QueryToQueryMap {
+        SetMultimap<String, String> toQueryMap(final HttpServletRequest req, final HttpServletResponse resp) throws IOException;
+    }
+
+    private final static QueryToQueryMap jsonBodyToQueryMap = new QueryToQueryMap() {
+        @Override
+        public SetMultimap<String, String> toQueryMap(
+                final HttpServletRequest req,
+                final HttpServletResponse resp
+        ) throws IOException {
+
+            final ObjectMapper mapper = ObjectMapperProvider.INSTANCE.mapper();
+            final JsonParser parser = mapper.reader().getFactory().createParser(req.getInputStream());
+
+            final SetMultimap<String, String> queryMap = mapper.reader().readValue(parser, mapOfStringsType);
+
+            return queryMap;
+        }
+    };
+
+    private final static QueryToQueryMap queryStringToMap = new QueryToQueryMap() {
+        @Override
+        public SetMultimap<String, String> toQueryMap(
+                final HttpServletRequest req,
+                final HttpServletResponse resp
+        ) throws IOException {
+
+            final ImmutableSetMultimap.Builder<String, String> queryParams = new ImmutableSetMultimap.Builder<>();
+            final Enumeration<String> keys = req.getParameterNames();
+
+            while (keys.hasMoreElements()) {
+                final String key = keys.nextElement();
+                queryParams.putAll(key, Arrays.asList(req.getParameterValues(key)));
+            }
+
+            return queryParams.build();
+        }
+    };
+
+    // ------------------------------------------------------------------------
+
     private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
     private final transient QueryServicesLocator queryServicesLocator;
     private final transient QueryFactory queryAdapterFactory;
@@ -67,10 +114,6 @@ public class HttpQueryExposer extends HttpExposer {
     private final transient QueryGateway queryGateway;
 
     // ------------------------------------------------------------------------
-
-    public HttpQueryExposer(final QueryGateway queryGateway, final QueryServicesLocator queryLocator) {
-        this(queryGateway, queryLocator, new QueryFactoryBuilder().create(), ObjectMapperProvider.INSTANCE.mapper());
-    }
 
     public HttpQueryExposer(final QueryGateway queryGateway,
                             final QueryServicesLocator queryServicesLocator,
@@ -83,11 +126,15 @@ public class HttpQueryExposer extends HttpExposer {
         this.mapper = mapper;
     }
 
+    public HttpQueryExposer(final QueryGateway queryGateway, final QueryServicesLocator queryLocator) {
+        this(queryGateway, queryLocator, new QueryFactoryBuilder().create(), ObjectMapperProvider.INSTANCE.mapper());
+    }
+
     // ------------------------------------------------------------------------
 
     @Override
     public void init() throws ServletException {
-        LOGGER.info("\n=============== Exposing queries ===============");
+        LOGGER.info("=============== Exposing queries ===============");
 
         /* expose all registered queries and commands */
         for (final QueryService<? extends Query, ?> queryService : queryServicesLocator.getServices()) {
@@ -106,10 +153,25 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @Override
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+        if ( ! req.getContentType().startsWith("application/json")) {
+            sendError(SC_NOT_ACCEPTABLE, "Accepting only application/json; charset=utf-8", req, resp, null);
+        } else {
+            handleQuery(jsonBodyToQueryMap, req, resp);
+        }
+    }
+
+    @Override
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
 
-        /* Start request timer */
+        handleQuery(queryStringToMap, req, resp);
+    }
+
+    // ------------------------------------------------------------------------
+
+    protected void handleQuery(final QueryToQueryMap queryMapper, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
+         /* Start request timer */
         final Timer.Context classTimer = METRICLASSTIMER.time();
 
         /* Create a kasper correlation id */
@@ -130,23 +192,22 @@ public class HttpQueryExposer extends HttpExposer {
         try {
 
             final String queryName = resourceName(req.getRequestURI());
-            final Query query = parseQuery(queryName, req, resp);
+            final Query query = parseQuery(queryMapper.toQueryMap(req, resp), queryName, req, resp);
 
             QueryResult<?> result = null;
             if (!resp.isCommitted()) {
-                result = handleQuery(queryName, query, resp, requestCorrelationUUID );
+                result = handleQuery(queryName, query, req, resp, requestCorrelationUUID );
             }
 
             /* need to check again as something might go wrong in handleQuery */
             if (!resp.isCommitted()) {
-                sendResult(queryName, result, resp);
+                sendResult(queryName, result, req, resp);
             }
-
         } catch (final Throwable t) {
             sendError(
                     SC_INTERNAL_SERVER_ERROR,
-                    String.format("Could not handle query [%s] with parameters [%s]",
-                            req.getRequestURI(), req.getQueryString()), resp, t);
+                    String.format("Could not handle query [%s] with parameters [%s]", req.getRequestURI(), req.getQueryString()),
+                    req, resp, t);
 
         } finally {
             /* Log & metrics */
@@ -159,10 +220,8 @@ public class HttpQueryExposer extends HttpExposer {
         resp.flushBuffer();
     }
 
-    // ------------------------------------------------------------------------
-
     // we can not use send error as it will send text/html response.
-    protected Query parseQuery(final String queryName, final HttpServletRequest req, final HttpServletResponse resp)
+    protected Query parseQuery(final SetMultimap<String, String> queryMap, final String queryName, final HttpServletRequest req, final HttpServletResponse resp)
             throws IOException {
 
         Query query = null;
@@ -172,28 +231,20 @@ public class HttpQueryExposer extends HttpExposer {
 
             sendError(HttpServletResponse.SC_NOT_FOUND,
                       "No such query[" + queryName + "].",
-                      resp, null);
+                      req, resp, null);
 
         } else {
 
             final TypeAdapter<? extends Query> adapter = queryAdapterFactory.create(TypeToken.of(queryClass));
 
-            final ImmutableSetMultimap.Builder<String, String> queryParams = new ImmutableSetMultimap.Builder<>();
-
-            final Enumeration<String> keys = req.getParameterNames();
-            while (keys.hasMoreElements()) {
-                final String key = keys.nextElement();
-                queryParams.putAll(key, Arrays.asList(req.getParameterValues(key)));
-            }
-
             try {
 
-                query = adapter.adapt(new QueryParser(queryParams.build()));
+                query = adapter.adapt(new QueryParser(queryMap));
 
             } catch (final Throwable t) {
                 sendError(SC_BAD_REQUEST, String.format(
                         "Unable to parse Query [%s] with parameters [%s]", queryName,
-                        req.getQueryString()), resp, t);
+                        req.getQueryString()), req, resp, t);
             }
         }
 
@@ -202,8 +253,9 @@ public class HttpQueryExposer extends HttpExposer {
 
     // ------------------------------------------------------------------------
 
-    protected QueryResult<?> handleQuery(final String queryName, final Query query, final HttpServletResponse resp,
-                                         final UUID requestCorrelationUUID)
+    // can not use sendError it is forcing response to text/html
+    protected QueryResult<?> handleQuery(final String queryName, final Query query, final HttpServletRequest req,
+                                         final HttpServletResponse resp, final UUID requestCorrelationUUID)
             throws IOException {
 
         QueryResult<?> result = null;
@@ -216,13 +268,17 @@ public class HttpQueryExposer extends HttpExposer {
 
         try {
 
-            /* Forward the query to the gateway for handling */
-            result = queryGateway.retrieve(query, new DefaultContextBuilder().build());
+            result = queryGateway.retrieve(query, context);
+            checkNotNull(result);
 
         } catch (final Throwable e) {
+            /*
+             * it is ok to eat all kind of exceptions as they occur at parsing
+             * level so we know what approximately failed.
+             */
             sendError(SC_INTERNAL_SERVER_ERROR,
                       String.format("ERROR Submiting query[%s] to Kasper platform.", queryName),
-                      resp, e);
+                      req, resp, e);
         }
 
         return result;
@@ -230,7 +286,9 @@ public class HttpQueryExposer extends HttpExposer {
 
     // ------------------------------------------------------------------------
 
-    protected void sendResult(final String queryName, final QueryResult<?> result, final HttpServletResponse resp)
+    // can not use sendError it is forcing response to text/html
+    protected void sendResult(final String queryName, final QueryResult<?> result, final HttpServletRequest req,
+                              final HttpServletResponse resp)
             throws IOException {
 
         final ObjectWriter writer = mapper.writer();
@@ -248,12 +306,14 @@ public class HttpQueryExposer extends HttpExposer {
             writer.writeValue(resp.getOutputStream(), result);
 
             /* Log the request */
-            QUERY_LOGGER.info("HTTP Response : '{}'", status);
+            QUERY_LOGGER.info("HTTP Response {} '{}' : {}", req.getMethod(), req.getRequestURI(), status);
 
         } catch (final Throwable t) {
             sendError(SC_INTERNAL_SERVER_ERROR,
                       String.format("ERROR sending Result [%s] for query [%s]", result.getClass().getSimpleName(),queryName),
-                      resp, t);
+                      req, resp, t);
+        } finally {
+            resp.getWriter().flush();
         }
 
     }
@@ -261,7 +321,8 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("deprecation")
-    protected void sendError(final int status, final String message, final HttpServletResponse resp, final Throwable exception)
+    protected void sendError(final int status, final String message, final HttpServletRequest req,
+                             final HttpServletResponse resp, final Throwable exception)
             throws IOException {
 
         if (null != exception) {
@@ -286,7 +347,7 @@ public class HttpQueryExposer extends HttpExposer {
         resp.flushBuffer();
 
         /* Log the request */
-        QUERY_LOGGER.info("HTTP Response : '{}'", status);
+        QUERY_LOGGER.info("HTTP Response {} '{}' : {} {}", req.getMethod(), req.getRequestURI(), status, message, exception);
 
         /* Log error metric */
         METRICLASSERRORS.mark();

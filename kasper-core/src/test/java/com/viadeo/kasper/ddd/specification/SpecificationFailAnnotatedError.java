@@ -6,10 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.specification;
 
-import com.viadeo.kasper.ddd.specification.annotation.XSpecification;
+import com.viadeo.kasper.ddd.specification.annotation.XKasperSpecification;
 import com.viadeo.kasper.ddd.specification.impl.Specification;
 
-@XSpecification( description = "this specification should always fail", errorMessage = "it has failed" )
+@XKasperSpecification( description = "this specification should always fail", errorMessage = "it has failed" )
 class SpecificationFailAnnotatedError extends Specification<String> {
 
     @Override

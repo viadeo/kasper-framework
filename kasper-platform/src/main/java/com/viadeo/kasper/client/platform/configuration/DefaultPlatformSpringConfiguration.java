@@ -100,8 +100,8 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public EventListenersProcessor eventListenersProcessor(final KasperEventBus eventBus){
-        return super.eventListenersProcessor(eventBus);
+    public EventListenersProcessor eventListenersProcessor(final KasperEventBus eventBus, final CommandGateway commandGateway) {
+        return super.eventListenersProcessor(eventBus, commandGateway);
     }
 
     @Bean

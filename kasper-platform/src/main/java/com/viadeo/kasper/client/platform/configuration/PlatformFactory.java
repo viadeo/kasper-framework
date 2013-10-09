@@ -64,7 +64,7 @@ public class PlatformFactory {
         final DomainsProcessor domainsProcessor = platformConfiguration.domainsProcessor(domainLocator);
         annotationRootProcessor.registerProcessor(domainsProcessor);
 
-        final EventListenersProcessor eventListenersProcessor = platformConfiguration.eventListenersProcessor(eventBus);
+        final EventListenersProcessor eventListenersProcessor = platformConfiguration.eventListenersProcessor(eventBus, commandGateway);
         annotationRootProcessor.registerProcessor(eventListenersProcessor);
 
         final QueryServicesProcessor queryServicesProcessor = platformConfiguration.queryServicesProcessor(queryServicesLocator);

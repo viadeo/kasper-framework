@@ -31,19 +31,19 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
+import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
+import org.springframework.http.MediaType;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.ws.rs.core.MediaType;
+import javax.validation.ConstraintViolation;
 import java.beans.Introspector;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
@@ -81,7 +81,7 @@ public class HttpCommandExposer extends HttpExposer {
 
     @Override
     public void init() throws ServletException {
-        LOGGER.info("\n=============== Exposing commands ===============");
+        LOGGER.info("=============== Exposing commands ===============");
 
         for (final CommandHandler<? extends Command> handler : domainLocator.getHandlers()) {
             expose(handler);
@@ -149,7 +149,7 @@ public class HttpCommandExposer extends HttpExposer {
         /* locate corresponding command class */
         final Class<? extends Command> commandClass = exposedCommands.get(commandName);
         if (null == commandClass) {
-            sendError(resp, HttpServletResponse.SC_NOT_FOUND,
+            sendError(req, resp, HttpServletResponse.SC_NOT_FOUND,
                       "Command[" + commandName + "] not found.");
             return;
         }
@@ -159,9 +159,9 @@ public class HttpCommandExposer extends HttpExposer {
 
         try {
 
-            if (!req.getContentType().contains(MediaType.APPLICATION_JSON)) {
-                sendError(resp, HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
-                          "Accepting and producing only " + MediaType.APPLICATION_JSON);
+            if (!req.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)) {
+                sendError(req, resp, HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
+                          "Accepting and producing only " + MediaType.APPLICATION_JSON_VALUE);
                 return;
             }
 
@@ -171,9 +171,9 @@ public class HttpCommandExposer extends HttpExposer {
             parser = reader.getFactory().createJsonParser(req.getInputStream());
             final Command command = reader.readValue(parser, commandClass);
 
-            // FIXME 1 use context from request
-            // FIXME 2 does it make sense to have async commands here? In any
-            // FIXME   case the user is expecting a result success or failure
+            // FIXME 1 Use context from request
+            // FIXME 2 Does it make sense to have async commands here? In any
+            // FIXME 2 case the user is expecting a result success or failure
             final Context context = new DefaultContextBuilder().build();
 
             if (AbstractContext.class.isAssignableFrom(context.getClass())) {
@@ -182,16 +182,35 @@ public class HttpCommandExposer extends HttpExposer {
 
             /* send now that command to the platform and wait for the result */
             result = commandGateway.sendCommandAndWaitForAResultWithException(command, context);
+            checkNotNull(result);
+
+        } catch (final JSR303ViolationException validationException) {
+
+            final List<String> errorMessages = new ArrayList<>();
+            for (final ConstraintViolation<Object> violation : validationException.getViolations()) {
+                errorMessages.add(violation.getPropertyPath() + " : " + violation.getMessage());
+            }
+
+            sendResponse(
+                    CommandResult.error(
+                        new KasperError(
+                            CoreErrorCode.INVALID_INPUT.name(),
+                            errorMessages
+                        )
+                    ),
+                    req, resp, commandClass);
 
         } catch (final IOException e) {
+
             LOGGER.error("Error in command [" + commandClass.getName() + "]", e);
             final String errorMessage = (null == e.getMessage()) ? "Unknown" : e.getMessage();
-            sendError(resp, HttpServletResponse.SC_BAD_REQUEST, errorMessage);
+            sendError(req, resp, HttpServletResponse.SC_BAD_REQUEST, errorMessage);
 
         } catch (final Throwable th) {
+            // we catch any other exception in order to still respond with json
             LOGGER.error("Error in command [" + commandClass.getName() + "]", th);
             final String errorMessage = (null == th.getMessage()) ? "Unknown" : th.getMessage();
-            sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
+            sendError(req, resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
 
         } finally {
             if (null != parser) {
@@ -211,13 +230,14 @@ public class HttpCommandExposer extends HttpExposer {
         }
 
         if (null != result) {
-            sendResponse(result, resp, commandClass);
+            sendResponse(result, req, resp, commandClass);
         }
     }
 
     // ------------------------------------------------------------------------
 
-    protected void sendResponse(final CommandResult result, final HttpServletResponse resp,
+    protected void sendResponse(final CommandResult result,
+                                final HttpServletRequest req, final HttpServletResponse resp,
                                 final Class<? extends Command> commandClass)
             throws IOException {
 
@@ -240,7 +260,7 @@ public class HttpCommandExposer extends HttpExposer {
 
         } catch (final JsonGenerationException | JsonMappingException e) {
 
-            this.internalCommandError(resp, commandClass, result, e);
+            this.internalCommandError(req, resp, commandClass, result, e);
 
         } finally {
 
@@ -250,13 +270,15 @@ public class HttpCommandExposer extends HttpExposer {
             }
 
             /* Log request */
-            REQUEST_LOGGER.info("HTTP Response : '{}'", status);
+            REQUEST_LOGGER.info("HTTP Response {} '{}' : {}", req.getMethod(), req.getRequestURI(), status);
         }
     }
 
-    private void internalCommandError(final HttpServletResponse resp, final Class<? extends Command> commandClass,
-                                      final CommandResult result, final Exception e) throws IOException {
-         this.sendError(resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+    private void internalCommandError(final HttpServletRequest req, final HttpServletResponse resp,
+                                      final Class<? extends Command> commandClass, final CommandResult result,
+                                      final Exception e)
+            throws IOException {
+         this.sendError(req, resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
                   String.format("Error outputting result to JSON for command [%s] and result [%s]error = %s",
                           commandClass.getSimpleName(), result, e)
          );
@@ -273,7 +295,7 @@ public class HttpCommandExposer extends HttpExposer {
      * text/html.
      */
     @SuppressWarnings("deprecation")
-    protected void sendError(final HttpServletResponse response, final int status, final String reason)
+    protected void sendError(final HttpServletRequest request, final HttpServletResponse response, final int status, final String reason)
             throws IOException {
         LOGGER.error(reason);
 
@@ -288,7 +310,7 @@ public class HttpCommandExposer extends HttpExposer {
         );
 
         /* Log request */
-        REQUEST_LOGGER.info("HTTP Response : '{}'", status);
+        REQUEST_LOGGER.info("HTTP Response {} '{}' : {} {}", request.getMethod(), request.getRequestURI(), status, reason);
 
         /* Log error metric */
         METRICLASSERRORS.mark();

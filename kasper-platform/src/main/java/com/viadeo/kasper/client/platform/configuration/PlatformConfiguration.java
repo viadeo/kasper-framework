@@ -124,7 +124,7 @@ public interface PlatformConfiguration {
      * @param eventBus the event bus to be used
      * @return the processor
      */
-     EventListenersProcessor eventListenersProcessor(KasperEventBus eventBus);
+     EventListenersProcessor eventListenersProcessor(KasperEventBus eventBus, CommandGateway commandGateway);
      EventListenersProcessor eventListenersProcessor();
 
     /**

@@ -10,7 +10,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.ddd.specification.ISpecification;
 import com.viadeo.kasper.ddd.specification.SpecificationErrorMessage;
-import com.viadeo.kasper.ddd.specification.annotation.XSpecification;
+import com.viadeo.kasper.ddd.specification.annotation.XKasperSpecification;
 
 import java.util.Map;
 
@@ -24,7 +24,7 @@ public abstract class Specification<T> implements ISpecification<T> {
 	 * Cache for all specifications annotation (if present)
 	 */
 	@SuppressWarnings("rawtypes")
-	private static final Map<Class<? extends Specification>, XSpecification> ANNOTATIONS =
+	private static final Map<Class<? extends Specification>, XKasperSpecification> ANNOTATIONS =
             Maps.newConcurrentMap();
 	
 	// ----------------------------------------------------------------------
@@ -54,11 +54,11 @@ public abstract class Specification<T> implements ISpecification<T> {
 	}
 	
 	protected String getErrorMessage(final T entity) {
-		final XSpecification annotation;
+		final XKasperSpecification annotation;
 		String errorMessage;
 		
 		if (!Specification.ANNOTATIONS.containsKey(this.getClass())) {
-			annotation = this.getClass().getAnnotation(XSpecification.class);
+			annotation = this.getClass().getAnnotation(XKasperSpecification.class);
             if (null != annotation) {
 			    Specification.ANNOTATIONS.put(this.getClass(), annotation);
             }
@@ -80,7 +80,9 @@ public abstract class Specification<T> implements ISpecification<T> {
 			errorMessage = getDefaultErrorMessage(entity);
 		}
 
-        errorMessage += " for value " + entity.toString();
+        if (String.class.equals(entity.getClass())) {
+            errorMessage += " for value " + entity.toString();
+        }
 		
 		return errorMessage;
 	}

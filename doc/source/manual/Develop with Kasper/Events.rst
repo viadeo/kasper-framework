@@ -94,7 +94,7 @@ provided, with a default implementation **AbstractEntityEvent<Domain, Entity>**.
     :linenos:
 
     @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
-    public class UsersAreNowConnectedEvent extends AbstractEntityEvent<MyDomain, User> {
+    public class UsersAreNowConnectedEvent extends AbstractEntityEvent<MyDomain> {
         private final KasperId userTarget; 
 
         public UsersAreNowConnected(final Context context, final KasperId userSource,
@@ -111,42 +111,6 @@ provided, with a default implementation **AbstractEntityEvent<Domain, Entity>**.
             return this.userTarget;
         }
     }
-
-Entity-relationship events
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-If your entity is an aggregate root (Concept or Relation), an entity which is persisted as a whole with its enclosed entities, you'll prefer to use either :
-
-- **ConceptRootEvent<Domain, ConceptRoot>** interface, with its default implementation **AbstractConceptRootEvent<Domain, ConceptRoot>**.
-- **RelationRootEvent<Domain, RelationRoot>** interface, with its default implementation **AbstractRelationRootEvent<Domain, RelationRoot>**.
-
-**usage**
-
-.. code-block:: java
-    :linenos:
-
-    @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
-    public class UsersAreNowConnectedEvent extends AbstractConceptRootEvent<MyDomain, User> {
-        private final KasperId userTarget; 
-
-        public UsersAreNowConnected(final Context context, final KasperId userSource,
-                                    final KasperId userTarget, final DateTime lastModificationDate) {
-            super(context, userSource, lastModificationDate);
-            this.userTarget = userTarget;
-        }
-
-        public KasperId getUserSource() {
-            return this.getEntityId();
-        }
-
-        public KasperId getUserTarget() {
-            return this.userTarget;
-        }
-    }
-
-The interest of using these two last events is awesome as it allows a immediate graph-oriented denormalization of your events, for instance
-as a default datastore in a graph database. **Do not negligate it !**
-
 
 Event listeners
 ---------------

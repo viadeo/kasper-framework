@@ -17,6 +17,7 @@ public enum CoreErrorCode {
     TOO_MANY_ENTRIES(1003),
     CONFLICT(1004),
     INVALID_ID(1005),
+    NOT_FOUND(1006),
 
     /* Security errors */
     REQUIRE_AUTHENTICATION(2001),

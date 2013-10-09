@@ -4,16 +4,30 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.event.domain.er;
+package com.viadeo.kasper.event;
 
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.domain.RootEntityEvent;
+import com.google.common.base.Optional;
 
 /**
  *
- * Event on Kasper Concept
+ * The Kasper error event
  *
  */
-public interface RootConceptEvent<D extends Domain, C> extends RootEntityEvent<D, C> {
+public interface ErrorEvent extends Event {
+
+	/**
+	 * @return the event's exception
+	 */
+	Optional<Exception> getException();
+
+ 	/**
+	 * @return the event's exception
+	 */
+	Optional<String> getMessage();
+
+  	/**
+	 * @return the event's exception
+	 */
+	Optional<String> getCode();
 
 }
