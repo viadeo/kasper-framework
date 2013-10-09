@@ -56,43 +56,6 @@ import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
 import static javax.servlet.http.HttpServletResponse.SC_NOT_ACCEPTABLE;
 
 public class HttpQueryExposer extends HttpExposer {
-
-
-    private final static TypeReference<ImmutableSetMultimap<String, String>> mapOfStringsType = new TypeReference<ImmutableSetMultimap<String, String>>() {};
-
-    interface QueryToQueryMap {
-        SetMultimap<String, String> toQueryMap(final HttpServletRequest req, final HttpServletResponse resp) throws IOException;
-    }
-
-    private final static QueryToQueryMap jsonBodyToQueryMap = new QueryToQueryMap() {
-
-        @Override
-        public SetMultimap<String, String> toQueryMap(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-            ObjectMapper mapper = ObjectMapperProvider.INSTANCE.mapper();
-            JsonParser parser = mapper.reader().getFactory().createParser(req.getInputStream());
-
-            final SetMultimap<String, String> queryMap = mapper.reader().readValue(parser, mapOfStringsType);
-
-            return queryMap;
-        }
-    };
-
-    private final static QueryToQueryMap queryStringToMap = new QueryToQueryMap() {
-
-        @Override
-        public SetMultimap<String, String> toQueryMap(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-            final ImmutableSetMultimap.Builder<String, String> queryParams = new ImmutableSetMultimap.Builder<>();
-
-            final Enumeration<String> keys = req.getParameterNames();
-            while (keys.hasMoreElements()) {
-                final String key = keys.nextElement();
-                queryParams.putAll(key, Arrays.asList(req.getParameterValues(key)));
-            }
-
-            return queryParams.build();
-        }
-    };
-
     private static final long serialVersionUID = 8448984922303895624L;
     protected static final transient Logger QUERY_LOGGER = LoggerFactory.getLogger(HttpQueryExposer.class);
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
@@ -102,6 +65,51 @@ public class HttpQueryExposer extends HttpExposer {
     private static final Meter METRICLASSREQUESTS = METRICS.meter(name(HttpQueryExposer.class, "requests"));
     private static final Meter METRICLASSERRORS = METRICS.meter(name(HttpQueryExposer.class, "errors"));
 
+    // ------------------------------------------------------------------------
+
+    private final static TypeReference<ImmutableSetMultimap<String, String>> mapOfStringsType = new TypeReference<ImmutableSetMultimap<String, String>>() {};
+
+    interface QueryToQueryMap {
+        SetMultimap<String, String> toQueryMap(final HttpServletRequest req, final HttpServletResponse resp) throws IOException;
+    }
+
+    private final static QueryToQueryMap jsonBodyToQueryMap = new QueryToQueryMap() {
+        @Override
+        public SetMultimap<String, String> toQueryMap(
+                final HttpServletRequest req,
+                final HttpServletResponse resp
+        ) throws IOException {
+
+            final ObjectMapper mapper = ObjectMapperProvider.INSTANCE.mapper();
+            final JsonParser parser = mapper.reader().getFactory().createParser(req.getInputStream());
+
+            final SetMultimap<String, String> queryMap = mapper.reader().readValue(parser, mapOfStringsType);
+
+            return queryMap;
+        }
+    };
+
+    private final static QueryToQueryMap queryStringToMap = new QueryToQueryMap() {
+        @Override
+        public SetMultimap<String, String> toQueryMap(
+                final HttpServletRequest req,
+                final HttpServletResponse resp
+        ) throws IOException {
+
+            final ImmutableSetMultimap.Builder<String, String> queryParams = new ImmutableSetMultimap.Builder<>();
+            final Enumeration<String> keys = req.getParameterNames();
+
+            while (keys.hasMoreElements()) {
+                final String key = keys.nextElement();
+                queryParams.putAll(key, Arrays.asList(req.getParameterValues(key)));
+            }
+
+            return queryParams.build();
+        }
+    };
+
+    // ------------------------------------------------------------------------
+
     private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
     private final transient QueryServicesLocator queryServicesLocator;
     private final transient QueryFactory queryAdapterFactory;
@@ -109,10 +117,6 @@ public class HttpQueryExposer extends HttpExposer {
     private final transient QueryGateway queryGateway;
 
     // ------------------------------------------------------------------------
-
-    public HttpQueryExposer(final QueryGateway queryGateway, final QueryServicesLocator queryLocator) {
-        this(queryGateway, queryLocator, new QueryFactoryBuilder().create(), ObjectMapperProvider.INSTANCE.mapper());
-    }
 
     public HttpQueryExposer(final QueryGateway queryGateway,
                             final QueryServicesLocator queryServicesLocator,
@@ -122,6 +126,10 @@ public class HttpQueryExposer extends HttpExposer {
         this.queryServicesLocator = queryServicesLocator;
         this.queryAdapterFactory = queryAdapterFactory;
         this.mapper = mapper;
+    }
+
+    public HttpQueryExposer(final QueryGateway queryGateway, final QueryServicesLocator queryLocator) {
+        this(queryGateway, queryLocator, new QueryFactoryBuilder().create(), ObjectMapperProvider.INSTANCE.mapper());
     }
 
     // ------------------------------------------------------------------------
@@ -147,9 +155,9 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        if (!req.getContentType().startsWith("application/json")) {
-            sendError(SC_NOT_ACCEPTABLE, "Accepting only application/json; charset=utf-8", resp, null);
+    protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
+        if ( ! req.getContentType().startsWith("application/json")) {
+            sendError(SC_NOT_ACCEPTABLE, "Accepting only application/json; charset=utf-8", req, resp, null);
         } else {
             handleQuery(jsonBodyToQueryMap, req, resp);
         }

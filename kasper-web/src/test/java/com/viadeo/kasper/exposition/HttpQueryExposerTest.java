@@ -43,10 +43,12 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         @Override
         public QueryResult<SomeCollectionResult> retrieve(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
-            SomeCollectionResult list = new SomeCollectionResult();
-            SomeResult result = new SomeResult();
+            final SomeCollectionResult list = new SomeCollectionResult();
+            final SomeResult result = new SomeResult();
+
             result.setQuery(q);
             list.setList(Arrays.asList(result));
+
             return QueryResult.of(list);
         }
     }
