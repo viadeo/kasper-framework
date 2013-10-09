@@ -203,6 +203,7 @@ public class HttpQueryExposer extends HttpExposer {
             if (!resp.isCommitted()) {
                 sendResult(queryName, result, req, resp);
             }
+
         } catch (final Throwable t) {
             sendError(
                     SC_INTERNAL_SERVER_ERROR,
@@ -313,7 +314,7 @@ public class HttpQueryExposer extends HttpExposer {
                       String.format("ERROR sending Result [%s] for query [%s]", result.getClass().getSimpleName(),queryName),
                       req, resp, t);
         } finally {
-            resp.getWriter().flush();
+            resp.flushBuffer();
         }
 
     }
