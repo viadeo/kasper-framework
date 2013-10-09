@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface XSpecification {
+public @interface XKasperSpecification {
 	
 	/**
 	 * @return a short description about the specification behaviour (one line) 

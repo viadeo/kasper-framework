@@ -45,7 +45,7 @@ public class HiveLauncher implements HadoopLauncher {
             Class.forName(JDBC_HIVE_DRIVER_NAME);
         } catch (final ClassNotFoundException e) {
             e.printStackTrace();
-            new RuntimeException("HiveJDBC driver cannot be found !", e);
+            throw new RuntimeException("HiveJDBC driver cannot be found !", e);
         }
     }
 

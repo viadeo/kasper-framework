@@ -98,7 +98,7 @@ public class HiveRunner {
                     final StringBuffer sb = new StringBuffer();
                     final int nbCols = this.lastResult.getMetaData().getColumnCount();
                     for (int i = 0; i < nbCols; i++) {
-                        sb.append(this.lastResult.getObject(i).toString()).append(';');
+                        sb.append(this.lastResult.getObject(i+1).toString()).append(';');
                     }
                     resList.add(sb.toString());
                 }

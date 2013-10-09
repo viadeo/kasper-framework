@@ -92,7 +92,7 @@ public class HiveTestFixture extends HadoopTestFixture {
      * Hive test using MiniCluster facilities from hive_test
      * https://github.com/edwardcapriolo/hive_test
      */
-    private class HiveTest extends HiveTestService {
+    private final static class HiveTest extends HiveTestService {
 
         private final File scriptFile;
         private HadoopDependencies hadoopDeps;

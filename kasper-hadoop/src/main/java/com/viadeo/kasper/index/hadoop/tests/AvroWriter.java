@@ -56,8 +56,8 @@ public class AvroWriter {
         return file;
     }
 
-    public final File write(final Object object) throws IOException {
-        return this.write(Lists.newArrayList(object));
+    public final File write(final Object object, File file) throws IOException {
+        return this.write(Lists.newArrayList(object), file);
     }
 
 }
