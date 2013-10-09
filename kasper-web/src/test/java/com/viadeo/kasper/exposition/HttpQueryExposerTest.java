@@ -6,21 +6,29 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionPayload;
+import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 import org.springframework.context.ApplicationContext;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.*;
 
+@RunWith(Parameterized.class)
 public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> {
 
     public static class SomeCollectionQuery extends SomeQuery {
@@ -64,7 +72,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
             this.intArray = intArray;
         }
 
-        public String getaValue() {
+        public String getAValue() {
             return aValue;
         }
 
@@ -72,7 +80,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
             return doThrowSomeException;
         }
 
-        public void setaValue(final String aValue) {
+        public void setAValue(final String aValue) {
             this.aValue = aValue;
         }
 
@@ -124,6 +132,23 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     }
 
     // ------------------------------------------------------------------------
+    private boolean usePostForQueries;
+
+    public HttpQueryExposerTest(final boolean usePostForQueries) {
+        this.usePostForQueries = usePostForQueries;
+    }
+
+    @Parameterized.Parameters public static Collection<Object[]> params() {
+        Object[][] params = new Object[][] { {false}, {true}};
+        return Lists.newArrayList(params);
+    }
+
+    @Override
+    protected void customize(KasperClientBuilder clientBuilder) {
+        clientBuilder.usePostForQueries(usePostForQueries);
+    }
+
+    // ------------------------------------------------------------------------
 
     @Override
     protected HttpQueryExposer createExposer(final ApplicationContext ctx) {
@@ -131,7 +156,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     }
 
     @Test
-    public void testQueryRoundTrip() {
+    public void testQueryRoundTrip() throws JsonProcessingException {
         // Given
         final SomeQuery query = new SomeQuery();
         query.aValue = "foo";
@@ -185,14 +210,14 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         // Given
         final SomeQuery query = new SomeQuery();
         query.setDoThrowSomeException(true);
-        query.setaValue("some error message");
+        query.setAValue("some error message");
         query.setErrorCodes(Arrays.asList("a", "b"));
 
         // When
         final QueryResult<SomeCollectionResult> actual = client().query(query, SomeCollectionResult.class);
        
         // Then
-        assertEquals(query.getaValue(), actual.getError().getCode());
+        assertEquals(query.getAValue(), actual.getError().getCode());
         for (int i = 0; i < query.getErrorCodes().size(); i++) {
             assertEquals(query.getErrorCodes().get(i), actual.getError().getMessages().get(i));
         }
