@@ -52,7 +52,7 @@ public abstract class AbstractQueryCollectionPayload<RES> implements CollectionQ
         this.list = list;
     }
 
-    public void setList(final Iterator<RES> iterator) {
+    public void setListAsIterator(final Iterator<RES> iterator) {
         this.list = new ArrayList<RES>();
         while (iterator.hasNext()) {
             this.list.add(iterator.next());
@@ -64,8 +64,8 @@ public abstract class AbstractQueryCollectionPayload<RES> implements CollectionQ
         return this;
     }
 
-    public AbstractQueryCollectionPayload withList(final Iterator<RES> iterator) {
-        this.setList(iterator);
+    public AbstractQueryCollectionPayload withListAsIterator(final Iterator<RES> iterator) {
+        this.setListAsIterator(iterator);
         return this;
     }
 
