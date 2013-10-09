@@ -9,6 +9,7 @@ package com.viadeo.kasper.cqrs.query.impl;
 import com.google.common.base.Objects;
 import com.viadeo.kasper.cqrs.query.CollectionQueryPayload;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 
@@ -49,6 +50,23 @@ public abstract class AbstractQueryCollectionPayload<RES> implements CollectionQ
 
     public void setList(final Collection<RES> list) {
         this.list = list;
+    }
+
+    public void setList(final Iterator<RES> iterator) {
+        this.list = new ArrayList<RES>();
+        while (iterator.hasNext()) {
+            this.list.add(iterator.next());
+        }
+    }
+
+    public AbstractQueryCollectionPayload withList(final Collection<RES> list) {
+        this.setList(list);
+        return this;
+    }
+
+    public AbstractQueryCollectionPayload withList(final Iterator<RES> iterator) {
+        this.setList(iterator);
+        return this;
     }
 
     // ------------------------------------------------------------------------
