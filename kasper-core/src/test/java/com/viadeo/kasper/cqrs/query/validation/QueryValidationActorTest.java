@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.validation;
 
-import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
@@ -17,7 +16,6 @@ import org.junit.Test;
 
 import javax.validation.Validation;
 import javax.validation.constraints.NotNull;
-
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;

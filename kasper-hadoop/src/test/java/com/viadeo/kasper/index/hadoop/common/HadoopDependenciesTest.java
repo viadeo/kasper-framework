@@ -13,7 +13,7 @@ import java.io.*;
 
 import static com.viadeo.kasper.index.hadoop.common.HadoopDependencies.Dependency;
 import static com.viadeo.kasper.index.hadoop.common.HadoopDependencies.DependencyType;
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class HadoopDependenciesTest {
 

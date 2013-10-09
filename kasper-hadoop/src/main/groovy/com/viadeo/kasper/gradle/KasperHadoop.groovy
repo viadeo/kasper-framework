@@ -4,11 +4,10 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.gradle;
+package com.viadeo.kasper.gradle
 
-import org.gradle.api.Plugin;
-import org.gradle.api.Project;
-import org.gradle.api.Task;
+import org.gradle.api.Plugin
+import org.gradle.api.Project
 
 class KasperHadoopExtension {
     def String pigSourceDir = 'src/main/pig'

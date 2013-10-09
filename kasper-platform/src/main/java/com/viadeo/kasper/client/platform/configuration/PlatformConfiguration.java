@@ -6,13 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform.configuration;
 
+import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
-import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
-import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import org.axonframework.commandhandling.CommandBus;
 
 /**

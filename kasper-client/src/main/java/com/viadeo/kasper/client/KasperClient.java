@@ -12,9 +12,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.SetMultimap;
 import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.GenericType;
+import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.async.TypeListener;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
@@ -117,8 +115,40 @@ public class KasperClient {
     private final URL commandBaseLocation;
     private final URL queryBaseLocation;
 
+    private final Flags flags;
+
     @VisibleForTesting
     protected final QueryFactory queryFactory;
+
+    // ------------------------------------------------------------------------
+
+    public static final class Flags {
+
+        private boolean usePostForQueries = false;
+
+        // -----
+
+        public static Flags defaults() {
+            return new Flags();
+        }
+
+        public Flags importFrom(final Flags flags) {
+            this.usePostForQueries = flags.usePostForQueries();
+            return this;
+        }
+
+        // -----
+
+        public Flags usePostForQueries(final boolean flag) {
+            this.usePostForQueries = flag;
+            return this;
+        }
+
+        public boolean usePostForQueries() {
+            return this.usePostForQueries;
+        }
+
+    }
 
     // ------------------------------------------------------------------------
 
@@ -131,12 +161,14 @@ public class KasperClient {
         this.commandBaseLocation = DEFAULT_KASPER_CLIENT.commandBaseLocation;
         this.queryBaseLocation = DEFAULT_KASPER_CLIENT.queryBaseLocation;
         this.queryFactory = DEFAULT_KASPER_CLIENT.queryFactory;
+        this.flags = Flags.defaults();
     }
 
     // --
 
     KasperClient(final QueryFactory queryFactory, final ObjectMapper mapper,
-                 final URL commandBaseUrl, final URL queryBaseUrl) {
+                 final URL commandBaseUrl, final URL queryBaseUrl,
+                 final Flags flags) {
 
         final DefaultClientConfig cfg = new DefaultClientConfig();
         cfg.getSingletons().add(new JacksonJsonProvider(mapper));
@@ -145,18 +177,31 @@ public class KasperClient {
         this.commandBaseLocation = commandBaseUrl;
         this.queryBaseLocation = queryBaseUrl;
         this.queryFactory = queryFactory;
+        this.flags = flags;
+    }
+
+    KasperClient(final QueryFactory queryFactory, final ObjectMapper mapper,
+                 final URL commandBaseUrl, final URL queryBaseUrl) {
+        this(queryFactory, mapper, commandBaseUrl, queryBaseUrl, Flags.defaults());
     }
 
     // --
 
-    KasperClient(final QueryFactory queryFactory, final Client client, final URL commandBaseUrl,
-            final URL queryBaseUrl) {
+    KasperClient(final QueryFactory queryFactory, final Client client,
+                 final URL commandBaseUrl, final URL queryBaseUrl,
+                 final Flags flags) {
 
         this.client = client;
         this.commandBaseLocation = commandBaseUrl;
         this.queryBaseLocation = queryBaseUrl;
         this.queryFactory = queryFactory;
+        this.flags = flags;
     }
+
+     KasperClient(final QueryFactory queryFactory, final Client client,
+                  final URL commandBaseUrl, final URL queryBaseUrl) {
+        this(queryFactory, client, commandBaseUrl, queryBaseUrl, Flags.defaults());
+     }
 
     // ------------------------------------------------------------------------
     // COMMANDS
@@ -301,12 +346,18 @@ public class KasperClient {
         checkNotNull(query);
         checkNotNull(mapTo);
 
-        final ClientResponse response = client
+        final WebResource.Builder res = client
                 .resource(resolveQueryPath(query.getClass()))
                 .queryParams(prepareQueryParams(query))
                 .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON)
-                .get(ClientResponse.class);
+                .type(MediaType.APPLICATION_JSON);
+
+        final ClientResponse response;
+        if (flags.usePostForQueries()) {
+            response = res.post(ClientResponse.class, queryToSetMap(query));
+        } else {
+            response = res.get(ClientResponse.class);
+        }
 
         return handleQueryResponse(response, mapTo);
     }
@@ -328,12 +379,19 @@ public class KasperClient {
         checkNotNull(query);
         checkNotNull(mapTo);
 
-        final Future<ClientResponse> futureResponse = client
+        final AsyncWebResource.Builder res = client
                 .asyncResource(resolveQueryPath(query.getClass()))
                 .queryParams(prepareQueryParams(query))
                 .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON)
-                .get(ClientResponse.class);
+                .type(MediaType.APPLICATION_JSON);
+
+        final Future<ClientResponse> futureResponse;
+
+        if (flags.usePostForQueries()) {
+            futureResponse = res.post(ClientResponse.class, queryToSetMap(query));
+        } else {
+            futureResponse = res.get(ClientResponse.class);
+        }
 
         return new QueryResultFuture<P>(this, futureResponse, mapTo);
     }
@@ -360,24 +418,37 @@ public class KasperClient {
         checkNotNull(query);
         checkNotNull(mapTo);
 
-        client.asyncResource(resolveQueryPath(query.getClass()))
+        final AsyncWebResource.Builder res = client.asyncResource(resolveQueryPath(query.getClass()))
                 .queryParams(prepareQueryParams(query))
                 .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON)
-                .get(new TypeListener<ClientResponse>(ClientResponse.class) {
-                    @Override
-                    public void onComplete(final Future<ClientResponse> f)
-                            throws InterruptedException {
-                        try {
+                .type(MediaType.APPLICATION_JSON);
 
-                            callback.done(handleQueryResponse(f.get(), mapTo));
+        final TypeListener<ClientResponse> typeListener = createTypeListener(query, mapTo, callback);
 
-                        } catch (final ExecutionException e) {
-                            throw new KasperException("ERROR handling query[" + query.getClass()
-                                    + "]", e);
-                        }
-                    }
-                });
+        if (flags.usePostForQueries()) {
+            res.post(typeListener, queryToSetMap(query));
+        } else {
+            res.get(typeListener);
+        }
+    }
+
+    private <P extends QueryPayload> TypeListener<ClientResponse> createTypeListener(
+            final Query query,
+            final TypeToken<P> mapTo,
+            final Callback<QueryResult<P>> callback
+    ) {
+        return new TypeListener<ClientResponse>(ClientResponse.class) {
+            @Override
+            public void onComplete(final Future<ClientResponse> f) throws InterruptedException {
+                try {
+
+                    callback.done(handleQueryResponse(f.get(), mapTo));
+
+                } catch (final ExecutionException e) {
+                    throw new KasperException("ERROR handling query[" + query.getClass() + "]", e);
+                }
+            }
+        };
     }
 
     <P extends QueryPayload> QueryResult<P> handleQueryResponse(final ClientResponse response,
@@ -393,31 +464,40 @@ public class KasperClient {
     // --
 
     MultivaluedMap<String, String> prepareQueryParams(final Query query) {
-        try {
-
-            @SuppressWarnings("unchecked")
-            final TypeAdapter<Query> adapter = (TypeAdapter<Query>) queryFactory.create(
-                                                    TypeToken.of(query.getClass()));
-
-            final QueryBuilder queryBuilder = new QueryBuilder();
-            adapter.adapt(query, queryBuilder);
-
             final MultivaluedMap<String, String> map = new MultivaluedMapImpl();
-            final SetMultimap<String, String> queryMap = queryBuilder.build();
 
-            for (final Map.Entry<String, String> entry : queryMap.entries()) {
-                map.add(entry.getKey(), entry.getValue());
+            if ( ! flags.usePostForQueries()) {
+                for (final Map.Entry<String, String> entry : queryToSetMap(query).entries()) {
+                    map.add(entry.getKey(), entry.getValue());
+                }
             }
 
             return map;
+    }
+
+    private SetMultimap<String, String> queryToSetMap(final Query query) {
+        @SuppressWarnings("unchecked")
+        final TypeAdapter<Query> adapter = (TypeAdapter<Query>)
+                queryFactory.create(TypeToken.of(query.getClass()));
+
+        final QueryBuilder queryBuilder = new QueryBuilder();
+        try {
+
+            adapter.adapt(query, queryBuilder);
 
         } catch (final KasperQueryAdapterException ex) {
-            throw new KasperException(String.format("ERROR generating query string for [%s]",
-                    query.getClass()), ex);
+            throw new KasperException(String.format(
+                    "ERROR generating query string for [%s]",
+                    query.getClass()
+            ), ex);
         } catch (final Exception ex) {
-            throw new KasperException(String.format("ERROR generating query string for [%s]",
-                    query.getClass()), ex);
+            throw new KasperException(String.format(
+                    "ERROR generating query string for [%s]",
+                    query.getClass()
+            ), ex);
         }
+
+        return queryBuilder.build();
     }
 
     // ------------------------------------------------------------------------

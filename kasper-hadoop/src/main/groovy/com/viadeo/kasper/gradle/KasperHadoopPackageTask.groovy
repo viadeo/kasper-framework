@@ -4,12 +4,11 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.gradle;
+package com.viadeo.kasper.gradle
 
+import groovy.io.FileType
 import org.gradle.api.DefaultTask
 import org.gradle.api.tasks.TaskAction
-import groovy.io.FileType
-import groovy.util.AntBuilder
 
 class KasperHadoopPackageTask extends DefaultTask {
 
