@@ -57,6 +57,19 @@ public class AbstractErrorEvent extends AbstractEvent implements ErrorEvent {
         this.message = null;
     }
 
+    public AbstractErrorEvent(final Context context, final CoreErrorCode code,
+                              final String message, final Exception exception) {
+         this(context, code.toString(), message, exception);
+    }
+
+    public AbstractErrorEvent(final Context context, final CoreErrorCode code, final Exception exception) {
+        this(context, code.toString(), exception);
+    }
+
+    public AbstractErrorEvent(final Context context, final CoreErrorCode code, final String message) {
+        this(context, code.toString(), message);
+    }
+
     // ------------------------------------------------------------------------
 
     @Override
