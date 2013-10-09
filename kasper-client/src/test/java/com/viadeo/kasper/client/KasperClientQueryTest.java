@@ -6,12 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.client;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.base.Function;
-import com.google.common.collect.*;
-import com.google.common.reflect.TypeToken;
+import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
@@ -20,7 +20,6 @@ import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.query.exposition.query.QueryFactory;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -28,15 +27,7 @@ import org.mockito.ArgumentCaptor;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.ext.MessageBodyReader;
-import javax.ws.rs.ext.MessageBodyWriter;
-import javax.ws.rs.ext.Provider;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.lang.annotation.Annotation;
-import java.lang.reflect.Type;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
 import java.net.URL;

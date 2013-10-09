@@ -15,7 +15,6 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandBus;
-import org.axonframework.eventhandling.EventBus;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertSame;

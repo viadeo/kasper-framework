@@ -10,14 +10,11 @@ import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.ImmutableSetMultimap;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.reflect.TypeToken;
@@ -47,13 +44,14 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.beans.Introspector;
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Enumeration;
+import java.util.Map;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
-import static javax.servlet.http.HttpServletResponse.SC_BAD_REQUEST;
-import static javax.servlet.http.HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
-import static javax.servlet.http.HttpServletResponse.SC_NOT_ACCEPTABLE;
+import static javax.servlet.http.HttpServletResponse.*;
 
 public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
