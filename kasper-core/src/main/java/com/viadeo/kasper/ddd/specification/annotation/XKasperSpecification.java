@@ -18,7 +18,7 @@ public @interface XKasperSpecification {
 	/**
 	 * @return a short description about the specification behaviour (one line) 
 	 */
-	String description();
+	String description() default "";
 	
 	/**
 	 * @return an optional error message if the specification fails
