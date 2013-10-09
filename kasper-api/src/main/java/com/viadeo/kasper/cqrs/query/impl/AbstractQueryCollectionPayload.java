@@ -59,14 +59,16 @@ public abstract class AbstractQueryCollectionPayload<RES> implements CollectionQ
         }
     }
 
-    public AbstractQueryCollectionPayload withList(final Collection<RES> list) {
+    @SuppressWarnings("unchecked")
+    public <P extends AbstractQueryCollectionPayload> P withList(final Collection<RES> list) {
         this.setList(list);
-        return this;
+        return (P) this;
     }
 
-    public AbstractQueryCollectionPayload withListAsIterator(final Iterator<RES> iterator) {
+    @SuppressWarnings("unchecked")
+    public <P extends AbstractQueryCollectionPayload> P withListAsIterator(final Iterator<RES> iterator) {
         this.setListAsIterator(iterator);
-        return this;
+        return (P) this;
     }
 
     // ------------------------------------------------------------------------
