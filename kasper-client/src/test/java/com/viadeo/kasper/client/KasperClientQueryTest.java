@@ -255,15 +255,17 @@ public class KasperClientQueryTest extends JerseyTest {
     }
 
     @Test public void testQueryUsingPost() throws MalformedURLException {
+        // Given
         final KasperClient client = new KasperClientBuilder()
                 .queryBaseLocation(new URL("http://localhost:" + port + "/kasper/query/"))
                 .usePostForQueries(true)
                 .create();
-
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
+        // When
         final QueryResult<MemberPayload> result = client.query(query, MemberPayload.class);
 
+        // Then
         checkRoundTrip(query, result);
     }
 }
