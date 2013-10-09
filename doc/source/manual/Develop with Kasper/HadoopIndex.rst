@@ -105,7 +105,8 @@ Add your script in the corresponding directory :
 In order to allow the **MainLauncher** to discover the needed
 AVRO files, you'll need to add them as dependencies in your script :
 
-.. code-block::
+.. code-block::sql
+
     -- REQUIRE AVRO MemberInfo
     -- REQUIRE AVRO Position
     -- REQUIRE AVRO Member

@@ -164,11 +164,13 @@ when other message informations are not required :
 
 QueryResult Caching
 -------------------
-Kasper framework provides a way to cache query results based on the used query, the cache is enabled per QueryService and by default is disabled.
-It is based on JSR 107 - JCache for selecting a cache implementation. By default no cache implementation is provided by the framework
+
+Kasper framework provides a way to cache query results based on the submitted query, the cache is enabled per QueryService and is disabled by default.
+
+It is based on **JSR 107 - JCache** for selecting a cache implementation. By default no cache implementation is provided by the framework
 you can use any implementation of JCache (for example using ehcache-jcache).
 
-To enable the cache for a query service with default configuration, just put @XKasperQueryCache annotation:
+To enable the cache for a query service with default configuration, just put **@XKasperQueryCache** annotation:
 
 .. code-block:: java
     :linenos:
@@ -178,8 +180,9 @@ To enable the cache for a query service with default configuration, just put @XK
         ...
     }
 
-The default behaviour will be to use the QueryAttributesKeyGenerator for computing the key of the query and use a ttl of one hour.
-QueryAttributesKeyGenerator is using the hashcode of your query if no key is defined, otherwise it will combine the hashcode of the keys.
+The default behaviour will be to use the **QueryAttributesKeyGenerator** for computing the key of the query and use a ttl of one hour.
+
+**QueryAttributesKeyGenerator** is using the hashcode of your query if no key is defined, otherwise it will combine the hashcode of the keys.
 
 Use only someField and anotherField in the generated key and have a ttl of 1 minute:
 
@@ -187,11 +190,11 @@ Use only someField and anotherField in the generated key and have a ttl of 1 min
 
     @XKasperQueryCache(keys = {"someField", "anotherField"}, ttl=60)
 
-You can also have custom KeyGenerators, to do so just implement QueryCacheKeyGenerator and enable it:
+You can also have custom KeyGenerators, to do so just implement **QueryCacheKeyGenerator** and enable it:
 
 .. code-block:: java
 
-    @XKasperQueryCache(keyGenerator=MyKeyGenerator.class)
+    @XKasperQueryCache( keyGenerator = MyKeyGenerator.class )
 
 
 Service filters
