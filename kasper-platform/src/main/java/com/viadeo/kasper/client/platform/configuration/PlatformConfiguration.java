@@ -106,7 +106,7 @@ public interface PlatformConfiguration {
      * @param domainLocator the domain locator to be used
      * @return the processor
      */
-     CommandHandlersProcessor commandHandlersProcessor(CommandBus commandBus, DomainLocator domainLocator);
+     CommandHandlersProcessor commandHandlersProcessor(CommandBus commandBus, DomainLocator domainLocator, KasperEventBus eventBus);
      CommandHandlersProcessor commandHandlersProcessor();
 
     /**

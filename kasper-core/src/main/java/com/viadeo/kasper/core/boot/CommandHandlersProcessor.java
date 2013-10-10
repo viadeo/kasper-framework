@@ -16,8 +16,11 @@ import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.eventhandling.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  *
@@ -33,6 +36,11 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 	 * The command bus to register on
 	 */
 	private transient CommandBus commandBus;
+
+    /**
+     * The event bus to use for events publishing
+     */
+    private transient EventBus eventBus;
 
 	/**
 	 * The domain locator to be passed to command handlers
@@ -81,6 +89,7 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 
 		if (AbstractCommandHandler.class.isAssignableFrom(commandHandler.getClass())) {
 			((AbstractCommandHandler<?>) commandHandler).setDomainLocator(this.domainLocator);
+ 			((AbstractCommandHandler<?>) commandHandler).setEventBus(this.eventBus);
 		}
 		
 		//- Retrieve command type from command handler definition -------------
@@ -112,14 +121,21 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 	 * @param commandBus the command bus to register command handlers on
 	 */
 	public void setCommandBus(final CommandBus commandBus) {
-		this.commandBus = Preconditions.checkNotNull(commandBus);
+		this.commandBus = checkNotNull(commandBus);
 	}
 
 	/**
 	 * @param domainLocator the domain locator to inject on command handlers
 	 */
 	public void setDomainLocator(final DomainLocator domainLocator) {
-		this.domainLocator = Preconditions.checkNotNull(domainLocator);
+		this.domainLocator = checkNotNull(domainLocator);
+	}
+
+ 	/**
+	 * @param eventBus the event bus to register command handlers on
+	 */
+	public void setEventBus(final EventBus eventBus) {
+		this.eventBus = checkNotNull(eventBus);
 	}
 
 }

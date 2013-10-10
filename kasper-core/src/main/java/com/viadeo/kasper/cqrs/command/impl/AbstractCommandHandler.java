@@ -11,13 +11,19 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.*;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
+import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.EventUtils;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.commandhandling.CommandMessage;
+import org.axonframework.domain.GenericEventMessage;
+import org.axonframework.eventhandling.EventBus;
+import org.axonframework.unitofwork.CurrentUnitOfWork;
 import org.axonframework.unitofwork.UnitOfWork;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,6 +49,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
     private final Meter metricErrors;
 
     private transient DomainLocator domainLocator;
+    private transient EventBus eventBus;
 
     // ------------------------------------------------------------------------
 
@@ -173,14 +180,45 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
     // ------------------------------------------------------------------------
 
     /**
+     * Publish an event using the current unit of work
+     *
+     * @param event The event to be scheduled for publication to the unit of work
+     */
+    public void publish(final Event event) {
+        final GenericEventMessage<?> axonMessage = EventUtils.KasperEvent2AxonMessage(checkNotNull(event));
+        if (CurrentUnitOfWork.isStarted()) {
+            CurrentUnitOfWork.get().publishEvent(axonMessage, eventBus);
+        } else {
+            throw new KasperCommandException("UnitOfWork is not started when trying to publish event");
+        }
+    }
+
+    public void publish(final Event event, final Context context) {
+        checkNotNull(event).setContext(checkNotNull(context));
+        this.publish(event);
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
      * @param domainLocator
      */
     public void setDomainLocator(final DomainLocator domainLocator) {
-        this.domainLocator = domainLocator;
+        this.domainLocator = checkNotNull(domainLocator);
     }
 
     protected DomainLocator getDomainLocator() {
         return this.domainLocator;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public void setEventBus(final EventBus eventBus) {
+        this.eventBus = checkNotNull(eventBus);
+    }
+
+    protected EventBus getEventBus() {
+        return this.eventBus;
     }
 
 }
