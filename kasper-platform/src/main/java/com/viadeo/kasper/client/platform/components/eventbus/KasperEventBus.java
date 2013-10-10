@@ -12,6 +12,7 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.EventUtils;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
@@ -169,27 +170,7 @@ public class KasperEventBus extends ClusteringEventBus {
      */
     public void publish(final Event event) {
         checkNotNull(event);
-        Preconditions.checkState(event.getContext().isPresent(), "Context must be present !");
-
-        final Context context = event.getContext().get();
-
-        /* Sets a valid Kasper correlation id if required */
-        if (AbstractContext.class.isAssignableFrom(context.getClass())) {
-            final AbstractContext kasperContext = (AbstractContext) context;
-            kasperContext.setValidKasperCorrelationId();
-        }
-
-        final Map<String, Object> metaData = Maps.newHashMap();
-        metaData.put(Context.METANAME, checkNotNull(context));
-
-        final GenericEventMessage<Event> eventMessageAxon = new GenericEventMessage<>(event, metaData);
-
-        /* Publish the event using the current unit of work if any is started */
-        if (CurrentUnitOfWork.isStarted()) {
-            CurrentUnitOfWork.get().publishEvent(eventMessageAxon, this);
-        } else {
-            publish(eventMessageAxon);
-        }
+        publish(EventUtils.KasperEvent2AxonMessage(event));
     }
 
     /*
@@ -197,7 +178,7 @@ public class KasperEventBus extends ClusteringEventBus {
      * Warning : The provided context will override eventually set one of the provided event
      */
     public void publish(final Event event, final Context context) {
-        checkNotNull(event).setContext(context);
+        checkNotNull(event).setContext(checkNotNull(context));
         this.publish(event);
     }
 

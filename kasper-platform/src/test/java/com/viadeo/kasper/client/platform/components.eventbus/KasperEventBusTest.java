@@ -47,46 +47,6 @@ public class KasperEventBusTest {
 
     // ------------------------------------------------------------------------
 
-    @Test public void eventsShouldNotBeEmitedIfUnitOfWorkIsNotCommited() {
-        final KasperEventBus eventBus = spy(new KasperEventBus());
-        final TestEvent dummyEvent = new TestEvent();
-        final Context context = new DefaultContextBuilder().build();
-        dummyEvent.setContext(context);
-
-        UnitOfWork unitOfWork = new DefaultUnitOfWork();
-        unitOfWork.start();
-
-        eventBus.publish(dummyEvent);
-
-        Mockito.verify(eventBus, new Times(0)).publish(captor.capture());
-
-        unitOfWork.commit();
-
-        Mockito.verify(eventBus, new Times(1)).publish(captor.capture());
-    }
-
-    @Test public void eventsShouldNotBeEmitedIfUnitOfWorkIsFailed() {
-        // Given
-        final KasperEventBus eventBus = spy(new KasperEventBus());
-        final TestEvent dummyEvent = new TestEvent();
-        final Context context = new DefaultContextBuilder().build();
-        dummyEvent.setContext(context);
-        UnitOfWork unitOfWork = new DefaultUnitOfWork();
-        unitOfWork.start();
-
-        // When
-        eventBus.publish(dummyEvent);
-
-        // Then
-        Mockito.verify(eventBus, new Times(0)).publish(captor.capture());
-
-        // When
-        unitOfWork.rollback();
-
-        // Then
-        Mockito.verify(eventBus, new Times(0)).publish(captor.capture());
-    }
-
     @Test
     public void nominal() throws Exception {
         // Given

@@ -82,8 +82,8 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public CommandHandlersProcessor commandHandlersProcessor(final CommandBus commandBus, final DomainLocator domainLocator){
-        return super.commandHandlersProcessor(commandBus, domainLocator);
+    public CommandHandlersProcessor commandHandlersProcessor(final CommandBus commandBus, final DomainLocator domainLocator, final KasperEventBus eventBus){
+        return super.commandHandlersProcessor(commandBus, domainLocator, eventBus);
     }
 
     @Bean
