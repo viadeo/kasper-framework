@@ -58,7 +58,7 @@ public class PlatformFactory {
 
         final DomainLocator domainLocator = platformConfiguration.domainLocator();
 
-        final CommandHandlersProcessor commandHandlersProcessor = platformConfiguration.commandHandlersProcessor(commandBus, domainLocator);
+        final CommandHandlersProcessor commandHandlersProcessor = platformConfiguration.commandHandlersProcessor(commandBus, domainLocator, eventBus);
         annotationRootProcessor.registerProcessor(commandHandlersProcessor);
 
         final DomainsProcessor domainsProcessor = platformConfiguration.domainsProcessor(domainLocator);

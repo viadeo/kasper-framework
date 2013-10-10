@@ -62,7 +62,7 @@ public class PlatformConfigurationTest {
                 this.testDomainLocator(platformConfiguration);
 
         final CommandHandlersProcessor commandHandlersProcessor =
-                this.testCommandHandlersProcessor(platformConfiguration, commandBus, domainLocator);
+                this.testCommandHandlersProcessor(platformConfiguration, commandBus, domainLocator, eventBus);
 
         final DomainsProcessor domainsProcessor =
                 this.testDomainsProcessor(platformConfiguration, domainLocator);
@@ -206,7 +206,8 @@ public class PlatformConfigurationTest {
 
     private CommandHandlersProcessor testCommandHandlersProcessor(final PlatformConfiguration platformConfiguration,
                                                                   final CommandBus commandBus,
-                                                                  final DomainLocator domainLocator) {
+                                                                  final DomainLocator domainLocator,
+                                                                  final KasperEventBus eventBus) {
         try {
             platformConfiguration.commandHandlersProcessor();
             fail();
@@ -214,11 +215,11 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
-        final CommandHandlersProcessor commandHandlersProcessor = platformConfiguration.commandHandlersProcessor(commandBus, domainLocator);
+        final CommandHandlersProcessor commandHandlersProcessor = platformConfiguration.commandHandlersProcessor(commandBus, domainLocator, eventBus);
         assertSame(commandHandlersProcessor, platformConfiguration.commandHandlersProcessor());
 
         try {
-            platformConfiguration.commandHandlersProcessor(commandBus, domainLocator);
+            platformConfiguration.commandHandlersProcessor(commandBus, domainLocator, eventBus);
             fail();
         } catch (final KasperException e) {
             // Ignore

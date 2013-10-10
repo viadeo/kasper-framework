@@ -238,12 +238,17 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public CommandHandlersProcessor commandHandlersProcessor(final CommandBus commandBus, final DomainLocator domainLocator) {
+    public CommandHandlersProcessor commandHandlersProcessor(
+            final CommandBus commandBus,
+            final DomainLocator domainLocator,
+            final KasperEventBus eventBus
+    ) {
         this.ensureNotPresent(CommandHandlersProcessor.class);
 
         final CommandHandlersProcessor commandHandlersProcessor = new CommandHandlersProcessor();
         commandHandlersProcessor.setCommandBus(commandBus);
         commandHandlersProcessor.setDomainLocator(domainLocator);
+        commandHandlersProcessor.setEventBus(eventBus);
 
         components.putInstance(CommandHandlersProcessor.class, commandHandlersProcessor);
         return commandHandlersProcessor;
