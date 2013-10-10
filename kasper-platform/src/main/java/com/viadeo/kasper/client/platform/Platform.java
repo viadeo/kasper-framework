@@ -7,6 +7,7 @@
 package com.viadeo.kasper.client.platform;
 
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
 import com.viadeo.kasper.core.boot.ComponentsInstanceManager;

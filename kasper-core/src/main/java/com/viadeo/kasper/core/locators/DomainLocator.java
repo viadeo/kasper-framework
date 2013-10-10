@@ -37,6 +37,11 @@ public interface DomainLocator {
      */
     Collection<CommandHandler<? extends Command>> getHandlers();
 
+    /**
+     * @return an optional handler for the specified command class
+     */
+    Optional<CommandHandler<? extends Command>> getHandlerForCommandClass(Class<? extends Command> commandClass);
+
 	/**
 	 * Register a new domain to the locator
 	 * 
@@ -106,7 +111,6 @@ public interface DomainLocator {
 	 * @return a set with all entities related to this domain class
 	 */
 	<D extends Domain> Set<? extends Entity> getDomainEntities(Class<D> domain);
-
 
 	/**
 	 * Register a new domain repository

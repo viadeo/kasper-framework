@@ -9,6 +9,7 @@ package com.viadeo.kasper.client.platform.impl;
 
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
 import com.viadeo.kasper.core.boot.ComponentsInstanceManager;
@@ -26,6 +27,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * The default implementation for the Kasper platform
  */
 public class KasperPlatform implements Platform {
+
+    /** The platform configuration **/
+    protected PlatformConfiguration platformConfiguration;
 
     /** The platform components **/
     protected CommandGateway commandGateway;

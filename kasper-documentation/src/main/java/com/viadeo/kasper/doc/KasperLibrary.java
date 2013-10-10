@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Kasper autodoc library
  * 
@@ -43,7 +45,12 @@ import java.util.TreeMap;
  */
 @Component
 public class KasperLibrary {
-	
+
+    /**
+     * Access to the Kasper components resolvers
+     */
+    private Resolvers resolvers;
+
 	/**
 	 * Keeps track of registered domains, by name and by prefix
 	 */
@@ -145,7 +152,7 @@ public class KasperLibrary {
 	// --
 	
 	public Optional<DocumentedDomain> getDomainFromName(final String domainName) {
-		Preconditions.checkNotNull(domainName);
+		checkNotNull(domainName);
 		
 		if (this.domainNames.containsKey(domainName)) {
 			return Optional.of(this.domainNames.get(domainName));
@@ -157,7 +164,7 @@ public class KasperLibrary {
 	// --
 	
 	public Optional<DocumentedDomain> getDomainFromPrefix(final String domainPrefix) {
-		Preconditions.checkNotNull(domainPrefix);
+		checkNotNull(domainPrefix);
 		
 		if (this.domainPrefixes.containsKey(domainPrefix)) {
 			return Optional.of(this.domainPrefixes.get(domainPrefix));
@@ -259,8 +266,8 @@ public class KasperLibrary {
 	// --
 	
 	public void registerAggregateComponent(final String agrName, final String componentName) {
-		Preconditions.checkNotNull(agrName);
-		Preconditions.checkNotNull(componentName);
+		checkNotNull(agrName);
+		checkNotNull(componentName);
 		
 		final List<String> components;
 		if (!this.aggregateComponents.containsKey(agrName)) {
@@ -348,7 +355,7 @@ public class KasperLibrary {
 	// --
 	
 	public List<DocumentedRelation> getSourceConceptRelations(final String conceptName) {
-		if (sourceConceptRelations.containsKey(Preconditions.checkNotNull(conceptName))) {
+		if (sourceConceptRelations.containsKey(checkNotNull(conceptName))) {
 			return Collections.unmodifiableList(sourceConceptRelations.get(conceptName));
 		}
 		return Collections.emptyList();
@@ -357,7 +364,7 @@ public class KasperLibrary {
 	// --
 	
 	public List<DocumentedRelation> getTargetConceptRelations(final String conceptName) {
-		if (targetConceptRelations.containsKey(Preconditions.checkNotNull(conceptName))) {
+		if (targetConceptRelations.containsKey(checkNotNull(conceptName))) {
 			return Collections.unmodifiableList(targetConceptRelations.get(conceptName));
 		}
 		return Collections.emptyList();
@@ -387,8 +394,8 @@ public class KasperLibrary {
 	// --
 	
 	public void registerListener(final DocumentedListener listener,final String eventName) {
-		Preconditions.checkNotNull(listener);
-		Preconditions.checkNotNull(eventName);
+		checkNotNull(listener);
+		checkNotNull(eventName);
 		
 		final List<DocumentedListener> listeners;
 		if (!this.eventListeners.containsKey(eventName)) {
@@ -430,8 +437,8 @@ public class KasperLibrary {
 	// --
 	
 	public void registerHandler(final DocumentedHandler handler, final String commandName){
-		Preconditions.checkNotNull(handler);
-		Preconditions.checkNotNull(commandName);
+		checkNotNull(handler);
+		checkNotNull(commandName);
 		
 		this.commandHandlers.put(commandName, handler);
 	}
@@ -468,8 +475,8 @@ public class KasperLibrary {
 	// ========================================================================
 	
 	public <T extends DocumentedNode> Optional<Map<String, T>> getEntities(final String domainName, final String entityPluralType) {
-		Preconditions.checkNotNull(domainName);
-		Preconditions.checkNotNull(entityPluralType);
+		checkNotNull(domainName);
+		checkNotNull(entityPluralType);
 		
 		@SuppressWarnings("unchecked") // Safe
 		final Class<T> entityClass = (Class<T>) this.pluralTypes.get(entityPluralType);
@@ -500,8 +507,8 @@ public class KasperLibrary {
 	
 	@SuppressWarnings("unchecked") // Checked
 	public <T extends DocumentedNode> Optional<Map<String, T>> getEntities(final String domainName, final Class<T> entityClass, final boolean returnAbsent) {
-		Preconditions.checkNotNull(domainName);
-		Preconditions.checkNotNull(entityClass);
+		checkNotNull(domainName);
+		checkNotNull(entityClass);
 		
 		if (this.domainEntities.containsKey(entityClass)) {
 			final Map<String, ?> entityMap = this.domainEntities.get(entityClass);
@@ -522,9 +529,9 @@ public class KasperLibrary {
 	// ------------------------------------------------------------------------
 	
 	public <T extends DocumentedDomainNode> Optional<T> getEntity(final String domainName, final String entityType, final String entityName) {
-		Preconditions.checkNotNull(domainName);
-		Preconditions.checkNotNull(entityType);
-		Preconditions.checkNotNull(entityName);
+		checkNotNull(domainName);
+		checkNotNull(entityType);
+		checkNotNull(entityName);
 		
 		@SuppressWarnings("unchecked") // Safe
 		final Class<T> entityClass = (Class<T>) this.simpleTypes.get(entityType);
@@ -534,9 +541,9 @@ public class KasperLibrary {
 	// --
 	
 	public <T extends DocumentedNode> Optional<T> getEntity(final String domainName, final Class<T> entityClass, final String entityName) {
-		Preconditions.checkNotNull(domainName);
-		Preconditions.checkNotNull(entityClass);
-		Preconditions.checkNotNull(entityName);
+		checkNotNull(domainName);
+		checkNotNull(entityClass);
+		checkNotNull(entityName);
 		
 		final Optional<Map<String, T>> entities = getEntities(domainName, entityClass);
 		if (!entities.isPresent()) {
@@ -593,7 +600,7 @@ public class KasperLibrary {
 	// --
 	
 	public <T extends DocumentedDomainNode> Map<String, DocumentedNode> simpleNodesFrom(final Map<String, T> nodes) {
-		Preconditions.checkNotNull(nodes);
+		checkNotNull(nodes);
 		
 		final TreeMap<String, DocumentedNode> simpleNodes = Maps.newTreeMap();
 		
@@ -610,7 +617,7 @@ public class KasperLibrary {
 	// --
 	
 	public <T extends DocumentedDomainNode> Map<String, DocumentedNode> simpleNodesFrom(final List<T> nodes) {
-		Preconditions.checkNotNull(nodes);
+		checkNotNull(nodes);
 		
 		final Map<String, DocumentedNode> simpleNodes = Maps.newTreeMap();
 		
@@ -632,5 +639,15 @@ public class KasperLibrary {
 		}
 		return new DocumentedNode(node);
 	}
-	
+
+    // ------------------------------------------------------------------------
+
+    public void setResolvers(final Resolvers resolvers) {
+        this.resolvers = checkNotNull(resolvers);
+    }
+
+    public Resolvers getResolvers() {
+        return this.resolvers;
+    }
+
 }

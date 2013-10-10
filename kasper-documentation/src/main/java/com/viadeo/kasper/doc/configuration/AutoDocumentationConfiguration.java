@@ -6,12 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.doc.configuration;
 
+import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.doc.KasperLibrary;
 
 interface AutoDocumentationConfiguration {
 
-     KasperLibrary getKasperLibrary();
+     KasperLibrary getKasperLibrary(PlatformConfiguration pf);
 
      DomainsDocumentationProcessor getDomainsDocumentationProcessor( KasperLibrary library);
 

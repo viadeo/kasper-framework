@@ -7,8 +7,9 @@
 package com.viadeo.kasper.core.locators.impl;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.ddd.AggregateRoot;
@@ -19,6 +20,8 @@ import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.*;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Base implementation for domain locator
@@ -40,7 +43,7 @@ public class DefaultDomainLocator implements DomainLocator {
         private static final long serialVersionUID = 4967890441255351599L;
     }
 
-    private final List<CommandHandler<? extends Command>> handlers = new ArrayList<>();
+    private final Map<CommandHandler<? extends Command>, Class<? extends Command>> handlers = Maps.newHashMap();
 
     // ------------------------------------------------------------------------
 
@@ -54,6 +57,10 @@ public class DefaultDomainLocator implements DomainLocator {
 
     // ------------------------------------------------------------------------
 
+    private transient CommandHandlerResolver commandHandlerResolver;
+
+    // ------------------------------------------------------------------------
+
     public DefaultDomainLocator() {
         this.entityRepositories = new RepositoriesByAggregateCache();
         this.domains = new DomainsPropertiesCache();
@@ -64,13 +71,28 @@ public class DefaultDomainLocator implements DomainLocator {
     // ------------------------------------------------------------------------
 
     @Override
+    @SuppressWarnings("unchecked")
     public void registerHandler(final CommandHandler<? extends Command> commandHandler) {
-        handlers.add(commandHandler);
+        final Optional<Class<? extends Command>> commandClass = commandHandlerResolver.getCommandClass(
+                (Class<CommandHandler<? extends CommandHandler>>) commandHandler.getClass());
+        handlers.put(commandHandler, commandClass.get());
     }
 
     @Override
     public Collection<CommandHandler<? extends Command>> getHandlers() {
-        return Collections.unmodifiableCollection(handlers);
+        return Collections.unmodifiableCollection(handlers.keySet());
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Optional<CommandHandler<? extends Command>> getHandlerForCommandClass(Class<? extends Command> commandClass) {
+        for (final CommandHandler<? extends Command> commandHandler : handlers.keySet()) {
+            final Class<? extends Command> command = handlers.get(commandHandler);
+            if (command.equals(commandClass)) {
+                return Optional.<CommandHandler<? extends Command>>of(commandHandler);
+            }
+        }
+        return Optional.absent();
     }
 
     /**
@@ -79,7 +101,7 @@ public class DefaultDomainLocator implements DomainLocator {
     @Override
     @SuppressWarnings("unchecked")
     public <D extends Domain> Set<? extends Entity> getDomainEntities(final D domain) {
-        Preconditions.checkNotNull(domain);
+        checkNotNull(domain);
         // TODO Auto-generated method stub
 
         return Collections.EMPTY_SET;
@@ -91,7 +113,7 @@ public class DefaultDomainLocator implements DomainLocator {
     @Override
     @SuppressWarnings("unchecked")
     public <D extends Domain> Set<? extends Entity> getDomainEntities(final Class<D> domain) {
-        Preconditions.checkNotNull(domain);
+        checkNotNull(domain);
         // TODO Auto-generated method stub
 
         return Collections.EMPTY_SET;
@@ -102,7 +124,7 @@ public class DefaultDomainLocator implements DomainLocator {
      */
     @Override
     public <D extends Domain> Optional<D> getEntityDomain(final Entity entity) {
-        Preconditions.checkNotNull(entity);
+        checkNotNull(entity);
         // TODO Auto-generated method stub
         throw new KasperException("Entity has no registered domain : " + entity.getClass().getName());
     }
@@ -114,7 +136,7 @@ public class DefaultDomainLocator implements DomainLocator {
      */
     @Override
     public void registerRepository(final IRepository<?> repository) {
-        Preconditions.checkNotNull(repository);
+        checkNotNull(repository);
 
         @SuppressWarnings("unchecked")
         // Safe
@@ -138,7 +160,7 @@ public class DefaultDomainLocator implements DomainLocator {
     // Safe
     @Override
     public <E extends AggregateRoot> Optional<IRepository<E>> getEntityRepository(final E entity) {
-        Preconditions.checkNotNull(entity);
+        checkNotNull(entity);
         return Optional.of((IRepository<E>) this.entityRepositories.get(entity.getClass()));
     }
 
@@ -148,7 +170,7 @@ public class DefaultDomainLocator implements DomainLocator {
     @Override
     @SuppressWarnings("unchecked")
     public <E extends AggregateRoot> Optional<IRepository<E>> getEntityRepository(final Class<E> entityClass) {
-        Preconditions.checkNotNull(entityClass);
+        checkNotNull(entityClass);
 
         return Optional.of((IRepository<E>) this.entityRepositories.get(entityClass));
     }
@@ -157,9 +179,9 @@ public class DefaultDomainLocator implements DomainLocator {
 
     @Override
     public void registerDomain(final Domain domain, final String name, final String prefix) {
-        Preconditions.checkNotNull(domain);
-        Preconditions.checkNotNull(name);
-        Preconditions.checkNotNull(prefix);
+        checkNotNull(domain);
+        checkNotNull(name);
+        checkNotNull(prefix);
 
         if (name.isEmpty() || prefix.isEmpty()) {
             throw new KasperException("Domain name and prefix must not be empty for domain"
@@ -183,7 +205,7 @@ public class DefaultDomainLocator implements DomainLocator {
     @SuppressWarnings("unchecked")
     @Override
     public <D extends Domain> Optional<D> getDomainByName(final String name) {
-        Preconditions.checkNotNull(name);
+        checkNotNull(name);
         return Optional.fromNullable((D) this.domainNames.get(name));
     }
 
@@ -193,7 +215,7 @@ public class DefaultDomainLocator implements DomainLocator {
     @SuppressWarnings("unchecked")
     @Override
     public <D extends Domain> Optional<D> getDomainByPrefix(final String prefix) {
-        Preconditions.checkNotNull(prefix);
+        checkNotNull(prefix);
         return Optional.fromNullable((D) this.domainPrefixes.get(prefix));
     }
 
@@ -204,7 +226,7 @@ public class DefaultDomainLocator implements DomainLocator {
      */
     @Override
     public String getDomainPrefix(final Domain domain) {
-        Preconditions.checkNotNull(domain);
+        checkNotNull(domain);
 
         if (this.domains.containsKey(domain.getClass())) {
             return this.domains.get(domain.getClass()).get("prefix");
@@ -218,7 +240,7 @@ public class DefaultDomainLocator implements DomainLocator {
      */
     @Override
     public String getDomainName(final Domain domain) {
-        Preconditions.checkNotNull(domain);
+        checkNotNull(domain);
 
         if (this.domains.containsKey(domain.getClass())) {
             return this.domains.get(domain.getClass()).get("name");
@@ -233,6 +255,12 @@ public class DefaultDomainLocator implements DomainLocator {
     @Override
     public Set<Domain> getDomains() {
         return Collections.unmodifiableSet(this.domains.keySet());
+    }
+
+    // ------------------------------------------------------------------------
+
+    public void setCommandHandlerResolver(final CommandHandlerResolver commandHandlerResolver) {
+        this.commandHandlerResolver = checkNotNull(commandHandlerResolver);
     }
 
 }

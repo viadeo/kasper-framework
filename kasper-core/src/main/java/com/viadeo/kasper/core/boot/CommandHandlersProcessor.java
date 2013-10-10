@@ -7,7 +7,6 @@
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;

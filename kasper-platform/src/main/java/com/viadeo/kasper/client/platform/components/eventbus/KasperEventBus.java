@@ -7,24 +7,18 @@
 
 package com.viadeo.kasper.client.platform.components.eventbus;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventUtils;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.domain.EventMessage;
-import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.*;
 import org.axonframework.eventhandling.async.*;
-import org.axonframework.unitofwork.CurrentUnitOfWork;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.NoTransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Map;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;

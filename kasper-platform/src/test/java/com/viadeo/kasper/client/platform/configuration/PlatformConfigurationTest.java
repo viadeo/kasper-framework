@@ -11,6 +11,7 @@ import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.exception.KasperException;
@@ -58,8 +59,17 @@ public class PlatformConfigurationTest {
         final AnnotationRootProcessor annotationRootProcessor =
                 this.testAnnotationRootProcessor(platformConfiguration, componentsInstanceManager);
 
+        final CommandHandlerResolver commandHandlerResolver = testCommandHandlerResolver(platformConfiguration);
+
         final DomainLocator domainLocator =
-                this.testDomainLocator(platformConfiguration);
+                this.testDomainLocator(platformConfiguration, commandHandlerResolver);
+
+         final DomainResolver domainResolver = testDomainResolver(
+                platformConfiguration,
+                domainLocator,
+                commandHandlerResolver,
+                queryServicesLocator
+        );
 
         final CommandHandlersProcessor commandHandlersProcessor =
                 this.testCommandHandlersProcessor(platformConfiguration, commandBus, domainLocator, eventBus);
@@ -83,6 +93,54 @@ public class PlatformConfigurationTest {
                 this.testPlatform(platformConfiguration,
                                   commandGateway, queryGateway,
                                   eventBus, annotationRootProcessor);
+    }
+
+    // ------------------------------------------------------------------------
+
+    /*
+     * FIXME: implement tests
+     */
+    private CommandHandlerResolver testCommandHandlerResolver(final PlatformConfiguration platformConfiguration) {
+        return platformConfiguration.commandHandlerResolver();
+    }
+
+    /*
+     * FIXME: implement tests
+     */
+    private DomainResolver testDomainResolver(
+            final PlatformConfiguration platformConfiguration,
+            final DomainLocator domainLocator,
+            final CommandHandlerResolver commandHandlerResolver,
+            final QueryServicesLocator queryServicesLocator
+    ) {
+
+
+        final CommandResolver commandResolver = platformConfiguration.commandResolver(domainLocator, commandHandlerResolver);
+
+        final EventResolver eventResolver = platformConfiguration.eventResolver();
+
+        final EventListenerResolver eventListenerResolver = platformConfiguration.eventListenerResolver(eventResolver);
+
+        final QueryServiceResolver queryServiceResolver = platformConfiguration.queryServiceResolver();
+
+        final QueryResolver queryResolver = platformConfiguration.queryResolver(queryServiceResolver, queryServicesLocator);
+
+        final ConceptResolver conceptResolver = platformConfiguration.conceptResolver();
+
+        final RelationResolver relationResolver = platformConfiguration.relationResolver();
+
+        final EntityResolver entityResolver = platformConfiguration.entityResolver(conceptResolver, relationResolver);
+
+        final RepositoryResolver repositoryResolver = platformConfiguration.repositoryResolver(entityResolver);
+
+        final DomainResolver domainResolver = platformConfiguration.domainResolver(
+                commandResolver,
+                eventListenerResolver,
+                queryResolver,
+                repositoryResolver
+        );
+
+        return domainResolver;
     }
 
     // ------------------------------------------------------------------------
@@ -195,9 +253,9 @@ public class PlatformConfigurationTest {
 
     // ------------------------------------------------------------------------
 
-    private DomainLocator testDomainLocator(final PlatformConfiguration platformConfiguration) {
-        final DomainLocator domainLocator = platformConfiguration.domainLocator();
-        assertSame(domainLocator, platformConfiguration.domainLocator());
+    private DomainLocator testDomainLocator(final PlatformConfiguration platformConfiguration, final CommandHandlerResolver commandHandlerResolver) {
+        final DomainLocator domainLocator = platformConfiguration.domainLocator(commandHandlerResolver);
+        assertSame(domainLocator, platformConfiguration.domainLocator(commandHandlerResolver));
 
         return domainLocator;
     }

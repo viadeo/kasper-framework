@@ -11,6 +11,7 @@ import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import org.axonframework.commandhandling.CommandBus;
@@ -92,7 +93,7 @@ public interface PlatformConfiguration {
     /**
      * @return the domain locator
      */
-     DomainLocator domainLocator();
+     DomainLocator domainLocator(CommandHandlerResolver commandHandlerResolver);
 
     /**
      * @return the query services locator
@@ -165,5 +166,112 @@ public interface PlatformConfiguration {
      *
      */
     void initializeMetricsReporters();
+
+    /**
+     * @return the command handler resolver
+     */
+    CommandHandlerResolver commandHandlerResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param commandResolver the command resolver
+     * @param eventListenerResolver the vent listener resolver
+     * @param queryResolver the query resolver
+     * @param repositoryResolver the repository resolver
+     *
+     * @return the domain resolver
+     */
+    DomainResolver domainResolver(
+            CommandResolver commandResolver,
+            EventListenerResolver eventListenerResolver,
+            QueryResolver queryResolver,
+            RepositoryResolver repositoryResolver
+    );
+    DomainResolver domainResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param domainLocator the domain locator
+     * @param commandHandlerResolver the command handler resolver
+     *
+     * @return the command resolver
+     */
+    CommandResolver commandResolver(
+            DomainLocator domainLocator,
+            CommandHandlerResolver commandHandlerResolver
+    );
+    CommandResolver commandResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param eventResolver the event resolver
+     *
+     * @return the event listener resolver
+     */
+    EventListenerResolver eventListenerResolver(
+            EventResolver eventResolver
+    );
+    EventListenerResolver eventListenerResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param queryServiceResolver the query service resolver
+     * @param queryServicesLocator the query services locator
+     *
+     * @return the query resolver
+     */
+    QueryResolver queryResolver(
+            QueryServiceResolver queryServiceResolver,
+            QueryServicesLocator queryServicesLocator
+    );
+    QueryResolver queryResolver();
+
+    /**
+     * @return the query service resolver
+     */
+    QueryServiceResolver queryServiceResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param entityResolver
+     *
+     * @return the entity resolver
+     */
+    RepositoryResolver repositoryResolver(EntityResolver entityResolver);
+    RepositoryResolver repositoryResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param conceptResolver the concept resolver
+     * @param relationResolver the relation resolver
+     *
+     * @return the entity resolver
+     */
+    EntityResolver entityResolver(
+            ConceptResolver conceptResolver,
+            RelationResolver relationResolver
+    );
+    EntityResolver entityResolver();
+
+    /**
+     * @return the concept resolver
+     */
+    ConceptResolver conceptResolver();
+
+    /**
+     * @return the relation resolver
+     */
+    RelationResolver relationResolver();
+
+    /**
+     * @return the event resolver
+     */
+    EventResolver eventResolver();
 
 }

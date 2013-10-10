@@ -19,6 +19,7 @@ import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
@@ -210,11 +211,13 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public DomainLocator domainLocator() {
+    public DomainLocator domainLocator(final CommandHandlerResolver commandHandlerResolver) {
         if (components.containsKey(DomainLocator.class)) {
             return components.getInstance(DomainLocator.class);
         } else {
-            final DomainLocator domainLocator = new DefaultDomainLocator();
+            final DefaultDomainLocator domainLocator = new DefaultDomainLocator();
+
+            domainLocator.setCommandHandlerResolver(commandHandlerResolver);
 
             components.putInstance(DomainLocator.class, domainLocator);
             return domainLocator;
@@ -367,6 +370,201 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     @Override
     public QueryGateway queryGateway() {
         return this.getAvailableInstance(QueryGateway.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public CommandHandlerResolver commandHandlerResolver() {
+        if (components.containsKey(CommandHandlerResolver.class)) {
+            return components.getInstance(CommandHandlerResolver.class);
+        } else {
+            final CommandHandlerResolver commandHandlerResolver = new CommandHandlerResolver();
+            components.putInstance(CommandHandlerResolver.class, commandHandlerResolver);
+            return commandHandlerResolver;
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public DomainResolver domainResolver(
+            final CommandResolver commandResolver,
+            final EventListenerResolver eventListenerResolver,
+            final QueryResolver queryResolver,
+            final RepositoryResolver repositoryResolver
+    ) {
+        this.ensureNotPresent(DomainResolver.class);
+
+        final DomainResolver domainResolver = new DomainResolver();
+        domainResolver.setCommandResolver(commandResolver);
+        domainResolver.setEventListenerResolver(eventListenerResolver);
+        domainResolver.setQueryResolver(queryResolver);
+        domainResolver.setRepositoryResolver(repositoryResolver);
+
+        components.putInstance(DomainResolver.class, domainResolver);
+        return domainResolver;
+    }
+
+    @Override
+    public DomainResolver domainResolver() {
+        return this.getAvailableInstance(DomainResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public CommandResolver commandResolver(
+            final DomainLocator domainLocator,
+            final CommandHandlerResolver commandHandlerResolver
+    ) {
+        this.ensureNotPresent(CommandResolver.class);
+
+        final CommandResolver commandResolver = new CommandResolver();
+        commandResolver.setDomainLocator(domainLocator);
+        commandResolver.setCommandHandlerResolver(commandHandlerResolver);
+
+        components.putInstance(CommandResolver.class, commandResolver);
+        return commandResolver;
+    }
+
+    @Override
+    public CommandResolver commandResolver() {
+        return this.getAvailableInstance(CommandResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public EventListenerResolver eventListenerResolver(
+            final EventResolver eventResolver
+    ) {
+        this.ensureNotPresent(EventListenerResolver.class);
+
+        final EventListenerResolver eventListenerResolver = new EventListenerResolver();
+        eventListenerResolver.setEventResolver(eventResolver);
+
+        components.putInstance(EventListenerResolver.class, eventListenerResolver);
+        return eventListenerResolver;
+    }
+
+    @Override
+    public EventListenerResolver eventListenerResolver() {
+        return this.getAvailableInstance(EventListenerResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public EventResolver eventResolver() {
+        if (components.containsKey(EventResolver.class)) {
+            return components.getInstance(EventResolver.class);
+        } else {
+            final EventResolver eventResolver = new EventResolver();
+            components.putInstance(EventResolver.class, eventResolver);
+            return eventResolver;
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public QueryResolver queryResolver(
+        final QueryServiceResolver queryServiceResolver,
+        final QueryServicesLocator queryServicesLocator
+    ) {
+        this.ensureNotPresent(QueryResolver.class);
+
+        final QueryResolver queryResolver = new QueryResolver();
+        queryResolver.setQueryServiceResolver(queryServiceResolver);
+        queryResolver.setQueryServicesLocator(queryServicesLocator);
+
+        components.putInstance(QueryResolver.class, queryResolver);
+        return queryResolver;
+    }
+
+    @Override
+    public QueryResolver queryResolver() {
+        return this.getAvailableInstance(QueryResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public QueryServiceResolver queryServiceResolver() {
+        if (components.containsKey(QueryServiceResolver.class)) {
+            return components.getInstance(QueryServiceResolver.class);
+        } else {
+            final QueryServiceResolver queryServiceResolver = new QueryServiceResolver();
+            components.putInstance(QueryServiceResolver.class, queryServiceResolver);
+            return queryServiceResolver;
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public RepositoryResolver repositoryResolver(final EntityResolver entityResolver) {
+        this.ensureNotPresent(RepositoryResolver.class);
+
+        final RepositoryResolver repositoryResolver = new RepositoryResolver();
+        repositoryResolver.setEntityResolver(entityResolver);
+
+        components.putInstance(RepositoryResolver.class, repositoryResolver);
+        return repositoryResolver;
+    }
+
+    @Override
+    public RepositoryResolver repositoryResolver() {
+        return this.getAvailableInstance(RepositoryResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public EntityResolver entityResolver(
+            final ConceptResolver conceptResolver,
+            final RelationResolver relationResolver
+    ) {
+        this.ensureNotPresent(EntityResolver.class);
+
+        final EntityResolver entityResolver = new EntityResolver();
+        entityResolver.setConceptResolver(conceptResolver);
+        entityResolver.setRelationResolver(relationResolver);
+
+        components.putInstance(EntityResolver.class, entityResolver);
+        return entityResolver;
+    }
+
+    @Override
+    public EntityResolver entityResolver() {
+        return this.getAvailableInstance(EntityResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public ConceptResolver conceptResolver() {
+        if (components.containsKey(ConceptResolver.class)) {
+            return components.getInstance(ConceptResolver.class);
+        } else {
+            final ConceptResolver conceptResolver = new ConceptResolver();
+            components.putInstance(ConceptResolver.class, conceptResolver);
+            return conceptResolver;
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public RelationResolver relationResolver() {
+        if (components.containsKey(RelationResolver.class)) {
+            return components.getInstance(RelationResolver.class);
+        } else {
+            final RelationResolver relationResolver = new RelationResolver();
+            components.putInstance(RelationResolver.class, relationResolver);
+            return relationResolver;
+        }
     }
 
     // ------------------------------------------------------------------------
