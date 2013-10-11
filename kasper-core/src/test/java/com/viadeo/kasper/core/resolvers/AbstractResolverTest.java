@@ -22,21 +22,16 @@ public class AbstractResolverTest {
     private static class TestDomain implements Domain {}
 
     private static class ImplementedAbstractResolver extends AbstractResolver<Object> {
-
         @Override
         public String getTypeName() { return "Object"; }
-
         @Override
         public String getLabel(Class<?> clazz) { return null; }
-
         @Override
         public String getDescription(Class<?> clazz) { return null; }
-
         @Override
         public Optional<Class<? extends Domain>> getDomainClass(final Class clazz) {
             return Optional.<Class<? extends Domain>>of(TestDomain.class);
         }
-
     }
 
     // ------------------------------------------------------------------------

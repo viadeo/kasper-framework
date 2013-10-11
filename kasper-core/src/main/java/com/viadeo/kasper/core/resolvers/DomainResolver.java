@@ -39,7 +39,7 @@ public class DomainResolver implements Resolver<Domain> {
 
         final XKasperDomain domainAnnotation = clazz.getAnnotation(XKasperDomain.class);
         if ((null != domainAnnotation) && ! domainAnnotation.label().isEmpty()) {
-            domainName = domainAnnotation.label();
+            domainName = domainAnnotation.label().replaceAll(" ", "");
         }
 
         if (null == domainName) {
@@ -73,7 +73,7 @@ public class DomainResolver implements Resolver<Domain> {
         String prefix = "";
 
         final XKasperDomain domainAnnotation = clazz.getAnnotation(XKasperDomain.class);
-        if ((null != domainAnnotation) && ! domainAnnotation.description().isEmpty()) {
+        if ((null != domainAnnotation) && ! domainAnnotation.prefix().isEmpty()) {
             prefix = domainAnnotation.prefix();
         }
         if (prefix.isEmpty()) {

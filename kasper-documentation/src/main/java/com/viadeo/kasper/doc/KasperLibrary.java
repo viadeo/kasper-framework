@@ -59,6 +59,7 @@ public class KasperLibrary {
 	
 	/**
 	 * Stores all registered domain-related components
+     * FIXME: replace with MultiMap
 	 */
 	private final Map<Class<? extends DocumentedDomainNode>, Map<String, ?>> domainEntities;
 	

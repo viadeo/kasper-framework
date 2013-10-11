@@ -74,8 +74,7 @@ public class CommandResolver extends AbstractResolver<Command> {
     }
 
     public String getLabel(Class<? extends Command> commandClass) {
-        return commandClass.getSimpleName()
-                .replace("Command", "");
+        return commandClass.getSimpleName().replace("Command", "");
     }
 
     // ------------------------------------------------------------------------

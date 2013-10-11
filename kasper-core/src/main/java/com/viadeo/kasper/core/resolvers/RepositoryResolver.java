@@ -61,7 +61,8 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
             description = annotation.description();
         }
         if (description.isEmpty()) {
-            description = String.format("The %s repository", this.getLabel(clazz));
+            description = String.format("The repository for %s aggregates",
+                    entityResolver.getLabel(this.getStoredEntityClass(clazz)));
         }
 
         return description;

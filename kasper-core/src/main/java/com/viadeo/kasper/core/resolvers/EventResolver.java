@@ -85,7 +85,7 @@ public class EventResolver extends AbstractResolver<Event> {
 
         String action = "";
         if (null != annotation) {
-            action = annotation.description();
+            action = annotation.action();
         }
 
         return action;

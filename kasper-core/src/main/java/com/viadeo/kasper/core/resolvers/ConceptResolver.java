@@ -64,7 +64,7 @@ public class ConceptResolver extends AbstractResolver<Concept> {
 
         String label = "";
         if (null != annotation) {
-            label = annotation.label();
+            label = annotation.label().replaceAll(" ", "");
         }
         if (label.isEmpty()) {
             label = String.format(conceptClazz.getSimpleName().replaceAll("Concept", ""));

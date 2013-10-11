@@ -63,9 +63,9 @@ public final class DocumentedEvent extends DocumentedDomainNode {
 		return this.action;
 	}
 	
-	
+
 	// ------------------------------------------------------------------------
-	
+
 	public static String getDomainFromEventClass(final EventResolver eventResolver, final Class eventClazz) {
 
         if (DomainEvent.class.isAssignableFrom(eventClazz)) {
@@ -79,7 +79,7 @@ public final class DocumentedEvent extends DocumentedDomainNode {
 
 		return "Unknown";
 	}
-	
+
 	// ------------------------------------------------------------------------
 	
 	public String getLabel() {

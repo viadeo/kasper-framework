@@ -54,6 +54,23 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
         }
     }
 
+    // ------------------------------------------------------------------------
+
+    @Override
+    public String getDescription(Class<? extends CommandHandler> handlerClazz) {
+        final XKasperCommandHandler annotation = handlerClazz.getAnnotation(XKasperCommandHandler.class);
+
+        String description = "";
+        if (null != annotation) {
+            description = annotation.description();
+        }
+        if (description.isEmpty()) {
+            description = String.format("The %s command handler", this.getLabel(handlerClazz));
+        }
+
+        return description;
+    }
+
     @Override
     public String getLabel(final Class<? extends CommandHandler> clazz) {
         return clazz.getSimpleName()
@@ -91,23 +108,6 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
     public void clearCache() {
         super.clearCache();
         cacheCommands.clear();
-    }
-
-    // ------------------------------------------------------------------------
-
-    @Override
-    public String getDescription(Class<? extends CommandHandler> handlerClazz) {
-        final XKasperCommandHandler annotation = handlerClazz.getAnnotation(XKasperCommandHandler.class);
-
-        String description = "";
-        if (null != annotation) {
-            description = annotation.description();
-        }
-        if (description.isEmpty()) {
-            description = String.format("The %s command handler", this.getLabel(handlerClazz));
-        }
-
-        return description;
     }
 
     // ------------------------------------------------------------------------

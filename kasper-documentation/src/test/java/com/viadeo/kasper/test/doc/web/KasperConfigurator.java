@@ -38,7 +38,9 @@ public class KasperConfigurator {
         final PlatformFactory platformFactory = new PlatformFactory().configure();
         final PlatformConfiguration pf = platformFactory.getPlatformConfiguration();
 
-        final DefaultAutoDocumentationConfiguration docConf = new DefaultAutoDocumentationConfiguration();
+        final DefaultAutoDocumentationConfiguration docConf =
+                new DefaultAutoDocumentationConfiguration();
+
         docConf.registerToRootProcessor(rootProcessor, pf.resolverFactory());
         this.kasperLibrary = docConf.getKasperLibrary(pf.resolverFactory());
 

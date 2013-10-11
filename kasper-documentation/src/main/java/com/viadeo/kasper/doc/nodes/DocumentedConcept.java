@@ -43,7 +43,7 @@ public final class DocumentedConcept extends DocumentedEntity {
 		
 		// Find associated domain ---------------------------------------------
         final ConceptResolver resolver = this.getKasperLibrary().getResolverFactory().getConceptResolver();
- 		final String domainName = resolver.getDomainLabel(conceptClazz);
+ 		final String domainName = resolver.getDomainClass(conceptClazz).get().getSimpleName();
         final String description = resolver.getDescription(conceptClazz);
         final String label = resolver.getLabel(conceptClazz);
 

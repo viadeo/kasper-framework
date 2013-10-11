@@ -62,7 +62,7 @@ public class RelationResolver extends AbstractResolver<Relation> {
         final XKasperRelation relationAnnotation = clazz.getAnnotation(XKasperRelation.class);
 
         if ((null != relationAnnotation) && ! relationAnnotation.label().isEmpty()) {
-            return relationAnnotation.label();
+            return relationAnnotation.label().replaceAll(" ", "");
         }
 
         return clazz.getSimpleName()
@@ -128,7 +128,7 @@ public class RelationResolver extends AbstractResolver<Relation> {
             throw new KasperException("Unable to find target concept type for relation " + clazz.getClass());
         }
 
-        cacheSources.put(clazz, targetClazz.get());
+        cacheTargets.put(clazz, targetClazz.get());
         return targetClazz.get();
     }
 

@@ -38,7 +38,7 @@ public final class DocumentedRepository extends DocumentedDomainNode {
 		final Class<? extends AggregateRoot> agr = resolver.getStoredEntityClass(repositoryClazz);
 
 		// Find associated domain ---------------------------------------------
-		final String domainName = resolver.getDomainLabel(repositoryClazz);
+		final String domainName = resolver.getDomainClass(repositoryClazz).get().getSimpleName();
         final String description = resolver.getDescription(repositoryClazz);
 
 		// Set properties -----------------------------------------------------

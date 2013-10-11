@@ -39,7 +39,7 @@ public final class DocumentedRelation extends DocumentedEntity {
 		
 		// Find associated domain ---------------------------------------------
         final RelationResolver resolver = this.getKasperLibrary().getResolverFactory().getRelationResolver();
-		final String domainName = resolver.getDomainLabel(relationClazz);
+		final String domainName = resolver.getDomainClass(relationClazz).get().getSimpleName();
         final String label = resolver.getLabel(relationClazz);
         final String description = resolver.getDescription(relationClazz);
  		final boolean annotatedBidirectional = resolver.isBidirectional(relationClazz);
@@ -114,7 +114,8 @@ public final class DocumentedRelation extends DocumentedEntity {
 	
 	public DocumentedNode getTargetConcept() {
 		final KasperLibrary kl = this.getKasperLibrary();
-		final Optional<DocumentedConcept> concept = kl.getConcept(this.getDomainName(), this.targetConceptName);
+		final Optional<DocumentedConcept> concept = kl.getConcept(this.getDomainName(),
+                this.targetConceptName);
 		
 		if (concept.isPresent()) {
 			return kl.getSimpleNodeFrom( concept.get() ); 

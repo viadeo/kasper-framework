@@ -35,14 +35,17 @@ public final class DocumentedHandler extends DocumentedDomainNode {
                 commandHandlerResolver.getCommandClass(handlerClazz);
 
 		// Find associated domain ---------------------------------------------
-        final String domainName = commandHandlerResolver.getDomainLabel(handlerClazz);
+        final String domainName =
+                commandHandlerResolver.getDomainClass(handlerClazz).get().getSimpleName();
 
 		// Get description ----------------------------------------------------
 		final String description = commandHandlerResolver.getDescription(handlerClazz);
+        final String label = commandHandlerResolver.getLabel(handlerClazz);
 
 		// Set properties -----------------------------------------------------
 		this.commandName = commandClazz.getSimpleName();
 		this.setName(handlerClazz.getSimpleName());
+        this.setLabel(label);
 		this.setDescription(description);
 		this.setDomainName(domainName);
 		this.getKasperLibrary().registerHandler(this, this.commandName);

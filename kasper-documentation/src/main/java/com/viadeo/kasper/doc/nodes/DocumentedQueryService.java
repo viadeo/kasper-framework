@@ -35,7 +35,7 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
         final QueryServiceResolver resolver = this.getKasperLibrary().getResolverFactory().getQueryServiceResolver();
 		final String label = resolver.getLabel(queryServiceClazz);
 		final String description = resolver.getDescription(queryServiceClazz);
-        final String domainName = resolver.getDomainLabel(queryServiceClazz);
+        final String domainName = resolver.getDomainClass(queryServiceClazz).get().getSimpleName();
 
 		// - Register the domain to the locator --------------------------------
 		this.setName(queryServiceClazz.getSimpleName());
