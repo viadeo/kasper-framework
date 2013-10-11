@@ -29,10 +29,11 @@ public class KasperMetricsTest {
     @Test
     public void testNameFromString() {
         // Given
-        KasperMetrics.setNamePrefix("dummy");
+        final KasperMetrics kasperMetrics = new KasperMetrics();
+        kasperMetrics._setNamePrefix("dummy");
 
         // When
-        final String name = KasperMetrics.name("a", "b");
+        final String name = kasperMetrics._name("a", "b");
 
         // Then
         assertEquals("dummy.a.b", name);
@@ -41,10 +42,11 @@ public class KasperMetricsTest {
     @Test
     public void testNameFromClass() {
         // Given
-        KasperMetrics.setNamePrefix("");
+        final KasperMetrics kasperMetrics = new KasperMetrics();
+        kasperMetrics._setNamePrefix("");
 
         // When
-        final String name = KasperMetrics.name(this.getClass(), "b");
+        final String name = kasperMetrics._name(this.getClass(), "b");
 
         // Then
         assertEquals(this.getClass().getName() + ".b", name);
@@ -53,11 +55,12 @@ public class KasperMetricsTest {
     @Test
     public void testKasperPathDefault() {
         // Given
-        KasperMetrics.unsetResolverFactory();
+        final KasperMetrics kasperMetrics = new KasperMetrics();
+        kasperMetrics._unsetResolverFactory();
 
         // When
-        KasperMetrics.clearCache();
-        final String path = KasperMetrics.pathForKasperComponent(TestCommand.class);
+        kasperMetrics._clearCache();
+        final String path = kasperMetrics._pathForKasperComponent(TestCommand.class);
 
         // Then
         assertEquals(TestCommand.class.getName(), path);
@@ -66,6 +69,7 @@ public class KasperMetricsTest {
     @Test
     public void testKasperPathWithDomainResolver() {
         // Given
+        final KasperMetrics kasperMetrics = new KasperMetrics();
         final ResolverFactory resolverFactory = mock(ResolverFactory.class);
         final CommandResolver commandResolver = mock(CommandResolver.class);
 
@@ -78,11 +82,11 @@ public class KasperMetricsTest {
         when(commandResolver.getDomainLabel(TestCommand.class))
                 .thenReturn("Test");
 
-        KasperMetrics.setResolverFactory(resolverFactory);
+        kasperMetrics._setResolverFactory(resolverFactory);
 
         // When
-        KasperMetrics.clearCache();
-        final String path = KasperMetrics.pathForKasperComponent(TestCommand.class);
+        kasperMetrics._clearCache();
+        final String path = kasperMetrics._pathForKasperComponent(TestCommand.class);
 
         // Then
         assertEquals("Test.Command." + TestCommand.class.getSimpleName(), path);
