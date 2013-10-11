@@ -12,8 +12,6 @@ import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.ComponentEntity;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.er.RootConcept;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.Collection;
 

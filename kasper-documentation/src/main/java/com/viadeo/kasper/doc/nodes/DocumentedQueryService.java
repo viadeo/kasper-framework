@@ -10,7 +10,6 @@ import com.viadeo.kasper.core.resolvers.QueryServiceResolver;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryService;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.doc.KasperLibrary;
 
 public final class DocumentedQueryService extends DocumentedDomainNode {

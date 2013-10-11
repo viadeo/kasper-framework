@@ -12,8 +12,6 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQuery;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.annotation.XKasperEvent;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

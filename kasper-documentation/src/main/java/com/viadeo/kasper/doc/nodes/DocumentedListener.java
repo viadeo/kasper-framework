@@ -11,7 +11,6 @@ import com.viadeo.kasper.core.resolvers.EventListenerResolver;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.annotation.XKasperEventListener;
 
 public final class DocumentedListener extends DocumentedDomainNode {
 	private static final long serialVersionUID = 2245288475426783601L;

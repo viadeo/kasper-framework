@@ -7,7 +7,6 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;

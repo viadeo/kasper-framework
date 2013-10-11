@@ -12,8 +12,6 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.er.Concept;
-import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 

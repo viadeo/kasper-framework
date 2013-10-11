@@ -9,14 +9,8 @@ package com.viadeo.kasper.doc.nodes;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.resolvers.RepositoryResolver;
 import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.ddd.annotation.XKasperDomain;
-import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.er.annotation.XKasperConcept;
-import com.viadeo.kasper.er.annotation.XKasperRelation;
-import com.viadeo.kasper.exception.KasperException;
 
 public final class DocumentedRepository extends DocumentedDomainNode {
 	private static final long serialVersionUID = 2245288475776783601L;

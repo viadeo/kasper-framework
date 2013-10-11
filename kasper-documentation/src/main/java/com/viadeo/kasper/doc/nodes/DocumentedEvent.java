@@ -11,7 +11,6 @@ import com.viadeo.kasper.core.resolvers.EventResolver;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.domain.DomainEvent;
 
 import java.util.Collection;

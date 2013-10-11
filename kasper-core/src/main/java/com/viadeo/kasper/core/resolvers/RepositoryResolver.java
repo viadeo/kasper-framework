@@ -11,9 +11,6 @@ import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
-import com.viadeo.kasper.ddd.impl.Repository;
-import com.viadeo.kasper.er.Relation;
-import com.viadeo.kasper.er.annotation.XKasperRelation;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 

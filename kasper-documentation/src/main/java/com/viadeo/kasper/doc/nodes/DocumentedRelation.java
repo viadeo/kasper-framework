@@ -10,12 +10,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.resolvers.RelationResolver;
 import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.er.RootConcept;
-import com.viadeo.kasper.er.annotation.XBidirectional;
-import com.viadeo.kasper.er.annotation.XKasperRelation;
 
 import java.util.StringTokenizer;
 

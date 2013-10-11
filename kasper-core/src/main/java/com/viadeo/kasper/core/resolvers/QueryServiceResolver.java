@@ -13,8 +13,6 @@ import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 

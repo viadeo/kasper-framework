@@ -11,7 +11,6 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.doc.KasperLibrary;
 
 public final class DocumentedHandler extends DocumentedDomainNode {

@@ -9,7 +9,6 @@ package com.viadeo.kasper.doc.nodes;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.doc.KasperLibrary;
 
 import java.util.Collection;

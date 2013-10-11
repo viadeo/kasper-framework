@@ -11,7 +11,6 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
