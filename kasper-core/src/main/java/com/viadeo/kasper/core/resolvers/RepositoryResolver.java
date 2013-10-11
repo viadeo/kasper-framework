@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class RepositoryResolver extends AbstractResolver<Repository> {
+public class RepositoryResolver extends AbstractResolver<IRepository> {
 
     private EntityResolver entityResolver;
 
@@ -34,7 +34,7 @@ public class RepositoryResolver extends AbstractResolver<Repository> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(Class<? extends Repository> clazz) {
+    public Optional<Class<? extends Domain>> getDomain(final Class<? extends IRepository> clazz) {
 
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));

@@ -34,7 +34,7 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(Class<? extends EventListener> clazz) {
+    public Optional<Class<? extends Domain>> getDomain(final Class<? extends EventListener> clazz) {
 
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));

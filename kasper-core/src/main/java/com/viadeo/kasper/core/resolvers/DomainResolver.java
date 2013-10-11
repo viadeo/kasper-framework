@@ -56,7 +56,7 @@ public class DomainResolver implements Resolver<Domain> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(Class<? extends Domain> clazz) {
+    public Optional<Class<? extends Domain>> getDomain(final Class<? extends Domain> clazz) {
         return Optional.<Class<? extends Domain>>of(clazz);
     }
 
@@ -64,7 +64,7 @@ public class DomainResolver implements Resolver<Domain> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<String> getDomainLabel(Class<? extends Domain> clazz) {
+    public Optional<String> getDomainLabel(final Class<? extends Domain> clazz) {
         return this.getLabel(clazz);
     }
 

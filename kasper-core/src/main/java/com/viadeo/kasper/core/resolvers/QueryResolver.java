@@ -33,7 +33,7 @@ public class QueryResolver extends AbstractResolver<Query> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(Class<? extends Query> clazz) {
+    public Optional<Class<? extends Domain>> getDomain(final Class<? extends Query> clazz) {
 
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));

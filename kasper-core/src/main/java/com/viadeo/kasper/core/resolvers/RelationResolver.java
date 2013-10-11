@@ -31,8 +31,7 @@ public class RelationResolver extends AbstractResolver<Relation> {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
         }
 
-        final XKasperRelation relationAnnotation = (XKasperRelation)
-                clazz.getAnnotation(XKasperRelation.class);
+        final XKasperRelation relationAnnotation = clazz.getAnnotation(XKasperRelation.class);
 
         if (null != relationAnnotation) {
             final Class<? extends Domain> domain = relationAnnotation.domain();

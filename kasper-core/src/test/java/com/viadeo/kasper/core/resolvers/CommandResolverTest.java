@@ -19,8 +19,7 @@ import org.axonframework.unitofwork.UnitOfWork;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class CommandResolverTest {
 
@@ -45,7 +44,7 @@ public class CommandResolverTest {
         resolver.setCommandHandlerResolver(commandHandlerResolver);
         resolver.setDomainResolver(domainResolver);
 
-        when( domainLocator.getHandlerForCommandClass(TestCommand.class) )
+        when(domainLocator.getHandlerForCommandClass(TestCommand.class))
                 .thenReturn( Optional.<CommandHandler>of(commandHandler) );
 
         when( commandHandlerResolver.getDomain(commandHandler.getClass()) )
@@ -58,6 +57,12 @@ public class CommandResolverTest {
         // Then
         assertTrue(domain.isPresent());
         assertEquals(TestDomain.class, domain.get());
+
+        verify(domainLocator, times(1)).getHandlerForCommandClass(TestCommand.class);
+        verifyNoMoreInteractions(domainLocator);
+
+        verify(commandHandlerResolver, times(1)).getDomain(commandHandler.getClass());
+        verifyNoMoreInteractions(commandHandlerResolver);
     }
 
 }

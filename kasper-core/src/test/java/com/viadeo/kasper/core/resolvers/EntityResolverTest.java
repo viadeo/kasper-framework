@@ -18,8 +18,7 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 public class EntityResolverTest {
 
@@ -70,7 +69,7 @@ public class EntityResolverTest {
 
         resolver.setConceptResolver(conceptResolver);
 
-        when( conceptResolver.getDomain(TestConcept.class) )
+        when(conceptResolver.getDomain(TestConcept.class))
                 .thenReturn(Optional.<Class<? extends Domain>>of(TestDomain.class));
 
         // When
@@ -79,6 +78,9 @@ public class EntityResolverTest {
         // Then
         assertTrue(domain.isPresent());
         assertEquals(TestDomain.class, domain.get());
+
+        verify(conceptResolver, times(1)).getDomain(TestConcept.class);
+        verifyNoMoreInteractions(conceptResolver);
     }
 
     @Test
@@ -98,6 +100,9 @@ public class EntityResolverTest {
         // Then
         assertTrue(domain.isPresent());
         assertEquals(TestDomain.class, domain.get());
+
+        verify(relationResolver, times(1)).getDomain(TestRelation.class);
+        verifyNoMoreInteractions(relationResolver);
     }
 
 }

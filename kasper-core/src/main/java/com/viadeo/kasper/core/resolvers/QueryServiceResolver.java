@@ -25,14 +25,13 @@ public class QueryServiceResolver extends AbstractResolver<QueryService> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(Class<? extends QueryService> clazz) {
+    public Optional<Class<? extends Domain>> getDomain(final Class<? extends QueryService> clazz) {
 
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
         }
 
-        final XKasperQueryService annotation = (XKasperQueryService)
-                clazz.getAnnotation(XKasperQueryService.class);
+        final XKasperQueryService annotation = clazz.getAnnotation(XKasperQueryService.class);
 
         if (null != annotation) {
             final Class<? extends Domain> domain = annotation.domain();
