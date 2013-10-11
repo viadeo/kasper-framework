@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.doc.configuration;
 
-import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.core.boot.*;
+import com.viadeo.kasper.core.resolvers.ResolverFactory;
 import com.viadeo.kasper.doc.KasperLibrary;
 import org.springframework.context.annotation.Bean;
 
@@ -15,8 +15,8 @@ public class DefaultAutoDocumentationSpringConfiguration extends DefaultAutoDocu
 
     @Bean
     @Override
-    public KasperLibrary getKasperLibrary(final PlatformConfiguration pf) {
-        return super.getKasperLibrary(pf);
+    public KasperLibrary getKasperLibrary(final ResolverFactory resolverFactory) {
+        return super.getKasperLibrary(resolverFactory);
     }
 
     @Bean

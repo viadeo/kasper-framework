@@ -8,12 +8,12 @@ package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.locators.DomainLocator;
+import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.eventhandling.EventBus;
 import org.slf4j.Logger;
@@ -45,6 +45,11 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 	 * The domain locator to be passed to command handlers
 	 */
 	private transient DomainLocator domainLocator;
+
+    /**
+     * The command handler resolver
+     */
+    private transient CommandHandlerResolver commandHandlerResolver;
 
 	// ------------------------------------------------------------------------
 
@@ -92,11 +97,9 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 		}
 		
 		//- Retrieve command type from command handler definition -------------
-		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<?>> commandClass =
-				(Optional<Class<?>>) 
-					ReflectionGenericsResolver.getParameterTypeFromClass(commandHandlerClazz,
-						CommandHandler.class, CommandHandler.COMMAND_PARAMETER_POSITION);
+        @SuppressWarnings("unchecked")
+        final Optional<Class<? extends Command>> commandClass =
+                commandHandlerResolver.getCommandClass((Class<? extends CommandHandler>) commandHandlerClazz);
 
 		if (commandClass.isPresent()) {
 		    // register this command handler for further use in kasper components
@@ -136,5 +139,9 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 	public void setEventBus(final EventBus eventBus) {
 		this.eventBus = checkNotNull(eventBus);
 	}
+
+    public void setCommandHandlerResolver(final CommandHandlerResolver commandHandlerResolver) {
+        this.commandHandlerResolver = checkNotNull(commandHandlerResolver);
+    }
 
 }

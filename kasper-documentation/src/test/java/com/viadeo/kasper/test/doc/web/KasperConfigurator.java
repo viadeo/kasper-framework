@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.test.doc.web;
 
-import com.viadeo.kasper.client.platform.configuration.DefaultPlatformConfiguration;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.client.platform.configuration.PlatformFactory;
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
@@ -40,8 +39,8 @@ public class KasperConfigurator {
         final PlatformConfiguration pf = platformFactory.getPlatformConfiguration();
 
         final DefaultAutoDocumentationConfiguration docConf = new DefaultAutoDocumentationConfiguration();
-        docConf.registerToRootProcessor(rootProcessor, pf);
-        this.kasperLibrary = docConf.getKasperLibrary(pf);
+        docConf.registerToRootProcessor(rootProcessor, pf.resolverFactory());
+        this.kasperLibrary = docConf.getKasperLibrary(pf.resolverFactory());
 
         rootProcessor.addScanPrefix("com.viadeo.kasper.test"); // Scan test classes (test use case)
         rootProcessor.setDoNotScanDefaultPrefix(true); // Do not use default boot processors

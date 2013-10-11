@@ -7,9 +7,9 @@
 package com.viadeo.kasper.doc;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.core.resolvers.ResolverFactory;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryService;
@@ -49,7 +49,7 @@ public class KasperLibrary {
     /**
      * Access to the Kasper components resolvers
      */
-    private Resolvers resolvers;
+    private ResolverFactory resolverFactory;
 
 	/**
 	 * Keeps track of registered domains, by name and by prefix
@@ -642,12 +642,12 @@ public class KasperLibrary {
 
     // ------------------------------------------------------------------------
 
-    public void setResolvers(final Resolvers resolvers) {
-        this.resolvers = checkNotNull(resolvers);
+    public void setResolverFactory(final ResolverFactory resolverFactory) {
+        this.resolverFactory = checkNotNull(resolverFactory);
     }
 
-    public Resolvers getResolvers() {
-        return this.resolvers;
+    public ResolverFactory getResolverFactory() {
+        return this.resolverFactory;
     }
 
 }

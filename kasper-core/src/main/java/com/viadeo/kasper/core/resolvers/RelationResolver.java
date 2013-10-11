@@ -14,18 +14,20 @@ import com.viadeo.kasper.er.annotation.XKasperRelation;
 
 import java.util.concurrent.ConcurrentMap;
 
-public class RelationResolver {
+public class RelationResolver extends AbstractResolver {
 
     private static ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getTypeName() {
         return "Relation";
     }
 
     // ------------------------------------------------------------------------
 
+    @Override
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomain(final Class<?> clazz) {
 

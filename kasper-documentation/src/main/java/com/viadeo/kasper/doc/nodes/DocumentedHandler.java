@@ -8,12 +8,12 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
+import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 public final class DocumentedHandler extends DocumentedDomainNode {
 	private static final long serialVersionUID = 2245288475776783642L;
@@ -27,21 +27,21 @@ public final class DocumentedHandler extends DocumentedDomainNode {
 	
 	public DocumentedHandler(final KasperLibrary kl, final Class<? extends CommandHandler<?>> handlerClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
-		
+
+        final CommandHandlerResolver commandHandlerResolver =
+                this.getKasperLibrary().getResolverFactory().getCommandHandlerResolver();
+
 		// Extract command type from handler ----------------------------------
-		@SuppressWarnings("unchecked") // Safe
 		final Optional<Class<? extends Command>> commandClazz =
-				(Optional<Class<? extends Command>>)
-					ReflectionGenericsResolver.getParameterTypeFromClass(
-						handlerClazz, CommandHandler.class, CommandHandler.COMMAND_PARAMETER_POSITION);
-		
-		if (!commandClazz.isPresent()) {
-			throw new KasperException("Unable to find command type for handler " + handlerClazz.getClass());
-		}
-		
-		// Find associated domain ---------------------------------------------		
-		final XKasperCommandHandler handlerAnno = handlerClazz.getAnnotation(XKasperCommandHandler.class);
-		final String domainName = handlerAnno.domain().getSimpleName();
+                commandHandlerResolver.getCommandClass(handlerClazz);
+
+		// Find associated domain ---------------------------------------------
+        String domainName = "[Not Resolved]";
+        final Optional<String> optDomainName =
+                commandHandlerResolver.getDomainLabel(handlerClazz);
+        if (optDomainName.isPresent()) {
+            domainName = optDomainName.get();
+        }
 		
 		// Get description ----------------------------------------------------
 		final XKasperCommandHandler annotation = handlerClazz.getAnnotation(XKasperCommandHandler.class);

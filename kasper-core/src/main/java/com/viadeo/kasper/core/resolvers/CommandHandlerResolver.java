@@ -17,19 +17,21 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.concurrent.ConcurrentMap;
 
-public class CommandHandlerResolver {
+public class CommandHandlerResolver extends AbstractResolver {
 
     private static ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
     private static ConcurrentMap<Class, Class> cacheCommands = Maps.newConcurrentMap();
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getTypeName() {
         return "CommandHandler";
     }
 
     // ------------------------------------------------------------------------
 
+    @Override
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomain(final Class<?> clazz) {
 
@@ -46,15 +48,15 @@ public class CommandHandlerResolver {
             final Class<? extends Domain> domain = handlerAnnotation.domain();
             cacheDomains.put(clazz, domain);
             return Optional.<Class<? extends Domain>>of(domain);
+        } else {
+            throw new KasperException("Command handler is not decorated : " + clazz.getName());
         }
-
-        return Optional.absent();
     }
 
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Command>> getCommandClass(final Class<CommandHandler<? extends CommandHandler>> clazz) {
+    public Optional<Class<? extends Command>> getCommandClass(final Class<? extends CommandHandler> clazz) {
 
         if (cacheCommands.containsKey(clazz)) {
             return Optional.<Class<? extends Command>>of(cacheCommands.get(clazz));

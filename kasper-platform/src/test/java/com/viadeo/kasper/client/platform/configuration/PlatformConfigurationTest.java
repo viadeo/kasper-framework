@@ -59,20 +59,25 @@ public class PlatformConfigurationTest {
         final AnnotationRootProcessor annotationRootProcessor =
                 this.testAnnotationRootProcessor(platformConfiguration, componentsInstanceManager);
 
-        final CommandHandlerResolver commandHandlerResolver = testCommandHandlerResolver(platformConfiguration);
+        /* FIXME: add test */
+        final DomainResolver domainResolver = platformConfiguration.domainResolver();
+
+        final CommandHandlerResolver commandHandlerResolver = testCommandHandlerResolver(platformConfiguration, domainResolver);
 
         final DomainLocator domainLocator =
                 this.testDomainLocator(platformConfiguration, commandHandlerResolver);
 
-         final DomainResolver domainResolver = testDomainResolver(
+        final ResolverFactory resolverFactory = testResolverFactory(
                 platformConfiguration,
                 domainLocator,
                 commandHandlerResolver,
-                queryServicesLocator
+                queryServicesLocator,
+                domainResolver
         );
 
         final CommandHandlersProcessor commandHandlersProcessor =
-                this.testCommandHandlersProcessor(platformConfiguration, commandBus, domainLocator, eventBus);
+                this.testCommandHandlersProcessor(
+                        platformConfiguration, commandBus, domainLocator, commandHandlerResolver, eventBus);
 
         final DomainsProcessor domainsProcessor =
                 this.testDomainsProcessor(platformConfiguration, domainLocator);
@@ -100,47 +105,53 @@ public class PlatformConfigurationTest {
     /*
      * FIXME: implement tests
      */
-    private CommandHandlerResolver testCommandHandlerResolver(final PlatformConfiguration platformConfiguration) {
-        return platformConfiguration.commandHandlerResolver();
+    private CommandHandlerResolver testCommandHandlerResolver(final PlatformConfiguration platformConfiguration, final DomainResolver domainResolver) {
+        return platformConfiguration.commandHandlerResolver(domainResolver);
     }
 
     /*
      * FIXME: implement tests
      */
-    private DomainResolver testDomainResolver(
+    private ResolverFactory testResolverFactory(
             final PlatformConfiguration platformConfiguration,
             final DomainLocator domainLocator,
             final CommandHandlerResolver commandHandlerResolver,
-            final QueryServicesLocator queryServicesLocator
+            final QueryServicesLocator queryServicesLocator,
+            final DomainResolver domainResolver
     ) {
 
+        final CommandResolver commandResolver = platformConfiguration.commandResolver(domainLocator, domainResolver, commandHandlerResolver);
 
-        final CommandResolver commandResolver = platformConfiguration.commandResolver(domainLocator, commandHandlerResolver);
+        final EventResolver eventResolver = platformConfiguration.eventResolver(domainResolver);
 
-        final EventResolver eventResolver = platformConfiguration.eventResolver();
+        final EventListenerResolver eventListenerResolver = platformConfiguration.eventListenerResolver(eventResolver, domainResolver);
 
-        final EventListenerResolver eventListenerResolver = platformConfiguration.eventListenerResolver(eventResolver);
+        final QueryServiceResolver queryServiceResolver = platformConfiguration.queryServiceResolver(domainResolver);
 
-        final QueryServiceResolver queryServiceResolver = platformConfiguration.queryServiceResolver();
+        final QueryResolver queryResolver = platformConfiguration.queryResolver(domainResolver, queryServiceResolver, queryServicesLocator);
 
-        final QueryResolver queryResolver = platformConfiguration.queryResolver(queryServiceResolver, queryServicesLocator);
+        final ConceptResolver conceptResolver = platformConfiguration.conceptResolver(domainResolver);
 
-        final ConceptResolver conceptResolver = platformConfiguration.conceptResolver();
+        final RelationResolver relationResolver = platformConfiguration.relationResolver(domainResolver);
 
-        final RelationResolver relationResolver = platformConfiguration.relationResolver();
+        final EntityResolver entityResolver = platformConfiguration.entityResolver(conceptResolver, relationResolver, domainResolver);
 
-        final EntityResolver entityResolver = platformConfiguration.entityResolver(conceptResolver, relationResolver);
+        final RepositoryResolver repositoryResolver = platformConfiguration.repositoryResolver(entityResolver, domainResolver);
 
-        final RepositoryResolver repositoryResolver = platformConfiguration.repositoryResolver(entityResolver);
+        final ResolverFactory resolverFactory = new ResolverFactory();
+        resolverFactory.setDomainResolver(domainResolver);
+        resolverFactory.setCommandResolver(commandResolver);
+        resolverFactory.setCommandHandlerResolver(commandHandlerResolver);
+        resolverFactory.setEventListenerResolver(eventListenerResolver);
+        resolverFactory.setQueryResolver(queryResolver);
+        resolverFactory.setQueryServiceResolver(queryServiceResolver);
+        resolverFactory.setRepositoryResolver(repositoryResolver);
+        resolverFactory.setEntityResolver(entityResolver);
+        resolverFactory.setConceptResolver(conceptResolver);
+        resolverFactory.setRelationResolver(relationResolver);
+        resolverFactory.setEventResolver(eventResolver);
 
-        final DomainResolver domainResolver = platformConfiguration.domainResolver(
-                commandResolver,
-                eventListenerResolver,
-                queryResolver,
-                repositoryResolver
-        );
-
-        return domainResolver;
+        return resolverFactory;
     }
 
     // ------------------------------------------------------------------------
@@ -265,6 +276,7 @@ public class PlatformConfigurationTest {
     private CommandHandlersProcessor testCommandHandlersProcessor(final PlatformConfiguration platformConfiguration,
                                                                   final CommandBus commandBus,
                                                                   final DomainLocator domainLocator,
+                                                                  final CommandHandlerResolver commandHandlerResolver,
                                                                   final KasperEventBus eventBus) {
         try {
             platformConfiguration.commandHandlersProcessor();
@@ -273,11 +285,14 @@ public class PlatformConfigurationTest {
             // Ignore
         }
 
-        final CommandHandlersProcessor commandHandlersProcessor = platformConfiguration.commandHandlersProcessor(commandBus, domainLocator, eventBus);
+        final CommandHandlersProcessor commandHandlersProcessor =
+                platformConfiguration.commandHandlersProcessor(
+                        commandBus, domainLocator, eventBus, commandHandlerResolver);
         assertSame(commandHandlersProcessor, platformConfiguration.commandHandlersProcessor());
 
         try {
-            platformConfiguration.commandHandlersProcessor(commandBus, domainLocator, eventBus);
+            platformConfiguration.commandHandlersProcessor(
+                    commandBus, domainLocator, eventBus, commandHandlerResolver);
             fail();
         } catch (final KasperException e) {
             // Ignore

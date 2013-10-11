@@ -19,7 +19,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class RepositoryResolver {
+public class RepositoryResolver extends AbstractResolver {
 
     private static ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
 
@@ -27,12 +27,14 @@ public class RepositoryResolver {
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getTypeName() {
         return "Repository";
     }
 
     // ------------------------------------------------------------------------
 
+    @Override
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomain(Class<?> clazz) {
 

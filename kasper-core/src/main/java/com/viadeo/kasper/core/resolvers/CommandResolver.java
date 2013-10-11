@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class CommandResolver {
+public class CommandResolver extends AbstractResolver {
 
     private static ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
 
@@ -26,10 +26,12 @@ public class CommandResolver {
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getTypeName() {
         return "Command";
     }
 
+    @Override
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomain(final Class<?> clazz) {
 

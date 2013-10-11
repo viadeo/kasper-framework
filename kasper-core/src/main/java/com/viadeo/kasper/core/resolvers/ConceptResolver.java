@@ -14,18 +14,20 @@ import com.viadeo.kasper.er.annotation.XKasperConcept;
 
 import java.util.concurrent.ConcurrentMap;
 
-public class ConceptResolver {
+public class ConceptResolver extends AbstractResolver {
 
     private static ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getTypeName() {
         return "Concept";
     }
 
     // ------------------------------------------------------------------------
 
+    @Override
     public Optional<Class<? extends Domain>> getDomain(final Class<?> clazz) {
 
         if ( ! Concept.class.isAssignableFrom(clazz)) {

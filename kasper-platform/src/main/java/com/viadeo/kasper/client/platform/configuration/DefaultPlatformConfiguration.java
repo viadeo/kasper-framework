@@ -129,12 +129,10 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         if (components.containsKey(KasperEventBus.class)) {
             return components.getInstance(KasperEventBus.class);
         } else {
-
             final KasperEventBus eventBus = new KasperEventBus();
 
             components.putInstance(KasperEventBus.class, eventBus);
             return eventBus;
-
         }
     }
 
@@ -244,7 +242,8 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     public CommandHandlersProcessor commandHandlersProcessor(
             final CommandBus commandBus,
             final DomainLocator domainLocator,
-            final KasperEventBus eventBus
+            final KasperEventBus eventBus,
+            final CommandHandlerResolver commandHandlerResolver
     ) {
         this.ensureNotPresent(CommandHandlersProcessor.class);
 
@@ -252,6 +251,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         commandHandlersProcessor.setCommandBus(commandBus);
         commandHandlersProcessor.setDomainLocator(domainLocator);
         commandHandlersProcessor.setEventBus(eventBus);
+        commandHandlersProcessor.setCommandHandlerResolver(commandHandlerResolver);
 
         components.putInstance(CommandHandlersProcessor.class, commandHandlersProcessor);
         return commandHandlersProcessor;
@@ -375,40 +375,35 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
+    public CommandHandlerResolver commandHandlerResolver(final DomainResolver domainResolver) {
+        this.ensureNotPresent(CommandHandlerResolver.class);
+
+        final CommandHandlerResolver commandHandlerResolver = new CommandHandlerResolver();
+        commandHandlerResolver.setDomainResolver(domainResolver);
+
+        components.putInstance(CommandHandlerResolver.class, commandHandlerResolver);
+        return commandHandlerResolver;
+    }
+
+    @Override
     public CommandHandlerResolver commandHandlerResolver() {
-        if (components.containsKey(CommandHandlerResolver.class)) {
-            return components.getInstance(CommandHandlerResolver.class);
-        } else {
-            final CommandHandlerResolver commandHandlerResolver = new CommandHandlerResolver();
-            components.putInstance(CommandHandlerResolver.class, commandHandlerResolver);
-            return commandHandlerResolver;
-        }
+        return this.getAvailableInstance(CommandHandlerResolver.class);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public DomainResolver domainResolver(
-            final CommandResolver commandResolver,
-            final EventListenerResolver eventListenerResolver,
-            final QueryResolver queryResolver,
-            final RepositoryResolver repositoryResolver
-    ) {
-        this.ensureNotPresent(DomainResolver.class);
-
-        final DomainResolver domainResolver = new DomainResolver();
-        domainResolver.setCommandResolver(commandResolver);
-        domainResolver.setEventListenerResolver(eventListenerResolver);
-        domainResolver.setQueryResolver(queryResolver);
-        domainResolver.setRepositoryResolver(repositoryResolver);
-
-        components.putInstance(DomainResolver.class, domainResolver);
-        return domainResolver;
-    }
-
-    @Override
     public DomainResolver domainResolver() {
-        return this.getAvailableInstance(DomainResolver.class);
+        if (components.containsKey(DomainResolver.class)) {
+            return components.getInstance(DomainResolver.class);
+        } else {
+            this.ensureNotPresent(DomainResolver.class);
+
+            final DomainResolver domainResolver = new DomainResolver();
+
+            components.putInstance(DomainResolver.class, domainResolver);
+            return domainResolver;
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -416,6 +411,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     @Override
     public CommandResolver commandResolver(
             final DomainLocator domainLocator,
+            final DomainResolver domainResolver,
             final CommandHandlerResolver commandHandlerResolver
     ) {
         this.ensureNotPresent(CommandResolver.class);
@@ -423,6 +419,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         final CommandResolver commandResolver = new CommandResolver();
         commandResolver.setDomainLocator(domainLocator);
         commandResolver.setCommandHandlerResolver(commandHandlerResolver);
+        commandResolver.setDomainResolver(domainResolver);
 
         components.putInstance(CommandResolver.class, commandResolver);
         return commandResolver;
@@ -437,12 +434,14 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
 
     @Override
     public EventListenerResolver eventListenerResolver(
-            final EventResolver eventResolver
+            final EventResolver eventResolver,
+            final DomainResolver domainResolver
     ) {
         this.ensureNotPresent(EventListenerResolver.class);
 
         final EventListenerResolver eventListenerResolver = new EventListenerResolver();
         eventListenerResolver.setEventResolver(eventResolver);
+        eventListenerResolver.setDomainResolver(domainResolver);
 
         components.putInstance(EventListenerResolver.class, eventListenerResolver);
         return eventListenerResolver;
@@ -456,20 +455,26 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
+    public EventResolver eventResolver(final DomainResolver domainResolver) {
+        this.ensureNotPresent(EventResolver.class);
+
+        final EventResolver eventResolver = new EventResolver();
+        eventResolver.setDomainResolver(domainResolver);
+
+        components.putInstance(EventResolver.class, eventResolver);
+        return eventResolver;
+    }
+
+    @Override
     public EventResolver eventResolver() {
-        if (components.containsKey(EventResolver.class)) {
-            return components.getInstance(EventResolver.class);
-        } else {
-            final EventResolver eventResolver = new EventResolver();
-            components.putInstance(EventResolver.class, eventResolver);
-            return eventResolver;
-        }
+        return this.getAvailableInstance(EventResolver.class);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
     public QueryResolver queryResolver(
+        final DomainResolver domainResolver,
         final QueryServiceResolver queryServiceResolver,
         final QueryServicesLocator queryServicesLocator
     ) {
@@ -478,6 +483,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         final QueryResolver queryResolver = new QueryResolver();
         queryResolver.setQueryServiceResolver(queryServiceResolver);
         queryResolver.setQueryServicesLocator(queryServicesLocator);
+        queryResolver.setDomainResolver(domainResolver);
 
         components.putInstance(QueryResolver.class, queryResolver);
         return queryResolver;
@@ -491,24 +497,30 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
+    public QueryServiceResolver queryServiceResolver(final DomainResolver domainResolver) {
+        this.ensureNotPresent(QueryServiceResolver.class);
+
+        final QueryServiceResolver queryServiceResolver = new QueryServiceResolver();
+        queryServiceResolver.setDomainResolver(domainResolver);
+
+        components.putInstance(QueryServiceResolver.class, queryServiceResolver);
+        return queryServiceResolver;
+    }
+
+    @Override
     public QueryServiceResolver queryServiceResolver() {
-        if (components.containsKey(QueryServiceResolver.class)) {
-            return components.getInstance(QueryServiceResolver.class);
-        } else {
-            final QueryServiceResolver queryServiceResolver = new QueryServiceResolver();
-            components.putInstance(QueryServiceResolver.class, queryServiceResolver);
-            return queryServiceResolver;
-        }
+        return this.getAvailableInstance(QueryServiceResolver.class);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public RepositoryResolver repositoryResolver(final EntityResolver entityResolver) {
+    public RepositoryResolver repositoryResolver(final EntityResolver entityResolver, final DomainResolver domainResolver) {
         this.ensureNotPresent(RepositoryResolver.class);
 
         final RepositoryResolver repositoryResolver = new RepositoryResolver();
         repositoryResolver.setEntityResolver(entityResolver);
+        repositoryResolver.setDomainResolver(domainResolver);
 
         components.putInstance(RepositoryResolver.class, repositoryResolver);
         return repositoryResolver;
@@ -524,13 +536,15 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     @Override
     public EntityResolver entityResolver(
             final ConceptResolver conceptResolver,
-            final RelationResolver relationResolver
+            final RelationResolver relationResolver,
+            final DomainResolver domainResolver
     ) {
         this.ensureNotPresent(EntityResolver.class);
 
         final EntityResolver entityResolver = new EntityResolver();
         entityResolver.setConceptResolver(conceptResolver);
         entityResolver.setRelationResolver(relationResolver);
+        entityResolver.setDomainResolver(domainResolver);
 
         components.putInstance(EntityResolver.class, entityResolver);
         return entityResolver;
@@ -544,27 +558,77 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
+    public ConceptResolver conceptResolver(final DomainResolver domainResolver) {
+        this.ensureNotPresent(ConceptResolver.class);
+
+        final ConceptResolver conceptResolver = new ConceptResolver();
+        conceptResolver.setDomainResolver(domainResolver);
+
+        components.putInstance(ConceptResolver.class, conceptResolver);
+        return conceptResolver;
+    }
+
+    @Override
     public ConceptResolver conceptResolver() {
-        if (components.containsKey(ConceptResolver.class)) {
-            return components.getInstance(ConceptResolver.class);
-        } else {
-            final ConceptResolver conceptResolver = new ConceptResolver();
-            components.putInstance(ConceptResolver.class, conceptResolver);
-            return conceptResolver;
-        }
+        return this.getAvailableInstance(ConceptResolver.class);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
+    public RelationResolver relationResolver(final DomainResolver domainResolver) {
+        this.ensureNotPresent(RelationResolver.class);
+
+        final RelationResolver relationResolver = new RelationResolver();
+        relationResolver.setDomainResolver(domainResolver);
+
+        components.putInstance(RelationResolver.class, relationResolver);
+        return relationResolver;
+    }
+
+    @Override
     public RelationResolver relationResolver() {
-        if (components.containsKey(RelationResolver.class)) {
-            return components.getInstance(RelationResolver.class);
-        } else {
-            final RelationResolver relationResolver = new RelationResolver();
-            components.putInstance(RelationResolver.class, relationResolver);
-            return relationResolver;
-        }
+        return this.getAvailableInstance(RelationResolver.class);
+    }
+
+    // -----------------------------------------------------------------------
+
+    @Override
+    public ResolverFactory resolverFactory(
+            DomainResolver domainResolver,
+            CommandResolver commandResolver,
+            CommandHandlerResolver commandHandlerResolver,
+            EventListenerResolver eventListenerResolver,
+            QueryResolver queryResolver,
+            QueryServiceResolver queryServiceResolver,
+            RepositoryResolver repositoryResolver,
+            EntityResolver entityResolver,
+            ConceptResolver conceptResolver,
+            RelationResolver relationResolver,
+            EventResolver eventResolver
+    ) {
+        this.ensureNotPresent(ResolverFactory.class);
+
+        final ResolverFactory resolverFactory = new ResolverFactory();
+        resolverFactory.setDomainResolver(domainResolver);
+        resolverFactory.setCommandResolver(commandResolver);
+        resolverFactory.setCommandHandlerResolver(commandHandlerResolver);
+        resolverFactory.setEventListenerResolver(eventListenerResolver);
+        resolverFactory.setQueryResolver(queryResolver);
+        resolverFactory.setQueryServiceResolver(queryServiceResolver);
+        resolverFactory.setRepositoryResolver(repositoryResolver);
+        resolverFactory.setEntityResolver(entityResolver);
+        resolverFactory.setConceptResolver(conceptResolver);
+        resolverFactory.setRelationResolver(relationResolver);
+        resolverFactory.setEventResolver(eventResolver);
+
+        components.putInstance(ResolverFactory.class, resolverFactory);
+        return resolverFactory;
+    }
+
+    @Override
+    public ResolverFactory resolverFactory() {
+        return this.getAvailableInstance(ResolverFactory.class);
     }
 
     // ------------------------------------------------------------------------

@@ -6,10 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.doc.configuration;
 
-import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.core.boot.*;
+import com.viadeo.kasper.core.resolvers.ResolverFactory;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.doc.Resolvers;
 
 public class DefaultAutoDocumentationConfiguration implements AutoDocumentationConfiguration {
 
@@ -18,10 +17,10 @@ public class DefaultAutoDocumentationConfiguration implements AutoDocumentationC
 
     // ------------------------------------------------------------------------
 
-    public void registerToRootProcessor(final AnnotationRootProcessor rootProcessor, final PlatformConfiguration pf) {
+    public void registerToRootProcessor(final AnnotationRootProcessor rootProcessor, final ResolverFactory resolverFactory) {
         this.rootProcessor = rootProcessor;
 
-        final KasperLibrary library = this.getKasperLibrary(pf);
+        final KasperLibrary library = this.getKasperLibrary(resolverFactory);
 
         this.getDomainsDocumentationProcessor(library);
         this.getRepositoriesDocumentationProcessor(library);
@@ -46,24 +45,10 @@ public class DefaultAutoDocumentationConfiguration implements AutoDocumentationC
     // ------------------------------------------------------------------------
 
     @Override
-    public KasperLibrary getKasperLibrary(final PlatformConfiguration pf) {
+    public KasperLibrary getKasperLibrary(final ResolverFactory resolverFactory) {
         if (null == this.kasperLibrary) {
             this.kasperLibrary = new KasperLibrary();
-
-            final Resolvers resolvers = new Resolvers();
-
-            resolvers.setDomainResolver(pf.domainResolver());
-            resolvers.setCommandResolver(pf.commandResolver());
-            resolvers.setEventListenerResolver(pf.eventListenerResolver());
-            resolvers.setQueryResolver(pf.queryResolver());
-            resolvers.setQueryServiceResolver(pf.queryServiceResolver());
-            resolvers.setRepositoryResolver(pf.repositoryResolver());
-            resolvers.setEntityResolver(pf.entityResolver());
-            resolvers.setConceptResolver(pf.conceptResolver());
-            resolvers.setRelationResolver(pf.relationResolver());
-            resolvers.setEventResolver(pf.eventResolver());
-
-            this.kasperLibrary.setResolvers(resolvers);
+            this.kasperLibrary.setResolverFactory(resolverFactory);
         }
         return this.kasperLibrary;
     }

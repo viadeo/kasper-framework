@@ -8,14 +8,17 @@ package com.viadeo.kasper.core.metrics;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.resolvers.DomainResolver;
+import com.viadeo.kasper.core.resolvers.Resolver;
+import com.viadeo.kasper.core.resolvers.ResolverFactory;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class KasperMetrics {
 
     private static final MetricRegistry REGISTRY = new MetricRegistry();
     private static String namePrefix = "";
 
-    private static DomainResolver domainResolver;
+    private static ResolverFactory resolverFactory;
 
     // ------------------------------------------------------------------------
 
@@ -45,29 +48,36 @@ public final class KasperMetrics {
 
     // ------------------------------------------------------------------------
 
-    public static String pathForKasperComponent(final Class<?> clazz) {
-        if (null == domainResolver) {
-            return clazz.getName();
+  public static String pathForKasperComponent(final Class<?> clazz) {
+        String componentPath = clazz.getName();
+
+        if (null == resolverFactory) {
+            return componentPath;
         }
 
         final String name = clazz.getSimpleName();
-        final Optional<String> domain = domainResolver.getDomainLabelFromClass(clazz);
-        if (domain.isPresent()) {
-            final Optional<String> type = domainResolver.getComponentTypeName(clazz);
-            if (type.isPresent()) {
-                return domain.get() + "." + type.get() + "." + name;
-            } else {
-                return clazz.getName();
+
+        final Optional<Resolver> resolver = resolverFactory.getResolverFromClass(clazz);
+        if (resolver.isPresent()) {
+
+            final Optional<String> domainName = resolver.get().getDomainLabel(clazz);
+            if (domainName.isPresent()) {
+                final String type = resolver.get().getTypeName();
+                componentPath = domainName.get() + "." + type + "." + name;
             }
-        } else {
-            return clazz.getName();
         }
+
+        return componentPath;
     }
 
     // ------------------------------------------------------------------------
 
-    public static void setDomainResolver(final DomainResolver domainResolver) {
-        KasperMetrics.domainResolver = domainResolver;
+    public static void setResolverFactory(final ResolverFactory resolverFactory) {
+        KasperMetrics.resolverFactory = checkNotNull(resolverFactory);
+    }
+
+    public static void unsetResolverFactory(){
+        KasperMetrics.resolverFactory = null;
     }
 
 }

@@ -81,14 +81,55 @@ public class PlatformFactory {
         // -- EVENT
         final KasperEventBus eventBus = platformConfiguration.eventBus();
 
+        // -- MAIN RESOLVERS
+
+        final DomainResolver domainResolver = platformConfiguration.domainResolver();
+
+        final CommandHandlerResolver commandHandlerResolver = platformConfiguration.commandHandlerResolver(domainResolver);
+
+        // -- DOMAIN LOCATOR
+
+        final DomainLocator domainLocator = platformConfiguration.domainLocator(commandHandlerResolver);
+
+        // -- COMPONENTS RESOLVERS
+
+        final CommandResolver commandResolver = platformConfiguration.commandResolver(domainLocator, domainResolver, commandHandlerResolver);
+
+        final EventResolver eventResolver = platformConfiguration.eventResolver(domainResolver);
+
+        final EventListenerResolver eventListenerResolver = platformConfiguration.eventListenerResolver(eventResolver, domainResolver);
+
+        final QueryServiceResolver queryServiceResolver = platformConfiguration.queryServiceResolver(domainResolver);
+
+        final QueryResolver queryResolver = platformConfiguration.queryResolver(domainResolver, queryServiceResolver, queryServicesLocator);
+
+        final ConceptResolver conceptResolver = platformConfiguration.conceptResolver(domainResolver);
+
+        final RelationResolver relationResolver = platformConfiguration.relationResolver(domainResolver);
+
+        final EntityResolver entityResolver = platformConfiguration.entityResolver(conceptResolver, relationResolver, domainResolver);
+
+        final RepositoryResolver repositoryResolver = platformConfiguration.repositoryResolver(entityResolver, domainResolver);
+
+        final ResolverFactory resolverFactory = platformConfiguration.resolverFactory(
+                domainResolver,
+                commandResolver,
+                commandHandlerResolver,
+                eventListenerResolver,
+                queryResolver,
+                queryServiceResolver,
+                repositoryResolver,
+                entityResolver,
+                conceptResolver,
+                relationResolver,
+                eventResolver
+        );
+
         // -- ROOT PROCESSING
         final ComponentsInstanceManager componentsInstanceManager = platformConfiguration.getComponentsInstanceManager();
         final AnnotationRootProcessor annotationRootProcessor = platformConfiguration.annotationRootProcessor(componentsInstanceManager);
 
-        final CommandHandlerResolver commandHandlerResolver = platformConfiguration.commandHandlerResolver();
-        final DomainLocator domainLocator = platformConfiguration.domainLocator(commandHandlerResolver);
-
-        final CommandHandlersProcessor commandHandlersProcessor = platformConfiguration.commandHandlersProcessor(commandBus, domainLocator, eventBus);
+        final CommandHandlersProcessor commandHandlersProcessor = platformConfiguration.commandHandlersProcessor(commandBus, domainLocator, eventBus, commandHandlerResolver);
         annotationRootProcessor.registerProcessor(commandHandlersProcessor);
 
         final DomainsProcessor domainsProcessor = platformConfiguration.domainsProcessor(domainLocator);
@@ -106,35 +147,8 @@ public class PlatformFactory {
         final ServiceFiltersProcessor serviceFiltersProcessor = platformConfiguration.serviceFiltersProcessor(queryServicesLocator);
         annotationRootProcessor.registerProcessor(serviceFiltersProcessor);
 
-        // -- COMPONENTS RESOLVERS
-
-        final CommandResolver commandResolver = platformConfiguration.commandResolver(domainLocator, commandHandlerResolver);
-
-        final EventResolver eventResolver = platformConfiguration.eventResolver();
-
-        final EventListenerResolver eventListenerResolver = platformConfiguration.eventListenerResolver(eventResolver);
-
-        final QueryServiceResolver queryServiceResolver = platformConfiguration.queryServiceResolver();
-
-        final QueryResolver queryResolver = platformConfiguration.queryResolver(queryServiceResolver, queryServicesLocator);
-
-        final ConceptResolver conceptResolver = platformConfiguration.conceptResolver();
-
-        final RelationResolver relationResolver = platformConfiguration.relationResolver();
-
-        final EntityResolver entityResolver = platformConfiguration.entityResolver(conceptResolver, relationResolver);
-
-        final RepositoryResolver repositoryResolver = platformConfiguration.repositoryResolver(entityResolver);
-
-        final DomainResolver domainResolver = platformConfiguration.domainResolver(
-                commandResolver,
-                eventListenerResolver,
-                queryResolver,
-                repositoryResolver
-        );
-
         // -- Metrics
-        KasperMetrics.setDomainResolver(domainResolver);
+        KasperMetrics.setResolverFactory(resolverFactory);
 
         // -- PLATFORM
         platform = platformConfiguration.kasperPlatform(commandGateway, queryGateway, eventBus, annotationRootProcessor);

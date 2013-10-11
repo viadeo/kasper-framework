@@ -15,18 +15,20 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.concurrent.ConcurrentMap;
 
-public class EventResolver {
+public class EventResolver extends AbstractResolver {
 
     private static ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getTypeName() {
         return "Event";
     }
 
     // ------------------------------------------------------------------------
 
+    @Override
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomain(Class<?> clazz) {
 
