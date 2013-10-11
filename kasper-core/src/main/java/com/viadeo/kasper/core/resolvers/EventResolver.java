@@ -8,7 +8,10 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.er.Concept;
+import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.domain.DomainEvent;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
@@ -51,6 +54,41 @@ public class EventResolver extends AbstractResolver<Event> {
         }
 
         return domainClazz;
+    }
+
+    @Override
+    public String getLabel(Class<? extends Event> clazz) {
+        return clazz.getSimpleName()
+                .replace("Event", "");
+    }
+
+    // ------------------------------------------------------------------------
+
+    public String getDescription(Class<? extends Event> eventClazz) {
+        final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
+
+        String description = "";
+        if (null != annotation) {
+            description = annotation.description();
+        }
+        if (description.isEmpty()) {
+            description = String.format("The %s event", eventClazz.getSimpleName().replaceAll("Concept", ""));
+        }
+
+        return description;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public String getAction(Class<? extends Event> eventClazz) {
+        final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
+
+        String action = "";
+        if (null != annotation) {
+            action = annotation.description();
+        }
+
+        return action;
     }
 
 }

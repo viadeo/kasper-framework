@@ -51,6 +51,12 @@ public class QueryResolver extends AbstractResolver<Query> {
         return Optional.absent();
     }
 
+    @Override
+    public String getLabel(Class<? extends Query> clazz) {
+        return clazz.getSimpleName()
+                .replace("Query", "");
+    }
+
     // ------------------------------------------------------------------------
 
     public void setQueryServicesLocator(final QueryServicesLocator queryServicesLocator) {

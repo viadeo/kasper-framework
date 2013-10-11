@@ -11,6 +11,7 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
@@ -47,6 +48,29 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
         } else {
             throw new KasperException("Event event is not decorated : " + clazz.getName());
         }
+    }
+
+    @Override
+    public String getLabel(Class<? extends EventListener> clazz) {
+        return clazz.getSimpleName()
+                .replace("EventListener", "")
+                .replace("Listener", "");
+    }
+
+    // ------------------------------------------------------------------------
+
+    public String getDescription(Class<? extends EventListener> clazz) {
+        final XKasperEventListener annotation = clazz.getAnnotation(XKasperEventListener.class);
+
+        String description = "";
+        if (null != annotation) {
+            description = annotation.description();
+        }
+        if (description.isEmpty()) {
+            description = String.format("The %s event listener", clazz.getSimpleName().replaceAll("Concept", ""));
+        }
+
+        return description;
     }
 
     // ------------------------------------------------------------------------

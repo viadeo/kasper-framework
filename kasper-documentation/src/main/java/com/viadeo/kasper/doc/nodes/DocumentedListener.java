@@ -7,6 +7,7 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.core.resolvers.EventListenerResolver;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
@@ -24,23 +25,21 @@ public final class DocumentedListener extends DocumentedDomainNode {
 	
 	public DocumentedListener(final KasperLibrary kl, final Class<? extends EventListener> listenerClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
-		
+
+        final EventListenerResolver resolver =
+                this.getKasperLibrary().getResolverFactory().getEventListenerResolver();
+
 		// Extract event type from listener -----------------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Class<? extends Event> eventClazz =
-                this.getKasperLibrary().getResolverFactory().getEventListenerResolver().getEventClass(listenerClazz);
+		final Class<? extends Event> eventClazz = resolver.getEventClass(listenerClazz);
 
 		// Find associated domain ---------------------------------------------		
 		final String domainName = DocumentedEvent.getDomainFromEventClass(
                 this.getKasperLibrary().getResolverFactory().getEventResolver(), eventClazz);
 		
 		// Get description ----------------------------------------------------
-		final XKasperEventListener annotation = listenerClazz.getAnnotation(XKasperEventListener.class);
-		String description = annotation.description();
-		if (description.isEmpty()) {
-			description = String.format("The listener for %s events", eventClazz.getSimpleName().replaceAll("Event", ""));
-		}
-		
+		final String description = resolver.getDescription(listenerClazz);
+
 		//- Set properties ----------------------------------------------------
 		this.eventName = eventClazz.getSimpleName();
 		this.setName(listenerClazz.getSimpleName());

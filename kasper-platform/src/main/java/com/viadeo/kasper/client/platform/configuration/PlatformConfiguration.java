@@ -104,7 +104,7 @@ public interface PlatformConfiguration {
     /**
      * Warning : override the two methods at once
      *
-     * @param queryServiceResolver the query service resolver
+     * @param queryServiceResolver the resolver factory
      *
      * @return the query services locator
      */
@@ -213,7 +213,6 @@ public interface PlatformConfiguration {
      * Warning : override the two methods at once
      *
      * @param domainResolver the event resolver
-     * @param domainResolver the domain resolver
      *
      * @return the event listener resolver
      */
@@ -276,9 +275,9 @@ public interface PlatformConfiguration {
     /**
      * Warning : override the two methods at once
      *
-     * @param domainResolver
+     * @param domainResolver the domain resolver
      *
-     * @return
+     * @return the concept resolver
      */
     ConceptResolver conceptResolver(DomainResolver domainResolver);
     ConceptResolver conceptResolver();

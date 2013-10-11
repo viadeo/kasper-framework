@@ -15,7 +15,9 @@ public interface Resolver<T> {
 
     Optional<Class<? extends Domain>> getDomainClass(Class<? extends T> clazz);
 
-    Optional<String> getDomainLabel(Class<? extends T> clazz);
+    String getDomainLabel(Class<? extends T> clazz);
+
+    String getLabel(Class<? extends T> clazz);
 
     void clearCache();
 

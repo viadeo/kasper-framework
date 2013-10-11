@@ -34,29 +34,24 @@ public final class DocumentedRelation extends DocumentedEntity {
 	public DocumentedRelation(final KasperLibrary kl, final Class<? extends Relation> relationClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
-		final XKasperRelation annotation = relationClazz.getAnnotation(XKasperRelation.class);
-		final XBidirectional biDirAnno = relationClazz.getAnnotation(XBidirectional.class);
-		final boolean annotatedBidirectional = (null != biDirAnno);
-		final String label = annotation.label();
-				
 		// Find if it's an aggregate ------------------------------------------
 		final boolean isAggregate = AggregateRoot.class.isAssignableFrom(relationClazz);
 		
 		// Find associated domain ---------------------------------------------
-		final Class<? extends Domain> domain = annotation.domain();
-		final String domainName = domain.getSimpleName();
-
-        final RelationResolver relationResolver =
-                this.getKasperLibrary().getResolverFactory().getRelationResolver();
+        final RelationResolver resolver = this.getKasperLibrary().getResolverFactory().getRelationResolver();
+		final String domainName = resolver.getDomainLabel(relationClazz);
+        final String label = resolver.getLabel(relationClazz);
+        final String description = resolver.getDescription(relationClazz);
+ 		final boolean annotatedBidirectional = resolver.isBidirectional(relationClazz);
 
 		// Find source and target root concepts -------------------------------
 		@SuppressWarnings("unchecked") // Safe
 		final Class<? extends RootConcept> sourceClass =
-                relationResolver.getSourceEntityClass(relationClazz);
+                resolver.getSourceEntityClass(relationClazz);
 
 		@SuppressWarnings("unchecked") // Safe
 		final Class<? extends RootConcept> targetClass =
-                relationResolver.getTargetEntityClass(relationClazz);
+                resolver.getTargetEntityClass(relationClazz);
 
 		String source = "error";
 		String target = "error";
@@ -64,13 +59,7 @@ public final class DocumentedRelation extends DocumentedEntity {
         source = sourceClass.getSimpleName();
 		target = targetClass.getSimpleName();
 
-		// Get description ----------------------------------------------------
-		String description = annotation.description();
-		if (description.isEmpty()) {
-			description = String.format("The %s relation between %s and %s", label, source, target);
-		}		
-		
-		//- Set properties ----------------------------------------------------		
+		//- Set properties ----------------------------------------------------
 		this.setName(relationClazz.getSimpleName());
 		this.setLabel(label);
 		this.setDescription(description);

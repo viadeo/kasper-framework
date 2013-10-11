@@ -74,7 +74,7 @@ public class KasperMetricsTest {
                 .thenReturn( "Command" );
 
         when( commandResolver.getDomainLabel(TestCommand.class) )
-                .thenReturn( Optional.of("Test") );
+                .thenReturn( "Test" );
 
         KasperMetrics.setResolverFactory(resolverFactory);
 

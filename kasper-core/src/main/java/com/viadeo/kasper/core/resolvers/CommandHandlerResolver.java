@@ -12,14 +12,20 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.er.Concept;
+import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.concurrent.ConcurrentMap;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
 
     private static ConcurrentMap<Class, Class> cacheCommands = Maps.newConcurrentMap();
+
+    private CommandResolver commandResolver;
 
     // ------------------------------------------------------------------------
 
@@ -46,6 +52,13 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
         } else {
             throw new KasperException("Command handler is not decorated : " + clazz.getName());
         }
+    }
+
+    @Override
+    public String getLabel(final Class<? extends CommandHandler> clazz) {
+        return clazz.getSimpleName()
+                .replace("CommandHandler", "")
+                .replace("Hndler", "");
     }
 
     // ------------------------------------------------------------------------
@@ -78,6 +91,28 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
     public void clearCache() {
         super.clearCache();
         cacheCommands.clear();
+    }
+
+    // ------------------------------------------------------------------------
+
+    public String getDescription(Class<? extends CommandHandler> handlerClazz) {
+        final XKasperCommandHandler annotation = handlerClazz.getAnnotation(XKasperCommandHandler.class);
+
+        String description = "";
+        if (null != annotation) {
+            description = annotation.description();
+        }
+        if (description.isEmpty()) {
+            description = String.format("The %s command handler", this.getLabel(handlerClazz));
+        }
+
+        return description;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public void setCommandResolver(final CommandResolver commandResolver) {
+        this.commandResolver = checkNotNull(commandResolver);
     }
 
 }

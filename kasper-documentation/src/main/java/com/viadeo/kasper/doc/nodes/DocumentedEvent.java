@@ -39,17 +39,9 @@ public final class DocumentedEvent extends DocumentedDomainNode {
                 this.getKasperLibrary().getResolverFactory().getEventResolver(), eventClazz);
 		
 		// Get description ----------------------------------------------------
-		final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
-		String description = "";
-  		String annotatedAction = "";
-		if (annotation != null) {
-            description = annotation.description();
-            annotatedAction = annotation.action();
-        }
-
-        if (description.isEmpty()) {
-			description = String.format("The %s event", eventClazz.getSimpleName().replaceAll("Event", ""));
-        }
+        final EventResolver resolver = this.getKasperLibrary().getResolverFactory().getEventResolver();
+		final String description = resolver.getDescription(eventClazz);
+  		final String annotatedAction = resolver.getAction(eventClazz);
 
 		// Set properties -----------------------------------------------------
 		this.setAction(annotatedAction);

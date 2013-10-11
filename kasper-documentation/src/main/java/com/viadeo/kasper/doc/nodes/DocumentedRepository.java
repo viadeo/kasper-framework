@@ -7,6 +7,7 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.core.resolvers.RepositoryResolver;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.IRepository;
@@ -29,43 +30,20 @@ public final class DocumentedRepository extends DocumentedDomainNode {
 	
 	public DocumentedRepository(final KasperLibrary kl, final Class<? extends IRepository> repositoryClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
-		
+
+        final RepositoryResolver resolver = this.getKasperLibrary().getResolverFactory().getRepositoryResolver();
+
 		// Extract aggregate type from repository -----------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Class<? extends AggregateRoot> agr =
-                this.getKasperLibrary().getResolverFactory().getRepositoryResolver().getStoredEntityClass(repositoryClazz);
+		final Class<? extends AggregateRoot> agr = resolver.getStoredEntityClass(repositoryClazz);
 
 		// Find associated domain ---------------------------------------------
-		final Class<? extends Domain> domain;
-		final XKasperConcept conceptAnno = agr.getAnnotation(XKasperConcept.class);
-		if (null != conceptAnno) {
-			domain = conceptAnno.domain();
-		} else {
-			final XKasperRelation relationAnno = agr.getAnnotation(XKasperRelation.class);
-			if (null != relationAnno) {
-				domain = relationAnno.domain();
-			} else {
-				throw new KasperException("Unable to find domain from annotation for aggregate " + agr.getSimpleName());
-			}
-		}
-		 		
-		// Get domain name ----------------------------------------------------
-		final XKasperDomain domainAnno = domain.getAnnotation(XKasperDomain.class);
-		
-		if (null == domainAnno) {
-			throw new KasperException("Unable to find a name type for domain " + domain);
-		}
-		
-		// Get description ----------------------------------------------------
-		final XKasperRepository annotation = repositoryClazz.getAnnotation(XKasperRepository.class);
-		String description = annotation.description();
-		if (description.isEmpty()) {
-			description = String.format("The repository for %s aggregates", agr.getSimpleName());
-		}
-		
+		final String domainName = resolver.getDomainLabel(repositoryClazz);
+        final String description = resolver.getDescription(repositoryClazz);
+
 		// Set properties -----------------------------------------------------
 		this.setName(repositoryClazz.getSimpleName());
-		this.setDomainName(domain.getSimpleName());
+		this.setDomainName(domainName);
 		this.setDescription(description);
 		this.aggregate = agr.getSimpleName();
 	}	

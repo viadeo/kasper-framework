@@ -7,10 +7,19 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
+import com.viadeo.kasper.event.Event;
+import org.axonframework.eventhandling.annotation.EventHandler;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Type;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -43,6 +52,11 @@ public class EntityResolver extends AbstractResolver<Entity> {
         return Optional.absent();
     }
 
+    @Override
+    public String getLabel(final Class<? extends Entity> clazz) {
+        return clazz.getSimpleName().replace("Entity", "");
+    }
+
     // ------------------------------------------------------------------------
 
     public void setConceptResolver(final ConceptResolver conceptResolver) {
@@ -51,6 +65,27 @@ public class EntityResolver extends AbstractResolver<Entity> {
 
     public void setRelationResolver(final RelationResolver relationResolver) {
         this.relationResolver = checkNotNull(relationResolver);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @SuppressWarnings("unchecked")
+    public Collection<Class<? extends Event>> getListenedSourceEvents(final Class<? extends Entity> clazz) {
+        final List<Class<? extends Event>> listenedSourceEvents = Lists.newArrayList();
+
+        final Method[] methods = checkNotNull(clazz).getDeclaredMethods();
+        for (Method method : methods) {
+            if (null != method.getAnnotation(EventHandler.class)) {
+                final Class[] types = method.getParameterTypes();
+                if (types.length == 1) {
+                    if (Event.class.isAssignableFrom(types[0])) {
+                        listenedSourceEvents.add((Class<? extends Event>) types[0]);
+                    }
+                }
+            }
+        }
+
+        return Collections.unmodifiableCollection(listenedSourceEvents);
     }
 
 }

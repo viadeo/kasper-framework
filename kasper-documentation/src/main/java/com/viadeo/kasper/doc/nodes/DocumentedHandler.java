@@ -35,20 +35,11 @@ public final class DocumentedHandler extends DocumentedDomainNode {
                 commandHandlerResolver.getCommandClass(handlerClazz);
 
 		// Find associated domain ---------------------------------------------
-        String domainName = "[Not Resolved]";
-        final Optional<String> optDomainName =
-                commandHandlerResolver.getDomainLabel(handlerClazz);
-        if (optDomainName.isPresent()) {
-            domainName = optDomainName.get();
-        }
-		
+        final String domainName = commandHandlerResolver.getDomainLabel(handlerClazz);
+
 		// Get description ----------------------------------------------------
-		final XKasperCommandHandler annotation = handlerClazz.getAnnotation(XKasperCommandHandler.class);
-		String description = annotation.description();
-		if (description.isEmpty()) {
-			description = String.format("The handler for %s commands", commandClazz.getSimpleName().replaceAll("Command", ""));
-		}
-		
+		final String description = commandHandlerResolver.getDescription(handlerClazz);
+
 		// Set properties -----------------------------------------------------
 		this.commandName = commandClazz.getSimpleName();
 		this.setName(handlerClazz.getSimpleName());

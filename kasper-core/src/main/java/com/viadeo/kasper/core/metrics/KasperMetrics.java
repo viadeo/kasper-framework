@@ -53,6 +53,7 @@ public final class KasperMetrics {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     public static String pathForKasperComponent(final Class clazz) {
 
         if (pathCache.containsKey(clazz)) {
@@ -67,11 +68,9 @@ public final class KasperMetrics {
             final Optional<Resolver> resolver = resolverFactory.getResolverFromClass(clazz);
             if (resolver.isPresent()) {
 
-                final Optional<String> domainName = resolver.get().getDomainLabel(clazz);
-                if (domainName.isPresent()) {
-                    final String type = resolver.get().getTypeName();
-                    componentPath = domainName.get() + "." + type + "." + name;
-                }
+                final String domainName = resolver.get().getDomainLabel(clazz);
+                final String type = resolver.get().getTypeName();
+                componentPath = domainName + "." + type + "." + name;
             }
         }
 

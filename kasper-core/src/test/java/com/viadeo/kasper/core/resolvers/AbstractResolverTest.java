@@ -27,6 +27,9 @@ public class AbstractResolverTest {
         public String getTypeName() { return "Object"; }
 
         @Override
+        public String getLabel(Class<?> clazz) { return null; }
+
+        @Override
         public Optional<Class<? extends Domain>> getDomainClass(final Class clazz) {
             return Optional.<Class<? extends Domain>>of(TestDomain.class);
         }
@@ -44,14 +47,13 @@ public class AbstractResolverTest {
         resolver.setDomainResolver(domainResolver);
 
         when( domainResolver.getLabel(TestDomain.class) )
-                .thenReturn( Optional.<String>of("Test") );
+                .thenReturn( "Test" );
 
         // When
-        final Optional<String> label = resolver.getDomainLabel(TestDomain.class);
+        final String label = resolver.getDomainLabel(TestDomain.class);
 
         // Then
-        assertTrue(label.isPresent());
-        assertEquals("Test", label.get());
+        assertEquals("Test", label);
     }
 
 }

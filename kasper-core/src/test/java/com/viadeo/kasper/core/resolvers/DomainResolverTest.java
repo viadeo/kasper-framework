@@ -51,14 +51,12 @@ public class DomainResolverTest {
         final DomainResolver domainResolver = new DomainResolver();
 
         // When
-        final Optional<String> label = domainResolver.getLabel(TestDomain.class);
-        final Optional<String> labelIndirect = domainResolver.getDomainLabel(TestDomain.class);
+        final String label = domainResolver.getLabel(TestDomain.class);
+        final String labelIndirect = domainResolver.getDomainLabel(TestDomain.class);
 
         // Then
-        assertTrue(label.isPresent());
-        assertTrue(labelIndirect.isPresent());
-        assertEquals("Test", label.get());
-        assertEquals(label.get(), labelIndirect.get());
+        assertEquals("Test", label);
+        assertEquals(label, labelIndirect);
     }
 
     @Test
@@ -67,14 +65,12 @@ public class DomainResolverTest {
         final DomainResolver domainResolver = new DomainResolver();
 
         // When
-        final Optional<String> label = domainResolver.getLabel(TestDomain2.class);
-        final Optional<String> labelIndirect = domainResolver.getDomainLabel(TestDomain2.class);
+        final String label = domainResolver.getLabel(TestDomain2.class);
+        final String labelIndirect = domainResolver.getDomainLabel(TestDomain2.class);
 
         // Then
-        assertTrue(label.isPresent());
-        assertTrue(labelIndirect.isPresent());
-        assertEquals("TestFoo", label.get());
-        assertEquals(label.get(), labelIndirect.get());
+        assertEquals("TestFoo", label);
+        assertEquals(label, labelIndirect);
     }
 
     @Test
@@ -83,14 +79,12 @@ public class DomainResolverTest {
         final DomainResolver domainResolver = new DomainResolver();
 
         // When
-        final Optional<String> label = domainResolver.getLabel(TestDomain3.class);
-        final Optional<String> labelIndirect = domainResolver.getDomainLabel(TestDomain3.class);
+        final String label = domainResolver.getLabel(TestDomain3.class);
+        final String labelIndirect = domainResolver.getDomainLabel(TestDomain3.class);
 
         // Then
-        assertTrue(label.isPresent());
-        assertTrue(labelIndirect.isPresent());
-        assertEquals("Test3", label.get());
-        assertEquals(label.get(), labelIndirect.get());
+        assertEquals("Test3", label);
+        assertEquals(label, labelIndirect);
     }
 
 }

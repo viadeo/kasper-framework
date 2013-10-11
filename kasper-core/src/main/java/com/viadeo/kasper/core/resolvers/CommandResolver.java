@@ -10,6 +10,7 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.ddd.Domain;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -50,6 +51,31 @@ public class CommandResolver extends AbstractResolver<Command> {
         }
 
         return Optional.absent();
+    }
+
+    // ------------------------------------------------------------------------
+
+    public String getDescription(Class<? extends Command> commandClazz) {
+ 		final XKasperCommand annotation = commandClazz.getAnnotation(XKasperCommand.class);
+
+		// Get description ----------------------------------------------------
+		String description = "";
+
+        if (null != annotation) {
+           description = annotation.description();
+        }
+
+		if (description.isEmpty()) {
+			description = String.format("The %s command",
+					commandClazz.getSimpleName().replaceAll("Command", ""));
+		}
+
+        return description;
+    }
+
+    public String getLabel(Class<? extends Command> commandClass) {
+        return commandClass.getSimpleName()
+                .replace("Command", "");
     }
 
     // ------------------------------------------------------------------------

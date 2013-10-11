@@ -13,6 +13,8 @@ import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
@@ -49,6 +51,29 @@ public class QueryServiceResolver extends AbstractResolver<QueryService> {
         }
 
         return Optional.absent();
+    }
+
+    // ------------------------------------------------------------------------
+
+    public String getDescription(Class<? extends QueryService> clazz) {
+        final XKasperQueryService annotation = clazz.getAnnotation(XKasperQueryService.class);
+
+        String description = "";
+        if (null != annotation) {
+            description = annotation.description();
+        }
+        if (description.isEmpty()) {
+            description = String.format("The %s query service", clazz.getSimpleName().replaceAll("Concept", ""));
+        }
+
+        return description;
+    }
+
+    @Override
+    public String getLabel(Class<? extends QueryService> clazz) {
+        return clazz.getSimpleName()
+                .replace("QueryService", "")
+                .replace("Service", "");
     }
 
     // ------------------------------------------------------------------------

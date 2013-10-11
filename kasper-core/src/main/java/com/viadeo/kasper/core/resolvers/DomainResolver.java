@@ -29,9 +29,9 @@ public class DomainResolver implements Resolver<Domain> {
 
     // ------------------------------------------------------------------------
 
-    public Optional<String> getLabel(final Class<? extends Domain> clazz) {
+    public String getLabel(final Class<? extends Domain> clazz) {
         if (cacheDomains.containsKey(clazz)) {
-            return Optional.of(cacheDomains.get(clazz));
+            return cacheDomains.get(clazz);
         }
 
         String domainName = null;
@@ -48,7 +48,37 @@ public class DomainResolver implements Resolver<Domain> {
         domainName = domainName.replaceAll(" ", "");
 
         cacheDomains.put(clazz, domainName);
-        return Optional.of(domainName);
+        return domainName;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public String getDescription(final Class<? extends Domain> clazz) {
+        String description = "";
+
+        final XKasperDomain domainAnnotation = clazz.getAnnotation(XKasperDomain.class);
+        if ((null != domainAnnotation) && ! domainAnnotation.description().isEmpty()) {
+            description = domainAnnotation.description();
+        }
+        if (description.isEmpty()) {
+            description = String.format("The domain %s", this.getLabel(clazz));
+        }
+
+        return description;
+    }
+
+    public String getPrefix(final Class<? extends Domain> clazz) {
+        String prefix = "";
+
+        final XKasperDomain domainAnnotation = clazz.getAnnotation(XKasperDomain.class);
+        if ((null != domainAnnotation) && ! domainAnnotation.description().isEmpty()) {
+            prefix = domainAnnotation.prefix();
+        }
+        if (prefix.isEmpty()) {
+            prefix = "unk";
+        }
+
+        return prefix;
     }
 
     // ------------------------------------------------------------------------
@@ -63,7 +93,7 @@ public class DomainResolver implements Resolver<Domain> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<String> getDomainLabel(final Class<? extends Domain> clazz) {
+    public String getDomainLabel(final Class<? extends Domain> clazz) {
         return this.getLabel(clazz);
     }
 

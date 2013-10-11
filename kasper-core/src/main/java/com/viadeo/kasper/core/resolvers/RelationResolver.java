@@ -8,9 +8,12 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.er.RootConcept;
+import com.viadeo.kasper.er.annotation.XBidirectional;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
@@ -48,6 +51,28 @@ public class RelationResolver extends AbstractResolver<Relation> {
         }
 
         return Optional.absent();
+    }
+
+    @Override
+    public String getLabel(Class<? extends Relation> clazz) {
+        return clazz.getSimpleName()
+                .replace("Relation", "");
+    }
+
+    // ------------------------------------------------------------------------
+
+    public String getDescription(Class<? extends Relation> clazz) {
+        final XKasperRelation annotation = clazz.getAnnotation(XKasperRelation.class);
+
+        String description = "";
+        if (null != annotation) {
+            description = annotation.description();
+        }
+        if (description.isEmpty()) {
+            description = String.format("The %s relation", this.getLabel(clazz));
+        }
+
+        return description;
     }
 
     // ------------------------------------------------------------------------
@@ -90,6 +115,21 @@ public class RelationResolver extends AbstractResolver<Relation> {
 
         cacheSources.put(clazz, targetClazz.get());
         return targetClazz.get();
+    }
+
+    // ------------------------------------------------------------------------
+
+    public boolean isBidirectional(final Class<? extends Relation> clazz) {
+        final XBidirectional biDirAnno = clazz.getAnnotation(XBidirectional.class);
+        return (null != biDirAnno);
+    }
+
+    public Optional<String> biDirectionalVerb(final Class<? extends Relation> clazz) {
+        final XBidirectional biDirAnno = clazz.getAnnotation(XBidirectional.class);
+        if ((null != biDirAnno) &&  ! biDirAnno.verb().isEmpty()) {
+            return Optional.of(biDirAnno.verb());
+        }
+        return Optional.absent();
     }
 
 }

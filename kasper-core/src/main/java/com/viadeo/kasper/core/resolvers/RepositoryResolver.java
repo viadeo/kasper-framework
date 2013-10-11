@@ -10,6 +10,10 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.ddd.annotation.XKasperRepository;
+import com.viadeo.kasper.ddd.impl.Repository;
+import com.viadeo.kasper.er.Relation;
+import com.viadeo.kasper.er.annotation.XKasperRelation;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
@@ -44,6 +48,28 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
         }
 
         return Optional.absent();
+    }
+
+    // ------------------------------------------------------------------------
+
+    public String getDescription(Class<? extends IRepository> clazz) {
+        final XKasperRepository annotation = clazz.getAnnotation(XKasperRepository.class);
+
+        String description = "";
+        if (null != annotation) {
+            description = annotation.description();
+        }
+        if (description.isEmpty()) {
+            description = String.format("The %s repository", this.getLabel(clazz));
+        }
+
+        return description;
+    }
+
+    @Override
+    public String getLabel(Class<? extends IRepository> clazz) {
+        return clazz.getSimpleName()
+                .replace("Repository", "");
     }
 
     // ------------------------------------------------------------------------
