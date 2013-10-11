@@ -13,7 +13,7 @@ public interface Resolver<T> {
 
     String getTypeName();
 
-    Optional<Class<? extends Domain>> getDomain(Class<? extends T> clazz);
+    Optional<Class<? extends Domain>> getDomainClass(Class<? extends T> clazz);
 
     Optional<String> getDomainLabel(Class<? extends T> clazz);
 

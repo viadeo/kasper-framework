@@ -27,7 +27,7 @@ public class AbstractResolverTest {
         public String getTypeName() { return "Object"; }
 
         @Override
-        public Optional<Class<? extends Domain>> getDomain(final Class clazz) {
+        public Optional<Class<? extends Domain>> getDomainClass(final Class clazz) {
             return Optional.<Class<? extends Domain>>of(TestDomain.class);
         }
 

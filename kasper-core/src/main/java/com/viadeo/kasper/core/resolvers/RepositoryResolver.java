@@ -7,15 +7,11 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.ddd.impl.Repository;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
-
-import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -34,13 +30,26 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(final Class<? extends IRepository> clazz) {
+    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends IRepository> clazz) {
 
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
         }
 
-        @SuppressWarnings("unchecked") // Safe
+        final Class<? extends AggregateRoot> agr = this.getStoredEntityClass(clazz);
+        final Optional<Class<? extends Domain>> domain = this.entityResolver.getDomainClass(agr);
+        if (domain.isPresent()) {
+            cacheDomains.put(clazz, domain.get());
+            return domain;
+        }
+
+        return Optional.absent();
+    }
+
+    // ------------------------------------------------------------------------
+
+    public Class<? extends AggregateRoot> getStoredEntityClass(final Class<? extends IRepository> clazz) {
+        @SuppressWarnings("unchecked")
         final Optional<Class<? extends AggregateRoot>> agr =
                 (Optional<Class<? extends AggregateRoot>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
@@ -50,13 +59,7 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
             throw new KasperException("Unable to find aggregate type for repository " + clazz.getClass());
         }
 
-        final Optional<Class<? extends Domain>> domain = this.entityResolver.getDomain(agr.get());
-        if (domain.isPresent()) {
-            cacheDomains.put(clazz, domain.get());
-            return domain;
-        }
-
-        return Optional.absent();
+        return agr.get();
     }
 
     // ------------------------------------------------------------------------

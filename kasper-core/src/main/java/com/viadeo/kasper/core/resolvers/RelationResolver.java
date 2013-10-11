@@ -10,11 +10,19 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.Relation;
+import com.viadeo.kasper.er.RootConcept;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
+import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.concurrent.ConcurrentMap;
 
 public class RelationResolver extends AbstractResolver<Relation> {
+
+    private static final ConcurrentMap<Class, Class> cacheSources = Maps.newConcurrentMap();
+    private static final ConcurrentMap<Class, Class> cacheTargets = Maps.newConcurrentMap();
+
+    // ------------------------------------------------------------------------
 
     @Override
     public String getTypeName() {
@@ -25,7 +33,7 @@ public class RelationResolver extends AbstractResolver<Relation> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(final Class<? extends Relation> clazz) {
+    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Relation> clazz) {
 
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
@@ -40,6 +48,48 @@ public class RelationResolver extends AbstractResolver<Relation> {
         }
 
         return Optional.absent();
+    }
+
+    // ------------------------------------------------------------------------
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends RootConcept> getSourceEntityClass(final Class<? extends Relation> clazz) {
+        if (cacheSources.containsKey(clazz)) {
+            return (Class<? extends RootConcept>) cacheSources.get(clazz);
+        }
+
+        @SuppressWarnings("unchecked") // Safe
+        final Optional<Class<? extends RootConcept>> sourceClazz =
+                (Optional<Class<? extends RootConcept>>)
+                        ReflectionGenericsResolver.getParameterTypeFromClass(
+                                clazz, Relation.class, Relation.SOURCE_PARAMETER_POSITION);
+
+        if (!sourceClazz.isPresent()) {
+            throw new KasperException("Unable to find source concept type for relation " + clazz.getClass());
+        }
+
+        cacheSources.put(clazz, sourceClazz.get());
+        return sourceClazz.get();
+    }
+
+    @SuppressWarnings("unchecked")
+    public Class<? extends RootConcept> getTargetEntityClass(final Class<? extends Relation> clazz) {
+        if (cacheTargets.containsKey(clazz)) {
+            return (Class<? extends RootConcept>) cacheTargets.get(clazz);
+        }
+
+        @SuppressWarnings("unchecked") // Safe
+        final Optional<Class<? extends RootConcept>> targetClazz =
+                (Optional<Class<? extends RootConcept>>)
+                        ReflectionGenericsResolver.getParameterTypeFromClass(
+                                clazz, Relation.class, Relation.TARGET_PARAMETER_POSITION);
+
+        if (!targetClazz.isPresent()) {
+            throw new KasperException("Unable to find target concept type for relation " + clazz.getClass());
+        }
+
+        cacheSources.put(clazz, targetClazz.get());
+        return targetClazz.get();
     }
 
 }

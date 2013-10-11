@@ -7,8 +7,9 @@
 package com.viadeo.kasper.core.boot;
 
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
+import com.viadeo.kasper.core.resolvers.DomainResolver;
+import com.viadeo.kasper.core.resolvers.QueryServiceResolver;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.ddd.Domain;
@@ -25,10 +26,16 @@ public class QueryServicesProcessorTest {
 
     // ------------------------------------------------------------------------
 
-    final QueryServicesLocator locator = spy(new DefaultQueryServicesLocator());
+    final DefaultQueryServicesLocator locator = spy(new DefaultQueryServicesLocator());
+    final DomainResolver domainResolver = new DomainResolver();
+    final QueryServiceResolver queryServiceResolver = new QueryServiceResolver();
     final QueryServicesProcessor processor = new QueryServicesProcessor();
 
-    { processor.setQueryServicesLocator(locator); }
+    {
+        queryServiceResolver.setDomainResolver(domainResolver);
+        locator.setQueryServiceResolver(queryServiceResolver);
+        processor.setQueryServicesLocator(locator);
+    }
 
     // ------------------------------------------------------------------------
 

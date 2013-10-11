@@ -25,7 +25,7 @@ public abstract class AbstractResolver<T> implements Resolver<T> {
     @Override
     public Optional<String> getDomainLabel(final Class<? extends T> clazz) {
 
-        final Optional<Class<? extends Domain>> domain = this.getDomain(clazz);
+        final Optional<Class<? extends Domain>> domain = this.getDomainClass(clazz);
         if (domain.isPresent()) {
             return domainResolver.getLabel(domain.get());
         }

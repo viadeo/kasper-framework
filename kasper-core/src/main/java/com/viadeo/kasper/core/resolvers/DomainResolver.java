@@ -48,7 +48,6 @@ public class DomainResolver implements Resolver<Domain> {
         domainName = domainName.replaceAll(" ", "");
 
         cacheDomains.put(clazz, domainName);
-
         return Optional.of(domainName);
     }
 
@@ -56,7 +55,7 @@ public class DomainResolver implements Resolver<Domain> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(final Class<? extends Domain> clazz) {
+    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Domain> clazz) {
         return Optional.<Class<? extends Domain>>of(clazz);
     }
 

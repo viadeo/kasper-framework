@@ -7,13 +7,10 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.ddd.Domain;
-
-import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -33,7 +30,7 @@ public class QueryResolver extends AbstractResolver<Query> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(final Class<? extends Query> clazz) {
+    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Query> clazz) {
 
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
@@ -43,7 +40,7 @@ public class QueryResolver extends AbstractResolver<Query> {
 
         if (service.isPresent()) {
             final Optional<Class<? extends Domain>> domain =
-                    this.queryServiceResolver.getDomain(service.get().getClass());
+                    this.queryServiceResolver.getDomainClass(service.get().getClass());
 
             if (domain.isPresent()) {
                 cacheDomains.put(clazz, domain.get());

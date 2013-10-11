@@ -11,9 +11,6 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.EventMessage;
-import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.event.domain.DomainEvent;
 import com.viadeo.kasper.exception.KasperException;
 import org.junit.Test;
@@ -58,7 +55,7 @@ public class EventResolverTest {
 
         // When
         final Optional<Class<? extends Domain>> domain =
-                resolver.getDomain(TestDomainEvent.class);
+                resolver.getDomainClass(TestDomainEvent.class);
 
         // Then
         assertTrue(domain.isPresent());
@@ -73,7 +70,7 @@ public class EventResolverTest {
         // When
         try {
             final Optional<Class<? extends Domain>> domain =
-                    resolver.getDomain(TestGenericDomainEvent.class);
+                    resolver.getDomainClass(TestGenericDomainEvent.class);
             fail();
         } catch (final KasperException e) {
             // Then should raise exception
@@ -87,7 +84,7 @@ public class EventResolverTest {
 
         // When
         final Optional<Class<? extends Domain>> domain =
-                resolver.getDomain(TestEvent.class);
+                resolver.getDomainClass(TestEvent.class);
 
         // Then
         assertFalse(domain.isPresent());

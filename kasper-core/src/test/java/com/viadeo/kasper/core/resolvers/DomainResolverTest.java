@@ -8,17 +8,12 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
-import com.viadeo.kasper.exception.KasperException;
-import org.axonframework.commandhandling.CommandMessage;
-import org.axonframework.unitofwork.UnitOfWork;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class DomainResolverTest {
 
@@ -41,7 +36,7 @@ public class DomainResolverTest {
         final DomainResolver domainResolver = new DomainResolver();
 
         // When
-        final Optional<Class<? extends Domain>> domain = domainResolver.getDomain(TestDomain.class);
+        final Optional<Class<? extends Domain>> domain = domainResolver.getDomainClass(TestDomain.class);
 
         // Then
         assertTrue(domain.isPresent());

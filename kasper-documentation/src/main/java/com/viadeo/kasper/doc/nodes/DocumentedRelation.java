@@ -8,6 +8,7 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
+import com.viadeo.kasper.core.resolvers.RelationResolver;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.doc.KasperLibrary;
@@ -15,7 +16,6 @@ import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.er.RootConcept;
 import com.viadeo.kasper.er.annotation.XBidirectional;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.StringTokenizer;
 
@@ -45,31 +45,25 @@ public final class DocumentedRelation extends DocumentedEntity {
 		// Find associated domain ---------------------------------------------
 		final Class<? extends Domain> domain = annotation.domain();
 		final String domainName = domain.getSimpleName();
-		
+
+        final RelationResolver relationResolver =
+                this.getKasperLibrary().getResolverFactory().getRelationResolver();
+
 		// Find source and target root concepts -------------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends RootConcept>> sourceClass =
-				(Optional<Class<? extends RootConcept>>)
-					ReflectionGenericsResolver.getParameterTypeFromClass(
-							relationClazz, Relation.class, Relation.SOURCE_PARAMETER_POSITION);
-		
+		final Class<? extends RootConcept> sourceClass =
+                relationResolver.getSourceEntityClass(relationClazz);
+
 		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends RootConcept>> targetClass =
-				(Optional<Class<? extends RootConcept>>)
-					ReflectionGenericsResolver.getParameterTypeFromClass(
-							relationClazz, Relation.class, Relation.TARGET_PARAMETER_POSITION);
-		
+		final Class<? extends RootConcept> targetClass =
+                relationResolver.getTargetEntityClass(relationClazz);
+
 		String source = "error";
 		String target = "error";
 		
-		if (sourceClass.isPresent()) {
-			source = sourceClass.get().getSimpleName();
-		}
+        source = sourceClass.getSimpleName();
+		target = targetClass.getSimpleName();
 
-		if (targetClass.isPresent()) {
-			target = targetClass.get().getSimpleName();
-		}		
-		
 		// Get description ----------------------------------------------------
 		String description = annotation.description();
 		if (description.isEmpty()) {

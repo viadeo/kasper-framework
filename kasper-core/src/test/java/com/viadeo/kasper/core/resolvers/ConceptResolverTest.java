@@ -10,18 +10,13 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
-import com.viadeo.kasper.exception.KasperException;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class ConceptResolverTest {
 
@@ -66,7 +61,7 @@ public class ConceptResolverTest {
 
         // When
         final Optional<Class<? extends Domain>> domain =
-                resolver.getDomain(TestConcept.class);
+                resolver.getDomainClass(TestConcept.class);
 
         // Then
         assertTrue(domain.isPresent());
@@ -80,7 +75,7 @@ public class ConceptResolverTest {
 
         // When
         final Optional<Class<? extends Domain>> domain =
-                resolver.getDomain(TestConcept2.class);
+                resolver.getDomainClass(TestConcept2.class);
 
         // Then
         assertFalse(domain.isPresent());

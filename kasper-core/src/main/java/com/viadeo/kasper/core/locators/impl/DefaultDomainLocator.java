@@ -10,6 +10,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
+import com.viadeo.kasper.core.resolvers.RepositoryResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.ddd.AggregateRoot;
@@ -17,7 +18,6 @@ import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.*;
 
@@ -57,7 +57,8 @@ public class DefaultDomainLocator implements DomainLocator {
 
     // ------------------------------------------------------------------------
 
-    private transient CommandHandlerResolver commandHandlerResolver;
+    private RepositoryResolver repositoryResolver;
+    private CommandHandlerResolver commandHandlerResolver;
 
     // ------------------------------------------------------------------------
 
@@ -73,9 +74,9 @@ public class DefaultDomainLocator implements DomainLocator {
     @Override
     @SuppressWarnings("unchecked")
     public void registerHandler(final CommandHandler commandHandler) {
-        final Optional<Class<? extends Command>> commandClass =
+        final Class<? extends Command> commandClass =
                 commandHandlerResolver.getCommandClass(commandHandler.getClass());
-        handlers.put(commandHandler, commandClass.get());
+        handlers.put(commandHandler, commandClass);
     }
 
     @Override
@@ -138,17 +139,10 @@ public class DefaultDomainLocator implements DomainLocator {
     public void registerRepository(final IRepository repository) {
         checkNotNull(repository);
 
-        @SuppressWarnings("unchecked")
-        // Safe
-        final Optional<Class<? extends AggregateRoot>> entity = (Optional<Class<? extends AggregateRoot>>) ReflectionGenericsResolver
-                .getParameterTypeFromClass(repository.getClass(), IRepository.class,
-                        IRepository.ENTITY_PARAMETER_POSITION);
+        final Class<? extends AggregateRoot> entity =
+                repositoryResolver.getStoredEntityClass(repository.getClass());
 
-        if (!entity.isPresent()) {
-            throw new KasperException("Entity type cannot be determined for " + repository.getClass().getName());
-        }
-
-        this.entityRepositories.put(entity.get(), repository);
+        this.entityRepositories.put(entity, repository);
     }
 
     // ------------------------------------------------------------------------
@@ -258,6 +252,10 @@ public class DefaultDomainLocator implements DomainLocator {
     }
 
     // ------------------------------------------------------------------------
+
+    public void setRepositoryResolver(final RepositoryResolver repositoryResolver) {
+        this.repositoryResolver = checkNotNull(repositoryResolver);
+    }
 
     public void setCommandHandlerResolver(final CommandHandlerResolver commandHandlerResolver) {
         this.commandHandlerResolver = checkNotNull(commandHandlerResolver);

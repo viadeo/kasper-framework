@@ -35,17 +35,57 @@ public class PlatformConfigurationTest {
 
     // ------------------------------------------------------------------------
 
+    /* FIXME: add tests for resolvers */
     @SuppressWarnings("unused")
     private void testPlatformConfiguration(final PlatformConfiguration platformConfiguration) throws Exception {
+
+
+        final DomainResolver domainResolver = platformConfiguration.domainResolver();
+
+        final CommandHandlerResolver commandHandlerResolver = testCommandHandlerResolver(platformConfiguration, domainResolver);
+
+        final EventResolver eventResolver = platformConfiguration.eventResolver(domainResolver);
+
+        final EventListenerResolver eventListenerResolver = platformConfiguration.eventListenerResolver(domainResolver);
+
+        final QueryServiceResolver queryServiceResolver = platformConfiguration.queryServiceResolver(domainResolver);
+
+        final QueryServicesLocator queryServicesLocator=
+                this.testQueryServicesLocator(platformConfiguration, queryServiceResolver);
+
+        final QueryResolver queryResolver = platformConfiguration.queryResolver(domainResolver, queryServiceResolver, queryServicesLocator);
+
+        final ConceptResolver conceptResolver = platformConfiguration.conceptResolver(domainResolver);
+
+        final RelationResolver relationResolver = platformConfiguration.relationResolver(domainResolver);
+
+        final EntityResolver entityResolver = platformConfiguration.entityResolver(conceptResolver, relationResolver, domainResolver);
+
+        final RepositoryResolver repositoryResolver = platformConfiguration.repositoryResolver(entityResolver, domainResolver);
+
+        final DomainLocator domainLocator =
+                this.testDomainLocator(platformConfiguration, commandHandlerResolver, repositoryResolver);
+
+        final CommandResolver commandResolver = platformConfiguration.commandResolver(domainLocator, domainResolver, commandHandlerResolver);
+
+        final ResolverFactory resolverFactory = new ResolverFactory();
+        resolverFactory.setDomainResolver(domainResolver);
+        resolverFactory.setCommandResolver(commandResolver);
+        resolverFactory.setCommandHandlerResolver(commandHandlerResolver);
+        resolverFactory.setEventListenerResolver(eventListenerResolver);
+        resolverFactory.setQueryResolver(queryResolver);
+        resolverFactory.setQueryServiceResolver(queryServiceResolver);
+        resolverFactory.setRepositoryResolver(repositoryResolver);
+        resolverFactory.setEntityResolver(entityResolver);
+        resolverFactory.setConceptResolver(conceptResolver);
+        resolverFactory.setRelationResolver(relationResolver);
+        resolverFactory.setEventResolver(eventResolver);
 
         final CommandBus commandBus =
                 this.testCommandBus(platformConfiguration);
 
         final CommandGateway commandGateway =
                 this.testCommandGateway(platformConfiguration, commandBus);
-
-        final QueryServicesLocator queryServicesLocator=
-                this.testQueryServicesLocator(platformConfiguration);
 
         final QueryGateway queryGateway =
                 this.testQueryGateway(platformConfiguration, queryServicesLocator);
@@ -58,22 +98,6 @@ public class PlatformConfigurationTest {
 
         final AnnotationRootProcessor annotationRootProcessor =
                 this.testAnnotationRootProcessor(platformConfiguration, componentsInstanceManager);
-
-        /* FIXME: add test */
-        final DomainResolver domainResolver = platformConfiguration.domainResolver();
-
-        final CommandHandlerResolver commandHandlerResolver = testCommandHandlerResolver(platformConfiguration, domainResolver);
-
-        final DomainLocator domainLocator =
-                this.testDomainLocator(platformConfiguration, commandHandlerResolver);
-
-        final ResolverFactory resolverFactory = testResolverFactory(
-                platformConfiguration,
-                domainLocator,
-                commandHandlerResolver,
-                queryServicesLocator,
-                domainResolver
-        );
 
         final CommandHandlersProcessor commandHandlersProcessor =
                 this.testCommandHandlersProcessor(
@@ -107,51 +131,6 @@ public class PlatformConfigurationTest {
      */
     private CommandHandlerResolver testCommandHandlerResolver(final PlatformConfiguration platformConfiguration, final DomainResolver domainResolver) {
         return platformConfiguration.commandHandlerResolver(domainResolver);
-    }
-
-    /*
-     * FIXME: implement tests
-     */
-    private ResolverFactory testResolverFactory(
-            final PlatformConfiguration platformConfiguration,
-            final DomainLocator domainLocator,
-            final CommandHandlerResolver commandHandlerResolver,
-            final QueryServicesLocator queryServicesLocator,
-            final DomainResolver domainResolver
-    ) {
-
-        final CommandResolver commandResolver = platformConfiguration.commandResolver(domainLocator, domainResolver, commandHandlerResolver);
-
-        final EventResolver eventResolver = platformConfiguration.eventResolver(domainResolver);
-
-        final EventListenerResolver eventListenerResolver = platformConfiguration.eventListenerResolver(eventResolver, domainResolver);
-
-        final QueryServiceResolver queryServiceResolver = platformConfiguration.queryServiceResolver(domainResolver);
-
-        final QueryResolver queryResolver = platformConfiguration.queryResolver(domainResolver, queryServiceResolver, queryServicesLocator);
-
-        final ConceptResolver conceptResolver = platformConfiguration.conceptResolver(domainResolver);
-
-        final RelationResolver relationResolver = platformConfiguration.relationResolver(domainResolver);
-
-        final EntityResolver entityResolver = platformConfiguration.entityResolver(conceptResolver, relationResolver, domainResolver);
-
-        final RepositoryResolver repositoryResolver = platformConfiguration.repositoryResolver(entityResolver, domainResolver);
-
-        final ResolverFactory resolverFactory = new ResolverFactory();
-        resolverFactory.setDomainResolver(domainResolver);
-        resolverFactory.setCommandResolver(commandResolver);
-        resolverFactory.setCommandHandlerResolver(commandHandlerResolver);
-        resolverFactory.setEventListenerResolver(eventListenerResolver);
-        resolverFactory.setQueryResolver(queryResolver);
-        resolverFactory.setQueryServiceResolver(queryServiceResolver);
-        resolverFactory.setRepositoryResolver(repositoryResolver);
-        resolverFactory.setEntityResolver(entityResolver);
-        resolverFactory.setConceptResolver(conceptResolver);
-        resolverFactory.setRelationResolver(relationResolver);
-        resolverFactory.setEventResolver(eventResolver);
-
-        return resolverFactory;
     }
 
     // ------------------------------------------------------------------------
@@ -189,8 +168,8 @@ public class PlatformConfigurationTest {
 
     // ------------------------------------------------------------------------
 
-    private QueryServicesLocator testQueryServicesLocator(final PlatformConfiguration platformConfiguration) {
-        final QueryServicesLocator queryServicesLocator = platformConfiguration.queryServicesLocator();
+    private QueryServicesLocator testQueryServicesLocator(final PlatformConfiguration platformConfiguration, final QueryServiceResolver queryServiceResolver) {
+        final QueryServicesLocator queryServicesLocator = platformConfiguration.queryServicesLocator(queryServiceResolver);
         assertSame(queryServicesLocator, platformConfiguration.queryServicesLocator());
 
         return queryServicesLocator;
@@ -264,9 +243,11 @@ public class PlatformConfigurationTest {
 
     // ------------------------------------------------------------------------
 
-    private DomainLocator testDomainLocator(final PlatformConfiguration platformConfiguration, final CommandHandlerResolver commandHandlerResolver) {
-        final DomainLocator domainLocator = platformConfiguration.domainLocator(commandHandlerResolver);
-        assertSame(domainLocator, platformConfiguration.domainLocator(commandHandlerResolver));
+    private DomainLocator testDomainLocator(final PlatformConfiguration platformConfiguration,
+                                            final CommandHandlerResolver commandHandlerResolver,
+                                            final RepositoryResolver repositoryResolver) {
+        final DomainLocator domainLocator = platformConfiguration.domainLocator(commandHandlerResolver, repositoryResolver);
+        assertSame(domainLocator, platformConfiguration.domainLocator());
 
         return domainLocator;
     }

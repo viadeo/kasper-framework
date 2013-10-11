@@ -9,6 +9,7 @@ package com.viadeo.kasper.core.locators.impl;
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.resolvers.QueryServiceResolver;
 import com.viadeo.kasper.cqrs.RequestActor;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.*;
@@ -18,7 +19,6 @@ import com.viadeo.kasper.cqrs.query.impl.QueryFiltersActor;
 import com.viadeo.kasper.cqrs.query.impl.QueryServiceActor;
 import com.viadeo.kasper.cqrs.query.validation.QueryValidationActor;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,6 +83,10 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
     // ------------------------------------------------------------------------
 
+    private QueryServiceResolver queryServiceResolver;
+
+    // ------------------------------------------------------------------------
+
     public DefaultQueryServicesLocator() {
         queryCacheFactory = new AnnotationQueryCacheActorFactory();
     }
@@ -106,16 +110,8 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
         final Class<? extends QueryService> serviceClass = service.getClass();
 
         @SuppressWarnings("unchecked") // Safe
-        final Optional<Class<? extends Query>> optQueryClass =
-                (Optional<Class<? extends Query>>)
-                        ReflectionGenericsResolver.getParameterTypeFromClass(
-                                service.getClass(), QueryService.class, QueryService.PARAMETER_QUERY_POSITION);
-
-        if (!optQueryClass.isPresent()) {
-            throw new KasperQueryException("Unable to find query class for service " + service.getClass());
-        }
-
-        final Class<? extends Query> queryClass = optQueryClass.get();
+        final Class<? extends Query> optQueryClass = queryServiceResolver.getQueryClass(serviceClass);
+        final Class<? extends Query> queryClass = optQueryClass;
         if (this.serviceQueryClasses.containsKey(queryClass)) {
             throw new KasperQueryException("A service for the same query class is already registered : " + queryClass);
         }
@@ -321,6 +317,12 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
         // Return the filter instances
         return unmodifiableCollection(this.instanceFilters.get(serviceClass));
+    }
+
+    // ------------------------------------------------------------------------
+
+    public void setQueryServiceResolver(final QueryServiceResolver queryServiceResolver) {
+        this.queryServiceResolver = checkNotNull(queryServiceResolver);
     }
 
 }

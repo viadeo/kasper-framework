@@ -71,14 +71,14 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public DomainLocator domainLocator(final CommandHandlerResolver commandHandlerResolver) {
-        return super.domainLocator(commandHandlerResolver);
+    public DomainLocator domainLocator(final CommandHandlerResolver commandHandlerResolver, final RepositoryResolver repositoryResolver) {
+        return super.domainLocator(commandHandlerResolver, repositoryResolver);
     }
 
     @Bean
     @Override
-    public QueryServicesLocator queryServicesLocator(){
-        return super.queryServicesLocator();
+    public QueryServicesLocator queryServicesLocator(final QueryServiceResolver queryServiceResolver) {
+        return super.queryServicesLocator(queryServiceResolver);
     }
 
     @Bean
@@ -151,10 +151,9 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
     @Bean
     @Override
     public EventListenerResolver eventListenerResolver(
-            final EventResolver eventResolver,
             final DomainResolver domainResolver
     ) {
-        return super.eventListenerResolver(eventResolver, domainResolver);
+        return super.eventListenerResolver(domainResolver);
     }
 
     @Bean

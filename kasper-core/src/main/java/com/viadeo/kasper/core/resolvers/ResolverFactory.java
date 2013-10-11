@@ -81,7 +81,6 @@ public class ResolverFactory {
         }
 
         final Optional<Resolver> optResolver = Optional.fromNullable(resolver);
-
         cache.put(clazz, optResolver);
         return optResolver;
     }

@@ -53,7 +53,7 @@ public class CommandHandlerResolverTest {
 
         // When
         final Optional<Class<? extends Domain>> domain =
-                resolver.getDomain(TestCommandHandler.class);
+                resolver.getDomainClass(TestCommandHandler.class);
 
         // Then
         assertTrue(domain.isPresent());
@@ -68,7 +68,7 @@ public class CommandHandlerResolverTest {
         // When
         try {
             final Optional<Class<? extends Domain>> domain =
-                    resolver.getDomain(TestCommandHandler2.class);
+                    resolver.getDomainClass(TestCommandHandler2.class);
             fail();
         } catch (final KasperException e) {
             // Then exception is raised
@@ -81,12 +81,11 @@ public class CommandHandlerResolverTest {
         final CommandHandlerResolver resolver = new CommandHandlerResolver();
 
         // When
-        final Optional<Class<? extends Command>> command =
+        final Class<? extends Command> command =
                 resolver.getCommandClass(TestCommandHandler2.class);
 
         // Then
-        assertTrue(command.isPresent());
-        assertEquals(TestCommand.class, command.get());
+        assertEquals(TestCommand.class, command);
     }
 
     @Test
@@ -96,7 +95,7 @@ public class CommandHandlerResolverTest {
 
         // When
         try {
-            final Optional<Class<? extends Command>> command =
+            final Class<? extends Command> command =
                     resolver.getCommandClass(TestCommandHandler.class);
             fail();
         } catch (final KasperException e) {

@@ -58,7 +58,7 @@ public class EventListenerResolverTest {
 
         // When
         final Optional<Class<? extends Domain>> domain =
-                resolver.getDomain(TestEventListener.class);
+                resolver.getDomainClass(TestEventListener.class);
 
         // Then
         assertTrue(domain.isPresent());
@@ -73,7 +73,7 @@ public class EventListenerResolverTest {
         // When
         try {
             final Optional<Class<? extends Domain>> domain =
-                    resolver.getDomain(TestEventListener2.class);
+                    resolver.getDomainClass(TestEventListener2.class);
             fail();
         } catch (final KasperException e) {
             // Then exception is raised
@@ -86,12 +86,11 @@ public class EventListenerResolverTest {
         final EventListenerResolver resolver = new EventListenerResolver();
 
         // When
-        final Optional<Class<? extends Event>> command =
+        final Class<? extends Event> command =
                 resolver.getEventClass(TestEventListener2.class);
 
         // Then
-        assertTrue(command.isPresent());
-        assertEquals(TestEvent.class, command.get());
+        assertEquals(TestEvent.class, command);
     }
 
     @Test
@@ -101,7 +100,7 @@ public class EventListenerResolverTest {
 
         // When
         try {
-            final Optional<Class<? extends Event>> command =
+            final Class<? extends Event> command =
                     resolver.getEventClass(TestEventListener.class);
             fail();
         } catch (final KasperException e) {

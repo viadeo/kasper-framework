@@ -88,20 +88,20 @@ public class RepositoryResolverTest {
         final RepositoryResolver resolver = new RepositoryResolver();
         final EntityResolver entityResolver = mock(EntityResolver.class);
 
-        when( entityResolver.getDomain(TestAggregateRoot.class) )
+        when( entityResolver.getDomainClass(TestAggregateRoot.class) )
                 .thenReturn(Optional.<Class<? extends Domain>>of(TestDomain.class));
 
         resolver.setEntityResolver(entityResolver);
 
         // When
         final Optional<Class<? extends Domain>> domain =
-                resolver.getDomain(TestRepository.class);
+                resolver.getDomainClass(TestRepository.class);
 
         // Then
         assertTrue(domain.isPresent());
         assertEquals(TestDomain.class, domain.get());
 
-        verify(entityResolver, times(1)).getDomain(TestAggregateRoot.class);
+        verify(entityResolver, times(1)).getDomainClass(TestAggregateRoot.class);
         verifyNoMoreInteractions(entityResolver);
     }
 
@@ -114,7 +114,7 @@ public class RepositoryResolverTest {
         // When
         try {
             final Optional<Class<? extends Domain>> domain =
-                    resolver.getDomain(TestGenericRepository.class);
+                    resolver.getDomainClass(TestGenericRepository.class);
             fail();
         } catch (final KasperException e) {
             // Then should raise exception

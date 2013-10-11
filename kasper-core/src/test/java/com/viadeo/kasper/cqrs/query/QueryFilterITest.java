@@ -9,8 +9,9 @@ package com.viadeo.kasper.cqrs.query;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
+import com.viadeo.kasper.core.resolvers.DomainResolver;
+import com.viadeo.kasper.core.resolvers.QueryServiceResolver;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
@@ -82,7 +83,11 @@ public class QueryFilterITest {
         final TestService service = spy(new TestService());
         final TestFilter filter = spy(new TestFilter());
         final TestFilterGlobal filterGlobal = spy(new TestFilterGlobal());
-        final QueryServicesLocator locator = new DefaultQueryServicesLocator();
+        final DefaultQueryServicesLocator locator = new DefaultQueryServicesLocator();
+        final DomainResolver domainResolver = new DomainResolver();
+        final QueryServiceResolver queryServiceResolver = new QueryServiceResolver();
+        queryServiceResolver.setDomainResolver(domainResolver);
+        locator.setQueryServiceResolver(queryServiceResolver);
 
         locator.registerService("testService", service, TestDomain.class);
         locator.registerFilter("testFilter", filter);

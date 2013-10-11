@@ -6,13 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
-import com.google.common.base.Optional;
+import com.viadeo.kasper.core.resolvers.QueryServiceResolver;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 public final class DocumentedQueryService extends DocumentedDomainNode {
 	private static final long serialVersionUID = -4593630427564176805L;
@@ -49,22 +48,21 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
 		this.setLabel(label);
 		this.setDomainName(annotation.domain().getSimpleName());
 
+        final QueryServiceResolver queryServiceResolver =
+                this.getKasperLibrary().getResolverFactory().getQueryServiceResolver();
+
 		// - the Query --------------------------------------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends Query>> optQueryClass =
-				(Optional<Class<? extends Query>>)
-						ReflectionGenericsResolver.getParameterTypeFromClass(
-								queryServiceClazz, QueryService.class, QueryService.PARAMETER_QUERY_POSITION);
-		this.query = new DocumentedBean(optQueryClass.get());
+		final Class<? extends Query> optQueryClass =
+                queryServiceResolver.getQueryClass(queryServiceClazz);
+		this.query = new DocumentedBean(optQueryClass);
 		
 		// - the Result -------------------------------------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends QueryResult>> optQueryResultClass =
-				(Optional<Class<? extends QueryResult>>)
-						ReflectionGenericsResolver.getParameterTypeFromClass(
-								queryServiceClazz, QueryService.class, QueryService.PARAMETER_RESULT_POSITION);
+		final Class<? extends QueryPayload> optQueryResultClass =
+                queryServiceResolver.getQueryPayloadClass(queryServiceClazz);
 
-		this.response = new DocumentedBean(optQueryResultClass.get());
+		this.response = new DocumentedBean(optQueryResultClass);
 	}
 
 	// ------------------------------------------------------------------------

@@ -13,7 +13,6 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.exception.KasperException;
 
 public final class DocumentedHandler extends DocumentedDomainNode {
 	private static final long serialVersionUID = 2245288475776783642L;
@@ -32,7 +31,7 @@ public final class DocumentedHandler extends DocumentedDomainNode {
                 this.getKasperLibrary().getResolverFactory().getCommandHandlerResolver();
 
 		// Extract command type from handler ----------------------------------
-		final Optional<Class<? extends Command>> commandClazz =
+		final Class<? extends Command> commandClazz =
                 commandHandlerResolver.getCommandClass(handlerClazz);
 
 		// Find associated domain ---------------------------------------------
@@ -47,11 +46,11 @@ public final class DocumentedHandler extends DocumentedDomainNode {
 		final XKasperCommandHandler annotation = handlerClazz.getAnnotation(XKasperCommandHandler.class);
 		String description = annotation.description();
 		if (description.isEmpty()) {
-			description = String.format("The handler for %s commands", commandClazz.get().getSimpleName().replaceAll("Command", ""));
+			description = String.format("The handler for %s commands", commandClazz.getSimpleName().replaceAll("Command", ""));
 		}
 		
 		// Set properties -----------------------------------------------------
-		this.commandName = commandClazz.get().getSimpleName();
+		this.commandName = commandClazz.getSimpleName();
 		this.setName(handlerClazz.getSimpleName());
 		this.setDescription(description);
 		this.setDomainName(domainName);

@@ -32,7 +32,7 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(final Class<? extends CommandHandler> clazz) {
+    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends CommandHandler> clazz) {
 
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
@@ -51,10 +51,10 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Command>> getCommandClass(final Class<? extends CommandHandler> clazz) {
+    public Class<? extends Command> getCommandClass(final Class<? extends CommandHandler> clazz) {
 
         if (cacheCommands.containsKey(clazz)) {
-            return Optional.<Class<? extends Command>>of(cacheCommands.get(clazz));
+            return cacheCommands.get(clazz);
         }
 
         @SuppressWarnings("unchecked") // Safe
@@ -69,7 +69,7 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
 
         cacheCommands.put(clazz, commandClazz.get());
 
-        return commandClazz;
+        return commandClazz.get();
     }
 
     // ------------------------------------------------------------------------

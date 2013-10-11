@@ -13,11 +13,11 @@ import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
-import com.viadeo.kasper.er.annotation.XKasperRelation;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 public class EntityResolverTest {
@@ -69,17 +69,17 @@ public class EntityResolverTest {
 
         resolver.setConceptResolver(conceptResolver);
 
-        when(conceptResolver.getDomain(TestConcept.class))
+        when(conceptResolver.getDomainClass(TestConcept.class))
                 .thenReturn(Optional.<Class<? extends Domain>>of(TestDomain.class));
 
         // When
-        final Optional<Class<? extends Domain>> domain = resolver.getDomain(TestConcept.class);
+        final Optional<Class<? extends Domain>> domain = resolver.getDomainClass(TestConcept.class);
 
         // Then
         assertTrue(domain.isPresent());
         assertEquals(TestDomain.class, domain.get());
 
-        verify(conceptResolver, times(1)).getDomain(TestConcept.class);
+        verify(conceptResolver, times(1)).getDomainClass(TestConcept.class);
         verifyNoMoreInteractions(conceptResolver);
     }
 
@@ -91,17 +91,17 @@ public class EntityResolverTest {
 
         resolver.setRelationResolver(relationResolver);
 
-        when( relationResolver.getDomain(TestRelation.class) )
+        when( relationResolver.getDomainClass(TestRelation.class) )
                 .thenReturn(Optional.<Class<? extends Domain>>of(TestDomain.class));
 
         // When
-        final Optional<Class<? extends Domain>> domain = resolver.getDomain(TestRelation.class);
+        final Optional<Class<? extends Domain>> domain = resolver.getDomainClass(TestRelation.class);
 
         // Then
         assertTrue(domain.isPresent());
         assertEquals(TestDomain.class, domain.get());
 
-        verify(relationResolver, times(1)).getDomain(TestRelation.class);
+        verify(relationResolver, times(1)).getDomainClass(TestRelation.class);
         verifyNoMoreInteractions(relationResolver);
     }
 

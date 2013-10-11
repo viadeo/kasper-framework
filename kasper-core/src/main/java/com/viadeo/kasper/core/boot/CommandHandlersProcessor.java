@@ -6,14 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
-import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.eventhandling.EventBus;
 import org.slf4j.Logger;
@@ -98,23 +96,18 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 		
 		//- Retrieve command type from command handler definition -------------
         @SuppressWarnings("unchecked")
-        final Optional<Class<? extends Command>> commandClass =
+        final Class<? extends Command> commandClass =
                 commandHandlerResolver.getCommandClass((Class<? extends CommandHandler>) commandHandlerClazz);
 
-		if (commandClass.isPresent()) {
-		    // register this command handler for further use in kasper components
-			domainLocator.registerHandler(commandHandler);
-            
-			//- Dynamic type command class and command handler for Axon -------
-			final AxonCommandCastor<Command> castor =
-					new AxonCommandCastor<>(commandClass.get(), commandHandler);
+        // register this command handler for further use in kasper components
+        domainLocator.registerHandler(commandHandler);
 
-			//- Subscribe the handler to this command type (Axon) -------------
-			this.commandBus.subscribe(castor.getBeanClass().getName(), castor.getContainerClass());
+        //- Dynamic type command class and command handler for Axon -------
+        final AxonCommandCastor<Command> castor =
+                new AxonCommandCastor<>(commandClass, commandHandler);
 
-		} else {
-			throw new KasperException("Unable to determine Command class for handler " + commandHandlerClazz.getName());
-		}
+        //- Subscribe the handler to this command type (Axon) -------------
+        this.commandBus.subscribe(castor.getBeanClass().getName(), castor.getContainerClass());
 	}
 
 	// ------------------------------------------------------------------------

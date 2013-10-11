@@ -21,8 +21,6 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
 
     private static ConcurrentMap<Class, Class> cacheEvents = Maps.newConcurrentMap();
 
-    private EventResolver eventResolver;
-
     // ------------------------------------------------------------------------
 
     @Override
@@ -34,7 +32,7 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(final Class<? extends EventListener> clazz) {
+    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends EventListener> clazz) {
 
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
@@ -54,10 +52,10 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Event>> getEventClass(final Class<? extends EventListener> clazz) {
+    public Class<? extends Event> getEventClass(final Class<? extends EventListener> clazz) {
 
         if (cacheEvents.containsKey(clazz)) {
-            return Optional.<Class<? extends Event>>of(cacheEvents.get(clazz));
+            return cacheEvents.get(clazz);
         }
 
         @SuppressWarnings("unchecked") // Safe
@@ -72,14 +70,10 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
 
         cacheEvents.put(clazz, eventClazz.get());
 
-        return eventClazz;
+        return eventClazz.get();
     }
 
     // ------------------------------------------------------------------------
-
-    public void setEventResolver(final EventResolver eventResolver) {
-        this.eventResolver = eventResolver;
-    }
 
     @Override
     public void clearCache() {

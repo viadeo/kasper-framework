@@ -7,14 +7,11 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.domain.DomainEvent;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
-
-import java.util.concurrent.ConcurrentMap;
 
 public class EventResolver extends AbstractResolver<Event> {
 
@@ -27,7 +24,7 @@ public class EventResolver extends AbstractResolver<Event> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(final Class<? extends Event> clazz) {
+    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Event> clazz) {
 
         /* Force events to be DomainEvents for domain resolution */
         if ( ! DomainEvent.class.isAssignableFrom(clazz)) {

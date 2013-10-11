@@ -91,14 +91,25 @@ public interface PlatformConfiguration {
      CommandBus commandBus();
 
     /**
+     * Warning : override the two methods at once
+     *
+     * @param commandHandlerResolver the command handler resolver
+     * @param repositoryResolver the repository resolver
+     *
      * @return the domain locator
      */
-     DomainLocator domainLocator(CommandHandlerResolver commandHandlerResolver);
+    DomainLocator domainLocator(CommandHandlerResolver commandHandlerResolver, RepositoryResolver repositoryResolver);
+    DomainLocator domainLocator();
 
     /**
+     * Warning : override the two methods at once
+     *
+     * @param queryServiceResolver the query service resolver
+     *
      * @return the query services locator
      */
-     QueryServicesLocator queryServicesLocator();
+    QueryServicesLocator queryServicesLocator(QueryServiceResolver queryServiceResolver);
+    QueryServicesLocator queryServicesLocator();
 
     /**
      * Warning : override the two methods at once
@@ -201,12 +212,12 @@ public interface PlatformConfiguration {
     /**
      * Warning : override the two methods at once
      *
-     * @param eventResolver the event resolver
+     * @param domainResolver the event resolver
      * @param domainResolver the domain resolver
      *
      * @return the event listener resolver
      */
-    EventListenerResolver eventListenerResolver(EventResolver eventResolver, DomainResolver domainResolver);
+    EventListenerResolver eventListenerResolver(DomainResolver domainResolver);
     EventListenerResolver eventListenerResolver();
 
     /**

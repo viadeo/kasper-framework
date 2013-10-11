@@ -11,8 +11,6 @@ import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
-import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 public final class DocumentedListener extends DocumentedDomainNode {
 	private static final long serialVersionUID = 2245288475426783601L;
@@ -29,27 +27,22 @@ public final class DocumentedListener extends DocumentedDomainNode {
 		
 		// Extract event type from listener -----------------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends Event>> eventClazz =
-				(Optional<Class<? extends Event>>)
-					ReflectionGenericsResolver.getParameterTypeFromClass(
-						listenerClazz, EventListener.class, EventListener.EVENT_PARAMETER_POSITION);
-		
-		if (!eventClazz.isPresent()) {
-			throw new KasperException("Unable to find event type for listener " + listenerClazz.getClass());
-		}
-		
+		final Class<? extends Event> eventClazz =
+                this.getKasperLibrary().getResolverFactory().getEventListenerResolver().getEventClass(listenerClazz);
+
 		// Find associated domain ---------------------------------------------		
-		final String domainName = DocumentedEvent.getDomainFromEventClass(eventClazz.get());
+		final String domainName = DocumentedEvent.getDomainFromEventClass(
+                this.getKasperLibrary().getResolverFactory().getEventResolver(), eventClazz);
 		
 		// Get description ----------------------------------------------------
 		final XKasperEventListener annotation = listenerClazz.getAnnotation(XKasperEventListener.class);
 		String description = annotation.description();
 		if (description.isEmpty()) {
-			description = String.format("The listener for %s events", eventClazz.get().getSimpleName().replaceAll("Event", ""));
+			description = String.format("The listener for %s events", eventClazz.getSimpleName().replaceAll("Event", ""));
 		}
 		
 		//- Set properties ----------------------------------------------------
-		this.eventName = eventClazz.get().getSimpleName();
+		this.eventName = eventClazz.getSimpleName();
 		this.setName(listenerClazz.getSimpleName());
 		this.setDescription(description);
 		this.setDomainName(domainName);

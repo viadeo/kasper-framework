@@ -7,12 +7,9 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
-
-import java.util.concurrent.ConcurrentMap;
 
 public class ConceptResolver extends AbstractResolver<Concept> {
 
@@ -24,14 +21,13 @@ public class ConceptResolver extends AbstractResolver<Concept> {
     // ------------------------------------------------------------------------
 
     @Override
-    public Optional<Class<? extends Domain>> getDomain(final Class<? extends Concept> clazz) {
+    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Concept> clazz) {
 
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
         }
 
-        final XKasperConcept conceptAnnotation = (XKasperConcept)
-                clazz.getAnnotation(XKasperConcept.class);
+        final XKasperConcept conceptAnnotation = clazz.getAnnotation(XKasperConcept.class);
 
         if (null != conceptAnnotation) {
             final Class<? extends Domain> domain = conceptAnnotation.domain();

@@ -209,31 +209,38 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public DomainLocator domainLocator(final CommandHandlerResolver commandHandlerResolver) {
-        if (components.containsKey(DomainLocator.class)) {
-            return components.getInstance(DomainLocator.class);
-        } else {
-            final DefaultDomainLocator domainLocator = new DefaultDomainLocator();
+    public DomainLocator domainLocator(final CommandHandlerResolver commandHandlerResolver, final RepositoryResolver repositoryResolver) {
+        this.ensureNotPresent(DomainLocator.class);
 
-            domainLocator.setCommandHandlerResolver(commandHandlerResolver);
+        final DefaultDomainLocator domainLocator = new DefaultDomainLocator();
+        domainLocator.setCommandHandlerResolver(commandHandlerResolver);
+        domainLocator.setRepositoryResolver(repositoryResolver);
 
-            components.putInstance(DomainLocator.class, domainLocator);
-            return domainLocator;
-        }
+        components.putInstance(DomainLocator.class, domainLocator);
+        return domainLocator;
+    }
+
+    @Override
+    public DomainLocator domainLocator() {
+        return this.getAvailableInstance(DomainLocator.class);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryServicesLocator queryServicesLocator() {
-        if (components.containsKey(QueryServicesLocator.class)) {
-            return components.getInstance(QueryServicesLocator.class);
-        } else {
-            final QueryServicesLocator queryServicesLocator = new DefaultQueryServicesLocator();
+    public QueryServicesLocator queryServicesLocator(final QueryServiceResolver queryServiceResolver) {
+        this.ensureNotPresent(QueryServicesLocator.class);
 
-            components.putInstance(QueryServicesLocator.class, queryServicesLocator);
-            return queryServicesLocator;
-        }
+        final DefaultQueryServicesLocator queryServicesLocator = new DefaultQueryServicesLocator();
+        queryServicesLocator.setQueryServiceResolver(queryServiceResolver);
+
+        components.putInstance(QueryServicesLocator.class, queryServicesLocator);
+        return queryServicesLocator;
+    }
+
+    @Override
+    public QueryServicesLocator queryServicesLocator() {
+        return this.getAvailableInstance(QueryServicesLocator.class);
     }
 
     // ------------------------------------------------------------------------
@@ -434,13 +441,11 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
 
     @Override
     public EventListenerResolver eventListenerResolver(
-            final EventResolver eventResolver,
             final DomainResolver domainResolver
     ) {
         this.ensureNotPresent(EventListenerResolver.class);
 
         final EventListenerResolver eventListenerResolver = new EventListenerResolver();
-        eventListenerResolver.setEventResolver(eventResolver);
         eventListenerResolver.setDomainResolver(domainResolver);
 
         components.putInstance(EventListenerResolver.class, eventListenerResolver);
