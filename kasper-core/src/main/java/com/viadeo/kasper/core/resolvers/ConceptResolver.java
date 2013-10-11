@@ -41,6 +41,7 @@ public class ConceptResolver extends AbstractResolver<Concept> {
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getDescription(Class<? extends Concept> conceptClazz) {
         final XKasperConcept annotation = conceptClazz.getAnnotation(XKasperConcept.class);
 
@@ -49,7 +50,7 @@ public class ConceptResolver extends AbstractResolver<Concept> {
             description = annotation.description();
         }
         if (description.isEmpty()) {
-            description = String.format("The %s concept", conceptClazz.getSimpleName().replaceAll("Concept", ""));
+            description = String.format("The %s concept", this.getLabel(conceptClazz));
         }
 
         return description;
@@ -57,6 +58,7 @@ public class ConceptResolver extends AbstractResolver<Concept> {
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getLabel(Class<? extends Concept> conceptClazz) {
         final XKasperConcept annotation = conceptClazz.getAnnotation(XKasperConcept.class);
 

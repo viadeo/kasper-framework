@@ -19,6 +19,8 @@ public interface Resolver<T> {
 
     String getLabel(Class<? extends T> clazz);
 
+    String getDescription(Class<? extends T> clazz);
+
     void clearCache();
 
 }

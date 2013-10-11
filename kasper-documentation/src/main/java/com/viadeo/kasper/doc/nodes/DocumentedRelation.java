@@ -53,11 +53,8 @@ public final class DocumentedRelation extends DocumentedEntity {
 		final Class<? extends RootConcept> targetClass =
                 resolver.getTargetEntityClass(relationClazz);
 
-		String source = "error";
-		String target = "error";
-		
-        source = sourceClass.getSimpleName();
-		target = targetClass.getSimpleName();
+        final String source = sourceClass.getSimpleName();
+		final String target = targetClass.getSimpleName();
 
 		//- Set properties ----------------------------------------------------
 		this.setName(relationClazz.getSimpleName());

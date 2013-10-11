@@ -581,11 +581,12 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public RelationResolver relationResolver(final DomainResolver domainResolver) {
+    public RelationResolver relationResolver(final DomainResolver domainResolver, final ConceptResolver conceptResolver) {
         this.ensureNotPresent(RelationResolver.class);
 
         final RelationResolver relationResolver = new RelationResolver();
         relationResolver.setDomainResolver(domainResolver);
+        relationResolver.setConceptResolver(conceptResolver);
 
         components.putInstance(RelationResolver.class, relationResolver);
         return relationResolver;

@@ -70,7 +70,7 @@ public class PlatformConfigurationTest {
                 this.testCachedComponent(pf, "conceptResolver", domainResolver);
 
         final RelationResolver relationResolver =
-                this.testCachedComponent(pf, "relationResolver", domainResolver);
+                this.testCachedComponent(pf, "relationResolver", domainResolver, conceptResolver);
 
         final EntityResolver entityResolver =
                 this.testCachedComponent(pf, "entityResolver", conceptResolver, relationResolver, domainResolver);

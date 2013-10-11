@@ -83,7 +83,7 @@ public class PlatformFactory {
 
         final ConceptResolver conceptResolver = platformConfiguration.conceptResolver(domainResolver);
 
-        final RelationResolver relationResolver = platformConfiguration.relationResolver(domainResolver);
+        final RelationResolver relationResolver = platformConfiguration.relationResolver(domainResolver, conceptResolver);
 
         final EntityResolver entityResolver = platformConfiguration.entityResolver(conceptResolver, relationResolver, domainResolver);
 

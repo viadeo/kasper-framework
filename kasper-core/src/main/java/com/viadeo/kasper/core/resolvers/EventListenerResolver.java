@@ -59,6 +59,7 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getDescription(Class<? extends EventListener> clazz) {
         final XKasperEventListener annotation = clazz.getAnnotation(XKasperEventListener.class);
 
@@ -67,7 +68,7 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
             description = annotation.description();
         }
         if (description.isEmpty()) {
-            description = String.format("The %s event listener", clazz.getSimpleName().replaceAll("Concept", ""));
+            description = String.format("The %s event listener", this.getLabel(clazz));
         }
 
         return description;

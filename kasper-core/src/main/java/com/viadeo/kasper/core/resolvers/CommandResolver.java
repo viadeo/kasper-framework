@@ -55,6 +55,7 @@ public class CommandResolver extends AbstractResolver<Command> {
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getDescription(Class<? extends Command> commandClazz) {
  		final XKasperCommand annotation = commandClazz.getAnnotation(XKasperCommand.class);
 
@@ -66,8 +67,7 @@ public class CommandResolver extends AbstractResolver<Command> {
         }
 
 		if (description.isEmpty()) {
-			description = String.format("The %s command",
-					commandClazz.getSimpleName().replaceAll("Command", ""));
+			description = String.format("The %s command", this.getLabel(commandClazz));
 		}
 
         return description;

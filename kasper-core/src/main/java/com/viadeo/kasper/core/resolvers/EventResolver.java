@@ -58,12 +58,12 @@ public class EventResolver extends AbstractResolver<Event> {
 
     @Override
     public String getLabel(Class<? extends Event> clazz) {
-        return clazz.getSimpleName()
-                .replace("Event", "");
+        return clazz.getSimpleName().replace("Event", "");
     }
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getDescription(Class<? extends Event> eventClazz) {
         final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
 
@@ -72,7 +72,7 @@ public class EventResolver extends AbstractResolver<Event> {
             description = annotation.description();
         }
         if (description.isEmpty()) {
-            description = String.format("The %s event", eventClazz.getSimpleName().replaceAll("Concept", ""));
+            description = String.format("The %s event", this.getLabel(eventClazz));
         }
 
         return description;

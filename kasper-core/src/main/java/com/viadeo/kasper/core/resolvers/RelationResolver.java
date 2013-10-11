@@ -25,6 +25,8 @@ public class RelationResolver extends AbstractResolver<Relation> {
     private static final ConcurrentMap<Class, Class> cacheSources = Maps.newConcurrentMap();
     private static final ConcurrentMap<Class, Class> cacheTargets = Maps.newConcurrentMap();
 
+    private ConceptResolver conceptResolver;
+
     // ------------------------------------------------------------------------
 
     @Override
@@ -53,14 +55,23 @@ public class RelationResolver extends AbstractResolver<Relation> {
         return Optional.absent();
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
     public String getLabel(Class<? extends Relation> clazz) {
+        final XKasperRelation relationAnnotation = clazz.getAnnotation(XKasperRelation.class);
+
+        if ((null != relationAnnotation) && ! relationAnnotation.label().isEmpty()) {
+            return relationAnnotation.label();
+        }
+
         return clazz.getSimpleName()
                 .replace("Relation", "");
     }
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getDescription(Class<? extends Relation> clazz) {
         final XKasperRelation annotation = clazz.getAnnotation(XKasperRelation.class);
 
@@ -69,7 +80,11 @@ public class RelationResolver extends AbstractResolver<Relation> {
             description = annotation.description();
         }
         if (description.isEmpty()) {
-            description = String.format("The %s relation", this.getLabel(clazz));
+            description = String.format("The %s relation between %s and %s",
+                    this.getLabel(clazz),
+                    conceptResolver.getLabel(this.getSourceEntityClass(clazz)),
+                    conceptResolver.getLabel(this.getTargetEntityClass(clazz))
+            );
         }
 
         return description;
@@ -130,6 +145,12 @@ public class RelationResolver extends AbstractResolver<Relation> {
             return Optional.of(biDirAnno.verb());
         }
         return Optional.absent();
+    }
+
+    // ------------------------------------------------------------------------
+
+    public void setConceptResolver(final ConceptResolver conceptResolver) {
+        this.conceptResolver = conceptResolver;
     }
 
 }

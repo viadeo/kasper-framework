@@ -286,10 +286,11 @@ public interface PlatformConfiguration {
      * Warning : override the two methods at once
      *
      * @param domainResolver the domain resolver
+     * @param conceptResolver the concept resolver
      *
      * @return the relation resolver
      */
-    RelationResolver relationResolver(DomainResolver domainResolver);
+    RelationResolver relationResolver(DomainResolver domainResolver, ConceptResolver conceptResolver);
     RelationResolver relationResolver();
 
     /**

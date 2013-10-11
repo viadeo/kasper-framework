@@ -58,7 +58,7 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
     public String getLabel(final Class<? extends CommandHandler> clazz) {
         return clazz.getSimpleName()
                 .replace("CommandHandler", "")
-                .replace("Hndler", "");
+                .replace("Handler", "");
     }
 
     // ------------------------------------------------------------------------
@@ -95,6 +95,7 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getDescription(Class<? extends CommandHandler> handlerClazz) {
         final XKasperCommandHandler annotation = handlerClazz.getAnnotation(XKasperCommandHandler.class);
 

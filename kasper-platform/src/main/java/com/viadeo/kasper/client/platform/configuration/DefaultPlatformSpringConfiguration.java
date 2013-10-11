@@ -196,8 +196,8 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public RelationResolver relationResolver(final DomainResolver domainResolver)  {
-        return super.relationResolver(domainResolver);
+    public RelationResolver relationResolver(final DomainResolver domainResolver, final ConceptResolver conceptResolver)  {
+        return super.relationResolver(domainResolver, conceptResolver);
     }
 
     @Bean

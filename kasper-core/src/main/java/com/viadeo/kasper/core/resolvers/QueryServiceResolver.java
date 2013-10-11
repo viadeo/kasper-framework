@@ -63,7 +63,7 @@ public class QueryServiceResolver extends AbstractResolver<QueryService> {
             description = annotation.description();
         }
         if (description.isEmpty()) {
-            description = String.format("The %s query service", clazz.getSimpleName().replaceAll("Concept", ""));
+            description = String.format("The %s query service", this.getLabel(clazz));
         }
 
         return description;

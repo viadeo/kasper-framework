@@ -29,6 +29,7 @@ public class DomainResolver implements Resolver<Domain> {
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getLabel(final Class<? extends Domain> clazz) {
         if (cacheDomains.containsKey(clazz)) {
             return cacheDomains.get(clazz);
@@ -53,6 +54,7 @@ public class DomainResolver implements Resolver<Domain> {
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getDescription(final Class<? extends Domain> clazz) {
         String description = "";
 
@@ -61,7 +63,7 @@ public class DomainResolver implements Resolver<Domain> {
             description = domainAnnotation.description();
         }
         if (description.isEmpty()) {
-            description = String.format("The domain %s", this.getLabel(clazz));
+            description = String.format("The %s domain", this.getLabel(clazz));
         }
 
         return description;

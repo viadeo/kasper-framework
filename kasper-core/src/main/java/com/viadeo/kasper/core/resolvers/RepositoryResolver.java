@@ -52,6 +52,7 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
 
     // ------------------------------------------------------------------------
 
+    @Override
     public String getDescription(Class<? extends IRepository> clazz) {
         final XKasperRepository annotation = clazz.getAnnotation(XKasperRepository.class);
 
@@ -68,8 +69,7 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
 
     @Override
     public String getLabel(Class<? extends IRepository> clazz) {
-        return clazz.getSimpleName()
-                .replace("Repository", "");
+        return clazz.getSimpleName().replace("Repository", "");
     }
 
     // ------------------------------------------------------------------------

@@ -52,6 +52,13 @@ public class EntityResolver extends AbstractResolver<Entity> {
         return Optional.absent();
     }
 
+    // ------------------------------------------------------------------------
+
+    @Override
+    public String getDescription(final Class<? extends Entity> clazz) {
+        return String.format("The %s entity", this.getLabel(clazz));
+    }
+
     @Override
     public String getLabel(final Class<? extends Entity> clazz) {
         return clazz.getSimpleName().replace("Entity", "");

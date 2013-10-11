@@ -10,7 +10,10 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQuery;
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.annotation.XKasperEvent;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -51,10 +54,26 @@ public class QueryResolver extends AbstractResolver<Query> {
         return Optional.absent();
     }
 
+    // ------------------------------------------------------------------------
+
+    @Override
+    public String getDescription(Class<? extends Query> clazz) {
+        final XKasperQuery annotation = clazz.getAnnotation(XKasperQuery.class);
+
+        String description = "";
+        if (null != annotation) {
+            description = annotation.description();
+        }
+        if (description.isEmpty()) {
+            description = String.format("The %s query", this.getLabel(clazz));
+        }
+
+        return description;
+    }
+
     @Override
     public String getLabel(Class<? extends Query> clazz) {
-        return clazz.getSimpleName()
-                .replace("Query", "");
+        return clazz.getSimpleName().replace("Query", "");
     }
 
     // ------------------------------------------------------------------------
