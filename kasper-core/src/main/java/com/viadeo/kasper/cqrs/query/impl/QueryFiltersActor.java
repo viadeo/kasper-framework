@@ -14,7 +14,7 @@ import java.util.Collection;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
-public class QueryFiltersActor<Q extends Query, P extends QueryPayload>
+public class QueryFiltersActor<Q extends Query, P extends QueryAnswer>
         implements QueryRequestActor<Q, P> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryFiltersActor.class);
@@ -62,7 +62,7 @@ public class QueryFiltersActor<Q extends Query, P extends QueryPayload>
     private <R extends QueryResult<P>> R applyResultFilters(final Class queryClass, final R result, final Context context) {
         R newResult = result;
 
-        if ((null != result.getPayload()) && !resultFilters.isEmpty()) {
+        if ((null != result.getAnswer()) && !resultFilters.isEmpty()) {
             final Timer.Context timerFilters = METRICS.timer(name(queryClass, "requests-result-filters-time")).time();
             for (final ResultFilter<P> filter : resultFilters) {
                 if (ResultFilter.class.isAssignableFrom(filter.getClass())) {

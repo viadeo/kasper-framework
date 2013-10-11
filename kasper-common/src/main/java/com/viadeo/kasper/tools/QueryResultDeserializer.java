@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.viadeo.kasper.KasperError;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,7 +50,7 @@ public class QueryResultDeserializer extends JsonDeserializer<QueryResult> {
             return QueryResult.of(new KasperError(globalCode, messages));
         } else {
             // not very efficient but will be fine for now
-            return QueryResult.of((QueryPayload) ((ObjectMapper) jp.getCodec()).convertValue(root, resultType));
+            return QueryResult.of((QueryAnswer) ((ObjectMapper) jp.getCodec()).convertValue(root, resultType));
         }
     }
 

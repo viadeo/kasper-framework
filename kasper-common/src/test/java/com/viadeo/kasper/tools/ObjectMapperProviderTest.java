@@ -11,9 +11,9 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionPayload;
+import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionAnswer;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
@@ -26,14 +26,14 @@ import static org.junit.Assert.*;
 public class ObjectMapperProviderTest {
     final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
 
-    static class SomePayload implements QueryPayload {
+    static class SomeAnswer implements QueryAnswer {
         private String str;
 
-        public SomePayload() {
+        public SomeAnswer() {
             
         }
         
-        public SomePayload(String str) {
+        public SomeAnswer(String str) {
             this.str = str;
         }
 
@@ -46,7 +46,7 @@ public class ObjectMapperProviderTest {
         }
     }
 
-    static class SomeCollectionResult extends AbstractQueryCollectionPayload<SomePayload> {
+    static class SomeCollectionResult extends AbstractQueryCollectionAnswer<SomeAnswer> {
     }
 
     // ------------------------------------------------------------------------
@@ -54,18 +54,18 @@ public class ObjectMapperProviderTest {
     @Test
     public void queryResultSuccessRoundTrip() throws IOException {
         // Given
-        final QueryResult<SomePayload> expected = new QueryResult<SomePayload>(new SomePayload("foo"));
+        final QueryResult<SomeAnswer> expected = new QueryResult<SomeAnswer>(new SomeAnswer("foo"));
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
                 expected);
 
-        final QueryResult<SomePayload> actual = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), new TypeReference<QueryResult<SomePayload>>() {});
+        final QueryResult<SomeAnswer> actual = objectReader.readValue(objectReader.getFactory()
+                .createJsonParser(json), new TypeReference<QueryResult<SomeAnswer>>() {});
         
         assertFalse(actual.isError());
         assertNull(actual.getError());
-        assertEquals(expected.getPayload().getStr(), actual.getPayload().getStr());
+        assertEquals(expected.getAnswer().getStr(), actual.getAnswer().getStr());
     }
 
     @Test
@@ -142,7 +142,7 @@ public class ObjectMapperProviderTest {
     public void dontFailOnUnknownProperty() throws IOException {
         // Given
         final SomeCollectionResult result = new SomeCollectionResult();
-        result.setList(Arrays.asList(new SomePayload("foo"), new SomePayload("bar")));
+        result.setList(Arrays.asList(new SomeAnswer("foo"), new SomeAnswer("bar")));
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(result);

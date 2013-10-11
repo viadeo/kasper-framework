@@ -6,10 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
-import com.viadeo.kasper.annotation.Immutable;
-
-import java.io.Serializable;
-
-public interface QueryPayload extends Serializable, Immutable {
+/**
+ * An ordered KasperQuery
+ *
+ */
+public interface OrderedQueryAnswer extends QueryAnswer {
 
 }

@@ -6,10 +6,15 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
-/**
- * An ordered KasperQuery
- *
- */
-public interface OrderedQueryPayload extends QueryPayload {
+import com.viadeo.kasper.KasperID;
+import org.joda.time.DateTime;
+
+public interface QueryEntityAnswer extends QueryAnswer {
+
+    KasperID getId();
+
+    String getType();
+
+    DateTime getLastModificationTime();
 
 }

@@ -14,7 +14,7 @@ import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionPayload;
+import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionAnswer;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -34,7 +34,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         private static final long serialVersionUID = 104409802777527460L;
     }
 
-    public static class SomeCollectionResult extends AbstractQueryCollectionPayload<SomeResult> {
+    public static class SomeCollectionResult extends AbstractQueryCollectionAnswer<SomeResult> {
     }
 
     @XKasperQueryService(domain = AccountDomain.class)
@@ -98,7 +98,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         }
     }
 
-    public static class SomeResult implements QueryPayload {
+    public static class SomeResult implements QueryAnswer {
         private SomeQuery query;
 
         public SomeQuery getQuery() {
@@ -168,9 +168,9 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         final QueryResult<SomeResult> result = client().query(query, SomeResult.class);
 
         // Then
-        assertEquals(query.aValue, result.getPayload().query.aValue);
-        assertEquals(query.doThrowSomeException, result.getPayload().query.doThrowSomeException);
-        assertArrayEquals(query.intArray, result.getPayload().query.intArray);
+        assertEquals(query.aValue, result.getAnswer().query.aValue);
+        assertEquals(query.doThrowSomeException, result.getAnswer().query.doThrowSomeException);
+        assertArrayEquals(query.intArray, result.getAnswer().query.intArray);
     }
 
     // ------------------------------------------------------------------------
@@ -201,7 +201,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         final QueryResult<SomeCollectionResult> result = client().query(query, SomeCollectionResult.class);
 
         // Then
-        assertEquals(1, result.getPayload().getCount());
+        assertEquals(1, result.getAnswer().getCount());
     }
 
     // ------------------------------------------------------------------------

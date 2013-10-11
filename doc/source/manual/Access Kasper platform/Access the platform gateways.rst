@@ -11,7 +11,7 @@ to the **Command** and **Query** gateways :
 
    platform.sendCommand(command, context);
 
-   final QueryResult<MyQueryPayload> res = platform.retrieve(query, context);
+   final QueryResult<MyQueryAnswer> res = platform.retrieve(query, context);
 
    // == COMMAND GATEWAY ======================================================
    final CommandGateway cgw = platform.getCommandGateway();
@@ -34,7 +34,7 @@ to the **Command** and **Query** gateways :
    // == QUERY GATEWAY ========================================================
    final QueryGateway qgw = platform.getQueryGateway();
 
-   final QueryResult<MyQueryPayload> res = retrieve(query, context);
+   final QueryResult<MyQueryAnswer> res = retrieve(query, context);
 
 
 TODO: document the different ways to send commands and events from handlers, listeners and query services

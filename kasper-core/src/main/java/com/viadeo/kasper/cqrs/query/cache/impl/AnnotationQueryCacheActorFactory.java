@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs.query.cache.impl;
 import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class AnnotationQueryCacheActorFactory<QUERY extends Query, PAYLOAD extends QueryPayload> {
+public class AnnotationQueryCacheActorFactory<QUERY extends Query, ANSWER extends QueryAnswer> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationQueryCacheActorFactory.class);
 
     private CacheManager cacheManager;
@@ -50,9 +50,9 @@ public class AnnotationQueryCacheActorFactory<QUERY extends Query, PAYLOAD exten
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    public <QUERY extends Query, PAYLOAD extends QueryPayload> Optional<QueryCacheActor<QUERY, PAYLOAD>> make(
+    public <QUERY extends Query, ANSWER extends QueryAnswer> Optional<QueryCacheActor<QUERY, ANSWER>> make(
             final Class<QUERY> queryClass,
-            final Class<? extends QueryService<QUERY, PAYLOAD>> queryServiceClass) {
+            final Class<? extends QueryService<QUERY, ANSWER>> queryServiceClass) {
 
         if (null != cacheManager) {
             final XKasperQueryService queryServiceAnnotation =
@@ -62,8 +62,8 @@ public class AnnotationQueryCacheActorFactory<QUERY extends Query, PAYLOAD exten
                 final XKasperQueryCache kasperQueryCache = queryServiceAnnotation.cache();
 
                 if (kasperQueryCache.enabled()) {
-                    final Cache<Serializable, QueryResult<PAYLOAD>> cache =
-                            cacheManager.<Serializable, QueryResult<PAYLOAD>>
+                    final Cache<Serializable, QueryResult<ANSWER>> cache =
+                            cacheManager.<Serializable, QueryResult<ANSWER>>
                              createCacheBuilder(queryClass.getName())
                             .setStoreByValue(false)
                             .setExpiry(CacheConfiguration.ExpiryType.MODIFIED,

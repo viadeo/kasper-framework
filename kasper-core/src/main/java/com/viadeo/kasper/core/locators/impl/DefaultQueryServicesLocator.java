@@ -210,7 +210,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <Q extends Query, P extends QueryPayload, R extends QueryResult<P>>
+    public <Q extends Query, P extends QueryAnswer, R extends QueryResult<P>>
     Optional<RequestActorsChain<Q, R>> getRequestActorChain(Class<? extends Q> queryClass) {
         RequestActorsChain<Q, R> chain = (RequestActorsChain<Q, R>) requestActorChainCache.get(queryClass);
 

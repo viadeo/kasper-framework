@@ -6,15 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
-import com.viadeo.kasper.KasperID;
-import org.joda.time.DateTime;
+import com.viadeo.kasper.annotation.Immutable;
 
-public interface QueryEntityPayload extends QueryPayload {
+import java.io.Serializable;
 
-    KasperID getId();
-
-    String getType();
-
-    DateTime getLastModificationTime();
+public interface QueryAnswer extends Serializable, Immutable {
 
 }

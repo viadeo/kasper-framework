@@ -36,8 +36,8 @@ KasperClient is thread safe and should be reused for optimal performances.
 	KasperError error = result.getError();
         // do something using the error code or the messages list
    } else {
-     // if no error occured you can access the payload
-     SuperCoolResult payload = result.get();
+     // if no error occured you can access the answer
+     SuperCoolResult answer = result.get();
    }
 
 Hard to make it shorter! :)

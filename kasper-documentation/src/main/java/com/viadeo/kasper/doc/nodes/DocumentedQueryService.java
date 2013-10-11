@@ -8,7 +8,7 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.viadeo.kasper.core.resolvers.QueryServiceResolver;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.doc.KasperLibrary;
 
@@ -53,8 +53,8 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
 		
 		// - the Result -------------------------------------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Class<? extends QueryPayload> optQueryResultClass =
-                queryServiceResolver.getQueryPayloadClass(queryServiceClazz);
+		final Class<? extends QueryAnswer> optQueryResultClass =
+                queryServiceResolver.getQueryAnswerClass(queryServiceClazz);
 
 		this.response = new DocumentedBean(optQueryResultClass);
 	}

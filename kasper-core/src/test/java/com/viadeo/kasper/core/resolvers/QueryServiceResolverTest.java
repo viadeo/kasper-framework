@@ -38,12 +38,12 @@ public class QueryServiceResolverTest {
     private static final class TestQuery implements Query { }
 
     @XKasperUnregistered
-    private static final class TestQueryPayload implements QueryPayload { }
+    private static final class TestQueryAnswer implements QueryAnswer { }
 
     @XKasperUnregistered
-    private static final class TestQueryService3 implements  QueryService<TestQuery, TestQueryPayload> {
+    private static final class TestQueryService3 implements  QueryService<TestQuery, TestQueryAnswer> {
         @Override
-        public QueryResult<TestQueryPayload> retrieve(QueryMessage<TestQuery> message) throws Exception {
+        public QueryResult<TestQueryAnswer> retrieve(QueryMessage<TestQuery> message) throws Exception {
             return null;
         }
     }
@@ -109,26 +109,26 @@ public class QueryServiceResolverTest {
     // ------------------------------------------------------------------------
 
     @Test
-    public void testGetQueryPayloadFromValidService() {
+    public void testGetQueryAnswerFromValidService() {
         // Given
         final QueryServiceResolver resolver = new QueryServiceResolver();
 
         // When
-        final Class<? extends QueryPayload> queryPayload = resolver.getQueryPayloadClass(TestQueryService3.class);
+        final Class<? extends QueryAnswer> queryAnswer = resolver.getQueryAnswerClass(TestQueryService3.class);
 
         // Then
-        assertEquals(TestQueryPayload.class, queryPayload);
+        assertEquals(TestQueryAnswer.class, queryAnswer);
     }
 
 
     @Test
-    public void testGetQueryPayloadFromInvalidService() {
+    public void testGetQueryAnswerFromInvalidService() {
         // Given
         final QueryServiceResolver resolver = new QueryServiceResolver();
 
         // When
         try {
-            final Class<? extends QueryPayload> queryPayload = resolver.getQueryPayloadClass(TestQueryService.class);
+            final Class<? extends QueryAnswer> queryAnswer = resolver.getQueryAnswerClass(TestQueryService.class);
             fail();
         } catch (final KasperException e) {
             // Then should raise exception

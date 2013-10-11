@@ -61,7 +61,7 @@ public interface QueryServicesLocator {
      * @param queryClass the query class
      * @return the computed actors chain
      */
-    <Q extends Query, P extends QueryPayload, R extends QueryResult<P>>
+    <Q extends Query, P extends QueryAnswer, R extends QueryResult<P>>
     Optional<RequestActorsChain<Q, R>> getRequestActorChain(Class<? extends Q> queryClass);
 
 	/**

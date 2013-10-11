@@ -49,7 +49,7 @@ public class QueryResultSerializer extends JsonSerializer<QueryResult> {
 
             jgen.writeEndObject();
         } else {
-            jgen.writeObject(value.getPayload());
+            jgen.writeObject(value.getAnswer());
         }
     }
 }

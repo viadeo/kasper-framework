@@ -19,7 +19,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
@@ -313,7 +313,7 @@ public class KasperClient {
      * @throws KasperException
      *             if something went wrong.
      */
-    public <P extends QueryPayload> QueryResult<P> query(final Query query, final Class<P> mapTo) {
+    public <P extends QueryAnswer> QueryResult<P> query(final Query query, final Class<P> mapTo) {
         return query(query, TypeToken.of(mapTo));
     }
 
@@ -342,7 +342,7 @@ public class KasperClient {
      * @throws KasperException
      *             if something went wrong.
      */
-    public <P extends QueryPayload> QueryResult<P> query(final Query query, final TypeToken<P> mapTo) {
+    public <P extends QueryAnswer> QueryResult<P> query(final Query query, final TypeToken<P> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
@@ -364,7 +364,7 @@ public class KasperClient {
 
     // --
 
-    public <P extends QueryPayload> Future<QueryResult<P>> queryAsync(final Query query, final Class<P> mapTo) {
+    public <P extends QueryAnswer> Future<QueryResult<P>> queryAsync(final Query query, final Class<P> mapTo) {
         return queryAsync(query, TypeToken.of(mapTo));
     }
 
@@ -375,7 +375,7 @@ public class KasperClient {
      * @see KasperClient#query(com.viadeo.kasper.cqrs.query.Query, Class)
      * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command)
      */
-    public <P extends QueryPayload> Future<QueryResult<P>> queryAsync(final Query query, final TypeToken<P> mapTo) {
+    public <P extends QueryAnswer> Future<QueryResult<P>> queryAsync(final Query query, final TypeToken<P> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
@@ -403,7 +403,7 @@ public class KasperClient {
      * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command,
      *      Callback)
      */
-    public <P extends QueryPayload> void queryAsync(final Query query, final Class<P> mapTo,
+    public <P extends QueryAnswer> void queryAsync(final Query query, final Class<P> mapTo,
                                                     final Callback<QueryResult<P>> callback) {
         queryAsync(query, TypeToken.of(mapTo), callback);
     }
@@ -413,7 +413,7 @@ public class KasperClient {
      * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command,
      *      Callback)
      */
-    public <P extends QueryPayload> void queryAsync(final Query query, final TypeToken<P> mapTo,
+    public <P extends QueryAnswer> void queryAsync(final Query query, final TypeToken<P> mapTo,
                                                     final Callback<QueryResult<P>> callback) {
         checkNotNull(query);
         checkNotNull(mapTo);
@@ -432,7 +432,7 @@ public class KasperClient {
         }
     }
 
-    private <P extends QueryPayload> TypeListener<ClientResponse> createTypeListener(
+    private <P extends QueryAnswer> TypeListener<ClientResponse> createTypeListener(
             final Query query,
             final TypeToken<P> mapTo,
             final Callback<QueryResult<P>> callback
@@ -451,7 +451,7 @@ public class KasperClient {
         };
     }
 
-    <P extends QueryPayload> QueryResult<P> handleQueryResponse(final ClientResponse response,
+    <P extends QueryAnswer> QueryResult<P> handleQueryResponse(final ClientResponse response,
                                                                 final TypeToken<P> mapTo) {
 
         final TypeToken mappedType = new TypeToken<QueryResult<P>>() {
