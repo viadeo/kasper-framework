@@ -12,11 +12,13 @@ import com.viadeo.kasper.core.resolvers.CommandResolver;
 import com.viadeo.kasper.core.resolvers.Resolver;
 import com.viadeo.kasper.core.resolvers.ResolverFactory;
 import com.viadeo.kasper.cqrs.command.Command;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
+@Ignore
 public class KasperMetricsTest {
 
     @XKasperUnregistered
@@ -73,8 +75,8 @@ public class KasperMetricsTest {
         when( commandResolver.getTypeName() )
                 .thenReturn( "Command" );
 
-        when( commandResolver.getDomainLabel(TestCommand.class) )
-                .thenReturn( "Test" );
+        when(commandResolver.getDomainLabel(TestCommand.class))
+                .thenReturn("Test");
 
         KasperMetrics.setResolverFactory(resolverFactory);
 
