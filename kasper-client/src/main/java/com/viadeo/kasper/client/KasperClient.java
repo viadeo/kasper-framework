@@ -454,7 +454,7 @@ public class KasperClient {
     <P extends QueryPayload> QueryResult<P> handleQueryResponse(final ClientResponse response,
                                                                 final TypeToken<P> mapTo) {
 
-        final TypeToken<?> mappedType = new TypeToken<QueryResult<P>>() {
+        final TypeToken mappedType = new TypeToken<QueryResult<P>>() {
                 private static final long serialVersionUID = -6868146773459098496L;
             }.where(new TypeParameter<P>() { }, mapTo);
 
@@ -514,7 +514,7 @@ public class KasperClient {
         return resolvePath(queryBaseLocation, Introspector.decapitalize(className), queryClass);
     }
 
-    private URI resolvePath(final URL basePath, final String path, final Class<?> clazz) {
+    private URI resolvePath(final URL basePath, final String path, final Class clazz) {
         try {
 
             return new URL(basePath, path).toURI();
@@ -528,7 +528,7 @@ public class KasperClient {
 
     // ------------------------------------------------------------------------
 
-    private KasperException cannotConstructURI(final Class<?> clazz, final Exception e) {
+    private KasperException cannotConstructURI(final Class clazz, final Exception e) {
         return new KasperException("Could not construct resource url for " + clazz, e);
     }
 

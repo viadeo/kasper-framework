@@ -38,7 +38,7 @@ public class EventsDocumentationProcessor extends DocumentationProcessor<XKasper
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public void process(final Class<?> eventClazz) {
+	public void process(final Class eventClazz) {
 		LOGGER.info("Record on event library : " + eventClazz.getName());
 
 		getKasperLibrary().recordEvent((Class<? extends Event>) eventClazz);

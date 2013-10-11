@@ -42,11 +42,12 @@ public class DomainsProcessor extends SingletonAnnotationProcessor<XKasperDomain
 	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
-	public void process(final Class<?> domainClazz, final Domain domain) {
+	public void process(final Class domainClazz, final Domain domain) {
 		LOGGER.info("Record on domain locator : " + domainClazz.getName());
 
 		//- Register the domain to the locator --------------------------------
-		final XKasperDomain annotation = domainClazz.getAnnotation(XKasperDomain.class);
+		final XKasperDomain annotation = (XKasperDomain)
+                domainClazz.getAnnotation(XKasperDomain.class);
 
         final String label;
         final String prefix;

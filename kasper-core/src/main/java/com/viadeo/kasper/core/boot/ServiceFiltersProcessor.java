@@ -37,11 +37,13 @@ public class ServiceFiltersProcessor extends SingletonAnnotationProcessor<XKaspe
 	 * @see com.viadeo.kasper.core.boot.AnnotationProcessor#process(Class)
 	 */
 	@Override
-	public void process(final Class<?> queryFilterClazz, final ServiceFilter queryFilter) {
+	public void process(final Class queryFilterClazz, final ServiceFilter queryFilter) {
 		LOGGER.info("Record filter on query services locator : " + queryFilterClazz.getName());
 
 		final String filterName;
-		final XKasperServiceFilter annotation = queryFilterClazz.getAnnotation(XKasperServiceFilter.class);
+		final XKasperServiceFilter annotation = (XKasperServiceFilter)
+                queryFilterClazz.getAnnotation(XKasperServiceFilter.class);
+
 		if (annotation.name().isEmpty()) {
 			filterName = queryFilterClazz.getSimpleName();
 		} else {

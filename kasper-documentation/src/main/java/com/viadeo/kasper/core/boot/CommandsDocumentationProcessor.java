@@ -36,7 +36,7 @@ public class CommandsDocumentationProcessor extends DocumentationProcessor<XKasp
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public void process(final Class<?> commandClazz) {
+	public void process(final Class commandClazz) {
 		LOGGER.info("Record on command library : " + commandClazz.getName());
 		
 		//- Register the domain to the locator --------------------------------

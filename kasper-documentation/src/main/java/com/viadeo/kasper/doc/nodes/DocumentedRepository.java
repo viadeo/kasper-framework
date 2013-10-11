@@ -7,6 +7,7 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.core.resolvers.RepositoryResolver;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.IRepository;
@@ -16,7 +17,6 @@ import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 public final class DocumentedRepository extends DocumentedDomainNode {
 	private static final long serialVersionUID = 2245288475776783601L;
@@ -28,53 +28,24 @@ public final class DocumentedRepository extends DocumentedDomainNode {
 	
 	// ------------------------------------------------------------------------
 	
-	public DocumentedRepository(final KasperLibrary kl, final Class<? extends IRepository<?>> repositoryClazz) {
+	public DocumentedRepository(final KasperLibrary kl, final Class<? extends IRepository> repositoryClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
-		
+
+        final RepositoryResolver resolver = this.getKasperLibrary().getResolverFactory().getRepositoryResolver();
+
 		// Extract aggregate type from repository -----------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends AggregateRoot>> agr =
-			(Optional<Class<? extends AggregateRoot>>)
-				ReflectionGenericsResolver.getParameterTypeFromClass(
-					repositoryClazz, IRepository.class, IRepository.ENTITY_PARAMETER_POSITION);
-		
-		if (!agr.isPresent()) {
-			throw new KasperException("Unable to find aggregate type for repository " + repositoryClazz.getClass());
-		}
-		
+		final Class<? extends AggregateRoot> agr = resolver.getStoredEntityClass(repositoryClazz);
+
 		// Find associated domain ---------------------------------------------
-		final Class<? extends Domain> domain;
-		final XKasperConcept conceptAnno = agr.get().getAnnotation(XKasperConcept.class);
-		if (null != conceptAnno) {
-			domain = conceptAnno.domain();
-		} else {
-			final XKasperRelation relationAnno = agr.get().getAnnotation(XKasperRelation.class);
-			if (null != relationAnno) {
-				domain = relationAnno.domain();
-			} else {
-				throw new KasperException("Unable to find domain from annotation for aggregate " + agr.get().getSimpleName());
-			}
-		}
-		 		
-		// Get domain name ----------------------------------------------------
-		final XKasperDomain domainAnno = domain.getAnnotation(XKasperDomain.class);
-		
-		if (null == domainAnno) {
-			throw new KasperException("Unable to find a name type for domain " + domain);
-		}
-		
-		// Get description ----------------------------------------------------
-		final XKasperRepository annotation = repositoryClazz.getAnnotation(XKasperRepository.class);
-		String description = annotation.description();
-		if (description.isEmpty()) {
-			description = String.format("The repository for %s aggregates", agr.get().getSimpleName());
-		}
-		
+		final String domainName = resolver.getDomainClass(repositoryClazz).get().getSimpleName();
+        final String description = resolver.getDescription(repositoryClazz);
+
 		// Set properties -----------------------------------------------------
 		this.setName(repositoryClazz.getSimpleName());
-		this.setDomainName(domain.getSimpleName());
+		this.setDomainName(domainName);
 		this.setDescription(description);
-		this.aggregate = agr.get().getSimpleName();
+		this.aggregate = agr.getSimpleName();
 	}	
 	
 	// ------------------------------------------------------------------------

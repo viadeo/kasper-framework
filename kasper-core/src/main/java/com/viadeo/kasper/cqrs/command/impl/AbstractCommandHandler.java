@@ -83,7 +83,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         final KasperCommandMessage<C> kmessage = new DefaultKasperCommandMessage<>(message);
         CurrentContext.set(kmessage.getContext());
 
-        final Class<?> commandClass = message.getPayload().getClass();
+        final Class commandClass = message.getPayload().getClass();
 
         AbstractCommandHandler.LOGGER.debug("Handle command " + commandClass.getSimpleName());
 
@@ -185,7 +185,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
      * @param event The event to be scheduled for publication to the unit of work
      */
     public void publish(final Event event) {
-        final GenericEventMessage<?> axonMessage = EventUtils.KasperEvent2AxonMessage(checkNotNull(event));
+        final GenericEventMessage axonMessage = EventUtils.KasperEvent2AxonMessage(checkNotNull(event));
         if (CurrentUnitOfWork.isStarted()) {
             CurrentUnitOfWork.get().publishEvent(axonMessage, eventBus);
         } else {

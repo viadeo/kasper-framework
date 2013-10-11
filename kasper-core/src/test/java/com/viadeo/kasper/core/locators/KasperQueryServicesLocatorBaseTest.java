@@ -9,6 +9,8 @@ package com.viadeo.kasper.core.locators;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
+import com.viadeo.kasper.core.resolvers.DomainResolver;
+import com.viadeo.kasper.core.resolvers.QueryServiceResolver;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperServiceFilter;
@@ -48,7 +50,13 @@ public class KasperQueryServicesLocatorBaseTest {
 
 	@Before
 	public void setUp() throws Exception {
+        final DomainResolver domainResolver = new DomainResolver();
+
+        final QueryServiceResolver queryServiceResolver = new QueryServiceResolver();
+        queryServiceResolver.setDomainResolver(domainResolver);
+
 		locator = new DefaultQueryServicesLocator();
+        locator.setQueryServiceResolver(queryServiceResolver);
 	}
 
 	@Test

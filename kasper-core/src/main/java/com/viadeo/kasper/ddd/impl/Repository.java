@@ -82,7 +82,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 		protected AxonRepository(final Repository<AGR> kasperRepository, final Class<AGR> aggregateType) {
 			super(aggregateType);
 
-            final Class<?> kasperRepositoryClass = kasperRepository.getClass();
+            final Class kasperRepositoryClass = kasperRepository.getClass();
 
 			this.kasperRepository = kasperRepository;
 

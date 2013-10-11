@@ -26,11 +26,11 @@ public class TestStdQueryFactoryDeser {
     @SuppressWarnings("unchecked")
     @Before
     public void setUp() {
-        final Map<Type, TypeAdapter<?>> adapters = new HashMap<Type, TypeAdapter<?>>();
+        final Map<Type, TypeAdapter> adapters = new HashMap<Type, TypeAdapter>();
         adapters.put(String.class, DefaultTypeAdapters.STRING_ADAPTER);
         adapters.put(int.class, DefaultTypeAdapters.INT_ADAPTER);
 
-        factory = new DefaultQueryFactory(new FeatureConfiguration(), adapters, ImmutableMap.<Type, BeanAdapter<?>>of(),
+        factory = new DefaultQueryFactory(new FeatureConfiguration(), adapters, ImmutableMap.<Type, BeanAdapter>of(),
                 Arrays.asList(DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY),
                 VisibilityFilter.PACKAGE_PUBLIC);
     }

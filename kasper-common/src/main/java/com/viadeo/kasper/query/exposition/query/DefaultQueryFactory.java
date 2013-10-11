@@ -48,16 +48,16 @@ public class DefaultQueryFactory implements QueryFactory {
     private static final String PREFIX_METHOD_SET = "set";
     private static final int PREFIX_METHOD_SET_LEN = 3;
 
-    private static final Comparator<Constructor<?>> LEAST_PARAM_COUNT_CTR_COMPARATOR = new Comparator<Constructor<?>>() {
+    private static final Comparator<Constructor> LEAST_PARAM_COUNT_CTR_COMPARATOR = new Comparator<Constructor>() {
         @Override
-        public int compare(final Constructor<?> o1, final Constructor<?> o2) {
+        public int compare(final Constructor o1, final Constructor o2) {
             return o1.getParameterTypes().length - o2.getParameterTypes().length;
         }
     };
 
-    private final ConcurrentMap<Type, TypeAdapter<?>> adapters;
-    private final Map<Type, BeanAdapter<?>> beanAdapters;
-    private final List<TypeAdapterFactory<?>> factories;
+    private final ConcurrentMap<Type, TypeAdapter> adapters;
+    private final Map<Type, BeanAdapter> beanAdapters;
+    private final List<TypeAdapterFactory> factories;
     private final FeatureConfiguration features;
 
     private final VisibilityFilter visibilityFilter;
@@ -66,9 +66,9 @@ public class DefaultQueryFactory implements QueryFactory {
 
     // ------------------------------------------------------------------------
 
-    public DefaultQueryFactory(final FeatureConfiguration features, final Map<Type, TypeAdapter<?>> adapters,
-                               final Map<Type, BeanAdapter<?>> beanAdapters,
-                               final List<? extends TypeAdapterFactory<?>> factories,
+    public DefaultQueryFactory(final FeatureConfiguration features, final Map<Type, TypeAdapter> adapters,
+                               final Map<Type, BeanAdapter> beanAdapters,
+                               final List<? extends TypeAdapterFactory> factories,
                                final VisibilityFilter visibilityFilter) {
         this.features = checkNotNull(features);
         this.visibilityFilter = checkNotNull(visibilityFilter);
@@ -91,7 +91,7 @@ public class DefaultQueryFactory implements QueryFactory {
         TypeAdapter<T> adapter = (TypeAdapter<T>) adapters.get(typeToken.getType());
 
         if (null == adapter) {
-            for (final TypeAdapterFactory<?> candidateFactory : factories) {
+            for (final TypeAdapterFactory candidateFactory : factories) {
                 if (TypeToken.of(candidateFactory.getClass())
                         .resolveType(TypeAdapterFactory.class.getTypeParameters()[0])
                         .isAssignableFrom(typeToken))
@@ -135,7 +135,7 @@ public class DefaultQueryFactory implements QueryFactory {
 
         // no need to look at interfaces as we are interested only in
         // implementations
-        Class<?> superClass = typeToken.getRawType();
+        Class superClass = typeToken.getRawType();
         while ((null != superClass) && !superClass.equals(Object.class)) {
             collectAccessors(superClass, accessors);
             collectMutators(superClass, mutators);
@@ -165,7 +165,7 @@ public class DefaultQueryFactory implements QueryFactory {
             // we have a ctr with args, this property will be set using the ctr
             // => do not use the mutator
             if (null != ctrProperty) {
-                final TypeToken<?> ctrTypeToken = typeToken.resolveType(ctrProperty.type());
+                final TypeToken ctrTypeToken = typeToken.resolveType(ctrProperty.type());
 
                 // FIXME do we want to check it or be more permissive?
                 if (!accessorType.equals(ctrTypeToken)) {
@@ -192,7 +192,7 @@ public class DefaultQueryFactory implements QueryFactory {
 
                 if (null != mutator) {
 
-                    final TypeToken<?> mutatorTypeToken = typeToken.resolveType(mutator
+                    final TypeToken mutatorTypeToken = typeToken.resolveType(mutator
                             .getGenericParameterTypes()[0]);
 
                     // FIXME do we want to check it or be more permissive?
@@ -288,8 +288,8 @@ public class DefaultQueryFactory implements QueryFactory {
 
     // ------------------------------------------------------------------------
 
-    private BeanConstructor resolveBeanConstructor(final Class<?> forClass) {
-        final Constructor<?>[] ctrs = forClass.getDeclaredConstructors();
+    private BeanConstructor resolveBeanConstructor(final Class forClass) {
+        final Constructor[] ctrs = forClass.getDeclaredConstructors();
 
         /*
          * we want the no arg ctr on top
@@ -325,7 +325,7 @@ public class DefaultQueryFactory implements QueryFactory {
 
     // ------------------------------------------------------------------------
 
-    private void collectAccessors(final Class<?> fromClass, final Map<String, Method> accessors) {
+    private void collectAccessors(final Class fromClass, final Map<String, Method> accessors) {
         final Method[] methods = fromClass.getDeclaredMethods();
 
         for (final Method m : methods) {
@@ -340,7 +340,7 @@ public class DefaultQueryFactory implements QueryFactory {
 
     // ------------------------------------------------------------------------
 
-    private void collectMutators(final Class<?> fromClass, final Map<String, Method> mutators) {
+    private void collectMutators(final Class fromClass, final Map<String, Method> mutators) {
         final Method[] methods = fromClass.getDeclaredMethods();
 
         for (final Method m : methods) {

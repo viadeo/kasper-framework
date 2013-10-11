@@ -7,12 +7,12 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.core.resolvers.EventResolver;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.domain.DomainEvent;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.Collection;
 
@@ -35,20 +35,13 @@ public final class DocumentedEvent extends DocumentedDomainNode {
 	public DocumentedEvent(final KasperLibrary kl, final Class<? extends Event> eventClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
-		final String domainName = getDomainFromEventClass(eventClazz);
+		final String domainName = getDomainFromEventClass(
+                this.getKasperLibrary().getResolverFactory().getEventResolver(), eventClazz);
 		
 		// Get description ----------------------------------------------------
-		final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
-		String description = "";
-  		String annotatedAction = "";
-		if (annotation != null) {
-            description = annotation.description();
-            annotatedAction = annotation.action();
-        }
-
-        if (description.isEmpty()) {
-			description = String.format("The %s event", eventClazz.getSimpleName().replaceAll("Event", ""));
-        }
+        final EventResolver resolver = this.getKasperLibrary().getResolverFactory().getEventResolver();
+		final String description = resolver.getDescription(eventClazz);
+  		final String annotatedAction = resolver.getAction(eventClazz);
 
 		// Set properties -----------------------------------------------------
 		this.setAction(annotatedAction);
@@ -70,28 +63,23 @@ public final class DocumentedEvent extends DocumentedDomainNode {
 		return this.action;
 	}
 	
-	
+
 	// ------------------------------------------------------------------------
-	
-	public static String getDomainFromEventClass(final Class<?> eventClazz) {
+
+	public static String getDomainFromEventClass(final EventResolver eventResolver, final Class eventClazz) {
 
         if (DomainEvent.class.isAssignableFrom(eventClazz)) {
             @SuppressWarnings("unchecked") // Safe
             final Optional<Class<? extends Domain>> domainClazz =
-                    (Optional<Class<? extends Domain>>)
-                            ReflectionGenericsResolver.getParameterTypeFromClass(
-                                    eventClazz,
-                                    DomainEvent.class,
-                                    DomainEvent.DOMAIN_PARAMETER_POSITION);
-
+                    eventResolver.getDomainClass(eventClazz);
             if (domainClazz.isPresent()) {
                 return domainClazz.get().getSimpleName();
             }
         }
 
 		return "Unknown";
-	}	
-	
+	}
+
 	// ------------------------------------------------------------------------
 	
 	public String getLabel() {

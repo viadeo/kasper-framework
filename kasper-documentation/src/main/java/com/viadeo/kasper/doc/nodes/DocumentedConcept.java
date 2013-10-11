@@ -8,11 +8,13 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.core.resolvers.ConceptResolver;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
+import com.viadeo.kasper.event.Event;
 import org.axonframework.eventhandling.annotation.EventHandler;
 
 import java.lang.reflect.Method;
@@ -37,25 +39,19 @@ public final class DocumentedConcept extends DocumentedEntity {
 	public DocumentedConcept(final KasperLibrary kl, final Class<? extends Concept> conceptClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
-		final XKasperConcept annotation = conceptClazz.getAnnotation(XKasperConcept.class);
-		
-		// Find if it's an aggregate ------------------------------------------
 		final boolean isAggregate = AggregateRoot.class.isAssignableFrom(conceptClazz);
 		
 		// Find associated domain ---------------------------------------------
-		final Class<? extends Domain> domain = annotation.domain();
-		
-		// Get description ----------------------------------------------------
-		String description = annotation.description();
-		if (description.isEmpty()) {
-			description = String.format("The %s concept", conceptClazz.getSimpleName().replaceAll("Concept", ""));
-		}
-		
+        final ConceptResolver resolver = this.getKasperLibrary().getResolverFactory().getConceptResolver();
+ 		final String domainName = resolver.getDomainClass(conceptClazz).get().getSimpleName();
+        final String description = resolver.getDescription(conceptClazz);
+        final String label = resolver.getLabel(conceptClazz);
+
 		// Set properties -----------------------------------------------------
 		this.setIsAggregate(isAggregate);
-		this.setLabel(annotation.label());
+		this.setLabel(label);
 		this.setName(conceptClazz.getSimpleName());
-		this.setDomainName(domain.getSimpleName());
+		this.setDomainName(domainName);
 		this.setDescription(description);
 		
 		if (isAggregate) {
@@ -70,14 +66,11 @@ public final class DocumentedConcept extends DocumentedEntity {
 	// --
 	
 	private void fillSourceEvents(final Class<? extends Concept> conceptClazz) {
-		final Method[] methods = conceptClazz.getDeclaredMethods();
-		for (Method method : methods) {
-			if (null != method.getAnnotation(EventHandler.class)) {
-				final Class<?>[] types = method.getParameterTypes();
-				if (types.length == 1) {
-					sourceEvents.add(types[0].getSimpleName());
-				}
-			}
+        final Collection<Class<? extends Event>> listenedEvents =
+                this.getKasperLibrary().getResolverFactory().getEntityResolver().getListenedSourceEvents(conceptClazz);
+
+		for (final Class<? extends Event> eventClazz : listenedEvents) {
+		    sourceEvents.add(eventClazz.getSimpleName());
 		}
 	}
 	

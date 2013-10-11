@@ -17,7 +17,7 @@ import java.util.Collection;
 public interface QueryServicesLocator {
 
 	/** @param service the service to be registered */
-	void registerService(String name, QueryService<?, ?> service, Class<? extends Domain> domainClass);
+	void registerService(String name, QueryService service, Class<? extends Domain> domainClass);
 
     /**
      * @param filterName the name of the query filter to be registered
@@ -44,7 +44,7 @@ public interface QueryServicesLocator {
      * @param queryServiceClass the service on which the filter must be applied
      * @param filterClass the class of the filter to be applied
      */
-    void registerFilterForService(Class<? extends QueryService<?, ?>> queryServiceClass, Class<? extends ServiceFilter> filterClass);
+    void registerFilterForService(Class<? extends QueryService> queryServiceClass, Class<? extends ServiceFilter> filterClass);
 
 	/**
 	 * Retrieve a service instance from its query class
@@ -71,7 +71,7 @@ public interface QueryServicesLocator {
 	 * @return a corresponding service instance
 	 */
 	@SuppressWarnings("rawtypes")
-	Optional<QueryService> getServiceFromClass(Class<? extends QueryService<?, ?>> serviceClass);
+	Optional<QueryService> getServiceFromClass(Class<? extends QueryService> serviceClass);
 
 	/**
 	 * Retrieve a service instance from its name
@@ -87,7 +87,7 @@ public interface QueryServicesLocator {
 	 *
 	 * @return all the registered services
 	 */
-	Collection<QueryService<?,?>> getServices();
+	Collection<QueryService> getServices();
 
     /**
      * Get all filters to be applied on a particular service class
@@ -95,6 +95,6 @@ public interface QueryServicesLocator {
      * @param serviceClass the class of the servcie to search filters for
      * @return a list of filter instances to apply on the service
      */
-    Collection<ServiceFilter> getFiltersForServiceClass(Class<? extends QueryService<?, ?>> serviceClass);
+    Collection<ServiceFilter> getFiltersForServiceClass(Class<? extends QueryService> serviceClass);
 
 }

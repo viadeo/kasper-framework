@@ -59,7 +59,7 @@ public class QueryFiltersActor<Q extends Query, P extends QueryPayload>
 
     // -----
 
-    private <R extends QueryResult<P>> R applyResultFilters(final Class<?> queryClass, final R result, final Context context) {
+    private <R extends QueryResult<P>> R applyResultFilters(final Class queryClass, final R result, final Context context) {
         R newResult = result;
 
         if ((null != result.getPayload()) && !resultFilters.isEmpty()) {

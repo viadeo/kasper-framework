@@ -40,6 +40,6 @@ public interface ComponentsInstanceManager {
      * @param clazz the class to use for recording the instance
      * @param objInstance the instance to be recorded
      */
-    void recordInstance(Class<?> clazz, Object objInstance);
+    void recordInstance(Class clazz, Object objInstance);
 
 }

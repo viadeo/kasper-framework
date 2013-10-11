@@ -24,12 +24,12 @@ import java.util.List;
 public class AvroWriter {
     private static final Logger LOGGER = LoggerFactory.getLogger(AvroWriter.class);
 
-    private final Class<?> clazz;
+    private final Class clazz;
     private final Schema schema;
 
     // ------------------------------------------------------------------------
 
-    public AvroWriter(final Class<?> clazz, final Schema schema) {
+    public AvroWriter(final Class clazz, final Schema schema) {
         this.clazz = clazz;
         this.schema = schema;
     }
@@ -37,7 +37,7 @@ public class AvroWriter {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    public final File write(final List<?> data, File file) throws IOException {
+    public final File write(final List data, File file) throws IOException {
         LOGGER.info(String.format("Generate AVRO file for class %s in %s", clazz.getSimpleName(), file.getAbsolutePath()));
 
         if (file.isDirectory()) {

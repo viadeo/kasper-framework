@@ -25,7 +25,7 @@ public interface QueryService<Q extends Query, PAYLOAD extends QueryPayload> {
 	/**
 	 * Generic parameter position for Data Transfer Object
 	 */
-	int PARAMETER_RESULT_POSITION = 1;
+	int PARAMETER_PAYLOAD_POSITION = 1;
 
 	/**
 	 * Operates the service, retrieve a service Result satisfying the submitted

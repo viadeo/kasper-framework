@@ -29,7 +29,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
     // ------------------------------------------------------------------------
 
-	DocumentedBean(final Class<?> componentClazz) {
+	DocumentedBean(final Class componentClazz) {
 		final List<Field> properties = Lists.newArrayList();
 		getAllFields(properties, componentClazz);
 		
@@ -44,13 +44,13 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 				}
 				
 				final Boolean isList;
-                final Class<?> propClass = property.getType();
+                final Class propClass = property.getType();
 				final String type;
 
 				if (Collection.class.isAssignableFrom(propClass)) {
 
 					@SuppressWarnings("unchecked")
-					final Optional<Class<?>> optType = (Optional<Class<?>>) 
+					final Optional<Class> optType = (Optional<Class>)
 							ReflectionGenericsResolver.getParameterTypeFromClass(
 									property, componentClazz, Collection.class, 0);
 					
@@ -66,7 +66,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 				} else if (Map.class.isAssignableFrom(propClass)) {
 
 					@SuppressWarnings("unchecked")
-					final Optional<Class<?>> optType = (Optional<Class<?>>) 
+					final Optional<Class> optType = (Optional<Class>)
 							ReflectionGenericsResolver.getParameterTypeFromClass(
 									property, componentClazz, Map.class, 1);
 					
@@ -95,7 +95,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 	// ------------------------------------------------------------------------
 	
 	private static List<Field> getAllFields(final List<Field> fields, final Type type) {
-        final Class<?> typeClass = extractClassFromType(type);
+        final Class typeClass = extractClassFromType(type);
         Collections.addAll(fields, typeClass.getDeclaredFields());
 
 	    if (typeClass.getSuperclass() != null) {
@@ -105,11 +105,11 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 	    return fields;
 	}
 
-    private static Class<?> extractClassFromType(final Type t) {
-        if (t instanceof Class<?>) {
-            return (Class<?>)t;
+    private static Class extractClassFromType(final Type t) {
+        if (t instanceof Class) {
+            return (Class)t;
         }
-        return (Class<?>)((ParameterizedType)t).getRawType();
+        return (Class)((ParameterizedType)t).getRawType();
     }
 	
 }

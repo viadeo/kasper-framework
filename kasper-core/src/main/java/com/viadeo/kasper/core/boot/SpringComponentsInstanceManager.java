@@ -92,7 +92,7 @@ public class SpringComponentsInstanceManager implements ComponentsInstanceManage
      * @param objInstance the instance to be recorded
      */
     @Override
-    public void recordInstance(final Class<?> clazz, final Object objInstance) {
+    public void recordInstance(final Class clazz, final Object objInstance) {
         LOGGER.debug("Record Spring instance {}", clazz.getSimpleName());
 
         try {

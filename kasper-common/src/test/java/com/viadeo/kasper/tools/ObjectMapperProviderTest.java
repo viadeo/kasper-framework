@@ -71,13 +71,13 @@ public class ObjectMapperProviderTest {
     @Test
     public void queryResultErrorRoundTrip() throws IOException {
         // Given
-        final QueryResult<?> expected = QueryResult.of(new KasperError("CODE", "aCode", "aMessage"));
+        final QueryResult expected = QueryResult.of(new KasperError("CODE", "aCode", "aMessage"));
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
                 expected);
         @SuppressWarnings("unchecked")
-        final QueryResult<?> actual = objectReader.readValue(objectReader.getFactory()
+        final QueryResult actual = objectReader.readValue(objectReader.getFactory()
                 .createJsonParser(json), QueryResult.class);
 
         // Then
