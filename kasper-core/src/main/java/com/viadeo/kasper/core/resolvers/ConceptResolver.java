@@ -14,7 +14,7 @@ import com.viadeo.kasper.er.annotation.XKasperConcept;
 
 import java.util.concurrent.ConcurrentMap;
 
-public class ConceptResolver extends AbstractResolver {
+public class ConceptResolver extends AbstractResolver<Concept> {
 
     @Override
     public String getTypeName() {
@@ -24,11 +24,7 @@ public class ConceptResolver extends AbstractResolver {
     // ------------------------------------------------------------------------
 
     @Override
-    public Optional<Class<? extends Domain>> getDomain(final Class clazz) {
-
-        if ( ! Concept.class.isAssignableFrom(clazz)) {
-            return Optional.absent();
-        }
+    public Optional<Class<? extends Domain>> getDomain(final Class<? extends Concept> clazz) {
 
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));

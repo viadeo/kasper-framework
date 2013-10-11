@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentMap;
 /**
  * Tool resolver for domain components
  */
-public class DomainResolver implements Resolver {
+public class DomainResolver implements Resolver<Domain> {
 
     private static ConcurrentMap<Class, String> cacheDomains = Maps.newConcurrentMap();
 
@@ -56,22 +56,16 @@ public class DomainResolver implements Resolver {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(Class clazz) {
-        if (Domain.class.isAssignableFrom(clazz)) {
-            return Optional.<Class<? extends Domain>>of(clazz);
-        }
-        return Optional.absent();
+    public Optional<Class<? extends Domain>> getDomain(Class<? extends Domain> clazz) {
+        return Optional.<Class<? extends Domain>>of(clazz);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<String> getDomainLabel(Class clazz) {
-        if (Domain.class.isAssignableFrom(clazz)) {
-            return this.getLabel((Class<? extends Domain>) clazz);
-        }
-        return Optional.absent();
+    public Optional<String> getDomainLabel(Class<? extends Domain> clazz) {
+        return this.getLabel(clazz);
     }
 
     // ------------------------------------------------------------------------

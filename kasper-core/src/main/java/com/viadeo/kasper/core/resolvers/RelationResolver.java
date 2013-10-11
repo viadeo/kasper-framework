@@ -14,7 +14,7 @@ import com.viadeo.kasper.er.annotation.XKasperRelation;
 
 import java.util.concurrent.ConcurrentMap;
 
-public class RelationResolver extends AbstractResolver {
+public class RelationResolver extends AbstractResolver<Relation> {
 
     @Override
     public String getTypeName() {
@@ -25,11 +25,7 @@ public class RelationResolver extends AbstractResolver {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(final Class clazz) {
-
-        if ( ! Relation.class.isAssignableFrom(clazz)) {
-            return Optional.absent();
-        }
+    public Optional<Class<? extends Domain>> getDomain(final Class<? extends Relation> clazz) {
 
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));

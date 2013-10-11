@@ -34,10 +34,6 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomain(final Class<? extends CommandHandler> clazz) {
 
-        if ( ! CommandHandler.class.isAssignableFrom(clazz)) {
-            return Optional.absent();
-        }
-
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
         }

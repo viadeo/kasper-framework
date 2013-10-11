@@ -17,7 +17,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class QueryResolver extends AbstractResolver {
+public class QueryResolver extends AbstractResolver<Query> {
 
     private QueryServicesLocator queryServicesLocator;
     private QueryServiceResolver queryServiceResolver;
@@ -33,20 +33,18 @@ public class QueryResolver extends AbstractResolver {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(Class clazz) {
-
-        if ( ! Query.class.isAssignableFrom(clazz)) {
-            return Optional.absent();
-        }
+    public Optional<Class<? extends Domain>> getDomain(Class<? extends Query> clazz) {
 
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
         }
 
-        final Optional<QueryService> service = this.queryServicesLocator.getServiceFromQueryClass((Class<? extends Query>) clazz);
+        final Optional<QueryService> service = this.queryServicesLocator.getServiceFromQueryClass(clazz);
 
         if (service.isPresent()) {
-            final Optional<Class<? extends Domain>> domain = this.queryServiceResolver.getDomain(clazz);
+            final Optional<Class<? extends Domain>> domain =
+                    this.queryServiceResolver.getDomain(service.get().getClass());
+
             if (domain.isPresent()) {
                 cacheDomains.put(clazz, domain.get());
                 return domain;

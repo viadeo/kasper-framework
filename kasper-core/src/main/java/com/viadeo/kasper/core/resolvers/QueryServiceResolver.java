@@ -14,7 +14,7 @@ import com.viadeo.kasper.ddd.Domain;
 
 import java.util.concurrent.ConcurrentMap;
 
-public class QueryServiceResolver extends AbstractResolver {
+public class QueryServiceResolver extends AbstractResolver<QueryService> {
 
     @Override
     public String getTypeName() {
@@ -25,11 +25,7 @@ public class QueryServiceResolver extends AbstractResolver {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(Class clazz) {
-
-        if ( ! QueryService.class.isAssignableFrom(clazz)) {
-            return Optional.absent();
-        }
+    public Optional<Class<? extends Domain>> getDomain(Class<? extends QueryService> clazz) {
 
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
