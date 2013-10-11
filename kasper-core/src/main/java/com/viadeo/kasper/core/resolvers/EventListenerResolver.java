@@ -11,12 +11,15 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.concurrent.ConcurrentMap;
 
 public class EventListenerResolver extends AbstractResolver {
+
+    private static ConcurrentMap<Class, Class> cacheEvents = Maps.newConcurrentMap();
 
     private EventResolver eventResolver;
 
@@ -41,6 +44,28 @@ public class EventListenerResolver extends AbstractResolver {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
         }
 
+        final XKasperEventListener eventAnnotation =
+                (XKasperEventListener) clazz.getAnnotation(XKasperEventListener.class);
+
+        if (null != eventAnnotation) {
+            final Class<? extends Domain> domain = eventAnnotation.domain();
+            cacheDomains.put(clazz, domain);
+            return Optional.<Class<? extends Domain>>of(domain);
+        } else {
+            throw new KasperException("Event event is not decorated : " + clazz.getName());
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    @SuppressWarnings("unchecked")
+    public Optional<Class<? extends Event>> getEventClass(final Class<? extends EventListener> clazz) {
+
+        if (cacheEvents.containsKey(clazz)) {
+            return Optional.<Class<? extends Event>>of(cacheEvents.get(clazz));
+        }
+
+        @SuppressWarnings("unchecked") // Safe
         final Optional<Class<? extends Event>> eventClazz =
                 (Optional<Class<? extends Event>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
@@ -50,19 +75,20 @@ public class EventListenerResolver extends AbstractResolver {
             throw new KasperException("Unable to find event type for listener " + clazz.getClass());
         }
 
-        final Optional<Class<? extends Domain>> eventDomain = eventResolver.getDomain(clazz);
+        cacheEvents.put(clazz, eventClazz.get());
 
-        if (eventDomain.isPresent()) {
-            cacheDomains.put(clazz, eventDomain.get());
-        }
-
-        return eventDomain;
+        return eventClazz;
     }
 
     // ------------------------------------------------------------------------
 
     public void setEventResolver(final EventResolver eventResolver) {
         this.eventResolver = eventResolver;
+    }
+
+    @Override
+    public void clearCache() {
+        cacheEvents.clear();
     }
 
 }

@@ -1,0 +1,101 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
+package com.viadeo.kasper.core.resolvers;
+
+import com.google.common.base.Optional;
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
+import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.ddd.annotation.XKasperDomain;
+import com.viadeo.kasper.exception.KasperException;
+import org.axonframework.commandhandling.CommandMessage;
+import org.axonframework.unitofwork.UnitOfWork;
+import org.junit.Test;
+
+import static org.junit.Assert.*;
+
+public class DomainResolverTest {
+
+    @XKasperUnregistered
+    private static class TestDomain implements Domain {}
+
+    @XKasperUnregistered
+    @XKasperDomain( prefix="tst2", label = "TestFoo")
+    private static class TestDomain2 implements Domain {}
+
+    @XKasperUnregistered
+    @XKasperDomain( prefix="tst3")
+    private static class TestDomain3 implements Domain {}
+
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void testGetDomain() {
+        // Given
+        final DomainResolver domainResolver = new DomainResolver();
+
+        // When
+        final Optional<Class<? extends Domain>> domain = domainResolver.getDomain(TestDomain.class);
+
+        // Then
+        assertTrue(domain.isPresent());
+        assertEquals(TestDomain.class, domain.get());
+    }
+
+    //-------------------------------------------------------------------------
+
+    @Test
+    public void testGetDomainLabelWithNonDecoratedDomain() {
+        // Given
+        final DomainResolver domainResolver = new DomainResolver();
+
+        // When
+        final Optional<String> label = domainResolver.getLabel(TestDomain.class);
+        final Optional<String> labelIndirect = domainResolver.getDomainLabel(TestDomain.class);
+
+        // Then
+        assertTrue(label.isPresent());
+        assertTrue(labelIndirect.isPresent());
+        assertEquals("Test", label.get());
+        assertEquals(label.get(), labelIndirect.get());
+    }
+
+    @Test
+    public void testGetDomainLabelWitDecoratedAndSetDomain() {
+        // Given
+        final DomainResolver domainResolver = new DomainResolver();
+
+        // When
+        final Optional<String> label = domainResolver.getLabel(TestDomain2.class);
+        final Optional<String> labelIndirect = domainResolver.getDomainLabel(TestDomain2.class);
+
+        // Then
+        assertTrue(label.isPresent());
+        assertTrue(labelIndirect.isPresent());
+        assertEquals("TestFoo", label.get());
+        assertEquals(label.get(), labelIndirect.get());
+    }
+
+    @Test
+    public void testGetDomainLabelWitDecoratedAndNotSetDomain() {
+        // Given
+        final DomainResolver domainResolver = new DomainResolver();
+
+        // When
+        final Optional<String> label = domainResolver.getLabel(TestDomain3.class);
+        final Optional<String> labelIndirect = domainResolver.getDomainLabel(TestDomain3.class);
+
+        // Then
+        assertTrue(label.isPresent());
+        assertTrue(labelIndirect.isPresent());
+        assertEquals("Test3", label.get());
+        assertEquals(label.get(), labelIndirect.get());
+    }
+
+}

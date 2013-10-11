@@ -18,7 +18,7 @@ public abstract class AbstractResolver<T> implements Resolver<T> {
 
     private DomainResolver domainResolver;
 
-    protected static ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
+    protected static final ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
 
     // ------------------------------------------------------------------------
 

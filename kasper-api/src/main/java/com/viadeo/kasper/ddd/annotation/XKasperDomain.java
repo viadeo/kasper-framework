@@ -28,7 +28,7 @@ public @interface XKasperDomain {
 	/**
 	 * @return the domain's label
 	 */
-	String label();
+	String label() default "";
 	
 	/**
 	 * @return the domain's description

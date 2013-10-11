@@ -28,6 +28,7 @@ public class EventResolver extends AbstractResolver {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomain(Class clazz) {
 
+        /* Force events to be DomainEvents for domain resolution */
         if ( ! DomainEvent.class.isAssignableFrom(clazz)) {
             return Optional.absent();
         }
