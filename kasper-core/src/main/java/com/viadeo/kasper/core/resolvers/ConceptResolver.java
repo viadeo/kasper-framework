@@ -16,10 +16,6 @@ import java.util.concurrent.ConcurrentMap;
 
 public class ConceptResolver extends AbstractResolver {
 
-    private static ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
-
-    // ------------------------------------------------------------------------
-
     @Override
     public String getTypeName() {
         return "Concept";
@@ -28,7 +24,7 @@ public class ConceptResolver extends AbstractResolver {
     // ------------------------------------------------------------------------
 
     @Override
-    public Optional<Class<? extends Domain>> getDomain(final Class<?> clazz) {
+    public Optional<Class<? extends Domain>> getDomain(final Class clazz) {
 
         if ( ! Concept.class.isAssignableFrom(clazz)) {
             return Optional.absent();
@@ -38,7 +34,9 @@ public class ConceptResolver extends AbstractResolver {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
         }
 
-        final XKasperConcept conceptAnnotation = clazz.getAnnotation(XKasperConcept.class);
+        final XKasperConcept conceptAnnotation = (XKasperConcept)
+                clazz.getAnnotation(XKasperConcept.class);
+
         if (null != conceptAnnotation) {
             final Class<? extends Domain> domain = conceptAnnotation.domain();
             cacheDomains.put(clazz, domain);

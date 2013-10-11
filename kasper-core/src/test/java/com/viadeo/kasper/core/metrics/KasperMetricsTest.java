@@ -54,6 +54,7 @@ public class KasperMetricsTest {
         KasperMetrics.unsetResolverFactory();
 
         // When
+        KasperMetrics.clearCache();
         final String path = KasperMetrics.pathForKasperComponent(TestCommand.class);
 
         // Then
@@ -78,6 +79,7 @@ public class KasperMetricsTest {
         KasperMetrics.setResolverFactory(resolverFactory);
 
         // When
+        KasperMetrics.clearCache();
         final String path = KasperMetrics.pathForKasperComponent(TestCommand.class);
 
         // Then

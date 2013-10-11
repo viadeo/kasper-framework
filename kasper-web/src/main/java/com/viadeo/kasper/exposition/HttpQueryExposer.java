@@ -137,7 +137,7 @@ public class HttpQueryExposer extends HttpExposer {
         LOGGER.info("=============== Exposing queries ===============");
 
         /* expose all registered queries and commands */
-        for (final QueryService<? extends Query, ?> queryService : queryServicesLocator.getServices()) {
+        for (final QueryService queryService : queryServicesLocator.getServices()) {
             expose(queryService);
         }
 
@@ -194,7 +194,7 @@ public class HttpQueryExposer extends HttpExposer {
             final String queryName = resourceName(req.getRequestURI());
             final Query query = parseQuery(queryMapper.toQueryMap(req, resp), queryName, req, resp);
 
-            QueryResult<?> result = null;
+            QueryResult result = null;
             if (!resp.isCommitted()) {
                 result = handleQuery(queryName, query, req, resp, requestCorrelationUUID );
             }
@@ -255,11 +255,11 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     // can not use sendError it is forcing response to text/html
-    protected QueryResult<?> handleQuery(final String queryName, final Query query, final HttpServletRequest req,
+    protected QueryResult handleQuery(final String queryName, final Query query, final HttpServletRequest req,
                                          final HttpServletResponse resp, final UUID requestCorrelationUUID)
             throws IOException {
 
-        QueryResult<?> result = null;
+        QueryResult result = null;
 
          /* TODO: handle context from request */
         final Context context = new DefaultContextBuilder().build();
@@ -288,7 +288,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     // can not use sendError it is forcing response to text/html
-    protected void sendResult(final String queryName, final QueryResult<?> result, final HttpServletRequest req,
+    protected void sendResult(final String queryName, final QueryResult result, final HttpServletRequest req,
                               final HttpServletResponse resp)
             throws IOException {
 
@@ -357,7 +357,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected HttpQueryExposer expose(final QueryService<? extends Query, ? extends QueryPayload> queryService) {
+    protected HttpQueryExposer expose(final QueryService queryService) {
         checkNotNull(queryService);
 
         final TypeToken<? extends QueryService> typeToken = TypeToken.of(queryService.getClass());

@@ -17,9 +17,7 @@ import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class CommandResolver extends AbstractResolver {
-
-    private static ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
+public class CommandResolver extends AbstractResolver<Command> {
 
     private DomainLocator domainLocator;
     private CommandHandlerResolver commandHandlerResolver;
@@ -33,7 +31,7 @@ public class CommandResolver extends AbstractResolver {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(final Class<?> clazz) {
+    public Optional<Class<? extends Domain>> getDomain(final Class<? extends Command> clazz) {
 
         if ( ! Command.class.isAssignableFrom(clazz)) {
             return Optional.absent();
@@ -43,10 +41,11 @@ public class CommandResolver extends AbstractResolver {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
         }
 
-        final Optional<CommandHandler<? extends Command>> handler = domainLocator.getHandlerForCommandClass((Class<? extends Command>) clazz);
+        final Optional<CommandHandler> handler = domainLocator.getHandlerForCommandClass((Class<? extends Command>) clazz);
 
         if (handler.isPresent()) {
-            final Optional<Class<? extends Domain>> domain = commandHandlerResolver.getDomain(handler.getClass());
+            final Optional<Class<? extends Domain>> domain =
+                    commandHandlerResolver.getDomain(handler.get().getClass());
             if (domain.isPresent()) {
                 cacheDomains.put(clazz, domain.get());
                 return domain;

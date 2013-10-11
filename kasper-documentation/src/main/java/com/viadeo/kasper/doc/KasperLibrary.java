@@ -176,7 +176,7 @@ public class KasperLibrary {
 	// == REPOSITORIES ========================================================
 	// ========================================================================
 	
-	public DocumentedRepository recordRepository(final Class<? extends IRepository<?>> repositoryClazz) {
+	public DocumentedRepository recordRepository(final Class<? extends IRepository> repositoryClazz) {
 		final DocumentedRepository documentedRepository = new DocumentedRepository(this, repositoryClazz);		
 		recordElement(documentedRepository.getDomainName(), documentedRepository);
 		return documentedRepository;
@@ -314,7 +314,7 @@ public class KasperLibrary {
 	// == RELATIONS ===========================================================
 	// ========================================================================
 	
-	public DocumentedRelation recordRelation(final Class<? extends Relation<?,?>> relationClazz) {
+	public DocumentedRelation recordRelation(final Class<? extends Relation> relationClazz) {
 		final DocumentedRelation documentedRelation = new DocumentedRelation(this, relationClazz);		
 
 		recordElement(documentedRelation.getDomainName(), documentedRelation);
@@ -379,7 +379,7 @@ public class KasperLibrary {
 	// == LISTENERS ===========================================================
 	// ========================================================================
 	
-	public DocumentedListener recordListener(final Class<? extends EventListener<?>> listenerClazz) {
+	public DocumentedListener recordListener(final Class<? extends EventListener> listenerClazz) {
 		final DocumentedListener documentedListener = new DocumentedListener(this, listenerClazz);
 		recordElement(documentedListener.getDomainName(), documentedListener);
 		return documentedListener;
@@ -422,7 +422,7 @@ public class KasperLibrary {
 	// == HANDLERS ============================================================
 	// ========================================================================
 	
-	public DocumentedHandler recordHandler(final Class<? extends CommandHandler<?>> handlerClazz) {
+	public DocumentedHandler recordHandler(final Class<? extends CommandHandler> handlerClazz) {
 		final DocumentedHandler documentedHandler = new DocumentedHandler(this, handlerClazz);
 		recordElement(documentedHandler.getDomainName(), documentedHandler);
 		return documentedHandler;
@@ -452,7 +452,7 @@ public class KasperLibrary {
 	// == QUERY SERVICES ======================================================
 	// ========================================================================
 	
-	public DocumentedQueryService recordQueryService(final Class<? extends QueryService<?,?>> queryServiceClazz) {
+	public DocumentedQueryService recordQueryService(final Class<? extends QueryService> queryServiceClazz) {
 		final DocumentedQueryService documentedQueryService = new DocumentedQueryService(this, queryServiceClazz);		
 		recordElement(documentedQueryService.getDomainName(), documentedQueryService);
 		return documentedQueryService;
@@ -632,10 +632,10 @@ public class KasperLibrary {
 	}	
 	
 	// --
-	
+
 	public <T extends DocumentedNode> DocumentedNode getSimpleNodeFrom(T node) {
 		if (DocumentedRelation.class.isAssignableFrom(node.getClass())) {
-			return new DocumentedSimpleRelation((DocumentedRelation) node);
+			return new DocumentedSimpleRelation(DocumentedRelation.class.cast(node));
 		}
 		return new DocumentedNode(node);
 	}

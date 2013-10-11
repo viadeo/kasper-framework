@@ -39,7 +39,7 @@ public class EventListenersProcessor extends SingletonAnnotationProcessor<XKaspe
 	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
-	public void process(final Class<?> eventListenerClazz, final EventListener eventListener) {		
+	public void process(final Class eventListenerClazz, final EventListener eventListener) {
 		LOGGER.info("Subscribe to event bus : " + eventListenerClazz.getName());
 
         if (AbstractEventListener.class.isAssignableFrom(eventListener.getClass())) {

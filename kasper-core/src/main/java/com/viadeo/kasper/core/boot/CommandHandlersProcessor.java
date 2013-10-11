@@ -27,7 +27,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @see XKasperCommandHandler
  */
-public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasperCommandHandler, CommandHandler<?>> {
+public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasperCommandHandler, CommandHandler> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommandHandlersProcessor.class);
 
@@ -65,7 +65,7 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 		private final transient org.axonframework.commandhandling.CommandHandler handler;
 
 		@SuppressWarnings("unchecked") // Safe by previous parent class typing
-        AxonCommandCastor(final Class<?> bean, final org.axonframework.commandhandling.CommandHandler container) {
+        AxonCommandCastor(final Class bean, final org.axonframework.commandhandling.CommandHandler container) {
 			this.payload = (Class<? extends C>) bean;
 			this.handler = container;
 		}
@@ -88,12 +88,12 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
-	public void process(final Class<?> commandHandlerClazz, final CommandHandler<?> commandHandler) {
+	public void process(final Class commandHandlerClazz, final CommandHandler commandHandler) {
 		LOGGER.info("Subscribe to command bus : " + commandHandlerClazz.getName());
 
 		if (AbstractCommandHandler.class.isAssignableFrom(commandHandler.getClass())) {
-			((AbstractCommandHandler<?>) commandHandler).setDomainLocator(this.domainLocator);
- 			((AbstractCommandHandler<?>) commandHandler).setEventBus(this.eventBus);
+			((AbstractCommandHandler) commandHandler).setDomainLocator(this.domainLocator);
+ 			((AbstractCommandHandler) commandHandler).setEventBus(this.eventBus);
 		}
 		
 		//- Retrieve command type from command handler definition -------------

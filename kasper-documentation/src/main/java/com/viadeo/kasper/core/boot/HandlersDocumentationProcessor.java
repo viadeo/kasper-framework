@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * Process Kasper handler dynamic registration at platform boot
  *
  */
-public class HandlersDocumentationProcessor extends DocumentationProcessor<XKasperCommandHandler, CommandHandler<?>> {
+public class HandlersDocumentationProcessor extends DocumentationProcessor<XKasperCommandHandler, CommandHandler> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(HandlersDocumentationProcessor.class);
 
@@ -30,11 +30,11 @@ public class HandlersDocumentationProcessor extends DocumentationProcessor<XKasp
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public void process(final Class<?> handlerClazz) {
+	public void process(final Class handlerClazz) {
 		LOGGER.info("Record on handler library : " + handlerClazz.getName());
 		
 		//- Register the handler to the locator -------------------------------
-		getKasperLibrary().recordHandler((Class<? extends CommandHandler<?>>) handlerClazz);
+		getKasperLibrary().recordHandler((Class<? extends CommandHandler>) handlerClazz);
 	}
 
 }

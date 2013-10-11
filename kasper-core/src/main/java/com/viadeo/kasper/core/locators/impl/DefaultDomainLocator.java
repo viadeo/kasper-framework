@@ -31,7 +31,7 @@ public class DefaultDomainLocator implements DomainLocator {
     // - Convenient Cache types ------------------------------------------------
 
     private static final class RepositoriesByAggregateCache extends
-            HashMap<Class<? extends AggregateRoot>, IRepository<?>> {
+            HashMap<Class<? extends AggregateRoot>, IRepository> {
         private static final long serialVersionUID = 4713909577649004213L;
     }
 
@@ -43,7 +43,7 @@ public class DefaultDomainLocator implements DomainLocator {
         private static final long serialVersionUID = 4967890441255351599L;
     }
 
-    private final Map<CommandHandler<? extends Command>, Class<? extends Command>> handlers = Maps.newHashMap();
+    private final Map<CommandHandler, Class<? extends Command>> handlers = Maps.newHashMap();
 
     // ------------------------------------------------------------------------
 
@@ -72,24 +72,24 @@ public class DefaultDomainLocator implements DomainLocator {
 
     @Override
     @SuppressWarnings("unchecked")
-    public void registerHandler(final CommandHandler<? extends Command> commandHandler) {
-        final Optional<Class<? extends Command>> commandClass = commandHandlerResolver.getCommandClass(
-                (Class<CommandHandler<? extends CommandHandler>>) commandHandler.getClass());
+    public void registerHandler(final CommandHandler commandHandler) {
+        final Optional<Class<? extends Command>> commandClass =
+                commandHandlerResolver.getCommandClass(commandHandler.getClass());
         handlers.put(commandHandler, commandClass.get());
     }
 
     @Override
-    public Collection<CommandHandler<? extends Command>> getHandlers() {
+    public Collection<CommandHandler> getHandlers() {
         return Collections.unmodifiableCollection(handlers.keySet());
     }
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<CommandHandler<? extends Command>> getHandlerForCommandClass(Class<? extends Command> commandClass) {
-        for (final CommandHandler<? extends Command> commandHandler : handlers.keySet()) {
+    public Optional<CommandHandler> getHandlerForCommandClass(Class<? extends Command> commandClass) {
+        for (final CommandHandler commandHandler : handlers.keySet()) {
             final Class<? extends Command> command = handlers.get(commandHandler);
             if (command.equals(commandClass)) {
-                return Optional.<CommandHandler<? extends Command>>of(commandHandler);
+                return Optional.of(commandHandler);
             }
         }
         return Optional.absent();
@@ -135,7 +135,7 @@ public class DefaultDomainLocator implements DomainLocator {
      * @see com.viadeo.kasper.core.locators.DomainLocator#registerRepository(com.viadeo.kasper.ddd.IRepository)
      */
     @Override
-    public void registerRepository(final IRepository<?> repository) {
+    public void registerRepository(final IRepository repository) {
         checkNotNull(repository);
 
         @SuppressWarnings("unchecked")

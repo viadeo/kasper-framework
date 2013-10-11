@@ -25,7 +25,7 @@ public final class DocumentedHandler extends DocumentedDomainNode {
 	
 	// ------------------------------------------------------------------------
 	
-	public DocumentedHandler(final KasperLibrary kl, final Class<? extends CommandHandler<?>> handlerClazz) {
+	public DocumentedHandler(final KasperLibrary kl, final Class<? extends CommandHandler> handlerClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 
         final CommandHandlerResolver commandHandlerResolver =

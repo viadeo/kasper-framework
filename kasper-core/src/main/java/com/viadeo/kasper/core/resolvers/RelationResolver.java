@@ -16,10 +16,6 @@ import java.util.concurrent.ConcurrentMap;
 
 public class RelationResolver extends AbstractResolver {
 
-    private static ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
-
-    // ------------------------------------------------------------------------
-
     @Override
     public String getTypeName() {
         return "Relation";
@@ -29,7 +25,7 @@ public class RelationResolver extends AbstractResolver {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(final Class<?> clazz) {
+    public Optional<Class<? extends Domain>> getDomain(final Class clazz) {
 
         if ( ! Relation.class.isAssignableFrom(clazz)) {
             return Optional.absent();
@@ -39,7 +35,9 @@ public class RelationResolver extends AbstractResolver {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
         }
 
-        final XKasperRelation relationAnnotation = clazz.getAnnotation(XKasperRelation.class);
+        final XKasperRelation relationAnnotation = (XKasperRelation)
+                clazz.getAnnotation(XKasperRelation.class);
+
         if (null != relationAnnotation) {
             final Class<? extends Domain> domain = relationAnnotation.domain();
             cacheDomains.put(clazz, domain);

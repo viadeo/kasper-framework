@@ -73,7 +73,7 @@ public final class DocumentedEvent extends DocumentedDomainNode {
 	
 	// ------------------------------------------------------------------------
 	
-	public static String getDomainFromEventClass(final Class<?> eventClazz) {
+	public static String getDomainFromEventClass(final Class eventClazz) {
 
         if (DomainEvent.class.isAssignableFrom(eventClazz)) {
             @SuppressWarnings("unchecked") // Safe

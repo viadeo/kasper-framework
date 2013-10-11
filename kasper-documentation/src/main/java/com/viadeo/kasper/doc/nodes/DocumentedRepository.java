@@ -28,7 +28,7 @@ public final class DocumentedRepository extends DocumentedDomainNode {
 	
 	// ------------------------------------------------------------------------
 	
-	public DocumentedRepository(final KasperLibrary kl, final Class<? extends IRepository<?>> repositoryClazz) {
+	public DocumentedRepository(final KasperLibrary kl, final Class<? extends IRepository> repositoryClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
 		// Extract aggregate type from repository -----------------------------

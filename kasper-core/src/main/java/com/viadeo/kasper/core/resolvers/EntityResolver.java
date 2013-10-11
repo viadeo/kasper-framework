@@ -18,8 +18,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class EntityResolver extends AbstractResolver {
 
-    private static ConcurrentMap<Class<?>, Class<?>> cacheDomains = Maps.newConcurrentMap();
-
     private ConceptResolver conceptResolver;
     private RelationResolver relationResolver;
 
@@ -34,7 +32,7 @@ public class EntityResolver extends AbstractResolver {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(final Class<?> clazz) {
+    public Optional<Class<? extends Domain>> getDomain(final Class clazz) {
 
         if (Concept.class.isAssignableFrom(clazz)) {
             return this.conceptResolver.getDomain(clazz);

@@ -56,7 +56,7 @@ public class ResolverFactory {
             put(Repository.class, repositoryResolver);
             put(Event.class, eventResolver);
 
-            /* Order is important here */
+            /* Order is important here (Concept/Relation before Entity) */
             put(Concept.class, conceptResolver);
             put(Relation.class, relationResolver);
             put(Entity.class, entityResolver);
@@ -65,7 +65,7 @@ public class ResolverFactory {
 
     // ------------------------------------------------------------------------
 
-    public Optional<Resolver> getResolverFromClass(final Class<?> clazz) {
+    public Optional<Resolver> getResolverFromClass(final Class clazz) {
 
         if (cache.containsKey(clazz)) {
             return cache.get(clazz);
@@ -80,7 +80,8 @@ public class ResolverFactory {
             }
         }
 
-        final Optional<Resolver> optResolver = Optional.of(resolver);
+        final Optional<Resolver> optResolver = Optional.fromNullable(resolver);
+
         cache.put(clazz, optResolver);
         return optResolver;
     }
@@ -193,6 +194,15 @@ public class ResolverFactory {
 
     public void setCommandHandlerResolver(final CommandHandlerResolver commandHandlerResolver) {
         this.commandHandlerResolver = checkNotNull(commandHandlerResolver);
+    }
+
+    // ------------------------------------------------------------------------
+
+    public void clearCaches() {
+        cache.clear();
+        for (final Resolver resolver : resolvers.values()) {
+            resolver.clearCache();
+        }
     }
 
 }

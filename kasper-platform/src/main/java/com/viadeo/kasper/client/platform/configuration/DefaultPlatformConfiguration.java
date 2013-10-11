@@ -53,7 +53,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         throw new KasperException(String.format(INSTANCE_NOT_YET_AVAILABLE, clazz.getSimpleName()));
     }
 
-    protected void ensureNotPresent(final Class<?> clazz) {
+    protected void ensureNotPresent(final Class clazz) {
         if (components.containsKey(clazz)) {
             throw new KasperException(String.format(INSTANCE_ALREADY_CREATED, clazz.getSimpleName()));
         }

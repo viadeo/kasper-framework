@@ -31,7 +31,7 @@ public final class DocumentedRelation extends DocumentedEntity {
 	
 	// ------------------------------------------------------------------------
 	
-	public DocumentedRelation(final KasperLibrary kl, final Class<? extends Relation<?,?>> relationClazz) {
+	public DocumentedRelation(final KasperLibrary kl, final Class<? extends Relation> relationClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
 		final XKasperRelation annotation = relationClazz.getAnnotation(XKasperRelation.class);

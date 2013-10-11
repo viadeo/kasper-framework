@@ -83,7 +83,7 @@ public class HttpCommandExposer extends HttpExposer {
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing commands ===============");
 
-        for (final CommandHandler<? extends Command> handler : domainLocator.getHandlers()) {
+        for (final CommandHandler handler : domainLocator.getHandlers()) {
             expose(handler);
         }
 
@@ -319,7 +319,7 @@ public class HttpCommandExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    HttpExposer expose(final CommandHandler<? extends Command> commandHandler) {
+    HttpExposer expose(final CommandHandler commandHandler) {
         checkNotNull(commandHandler);
 
         final TypeToken<? extends CommandHandler> typeToken = TypeToken.of(commandHandler.getClass());

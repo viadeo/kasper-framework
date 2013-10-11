@@ -8,8 +8,11 @@ package com.viadeo.kasper.core.metrics;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.resolvers.Resolver;
 import com.viadeo.kasper.core.resolvers.ResolverFactory;
+
+import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -17,6 +20,8 @@ public final class KasperMetrics {
 
     private static final MetricRegistry REGISTRY = new MetricRegistry();
     private static String namePrefix = "";
+
+    private static ConcurrentMap<Class, String> pathCache = Maps.newConcurrentMap();
 
     private static ResolverFactory resolverFactory;
 
@@ -41,32 +46,36 @@ public final class KasperMetrics {
         return prefix + MetricRegistry.name(name, names);
     }
 
-    public static String name(final Class<?> clazz, final String...names) {
+    public static String name(final Class clazz, final String...names) {
         final String prefix = namePrefix.isEmpty() ? "" : namePrefix + ".";
         return prefix + MetricRegistry.name(pathForKasperComponent(clazz), names);
     }
 
     // ------------------------------------------------------------------------
 
-  public static String pathForKasperComponent(final Class<?> clazz) {
-        String componentPath = clazz.getName();
+    public static String pathForKasperComponent(final Class clazz) {
 
-        if (null == resolverFactory) {
-            return componentPath;
+        if (pathCache.containsKey(clazz)) {
+            return pathCache.get(clazz);
         }
 
-        final String name = clazz.getSimpleName();
+        String componentPath = clazz.getName();
 
-        final Optional<Resolver> resolver = resolverFactory.getResolverFromClass(clazz);
-        if (resolver.isPresent()) {
+        if (null != resolverFactory) {
+            final String name = clazz.getSimpleName();
 
-            final Optional<String> domainName = resolver.get().getDomainLabel(clazz);
-            if (domainName.isPresent()) {
-                final String type = resolver.get().getTypeName();
-                componentPath = domainName.get() + "." + type + "." + name;
+            final Optional<Resolver> resolver = resolverFactory.getResolverFromClass(clazz);
+            if (resolver.isPresent()) {
+
+                final Optional<String> domainName = resolver.get().getDomainLabel(clazz);
+                if (domainName.isPresent()) {
+                    final String type = resolver.get().getTypeName();
+                    componentPath = domainName.get() + "." + type + "." + name;
+                }
             }
         }
 
+        pathCache.put(clazz, componentPath);
         return componentPath;
     }
 
@@ -78,6 +87,10 @@ public final class KasperMetrics {
 
     public static void unsetResolverFactory(){
         KasperMetrics.resolverFactory = null;
+    }
+
+    public static void clearCache() {
+        pathCache.clear();
     }
 
 }

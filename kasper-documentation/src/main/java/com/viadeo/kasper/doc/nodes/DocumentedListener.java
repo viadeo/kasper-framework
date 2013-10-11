@@ -24,7 +24,7 @@ public final class DocumentedListener extends DocumentedDomainNode {
 	
 	// ------------------------------------------------------------------------
 	
-	public DocumentedListener(final KasperLibrary kl, final Class<? extends EventListener<?>> listenerClazz) {
+	public DocumentedListener(final KasperLibrary kl, final Class<? extends EventListener> listenerClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
 		// Extract event type from listener -----------------------------------

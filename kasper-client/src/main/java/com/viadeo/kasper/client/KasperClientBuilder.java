@@ -73,7 +73,7 @@ public class KasperClientBuilder {
         return this;
     }
 
-    public KasperClientBuilder use(final TypeAdapter<?> adapter) {
+    public KasperClientBuilder use(final TypeAdapter adapter) {
         qFactoryBuilder.use(adapter);
         return this;
     }
@@ -81,7 +81,7 @@ public class KasperClientBuilder {
     /**
      * @see #use(com.viadeo.kasper.query.exposition.TypeAdapter)
      */
-    public KasperClientBuilder use(final TypeAdapterFactory<?> factory) {
+    public KasperClientBuilder use(final TypeAdapterFactory factory) {
         qFactoryBuilder.use(factory);
         return this;
     }

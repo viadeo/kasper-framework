@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @see XKasperQueryService
  */
-public class QueryServicesProcessor extends SingletonAnnotationProcessor<XKasperQueryService, QueryService<?,?>> {
+public class QueryServicesProcessor extends SingletonAnnotationProcessor<XKasperQueryService, QueryService> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueryServicesProcessor.class);
 
 	/**
@@ -37,11 +37,13 @@ public class QueryServicesProcessor extends SingletonAnnotationProcessor<XKasper
 	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
-	public void process(final Class<?> queryServiceClazz, final QueryService<?,?> queryService) {
+	public void process(final Class queryServiceClazz, final QueryService queryService) {
 		LOGGER.info("Record on query services locator : " + queryServiceClazz.getName());
 
 		final String serviceName;
-		final XKasperQueryService annotation = queryServiceClazz.getAnnotation(XKasperQueryService.class);
+		final XKasperQueryService annotation = (XKasperQueryService)
+                queryServiceClazz.getAnnotation(XKasperQueryService.class);
+
 		if (annotation.name().isEmpty()) {
 			serviceName = queryServiceClazz.getSimpleName();
 		} else {
@@ -52,7 +54,7 @@ public class QueryServicesProcessor extends SingletonAnnotationProcessor<XKasper
         if (null != filters) {
             for (final Class<? extends ServiceFilter> filterClass : filters) {
                 LOGGER.info(String.format("  --> w/ filter %s", filterClass.getSimpleName()));
-                this.queryServicesLocator.registerFilterForService((Class<? extends QueryService<?, ?>>) queryServiceClazz, filterClass);
+                this.queryServicesLocator.registerFilterForService((Class<? extends QueryService>) queryServiceClazz, filterClass);
             }
         }
 

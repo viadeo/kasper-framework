@@ -41,7 +41,7 @@ public final class DocumentedDomain extends DocumentedNode {
 
         this.setName(domainClazz.getSimpleName());
 		
-		final Class<?> parentClazz = domainClazz.getSuperclass();
+		final Class parentClazz = domainClazz.getSuperclass();
 		if (null != parentClazz) {
 			this.parent = parentClazz.getSimpleName();
 		}

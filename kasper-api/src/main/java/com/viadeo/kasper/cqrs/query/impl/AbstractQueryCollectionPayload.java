@@ -82,7 +82,7 @@ public abstract class AbstractQueryCollectionPayload<RES> implements CollectionQ
             return false;
         }
 
-        final AbstractQueryCollectionPayload<?> that = (AbstractQueryCollectionPayload<?>) o;
+        final AbstractQueryCollectionPayload that = (AbstractQueryCollectionPayload) o;
         return Objects.equal(this.list, that.list);
     }
 

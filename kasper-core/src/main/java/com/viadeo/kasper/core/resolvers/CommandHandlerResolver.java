@@ -17,9 +17,8 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.concurrent.ConcurrentMap;
 
-public class CommandHandlerResolver extends AbstractResolver {
+public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
 
-    private static ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
     private static ConcurrentMap<Class, Class> cacheCommands = Maps.newConcurrentMap();
 
     // ------------------------------------------------------------------------
@@ -33,7 +32,7 @@ public class CommandHandlerResolver extends AbstractResolver {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(final Class<?> clazz) {
+    public Optional<Class<? extends Domain>> getDomain(final Class<? extends CommandHandler> clazz) {
 
         if ( ! CommandHandler.class.isAssignableFrom(clazz)) {
             return Optional.absent();
@@ -75,6 +74,14 @@ public class CommandHandlerResolver extends AbstractResolver {
         cacheCommands.put(clazz, commandClazz.get());
 
         return commandClazz;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public void clearCache() {
+        super.clearCache();
+        cacheCommands.clear();
     }
 
 }

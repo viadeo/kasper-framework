@@ -9,12 +9,14 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.ddd.Domain;
 
-public interface Resolver {
+public interface Resolver<T> {
 
     String getTypeName();
 
-    Optional<Class<? extends Domain>> getDomain(Class<?> clazz);
+    Optional<Class<? extends Domain>> getDomain(Class<? extends T> clazz);
 
-    Optional<String> getDomainLabel(Class<?> clazz);
+    Optional<String> getDomainLabel(Class<? extends T> clazz);
+
+    void clearCache();
 
 }

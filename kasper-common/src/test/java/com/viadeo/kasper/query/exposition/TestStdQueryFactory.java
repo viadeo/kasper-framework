@@ -72,9 +72,9 @@ public class TestStdQueryFactory {
         final QueryBuilder builder = new QueryBuilder();
         final TypeAdapter<SomeQuery> adapter = new DefaultQueryFactory(
                 new FeatureConfiguration(),
-                ImmutableMap.<Type, TypeAdapter<?>>of(int.class, DefaultTypeAdapters.INT_ADAPTER),
-                ImmutableMap.<Type, BeanAdapter<?>>of(),
-                new ArrayList<TypeAdapterFactory<?>>(),
+                ImmutableMap.<Type, TypeAdapter>of(int.class, DefaultTypeAdapters.INT_ADAPTER),
+                ImmutableMap.<Type, BeanAdapter>of(),
+                new ArrayList<TypeAdapterFactory>(),
                 VisibilityFilter.PACKAGE_PUBLIC).create(TypeToken.of(SomeQuery.class));
 
         // When
@@ -163,16 +163,16 @@ public class TestStdQueryFactory {
     }
 
     private QueryFactory createQueryFactory(final Object... queryFactoryParameters) {
-        final Map<Type, TypeAdapter<?>> adaptersMap = new HashMap<Type, TypeAdapter<?>>();
-        final List<TypeAdapterFactory<?>> factories = new ArrayList<TypeAdapterFactory<?>>();
+        final Map<Type, TypeAdapter> adaptersMap = new HashMap<Type, TypeAdapter>();
+        final List<TypeAdapterFactory> factories = new ArrayList<TypeAdapterFactory>();
 
         for (final Object parameter : queryFactoryParameters) {
             if (parameter instanceof TypeAdapter) {
-                final TypeAdapter<?> adapter = (TypeAdapter<?>) parameter;
-                final TypeToken<?> adapterForType = TypeToken.of(adapter.getClass()).resolveType(TypeAdapter.class.getTypeParameters()[0]);
+                final TypeAdapter adapter = (TypeAdapter) parameter;
+                final TypeToken adapterForType = TypeToken.of(adapter.getClass()).resolveType(TypeAdapter.class.getTypeParameters()[0]);
                 adaptersMap.put(adapterForType.getType(), adapter);
             } else if (parameter instanceof TypeAdapterFactory) {
-                factories.add((TypeAdapterFactory<?>) parameter);
+                factories.add((TypeAdapterFactory) parameter);
             } else {
                 throw new IllegalArgumentException("Only TypeAdapter or TypeAdapter factories are allowed.");
             }
@@ -181,7 +181,7 @@ public class TestStdQueryFactory {
         return new DefaultQueryFactory(
                 new FeatureConfiguration(),
                 adaptersMap,
-                ImmutableMap.<Type, BeanAdapter<?>>of(),
+                ImmutableMap.<Type, BeanAdapter>of(),
                 factories,
                 VisibilityFilter.PACKAGE_PUBLIC);
     }

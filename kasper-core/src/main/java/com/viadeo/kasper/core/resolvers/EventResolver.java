@@ -17,10 +17,6 @@ import java.util.concurrent.ConcurrentMap;
 
 public class EventResolver extends AbstractResolver {
 
-    private static ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
-
-    // ------------------------------------------------------------------------
-
     @Override
     public String getTypeName() {
         return "Event";
@@ -30,7 +26,7 @@ public class EventResolver extends AbstractResolver {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(Class<?> clazz) {
+    public Optional<Class<? extends Domain>> getDomain(Class clazz) {
 
         if ( ! DomainEvent.class.isAssignableFrom(clazz)) {
             return Optional.absent();

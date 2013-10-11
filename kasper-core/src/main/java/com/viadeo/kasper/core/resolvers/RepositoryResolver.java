@@ -21,8 +21,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class RepositoryResolver extends AbstractResolver {
 
-    private static ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
-
     private EntityResolver entityResolver;
 
     // ------------------------------------------------------------------------
@@ -36,7 +34,7 @@ public class RepositoryResolver extends AbstractResolver {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(Class<?> clazz) {
+    public Optional<Class<? extends Domain>> getDomain(Class clazz) {
 
         if ( ! Repository.class.isAssignableFrom(clazz)) {
             return Optional.absent();

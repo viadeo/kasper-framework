@@ -19,7 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 class PropertyAdapter {
 
-    private static final Map<Class<?>, Object> DEFAULT_VALUES_FOR_PRIMITIVES = Maps.newHashMap();
+    private static final Map<Class, Object> DEFAULT_VALUES_FOR_PRIMITIVES = Maps.newHashMap();
     {
         DEFAULT_VALUES_FOR_PRIMITIVES.put(int.class, 0);
         DEFAULT_VALUES_FOR_PRIMITIVES.put(double.class, 0d);
@@ -77,7 +77,7 @@ class PropertyAdapter {
     }
 
     public Object adapt(final QueryParser parser) throws Exception {
-        final Class<?> rawClass = property.getTypeToken().getRawType();
+        final Class rawClass = property.getTypeToken().getRawType();
 
         /*
          * ok it is ugly but for the moment we have to do that in order to

@@ -106,7 +106,7 @@ public class KasperRepositoryTest<ENTITY extends AggregateRoot> implements IRepo
 					that.setEventBus(eventBus);
 		            return "";
 		         }				
-			}).when((Repository<?>) mocked).setEventBus(any(EventBus.class));
+			}).when((Repository) mocked).setEventBus(any(EventBus.class));
 		}
 		
 		doAnswer(new Answer<Object>() {

@@ -60,7 +60,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     /**
      * Registered query classes and associated service instances
      */
-    private final Map<Class<? extends Query>, QueryService<?, ?>> serviceQueryClasses = newHashMap();
+    private final Map<Class<? extends Query>, QueryService> serviceQueryClasses = newHashMap();
 
     /**
      * Registered services names and associated service instances
@@ -71,8 +71,8 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     /**
      * Association of filters per service and domains *
      */
-    private final Map<Class<? extends QueryService<?, ?>>, List<Class<? extends ServiceFilter>>> appliedFilters = newHashMap();
-    private final Map<Class<? extends QueryService<?, ?>>, List<ServiceFilter>> instanceFilters = newHashMap();
+    private final Map<Class<? extends QueryService>, List<Class<? extends ServiceFilter>>> appliedFilters = newHashMap();
+    private final Map<Class<? extends QueryService>, List<ServiceFilter>> instanceFilters = newHashMap();
     private final Map<Class<? extends ServiceFilter>, Class<? extends Domain>> isDomainSticky = Maps.newHashMap();
 
     /**
@@ -95,7 +95,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public void registerService(final String name, final QueryService<?, ?> service, final Class<? extends Domain> domainClass) {
+    public void registerService(final String name, final QueryService service, final Class<? extends Domain> domainClass) {
         checkNotNull(name);
         checkNotNull(service);
 
@@ -168,7 +168,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     // ------------------------------------------------------------------------
 
     @Override
-    public void registerFilterForService(final Class<? extends QueryService<?, ?>> queryServiceClass, final Class<? extends ServiceFilter> filterClass) {
+    public void registerFilterForService(final Class<? extends QueryService> queryServiceClass, final Class<? extends ServiceFilter> filterClass) {
         checkNotNull(queryServiceClass);
         checkNotNull(filterClass);
 
@@ -193,7 +193,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public Optional<QueryService> getServiceFromClass(final Class<? extends QueryService<?, ?>> serviceClass) {
+    public Optional<QueryService> getServiceFromClass(final Class<? extends QueryService> serviceClass) {
         final QueryService service = this.services.getInstance(serviceClass);
         return Optional.fromNullable(service);
     }
@@ -271,14 +271,14 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     }
 
     @Override
-    public Collection<QueryService<?, ?>> getServices() {
+    public Collection<QueryService> getServices() {
         return unmodifiableCollection(this.serviceQueryClasses.values());
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public Collection<ServiceFilter> getFiltersForServiceClass(final Class<? extends QueryService<?, ?>> serviceClass) {
+    public Collection<ServiceFilter> getFiltersForServiceClass(final Class<? extends QueryService> serviceClass) {
 
         // Ensure service has filters
         if (!this.appliedFilters.containsKey(serviceClass) && this.globalFilters.isEmpty()) {

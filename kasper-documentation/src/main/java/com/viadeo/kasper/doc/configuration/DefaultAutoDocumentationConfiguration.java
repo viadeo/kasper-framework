@@ -35,7 +35,7 @@ public class DefaultAutoDocumentationConfiguration implements AutoDocumentationC
 
     // ------------------------------------------------------------------------
 
-    protected <P extends AnnotationProcessor<?,?>> P registerProcessor(final P processor) {
+    protected <P extends AnnotationProcessor> P registerProcessor(final P processor) {
         if (null != this.rootProcessor) {
             this.rootProcessor.registerProcessor(processor);
         }

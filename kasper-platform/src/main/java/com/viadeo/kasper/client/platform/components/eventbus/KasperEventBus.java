@@ -58,7 +58,7 @@ public class KasperEventBus extends ClusteringEventBus {
         return new DefaultErrorHandler(RetryPolicy.proceed()) {
                         @Override
                         public RetryPolicy handleError(final Throwable exception,
-                                                       final EventMessage<?> eventMessage,
+                                                       final EventMessage eventMessage,
                                                        final EventListener eventListener) {
                             /* TODO: store the error, generate error event */
                             LOGGER.error(String.format("Error %s occured during processing of event %s in listener %s ",

@@ -30,9 +30,9 @@ import static com.viadeo.kasper.query.exposition.adapters.NullSafeTypeAdapter.nu
 
 public class QueryFactoryBuilder {
 
-	private ConcurrentMap<Type, TypeAdapter<?>> adapters = Maps.newConcurrentMap();
-	private ConcurrentMap<Type, BeanAdapter<?>> beanAdapters = Maps.newConcurrentMap();
-	private List<TypeAdapterFactory<?>> factories = Lists.newArrayList();
+	private ConcurrentMap<Type, TypeAdapter> adapters = Maps.newConcurrentMap();
+	private ConcurrentMap<Type, BeanAdapter> beanAdapters = Maps.newConcurrentMap();
+	private List<TypeAdapterFactory> factories = Lists.newArrayList();
 	private VisibilityFilter visibilityFilter = VisibilityFilter.PACKAGE_PUBLIC;
 	private List<Bundle> bundles = new ArrayList<Bundle>();
 	private FeatureConfiguration features = new FeatureConfiguration();
@@ -47,10 +47,10 @@ public class QueryFactoryBuilder {
 	}
 
 	@SuppressWarnings("unchecked")
-	public QueryFactoryBuilder use(final TypeAdapter<?> adapter) {
+	public QueryFactoryBuilder use(final TypeAdapter adapter) {
 		checkNotNull(adapter);
 
-		final TypeToken<?> adapterForType = TypeToken.of(adapter.getClass())
+		final TypeToken adapterForType = TypeToken.of(adapter.getClass())
 				.getSupertype(TypeAdapter.class)
 				.resolveType(TypeAdapter.class.getTypeParameters()[0]);
 
@@ -60,15 +60,15 @@ public class QueryFactoryBuilder {
 		return this;
 	}
 
-	public QueryFactoryBuilder use(final TypeAdapterFactory<?> factory) {
+	public QueryFactoryBuilder use(final TypeAdapterFactory factory) {
 		factories.add(checkNotNull(factory));
 		return this;
 	}
 	
-	public QueryFactoryBuilder use(final BeanAdapter<?> beanAdapter) {
+	public QueryFactoryBuilder use(final BeanAdapter beanAdapter) {
 	    checkNotNull(beanAdapter);
 	    
-	    final TypeToken<?> adapterForType = TypeToken.of(beanAdapter.getClass())
+	    final TypeToken adapterForType = TypeToken.of(beanAdapter.getClass())
                 .getSupertype(BeanAdapter.class)
                 .resolveType(BeanAdapter.class.getTypeParameters()[0]);
 
@@ -91,15 +91,15 @@ public class QueryFactoryBuilder {
 
 	public QueryFactory create() {
 
-		for (final TypeAdapter<?> adapter : loadServices(TypeAdapter.class)) {
+		for (final TypeAdapter adapter : loadServices(TypeAdapter.class)) {
 			use(adapter);
         }
 		
-		for (final BeanAdapter<?> beanAdapter : loadServices(BeanAdapter.class)) {
+		for (final BeanAdapter beanAdapter : loadServices(BeanAdapter.class)) {
             use(beanAdapter);
         }
 		
-		for (final TypeAdapterFactory<?> adapterFactory : loadServices(TypeAdapterFactory.class)) {
+		for (final TypeAdapterFactory adapterFactory : loadServices(TypeAdapterFactory.class)) {
             use(adapterFactory);
         }
 		

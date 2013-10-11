@@ -1,0 +1,5 @@
+
+- global check of classes usage..
+  -> the usage of a specific resolver must be done using the specific class, not a generic one..
+- terminate tests (tester le cache) + processor + documentation
+

@@ -100,7 +100,7 @@ public class AnnotationQueryCacheActorFactory<QUERY extends Query, PAYLOAD exten
 
         try {
 
-            final TypeToken<?> typeOfQuery = TypeToken
+            final TypeToken typeOfQuery = TypeToken
                     .of(keyGenClass)
                     .getSupertype(QueryCacheKeyGenerator.class)
                     .resolveType(

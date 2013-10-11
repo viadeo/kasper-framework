@@ -16,11 +16,11 @@ import static java.lang.System.arraycopy;
 
 public final class ArrayAdapter implements TypeAdapter<Object> {
     private final TypeAdapter<Object> componentAdapter;
-    private final Class<?> componentClass;
+    private final Class componentClass;
 
     // ------------------------------------------------------------------------
 
-    public ArrayAdapter(final TypeAdapter<Object> componentAdapter, final Class<?> componentClass) {
+    public ArrayAdapter(final TypeAdapter componentAdapter, final Class componentClass) {
         this.componentAdapter = componentAdapter;
         this.componentClass = componentClass;
     }

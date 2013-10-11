@@ -62,9 +62,9 @@ public class QueryAttributesKeyGeneratorTest {
         assertIterableEquals(Lists.newArrayList("integer"), missingNames);
     }
 
-    private void assertIterableEquals(Iterable<?> expected, Iterable<?> actual) {
+    private void assertIterableEquals(Iterable expected, Iterable actual) {
         // Given
-        final Iterator<?> a = actual.iterator();
+        final Iterator a = actual.iterator();
 
         // When
         for (final Object e : expected) {

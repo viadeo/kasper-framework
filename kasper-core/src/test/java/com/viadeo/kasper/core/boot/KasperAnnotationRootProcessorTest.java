@@ -20,7 +20,7 @@ public class KasperAnnotationRootProcessorTest extends TestCase {
 		final AnnotationRootProcessor rootProcessor = new AnnotationRootProcessor();
 		
 		final TestProcessor realProcessor = new TestProcessor();
-		final AnnotationProcessor<?,?> processor = spy(realProcessor);
+		final AnnotationProcessor processor = spy(realProcessor);
 
         // When
 		rootProcessor.registerProcessor(processor);
@@ -40,7 +40,7 @@ public class KasperAnnotationRootProcessorTest extends TestCase {
         final AnnotationRootProcessor rootProcessor = new AnnotationRootProcessor();
 
         final TestProcessor realProcessor = new TestProcessor();
-        final AnnotationProcessor<?,?> processor = spy(realProcessor);
+        final AnnotationProcessor processor = spy(realProcessor);
 
         // When
         rootProcessor.registerProcessor(processor);

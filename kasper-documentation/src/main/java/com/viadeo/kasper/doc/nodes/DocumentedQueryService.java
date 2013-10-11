@@ -30,7 +30,7 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 	}
 
-	public DocumentedQueryService(final KasperLibrary kl, final Class<? extends QueryService<?,?>> queryServiceClazz) {
+	public DocumentedQueryService(final KasperLibrary kl, final Class<? extends QueryService> queryServiceClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 
 		final XKasperQueryService annotation = queryServiceClazz.getAnnotation(XKasperQueryService.class);

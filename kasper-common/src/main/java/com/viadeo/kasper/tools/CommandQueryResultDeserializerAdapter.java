@@ -15,7 +15,7 @@ class CommandQueryResultDeserializerAdapter extends SimpleDeserializers {
     private static final long serialVersionUID = 1995270375280248186L;
 
     @Override
-    public JsonDeserializer<?> findBeanDeserializer(final JavaType type,
+    public JsonDeserializer findBeanDeserializer(final JavaType type,
                                                     final DeserializationConfig config,
                                                     final BeanDescription beanDesc)
             throws JsonMappingException {

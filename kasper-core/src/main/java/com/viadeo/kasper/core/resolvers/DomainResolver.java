@@ -67,11 +67,18 @@ public class DomainResolver implements Resolver {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<String> getDomainLabel(Class<?> clazz) {
+    public Optional<String> getDomainLabel(Class clazz) {
         if (Domain.class.isAssignableFrom(clazz)) {
             return this.getLabel((Class<? extends Domain>) clazz);
         }
         return Optional.absent();
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public void clearCache() {
+        cacheDomains.clear();
     }
 
 }

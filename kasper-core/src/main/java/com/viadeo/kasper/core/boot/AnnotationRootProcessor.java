@@ -47,7 +47,7 @@ public class AnnotationRootProcessor {
     /**
      * Allow user to explicitly specify processor instances to use before boot
      */
-    private transient List<AnnotationProcessor<?, ?>> userProcessors;
+    private transient List<AnnotationProcessor> userProcessors;
 
     /**
      * User provided scan packages names
@@ -62,8 +62,8 @@ public class AnnotationRootProcessor {
     /**
      * Scanned processors
      */
-    private transient Map<Class<?>, List<AnnotationProcessor<?, ?>>> processors;
-    private transient Map<AnnotationProcessor<?, ?>, Class<? extends Annotation>> processorsInterface;
+    private transient Map<Class, List<AnnotationProcessor>> processors;
+    private transient Map<AnnotationProcessor, Class<? extends Annotation>> processorsInterface;
 
     /**
      * Class-path reflection resolver
@@ -145,7 +145,7 @@ public class AnnotationRootProcessor {
 
         // Add user-defined processor classes ---------------------------------
         if (null != this.userProcessors) {
-            for (final AnnotationProcessor<?, ?> userProc : this.userProcessors) {
+            for (final AnnotationProcessor userProc : this.userProcessors) {
                 if (!classes.contains(userProc.getClass())) {
                     classes.add(userProc.getClass());
                 }
@@ -171,8 +171,8 @@ public class AnnotationRootProcessor {
                                 AnnotationProcessor.class, AnnotationProcessor.ANNOTYPE_PARAMETER_POSITION);
 
                 @SuppressWarnings("unchecked") // Safe
-                final Optional<Class<?>> interfaceClass =
-                        (Optional<Class<?>>) ReflectionGenericsResolver.getParameterTypeFromClass(clazz,
+                final Optional<Class> interfaceClass =
+                        (Optional<Class>) ReflectionGenericsResolver.getParameterTypeFromClass(clazz,
                                 AnnotationProcessor.class, AnnotationProcessor.INTERFACE_PARAMETER_POSITION);
 
                 if (annoClass.isPresent() && interfaceClass.isPresent()) {
@@ -186,7 +186,7 @@ public class AnnotationRootProcessor {
 
                     // 1- User supplied processor
                     if (null != this.userProcessors) {
-                        for (final AnnotationProcessor<?, ?> processor : this.userProcessors) {
+                        for (final AnnotationProcessor processor : this.userProcessors) {
                             if (clazz.isAssignableFrom(processor.getClass())) {
                                 objInstance = processor;
                             }
@@ -218,12 +218,12 @@ public class AnnotationRootProcessor {
                     LOGGER.debug("Registered Kasper processor : " + clazz.getName());
 
                     if (!processors.containsKey(interfaceClass.get())) {
-                        processors.put(interfaceClass.get(), new ArrayList<AnnotationProcessor<?, ?>>());
+                        processors.put(interfaceClass.get(), new ArrayList<AnnotationProcessor>());
                     }
 
                     if (!processors.get(interfaceClass.get()).contains(objInstance)) {
-                        processors.get(interfaceClass.get()).add((AnnotationProcessor<?, ?>) objInstance);
-                        processorsInterface.put((AnnotationProcessor<?, ?>) objInstance, annoClass.get());
+                        processors.get(interfaceClass.get()).add((AnnotationProcessor) objInstance);
+                        processorsInterface.put((AnnotationProcessor) objInstance, annoClass.get());
                     }
 
                 } else {
@@ -249,19 +249,19 @@ public class AnnotationRootProcessor {
     protected void process() {
         LOGGER.info("Delegate to Kasper annotation processors");
 
-        for (final Class<?> tplClass : processors.keySet()) {
-            for (final AnnotationProcessor<?, ?> processor : processors.get(tplClass)) {
+        for (final Class tplClass : processors.keySet()) {
+            for (final AnnotationProcessor processor : processors.get(tplClass)) {
                 final Class<? extends Annotation> annotation = processorsInterface.get(processor);
 
                 LOGGER.info(String.format("Delegate for %s to %s", tplClass.getSimpleName(), processor.getClass().getSimpleName()));
 
                 final Set<Class<?>> annotatedClasses = reflections.getTypesAnnotatedWith(annotation);
                 @SuppressWarnings({ "unchecked", "rawtypes" })
-                final Set<Class<?>> conformClasses = (Set) reflections.getSubTypesOf(tplClass);
+                final Set<Class> conformClasses = (Set) reflections.getSubTypesOf(tplClass);
                 conformClasses.addAll(annotatedClasses);
 
                 // For all suitable classes
-                for (final Class<?> clazz : conformClasses) {
+                for (final Class clazz : conformClasses) {
 
                     // Filter out interfaces and abstract classes
                     if (!clazz.isInterface() && !Modifier.isAbstract(clazz.getModifiers())) {
@@ -311,7 +311,7 @@ public class AnnotationRootProcessor {
      *
      * @param processor the processor to register
      */
-    public void registerProcessor(final AnnotationProcessor<?, ?> processor) {
+    public void registerProcessor(final AnnotationProcessor processor) {
         Preconditions.checkNotNull(processor);
 
         if (null == this.userProcessors) {

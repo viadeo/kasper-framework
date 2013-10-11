@@ -16,10 +16,6 @@ import java.util.concurrent.ConcurrentMap;
 
 public class QueryServiceResolver extends AbstractResolver {
 
-    private static ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
-
-    // ------------------------------------------------------------------------
-
     @Override
     public String getTypeName() {
         return "QueryService";
@@ -29,7 +25,7 @@ public class QueryServiceResolver extends AbstractResolver {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomain(Class<?> clazz) {
+    public Optional<Class<? extends Domain>> getDomain(Class clazz) {
 
         if ( ! QueryService.class.isAssignableFrom(clazz)) {
             return Optional.absent();
@@ -39,7 +35,9 @@ public class QueryServiceResolver extends AbstractResolver {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
         }
 
-        final XKasperQueryService annotation = clazz.getAnnotation(XKasperQueryService.class);
+        final XKasperQueryService annotation = (XKasperQueryService)
+                clazz.getAnnotation(XKasperQueryService.class);
+
         if (null != annotation) {
             final Class<? extends Domain> domain = annotation.domain();
             cacheDomains.put(clazz, domain);

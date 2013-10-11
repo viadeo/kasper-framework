@@ -73,7 +73,7 @@ public final class DocumentedConcept extends DocumentedEntity {
 		final Method[] methods = conceptClazz.getDeclaredMethods();
 		for (Method method : methods) {
 			if (null != method.getAnnotation(EventHandler.class)) {
-				final Class<?>[] types = method.getParameterTypes();
+				final Class[] types = method.getParameterTypes();
 				if (types.length == 1) {
 					sourceEvents.add(types[0].getSimpleName());
 				}

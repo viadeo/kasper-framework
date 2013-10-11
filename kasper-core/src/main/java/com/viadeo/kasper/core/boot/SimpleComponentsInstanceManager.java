@@ -54,7 +54,7 @@ public class SimpleComponentsInstanceManager implements ComponentsInstanceManage
      * @param objInstance the instance to be recorded
      */
     @Override
-    public void recordInstance(final Class<?> clazz, final Object objInstance) {
+    public void recordInstance(final Class clazz, final Object objInstance) {
 
         if (this.instances.containsKey(clazz) || this.instances.containsKey(objInstance.getClass())) {
             throw new KasperException(String.format(ALREADY_REGISTERED, clazz));

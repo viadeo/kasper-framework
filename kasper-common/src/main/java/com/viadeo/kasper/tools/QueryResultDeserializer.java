@@ -19,7 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class QueryResultDeserializer extends JsonDeserializer<QueryResult<?>> {
+public class QueryResultDeserializer extends JsonDeserializer<QueryResult> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class); 
 
     private final JavaType resultType;
@@ -29,7 +29,7 @@ public class QueryResultDeserializer extends JsonDeserializer<QueryResult<?>> {
     }
 
     @Override
-    public QueryResult<?> deserialize(JsonParser jp, DeserializationContext ctxt)
+    public QueryResult deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException {
 
         ObjectNode root = jp.readValueAs(ObjectNode.class);
