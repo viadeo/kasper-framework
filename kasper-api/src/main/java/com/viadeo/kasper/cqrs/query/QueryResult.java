@@ -8,6 +8,10 @@ package com.viadeo.kasper.cqrs.query;
 
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.annotation.Immutable;
+import com.viadeo.kasper.cqrs.TransportMode;
+import com.viadeo.kasper.cqrs.command.http.HTTPCommandResult;
+import com.viadeo.kasper.cqrs.query.http.HTTPQueryResult;
+import com.viadeo.kasper.exception.KasperException;
 
 import java.io.Serializable;
 
@@ -39,6 +43,11 @@ public class QueryResult<ANSWER extends QueryAnswer> implements Serializable, Im
 
     // ------------------------------------------------------------------------
 
+    public QueryResult(final QueryResult<ANSWER> result) {
+        this.answer = result.answer;
+        this.error = result.error;
+    }
+
     public QueryResult(final ANSWER answer) {
         this.answer = checkNotNull(answer);
         this.error = null;
@@ -61,6 +70,22 @@ public class QueryResult<ANSWER extends QueryAnswer> implements Serializable, Im
     
     public boolean isError() {
         return error != null;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public TransportMode getTransportMode() {
+         if (HTTPQueryResult.class.isAssignableFrom(this.getClass())) {
+             return TransportMode.HTTP;
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    public HTTPQueryResult asHttp() {
+        if (HTTPQueryResult.class.isAssignableFrom(this.getClass())) {
+            return (HTTPQueryResult) this;
+        }
+        throw new KasperException("Not an HTTP query result");
     }
 
 }

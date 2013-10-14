@@ -17,6 +17,8 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
+import com.viadeo.kasper.CoreErrorCode;
+import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryResult;
@@ -28,6 +30,7 @@ import org.mockito.ArgumentCaptor;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
@@ -277,7 +280,9 @@ public class KasperClientQueryTest extends JerseyTest {
         final QueryResult<MemberAnswer> result = client.query(query, MemberAnswer.class);
 
         // Then
-        Assert.assertEquals("404", result.getError().getCode());
+        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), result.getError().getCode());
+        Assert.assertEquals(Response.Status.NOT_FOUND, result.asHttp().getHTTPStatus());
+        Assert.assertEquals(TransportMode.HTTP, result.getTransportMode());
     }
 
     @Test public void queryAsync_withAnswerNot200_shouldFillErrorsInResult() throws MalformedURLException, InterruptedException, ExecutionException {
@@ -291,6 +296,8 @@ public class KasperClientQueryTest extends JerseyTest {
         final QueryResult<MemberAnswer> result = client.queryAsync(query, MemberAnswer.class).get();
 
         // Then
-        Assert.assertEquals("404", result.getError().getCode());
+        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), result.getError().getCode());
+        Assert.assertEquals(Response.Status.NOT_FOUND, result.asHttp().getHTTPStatus());
+        Assert.assertEquals(TransportMode.HTTP, result.getTransportMode());
     }
 }

@@ -13,7 +13,9 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
+import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.command.CommandResult.Status;
@@ -28,6 +30,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
@@ -230,7 +233,9 @@ public class KasperClientCommandTest extends JerseyTest {
         // Then
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getError());
-        Assert.assertEquals("404", result.getError().getCode());
+        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), result.getError().getCode());
+        Assert.assertEquals(Response.Status.NOT_FOUND, result.asHttp().getHTTPStatus());
+        Assert.assertEquals(TransportMode.HTTP, result.getTransportMode());
     }
 
     @Test
@@ -247,6 +252,8 @@ public class KasperClientCommandTest extends JerseyTest {
         // Then
         Assert.assertNotNull(result);
         Assert.assertNotNull(result.getError());
-        Assert.assertEquals("404", result.getError().getCode());
+        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), result.getError().getCode());
+        Assert.assertEquals(Response.Status.NOT_FOUND, result.asHttp().getHTTPStatus());
+        Assert.assertEquals(TransportMode.HTTP, result.getTransportMode());
     }
 }

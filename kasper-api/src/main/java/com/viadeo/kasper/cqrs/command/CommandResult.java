@@ -9,6 +9,9 @@ package com.viadeo.kasper.cqrs.command;
 import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.annotation.Immutable;
+import com.viadeo.kasper.cqrs.TransportMode;
+import com.viadeo.kasper.cqrs.command.http.HTTPCommandResult;
+import com.viadeo.kasper.exception.KasperException;
 
 import java.io.Serializable;
 
@@ -70,7 +73,12 @@ public class CommandResult implements Serializable, Immutable {
     }
 
     // ------------------------------------------------------------------------
-    
+
+    public CommandResult(final CommandResult result) {
+        this.status = result.status;
+        this.error = result.error;
+    }
+
     public CommandResult(final Status status, final KasperError error) {
         this.status = checkNotNull(status);
         
@@ -106,6 +114,22 @@ public class CommandResult implements Serializable, Immutable {
      */
     public boolean isError() {
         return this.status != Status.OK;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public TransportMode getTransportMode() {
+        if (HTTPCommandResult.class.isAssignableFrom(this.getClass())) {
+            return TransportMode.HTTP;
+        }
+        throw new UnsupportedOperationException();
+    }
+
+    public HTTPCommandResult asHttp(){
+        if (HTTPCommandResult.class.isAssignableFrom(this.getClass())) {
+            return (HTTPCommandResult) this;
+        }
+        throw new KasperException("Not an HTTP command result");
     }
 
 }

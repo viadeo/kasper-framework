@@ -16,12 +16,15 @@ import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.async.TypeListener;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
+import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResult;
+import com.viadeo.kasper.cqrs.command.http.HTTPCommandResult;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.http.HTTPQueryResult;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.exception.KasperQueryAdapterException;
@@ -30,6 +33,7 @@ import com.viadeo.kasper.query.exposition.query.QueryFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
+import javax.ws.rs.core.Response;
 import java.beans.Introspector;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -294,13 +298,21 @@ public class KasperClient {
     }
 
     CommandResult handleResponse(final ClientResponse response) {
-        if (response.getStatus() >= 300) {
-            final String code = Integer.valueOf(response.getStatus()).toString();
-            return new CommandResult(CommandResult.Status.ERROR
-                    , new KasperError(code, "Kasper answered with error " + code));
-        }
+        if (response.getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
 
-        return response.getEntity(CommandResult.class);
+            final CommandResult result = response.getEntity(CommandResult.class);
+            return new HTTPCommandResult(Response.Status.fromStatusCode(response.getStatus()), result);
+
+        } else {
+
+            return new HTTPCommandResult(
+                    Response.Status.fromStatusCode(response.getStatus()),
+                    CommandResult.Status.ERROR,
+                    new KasperError(
+                            CoreErrorCode.UNKNOWN_ERROR,
+                            "Result from platform uses an unsupported type: " + response.getType())
+            );
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -459,17 +471,24 @@ public class KasperClient {
     <P extends QueryAnswer> QueryResult<P> handleQueryResponse(final ClientResponse response,
                                                                 final TypeToken<P> mapTo) {
 
-        if (response.getStatus() >= 300) {
-            return new QueryResult<P>(new KasperError(Integer.valueOf(
-                    response.getStatus()).toString()
-                    , "Kasper answered with error " + response.getStatus()));
+        if (response.getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
+
+            final TypeToken mappedType = new TypeToken<QueryResult<P>>() {
+                    private static final long serialVersionUID = -6868146773459098496L;
+                }.where(new TypeParameter<P>() { }, mapTo);
+
+            final QueryResult<P> result = response.getEntity(new GenericType<QueryResult<P>>(mappedType.getType()));
+            return new HTTPQueryResult<P>(Response.Status.fromStatusCode(response.getStatus()), result);
+
+        } else {
+
+            return new HTTPQueryResult<P>(
+                    Response.Status.fromStatusCode(response.getStatus()),
+                    new KasperError(
+                            CoreErrorCode.UNKNOWN_ERROR,
+                            "Result from platform uses an unsupported type: " + response.getType())
+            );
         }
-
-        final TypeToken mappedType = new TypeToken<QueryResult<P>>() {
-                private static final long serialVersionUID = -6868146773459098496L;
-            }.where(new TypeParameter<P>() { }, mapTo);
-
-        return response.getEntity(new GenericType<QueryResult<P>>(mappedType.getType()));
     }
 
     // --
