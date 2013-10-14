@@ -111,9 +111,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class KasperClient {
     private static final KasperClient DEFAULT_KASPER_CLIENT = new KasperClientBuilder().create();
 
-    private final Client client;
-    private final URL commandBaseLocation;
-    private final URL queryBaseLocation;
+    protected final Client client;
+    protected final URL commandBaseLocation;
+    protected final URL queryBaseLocation;
 
     private final Flags flags;
 
@@ -504,12 +504,12 @@ public class KasperClient {
     // RESOLVERS
     // ------------------------------------------------------------------------
 
-    private URI resolveCommandPath(final Class<? extends Command> commandClass) {
+    protected URI resolveCommandPath(final Class<? extends Command> commandClass) {
         final String className = commandClass.getSimpleName().replace("Command", "");
         return resolvePath(commandBaseLocation, Introspector.decapitalize(className), commandClass);
     }
 
-    private URI resolveQueryPath(final Class<? extends Query> queryClass) {
+    protected URI resolveQueryPath(final Class<? extends Query> queryClass) {
         final String className = queryClass.getSimpleName().replace("Query", "");
         return resolvePath(queryBaseLocation, Introspector.decapitalize(className), queryClass);
     }
