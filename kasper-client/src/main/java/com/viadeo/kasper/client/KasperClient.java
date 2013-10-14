@@ -460,7 +460,7 @@ public class KasperClient {
                                                                 final TypeToken<P> mapTo) {
 
         if (response.getStatus() >= 300) {
-            return new QueryResult<P>(new KasperError(Integer.valueOf(
+            return new QueryResult<>(new KasperError(Integer.valueOf(
                     response.getStatus()).toString()
                     , "Kasper answered with error " + response.getStatus()));
         }
