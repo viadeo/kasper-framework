@@ -120,4 +120,20 @@ public interface Context extends Serializable  {
 	 */
 	Map<String, Serializable> getProperties();
 
+    // ------------------------------------------------------------------------
+
+    /**
+     * Return the context's sequence number
+     *
+     * @return the sequence number
+     */
+    int getSequenceIncrement();
+
+    /**
+     * Childify this context
+     *
+     * @return a new child context
+     */
+    Context child();
+
 }

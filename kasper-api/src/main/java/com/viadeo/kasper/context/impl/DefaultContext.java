@@ -7,6 +7,7 @@
 package com.viadeo.kasper.context.impl;
 
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.context.Context;
 
 /**
  *
@@ -15,7 +16,6 @@ import com.viadeo.kasper.KasperID;
  *
  */
 public class DefaultContext extends AbstractContext {
-
     private static final long serialVersionUID = -2357451589032314740L;
 
     private KasperID userId;
@@ -74,6 +74,20 @@ public class DefaultContext extends AbstractContext {
     @Override
     public KasperID getSessionCorrelationId() {
         return this.sessionCorrelationId;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public Context child() {
+        final DefaultContext newContext = (DefaultContext) super.child();
+
+        newContext.userId = this.userId;
+        newContext.userLang = this.userLang;
+
+        newContext.requestCorrelationId = this.requestCorrelationId;
+        newContext.sessionCorrelationId = this.sessionCorrelationId;
+
+        return newContext;
     }
 
 }

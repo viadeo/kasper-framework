@@ -63,8 +63,7 @@ public class RelationResolver extends AbstractResolver<Relation> {
             return relationAnnotation.label().replaceAll(" ", "");
         }
 
-        return clazz.getSimpleName()
-                .replace("Relation", "");
+        return clazz.getSimpleName().replace("Relation", "");
     }
 
     // ------------------------------------------------------------------------
