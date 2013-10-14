@@ -17,7 +17,6 @@ import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.command.CommandResult.Status;
-import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -214,39 +213,4 @@ public class KasperClientCommandTest extends JerseyTest {
         assertEquals(Status.OK, result.getValue().getStatus());
     }
 
-    @Test
-    public void send_withAnswerNot200_shouldFillErrorsInResult() {
-        // Given
-        final CreateMemberCommand command = new CreateMemberCommand(Status.REFUSED);
-        try {
-            client = new KasperClientBuilder().commandBaseLocation(new URL("http://localhost:" + port + "/404/")).create();
-        } catch (MalformedURLException e) {
-            Assert.fail("Shouldn't fail here");
-        }
-
-        // When
-        final CommandResult result = client.send(command);
-
-        // Then
-        Assert.assertNotNull(result);
-        Assert.assertNotNull(result.getError());
-        Assert.assertEquals("404", result.getError().getCode());
-    }
-
-    @Test
-    public void sendAsync_withAnswerNot200_shouldFillErrorsInResult() throws MalformedURLException, InterruptedException,
-            ExecutionException {
-
-        // Given
-        client = new KasperClientBuilder().commandBaseLocation(new URL("http://localhost:" + port + "/404/")).create();
-        final CreateMemberCommand command = new CreateMemberCommand(Status.ERROR);
-
-        // When
-        final CommandResult result = client.sendAsync(command).get();
-
-        // Then
-        Assert.assertNotNull(result);
-        Assert.assertNotNull(result.getError());
-        Assert.assertEquals("404", result.getError().getCode());
-    }
 }

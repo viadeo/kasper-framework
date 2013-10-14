@@ -16,7 +16,6 @@ import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.async.TypeListener;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.query.Query;
@@ -257,6 +256,7 @@ public class KasperClient {
         // we need to decorate the Future returned by jersey in order to handle
         // exceptions and populate according to it the command result
         return new CommandResultFuture(this, futureResponse);
+
     }
 
     // --
@@ -294,12 +294,7 @@ public class KasperClient {
     }
 
     CommandResult handleResponse(final ClientResponse response) {
-        if (response.getStatus() >= 300) {
-            final String code = Integer.valueOf(response.getStatus()).toString();
-            return new CommandResult(CommandResult.Status.ERROR
-                    , new KasperError(code, "Kasper answered with error " + code));
-        }
-
+        // handle errors
         return response.getEntity(CommandResult.class);
     }
 
@@ -459,12 +454,6 @@ public class KasperClient {
     <P extends QueryAnswer> QueryResult<P> handleQueryResponse(final ClientResponse response,
                                                                 final TypeToken<P> mapTo) {
 
-        if (response.getStatus() >= 300) {
-            return new QueryResult<>(new KasperError(Integer.valueOf(
-                    response.getStatus()).toString()
-                    , "Kasper answered with error " + response.getStatus()));
-        }
-
         final TypeToken mappedType = new TypeToken<QueryResult<P>>() {
                 private static final long serialVersionUID = -6868146773459098496L;
             }.where(new TypeParameter<P>() { }, mapTo);
@@ -542,4 +531,5 @@ public class KasperClient {
     private KasperException cannotConstructURI(final Class clazz, final Exception e) {
         return new KasperException("Could not construct resource url for " + clazz, e);
     }
+
 }

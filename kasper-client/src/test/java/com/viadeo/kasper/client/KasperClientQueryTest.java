@@ -21,7 +21,6 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
-import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -259,38 +258,5 @@ public class KasperClientQueryTest extends JerseyTest {
 
         // Then
         checkRoundTrip(query, result);
-    }
-
-    @Test public void query_withAnswerNot200_shouldFillErrorsInResult() {
-        // Given
-        KasperClient client = null;
-        try {
-            client = new KasperClientBuilder()
-                    .queryBaseLocation(new URL("http://localhost:" + port + "/404/"))
-                    .create();
-        } catch (MalformedURLException e) {
-            Assert.fail("Shouldn't throw exception here");
-        }
-        final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
-
-        // When
-        final QueryResult<MemberAnswer> result = client.query(query, MemberAnswer.class);
-
-        // Then
-        Assert.assertEquals("404", result.getError().getCode());
-    }
-
-    @Test public void queryAsync_withAnswerNot200_shouldFillErrorsInResult() throws MalformedURLException, InterruptedException, ExecutionException {
-        // Given
-        client = new KasperClientBuilder()
-                .queryBaseLocation(new URL("http://localhost:" + port + "/404/"))
-                .create();
-        final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
-
-        // When
-        final QueryResult<MemberAnswer> result = client.queryAsync(query, MemberAnswer.class).get();
-
-        // Then
-        Assert.assertEquals("404", result.getError().getCode());
     }
 }
