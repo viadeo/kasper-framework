@@ -218,7 +218,13 @@ public class HttpQueryExposer extends HttpExposer {
             METRICLASSREQUESTS.mark();
         }
 
-        resp.flushBuffer();
+        if (!resp.isCommitted()) {
+            try {
+                resp.flushBuffer();
+            } catch (final IOException e) {
+                LOGGER.error("Error when trying to flush output buffer", e);
+            }
+        }
     }
 
     // we can not use send error as it will send text/html response.
@@ -314,7 +320,11 @@ public class HttpQueryExposer extends HttpExposer {
                       String.format("ERROR sending Result [%s] for query [%s]", result.getClass().getSimpleName(),queryName),
                       req, resp, t);
         } finally {
-            resp.flushBuffer();
+            try {
+                resp.flushBuffer();
+            } catch (final IOException e) {
+                LOGGER.error("Error when trying to flush output buffer", e);
+            }
         }
 
     }
@@ -345,7 +355,11 @@ public class HttpQueryExposer extends HttpExposer {
 
         writer.writeValue(resp.getOutputStream(), new QueryResult<>(error));
 
-        resp.flushBuffer();
+        try {
+            resp.flushBuffer();
+        } catch (final IOException e) {
+            LOGGER.error("Error when trying to flush output buffer", e);
+        }
 
         /* Log the request */
         QUERY_LOGGER.info("HTTP Response {} '{}' : {} {}", req.getMethod(), req.getRequestURI(), status, message, exception);

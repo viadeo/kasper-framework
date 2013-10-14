@@ -108,7 +108,11 @@ public class HttpCommandExposer extends HttpExposer {
          * must be last call to ensure that everything is sent to the client
          * (even if an error occurred)
          */
-        resp.flushBuffer();
+        try {
+            resp.flushBuffer();
+        } catch (final IOException e) {
+            LOGGER.error("Error when trying to flush output buffer", e);
+        }
     }
 
     @Override
@@ -121,7 +125,11 @@ public class HttpCommandExposer extends HttpExposer {
          * must be last call to ensure that everything is sent to the client
          *(even if an error occurred)
          */
-        resp.flushBuffer();
+        try {
+            resp.flushBuffer();
+        } catch (final IOException e) {
+            LOGGER.error("Error when trying to flush output buffer", e);
+        }
     }
 
     // ------------------------------------------------------------------------
