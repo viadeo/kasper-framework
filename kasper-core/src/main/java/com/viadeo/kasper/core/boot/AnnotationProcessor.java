@@ -33,7 +33,7 @@ public interface AnnotationProcessor<T extends Annotation, I> {
 	/**
 	 * @param clazz a matching class to process
 	 */
-	void process(Class<?> clazz);
+	void process(Class clazz);
 
     /**
      * @return true if the annotation must be present on each class

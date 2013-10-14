@@ -9,6 +9,8 @@ package com.viadeo.kasper.core.locators;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
+import com.viadeo.kasper.core.resolvers.DomainResolver;
+import com.viadeo.kasper.core.resolvers.QueryServiceResolver;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperServiceFilter;
@@ -34,12 +36,12 @@ public class KasperQueryServicesLocatorBaseTest {
     @XKasperUnregistered
 	private static final class TestQuery implements Query {}
 
-    private static final class TestPayload implements QueryPayload {}
+    private static final class TestAnswer implements QueryAnswer {}
 
     @XKasperQueryService( domain = TestDomain.class )
-	private static class TestService implements QueryService<TestQuery, TestPayload> {
+	private static class TestService implements QueryService<TestQuery, TestAnswer> {
 		@Override
-		public QueryResult<TestPayload> retrieve(final QueryMessage<TestQuery> message) {
+		public QueryResult<TestAnswer> retrieve(final QueryMessage<TestQuery> message) {
 			throw new UnsupportedOperationException();
 		}
 	}
@@ -48,7 +50,13 @@ public class KasperQueryServicesLocatorBaseTest {
 
 	@Before
 	public void setUp() throws Exception {
+        final DomainResolver domainResolver = new DomainResolver();
+
+        final QueryServiceResolver queryServiceResolver = new QueryServiceResolver();
+        queryServiceResolver.setDomainResolver(domainResolver);
+
 		locator = new DefaultQueryServicesLocator();
+        locator.setQueryServiceResolver(queryServiceResolver);
 	}
 
 	@Test
@@ -152,9 +160,9 @@ public class KasperQueryServicesLocatorBaseTest {
     private static final class TestQuery2 implements Query {}
 
     @XKasperQueryService( domain = TestDomain2.class )
-    private static class TestService2 implements QueryService<TestQuery2, TestPayload> {
+    private static class TestService2 implements QueryService<TestQuery2, TestAnswer> {
         @Override
-        public QueryResult<TestPayload> retrieve(final QueryMessage<TestQuery2> message) {
+        public QueryResult<TestAnswer> retrieve(final QueryMessage<TestQuery2> message) {
             throw new UnsupportedOperationException();
         }
     }

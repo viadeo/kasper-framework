@@ -8,7 +8,6 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.doc.KasperLibrary;
 
 public final class DocumentedCommand extends DocumentedDomainNode {
@@ -28,17 +27,8 @@ public final class DocumentedCommand extends DocumentedDomainNode {
 	public DocumentedCommand(final KasperLibrary kl, final Class<? extends Command> commandClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 
-		final XKasperCommand annotation = commandClazz.getAnnotation(XKasperCommand.class);
-
-		// Get description ----------------------------------------------------
-		String description = "";
-        if (null != annotation) {
-           description = annotation.description();
-        }
-		if (description.isEmpty()) {
-			description = String.format("The %s command", 
-					commandClazz.getSimpleName().replaceAll("Command", ""));
-		}
+        final String description =
+                this.getKasperLibrary().getResolverFactory().getCommandResolver().getDescription(commandClazz);
 
 		// - Register the domain to the locator --------------------------------
 		this.setName(commandClazz.getSimpleName());

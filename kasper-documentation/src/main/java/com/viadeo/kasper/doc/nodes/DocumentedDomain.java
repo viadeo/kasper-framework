@@ -7,8 +7,8 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.doc.KasperLibrary;
 
 import java.util.Collection;
@@ -26,22 +26,15 @@ public final class DocumentedDomain extends DocumentedNode {
 	
 	public DocumentedDomain(final KasperLibrary kl, final Class<? extends Domain> domainClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);		
-		
-		final XKasperDomain annotation = domainClazz.getAnnotation(XKasperDomain.class);
 
-        if (null != annotation) {
-		    this.prefix = annotation.prefix();
-		    this.setLabel(annotation.label());
-		    this.setDescription(annotation.description());
-        } else {
-            this.prefix = "unk";
-            this.setLabel(domainClazz.getSimpleName());
-            this.setDescription(String.format("The %s domain", domainClazz.getSimpleName()));
-        }
+        final DomainResolver resolver = this.getKasperLibrary().getResolverFactory().getDomainResolver();
 
+        this.prefix = resolver.getPrefix(domainClazz);
+        this.setLabel(resolver.getLabel(domainClazz));
+        this.setDescription(resolver.getDescription(domainClazz));
         this.setName(domainClazz.getSimpleName());
 		
-		final Class<?> parentClazz = domainClazz.getSuperclass();
+		final Class parentClazz = domainClazz.getSuperclass();
 		if (null != parentClazz) {
 			this.parent = parentClazz.getSimpleName();
 		}

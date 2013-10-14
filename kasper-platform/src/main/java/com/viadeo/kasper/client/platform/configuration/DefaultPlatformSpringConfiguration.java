@@ -11,6 +11,7 @@ import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import org.axonframework.commandhandling.CommandBus;
@@ -70,20 +71,21 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public DomainLocator domainLocator() {
-        return super.domainLocator();
+    public DomainLocator domainLocator(final CommandHandlerResolver commandHandlerResolver, final RepositoryResolver repositoryResolver) {
+        return super.domainLocator(commandHandlerResolver, repositoryResolver);
     }
 
     @Bean
     @Override
-    public QueryServicesLocator queryServicesLocator(){
-        return super.queryServicesLocator();
+    public QueryServicesLocator queryServicesLocator(final QueryServiceResolver queryServiceResolver) {
+        return super.queryServicesLocator(queryServiceResolver);
     }
 
     @Bean
     @Override
-    public CommandHandlersProcessor commandHandlersProcessor(final CommandBus commandBus, final DomainLocator domainLocator, final KasperEventBus eventBus){
-        return super.commandHandlersProcessor(commandBus, domainLocator, eventBus);
+    public CommandHandlersProcessor commandHandlersProcessor(final CommandBus commandBus, final DomainLocator domainLocator,
+                                                             final KasperEventBus eventBus, final CommandHandlerResolver commandHandlerResolver ){
+        return super.commandHandlersProcessor(commandBus, domainLocator, eventBus, commandHandlerResolver);
     }
 
     @Bean
@@ -120,6 +122,88 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
     @Override
     public QueryGateway queryGateway(final QueryServicesLocator locator){
         return super.queryGateway(locator);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Bean
+    @Override
+    public CommandHandlerResolver commandHandlerResolver(final DomainResolver domainResolver) {
+        return super.commandHandlerResolver(domainResolver);
+    }
+
+    @Bean
+    @Override
+    public DomainResolver domainResolver() {
+        return super.domainResolver();
+    }
+
+    @Bean
+    @Override
+    public CommandResolver commandResolver(
+            final DomainLocator domainLocator,
+            final DomainResolver domainResolver,
+            final CommandHandlerResolver commandHandlerResolver
+    ) {
+        return super.commandResolver(domainLocator, domainResolver, commandHandlerResolver);
+    }
+
+    @Bean
+    @Override
+    public EventListenerResolver eventListenerResolver(
+            final DomainResolver domainResolver
+    ) {
+        return super.eventListenerResolver(domainResolver);
+    }
+
+    @Bean
+    @Override
+    public QueryResolver queryResolver(
+            final DomainResolver domainResolver,
+            final QueryServiceResolver queryServiceResolver,
+            final QueryServicesLocator queryServicesLocator
+    ) {
+        return super.queryResolver(domainResolver, queryServiceResolver, queryServicesLocator);
+    }
+
+    @Bean
+    @Override
+    public QueryServiceResolver queryServiceResolver(final DomainResolver domainResolver) {
+        return super.queryServiceResolver(domainResolver);
+    }
+
+    @Bean
+    @Override
+    public RepositoryResolver repositoryResolver(final EntityResolver entityResolver, final DomainResolver domainResolver) {
+        return super.repositoryResolver(entityResolver, domainResolver);
+    }
+
+    @Bean
+    @Override
+    public EntityResolver entityResolver(
+            final ConceptResolver conceptResolver,
+            final RelationResolver relationResolver,
+            final DomainResolver domainResolver
+    ) {
+        return super.entityResolver(conceptResolver, relationResolver, domainResolver);
+    }
+
+    @Bean
+    @Override
+    public ConceptResolver conceptResolver(final DomainResolver domainResolver) {
+        return super.conceptResolver(domainResolver);
+    }
+
+    @Bean
+    @Override
+    public RelationResolver relationResolver(final DomainResolver domainResolver, final ConceptResolver conceptResolver)  {
+        return super.relationResolver(domainResolver, conceptResolver);
+    }
+
+    @Bean
+    @Override
+    public EventResolver eventResolver(final DomainResolver domainResolver) {
+        return super.eventResolver(domainResolver);
     }
 
 }

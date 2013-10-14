@@ -4,12 +4,8 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.cqrs.query;
+package com.viadeo.kasper.cqrs;
 
-import com.viadeo.kasper.annotation.Immutable;
-
-import java.io.Serializable;
-
-public interface QueryPayload extends Serializable, Immutable {
-
+public enum TransportMode {
+        HTTP
 }

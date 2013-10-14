@@ -9,8 +9,9 @@ package com.viadeo.kasper.cqrs.query;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
+import com.viadeo.kasper.core.resolvers.DomainResolver;
+import com.viadeo.kasper.core.resolvers.QueryServiceResolver;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
@@ -38,23 +39,23 @@ public class QueryFilterITest {
     }
 
     @XKasperUnregistered
-    private class TestPayload implements QueryPayload {
+    private class TestAnswer implements QueryAnswer {
         public int state = STATE_START;
     }
 
     @XKasperUnregistered
-    private class TestService implements QueryService<TestQuery, TestPayload> {
+    private class TestService implements QueryService<TestQuery, TestAnswer> {
         @Override
-        public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception {
-            return new QueryResult<>(new TestPayload());
+        public QueryResult<TestAnswer> retrieve(final QueryMessage message) throws Exception {
+            return new QueryResult<>(new TestAnswer());
         }
     }
 
     @XKasperUnregistered
-    private class TestFilter implements QueryFilter<TestQuery>, ResultFilter<TestPayload> {
+    private class TestFilter implements QueryFilter<TestQuery>, ResultFilter<TestAnswer> {
         @Override
-        public <R extends QueryResult<TestPayload>> R filter(Context context, R result) {
-            result.getPayload().state = STATE_MODIFIED;
+        public <R extends QueryResult<TestAnswer>> R filter(Context context, R result) {
+            result.getAnswer().state = STATE_MODIFIED;
             return result;        }
 
         @Override
@@ -82,7 +83,11 @@ public class QueryFilterITest {
         final TestService service = spy(new TestService());
         final TestFilter filter = spy(new TestFilter());
         final TestFilterGlobal filterGlobal = spy(new TestFilterGlobal());
-        final QueryServicesLocator locator = new DefaultQueryServicesLocator();
+        final DefaultQueryServicesLocator locator = new DefaultQueryServicesLocator();
+        final DomainResolver domainResolver = new DomainResolver();
+        final QueryServiceResolver queryServiceResolver = new QueryServiceResolver();
+        queryServiceResolver.setDomainResolver(domainResolver);
+        locator.setQueryServiceResolver(queryServiceResolver);
 
         locator.registerService("testService", service, TestDomain.class);
         locator.registerFilter("testFilter", filter);
@@ -96,14 +101,14 @@ public class QueryFilterITest {
         final TestQuery query = new TestQuery();
 
         // When
-        final QueryResult<TestPayload> queryResult = gateway.retrieve(query, context);
+        final QueryResult<TestAnswer> queryResult = gateway.retrieve(query, context);
 
         // Then
         // verify(filter).filter(eq(context), any(TestQuery.class));
         assertEquals(STATE_MODIFIED, query.state);
 
         // verify(filter).filter(eq(context), any(QueryResult.class));
-        assertEquals(STATE_MODIFIED, queryResult.getPayload().state);
+        assertEquals(STATE_MODIFIED, queryResult.getAnswer().state);
 
         verify(filterGlobal).filter(eq(context), any(Query.class));
     }

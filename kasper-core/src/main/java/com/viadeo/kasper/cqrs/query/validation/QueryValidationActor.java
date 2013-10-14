@@ -11,7 +11,7 @@ import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryRequestActor;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class QueryValidationActor<Q extends Query, P extends QueryPayload> implements QueryRequestActor<Q, P> {
+public class QueryValidationActor<Q extends Query, P extends QueryAnswer> implements QueryRequestActor<Q, P> {
 
     private final ValidatorFactory validatorFactory;
 

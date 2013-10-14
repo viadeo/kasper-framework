@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs.query.cache.impl;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryRequestActor;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
@@ -20,7 +20,7 @@ import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class QueryCacheActor<Q extends Query, P extends QueryPayload>
+public class QueryCacheActor<Q extends Query, P extends QueryAnswer>
         implements QueryRequestActor<Q, P> {
 
     private final Cache<Serializable, QueryResult<P>> cache;

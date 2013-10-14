@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -23,11 +23,11 @@ public class RequestActorsChainTest {
         final Iterable<DummyRequestActor> chain = Lists.newArrayList(null, d1, null, d2, null);
 
         // When
-        final RequestActorsChain<Query, QueryPayload> actualChain =
+        final RequestActorsChain<Query, QueryAnswer> actualChain =
                 RequestActorsChain.makeChain(chain);
 
         // Then
-        RequestActorsChain<Query, QueryPayload> elt = actualChain;
+        RequestActorsChain<Query, QueryAnswer> elt = actualChain;
         for (final DummyRequestActor e : Lists.newArrayList(d1, d2)) {
             Assert.assertEquals(e, elt.actor.get());
             elt = actualChain.next.get();
@@ -36,9 +36,9 @@ public class RequestActorsChainTest {
 
     // ------------------------------------------------------------------------
 
-    static class DummyRequestActor implements RequestActor<Query, QueryPayload> {
+    static class DummyRequestActor implements RequestActor<Query, QueryAnswer> {
         @Override
-        public QueryPayload process(Query query, Context context, RequestActorsChain chain) {
+        public QueryAnswer process(Query query, Context context, RequestActorsChain chain) {
             return null;
         }
     }

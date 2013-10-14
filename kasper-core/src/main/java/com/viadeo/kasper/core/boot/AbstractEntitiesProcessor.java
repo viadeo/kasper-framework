@@ -46,7 +46,7 @@ public abstract class AbstractEntitiesProcessor<T extends Annotation, I extends 
 	 * @see AnnotationProcessor#process(Class)
 	 */
 	@Override
-	public void process(final Class<?> entityClass) {
+	public void process(final Class entityClass) {
         // Currently does nothing
 	}
 

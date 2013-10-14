@@ -10,6 +10,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.exception.KasperException;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -25,6 +26,7 @@ import java.util.UUID;
 public abstract class AbstractContext implements Context {
 	private static final long serialVersionUID = 1887660968377933167L;
 
+    public static final int INITIAL_SEQUENCE_INCREMENT = 1;
     public static final UUID DEFAULT_KASPER_UUID = UUID.fromString("00000000-0000-002a-0000-00000000002a");
     public static final KasperID DEFAULT_KASPER_ID = new DefaultKasperId(DEFAULT_KASPER_UUID);
 
@@ -36,7 +38,9 @@ public abstract class AbstractContext implements Context {
 
 	private Map<String, Serializable> properties;
     private KasperID kasperCorrelationId = DEFAULT_KASPERCORR_ID;
-	
+
+    private int sequenceIncrement = INITIAL_SEQUENCE_INCREMENT;
+
 	// ------------------------------------------------------------------------
 	
 	protected AbstractContext() { /* abstract */ }
@@ -117,5 +121,34 @@ public abstract class AbstractContext implements Context {
 		
 		return retMap;
 	}
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public int getSequenceIncrement() {
+        return this.sequenceIncrement;
+    }
+
+    @Override
+    public Context child() {
+        final AbstractContext newContext;
+
+        try {
+            newContext = this.getClass().newInstance();
+        } catch (final InstantiationException e) {
+            throw new KasperException("Unable to clone context", e);
+        } catch (final IllegalAccessException e) {
+            throw new KasperException("Unable to clone context", e);
+        }
+
+        if (null != this.properties) {
+            newContext.properties = Maps.newHashMap(this.properties);
+        }
+
+        newContext.kasperCorrelationId = this.kasperCorrelationId;
+        newContext.sequenceIncrement = this.sequenceIncrement + 1;
+
+        return newContext;
+    }
 
 }

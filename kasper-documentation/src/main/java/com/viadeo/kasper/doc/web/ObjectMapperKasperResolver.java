@@ -26,7 +26,7 @@ public class ObjectMapperKasperResolver implements ContextResolver<ObjectMapper>
     }
     
     @Override
-    public ObjectMapper getContext(Class<?> type) {
+    public ObjectMapper getContext(Class type) {
         return mapper;
     }
 

@@ -6,10 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
-/**
- * An ordered KasperQuery
- *
- */
-public interface OrderedQueryPayload extends QueryPayload {
+/** A paginated Kasper query */
+public interface PaginatedQueryAnswer extends QueryAnswer {
+
+	/** The requested number of elements. */
+	int getCount();
+
+	/** The requested index of the first element in the page. Starts at {@code 0}. */
+	int getStartIndex();
 
 }

@@ -7,8 +7,9 @@
 package com.viadeo.kasper.core.boot;
 
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
+import com.viadeo.kasper.core.resolvers.DomainResolver;
+import com.viadeo.kasper.core.resolvers.QueryServiceResolver;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.ddd.Domain;
@@ -25,10 +26,16 @@ public class QueryServicesProcessorTest {
 
     // ------------------------------------------------------------------------
 
-    final QueryServicesLocator locator = spy(new DefaultQueryServicesLocator());
+    final DefaultQueryServicesLocator locator = spy(new DefaultQueryServicesLocator());
+    final DomainResolver domainResolver = new DomainResolver();
+    final QueryServiceResolver queryServiceResolver = new QueryServiceResolver();
     final QueryServicesProcessor processor = new QueryServicesProcessor();
 
-    { processor.setQueryServicesLocator(locator); }
+    {
+        queryServiceResolver.setDomainResolver(domainResolver);
+        locator.setQueryServiceResolver(queryServiceResolver);
+        processor.setQueryServicesLocator(locator);
+    }
 
     // ------------------------------------------------------------------------
 
@@ -44,36 +51,36 @@ public class QueryServicesProcessorTest {
     @XKasperUnregistered
     public class TestFilter2 implements ServiceFilter { }
 
-    public class TestPayload implements QueryPayload { }
+    public class TestAnswer implements QueryAnswer { }
 
     // ------------------------------------------------------------------------
 
     @XKasperUnregistered
     @XKasperQueryService( name = SERVICE_NAME, domain = TestDomain.class )
-    public static class TestService implements QueryService<TestQuery, TestPayload> {
+    public static class TestService implements QueryService<TestQuery, TestAnswer> {
         @Override
-        public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResult<TestAnswer> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperUnregistered
     @XKasperQueryService( domain = TestDomain.class )
-    public static class TestServiceNoName implements QueryService<TestQuery, TestPayload> {
+    public static class TestServiceNoName implements QueryService<TestQuery, TestAnswer> {
         @Override
-        public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResult<TestAnswer> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperUnregistered
     @XKasperQueryService( domain = TestDomain.class, filters = TestFilter.class )
-    public static class TestServiceOneFilter implements QueryService<TestQuery, TestPayload> {
+    public static class TestServiceOneFilter implements QueryService<TestQuery, TestAnswer> {
         @Override
-        public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResult<TestAnswer> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperUnregistered
     @XKasperQueryService( domain = TestDomain.class, filters = { TestFilter.class, TestFilter2.class } )
-    public static class TestServiceMultipleFilters implements QueryService<TestQuery, TestPayload> {
+    public static class TestServiceMultipleFilters implements QueryService<TestQuery, TestAnswer> {
         @Override
-        public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResult<TestAnswer> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     // ------------------------------------------------------------------------

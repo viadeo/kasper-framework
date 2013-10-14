@@ -8,14 +8,11 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
+import com.viadeo.kasper.core.resolvers.RelationResolver;
 import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.er.RootConcept;
-import com.viadeo.kasper.er.annotation.XBidirectional;
-import com.viadeo.kasper.er.annotation.XKasperRelation;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.StringTokenizer;
 
@@ -31,52 +28,32 @@ public final class DocumentedRelation extends DocumentedEntity {
 	
 	// ------------------------------------------------------------------------
 	
-	public DocumentedRelation(final KasperLibrary kl, final Class<? extends Relation<?,?>> relationClazz) {
+	public DocumentedRelation(final KasperLibrary kl, final Class<? extends Relation> relationClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
-		final XKasperRelation annotation = relationClazz.getAnnotation(XKasperRelation.class);
-		final XBidirectional biDirAnno = relationClazz.getAnnotation(XBidirectional.class);
-		final boolean annotatedBidirectional = (null != biDirAnno);
-		final String label = annotation.label();
-				
 		// Find if it's an aggregate ------------------------------------------
 		final boolean isAggregate = AggregateRoot.class.isAssignableFrom(relationClazz);
 		
 		// Find associated domain ---------------------------------------------
-		final Class<? extends Domain> domain = annotation.domain();
-		final String domainName = domain.getSimpleName();
-		
+        final RelationResolver resolver = this.getKasperLibrary().getResolverFactory().getRelationResolver();
+		final String domainName = resolver.getDomainClass(relationClazz).get().getSimpleName();
+        final String label = resolver.getLabel(relationClazz);
+        final String description = resolver.getDescription(relationClazz);
+ 		final boolean annotatedBidirectional = resolver.isBidirectional(relationClazz);
+
 		// Find source and target root concepts -------------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends RootConcept>> sourceClass =
-				(Optional<Class<? extends RootConcept>>)
-					ReflectionGenericsResolver.getParameterTypeFromClass(
-							relationClazz, Relation.class, Relation.SOURCE_PARAMETER_POSITION);
-		
-		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<? extends RootConcept>> targetClass =
-				(Optional<Class<? extends RootConcept>>)
-					ReflectionGenericsResolver.getParameterTypeFromClass(
-							relationClazz, Relation.class, Relation.TARGET_PARAMETER_POSITION);
-		
-		String source = "error";
-		String target = "error";
-		
-		if (sourceClass.isPresent()) {
-			source = sourceClass.get().getSimpleName();
-		}
+		final Class<? extends RootConcept> sourceClass =
+                resolver.getSourceEntityClass(relationClazz);
 
-		if (targetClass.isPresent()) {
-			target = targetClass.get().getSimpleName();
-		}		
-		
-		// Get description ----------------------------------------------------
-		String description = annotation.description();
-		if (description.isEmpty()) {
-			description = String.format("The %s relation between %s and %s", label, source, target);
-		}		
-		
-		//- Set properties ----------------------------------------------------		
+		@SuppressWarnings("unchecked") // Safe
+		final Class<? extends RootConcept> targetClass =
+                resolver.getTargetEntityClass(relationClazz);
+
+        final String source = sourceClass.getSimpleName();
+		final String target = targetClass.getSimpleName();
+
+		//- Set properties ----------------------------------------------------
 		this.setName(relationClazz.getSimpleName());
 		this.setLabel(label);
 		this.setDescription(description);
@@ -134,7 +111,8 @@ public final class DocumentedRelation extends DocumentedEntity {
 	
 	public DocumentedNode getTargetConcept() {
 		final KasperLibrary kl = this.getKasperLibrary();
-		final Optional<DocumentedConcept> concept = kl.getConcept(this.getDomainName(), this.targetConceptName);
+		final Optional<DocumentedConcept> concept = kl.getConcept(this.getDomainName(),
+                this.targetConceptName);
 		
 		if (concept.isPresent()) {
 			return kl.getSimpleNodeFrom( concept.get() ); 

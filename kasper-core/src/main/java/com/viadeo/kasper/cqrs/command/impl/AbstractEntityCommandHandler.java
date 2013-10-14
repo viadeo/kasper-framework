@@ -40,12 +40,12 @@ public abstract class AbstractEntityCommandHandler<C extends Command, AGR extend
         private Class<E> entityClass;
 
         @SuppressWarnings("unchecked")
-        void setEntityClass(final Class<?> entityClass) {
+        void setEntityClass(final Class entityClass) {
             this.entityClass = (Class<E>) entityClass;
         }
 
         @SuppressWarnings("unchecked")
-        void setRepository(final IRepository<?> repository) {
+        void setRepository(final IRepository repository) {
             this.repository = (IRepository<E>) repository;
         }
     }

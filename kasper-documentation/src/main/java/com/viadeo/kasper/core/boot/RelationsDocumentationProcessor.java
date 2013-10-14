@@ -17,7 +17,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperRelation
  */
-public class RelationsDocumentationProcessor extends DocumentationProcessor<XKasperRelation, Relation<?,?>> {
+public class RelationsDocumentationProcessor extends DocumentationProcessor<XKasperRelation, Relation> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(RelationsDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------
@@ -30,11 +30,11 @@ public class RelationsDocumentationProcessor extends DocumentationProcessor<XKas
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public void process(final Class<?> relationClazz) {
+	public void process(final Class relationClazz) {
 		LOGGER.info("Record on relation library : " + relationClazz.getName());
 
 		//- Register the domain to the locator --------------------------------
-		getKasperLibrary().recordRelation((Class<? extends Relation<?, ?>>) relationClazz);
+		getKasperLibrary().recordRelation((Class<? extends Relation>) relationClazz);
 	}
 
 }

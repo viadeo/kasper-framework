@@ -7,7 +7,7 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.google.common.base.Objects;
-import com.viadeo.kasper.cqrs.query.CollectionQueryPayload;
+import com.viadeo.kasper.cqrs.query.CollectionQueryAnswer;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,17 +15,17 @@ import java.util.Iterator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class AbstractQueryCollectionPayload<RES> implements CollectionQueryPayload<RES> {
+public abstract class AbstractQueryCollectionAnswer<RES> implements CollectionQueryAnswer<RES> {
     
 	private Collection<RES> list;
 
     // ------------------------------------------------------------------------
 
-    protected AbstractQueryCollectionPayload() {
+    protected AbstractQueryCollectionAnswer() {
         /* Jackson */
     }
 
-	protected AbstractQueryCollectionPayload(final Collection<RES> list) {
+	protected AbstractQueryCollectionAnswer(final Collection<RES> list) {
 		this.list = checkNotNull(list);
 	}
 
@@ -60,13 +60,13 @@ public abstract class AbstractQueryCollectionPayload<RES> implements CollectionQ
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends AbstractQueryCollectionPayload> P withList(final Collection<RES> list) {
+    public <P extends AbstractQueryCollectionAnswer> P withList(final Collection<RES> list) {
         this.setList(list);
         return (P) this;
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends AbstractQueryCollectionPayload> P withListAsIterator(final Iterator<RES> iterator) {
+    public <P extends AbstractQueryCollectionAnswer> P withListAsIterator(final Iterator<RES> iterator) {
         this.setListAsIterator(iterator);
         return (P) this;
     }
@@ -82,7 +82,7 @@ public abstract class AbstractQueryCollectionPayload<RES> implements CollectionQ
             return false;
         }
 
-        final AbstractQueryCollectionPayload<?> that = (AbstractQueryCollectionPayload<?>) o;
+        final AbstractQueryCollectionAnswer that = (AbstractQueryCollectionAnswer) o;
         return Objects.equal(this.list, that.list);
     }
 

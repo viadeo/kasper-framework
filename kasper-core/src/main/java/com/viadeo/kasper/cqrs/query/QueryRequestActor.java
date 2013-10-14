@@ -8,7 +8,7 @@ package com.viadeo.kasper.cqrs.query;
 
 import com.viadeo.kasper.cqrs.RequestActor;
 
-public interface QueryRequestActor<Q extends Query, P extends QueryPayload>
+public interface QueryRequestActor<Q extends Query, P extends QueryAnswer>
         extends RequestActor<Q, QueryResult<P>> {
 
 }

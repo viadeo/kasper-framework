@@ -7,9 +7,9 @@
 package com.viadeo.kasper.doc;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.core.resolvers.ResolverFactory;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryService;
@@ -27,6 +27,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Kasper autodoc library
  * 
@@ -43,7 +45,12 @@ import java.util.TreeMap;
  */
 @Component
 public class KasperLibrary {
-	
+
+    /**
+     * Access to the Kasper components resolvers
+     */
+    private ResolverFactory resolverFactory;
+
 	/**
 	 * Keeps track of registered domains, by name and by prefix
 	 */
@@ -52,6 +59,7 @@ public class KasperLibrary {
 	
 	/**
 	 * Stores all registered domain-related components
+     * FIXME: replace with MultiMap
 	 */
 	private final Map<Class<? extends DocumentedDomainNode>, Map<String, ?>> domainEntities;
 	
@@ -145,7 +153,7 @@ public class KasperLibrary {
 	// --
 	
 	public Optional<DocumentedDomain> getDomainFromName(final String domainName) {
-		Preconditions.checkNotNull(domainName);
+		checkNotNull(domainName);
 		
 		if (this.domainNames.containsKey(domainName)) {
 			return Optional.of(this.domainNames.get(domainName));
@@ -157,7 +165,7 @@ public class KasperLibrary {
 	// --
 	
 	public Optional<DocumentedDomain> getDomainFromPrefix(final String domainPrefix) {
-		Preconditions.checkNotNull(domainPrefix);
+		checkNotNull(domainPrefix);
 		
 		if (this.domainPrefixes.containsKey(domainPrefix)) {
 			return Optional.of(this.domainPrefixes.get(domainPrefix));
@@ -169,7 +177,7 @@ public class KasperLibrary {
 	// == REPOSITORIES ========================================================
 	// ========================================================================
 	
-	public DocumentedRepository recordRepository(final Class<? extends IRepository<?>> repositoryClazz) {
+	public DocumentedRepository recordRepository(final Class<? extends IRepository> repositoryClazz) {
 		final DocumentedRepository documentedRepository = new DocumentedRepository(this, repositoryClazz);		
 		recordElement(documentedRepository.getDomainName(), documentedRepository);
 		return documentedRepository;
@@ -259,8 +267,8 @@ public class KasperLibrary {
 	// --
 	
 	public void registerAggregateComponent(final String agrName, final String componentName) {
-		Preconditions.checkNotNull(agrName);
-		Preconditions.checkNotNull(componentName);
+		checkNotNull(agrName);
+		checkNotNull(componentName);
 		
 		final List<String> components;
 		if (!this.aggregateComponents.containsKey(agrName)) {
@@ -307,7 +315,7 @@ public class KasperLibrary {
 	// == RELATIONS ===========================================================
 	// ========================================================================
 	
-	public DocumentedRelation recordRelation(final Class<? extends Relation<?,?>> relationClazz) {
+	public DocumentedRelation recordRelation(final Class<? extends Relation> relationClazz) {
 		final DocumentedRelation documentedRelation = new DocumentedRelation(this, relationClazz);		
 
 		recordElement(documentedRelation.getDomainName(), documentedRelation);
@@ -348,7 +356,7 @@ public class KasperLibrary {
 	// --
 	
 	public List<DocumentedRelation> getSourceConceptRelations(final String conceptName) {
-		if (sourceConceptRelations.containsKey(Preconditions.checkNotNull(conceptName))) {
+		if (sourceConceptRelations.containsKey(checkNotNull(conceptName))) {
 			return Collections.unmodifiableList(sourceConceptRelations.get(conceptName));
 		}
 		return Collections.emptyList();
@@ -357,7 +365,7 @@ public class KasperLibrary {
 	// --
 	
 	public List<DocumentedRelation> getTargetConceptRelations(final String conceptName) {
-		if (targetConceptRelations.containsKey(Preconditions.checkNotNull(conceptName))) {
+		if (targetConceptRelations.containsKey(checkNotNull(conceptName))) {
 			return Collections.unmodifiableList(targetConceptRelations.get(conceptName));
 		}
 		return Collections.emptyList();
@@ -372,7 +380,7 @@ public class KasperLibrary {
 	// == LISTENERS ===========================================================
 	// ========================================================================
 	
-	public DocumentedListener recordListener(final Class<? extends EventListener<?>> listenerClazz) {
+	public DocumentedListener recordListener(final Class<? extends EventListener> listenerClazz) {
 		final DocumentedListener documentedListener = new DocumentedListener(this, listenerClazz);
 		recordElement(documentedListener.getDomainName(), documentedListener);
 		return documentedListener;
@@ -387,8 +395,8 @@ public class KasperLibrary {
 	// --
 	
 	public void registerListener(final DocumentedListener listener,final String eventName) {
-		Preconditions.checkNotNull(listener);
-		Preconditions.checkNotNull(eventName);
+		checkNotNull(listener);
+		checkNotNull(eventName);
 		
 		final List<DocumentedListener> listeners;
 		if (!this.eventListeners.containsKey(eventName)) {
@@ -415,7 +423,7 @@ public class KasperLibrary {
 	// == HANDLERS ============================================================
 	// ========================================================================
 	
-	public DocumentedHandler recordHandler(final Class<? extends CommandHandler<?>> handlerClazz) {
+	public DocumentedHandler recordHandler(final Class<? extends CommandHandler> handlerClazz) {
 		final DocumentedHandler documentedHandler = new DocumentedHandler(this, handlerClazz);
 		recordElement(documentedHandler.getDomainName(), documentedHandler);
 		return documentedHandler;
@@ -430,8 +438,8 @@ public class KasperLibrary {
 	// --
 	
 	public void registerHandler(final DocumentedHandler handler, final String commandName){
-		Preconditions.checkNotNull(handler);
-		Preconditions.checkNotNull(commandName);
+		checkNotNull(handler);
+		checkNotNull(commandName);
 		
 		this.commandHandlers.put(commandName, handler);
 	}
@@ -445,7 +453,7 @@ public class KasperLibrary {
 	// == QUERY SERVICES ======================================================
 	// ========================================================================
 	
-	public DocumentedQueryService recordQueryService(final Class<? extends QueryService<?,?>> queryServiceClazz) {
+	public DocumentedQueryService recordQueryService(final Class<? extends QueryService> queryServiceClazz) {
 		final DocumentedQueryService documentedQueryService = new DocumentedQueryService(this, queryServiceClazz);		
 		recordElement(documentedQueryService.getDomainName(), documentedQueryService);
 		return documentedQueryService;
@@ -468,8 +476,8 @@ public class KasperLibrary {
 	// ========================================================================
 	
 	public <T extends DocumentedNode> Optional<Map<String, T>> getEntities(final String domainName, final String entityPluralType) {
-		Preconditions.checkNotNull(domainName);
-		Preconditions.checkNotNull(entityPluralType);
+		checkNotNull(domainName);
+		checkNotNull(entityPluralType);
 		
 		@SuppressWarnings("unchecked") // Safe
 		final Class<T> entityClass = (Class<T>) this.pluralTypes.get(entityPluralType);
@@ -500,8 +508,8 @@ public class KasperLibrary {
 	
 	@SuppressWarnings("unchecked") // Checked
 	public <T extends DocumentedNode> Optional<Map<String, T>> getEntities(final String domainName, final Class<T> entityClass, final boolean returnAbsent) {
-		Preconditions.checkNotNull(domainName);
-		Preconditions.checkNotNull(entityClass);
+		checkNotNull(domainName);
+		checkNotNull(entityClass);
 		
 		if (this.domainEntities.containsKey(entityClass)) {
 			final Map<String, ?> entityMap = this.domainEntities.get(entityClass);
@@ -522,9 +530,9 @@ public class KasperLibrary {
 	// ------------------------------------------------------------------------
 	
 	public <T extends DocumentedDomainNode> Optional<T> getEntity(final String domainName, final String entityType, final String entityName) {
-		Preconditions.checkNotNull(domainName);
-		Preconditions.checkNotNull(entityType);
-		Preconditions.checkNotNull(entityName);
+		checkNotNull(domainName);
+		checkNotNull(entityType);
+		checkNotNull(entityName);
 		
 		@SuppressWarnings("unchecked") // Safe
 		final Class<T> entityClass = (Class<T>) this.simpleTypes.get(entityType);
@@ -534,9 +542,9 @@ public class KasperLibrary {
 	// --
 	
 	public <T extends DocumentedNode> Optional<T> getEntity(final String domainName, final Class<T> entityClass, final String entityName) {
-		Preconditions.checkNotNull(domainName);
-		Preconditions.checkNotNull(entityClass);
-		Preconditions.checkNotNull(entityName);
+		checkNotNull(domainName);
+		checkNotNull(entityClass);
+		checkNotNull(entityName);
 		
 		final Optional<Map<String, T>> entities = getEntities(domainName, entityClass);
 		if (!entities.isPresent()) {
@@ -593,7 +601,7 @@ public class KasperLibrary {
 	// --
 	
 	public <T extends DocumentedDomainNode> Map<String, DocumentedNode> simpleNodesFrom(final Map<String, T> nodes) {
-		Preconditions.checkNotNull(nodes);
+		checkNotNull(nodes);
 		
 		final TreeMap<String, DocumentedNode> simpleNodes = Maps.newTreeMap();
 		
@@ -610,7 +618,7 @@ public class KasperLibrary {
 	// --
 	
 	public <T extends DocumentedDomainNode> Map<String, DocumentedNode> simpleNodesFrom(final List<T> nodes) {
-		Preconditions.checkNotNull(nodes);
+		checkNotNull(nodes);
 		
 		final Map<String, DocumentedNode> simpleNodes = Maps.newTreeMap();
 		
@@ -625,12 +633,22 @@ public class KasperLibrary {
 	}	
 	
 	// --
-	
+
 	public <T extends DocumentedNode> DocumentedNode getSimpleNodeFrom(T node) {
 		if (DocumentedRelation.class.isAssignableFrom(node.getClass())) {
-			return new DocumentedSimpleRelation((DocumentedRelation) node);
+			return new DocumentedSimpleRelation(DocumentedRelation.class.cast(node));
 		}
 		return new DocumentedNode(node);
 	}
-	
+
+    // ------------------------------------------------------------------------
+
+    public void setResolverFactory(final ResolverFactory resolverFactory) {
+        this.resolverFactory = checkNotNull(resolverFactory);
+    }
+
+    public ResolverFactory getResolverFactory() {
+        return this.resolverFactory;
+    }
+
 }

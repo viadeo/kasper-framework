@@ -16,6 +16,6 @@ public interface QueryGateway {
 	 * @param query the query to be answered
 	 * @return the Data Transfer Object as an answer
 	 */
-    <PAYLOAD extends QueryPayload> QueryResult<PAYLOAD> retrieve(Query query, Context context) throws Exception;
+    <ANSWER extends QueryAnswer> QueryResult<ANSWER> retrieve(Query query, Context context) throws Exception;
 
 }

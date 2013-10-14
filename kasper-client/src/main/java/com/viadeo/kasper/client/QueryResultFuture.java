@@ -8,7 +8,7 @@ package com.viadeo.kasper.client;
 
 import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.ClientResponse;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 
 import java.util.concurrent.ExecutionException;
@@ -16,7 +16,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-class QueryResultFuture<P extends QueryPayload> extends ResultFuture<QueryResult<P>> {
+class QueryResultFuture<P extends QueryAnswer> extends ResultFuture<QueryResult<P>> {
 
     private final TypeToken<P> mapTo;
     private KasperClient kasperClient;

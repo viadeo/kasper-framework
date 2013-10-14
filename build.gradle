@@ -40,7 +40,7 @@ allprojects  {
   apply plugin: 'findbugs'
 
   group = 'com.viadeo.kasper'
-  version = '0.0.16.3'
+  version = '0.0.17-SNAPSHOT'
 
   idea {
     module {
@@ -166,12 +166,12 @@ subprojects {
 
       YAMMER_METRICS        : 'com.codahale.metrics:metrics-core:3.0.0',
 
-      AXON_TEST             : 'org.axonframework:axon-test:2.0.2',
+      AXON_TEST             : 'org.axonframework:axon-test:2.0.5',
       AXON_CORE             : [
                                 'javax.persistence:persistence-api:1.0',
-                                'org.axonframework:axon-core:2.0.2'
+                                'org.axonframework:axon-core:2.0.5'
                               ],
-      AXON_MONGO            : 'org.axonframework:axon-mongo:2.0.2',
+      AXON_MONGO            : 'org.axonframework:axon-mongo:2.0.5',
 
       JCACHE                : 'javax.cache:cache-api:0.5',
       JCACHE_EHCACHE        : 'net.sf.ehcache:ehcache-jcache:1.5.0-0.5',

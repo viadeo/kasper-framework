@@ -30,7 +30,7 @@ public class ConceptsDocumentationProcessor extends DocumentationProcessor<XKasp
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public void process(final Class<?> conceptClazz) {
+	public void process(final Class conceptClazz) {
 		LOGGER.info("Record on concept library : " + conceptClazz.getName());
 		
 		//- Register the domain to the locator --------------------------------

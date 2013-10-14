@@ -30,12 +30,17 @@ public interface DomainLocator {
     /**
      * Register a new commandHandler
      */
-    void registerHandler(CommandHandler<? extends Command> commandHandler);
+    void registerHandler(CommandHandler commandHandler);
 
     /**
      * Get all registered command handlers
      */
-    Collection<CommandHandler<? extends Command>> getHandlers();
+    Collection<CommandHandler> getHandlers();
+
+    /**
+     * @return an optional handler for the specified command class
+     */
+    Optional<CommandHandler> getHandlerForCommandClass(Class<? extends Command> commandClass);
 
 	/**
 	 * Register a new domain to the locator
@@ -107,13 +112,12 @@ public interface DomainLocator {
 	 */
 	<D extends Domain> Set<? extends Entity> getDomainEntities(Class<D> domain);
 
-
 	/**
 	 * Register a new domain repository
 	 * 
 	 * @param repository the repository to register
 	 */
-	void registerRepository(IRepository<?> repository);
+	void registerRepository(IRepository repository);
 
 	/**
 	 * Get the repository for an entity

@@ -7,11 +7,12 @@
 package com.viadeo.kasper.doc.configuration;
 
 import com.viadeo.kasper.core.boot.*;
+import com.viadeo.kasper.core.resolvers.ResolverFactory;
 import com.viadeo.kasper.doc.KasperLibrary;
 
 interface AutoDocumentationConfiguration {
 
-     KasperLibrary getKasperLibrary();
+     KasperLibrary getKasperLibrary(ResolverFactory resolverFactory);
 
      DomainsDocumentationProcessor getDomainsDocumentationProcessor( KasperLibrary library);
 

@@ -18,28 +18,28 @@ import org.slf4j.LoggerFactory;
 
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
-public class QueryServiceActor<Q extends Query, PAYLOAD extends QueryPayload> implements RequestActor<Q, QueryResult<PAYLOAD>> {
+public class QueryServiceActor<Q extends Query, ANSWER extends QueryAnswer> implements RequestActor<Q, QueryResult<ANSWER>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryServiceActor.class);
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
     private static final Timer METRICLASSTIMER = METRICS.timer(name(QueryServiceActor.class, "requests-time"));
 
-    private final QueryService<Q, PAYLOAD> queryService;
+    private final QueryService<Q, ANSWER> queryService;
 
     // ------------------------------------------------------------------------
 
-    public QueryServiceActor(final QueryService<Q, PAYLOAD> queryService) {
+    public QueryServiceActor(final QueryService<Q, ANSWER> queryService) {
         this.queryService = queryService;
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryResult<PAYLOAD> process(final Q query, final Context context,
-                                        final RequestActorsChain<Q, QueryResult<PAYLOAD>> chain) throws Exception {
+    public QueryResult<ANSWER> process(final Q query, final Context context,
+                                        final RequestActorsChain<Q, QueryResult<ANSWER>> chain) throws Exception {
         /* Call the service */
         Exception exception = null;
-        QueryResult<PAYLOAD> ret = null;
+        QueryResult<ANSWER> ret = null;
 
         final Timer.Context classTimer = METRICLASSTIMER.time();
         final Timer.Context timer = METRICS.timer(name(query.getClass(), "requests-time")).time();
@@ -54,7 +54,7 @@ public class QueryServiceActor<Q extends Query, PAYLOAD extends QueryPayload> im
 
             } catch (final UnsupportedOperationException e) {
                 if (AbstractQueryService.class.isAssignableFrom(queryService.getClass())) {
-                    ret = (QueryResult<PAYLOAD>) ((AbstractQueryService) queryService).retrieve(message.getQuery());
+                    ret = (QueryResult<ANSWER>) ((AbstractQueryService) queryService).retrieve(message.getQuery());
                 } else {
                     timer.close();
                     classTimer.close();

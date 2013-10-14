@@ -37,7 +37,7 @@ public class DomainsDocumentationProcessor extends DocumentationProcessor<XKaspe
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public void process(final Class<?> domainClazz) {
+	public void process(final Class domainClazz) {
 		LOGGER.info("Record on domain library : " + domainClazz.getName());
 
 		//- Register the domain to the locator --------------------------------

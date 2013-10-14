@@ -1,0 +1,109 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
+package com.viadeo.kasper.core.resolvers;
+
+import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
+import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.ddd.annotation.XKasperDomain;
+
+import java.util.concurrent.ConcurrentMap;
+
+/**
+ * Tool resolver for domain components
+ */
+public class DomainResolver implements Resolver<Domain> {
+
+    private static ConcurrentMap<Class, String> cacheDomains = Maps.newConcurrentMap();
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public String getTypeName() {
+        return "Domain";
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public String getLabel(final Class<? extends Domain> clazz) {
+        if (cacheDomains.containsKey(clazz)) {
+            return cacheDomains.get(clazz);
+        }
+
+        String domainName = null;
+
+        final XKasperDomain domainAnnotation = clazz.getAnnotation(XKasperDomain.class);
+        if ((null != domainAnnotation) && ! domainAnnotation.label().isEmpty()) {
+            domainName = domainAnnotation.label().replaceAll(" ", "");
+        }
+
+        if (null == domainName) {
+            domainName = clazz.getSimpleName().replace("Domain", "");
+        }
+
+        domainName = domainName.replaceAll(" ", "");
+
+        cacheDomains.put(clazz, domainName);
+        return domainName;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public String getDescription(final Class<? extends Domain> clazz) {
+        String description = "";
+
+        final XKasperDomain domainAnnotation = clazz.getAnnotation(XKasperDomain.class);
+        if ((null != domainAnnotation) && ! domainAnnotation.description().isEmpty()) {
+            description = domainAnnotation.description();
+        }
+        if (description.isEmpty()) {
+            description = String.format("The %s domain", this.getLabel(clazz));
+        }
+
+        return description;
+    }
+
+    public String getPrefix(final Class<? extends Domain> clazz) {
+        String prefix = "";
+
+        final XKasperDomain domainAnnotation = clazz.getAnnotation(XKasperDomain.class);
+        if ((null != domainAnnotation) && ! domainAnnotation.prefix().isEmpty()) {
+            prefix = domainAnnotation.prefix();
+        }
+        if (prefix.isEmpty()) {
+            prefix = "unk";
+        }
+
+        return prefix;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Domain> clazz) {
+        return Optional.<Class<? extends Domain>>of(clazz);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public String getDomainLabel(final Class<? extends Domain> clazz) {
+        return this.getLabel(clazz);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public void clearCache() {
+        cacheDomains.clear();
+    }
+
+}

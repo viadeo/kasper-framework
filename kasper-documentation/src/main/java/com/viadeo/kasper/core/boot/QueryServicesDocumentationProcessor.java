@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see QueryService
  */
-public class QueryServicesDocumentationProcessor extends DocumentationProcessor<XKasperQueryService, QueryService<?,?>> {
+public class QueryServicesDocumentationProcessor extends DocumentationProcessor<XKasperQueryService, QueryService> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueryServicesDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------
@@ -29,11 +29,11 @@ public class QueryServicesDocumentationProcessor extends DocumentationProcessor<
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public void process(final Class<?> queryServiceClazz) {
+	public void process(final Class queryServiceClazz) {
 		LOGGER.info("Record on query services library : " + queryServiceClazz.getName());
 		
 		//- Register the domain to the locator --------------------------------
-		getKasperLibrary().recordQueryService((Class<? extends QueryService<?,?>>) queryServiceClazz);
+		getKasperLibrary().recordQueryService((Class<? extends QueryService>) queryServiceClazz);
 	}
 
 }

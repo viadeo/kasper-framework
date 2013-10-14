@@ -11,15 +11,12 @@ import com.viadeo.kasper.event.impl.AbstractEvent;
 import com.viadeo.kasper.event.impl.AbstractEventListener;
 import junit.framework.Assert;
 import org.axonframework.domain.GenericEventMessage;
-import org.axonframework.unitofwork.DefaultUnitOfWork;
-import org.axonframework.unitofwork.UnitOfWork;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
-import org.mockito.internal.verification.Times;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

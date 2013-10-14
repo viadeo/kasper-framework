@@ -19,6 +19,7 @@ import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
@@ -52,7 +53,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         throw new KasperException(String.format(INSTANCE_NOT_YET_AVAILABLE, clazz.getSimpleName()));
     }
 
-    protected void ensureNotPresent(final Class<?> clazz) {
+    protected void ensureNotPresent(final Class clazz) {
         if (components.containsKey(clazz)) {
             throw new KasperException(String.format(INSTANCE_ALREADY_CREATED, clazz.getSimpleName()));
         }
@@ -128,12 +129,10 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         if (components.containsKey(KasperEventBus.class)) {
             return components.getInstance(KasperEventBus.class);
         } else {
-
             final KasperEventBus eventBus = new KasperEventBus();
 
             components.putInstance(KasperEventBus.class, eventBus);
             return eventBus;
-
         }
     }
 
@@ -210,29 +209,38 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public DomainLocator domainLocator() {
-        if (components.containsKey(DomainLocator.class)) {
-            return components.getInstance(DomainLocator.class);
-        } else {
-            final DomainLocator domainLocator = new DefaultDomainLocator();
+    public DomainLocator domainLocator(final CommandHandlerResolver commandHandlerResolver, final RepositoryResolver repositoryResolver) {
+        this.ensureNotPresent(DomainLocator.class);
 
-            components.putInstance(DomainLocator.class, domainLocator);
-            return domainLocator;
-        }
+        final DefaultDomainLocator domainLocator = new DefaultDomainLocator();
+        domainLocator.setCommandHandlerResolver(commandHandlerResolver);
+        domainLocator.setRepositoryResolver(repositoryResolver);
+
+        components.putInstance(DomainLocator.class, domainLocator);
+        return domainLocator;
+    }
+
+    @Override
+    public DomainLocator domainLocator() {
+        return this.getAvailableInstance(DomainLocator.class);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryServicesLocator queryServicesLocator() {
-        if (components.containsKey(QueryServicesLocator.class)) {
-            return components.getInstance(QueryServicesLocator.class);
-        } else {
-            final QueryServicesLocator queryServicesLocator = new DefaultQueryServicesLocator();
+    public QueryServicesLocator queryServicesLocator(final QueryServiceResolver queryServiceResolver) {
+        this.ensureNotPresent(QueryServicesLocator.class);
 
-            components.putInstance(QueryServicesLocator.class, queryServicesLocator);
-            return queryServicesLocator;
-        }
+        final DefaultQueryServicesLocator queryServicesLocator = new DefaultQueryServicesLocator();
+        queryServicesLocator.setQueryServiceResolver(queryServiceResolver);
+
+        components.putInstance(QueryServicesLocator.class, queryServicesLocator);
+        return queryServicesLocator;
+    }
+
+    @Override
+    public QueryServicesLocator queryServicesLocator() {
+        return this.getAvailableInstance(QueryServicesLocator.class);
     }
 
     // ------------------------------------------------------------------------
@@ -241,7 +249,8 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     public CommandHandlersProcessor commandHandlersProcessor(
             final CommandBus commandBus,
             final DomainLocator domainLocator,
-            final KasperEventBus eventBus
+            final KasperEventBus eventBus,
+            final CommandHandlerResolver commandHandlerResolver
     ) {
         this.ensureNotPresent(CommandHandlersProcessor.class);
 
@@ -249,6 +258,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         commandHandlersProcessor.setCommandBus(commandBus);
         commandHandlersProcessor.setDomainLocator(domainLocator);
         commandHandlersProcessor.setEventBus(eventBus);
+        commandHandlersProcessor.setCommandHandlerResolver(commandHandlerResolver);
 
         components.putInstance(CommandHandlersProcessor.class, commandHandlersProcessor);
         return commandHandlersProcessor;
@@ -367,6 +377,264 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     @Override
     public QueryGateway queryGateway() {
         return this.getAvailableInstance(QueryGateway.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public CommandHandlerResolver commandHandlerResolver(final DomainResolver domainResolver) {
+        this.ensureNotPresent(CommandHandlerResolver.class);
+
+        final CommandHandlerResolver commandHandlerResolver = new CommandHandlerResolver();
+        commandHandlerResolver.setDomainResolver(domainResolver);
+
+        components.putInstance(CommandHandlerResolver.class, commandHandlerResolver);
+        return commandHandlerResolver;
+    }
+
+    @Override
+    public CommandHandlerResolver commandHandlerResolver() {
+        return this.getAvailableInstance(CommandHandlerResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public DomainResolver domainResolver() {
+        if (components.containsKey(DomainResolver.class)) {
+            return components.getInstance(DomainResolver.class);
+        } else {
+            this.ensureNotPresent(DomainResolver.class);
+
+            final DomainResolver domainResolver = new DomainResolver();
+
+            components.putInstance(DomainResolver.class, domainResolver);
+            return domainResolver;
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public CommandResolver commandResolver(
+            final DomainLocator domainLocator,
+            final DomainResolver domainResolver,
+            final CommandHandlerResolver commandHandlerResolver
+    ) {
+        this.ensureNotPresent(CommandResolver.class);
+
+        final CommandResolver commandResolver = new CommandResolver();
+        commandResolver.setDomainLocator(domainLocator);
+        commandResolver.setCommandHandlerResolver(commandHandlerResolver);
+        commandResolver.setDomainResolver(domainResolver);
+
+        components.putInstance(CommandResolver.class, commandResolver);
+        return commandResolver;
+    }
+
+    @Override
+    public CommandResolver commandResolver() {
+        return this.getAvailableInstance(CommandResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public EventListenerResolver eventListenerResolver(
+            final DomainResolver domainResolver
+    ) {
+        this.ensureNotPresent(EventListenerResolver.class);
+
+        final EventListenerResolver eventListenerResolver = new EventListenerResolver();
+        eventListenerResolver.setDomainResolver(domainResolver);
+
+        components.putInstance(EventListenerResolver.class, eventListenerResolver);
+        return eventListenerResolver;
+    }
+
+    @Override
+    public EventListenerResolver eventListenerResolver() {
+        return this.getAvailableInstance(EventListenerResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public EventResolver eventResolver(final DomainResolver domainResolver) {
+        this.ensureNotPresent(EventResolver.class);
+
+        final EventResolver eventResolver = new EventResolver();
+        eventResolver.setDomainResolver(domainResolver);
+
+        components.putInstance(EventResolver.class, eventResolver);
+        return eventResolver;
+    }
+
+    @Override
+    public EventResolver eventResolver() {
+        return this.getAvailableInstance(EventResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public QueryResolver queryResolver(
+        final DomainResolver domainResolver,
+        final QueryServiceResolver queryServiceResolver,
+        final QueryServicesLocator queryServicesLocator
+    ) {
+        this.ensureNotPresent(QueryResolver.class);
+
+        final QueryResolver queryResolver = new QueryResolver();
+        queryResolver.setQueryServiceResolver(queryServiceResolver);
+        queryResolver.setQueryServicesLocator(queryServicesLocator);
+        queryResolver.setDomainResolver(domainResolver);
+
+        components.putInstance(QueryResolver.class, queryResolver);
+        return queryResolver;
+    }
+
+    @Override
+    public QueryResolver queryResolver() {
+        return this.getAvailableInstance(QueryResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public QueryServiceResolver queryServiceResolver(final DomainResolver domainResolver) {
+        this.ensureNotPresent(QueryServiceResolver.class);
+
+        final QueryServiceResolver queryServiceResolver = new QueryServiceResolver();
+        queryServiceResolver.setDomainResolver(domainResolver);
+
+        components.putInstance(QueryServiceResolver.class, queryServiceResolver);
+        return queryServiceResolver;
+    }
+
+    @Override
+    public QueryServiceResolver queryServiceResolver() {
+        return this.getAvailableInstance(QueryServiceResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public RepositoryResolver repositoryResolver(final EntityResolver entityResolver, final DomainResolver domainResolver) {
+        this.ensureNotPresent(RepositoryResolver.class);
+
+        final RepositoryResolver repositoryResolver = new RepositoryResolver();
+        repositoryResolver.setEntityResolver(entityResolver);
+        repositoryResolver.setDomainResolver(domainResolver);
+
+        components.putInstance(RepositoryResolver.class, repositoryResolver);
+        return repositoryResolver;
+    }
+
+    @Override
+    public RepositoryResolver repositoryResolver() {
+        return this.getAvailableInstance(RepositoryResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public EntityResolver entityResolver(
+            final ConceptResolver conceptResolver,
+            final RelationResolver relationResolver,
+            final DomainResolver domainResolver
+    ) {
+        this.ensureNotPresent(EntityResolver.class);
+
+        final EntityResolver entityResolver = new EntityResolver();
+        entityResolver.setConceptResolver(conceptResolver);
+        entityResolver.setRelationResolver(relationResolver);
+        entityResolver.setDomainResolver(domainResolver);
+
+        components.putInstance(EntityResolver.class, entityResolver);
+        return entityResolver;
+    }
+
+    @Override
+    public EntityResolver entityResolver() {
+        return this.getAvailableInstance(EntityResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public ConceptResolver conceptResolver(final DomainResolver domainResolver) {
+        this.ensureNotPresent(ConceptResolver.class);
+
+        final ConceptResolver conceptResolver = new ConceptResolver();
+        conceptResolver.setDomainResolver(domainResolver);
+
+        components.putInstance(ConceptResolver.class, conceptResolver);
+        return conceptResolver;
+    }
+
+    @Override
+    public ConceptResolver conceptResolver() {
+        return this.getAvailableInstance(ConceptResolver.class);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public RelationResolver relationResolver(final DomainResolver domainResolver, final ConceptResolver conceptResolver) {
+        this.ensureNotPresent(RelationResolver.class);
+
+        final RelationResolver relationResolver = new RelationResolver();
+        relationResolver.setDomainResolver(domainResolver);
+        relationResolver.setConceptResolver(conceptResolver);
+
+        components.putInstance(RelationResolver.class, relationResolver);
+        return relationResolver;
+    }
+
+    @Override
+    public RelationResolver relationResolver() {
+        return this.getAvailableInstance(RelationResolver.class);
+    }
+
+    // -----------------------------------------------------------------------
+
+    @Override
+    public ResolverFactory resolverFactory(
+            DomainResolver domainResolver,
+            CommandResolver commandResolver,
+            CommandHandlerResolver commandHandlerResolver,
+            EventListenerResolver eventListenerResolver,
+            QueryResolver queryResolver,
+            QueryServiceResolver queryServiceResolver,
+            RepositoryResolver repositoryResolver,
+            EntityResolver entityResolver,
+            ConceptResolver conceptResolver,
+            RelationResolver relationResolver,
+            EventResolver eventResolver
+    ) {
+        this.ensureNotPresent(ResolverFactory.class);
+
+        final ResolverFactory resolverFactory = new ResolverFactory();
+        resolverFactory.setDomainResolver(domainResolver);
+        resolverFactory.setCommandResolver(commandResolver);
+        resolverFactory.setCommandHandlerResolver(commandHandlerResolver);
+        resolverFactory.setEventListenerResolver(eventListenerResolver);
+        resolverFactory.setQueryResolver(queryResolver);
+        resolverFactory.setQueryServiceResolver(queryServiceResolver);
+        resolverFactory.setRepositoryResolver(repositoryResolver);
+        resolverFactory.setEntityResolver(entityResolver);
+        resolverFactory.setConceptResolver(conceptResolver);
+        resolverFactory.setRelationResolver(relationResolver);
+        resolverFactory.setEventResolver(eventResolver);
+
+        components.putInstance(ResolverFactory.class, resolverFactory);
+        return resolverFactory;
+    }
+
+    @Override
+    public ResolverFactory resolverFactory() {
+        return this.getAvailableInstance(ResolverFactory.class);
     }
 
     // ------------------------------------------------------------------------
