@@ -93,7 +93,7 @@ public class KasperClientBuilder {
      * @throws KasperException
      */
     public KasperClientBuilder queryBaseLocation(final String url) {
-        return queryBaseLocation(createURL(checkNotNull(url)));
+        return queryBaseLocation(createURL(getCanonicalUrl(url)));
     }
 
     /**
@@ -102,7 +102,18 @@ public class KasperClientBuilder {
      * @throws KasperException
      */
     public KasperClientBuilder commandBaseLocation(final String url) {
-        return commandBaseLocation(createURL(checkNotNull(url)));
+        return commandBaseLocation(createURL(getCanonicalUrl(url)));
+    }
+
+    /**
+     * Add a trailing "/" at the end of the base URL.
+     * Also check url is not null as a precondition
+     * In case of URL without trailing "/", the last part of it is removed by java.net.URL constructor otherwise
+     * @param url
+     * @return url plus trailing "/"
+     */
+    private String getCanonicalUrl(String url) {
+        return checkNotNull(url).endsWith("/") ? url : url + "/";
     }
 
     /**
