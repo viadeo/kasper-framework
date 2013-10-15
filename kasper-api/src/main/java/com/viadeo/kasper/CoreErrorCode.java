@@ -30,13 +30,36 @@ public enum CoreErrorCode {
     // ------------------------------------------------------------------------
 
     private int code;
+    private KasperError error;
 
     // ------------------------------------------------------------------------
 
     CoreErrorCode(final int code) {
-       this.code = code;
+        this.code = code;
+        this.error = new KasperError(String.valueOf(this.code), this.name());
     }
 
+    // ------------------------------------------------------------------------
+
+    public KasperError error() {
+        return this.error;
+    }
+
+    public KasperError.Builder builder() {
+        return KasperError.Builder.from(error);
+    }
+
+    public String string() {
+        return this.toString();
+    }
+
+    public int code() {
+        return this.code;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
     public String toString() {
         return new StringBuffer()
                     .append(String.format("[%04d]", this.code))

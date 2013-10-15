@@ -22,6 +22,7 @@ public class CoreErrorCodeTest {
 
         // Then
         assertEquals("[1003] - TOO_MANY_ENTRIES", codeString);
+        assertEquals(code.error().getClass(), KasperError.class);
     }
 
 }

@@ -7,8 +7,6 @@
 package com.viadeo.kasper;
 
 import com.google.common.base.Objects;
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.annotation.Immutable;
@@ -29,8 +27,8 @@ public final class KasperError implements Serializable, Immutable {
 
     public final static class Builder {
 
-        String code = null;
-        List<String> messages;
+        String code = CoreErrorCode.UNKNOWN_ERROR.string();
+        Collection<String> messages;
 
         // -----
 
@@ -39,31 +37,39 @@ public final class KasperError implements Serializable, Immutable {
         }
 
         public static Builder from(final String code) {
-            return from(null, code, new String[0]);
+            return from(code, new String[0]);
+        }
+
+        public static Builder from(final String code, final Collection<String> messages) {
+            return from(code, messages.toArray(new String[0]));
         }
 
         public static Builder from(final String code, final String...messages) {
-            return from(null, code, messages);
-        }
-
-        public static Builder from(final KasperError error) {
-            return from(checkNotNull(error), CoreErrorCode.UNKNOWN_ERROR, "Unknown error");
-        }
-
-        public static Builder from(final KasperError error, final CoreErrorCode code, final String...messages) {
-            return from(checkNotNull(error), code.toString(), messages);
-        }
-
-        public static Builder from(final KasperError error, final String code, final String...messages) {
             final Builder builder = new Builder();
             builder.code = checkNotNull(code);
             builder.messages = Lists.newArrayList(messages);
             return builder;
         }
 
+        public static Builder from(final KasperError error) {
+            checkNotNull(error);
+            return from(error.getCode(), error.getMessages());
+        }
+
+        public static Builder from(final CoreErrorCode code, final Collection<String> messages) {
+            return from(code.string(), messages.toArray(new String[0]));
+        }
+
+        public static Builder from(final CoreErrorCode code, final String...messages) {
+            return from(code.string(), messages);
+        }
+
         // -----
 
         public KasperError build() {
+            if (null == messages) {
+                this.messages = Lists.newArrayList();
+            }
             return new KasperError(code, messages);
         }
 
@@ -136,7 +142,7 @@ public final class KasperError implements Serializable, Immutable {
         return code;
     }
 
-    public List<String> getMessages() {
+    public Collection<String> getMessages() {
         return messages;
     }
     
@@ -153,7 +159,7 @@ public final class KasperError implements Serializable, Immutable {
 
     @Override
     public boolean equals(final Object obj) {
-        if (this == Preconditions.checkNotNull(obj)) {
+        if (this == checkNotNull(obj)) {
             return true;
         }
         if (!getClass().equals(obj.getClass())) {
