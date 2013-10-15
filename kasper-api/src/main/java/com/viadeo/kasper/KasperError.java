@@ -24,13 +24,11 @@ public final class KasperError implements Serializable, Immutable {
     
     private final String code;
     private final List<String> messages;
-    private final KasperError enclosed;
 
     // ------------------------------------------------------------------------
 
     public final static class Builder {
 
-        KasperError enclosed = null;
         String code = null;
         List<String> messages;
 
@@ -58,7 +56,6 @@ public final class KasperError implements Serializable, Immutable {
 
         public static Builder from(final KasperError error, final String code, final String...messages) {
             final Builder builder = new Builder();
-            builder.enclosed = error;
             builder.code = checkNotNull(code);
             builder.messages = Lists.newArrayList(messages);
             return builder;
@@ -67,7 +64,7 @@ public final class KasperError implements Serializable, Immutable {
         // -----
 
         public KasperError build() {
-            return new KasperError(enclosed, code, messages);
+            return new KasperError(code, messages);
         }
 
         // -----
@@ -79,11 +76,6 @@ public final class KasperError implements Serializable, Immutable {
 
         public Builder code(final CoreErrorCode code) {
             this.code = checkNotNull(code).toString();
-            return this;
-        }
-
-        public Builder enclosed(final KasperError enclosed) {
-            this.enclosed = checkNotNull(enclosed);
             return this;
         }
 
@@ -107,7 +99,6 @@ public final class KasperError implements Serializable, Immutable {
         }
 
         public Builder error(final KasperError error) {
-            this.enclosed = error.enclosed;
             this.code = error.code;
             this.messages = error.messages;
             return this;
@@ -118,35 +109,17 @@ public final class KasperError implements Serializable, Immutable {
     // ------------------------------------------------------------------------
 
     public KasperError(final String code, final String...messages) {
-        this.enclosed = null;
         this.code = checkNotNull(code);
         this.messages = ImmutableList.copyOf(checkNotNull(messages));
     }
 
-    public KasperError(final KasperError enclosed,final String code, final String...messages) {
-        this.enclosed= enclosed;
-        this.code = checkNotNull(code);
-        this.messages = ImmutableList.copyOf(checkNotNull(messages));
-    }
-    
     public KasperError(final String code, final Collection<String> messages) {
-        this.enclosed = null;
-        this.code = checkNotNull(code);
-        this.messages = ImmutableList.copyOf(checkNotNull(messages));
-    }
-
-    public KasperError(final KasperError enclosed, final String code, final Collection<String> messages) {
-        this.enclosed = enclosed;
         this.code = checkNotNull(code);
         this.messages = ImmutableList.copyOf(checkNotNull(messages));
     }
 
     public KasperError(final CoreErrorCode code, final String message) {
         this(checkNotNull(code).toString(), checkNotNull(message));
-    }
-
-    public KasperError(final KasperError enclosed, final CoreErrorCode code, final String message) {
-        this(enclosed,checkNotNull(code).toString(), checkNotNull(message));
     }
 
     public KasperError(final CoreErrorCode code, final String...messages) {
@@ -169,14 +142,6 @@ public final class KasperError implements Serializable, Immutable {
     
     public boolean hasMessage(String message) {
         return messages.contains(message);
-    }
-
-    public boolean isEnclosing() {
-        return (null != this.enclosed);
-    }
-
-    public KasperError getEnclosed() {
-        return this.enclosed;
     }
 
     // ------------------------------------------------------------------------
