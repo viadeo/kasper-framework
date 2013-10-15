@@ -55,7 +55,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 
         // Then
         assertEquals(Status.ERROR, result.getStatus());
-        assertNotNull(result.getError().getMessages().get(0));
+        assertNotNull(result.getError().getMessages().toArray()[0]);
     }
 
     // ------------------------------------------------------------------------
@@ -105,15 +105,17 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         // Then
         assertEquals(Status.ERROR, result.getStatus());
         assertEquals(command.getCode(), result.getError().getCode());
-        for (int i = 0; i < command.getMessages().size(); i++)
-            assertEquals(command.getMessages().get(i), result.getError().getMessages().get(i));
+        final String[] resultMessages = result.getError().getMessages().toArray(new String[0]);
+        for (int i = 0; i < command.getMessages().size(); i++) {
+            assertEquals(command.getMessages().get(i), resultMessages[i]);
+        }
     }
 
     @Test public void testJSR303Validation() {
         // Given
         final NeedValidationCommand command = new NeedValidationCommand();
-        command.setStr("");
-        command.setInnerObject(new InnerObject());
+        command.str = "";
+        command.innerObject = new InnerObject();
 
         // When
         final CommandResult result = client().send(command);
