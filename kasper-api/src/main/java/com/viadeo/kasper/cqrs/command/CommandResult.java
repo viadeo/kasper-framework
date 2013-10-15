@@ -122,7 +122,7 @@ public class CommandResult implements Serializable, Immutable {
         if (HTTPCommandResult.class.isAssignableFrom(this.getClass())) {
             return TransportMode.HTTP;
         }
-        throw new UnsupportedOperationException();
+        return TransportMode.UNKNOWN;
     }
 
     public HTTPCommandResult asHttp(){

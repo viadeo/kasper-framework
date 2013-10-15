@@ -7,5 +7,5 @@
 package com.viadeo.kasper.cqrs;
 
 public enum TransportMode {
-        HTTP
+        UNKNOWN, HTTP
 }

@@ -78,7 +78,7 @@ public class QueryResult<ANSWER extends QueryAnswer> implements Serializable, Im
          if (HTTPQueryResult.class.isAssignableFrom(this.getClass())) {
              return TransportMode.HTTP;
         }
-        throw new UnsupportedOperationException();
+        return TransportMode.UNKNOWN;
     }
 
     public HTTPQueryResult asHttp() {
