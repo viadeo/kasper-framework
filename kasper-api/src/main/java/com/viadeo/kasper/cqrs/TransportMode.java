@@ -1,15 +1,11 @@
 // ============================================================================
 //                 KASPER - Kasper is the treasure keeper
 //    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
-//            Viadeo Framework for effective CQRS/DDD architecture
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
+package com.viadeo.kasper.cqrs;
 
-description = 'KASPER CQRS : API'
-
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
-dependencies {
-    compile libraries.VALIDATION_API
-    compile libraries.JERSEY_CORE
+public enum TransportMode {
+        UNKNOWN, HTTP
 }

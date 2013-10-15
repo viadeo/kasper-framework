@@ -7,8 +7,10 @@
 package com.viadeo.kasper;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.annotation.Immutable;
 
 import java.io.Serializable;
@@ -25,16 +27,92 @@ public final class KasperError implements Serializable, Immutable {
 
     // ------------------------------------------------------------------------
 
-    public KasperError(final String code, final String message) {
-        this.code = checkNotNull(code);
-        this.messages = new ImmutableList.Builder<String>().add(checkNotNull(message)).build();
+    public final static class Builder {
+
+        String code = null;
+        List<String> messages;
+
+        // -----
+
+        public static Builder empty() {
+            return new Builder();
+        }
+
+        public static Builder from(final String code) {
+            return from(null, code, new String[0]);
+        }
+
+        public static Builder from(final String code, final String...messages) {
+            return from(null, code, messages);
+        }
+
+        public static Builder from(final KasperError error) {
+            return from(checkNotNull(error), CoreErrorCode.UNKNOWN_ERROR, "Unknown error");
+        }
+
+        public static Builder from(final KasperError error, final CoreErrorCode code, final String...messages) {
+            return from(checkNotNull(error), code.toString(), messages);
+        }
+
+        public static Builder from(final KasperError error, final String code, final String...messages) {
+            final Builder builder = new Builder();
+            builder.code = checkNotNull(code);
+            builder.messages = Lists.newArrayList(messages);
+            return builder;
+        }
+
+        // -----
+
+        public KasperError build() {
+            return new KasperError(code, messages);
+        }
+
+        // -----
+
+        public Builder code(final String code) {
+            this.code = checkNotNull(code);
+            return this;
+        }
+
+        public Builder code(final CoreErrorCode code) {
+            this.code = checkNotNull(code).toString();
+            return this;
+        }
+
+        public Builder message(final String message) {
+            checkNotNull(message);
+            if (null == this.messages) {
+                this.messages = Lists.newArrayList();
+            }
+            this.messages.add(message);
+            return this;
+        }
+
+        public Builder messages(final Collection<String> messages) {
+            this.messages = ImmutableList.copyOf(checkNotNull(messages));
+            return this;
+        }
+
+        public Builder messages(final String...messages) {
+            this.messages = ImmutableList.copyOf(messages);
+            return this;
+        }
+
+        public Builder error(final KasperError error) {
+            this.code = error.code;
+            this.messages = error.messages;
+            return this;
+        }
+
     }
+
+    // ------------------------------------------------------------------------
 
     public KasperError(final String code, final String...messages) {
         this.code = checkNotNull(code);
         this.messages = ImmutableList.copyOf(checkNotNull(messages));
     }
-    
+
     public KasperError(final String code, final Collection<String> messages) {
         this.code = checkNotNull(code);
         this.messages = ImmutableList.copyOf(checkNotNull(messages));
