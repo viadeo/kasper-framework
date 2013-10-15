@@ -8,6 +8,7 @@ package com.viadeo.kasper.exposition;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.core.locators.QueryServicesLocator;
@@ -20,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.springframework.context.ApplicationContext;
 
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -188,6 +190,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         // Then
         assertTrue(actual.isError());
         assertEquals(query.aValue, actual.getError().getCode());
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR, actual.asHttp().getHTTPStatus());
     }
 
     // ------------------------------------------------------------------------
@@ -218,7 +221,9 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         final QueryResult<SomeCollectionResult> actual = client().query(query, SomeCollectionResult.class);
        
         // Then
+        assertTrue(actual.isError());
         assertEquals(query.getAValue(), actual.getError().getCode());
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR, actual.asHttp().getHTTPStatus());
         for (int i = 0; i < query.getErrorCodes().size(); i++) {
             assertEquals(query.getErrorCodes().get(i), actual.getError().getMessages().get(i));
         }

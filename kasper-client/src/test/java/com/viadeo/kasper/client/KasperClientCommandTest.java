@@ -13,10 +13,13 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
+import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResult;
 import com.viadeo.kasper.cqrs.command.CommandResult.Status;
+import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -27,6 +30,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
@@ -213,4 +217,43 @@ public class KasperClientCommandTest extends JerseyTest {
         assertEquals(Status.OK, result.getValue().getStatus());
     }
 
+    @Test
+    public void send_withAnswerNot200_shouldFillErrorsInResult() {
+        // Given
+        final CreateMemberCommand command = new CreateMemberCommand(Status.REFUSED);
+        try {
+            client = new KasperClientBuilder().commandBaseLocation(new URL("http://localhost:" + port + "/404/")).create();
+        } catch (MalformedURLException e) {
+            Assert.fail("Shouldn't fail here");
+        }
+
+        // When
+        final CommandResult result = client.send(command);
+
+        // Then
+        Assert.assertNotNull(result);
+        Assert.assertNotNull(result.getError());
+        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), result.getError().getCode());
+        Assert.assertEquals(Response.Status.NOT_FOUND, result.asHttp().getHTTPStatus());
+        Assert.assertEquals(TransportMode.HTTP, result.getTransportMode());
+    }
+
+    @Test
+    public void sendAsync_withAnswerNot200_shouldFillErrorsInResult() throws MalformedURLException, InterruptedException,
+            ExecutionException {
+
+        // Given
+        client = new KasperClientBuilder().commandBaseLocation(new URL("http://localhost:" + port + "/404/")).create();
+        final CreateMemberCommand command = new CreateMemberCommand(Status.ERROR);
+
+        // When
+        final CommandResult result = client.sendAsync(command).get();
+
+        // Then
+        Assert.assertNotNull(result);
+        Assert.assertNotNull(result.getError());
+        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), result.getError().getCode());
+        Assert.assertEquals(Response.Status.NOT_FOUND, result.asHttp().getHTTPStatus());
+        Assert.assertEquals(TransportMode.HTTP, result.getTransportMode());
+    }
 }
