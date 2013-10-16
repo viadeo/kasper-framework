@@ -25,7 +25,7 @@ public @interface XKasperConcept {
 	/**
 	 * @return the concept's label
 	 */
-	String label();
+	String label() default "";
 	
 	/**
 	 * @return the concept's description

@@ -60,13 +60,13 @@ public abstract class AbstractQueryCollectionAnswer<RES> implements CollectionQu
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends AbstractQueryCollectionAnswer> P withList(final Collection<RES> list) {
+    public <P extends AbstractQueryCollectionAnswer<RES>> P withList(final Collection<RES> list) {
         this.setList(list);
         return (P) this;
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends AbstractQueryCollectionAnswer> P withListAsIterator(final Iterator<RES> iterator) {
+    public <P extends AbstractQueryCollectionAnswer<RES>> P withListAsIterator(final Iterator<RES> iterator) {
         this.setListAsIterator(iterator);
         return (P) this;
     }

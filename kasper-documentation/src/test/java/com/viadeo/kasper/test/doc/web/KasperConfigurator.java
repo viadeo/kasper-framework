@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.test.doc.web;
 
-import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
-import com.viadeo.kasper.client.platform.configuration.PlatformFactory;
+import com.viadeo.kasper.platform.configuration.PlatformConfiguration;
+import com.viadeo.kasper.platform.configuration.PlatformFactory;
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.doc.configuration.DefaultAutoDocumentationConfiguration;

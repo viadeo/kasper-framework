@@ -1,4 +1,4 @@
-package com.viadeo.kasper.client.platform.components.eventbus;
+package com.viadeo.kasper.platform.components.eventbus;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static com.mongodb.util.MyAsserts.assertEquals;
-import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus.Policy;
+import static com.viadeo.kasper.platform.components.eventbus.KasperEventBus.Policy;
 import static org.mockito.Mockito.spy;
 
 public class KasperEventBusTest {

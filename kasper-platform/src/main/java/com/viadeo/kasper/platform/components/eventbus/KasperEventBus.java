@@ -5,7 +5,7 @@
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-package com.viadeo.kasper.client.platform.components.eventbus;
+package com.viadeo.kasper.platform.components.eventbus;
 
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;

@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.web;
 
-import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.platform.Platform;
 import com.viadeo.kasper.exception.KasperException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;

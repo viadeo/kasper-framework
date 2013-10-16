@@ -4,16 +4,16 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.configuration;
+package com.viadeo.kasper.test.platform;
 
-import org.junit.Test;
+public interface IPlatformFixture {
 
-public class PlatformFactoryTest {
+    GivenClause given();
 
-    @Test
-    public void platformShouldBeBuiltByFactoryWithoutError() {
-       final PlatformFactory factory = new PlatformFactory();
-       factory.getPlatform();
-    }
+    WhenClause when();
+
+    ThenClause then();
+
+    ThenClause ensure();
 
 }
