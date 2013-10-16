@@ -225,7 +225,7 @@ public class HttpQueryExposer extends HttpExposer {
             try {
                 resp.flushBuffer();
             } catch (final IOException e) {
-                LOGGER.error("Error when trying to flush output buffer", e);
+                LOGGER.warn("Error when trying to flush output buffer", e);
             }
         }
     }
@@ -326,7 +326,7 @@ public class HttpQueryExposer extends HttpExposer {
             try {
                 resp.flushBuffer();
             } catch (final IOException e) {
-                LOGGER.error("Error when trying to flush output buffer", e);
+                LOGGER.warn("Error when trying to flush output buffer", e);
             }
         }
 
@@ -361,7 +361,7 @@ public class HttpQueryExposer extends HttpExposer {
         try {
             resp.flushBuffer();
         } catch (final IOException e) {
-            LOGGER.error("Error when trying to flush output buffer", e);
+            LOGGER.warn("Error when trying to flush output buffer", e);
         }
 
         /* Log the request */
