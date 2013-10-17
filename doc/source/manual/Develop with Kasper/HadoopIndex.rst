@@ -251,7 +251,7 @@ by their default values :
 Known bugs and limitations
 --------------------------
 
-- TODO: Seems to have too many dependencies in the resulting debian package, generating a quite heavy archive
+- TODO: Seems to have too many dependencies in the responseing debian package, generating a quite heavy archive
 - Compiled against a specific version of Hadoop ecosystem (**2.0.0-mr1-cdh4.3.0**)
 - Required to compile hive 0.13.0-SNAPSHOT (as 0.13.0-VIADEO-SNAPSHOT) and hive-test 4.0.0 (as 4.0.1-VIADEO-SNAPSHOT) in order to correctly manage AVRO files and schemas
     - https://github.com/viadeo/hive_test

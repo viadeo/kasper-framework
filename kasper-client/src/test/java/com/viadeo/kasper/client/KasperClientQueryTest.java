@@ -205,10 +205,10 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When
-        final QueryResponse<MemberResult> result = client.query(query, MemberResult.class);
+        final QueryResponse<MemberResult> response = client.query(query, MemberResult.class);
 
         // Then
-        checkRoundTrip(query, result);
+        checkRoundTrip(query, response);
     }
 
     @Test
@@ -218,10 +218,10 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When 
-        final QueryResponse<MemberResult> result = client.queryAsync(query, MemberResult.class).get();
+        final QueryResponse<MemberResult> response = client.queryAsync(query, MemberResult.class).get();
 
         // Then
-        checkRoundTrip(query, result);
+        checkRoundTrip(query, response);
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -233,20 +233,20 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
         final Callback<QueryResponse<MemberResult>> callback = spy(new Callback<QueryResponse<MemberResult>>() {
             @Override
-            public void done(QueryResponse<MemberResult> result) {
+            public void done(QueryResponse<MemberResult> response) {
                 latch.countDown();
             }
         });
         @SuppressWarnings("rawtypes")
-        final ArgumentCaptor<QueryResponse> result = ArgumentCaptor.forClass(QueryResponse.class);
+        final ArgumentCaptor<QueryResponse> response = ArgumentCaptor.forClass(QueryResponse.class);
 
         // When
         client.queryAsync(query, MemberResult.class, callback);
 
         // Then
         latch.await(5, TimeUnit.SECONDS);
-        verify(callback).done(result.capture());
-        checkRoundTrip(query, result.getValue());
+        verify(callback).done(response.capture());
+        checkRoundTrip(query, response.getValue());
     }
 
     @Test public void testQueryUsingPost() throws MalformedURLException {
@@ -258,10 +258,10 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When
-        final QueryResponse<MemberResult> result = client.query(query, MemberResult.class);
+        final QueryResponse<MemberResult> response = client.query(query, MemberResult.class);
 
         // Then
-        checkRoundTrip(query, result);
+        checkRoundTrip(query, response);
     }
 
     @Test public void query_withResultNot200_shouldFillErrorsInResponse() {
@@ -277,12 +277,12 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When
-        final QueryResponse<MemberResult> result = client.query(query, MemberResult.class);
+        final QueryResponse<MemberResult> response = client.query(query, MemberResult.class);
 
         // Then
-        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), result.getError().getCode());
-        Assert.assertEquals(Response.Status.NOT_FOUND, result.asHttp().getHTTPStatus());
-        Assert.assertEquals(TransportMode.HTTP, result.getTransportMode());
+        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), response.getError().getCode());
+        Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
+        Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }
 
     @Test public void queryAsync_withResultNot200_shouldFillErrorsInResponse() throws MalformedURLException, InterruptedException, ExecutionException {
@@ -293,11 +293,11 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When
-        final QueryResponse<MemberResult> result = client.queryAsync(query, MemberResult.class).get();
+        final QueryResponse<MemberResult> response = client.queryAsync(query, MemberResult.class).get();
 
         // Then
-        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), result.getError().getCode());
-        Assert.assertEquals(Response.Status.NOT_FOUND, result.asHttp().getHTTPStatus());
-        Assert.assertEquals(TransportMode.HTTP, result.getTransportMode());
+        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), response.getError().getCode());
+        Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
+        Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }
 }

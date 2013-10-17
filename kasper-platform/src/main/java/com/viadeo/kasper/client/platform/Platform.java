@@ -114,12 +114,12 @@ public interface Platform {
 	QueryGateway getQueryGateway();
 
     /**
-     * Sends a query to the platform, retrieving a result for this query
+     * Sends a query to the platform, retrieving a response for this query
      *
      * @param query the query to be processed by the platform
      * @param context the query context
      *
-     * @return the result generated after processing of the query
+     * @return the response generated after processing of the query
      * @throws Exception when something bad occurs
      */
     <ANSWER extends QueryResult> QueryResponse<ANSWER> retrieve(Query query, Context context) throws Exception;

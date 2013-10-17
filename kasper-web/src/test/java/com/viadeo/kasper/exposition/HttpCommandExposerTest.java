@@ -51,11 +51,11 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         final Command unknownCommand = new Command() {};
 
         // When
-        final CommandResponse result = client().send(unknownCommand);
+        final CommandResponse response = client().send(unknownCommand);
 
         // Then
-        assertEquals(Status.ERROR, result.getStatus());
-        assertNotNull(result.getError().getMessages().toArray()[0]);
+        assertEquals(Status.ERROR, response.getStatus());
+        assertNotNull(response.getError().getMessages().toArray()[0]);
     }
 
     // ------------------------------------------------------------------------
@@ -67,10 +67,10 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.name = "foo bar";
 
         // When
-        final CommandResponse result = client().send(command);
+        final CommandResponse response = client().send(command);
 
         // Then
-        assertEquals(Status.OK, result.getStatus());
+        assertEquals(Status.OK, response.getStatus());
         assertEquals(command.name, CreateAccountCommandHandler.createAccountCommandName);
     }
 
@@ -84,10 +84,10 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.throwException = true;
 
         // When
-        final CommandResponse result = client().send(command);
+        final CommandResponse response = client().send(command);
 
         // Then
-        assertEquals(Status.ERROR, result.getStatus());
+        assertEquals(Status.ERROR, response.getStatus());
     }
 
     // ------------------------------------------------------------------------
@@ -100,14 +100,14 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.messages = ImmutableList.of("a", "aa", "aaa");
 
         // When
-        final CommandResponse result = client().send(command);
+        final CommandResponse response = client().send(command);
 
         // Then
-        assertEquals(Status.ERROR, result.getStatus());
-        assertEquals(command.getCode(), result.getError().getCode());
-        final String[] resultMessages = result.getError().getMessages().toArray(new String[0]);
+        assertEquals(Status.ERROR, response.getStatus());
+        assertEquals(command.getCode(), response.getError().getCode());
+        final String[] responseMessages = response.getError().getMessages().toArray(new String[0]);
         for (int i = 0; i < command.getMessages().size(); i++) {
-            assertEquals(command.getMessages().get(i), resultMessages[i]);
+            assertEquals(command.getMessages().get(i), responseMessages[i]);
         }
     }
 
@@ -118,15 +118,15 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.innerObject = new InnerObject();
 
         // When
-        final CommandResponse result = client().send(command);
+        final CommandResponse response = client().send(command);
 
         // Then
-        assertTrue(result.isError());
+        assertTrue(response.isError());
         final List<String> errorStrings = new ArrayList<String>() {{
             add("innerObject.age : must be greater than or equal to 2");
             add("str : size must be between 1 and 2147483647");
         }};
-        for (final String errorMessage : result.getError().getMessages()) {
+        for (final String errorMessage : response.getError().getMessages()) {
             if (!errorStrings.contains(errorMessage)) {
                 fail(String.format("Cannot find expected validation message : %s", errorMessage));
             }

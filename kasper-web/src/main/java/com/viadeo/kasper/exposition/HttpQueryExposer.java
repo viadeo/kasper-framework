@@ -197,12 +197,12 @@ public class HttpQueryExposer extends HttpExposer {
             final String queryName = resourceName(req.getRequestURI());
             final Query query = parseQuery(queryMapper.toQueryMap(req, resp), queryName, req, resp);
 
-            QueryResponse result = null;
+            QueryResponse response = null;
             if (!resp.isCommitted()) {
                 final Timer.Context queryHandleTimer = METRICS.timer(name(query.getClass(), "requests-handle-time")).time();
                 final Timer.Context classHandleTimer = METRICLASSHANDLETIMER.time();
 
-                result = handleQuery(queryName, query, req, resp, requestCorrelationUUID );
+                response = handleQuery(queryName, query, req, resp, requestCorrelationUUID );
 
                 queryHandleTimer.stop();
                 classHandleTimer.stop();
@@ -210,7 +210,7 @@ public class HttpQueryExposer extends HttpExposer {
 
             /* need to check again as something might go wrong in handleQuery */
             if (!resp.isCommitted()) {
-                sendResponse(queryName, result, req, resp);
+                sendResponse(queryName, response, req, resp);
             }
 
         } catch (final Throwable t) {
@@ -273,7 +273,7 @@ public class HttpQueryExposer extends HttpExposer {
                                          final HttpServletResponse resp, final UUID requestCorrelationUUID)
             throws IOException {
 
-        QueryResponse result = null;
+        QueryResponse response = null;
 
          /* TODO: handle context from request */
         final Context context = new DefaultContextBuilder().build();
@@ -283,8 +283,8 @@ public class HttpQueryExposer extends HttpExposer {
 
         try {
 
-            result = queryGateway.retrieve(query, context);
-            checkNotNull(result);
+            response = queryGateway.retrieve(query, context);
+            checkNotNull(response);
 
         } catch (final Throwable e) {
             /*
@@ -296,20 +296,20 @@ public class HttpQueryExposer extends HttpExposer {
                       req, resp, e);
         }
 
-        return result;
+        return response;
     }
 
     // ------------------------------------------------------------------------
 
     // can not use sendError it is forcing response to text/html
-    protected void sendResponse(final String queryName, final QueryResponse result, final HttpServletRequest req,
+    protected void sendResponse(final String queryName, final QueryResponse response, final HttpServletRequest req,
                               final HttpServletResponse resp)
             throws IOException {
 
         final ObjectWriter writer = mapper.writer();
 
         final int status;
-        if (result.isError()) {
+        if (response.isError()) {
             status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         } else {
             status = HttpServletResponse.SC_OK;
@@ -318,14 +318,14 @@ public class HttpQueryExposer extends HttpExposer {
         try {
 
             resp.setStatus(status);
-            writer.writeValue(resp.getOutputStream(), result);
+            writer.writeValue(resp.getOutputStream(), response);
 
             /* Log the request */
             QUERY_LOGGER.info("HTTP Response {} '{}' : {}", req.getMethod(), req.getRequestURI(), status);
 
         } catch (final Throwable t) {
             sendError(SC_INTERNAL_SERVER_ERROR,
-                      String.format("ERROR sending Response [%s] for query [%s]", result.getClass().getSimpleName(),queryName),
+                      String.format("ERROR sending Response [%s] for query [%s]", response.getClass().getSimpleName(),queryName),
                       req, resp, t);
         } finally {
             try {

@@ -26,7 +26,7 @@ So a domain :
 * offers an API composed of :
     * the **commands** it can handle
     * the **queries** it can answer
-    * the **query results** it can send
+    * the **query responses** it can send
     * the **events** it will emit
 * cannot have access to any part of another domain other than its api components (C/Q/E)
 * represent an atomic functional area, generally handled by only one close team

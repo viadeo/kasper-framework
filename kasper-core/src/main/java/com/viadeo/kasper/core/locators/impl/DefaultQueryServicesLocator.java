@@ -285,10 +285,10 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
         final Collection<QueryFilter> queryFilters =
                 Lists.newArrayList(Iterables.filter(serviceFilters, QueryFilter.class));
 
-        final Collection<ResponseFilter> resultFilters =
+        final Collection<ResponseFilter> responseFilters =
                 Lists.newArrayList(Iterables.filter(serviceFilters, ResponseFilter.class));
 
-        return new QueryFiltersActor(queryFilters, resultFilters);
+        return new QueryFiltersActor(queryFilters, responseFilters);
     }
 
     @Override

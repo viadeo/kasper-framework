@@ -162,7 +162,7 @@ public class HttpCommandExposer extends HttpExposer {
             return;
         }
 
-        CommandResponse result = null;
+        CommandResponse response = null;
         JsonParser parser = null;
 
         try {
@@ -181,7 +181,7 @@ public class HttpCommandExposer extends HttpExposer {
 
             // FIXME 1 Use context from request
             // FIXME 2 Does it make sense to have async commands here? In any
-            // FIXME 2 case the user is expecting a result success or failure
+            // FIXME 2 case the user is expecting a response success or failure
             final Context context = new DefaultContextBuilder().build();
 
             if (AbstractContext.class.isAssignableFrom(context.getClass())) {
@@ -192,12 +192,11 @@ public class HttpCommandExposer extends HttpExposer {
             final Timer.Context commandHandleTime = METRICS.timer(name(command.getClass(), "requests-handle-time")).time();
             final Timer.Context classHandleTime = METRICLASSHANDLETIMER.time();
 
-            result = commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
+            response = commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
+            checkNotNull(response);
 
             commandHandleTime.stop();
             classHandleTime.stop();
-
-            checkNotNull(result);
 
         } catch (final JSR303ViolationException validationException) {
 
@@ -243,14 +242,14 @@ public class HttpCommandExposer extends HttpExposer {
             METRICLASSREQUESTS.mark();
         }
 
-        if (null != result) {
-            sendResponse(result, req, resp, commandClass);
+        if (null != response) {
+            sendResponse(response, req, resp, commandClass);
         }
     }
 
     // ------------------------------------------------------------------------
 
-    protected void sendResponse(final CommandResponse result,
+    protected void sendResponse(final CommandResponse response,
                                 final HttpServletRequest req, final HttpServletResponse resp,
                                 final Class<? extends Command> commandClass)
             throws IOException {
@@ -259,7 +258,7 @@ public class HttpCommandExposer extends HttpExposer {
         JsonGenerator generator = null;
 
         final int status;
-        if (result.isError()) {
+        if (response.isError()) {
             status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         } else {
             status = HttpServletResponse.SC_OK;
@@ -270,11 +269,11 @@ public class HttpCommandExposer extends HttpExposer {
             /* try writing the response */
             generator = writer.getJsonFactory().createJsonGenerator(resp.getOutputStream());
             resp.setStatus(status);
-            writer.writeValue(generator, result);
+            writer.writeValue(generator, response);
 
         } catch (final JsonGenerationException | JsonMappingException e) {
 
-            this.internalCommandError(req, resp, commandClass, result, e);
+            this.internalCommandError(req, resp, commandClass, response, e);
 
         } finally {
 
@@ -289,12 +288,12 @@ public class HttpCommandExposer extends HttpExposer {
     }
 
     private void internalCommandError(final HttpServletRequest req, final HttpServletResponse resp,
-                                      final Class<? extends Command> commandClass, final CommandResponse result,
+                                      final Class<? extends Command> commandClass, final CommandResponse response,
                                       final Exception e)
             throws IOException {
          this.sendError(req, resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
-                  String.format("Error outputting result to JSON for command [%s] and result [%s]error = %s",
-                          commandClass.getSimpleName(), result, e)
+                  String.format("Error outputting response to JSON for command [%s] and response [%s]error = %s",
+                          commandClass.getSimpleName(), response, e)
          );
     }
 
@@ -316,7 +315,7 @@ public class HttpCommandExposer extends HttpExposer {
         /* set an error status and a message */
         response.setStatus(status, checkNotNull(reason));
 
-        /* write also into the body the result as json */
+        /* write also into the body the response as json */
         mapper.writer().writeValue(response.getOutputStream(),
                                    CommandResponse.error(
                                           new KasperError(CoreErrorCode.UNKNOWN_ERROR, reason)

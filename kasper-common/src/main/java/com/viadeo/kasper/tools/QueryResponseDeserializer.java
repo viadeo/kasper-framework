@@ -22,10 +22,10 @@ import java.util.List;
 public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class); 
 
-    private final JavaType resultType;
+    private final JavaType responseType;
 
-    QueryResponseDeserializer(final JavaType resultType) {
-        this.resultType = resultType;
+    QueryResponseDeserializer(final JavaType responseType) {
+        this.responseType = responseType;
     }
 
     @Override
@@ -50,7 +50,7 @@ public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
             return QueryResponse.of(new KasperError(globalCode, messages));
         } else {
             // not very efficient but will be fine for now
-            return QueryResponse.of((QueryResult) ((ObjectMapper) jp.getCodec()).convertValue(root, resultType));
+            return QueryResponse.of((QueryResult) ((ObjectMapper) jp.getCodec()).convertValue(root, responseType));
         }
     }
 

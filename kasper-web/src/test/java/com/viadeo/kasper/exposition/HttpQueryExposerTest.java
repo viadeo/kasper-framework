@@ -45,10 +45,10 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         public QueryResponse<SomeCollectionResponse> retrieve(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
             final SomeCollectionResponse list = new SomeCollectionResponse();
-            final SomeResponse result = new SomeResponse();
+            final SomeResponse response = new SomeResponse();
 
-            result.setQuery(q);
-            list.setList(Arrays.asList(result));
+            response.setQuery(q);
+            list.setList(Arrays.asList(response));
 
             return QueryResponse.of(list);
         }
@@ -128,9 +128,9 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
                 return QueryResponse.of(new KasperError(q.aValue, messages));
             }
 
-            final SomeResponse result = new SomeResponse();
-            result.setQuery(q);
-            return QueryResponse.of(result);
+            final SomeResponse response = new SomeResponse();
+            response.setQuery(q);
+            return QueryResponse.of(response);
         }
     }
 
@@ -167,12 +167,12 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         query.intArray = new int[] { 1, 2, 3 };
 
         // When
-        final QueryResponse<SomeResponse> result = client().query(query, SomeResponse.class);
+        final QueryResponse<SomeResponse> response = client().query(query, SomeResponse.class);
 
         // Then
-        assertEquals(query.aValue, result.getResult().query.aValue);
-        assertEquals(query.doThrowSomeException, result.getResult().query.doThrowSomeException);
-        assertArrayEquals(query.intArray, result.getResult().query.intArray);
+        assertEquals(query.aValue, response.getResult().query.aValue);
+        assertEquals(query.doThrowSomeException, response.getResult().query.doThrowSomeException);
+        assertArrayEquals(query.intArray, response.getResult().query.intArray);
     }
 
     // ------------------------------------------------------------------------
@@ -201,10 +201,10 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         final SomeCollectionQuery query = new SomeCollectionQuery();
 
         // When
-        final QueryResponse<SomeCollectionResponse> result = client().query(query, SomeCollectionResponse.class);
+        final QueryResponse<SomeCollectionResponse> response = client().query(query, SomeCollectionResponse.class);
 
         // Then
-        assertEquals(1, result.getResult().getCount());
+        assertEquals(1, response.getResult().getCount());
     }
 
     // ------------------------------------------------------------------------

@@ -30,14 +30,14 @@ public class QueryValidationActorTest {
         final QueryValidationActor<QueryToValidate, QueryResult> actor = new QueryValidationActor<>(Validation.buildDefaultValidatorFactory());
 
         // When
-        final QueryResponse<QueryResult> result = actor.process(
+        final QueryResponse<QueryResult> response = actor.process(
                 new QueryToValidate(),
                 new DefaultContextBuilder().build(),
                 RequestActorsChain.<QueryToValidate, QueryResponse<QueryResult>>tail());
 
         // Then
-        assertTrue(result.isError());
-        assertEquals("notNullField : may not be null", result.getError().getMessages().toArray()[0]);
+        assertTrue(response.isError());
+        assertEquals("notNullField : may not be null", response.getError().getMessages().toArray()[0]);
     }
 
     @Data

@@ -71,8 +71,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *      KasperClient client = new KasperClient();
  *      
  *      client.sendAsync(someCommand, new ICallback&lt;ICommandResponse&gt;() {
- *          public void done(final ICommandResponse result) {
- *              // do something smart with my result
+ *          public void done(final ICommandResponse response) {
+ *              // do something smart with my response
  *          }
  *      });
  *      
@@ -83,7 +83,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *      // do some other work while the command is being processed
  *      ...
  *      
- *      // block until the result is obtained
+ *      // block until the response is obtained
  *      ICommandResponse commandResponse = futureCommandResponse.get();
  * </pre>
  * 
@@ -106,8 +106,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * platform to implement a custom
  * {@link com.viadeo.kasper.query.exposition.TypeAdapter} for that specific
  * type.</li>
- * <li>At the moment the Response to which the result should be mapped is free,
- * but take care it must match the resulting stream. This will probably change
+ * <li>At the moment the Response to which the response should be mapped is free,
+ * but take care it must match the responseing stream. This will probably change
  * in the future by making IQuery parameterized with a Response. Thus query
  * methods signature could change.</li>
  * </ul>
@@ -213,11 +213,11 @@ public class KasperClient {
     // ------------------------------------------------------------------------
 
     /**
-     * Sends a command and waits until a result is returned.
+     * Sends a command and waits until a response is returned.
      * 
      * @param command
      *            to submit
-     * @return the command result, indicating if the command has been processed
+     * @return the command response, indicating if the command has been processed
      *         successfully or not (in that case you can get the error message
      *         from the command).
      * @throws KasperException
@@ -240,11 +240,11 @@ public class KasperClient {
 
     /**
      * Sends a command and returns immediately a future allowing to retrieve the
-     * result later.
+     * response later.
      * 
      * @param command
      *            to submit
-     * @return a Future allowing to retrieve the result later.
+     * @return a Future allowing to retrieve the response later.
      * @throws KasperException
      *             if something went wrong.
      * @see CommandResponse
@@ -259,7 +259,7 @@ public class KasperClient {
                 .put(ClientResponse.class, command);
 
         // we need to decorate the Future returned by jersey in order to handle
-        // exceptions and populate according to it the command result
+        // exceptions and populate according to it the command response
         return new CommandResponseFuture(this, futureResponse);
     }
 
@@ -297,20 +297,20 @@ public class KasperClient {
                 }, command);
     }
 
-    CommandResponse handleResponse(final ClientResponse response) {
-        if (response.getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
+    CommandResponse handleResponse(final ClientResponse clientResponse) {
+        if (clientResponse.getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
 
-            final CommandResponse result = response.getEntity(CommandResponse.class);
-            return new HTTPCommandResponse(Response.Status.fromStatusCode(response.getStatus()), result);
+            final CommandResponse response = clientResponse.getEntity(CommandResponse.class);
+            return new HTTPCommandResponse(Response.Status.fromStatusCode(clientResponse.getStatus()), response);
 
         } else {
 
             return new HTTPCommandResponse(
-                    Response.Status.fromStatusCode(response.getStatus()),
+                    Response.Status.fromStatusCode(clientResponse.getStatus()),
                     CommandResponse.Status.ERROR,
                     new KasperError(
                             CoreErrorCode.UNKNOWN_ERROR,
-                            "Response from platform uses an unsupported type: " + response.getType())
+                            "Response from platform uses an unsupported type: " + clientResponse.getType())
             );
         }
     }
@@ -325,7 +325,7 @@ public class KasperClient {
      * @param query
      *            to submit.
      * @param mapTo
-     *            Response class to which we want to map the result.
+     *            Response class to which we want to map the response.
      * @return an instance of the Response for this query.
      * @throws KasperException
      *             if something went wrong.
@@ -335,9 +335,9 @@ public class KasperClient {
     }
 
     /**
-     * Send a query and maps the result to a Response. Here we use guavas
+     * Send a query and maps the response to a Response. Here we use guavas
      * TypeToken allowing to define a generic type. This is useful if you want
-     * to map the result to a IQueryCollectionResponse. <br/>
+     * to map the response to a IQueryCollectionResponse. <br/>
      * <p>
      * Type tokens are used like that:
      * 
@@ -354,7 +354,7 @@ public class KasperClient {
      * @param query
      *            to submit.
      * @param mapTo
-     *            Response class to which we want to map the result.
+     *            Response class to which we want to map the response.
      * @return an instance of the Response for this query.
      * @throws KasperException
      *             if something went wrong.
@@ -468,25 +468,25 @@ public class KasperClient {
         };
     }
 
-    <P extends QueryResult> QueryResponse<P> handleQueryResponse(final ClientResponse response,
+    <P extends QueryResult> QueryResponse<P> handleQueryResponse(final ClientResponse clientResponse,
                                                                 final TypeToken<P> mapTo) {
 
-        if (response.getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
+        if (clientResponse.getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
 
             final TypeToken mappedType = new TypeToken<QueryResponse<P>>() {
                     private static final long serialVersionUID = -6868146773459098496L;
                 }.where(new TypeParameter<P>() { }, mapTo);
 
-            final QueryResponse<P> result = response.getEntity(new GenericType<QueryResponse<P>>(mappedType.getType()));
-            return new HTTPQueryResponse<P>(Response.Status.fromStatusCode(response.getStatus()), result);
+            final QueryResponse<P> response = clientResponse.getEntity(new GenericType<QueryResponse<P>>(mappedType.getType()));
+            return new HTTPQueryResponse<P>(Response.Status.fromStatusCode(clientResponse.getStatus()), response);
 
         } else {
 
             return new HTTPQueryResponse<P>(
-                    Response.Status.fromStatusCode(response.getStatus()),
+                    Response.Status.fromStatusCode(clientResponse.getStatus()),
                     new KasperError(
                             CoreErrorCode.UNKNOWN_ERROR,
-                            "Response from platform uses an unsupported type: " + response.getType())
+                            "Response from platform uses an unsupported type: " + clientResponse.getType())
             );
         }
     }

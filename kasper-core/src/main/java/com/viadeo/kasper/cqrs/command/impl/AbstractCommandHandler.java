@@ -113,8 +113,8 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
                 uow.start();
             }
             /*
-             * FIXME should we transform to a command result or just rollback and propagate the exception as is
-             * let's propagate the error as is and keep CommandResponse for business operation result (success and failure) ?
+             * FIXME should we transform to a command response or just rollback and propagate the exception as is
+             * let's propagate the error as is and keep CommandResponse for business operation response (success and failure) ?
              */
 
             /* Stop timer on error and propage exception */
@@ -148,7 +148,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
     /**
      * @param message the command handler encapsulating message
      * @param uow Axon unit of work
-     * @return the command result
+     * @return the command response
      * @throws Exception
      */
     public CommandResponse handle(final KasperCommandMessage<C> message, final UnitOfWork uow) throws Exception {
@@ -157,7 +157,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
 
     /**
      * @param message the command handler encapsulating message
-     * @return the command result
+     * @return the command response
      * @throws Exception
      */
     public CommandResponse handle(final KasperCommandMessage<C> message) throws Exception {

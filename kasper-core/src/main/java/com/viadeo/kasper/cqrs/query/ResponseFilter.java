@@ -18,12 +18,12 @@ public interface ResponseFilter<P extends QueryResult> extends ServiceFilter {
     /**
      * Filter a Response after processing by its associated service
      *
-     * @param result the Response to be returned by the service
+     * @param response the Response to be returned by the service
      * @param context the context used to execute the service
      *
-     * @return the filtered result
+     * @return the filtered response
      */
-    <R extends QueryResponse<P>> R filter(final Context context, final R result);
+    <R extends QueryResponse<P>> R filter(final Context context, final R response);
 
 }
 

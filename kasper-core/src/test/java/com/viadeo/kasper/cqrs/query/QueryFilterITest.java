@@ -54,9 +54,9 @@ public class QueryFilterITest {
     @XKasperUnregistered
     private class TestFilter implements QueryFilter<TestQuery>, ResponseFilter<TestResult> {
         @Override
-        public <R extends QueryResponse<TestResult>> R filter(Context context, R result) {
-            result.getResult().state = STATE_MODIFIED;
-            return result;        }
+        public <R extends QueryResponse<TestResult>> R filter(Context context, R response) {
+            response.getResult().state = STATE_MODIFIED;
+            return response;        }
 
         @Override
         public TestQuery filter(Context context, TestQuery query) {

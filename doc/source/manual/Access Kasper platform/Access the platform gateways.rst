@@ -22,10 +22,10 @@ to the **Command** and **Query** gateways :
    /* Fire and get a Future */
    final Future<CommandResponse> f1 = cgw.sendCommandForFuture(command, context);
 
-   /* Wait for result */
+   /* Wait for response */
    final CommandResponse cr = cgw.sendCommandAndWaitForAResponse(command, context);
 
-   /* Wait for result and get exceptions */
+   /* Wait for response and get exceptions */
    final CommandResponse cr2 = cgw.sendCommandAndWaitForAResponseWithException(command, context);
 
    /* Wait for command execution */

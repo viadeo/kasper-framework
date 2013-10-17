@@ -11,10 +11,10 @@ import java.util.Collection;
 
 /**
  * 
- *         Data transfer object enclosing a collection result. The result represent
- *         a window over a complete list of possible ordered results
+ *         Data transfer object enclosing a collection response. The response represent
+ *         a window over a complete list of possible ordered responses
  * 
- * @param <RES> the enclosed unit result type
+ * @param <RES> the enclosed unit response type
  * 
  * @see QueryResponse
  */
@@ -25,7 +25,7 @@ public interface CollectionQueryResult<RES> extends Iterable<RES>, QueryResult {
 
 	/**
 	 * Constant that can be used in getTotal() to indicate an infinite number of
-	 * possible result elements
+	 * possible response elements
 	 */
 	int INFINITE_TOTAL = -1;
 

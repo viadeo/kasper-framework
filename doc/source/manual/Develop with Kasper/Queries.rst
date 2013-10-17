@@ -8,8 +8,8 @@ Implementing queries consists on implementing four Kasper components :
 
 - one **event listener** used to listen for accurate events and index data
 - one **query** used by the client to send a request to the platform
-- one **query result** (with answer) used by the platform to send results back to the client
-- one **query service** which query the data according to the received query and sends back a result
+- one **query response** (with answer) used by the platform to send responses back to the client
+- one **query service** which query the data according to the received query and sends back a response
 
 Kasper does not say anything about your indexation process, but you are heavily encouraged to :
 
@@ -19,7 +19,7 @@ Kasper does not say anything about your indexation process, but you are heavily 
 About implementing event listeners, see :ref:`events`.
 
 Kasper queries uses the **Command pattern**, the client does not ask a service for data, it sends queries to the
-platform and expects for a result with answer.
+platform and expects for a response with answer.
 
 Queries
 -------
@@ -63,18 +63,18 @@ using the **@XKasperQuery** annotation.
 
 Some interfaces are available as a standard way to add some features to the query :
 
-- **OrderedQuery** can be implemented when the result can be ordered
-- **PaginatedQuery** can be implemented when the result can be paginated
+- **OrderedQuery** can be implemented when the response can be ordered
+- **PaginatedQuery** can be implemented when the response can be paginated
 
-Query result answers
+Query response answers
 ---------------------
 
-A Kasper query result answer is an immutable, anemic object used by a query service to send back data
+A Kasper query response answer is an immutable, anemic object used by a query service to send back data
 to the requesting client, it ends with the suffix '**QueryResult**' (recommended).
 
-**A Query result answer is part of a domain API**.
+**A Query response answer is part of a domain API**.
 
-A Kasper query result has to implement the interface **QueryResult** and can optionally defines some metadata
+A Kasper query response has to implement the interface **QueryResult** and can optionally defines some metadata
 using the **@XKasperQueryResult** annotation.
 
 **usage**
@@ -99,7 +99,7 @@ using the **@XKasperQueryResult** annotation.
     The interface **QueryEntityResult** and proposed default implementation **AbstractQueryEntityResult** should be used for each
     answer which is an entity (with an id, a type and optionally but preferably a last modification time)
 
-The interface **QueryCollectionResult** can be used to return a list of some other unit result answers.
+The interface **QueryCollectionResult** can be used to return a list of some other unit response answers.
 
 The abstract class **AbstractQueryCollectionResult** is provided as a default implementation of the list methods
 required by the **QueryCollectionResult** interface.
@@ -114,10 +114,10 @@ required by the **QueryCollectionResult** interface.
         // Nothing more needs to be declared
     }
 
-Some interfaces are available as a standard way to add some features to the query result answers :
+Some interfaces are available as a standard way to add some features to the query response answers :
 
-- **OrderedQueryResult** can be implemented when the result answer can be ordered
-- **PaginatedQueryResult** can be implemented when the result answer can be paginated
+- **OrderedQueryResult** can be implemented when the response answer can be ordered
+- **PaginatedQueryResult** can be implemented when the response answer can be paginated
 
 Query services
 --------------
@@ -165,7 +165,7 @@ when other message informations are not required :
 QueryResponse Caching
 -------------------
 
-Kasper framework provides a way to cache query results based on the submitted query, the cache is enabled per QueryService and is disabled by default.
+Kasper framework provides a way to cache query responses based on the submitted query, the cache is enabled per QueryService and is disabled by default.
 
 It is based on **JSR 107 - JCache** for selecting a cache implementation. By default no cache implementation is provided by the framework
 you can use any implementation of JCache (for example using ehcache-jcache).
@@ -205,7 +205,7 @@ Kasper framework allows you to define filters on Query services.
 These filters can be of two kind :
 
 - **Query filters** : can be used to mutate the query before its processing by the service
-- **Response filters** : can be used to mutate the result generated after processing of the query by the service
+- **Response filters** : can be used to mutate the response generated after processing of the query by the service
 
 In order to define a service filter, you have to :
 

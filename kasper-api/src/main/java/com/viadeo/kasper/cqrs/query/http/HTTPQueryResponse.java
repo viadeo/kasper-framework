@@ -19,8 +19,8 @@ public class HTTPQueryResponse<ANSWER extends QueryResult>  extends QueryRespons
 
     // ------------------------------------------------------------------------
 
-    public HTTPQueryResponse(final Status httpStatus, final QueryResponse<ANSWER> result) {
-        super(result);
+    public HTTPQueryResponse(final Status httpStatus, final QueryResponse<ANSWER> response) {
+        super(response);
         this.httpStatus = checkNotNull(httpStatus);
     }
 

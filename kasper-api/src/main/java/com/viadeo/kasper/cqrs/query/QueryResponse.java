@@ -37,15 +37,15 @@ public class QueryResponse<ANSWER extends QueryResult> implements Serializable, 
         return new QueryResponse<P>(error);
     }
 
-    public static <P extends QueryResult> QueryResponse<P> of(final P result) {
-        return new QueryResponse<P>(result);
+    public static <P extends QueryResult> QueryResponse<P> of(final P response) {
+        return new QueryResponse<P>(response);
     }
 
     // ------------------------------------------------------------------------
 
-    public QueryResponse(final QueryResponse<ANSWER> result) {
-        this.answer = result.answer;
-        this.error = result.error;
+    public QueryResponse(final QueryResponse<ANSWER> response) {
+        this.answer = response.answer;
+        this.error = response.error;
     }
 
     public QueryResponse(final ANSWER answer) {
@@ -85,7 +85,7 @@ public class QueryResponse<ANSWER extends QueryResult> implements Serializable, 
         if (HTTPQueryResponse.class.isAssignableFrom(this.getClass())) {
             return (HTTPQueryResponse) this;
         }
-        throw new KasperException("Not an HTTP query result");
+        throw new KasperException("Not an HTTP query response");
     }
 
 }

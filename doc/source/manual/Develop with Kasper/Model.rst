@@ -456,11 +456,11 @@ In order to create a Kasper repository you have to extend **Repository<Aggregate
 
         @Override
         protected abstract Optional<Member> doLoad(final KasperID memberId, final Long expectedVersion) {
-            final result = sql.selectFirst(String.format(REQ_SELECT, memberId, expectedVersion));
-            if (null != result) {
+            final response = sql.selectFirst(String.format(REQ_SELECT, memberId, expectedVersion));
+            if (null != response) {
                 return Optional.of(new Member(memberId,
                                               expectedVersion,
-                                              result.get('name')));
+                                              response.get('name')));
             }
             return Optional.absent();
         }

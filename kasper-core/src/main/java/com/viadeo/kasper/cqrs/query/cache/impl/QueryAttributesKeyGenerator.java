@@ -80,9 +80,9 @@ public class QueryAttributesKeyGenerator implements QueryCacheKeyGenerator {
 
         @Override
         public int hashCode() {
-            int result = queryClass != null ? queryClass.hashCode() : 0;
-            result = 31 * result + (keys != null ? Arrays.hashCode(keys) : 0);
-            return result;
+            int response = queryClass != null ? queryClass.hashCode() : 0;
+            response = 31 * response + (keys != null ? Arrays.hashCode(keys) : 0);
+            return response;
         }
     }
 

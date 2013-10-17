@@ -21,14 +21,14 @@ public class QueryFiltersActor<Q extends Query, P extends QueryResult>
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
     private final Collection<? extends QueryFilter<Q>> queryFilters;
-    private final Collection<? extends ResponseFilter<P>> resultFilters;
+    private final Collection<? extends ResponseFilter<P>> responseFilters;
 
     // ------------------------------------------------------------------------
 
     public QueryFiltersActor(final Collection<? extends QueryFilter<Q>> queryFilters,
-                             final Collection<? extends ResponseFilter<P>> resultFilters) {
+                             final Collection<? extends ResponseFilter<P>> responseFilters) {
         this.queryFilters = checkNotNull(queryFilters);
-        this.resultFilters = checkNotNull(resultFilters);
+        this.responseFilters = checkNotNull(responseFilters);
     }
 
     // ------------------------------------------------------------------------
@@ -59,17 +59,17 @@ public class QueryFiltersActor<Q extends Query, P extends QueryResult>
 
     // -----
 
-    private <R extends QueryResponse<P>> R applyResponseFilters(final Class queryClass, final R result, final Context context) {
-        R newResponse = result;
+    private <R extends QueryResponse<P>> R applyResponseFilters(final Class queryClass, final R response, final Context context) {
+        R newResponse = response;
 
-        if ((null != result.getResult()) && !resultFilters.isEmpty()) {
-            final Timer.Context timerFilters = METRICS.timer(name(queryClass, "requests-result-filters-time")).time();
-            for (final ResponseFilter<P> filter : resultFilters) {
+        if ((null != response.getResult()) && !responseFilters.isEmpty()) {
+            final Timer.Context timerFilters = METRICS.timer(name(queryClass, "requests-response-filters-time")).time();
+            for (final ResponseFilter<P> filter : responseFilters) {
                 if (ResponseFilter.class.isAssignableFrom(filter.getClass())) {
                     LOGGER.info(String.format("Apply Response filter %s", filter.getClass().getSimpleName()));
 
                     /* Apply filter */
-                    newResponse = filter.filter(context, result);
+                    newResponse = filter.filter(context, response);
                 }
             }
             timerFilters.stop();

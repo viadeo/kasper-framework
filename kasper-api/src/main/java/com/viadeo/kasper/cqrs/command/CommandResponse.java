@@ -18,13 +18,13 @@ import java.io.Serializable;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Base Kasper command result implementation
+ * Base Kasper command response implementation
  */
 public class CommandResponse implements Serializable, Immutable {
     private static final long serialVersionUID = -938831661655150085L;
 
     /**
-     * Accepted values for command result statuses
+     * Accepted values for command response statuses
      */
     public static enum Status {
         OK,         /** All is ok */
@@ -74,20 +74,20 @@ public class CommandResponse implements Serializable, Immutable {
 
     // ------------------------------------------------------------------------
 
-    public CommandResponse(final CommandResponse result) {
-        this.status = result.status;
-        this.error = result.error;
+    public CommandResponse(final CommandResponse response) {
+        this.status = response.status;
+        this.error = response.error;
     }
 
     public CommandResponse(final Status status, final KasperError error) {
         this.status = checkNotNull(status);
         
         if (!status.equals(Status.OK) && (null == error)) {
-            throw new IllegalStateException("Please provide an error to the command result");
+            throw new IllegalStateException("Please provide an error to the command response");
         }
 
         if (status.equals(Status.OK) && (null != error)) {
-            throw new IllegalStateException("Invalid command result OK provided with an error");
+            throw new IllegalStateException("Invalid command response OK provided with an error");
         }
         
         this.error = error;
@@ -96,7 +96,7 @@ public class CommandResponse implements Serializable, Immutable {
     // ------------------------------------------------------------------------
 
     /**
-     * @return the current command result execution status
+     * @return the current command response execution status
      */
     public Status getStatus() {
         return status;
@@ -110,7 +110,7 @@ public class CommandResponse implements Serializable, Immutable {
     }
 
     /**
-     * @return true if this command has resulted to an error
+     * @return true if this command has responseed to an error
      */
     public boolean isError() {
         return this.status != Status.OK;
@@ -129,7 +129,7 @@ public class CommandResponse implements Serializable, Immutable {
         if (HTTPCommandResponse.class.isAssignableFrom(this.getClass())) {
             return (HTTPCommandResponse) this;
         }
-        throw new KasperException("Not an HTTP command result");
+        throw new KasperException("Not an HTTP command response");
     }
 
 }

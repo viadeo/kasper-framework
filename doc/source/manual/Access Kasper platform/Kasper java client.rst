@@ -31,13 +31,13 @@ KasperClient is thread safe and should be reused for optimal performances.
    :linenos:
 
    final KasperClient client = new KasperClient();
-   final QueryResponse<SuperCoolResponse> result = client.query(new SuperCoolQuery("what's up?"), SuperCoolResponse.class);
-   if (result.isError()) {
-	KasperError error = result.getError();
+   final QueryResponse<SuperCoolResponse> response = client.query(new SuperCoolQuery("what's up?"), SuperCoolResponse.class);
+   if (response.isError()) {
+	KasperError error = response.getError();
         // do something using the error code or the messages list
    } else {
      // if no error occured you can access the answer
-     SuperCoolResponse answer = result.get();
+     SuperCoolResponse answer = response.get();
    }
 
 Hard to make it shorter! :)
@@ -63,9 +63,9 @@ If an error occurred during query processing on client side a **KasperQueryExcep
 .. code-block:: java
    :linenos:
 
-   final CommandResponse result = client.send(new ICommandYouTo("Enjoy Coding!"));
-   if (result.isError()) {
-      // do something useful with result.getError()
+   final CommandResponse response = client.send(new ICommandYouTo("Enjoy Coding!"));
+   if (response.isError()) {
+      // do something useful with response.getError()
    }
 
 |
@@ -94,8 +94,8 @@ Kasper client provides two ways of doing asynchronous operations, using Futures 
    :linenos:
 
    client.sendAsync(someCommand, new ICallback<ICommandResponse>() {
-       public void done(final ICommandResponse result) {
-           // do something smart with my result
+       public void done(final ICommandResponse response) {
+           // do something smart with my response
        }
    });
    
@@ -106,7 +106,7 @@ Kasper client provides two ways of doing asynchronous operations, using Futures 
    // do some other work while the command is being processed
    ...
    
-   // block until the result is obtained
+   // block until the response is obtained
    final ICommandResponse commandResponse = futureCommandResponse.get();
       
 In most cases you will probably prefer using Futures.

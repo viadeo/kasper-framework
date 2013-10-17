@@ -171,10 +171,10 @@ public class KasperClientCommandTest extends JerseyTest {
         final CreateMemberCommand command = new CreateMemberCommand(Status.REFUSED);
 
         // When
-        final CommandResponse result = client.send(command);
+        final CommandResponse response = client.send(command);
 
         // Then
-        assertEquals(Status.REFUSED, result.getStatus());
+        assertEquals(Status.REFUSED, response.getStatus());
     }
 
     // --
@@ -187,10 +187,10 @@ public class KasperClientCommandTest extends JerseyTest {
         final CreateMemberCommand command = new CreateMemberCommand(Status.ERROR);
 
         // When
-        final Future<? extends CommandResponse> result = client.sendAsync(command);
+        final Future<? extends CommandResponse> response = client.sendAsync(command);
 
         // Then
-        assertEquals(Status.ERROR, result.get().getStatus());
+        assertEquals(Status.ERROR, response.get().getStatus());
     }
 
     @Test
@@ -206,15 +206,15 @@ public class KasperClientCommandTest extends JerseyTest {
                 latch.countDown();
             }
         });
-        final ArgumentCaptor<CommandResponse> result = ArgumentCaptor.forClass(CommandResponse.class);
+        final ArgumentCaptor<CommandResponse> response = ArgumentCaptor.forClass(CommandResponse.class);
 
         // When
         client.sendAsync(command, callback);
 
         // Then
         latch.await(30, TimeUnit.SECONDS);
-        verify(callback).done(result.capture());
-        assertEquals(Status.OK, result.getValue().getStatus());
+        verify(callback).done(response.capture());
+        assertEquals(Status.OK, response.getValue().getStatus());
     }
 
     @Test
@@ -228,14 +228,14 @@ public class KasperClientCommandTest extends JerseyTest {
         }
 
         // When
-        final CommandResponse result = client.send(command);
+        final CommandResponse response = client.send(command);
 
         // Then
-        Assert.assertNotNull(result);
-        Assert.assertNotNull(result.getError());
-        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), result.getError().getCode());
-        Assert.assertEquals(Response.Status.NOT_FOUND, result.asHttp().getHTTPStatus());
-        Assert.assertEquals(TransportMode.HTTP, result.getTransportMode());
+        Assert.assertNotNull(response);
+        Assert.assertNotNull(response.getError());
+        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), response.getError().getCode());
+        Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
+        Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }
 
     @Test
@@ -247,13 +247,13 @@ public class KasperClientCommandTest extends JerseyTest {
         final CreateMemberCommand command = new CreateMemberCommand(Status.ERROR);
 
         // When
-        final CommandResponse result = client.sendAsync(command).get();
+        final CommandResponse response = client.sendAsync(command).get();
 
         // Then
-        Assert.assertNotNull(result);
-        Assert.assertNotNull(result.getError());
-        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), result.getError().getCode());
-        Assert.assertEquals(Response.Status.NOT_FOUND, result.asHttp().getHTTPStatus());
-        Assert.assertEquals(TransportMode.HTTP, result.getTransportMode());
+        Assert.assertNotNull(response);
+        Assert.assertNotNull(response.getError());
+        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), response.getError().getCode());
+        Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
+        Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }
 }

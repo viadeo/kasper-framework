@@ -32,14 +32,14 @@ public interface CommandGateway {
             throws Exception;
 
     /**
-     * Wait for result
+     * Wait for response
      */
     @Timeout(value = DEFAULT_TIMEOUT_SEC, unit = TimeUnit.SECONDS)
     CommandResponse sendCommandAndWaitForAResponse(Command command, @MetaData(Context.METANAME) Context context)
             throws Exception;
 
     /**
-     * Wait for result and get exceptions
+     * Wait for response and get exceptions
      */
     @Timeout(value = DEFAULT_TIMEOUT_SEC, unit = TimeUnit.SECONDS)
     CommandResponse sendCommandAndWaitForAResponseWithException(Command command, @MetaData(Context.METANAME) Context context)

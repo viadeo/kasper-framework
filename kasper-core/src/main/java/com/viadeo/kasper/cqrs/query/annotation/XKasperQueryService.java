@@ -42,7 +42,7 @@ public @interface XKasperQueryService {
     Class<? extends ServiceFilter>[] filters() default {};
 
     /**
-     * Whether the result of this query service should be cached.
+     * Whether the response of this query service should be cached.
      * False by default.
      */
     XKasperQueryCache cache() default @XKasperQueryCache(enabled = false);

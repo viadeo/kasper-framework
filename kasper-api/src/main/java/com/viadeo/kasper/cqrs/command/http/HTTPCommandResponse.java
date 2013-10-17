@@ -17,8 +17,8 @@ public class HTTPCommandResponse extends CommandResponse {
 
     // ------------------------------------------------------------------------
 
-    public HTTPCommandResponse(final Response.Status httpStatus, final CommandResponse result) {
-        super(result);
+    public HTTPCommandResponse(final Response.Status httpStatus, final CommandResponse response) {
+        super(response);
         this.httpStatus = httpStatus;
     }
 

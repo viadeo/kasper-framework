@@ -141,17 +141,17 @@ public class ObjectMapperProviderTest {
     @Test
     public void dontFailOnUnknownProperty() throws IOException {
         // Given
-        final SomeCollectionResponse result = new SomeCollectionResponse();
-        result.setList(Arrays.asList(new SomeResult("foo"), new SomeResult("bar")));
+        final SomeCollectionResponse response = new SomeCollectionResponse();
+        response.setList(Arrays.asList(new SomeResult("foo"), new SomeResult("bar")));
 
         // When
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(result);
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(response);
         final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
         final SomeCollectionResponse actual = objectReader.readValue(objectReader.getFactory()
                 .createJsonParser(json), SomeCollectionResponse.class);
 
         // Then
-        assertEquals(result.getCount(), actual.getCount());
+        assertEquals(response.getCount(), actual.getCount());
     }
 
     @Test

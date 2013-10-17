@@ -48,9 +48,9 @@ public class QueryCacheActor<Q extends Query, P extends QueryResult>
         if (cache.containsKey(key)) {
             return cache.get(key);
         } else {
-            final QueryResponse<P> result = chain.next(q, context);
-            cache.put(key, result);
-            return result;
+            final QueryResponse<P> response = chain.next(q, context);
+            cache.put(key, response);
+            return response;
         }
     }
 
