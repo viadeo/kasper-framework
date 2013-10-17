@@ -138,7 +138,7 @@ annotation and ends with the '**QueryService**' suffix (recommended).
     public class GetThingsQueryService implements QueryService<GetThingsQuery, ThingsListQueryAnswer> {
 
         @Override
-        public QueryResult<ThingsListQueryAnswer> retrieve(final QueryMessage<GetThingsQuery> message) throws KasperQueryException {
+        public QueryResponse<ThingsListQueryAnswer> retrieve(final QueryMessage<GetThingsQuery> message) throws KasperQueryException {
             ...
         }
 
@@ -156,13 +156,13 @@ when other message informations are not required :
     public class GetThingsQueryService extends AbstractQueryService<GetThingsQuery, ThingsListQueryAnswer> {
 
         @Override
-        public QueryResult<ThingsListQueryAnswer> retrieve(final GetThingsQuery query) throws KasperQueryException {
+        public QueryResponse<ThingsListQueryAnswer> retrieve(final GetThingsQuery query) throws KasperQueryException {
             ...
         }
 
     }
 
-QueryResult Caching
+QueryResponse Caching
 -------------------
 
 Kasper framework provides a way to cache query results based on the submitted query, the cache is enabled per QueryService and is disabled by default.
@@ -205,11 +205,11 @@ Kasper framework allows you to define filters on Query services.
 These filters can be of two kind :
 
 - **Query filters** : can be used to mutate the query before its processing by the service
-- **Result filters** : can be used to mutate the result generated after processing of the query by the service
+- **Response filters** : can be used to mutate the result generated after processing of the query by the service
 
 In order to define a service filter, you have to :
 
-1. Implement **QueryFilter** or **ResultFilter** interfaces (Kasper core)
+1. Implement **QueryFilter** or **ResponseFilter** interfaces (Kasper core)
 2. Add the annotation **@XKasperServiceFilter**, where you can define an optional name for your filter
 
 ex :
@@ -234,19 +234,19 @@ ex :
 
 A filter can be defined global (set the global flag (**global = true**) on the annotation).
 
-**IdEraserResultFilter.class** :
+**IdEraserResponseFilter.class** :
 
 .. code-block:: java
     :linenos:
 
     @XKasperServiceFilter( global = true ) // Will be applied to all query services
-    public class IdEraserResultFilter implements ResultFilter<HasAnIdAnswer> {
+    public class IdEraserResponseFilter implements ResponseFilter<HasAnIdAnswer> {
 
         @Override
-        public QueryResult<HasAnIdAnswer> filter(final Context context, final QueryResult<HasAnIdAnswer> dto) throws KasperQueryException {
-            QueryResult<HasAnIdAnswer res = dto; /* Answer DTO should be immutable */
+        public QueryResponse<HasAnIdAnswer> filter(final Context context, final QueryResponse<HasAnIdAnswer> dto) throws KasperQueryException {
+            QueryResponse<HasAnIdAnswer res = dto; /* Answer DTO should be immutable */
             if (!res.isError() && HasAnIdAnswer.class.isAssignableFrom(dto.getAnswer())) {
-                res = QueryResult.of(new HasAnIdAnswer.Builder(dto.getAnswer()).setId("").build());
+                res = QueryResponse.of(new HasAnIdAnswer.Builder(dto.getAnswer()).setId("").build());
             }
             return res;
         }
@@ -270,7 +270,7 @@ filling the 'filters' field.
     public class GetThingsQueryService extends AbstractQueryService<GetThingsQuery, ThingsListQueryAnswer> {
 
         @Override
-        public QueryResult<ThingsListQueryAnswer> retrieve(final GetThingsQuery query) throws KasperQueryException {
+        public QueryResponse<ThingsListQueryAnswer> retrieve(final GetThingsQuery query) throws KasperQueryException {
             ...
         }
 

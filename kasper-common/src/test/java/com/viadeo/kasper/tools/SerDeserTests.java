@@ -76,10 +76,10 @@ public class SerDeserTests {
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(bean);
         final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final SimpleBean actualResult = objectReader.readValue(objectReader.getFactory().createJsonParser(json), SimpleBean.class);
+        final SimpleBean actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), SimpleBean.class);
 
         // Then
-        assertEquals(actualResult.field, bean.field);
+        assertEquals(actualResponse.field, bean.field);
     }
 
     @Test
@@ -90,10 +90,10 @@ public class SerDeserTests {
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(bean);
         final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final ImmutableBean actualResult = objectReader.readValue(objectReader.getFactory().createJsonParser(json), ImmutableBean.class);
+        final ImmutableBean actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), ImmutableBean.class);
 
         // Then
-        assertEquals(actualResult.field, bean.field);
+        assertEquals(actualResponse.field, bean.field);
     }
 
     @Test
@@ -104,10 +104,10 @@ public class SerDeserTests {
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(bean);
         final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final NoSettersBean actualResult = objectReader.readValue(objectReader.getFactory().createJsonParser(json), NoSettersBean.class);
+        final NoSettersBean actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), NoSettersBean.class);
 
         // Then
-        assertEquals(actualResult.field, bean.field);
+        assertEquals(actualResponse.field, bean.field);
     }
 
 }

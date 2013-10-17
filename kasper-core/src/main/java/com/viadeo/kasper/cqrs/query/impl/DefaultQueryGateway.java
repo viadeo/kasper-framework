@@ -19,7 +19,7 @@ import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +43,7 @@ public class DefaultQueryGateway implements QueryGateway {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <ANSWER extends QueryAnswer> QueryResult<ANSWER> retrieve(final Query query, final Context context)
+    public <ANSWER extends QueryAnswer> QueryResponse<ANSWER> retrieve(final Query query, final Context context)
             throws Exception {
 
         checkNotNull(context);
@@ -60,7 +60,7 @@ public class DefaultQueryGateway implements QueryGateway {
 
         // Search for associated service --------------------------------------
         LOGGER.debug("Retrieve request processor chain for query " + queryClass.getSimpleName());
-        Optional<RequestActorsChain<Query, QueryResult<QueryAnswer>>> optionalRequestChain =
+        Optional<RequestActorsChain<Query, QueryResponse<QueryAnswer>>> optionalRequestChain =
                 queryServicesLocator.getRequestActorChain(queryClass);
 
         if (!optionalRequestChain.isPresent()) {
@@ -70,11 +70,11 @@ public class DefaultQueryGateway implements QueryGateway {
         }
 
         Exception exception = null;
-        QueryResult<ANSWER> ret = null;
+        QueryResponse<ANSWER> ret = null;
 
         try {
             LOGGER.info("Call actor chain for query " + queryClass.getSimpleName());
-            ret = (QueryResult<ANSWER>) optionalRequestChain.get().next(query, context);
+            ret = (QueryResponse<ANSWER>) optionalRequestChain.get().next(query, context);
         } catch (final RuntimeException e) {
             exception = e;
         } catch (final Exception e) {

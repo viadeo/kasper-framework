@@ -13,7 +13,7 @@ import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryRequestActor;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.ValidatorFactory;
@@ -34,21 +34,21 @@ public class QueryValidationActor<Q extends Query, P extends QueryAnswer> implem
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryResult<P> process(final Q q, final Context context, final RequestActorsChain<Q, QueryResult<P>> chain) throws Exception {
-        final QueryResult<P> queryResult;
+    public QueryResponse<P> process(final Q q, final Context context, final RequestActorsChain<Q, QueryResponse<P>> chain) throws Exception {
+        final QueryResponse<P> queryResponse;
 
         final Set<ConstraintViolation<Q>> validations = validatorFactory.getValidator().validate(q);
         if (validations.isEmpty()) {
-            queryResult = chain.next(q, context);
+            queryResponse = chain.next(q, context);
         } else {
             final List<String> errors = new ArrayList<>();
             for (final ConstraintViolation<Q> violation : validations) {
                 errors.add(violation.getPropertyPath() + " : " + violation.getMessage());
             }
-            queryResult = QueryResult.of(new KasperError(CoreErrorCode.INVALID_INPUT.name(), errors));
+            queryResponse = QueryResponse.of(new KasperError(CoreErrorCode.INVALID_INPUT.name(), errors));
         }
 
-        return queryResult;
+        return queryResponse;
     }
 
 }

@@ -11,7 +11,7 @@ import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.cqrs.query.impl.AbstractQueryService;
@@ -29,7 +29,7 @@ public class QueryCacheActorTest {
     final static long TTL = 1;
 
     private AnnotationQueryCacheActorFactory factory;
-    private RequestActorsChain<DummyQuery, QueryResult<DummyAnswer>> chain;
+    private RequestActorsChain<DummyQuery, QueryResponse<DummyAnswer>> chain;
 
     // ------------------------------------------------------------------------
 
@@ -62,9 +62,9 @@ public class QueryCacheActorTest {
         final DummyQuery nullFields = new DummyQuery();
 
         // When
-        final QueryResult<DummyAnswer> expected = chain.next(nullFields, new DefaultContext());
-        final QueryResult<DummyAnswer> actual = chain.next(nullFields, new DefaultContext());
-        final QueryResult<DummyAnswer> anotherNotPresentInCache = chain.next(new DummyQuery(), new DefaultContext());
+        final QueryResponse<DummyAnswer> expected = chain.next(nullFields, new DefaultContext());
+        final QueryResponse<DummyAnswer> actual = chain.next(nullFields, new DefaultContext());
+        final QueryResponse<DummyAnswer> anotherNotPresentInCache = chain.next(new DummyQuery(), new DefaultContext());
 
         // Then
         assertSame(expected, actual);
@@ -77,8 +77,8 @@ public class QueryCacheActorTest {
         final DummyQuery nullFields = new DummyQuery();
 
         // When
-        final QueryResult<DummyAnswer> expected = chain.next(nullFields, new DefaultContext());
-        final QueryResult<DummyAnswer> actual = chain.next(nullFields, new DefaultContext());
+        final QueryResponse<DummyAnswer> expected = chain.next(nullFields, new DefaultContext());
+        final QueryResponse<DummyAnswer> actual = chain.next(nullFields, new DefaultContext());
 
         // Wait
         synchronized (this) {
@@ -86,7 +86,7 @@ public class QueryCacheActorTest {
         }
 
         // And
-        final QueryResult<DummyAnswer> shouldBeNewAsExpiredFromCache = chain.next(nullFields, new DefaultContext());
+        final QueryResponse<DummyAnswer> shouldBeNewAsExpiredFromCache = chain.next(nullFields, new DefaultContext());
 
         // Then
         assertSame(expected, actual);
@@ -104,8 +104,8 @@ public class QueryCacheActorTest {
                 new QueryServiceActor<>(new WithFilteredFieldsCacheQueryService()));
 
         // When
-        final QueryResult<DummyAnswer> expected = chain.next(new DummyQuery("aa", 2), new DefaultContext());
-        final QueryResult<DummyAnswer> actual = chain.next(new DummyQuery("aa", 3333), new DefaultContext());
+        final QueryResponse<DummyAnswer> expected = chain.next(new DummyQuery("aa", 2), new DefaultContext());
+        final QueryResponse<DummyAnswer> actual = chain.next(new DummyQuery("aa", 3333), new DefaultContext());
 
         // Then
         assertSame(expected, actual);
@@ -117,8 +117,8 @@ public class QueryCacheActorTest {
     @XKasperQueryService(domain = DummyDomain.class, cache = @XKasperQueryCache(keys = "someField"))
     public static class WithFilteredFieldsCacheQueryService extends AbstractQueryService<DummyQuery, DummyAnswer> {
         @Override
-        public QueryResult<DummyAnswer> retrieve(DummyQuery query) throws Exception {
-            return QueryResult.of(new DummyAnswer());
+        public QueryResponse<DummyAnswer> retrieve(DummyQuery query) throws Exception {
+            return QueryResponse.of(new DummyAnswer());
         }
     }
 
@@ -126,8 +126,8 @@ public class QueryCacheActorTest {
     @XKasperQueryService(domain = DummyDomain.class, cache = @XKasperQueryCache(ttl = TTL))
     public static class WithCacheQueryService extends AbstractQueryService<DummyQuery, DummyAnswer> {
         @Override
-        public QueryResult<DummyAnswer> retrieve(DummyQuery query) throws Exception {
-            return QueryResult.of(new DummyAnswer());
+        public QueryResponse<DummyAnswer> retrieve(DummyQuery query) throws Exception {
+            return QueryResponse.of(new DummyAnswer());
         }
     }
 
@@ -135,8 +135,8 @@ public class QueryCacheActorTest {
     @XKasperQueryService(domain = DummyDomain.class)
     public static class WithoutCacheQueryService extends AbstractQueryService<DummyQuery, DummyAnswer> {
         @Override
-        public QueryResult<DummyAnswer> retrieve(DummyQuery query) throws Exception {
-            return QueryResult.of(new DummyAnswer());
+        public QueryResponse<DummyAnswer> retrieve(DummyQuery query) throws Exception {
+            return QueryResponse.of(new DummyAnswer());
         }
     }
 

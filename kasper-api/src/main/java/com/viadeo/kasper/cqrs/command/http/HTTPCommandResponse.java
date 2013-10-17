@@ -7,27 +7,27 @@
 package com.viadeo.kasper.cqrs.command.http;
 
 import com.viadeo.kasper.KasperError;
-import com.viadeo.kasper.cqrs.command.CommandResult;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 
 import javax.ws.rs.core.Response;
 
-public class HTTPCommandResult extends CommandResult {
+public class HTTPCommandResponse extends CommandResponse {
 
     private final Response.Status httpStatus;
 
     // ------------------------------------------------------------------------
 
-    public HTTPCommandResult(final Response.Status httpStatus, final CommandResult result) {
+    public HTTPCommandResponse(final Response.Status httpStatus, final CommandResponse result) {
         super(result);
         this.httpStatus = httpStatus;
     }
 
-    public HTTPCommandResult(final CommandResult.Status status, KasperError error) {
+    public HTTPCommandResponse(final CommandResponse.Status status, KasperError error) {
         super(status, error);
         this.httpStatus = Response.Status.OK;
     }
 
-    public HTTPCommandResult(final Response.Status httpStatus, final CommandResult.Status status, KasperError error) {
+    public HTTPCommandResponse(final Response.Status httpStatus, final CommandResponse.Status status, KasperError error) {
         super(status, error);
         this.httpStatus = httpStatus;
     }

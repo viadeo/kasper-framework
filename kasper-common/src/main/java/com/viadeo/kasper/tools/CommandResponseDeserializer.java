@@ -11,8 +11,8 @@ import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.viadeo.kasper.KasperError;
-import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.command.CommandResult.Status;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.command.CommandResponse.Status;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,17 +20,17 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class CommandResultDeserializer extends JsonDeserializer<CommandResult> {
-    static final Logger LOGGER = LoggerFactory.getLogger(CommandResultDeserializer.class);
+public final class CommandResponseDeserializer extends JsonDeserializer<CommandResponse> {
+    static final Logger LOGGER = LoggerFactory.getLogger(CommandResponseDeserializer.class);
 
     // ------------------------------------------------------------------------
 
-    public CommandResultDeserializer() { }
+    public CommandResponseDeserializer() { }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public CommandResult deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException {
+    public CommandResponse deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException {
         Status status = null;
         KasperError error = null;
         
@@ -50,7 +50,7 @@ public final class CommandResultDeserializer extends JsonDeserializer<CommandRes
             }
         }
 
-        return new CommandResult(status, error);
+        return new CommandResponse(status, error);
     }
 
     private KasperError readKasperError(final JsonParser jp) throws IOException {

@@ -10,7 +10,7 @@ import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import lombok.Data;
 import org.junit.Test;
 
@@ -30,10 +30,10 @@ public class QueryValidationActorTest {
         final QueryValidationActor<QueryToValidate, QueryAnswer> actor = new QueryValidationActor<>(Validation.buildDefaultValidatorFactory());
 
         // When
-        final QueryResult<QueryAnswer> result = actor.process(
+        final QueryResponse<QueryAnswer> result = actor.process(
                 new QueryToValidate(),
                 new DefaultContextBuilder().build(),
-                RequestActorsChain.<QueryToValidate, QueryResult<QueryAnswer>>tail());
+                RequestActorsChain.<QueryToValidate, QueryResponse<QueryAnswer>>tail());
 
         // Then
         assertTrue(result.isError());

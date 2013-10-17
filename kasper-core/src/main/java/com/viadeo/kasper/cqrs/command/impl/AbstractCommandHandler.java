@@ -88,7 +88,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         final Timer.Context classTimer = METRICLASSTIMER.time();
         final Timer.Context timer = metricTimer.time();
 
-        CommandResult ret = null;
+        CommandResponse ret = null;
         Exception exception = null;
         try {
 
@@ -114,7 +114,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
             }
             /*
              * FIXME should we transform to a command result or just rollback and propagate the exception as is
-             * let's propagate the error as is and keep CommandResult for business operation result (success and failure) ?
+             * let's propagate the error as is and keep CommandResponse for business operation result (success and failure) ?
              */
 
             /* Stop timer on error and propage exception */
@@ -151,7 +151,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
      * @return the command result
      * @throws Exception
      */
-    public CommandResult handle(final KasperCommandMessage<C> message, final UnitOfWork uow) throws Exception {
+    public CommandResponse handle(final KasperCommandMessage<C> message, final UnitOfWork uow) throws Exception {
         throw new UnsupportedOperationException();
     }
 
@@ -160,7 +160,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
      * @return the command result
      * @throws Exception
      */
-    public CommandResult handle(final KasperCommandMessage<C> message) throws Exception {
+    public CommandResponse handle(final KasperCommandMessage<C> message) throws Exception {
         throw new UnsupportedOperationException();
     }
 
@@ -168,7 +168,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
      * @param command The command to handle
      * @throws Exception
      */
-    public CommandResult handle(final C command) throws Exception {
+    public CommandResponse handle(final C command) throws Exception {
         throw new UnsupportedOperationException();
     }
 

@@ -14,8 +14,8 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.viadeo.kasper.KasperError;
-import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,11 +60,11 @@ public final class ObjectMapperProvider {
 
         /* Register a specific module for Kasper Ser/Deser */
         final SimpleModule kasperClientModule = new SimpleModule()
-                .addSerializer(CommandResult.class, new CommandResultSerializer())
-                .addDeserializer(CommandResult.class, new CommandResultDeserializer())
-                .addSerializer(QueryResult.class, new QueryResultSerializer());
+                .addSerializer(CommandResponse.class, new CommandResponseSerializer())
+                .addDeserializer(CommandResponse.class, new CommandResponseDeserializer())
+                .addSerializer(QueryResponse.class, new QueryResponseSerializer());
 
-        kasperClientModule.setDeserializers(new CommandQueryResultDeserializerAdapter());
+        kasperClientModule.setDeserializers(new CommandQueryResponseDeserializerAdapter());
 
         mapper.registerModule(kasperClientModule);
 

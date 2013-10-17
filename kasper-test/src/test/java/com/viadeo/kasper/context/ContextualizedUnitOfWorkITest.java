@@ -13,7 +13,7 @@ import com.viadeo.kasper.KasperTestId;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
-import com.viadeo.kasper.cqrs.command.CommandResult;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
@@ -74,7 +74,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 
     @XKasperCommandHandler(domain = ContextTestDomain.class)
     public static class ContextTestHandler extends AbstractEntityCommandHandler<ContextTestCommand, ContextTestAGR> {
-        public CommandResult handle(final ContextTestCommand command) throws Exception {
+        public CommandResponse handle(final ContextTestCommand command) throws Exception {
 
             StaticChecker.verify(CurrentContext.value().get());
 
@@ -89,7 +89,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
             final ContextTestAGR agr = new ContextTestAGR(new KasperTestId("42"));
             repo.add(agr);
 
-            return CommandResult.ok();
+            return CommandResponse.ok();
         }
     }
 
@@ -148,7 +148,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
         StaticChecker.context(context);
 
         // When
-        final Future<CommandResult> future = gw.sendCommandForFuture(command, context);
+        final Future<CommandResponse> future = gw.sendCommandForFuture(command, context);
         future.get();
 
         // Then

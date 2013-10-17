@@ -8,33 +8,33 @@ package com.viadeo.kasper.cqrs.query.http;
 
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.core.Response.Status;
 
-public class HTTPQueryResult<ANSWER extends QueryAnswer>  extends QueryResult<ANSWER> {
+public class HTTPQueryResponse<ANSWER extends QueryAnswer>  extends QueryResponse<ANSWER> {
 
     private final Status httpStatus;
 
     // ------------------------------------------------------------------------
 
-    public HTTPQueryResult(final Status httpStatus, final QueryResult<ANSWER> result) {
+    public HTTPQueryResponse(final Status httpStatus, final QueryResponse<ANSWER> result) {
         super(result);
         this.httpStatus = checkNotNull(httpStatus);
     }
 
-    public HTTPQueryResult(final ANSWER answer) {
+    public HTTPQueryResponse(final ANSWER answer) {
         super(checkNotNull(answer));
         this.httpStatus = Status.OK;
     }
 
-    public HTTPQueryResult(final Status httpStatus, final ANSWER answer) {
+    public HTTPQueryResponse(final Status httpStatus, final ANSWER answer) {
         super(checkNotNull(answer));
         this.httpStatus = checkNotNull(httpStatus);
     }
 
-    public HTTPQueryResult(final Status httpStatus, final KasperError error) {
+    public HTTPQueryResponse(final Status httpStatus, final KasperError error) {
         super(checkNotNull(error));
         this.httpStatus = checkNotNull(httpStatus);
     }

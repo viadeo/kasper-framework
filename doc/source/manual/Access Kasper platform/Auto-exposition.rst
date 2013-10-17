@@ -33,7 +33,7 @@ Goals
  * Uniformize the communication
  * Be extensible in order to allow customization and extension/addition of new features.
 
-Commands & CommandResult
+Commands & CommandResponse
 ------------------------
 
 Commands are submitted using **POST** or **PUT** requests, there are no query parameters, everything is in the body.
@@ -80,7 +80,7 @@ In response you receive a json of the following form (see :ref:`Error_codes`).
     }
 
 
-Queries & Results
+Queries & Responses
 -----------------
 
 A query is submitted using a **GET** request, the parameters will be in the query string not in the body.
@@ -127,8 +127,8 @@ information on what happened, see :ref:`Error_codes`.
         ]
     }
 
-In case of a success a query Result will be returned serialized to json, this is done with Jackson. That allows you to use standard Jackson
-annotations on your query Result (if you want to use constructors with args for example).
+In case of a success a query Response will be returned serialized to json, this is done with Jackson. That allows you to use standard Jackson
+annotations on your query Response (if you want to use constructors with args for example).
 
 ..  _TypeAdapters:
 

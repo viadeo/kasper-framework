@@ -10,7 +10,7 @@ import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.annotation.Immutable;
 import com.viadeo.kasper.cqrs.TransportMode;
-import com.viadeo.kasper.cqrs.command.http.HTTPCommandResult;
+import com.viadeo.kasper.cqrs.command.http.HTTPCommandResponse;
 import com.viadeo.kasper.exception.KasperException;
 
 import java.io.Serializable;
@@ -20,7 +20,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * Base Kasper command result implementation
  */
-public class CommandResult implements Serializable, Immutable {
+public class CommandResponse implements Serializable, Immutable {
     private static final long serialVersionUID = -938831661655150085L;
 
     /**
@@ -40,46 +40,46 @@ public class CommandResult implements Serializable, Immutable {
 
     // ------------------------------------------------------------------------
 
-    public static CommandResult error(final KasperError error) {
-        return new CommandResult(Status.ERROR, error);
+    public static CommandResponse error(final KasperError error) {
+        return new CommandResponse(Status.ERROR, error);
     }
 
-    public static CommandResult error(final String code, final String message) {
+    public static CommandResponse error(final String code, final String message) {
         return error(new KasperError(code, message));
     }
 
-    public static CommandResult error(final CoreErrorCode code, final String message) {
+    public static CommandResponse error(final CoreErrorCode code, final String message) {
         return error(new KasperError(checkNotNull(code).toString(), message));
     }
 
     // ------------------------------------------------------------------------
 
-    public static CommandResult refused(final KasperError error) {
-        return new CommandResult(Status.REFUSED, error);
+    public static CommandResponse refused(final KasperError error) {
+        return new CommandResponse(Status.REFUSED, error);
     }
 
-    public static CommandResult refused(final String code, final String message) {
+    public static CommandResponse refused(final String code, final String message) {
         return refused(new KasperError(code, message));
     }
 
-    public static CommandResult refused(final CoreErrorCode code, final String message) {
+    public static CommandResponse refused(final CoreErrorCode code, final String message) {
         return refused(new KasperError(code, message));
     }
 
     // ------------------------------------------------------------------------
 
-    public static CommandResult ok() {
-        return new CommandResult(Status.OK, null);
+    public static CommandResponse ok() {
+        return new CommandResponse(Status.OK, null);
     }
 
     // ------------------------------------------------------------------------
 
-    public CommandResult(final CommandResult result) {
+    public CommandResponse(final CommandResponse result) {
         this.status = result.status;
         this.error = result.error;
     }
 
-    public CommandResult(final Status status, final KasperError error) {
+    public CommandResponse(final Status status, final KasperError error) {
         this.status = checkNotNull(status);
         
         if (!status.equals(Status.OK) && (null == error)) {
@@ -119,15 +119,15 @@ public class CommandResult implements Serializable, Immutable {
     // ------------------------------------------------------------------------
 
     public TransportMode getTransportMode() {
-        if (HTTPCommandResult.class.isAssignableFrom(this.getClass())) {
+        if (HTTPCommandResponse.class.isAssignableFrom(this.getClass())) {
             return TransportMode.HTTP;
         }
         return TransportMode.UNKNOWN;
     }
 
-    public HTTPCommandResult asHttp(){
-        if (HTTPCommandResult.class.isAssignableFrom(this.getClass())) {
-            return (HTTPCommandResult) this;
+    public HTTPCommandResponse asHttp(){
+        if (HTTPCommandResponse.class.isAssignableFrom(this.getClass())) {
+            return (HTTPCommandResponse) this;
         }
         throw new KasperException("Not an HTTP command result");
     }

@@ -21,7 +21,7 @@ public class GetMembersQueryService implements QueryService<GetMembersQueryServi
 	}
 
 	@Override
-	public QueryResult<MembersAnswer> retrieve(final QueryMessage<GetMembersQuery> message) throws Exception {
+	public QueryResponse<MembersAnswer> retrieve(final QueryMessage<GetMembersQuery> message) throws Exception {
 		return null;
 	}
 	

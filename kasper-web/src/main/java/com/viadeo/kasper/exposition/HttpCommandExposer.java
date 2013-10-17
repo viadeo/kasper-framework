@@ -29,7 +29,7 @@ import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.command.CommandResult;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.slf4j.Logger;
@@ -162,7 +162,7 @@ public class HttpCommandExposer extends HttpExposer {
             return;
         }
 
-        CommandResult result = null;
+        CommandResponse result = null;
         JsonParser parser = null;
 
         try {
@@ -192,7 +192,7 @@ public class HttpCommandExposer extends HttpExposer {
             final Timer.Context commandHandleTime = METRICS.timer(name(command.getClass(), "requests-handle-time")).time();
             final Timer.Context classHandleTime = METRICLASSHANDLETIMER.time();
 
-            result = commandGateway.sendCommandAndWaitForAResultWithException(command, context);
+            result = commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
 
             commandHandleTime.stop();
             classHandleTime.stop();
@@ -207,7 +207,7 @@ public class HttpCommandExposer extends HttpExposer {
             }
 
             sendResponse(
-                    CommandResult.error(
+                    CommandResponse.error(
                         new KasperError(
                             CoreErrorCode.INVALID_INPUT.name(),
                             errorMessages
@@ -250,7 +250,7 @@ public class HttpCommandExposer extends HttpExposer {
 
     // ------------------------------------------------------------------------
 
-    protected void sendResponse(final CommandResult result,
+    protected void sendResponse(final CommandResponse result,
                                 final HttpServletRequest req, final HttpServletResponse resp,
                                 final Class<? extends Command> commandClass)
             throws IOException {
@@ -289,7 +289,7 @@ public class HttpCommandExposer extends HttpExposer {
     }
 
     private void internalCommandError(final HttpServletRequest req, final HttpServletResponse resp,
-                                      final Class<? extends Command> commandClass, final CommandResult result,
+                                      final Class<? extends Command> commandClass, final CommandResponse result,
                                       final Exception e)
             throws IOException {
          this.sendError(req, resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
@@ -318,7 +318,7 @@ public class HttpCommandExposer extends HttpExposer {
 
         /* write also into the body the result as json */
         mapper.writer().writeValue(response.getOutputStream(),
-                                   CommandResult.error(
+                                   CommandResponse.error(
                                           new KasperError(CoreErrorCode.UNKNOWN_ERROR, reason)
                                    )
         );

@@ -9,21 +9,21 @@ package com.viadeo.kasper.client;
 import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.ClientResponse;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-class QueryResultFuture<P extends QueryAnswer> extends ResultFuture<QueryResult<P>> {
+class QueryResponseFuture<P extends QueryAnswer> extends ResponseFuture<QueryResponse<P>> {
 
     private final TypeToken<P> mapTo;
     private KasperClient kasperClient;
 
     // ------------------------------------------------------------------------
 
-    public QueryResultFuture(final KasperClient kasperClient, final Future<ClientResponse> futureResponse, final TypeToken<P> mapTo) {
+    public QueryResponseFuture(final KasperClient kasperClient, final Future<ClientResponse> futureResponse, final TypeToken<P> mapTo) {
         super(futureResponse);
 
         this.kasperClient = kasperClient;
@@ -32,11 +32,11 @@ class QueryResultFuture<P extends QueryAnswer> extends ResultFuture<QueryResult<
 
     // ------------------------------------------------------------------------
 
-    public QueryResult<P> get() throws InterruptedException, ExecutionException {
+    public QueryResponse<P> get() throws InterruptedException, ExecutionException {
         return kasperClient.handleQueryResponse(futureResponse().get(), mapTo);
     }
 
-    public QueryResult<P> get(final long timeout, final TimeUnit unit)
+    public QueryResponse<P> get(final long timeout, final TimeUnit unit)
             throws InterruptedException, ExecutionException, TimeoutException {
         return kasperClient.handleQueryResponse(futureResponse().get(timeout, unit), mapTo);
     }

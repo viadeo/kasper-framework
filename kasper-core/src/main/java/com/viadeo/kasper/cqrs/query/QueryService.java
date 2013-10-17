@@ -12,7 +12,7 @@ package com.viadeo.kasper.cqrs.query;
  * @param <Q> the associated Query
  * @param <ANSWER> the associated Data Transfer Object
  *
- * @see QueryResult
+ * @see QueryResponse
  * @see Query
  */
 public interface QueryService<Q extends Query, ANSWER extends QueryAnswer> {
@@ -28,15 +28,15 @@ public interface QueryService<Q extends Query, ANSWER extends QueryAnswer> {
 	int PARAMETER_ANSWER_POSITION = 1;
 
 	/**
-	 * Operates the service, retrieve a service Result satisfying the submitted
+	 * Operates the service, retrieve a service Response satisfying the submitted
 	 * filter
      *
      * You have to implement at least one retrieve() method
 	 *
 	 * @param message a message encapsulating the query to answer
-	 * @return a filled Result
+	 * @return a filled Response
 	 */
-	QueryResult<ANSWER> retrieve(QueryMessage<Q> message) throws Exception;
+	QueryResponse<ANSWER> retrieve(QueryMessage<Q> message) throws Exception;
 
 }
 

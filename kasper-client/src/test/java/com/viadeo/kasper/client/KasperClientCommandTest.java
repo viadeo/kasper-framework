@@ -17,8 +17,8 @@ import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.command.CommandResult.Status;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.command.CommandResponse.Status;
 import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -53,17 +53,17 @@ public class KasperClientCommandTest extends JerseyTest {
 
     // -------------------------------------------------------------------------
 
-    public static class MemberResult {
+    public static class MemberResponse {
 
         private String memberName;
         private List<Integer> ids;
 
         // --
 
-        public MemberResult() {
+        public MemberResponse() {
         }
 
-        public MemberResult(final String memberName, final List<Integer> ids) {
+        public MemberResponse(final String memberName, final List<Integer> ids) {
             this.memberName = memberName;
             this.ids = ids;
         }
@@ -124,8 +124,8 @@ public class KasperClientCommandTest extends JerseyTest {
         @PUT
         @Produces(MediaType.APPLICATION_JSON)
         @Consumes(MediaType.APPLICATION_JSON)
-        public CommandResult getMember(final CreateMemberCommand command) {
-            return new CommandResult(command.getStatus(),
+        public CommandResponse getMember(final CreateMemberCommand command) {
+            return new CommandResponse(command.getStatus(),
                     Status.OK != command.getStatus() ? new KasperError("", "") : null);
         }
     }
@@ -171,7 +171,7 @@ public class KasperClientCommandTest extends JerseyTest {
         final CreateMemberCommand command = new CreateMemberCommand(Status.REFUSED);
 
         // When
-        final CommandResult result = client.send(command);
+        final CommandResponse result = client.send(command);
 
         // Then
         assertEquals(Status.REFUSED, result.getStatus());
@@ -187,7 +187,7 @@ public class KasperClientCommandTest extends JerseyTest {
         final CreateMemberCommand command = new CreateMemberCommand(Status.ERROR);
 
         // When
-        final Future<? extends CommandResult> result = client.sendAsync(command);
+        final Future<? extends CommandResponse> result = client.sendAsync(command);
 
         // Then
         assertEquals(Status.ERROR, result.get().getStatus());
@@ -200,13 +200,13 @@ public class KasperClientCommandTest extends JerseyTest {
         // Given
         final CountDownLatch latch = new CountDownLatch(1);
         final CreateMemberCommand command = new CreateMemberCommand(Status.OK);
-        final Callback<CommandResult> callback = spy(new Callback<CommandResult>() {
+        final Callback<CommandResponse> callback = spy(new Callback<CommandResponse>() {
             @Override
-            public void done(CommandResult object) {
+            public void done(CommandResponse object) {
                 latch.countDown();
             }
         });
-        final ArgumentCaptor<CommandResult> result = ArgumentCaptor.forClass(CommandResult.class);
+        final ArgumentCaptor<CommandResponse> result = ArgumentCaptor.forClass(CommandResponse.class);
 
         // When
         client.sendAsync(command, callback);
@@ -218,7 +218,7 @@ public class KasperClientCommandTest extends JerseyTest {
     }
 
     @Test
-    public void send_withAnswerNot200_shouldFillErrorsInResult() {
+    public void send_withAnswerNot200_shouldFillErrorsInResponse() {
         // Given
         final CreateMemberCommand command = new CreateMemberCommand(Status.REFUSED);
         try {
@@ -228,7 +228,7 @@ public class KasperClientCommandTest extends JerseyTest {
         }
 
         // When
-        final CommandResult result = client.send(command);
+        final CommandResponse result = client.send(command);
 
         // Then
         Assert.assertNotNull(result);
@@ -239,7 +239,7 @@ public class KasperClientCommandTest extends JerseyTest {
     }
 
     @Test
-    public void sendAsync_withAnswerNot200_shouldFillErrorsInResult() throws MalformedURLException, InterruptedException,
+    public void sendAsync_withAnswerNot200_shouldFillErrorsInResponse() throws MalformedURLException, InterruptedException,
             ExecutionException {
 
         // Given
@@ -247,7 +247,7 @@ public class KasperClientCommandTest extends JerseyTest {
         final CreateMemberCommand command = new CreateMemberCommand(Status.ERROR);
 
         // When
-        final CommandResult result = client.sendAsync(command).get();
+        final CommandResponse result = client.sendAsync(command).get();
 
         // Then
         Assert.assertNotNull(result);

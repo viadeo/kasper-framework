@@ -21,12 +21,12 @@ public class QueryFiltersActor<Q extends Query, P extends QueryAnswer>
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
     private final Collection<? extends QueryFilter<Q>> queryFilters;
-    private final Collection<? extends ResultFilter<P>> resultFilters;
+    private final Collection<? extends ResponseFilter<P>> resultFilters;
 
     // ------------------------------------------------------------------------
 
     public QueryFiltersActor(final Collection<? extends QueryFilter<Q>> queryFilters,
-                             final Collection<? extends ResultFilter<P>> resultFilters) {
+                             final Collection<? extends ResponseFilter<P>> resultFilters) {
         this.queryFilters = checkNotNull(queryFilters);
         this.resultFilters = checkNotNull(resultFilters);
     }
@@ -34,8 +34,8 @@ public class QueryFiltersActor<Q extends Query, P extends QueryAnswer>
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryResult<P> process(final Q query, final Context context, final RequestActorsChain<Q, QueryResult<P>> chain) throws Exception {
-        return applyResultFilters(query.getClass(), chain.next(applyQueryFilters(query, context), context), context);
+    public QueryResponse<P> process(final Q query, final Context context, final RequestActorsChain<Q, QueryResponse<P>> chain) throws Exception {
+        return applyResponseFilters(query.getClass(), chain.next(applyQueryFilters(query, context), context), context);
     }
 
     // ------------------------------------------------------------------------
@@ -59,23 +59,23 @@ public class QueryFiltersActor<Q extends Query, P extends QueryAnswer>
 
     // -----
 
-    private <R extends QueryResult<P>> R applyResultFilters(final Class queryClass, final R result, final Context context) {
-        R newResult = result;
+    private <R extends QueryResponse<P>> R applyResponseFilters(final Class queryClass, final R result, final Context context) {
+        R newResponse = result;
 
         if ((null != result.getAnswer()) && !resultFilters.isEmpty()) {
             final Timer.Context timerFilters = METRICS.timer(name(queryClass, "requests-result-filters-time")).time();
-            for (final ResultFilter<P> filter : resultFilters) {
-                if (ResultFilter.class.isAssignableFrom(filter.getClass())) {
-                    LOGGER.info(String.format("Apply Result filter %s", filter.getClass().getSimpleName()));
+            for (final ResponseFilter<P> filter : resultFilters) {
+                if (ResponseFilter.class.isAssignableFrom(filter.getClass())) {
+                    LOGGER.info(String.format("Apply Response filter %s", filter.getClass().getSimpleName()));
 
                     /* Apply filter */
-                    newResult = filter.filter(context, result);
+                    newResponse = filter.filter(context, result);
                 }
             }
             timerFilters.stop();
         }
 
-        return newResult;
+        return newResponse;
     }
 
 }

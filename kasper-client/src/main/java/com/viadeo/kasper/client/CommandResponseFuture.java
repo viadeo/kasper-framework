@@ -7,20 +7,20 @@
 package com.viadeo.kasper.client;
 
 import com.sun.jersey.api.client.ClientResponse;
-import com.viadeo.kasper.cqrs.command.CommandResult;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
-class CommandResultFuture extends ResultFuture<CommandResult> {
+class CommandResponseFuture extends ResponseFuture<CommandResponse> {
 
     private KasperClient kasperClient;
 
     // ------------------------------------------------------------------------
 
-    public CommandResultFuture(final KasperClient kasperClient, final Future<ClientResponse> futureResponse) {
+    public CommandResponseFuture(final KasperClient kasperClient, final Future<ClientResponse> futureResponse) {
         super(futureResponse);
 
         this.kasperClient = kasperClient;
@@ -28,11 +28,11 @@ class CommandResultFuture extends ResultFuture<CommandResult> {
 
     // ------------------------------------------------------------------------
 
-    public CommandResult get() throws InterruptedException, ExecutionException {
+    public CommandResponse get() throws InterruptedException, ExecutionException {
         return kasperClient.handleResponse(futureResponse().get());
     }
 
-    public CommandResult get(final long timeout, final TimeUnit unit)
+    public CommandResponse get(final long timeout, final TimeUnit unit)
             throws InterruptedException, ExecutionException, TimeoutException {
         return kasperClient.handleResponse(futureResponse().get(timeout, unit));
     }

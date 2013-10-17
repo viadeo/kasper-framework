@@ -11,7 +11,7 @@ to the **Command** and **Query** gateways :
 
    platform.sendCommand(command, context);
 
-   final QueryResult<MyQueryAnswer> res = platform.retrieve(query, context);
+   final QueryResponse<MyQueryAnswer> res = platform.retrieve(query, context);
 
    // == COMMAND GATEWAY ======================================================
    final CommandGateway cgw = platform.getCommandGateway();
@@ -20,13 +20,13 @@ to the **Command** and **Query** gateways :
    cgw.sendCommand(command, context);
 
    /* Fire and get a Future */
-   final Future<CommandResult> f1 = cgw.sendCommandForFuture(command, context);
+   final Future<CommandResponse> f1 = cgw.sendCommandForFuture(command, context);
 
    /* Wait for result */
-   final CommandResult cr = cgw.sendCommandAndWaitForAResult(command, context);
+   final CommandResponse cr = cgw.sendCommandAndWaitForAResponse(command, context);
 
    /* Wait for result and get exceptions */
-   final CommandResult cr2 = cgw.sendCommandAndWaitForAResultWithException(command, context);
+   final CommandResponse cr2 = cgw.sendCommandAndWaitForAResponseWithException(command, context);
 
    /* Wait for command execution */
    cgw.sendCommandAndWait(command, context, timeout, unit);
@@ -34,7 +34,7 @@ to the **Command** and **Query** gateways :
    // == QUERY GATEWAY ========================================================
    final QueryGateway qgw = platform.getQueryGateway();
 
-   final QueryResult<MyQueryAnswer> res = retrieve(query, context);
+   final QueryResponse<MyQueryAnswer> res = retrieve(query, context);
 
 
 TODO: document the different ways to send commands and events from handlers, listeners and query services

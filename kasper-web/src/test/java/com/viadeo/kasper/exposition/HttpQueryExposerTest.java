@@ -36,21 +36,21 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         private static final long serialVersionUID = 104409802777527460L;
     }
 
-    public static class SomeCollectionResult extends AbstractQueryCollectionAnswer<SomeResult> {
+    public static class SomeCollectionResponse extends AbstractQueryCollectionAnswer<SomeResponse> {
     }
 
     @XKasperQueryService(domain = AccountDomain.class)
-    public static class SomeCollectionQueryService implements QueryService<SomeCollectionQuery, SomeCollectionResult> {
+    public static class SomeCollectionQueryService implements QueryService<SomeCollectionQuery, SomeCollectionResponse> {
         @Override
-        public QueryResult<SomeCollectionResult> retrieve(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
+        public QueryResponse<SomeCollectionResponse> retrieve(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
-            final SomeCollectionResult list = new SomeCollectionResult();
-            final SomeResult result = new SomeResult();
+            final SomeCollectionResponse list = new SomeCollectionResponse();
+            final SomeResponse result = new SomeResponse();
 
             result.setQuery(q);
             list.setList(Arrays.asList(result));
 
-            return QueryResult.of(list);
+            return QueryResponse.of(list);
         }
     }
 
@@ -100,7 +100,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         }
     }
 
-    public static class SomeResult implements QueryAnswer {
+    public static class SomeResponse implements QueryAnswer {
         private SomeQuery query;
 
         public SomeQuery getQuery() {
@@ -113,9 +113,9 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     }
 
     @XKasperQueryService(domain = AccountDomain.class)
-    public static class SomeQueryService implements QueryService<SomeQuery, SomeResult> {
+    public static class SomeQueryService implements QueryService<SomeQuery, SomeResponse> {
         @Override
-        public QueryResult<SomeResult> retrieve(final QueryMessage<SomeQuery> message) throws KasperQueryException {
+        public QueryResponse<SomeResponse> retrieve(final QueryMessage<SomeQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
 
             if (q.isDoThrowSomeException()) {
@@ -125,12 +125,12 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
                         messages.add(q.getErrorCodes().get(i));
                 }
 
-                return QueryResult.of(new KasperError(q.aValue, messages));
+                return QueryResponse.of(new KasperError(q.aValue, messages));
             }
 
-            final SomeResult result = new SomeResult();
+            final SomeResponse result = new SomeResponse();
             result.setQuery(q);
-            return QueryResult.of(result);
+            return QueryResponse.of(result);
         }
     }
 
@@ -167,7 +167,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         query.intArray = new int[] { 1, 2, 3 };
 
         // When
-        final QueryResult<SomeResult> result = client().query(query, SomeResult.class);
+        final QueryResponse<SomeResponse> result = client().query(query, SomeResponse.class);
 
         // Then
         assertEquals(query.aValue, result.getAnswer().query.aValue);
@@ -185,7 +185,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         query.aValue = "aaa";
 
         // When
-        final QueryResult<SomeResult> actual = client().query(query, SomeResult.class);
+        final QueryResponse<SomeResponse> actual = client().query(query, SomeResponse.class);
 
         // Then
         assertTrue(actual.isError());
@@ -196,12 +196,12 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     // ------------------------------------------------------------------------
 
     @Test
-    public void testQueryServiceReturningCollectionResult() {
+    public void testQueryServiceReturningCollectionResponse() {
         // Given
         final SomeCollectionQuery query = new SomeCollectionQuery();
 
         // When
-        final QueryResult<SomeCollectionResult> result = client().query(query, SomeCollectionResult.class);
+        final QueryResponse<SomeCollectionResponse> result = client().query(query, SomeCollectionResponse.class);
 
         // Then
         assertEquals(1, result.getAnswer().getCount());
@@ -218,7 +218,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         query.setErrorCodes(Arrays.asList("a", "b"));
 
         // When
-        final QueryResult<SomeCollectionResult> actual = client().query(query, SomeCollectionResult.class);
+        final QueryResponse<SomeCollectionResponse> actual = client().query(query, SomeCollectionResponse.class);
        
         // Then
         assertTrue(actual.isError());

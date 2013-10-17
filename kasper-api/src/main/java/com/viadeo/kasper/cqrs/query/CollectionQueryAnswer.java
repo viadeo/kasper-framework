@@ -16,7 +16,7 @@ import java.util.Collection;
  * 
  * @param <RES> the enclosed unit result type
  * 
- * @see QueryResult
+ * @see QueryResponse
  */
 public interface CollectionQueryAnswer<RES> extends Iterable<RES>, QueryAnswer {
 
@@ -32,7 +32,7 @@ public interface CollectionQueryAnswer<RES> extends Iterable<RES>, QueryAnswer {
 	/** @return the number of elements of this (returned) collection */
 	int getCount();
 
-    /** @return the list of Result elements */
+    /** @return the list of Response elements */
     Collection<RES> getList();
 
 }

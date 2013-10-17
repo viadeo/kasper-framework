@@ -28,7 +28,7 @@ import com.viadeo.kasper.core.locators.QueryServicesLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
@@ -197,7 +197,7 @@ public class HttpQueryExposer extends HttpExposer {
             final String queryName = resourceName(req.getRequestURI());
             final Query query = parseQuery(queryMapper.toQueryMap(req, resp), queryName, req, resp);
 
-            QueryResult result = null;
+            QueryResponse result = null;
             if (!resp.isCommitted()) {
                 final Timer.Context queryHandleTimer = METRICS.timer(name(query.getClass(), "requests-handle-time")).time();
                 final Timer.Context classHandleTimer = METRICLASSHANDLETIMER.time();
@@ -210,7 +210,7 @@ public class HttpQueryExposer extends HttpExposer {
 
             /* need to check again as something might go wrong in handleQuery */
             if (!resp.isCommitted()) {
-                sendResult(queryName, result, req, resp);
+                sendResponse(queryName, result, req, resp);
             }
 
         } catch (final Throwable t) {
@@ -269,11 +269,11 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     // can not use sendError it is forcing response to text/html
-    protected QueryResult handleQuery(final String queryName, final Query query, final HttpServletRequest req,
+    protected QueryResponse handleQuery(final String queryName, final Query query, final HttpServletRequest req,
                                          final HttpServletResponse resp, final UUID requestCorrelationUUID)
             throws IOException {
 
-        QueryResult result = null;
+        QueryResponse result = null;
 
          /* TODO: handle context from request */
         final Context context = new DefaultContextBuilder().build();
@@ -302,7 +302,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     // can not use sendError it is forcing response to text/html
-    protected void sendResult(final String queryName, final QueryResult result, final HttpServletRequest req,
+    protected void sendResponse(final String queryName, final QueryResponse result, final HttpServletRequest req,
                               final HttpServletResponse resp)
             throws IOException {
 
@@ -325,7 +325,7 @@ public class HttpQueryExposer extends HttpExposer {
 
         } catch (final Throwable t) {
             sendError(SC_INTERNAL_SERVER_ERROR,
-                      String.format("ERROR sending Result [%s] for query [%s]", result.getClass().getSimpleName(),queryName),
+                      String.format("ERROR sending Response [%s] for query [%s]", result.getClass().getSimpleName(),queryName),
                       req, resp, t);
         } finally {
             try {
@@ -361,7 +361,7 @@ public class HttpQueryExposer extends HttpExposer {
             error = new KasperError(CoreErrorCode.UNKNOWN_ERROR, message);
         }
 
-        writer.writeValue(resp.getOutputStream(), new QueryResult<>(error));
+        writer.writeValue(resp.getOutputStream(), new QueryResponse<>(error));
 
         try {
             resp.flushBuffer();

@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
-public class QueryServiceActor<Q extends Query, ANSWER extends QueryAnswer> implements RequestActor<Q, QueryResult<ANSWER>> {
+public class QueryServiceActor<Q extends Query, ANSWER extends QueryAnswer> implements RequestActor<Q, QueryResponse<ANSWER>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryServiceActor.class);
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
@@ -35,11 +35,11 @@ public class QueryServiceActor<Q extends Query, ANSWER extends QueryAnswer> impl
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryResult<ANSWER> process(final Q query, final Context context,
-                                        final RequestActorsChain<Q, QueryResult<ANSWER>> chain) throws Exception {
+    public QueryResponse<ANSWER> process(final Q query, final Context context,
+                                        final RequestActorsChain<Q, QueryResponse<ANSWER>> chain) throws Exception {
         /* Call the service */
         Exception exception = null;
-        QueryResult<ANSWER> ret = null;
+        QueryResponse<ANSWER> ret = null;
 
         final Timer.Context classTimer = METRICLASSTIMER.time();
         final Timer.Context timer = METRICS.timer(name(query.getClass(), "requests-time")).time();
@@ -54,7 +54,7 @@ public class QueryServiceActor<Q extends Query, ANSWER extends QueryAnswer> impl
 
             } catch (final UnsupportedOperationException e) {
                 if (AbstractQueryService.class.isAssignableFrom(queryService.getClass())) {
-                    ret = (QueryResult<ANSWER>) ((AbstractQueryService) queryService).retrieve(message.getQuery());
+                    ret = (QueryResponse<ANSWER>) ((AbstractQueryService) queryService).retrieve(message.getQuery());
                 } else {
                     timer.close();
                     classTimer.close();

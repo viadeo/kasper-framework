@@ -10,22 +10,32 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.viadeo.kasper.KasperError;
-import com.viadeo.kasper.cqrs.command.CommandResult;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 
 import java.io.IOException;
 
-public class CommandResultSerializer extends JsonSerializer<CommandResult> {
-
+@SuppressWarnings("rawtypes")
+public class QueryResponseSerializer extends JsonSerializer<QueryResponse> {
+    
     @Override
-    public void serialize(final CommandResult value, final JsonGenerator jgen, final SerializerProvider provider)
+    public void serialize(QueryResponse value, JsonGenerator jgen, SerializerProvider provider)
             throws IOException {
-
-        jgen.writeStartObject();
-        jgen.writeStringField(ObjectMapperProvider.STATUS, value.getStatus().name());
-        jgen.writeFieldName(ObjectMapperProvider.ERRORS);
-        jgen.writeStartArray();
         if (value.isError()) {
-            final KasperError error = value.getError();
+            jgen.writeStartObject();
+
+            // lets write a boolean telling that this is an error, can be useful
+            // for js consumers
+            jgen.writeFieldName(ObjectMapperProvider.ERROR);
+            jgen.writeBoolean(true);
+            
+            KasperError error = value.getError();
+
+            jgen.writeFieldName(ObjectMapperProvider.MESSAGE);
+            jgen.writeString(error.getCode());
+
+            jgen.writeFieldName(ObjectMapperProvider.ERRORS);
+
+            jgen.writeStartArray();
             for (String message : error.getMessages()) {
                 jgen.writeStartObject();
                 
@@ -35,9 +45,11 @@ public class CommandResultSerializer extends JsonSerializer<CommandResult> {
                 
                 jgen.writeEndObject();
             }
-        }
-        jgen.writeEndArray();
-        jgen.writeEndObject();
-    }
+            jgen.writeEndArray();
 
+            jgen.writeEndObject();
+        } else {
+            jgen.writeObject(value.getAnswer());
+        }
+    }
 }

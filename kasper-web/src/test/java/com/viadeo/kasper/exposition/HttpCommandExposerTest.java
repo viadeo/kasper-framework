@@ -11,8 +11,8 @@ import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
-import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.command.CommandResult.Status;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.command.CommandResponse.Status;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
 import com.viadeo.kasper.exception.KasperException;
@@ -51,7 +51,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         final Command unknownCommand = new Command() {};
 
         // When
-        final CommandResult result = client().send(unknownCommand);
+        final CommandResponse result = client().send(unknownCommand);
 
         // Then
         assertEquals(Status.ERROR, result.getStatus());
@@ -67,7 +67,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.name = "foo bar";
 
         // When
-        final CommandResult result = client().send(command);
+        final CommandResponse result = client().send(command);
 
         // Then
         assertEquals(Status.OK, result.getStatus());
@@ -84,7 +84,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.throwException = true;
 
         // When
-        final CommandResult result = client().send(command);
+        final CommandResponse result = client().send(command);
 
         // Then
         assertEquals(Status.ERROR, result.getStatus());
@@ -93,14 +93,14 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
     // ------------------------------------------------------------------------
 
     @Test
-    public void testCommandResultWithListOfErrors() throws Exception {
+    public void testCommandResponseWithListOfErrors() throws Exception {
         // Given valid input
         final CreateAccountCommand command = new CreateAccountCommand();
         command.code = "code";
         command.messages = ImmutableList.of("a", "aa", "aaa");
 
         // When
-        final CommandResult result = client().send(command);
+        final CommandResponse result = client().send(command);
 
         // Then
         assertEquals(Status.ERROR, result.getStatus());
@@ -118,7 +118,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.innerObject = new InnerObject();
 
         // When
-        final CommandResult result = client().send(command);
+        final CommandResponse result = client().send(command);
 
         // Then
         assertTrue(result.isError());
@@ -178,13 +178,13 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         static String createAccountCommandName = null;
 
         @Override
-        public CommandResult handle(final CreateAccountCommand command) throws Exception {
+        public CommandResponse handle(final CreateAccountCommand command) throws Exception {
             if (command.isThrowException())
                 throw new KasperException("Something bad happened!");
             if (command.getCode() != null)
-                return CommandResult.error(new KasperError(command.getCode(), command.getMessages()));
+                return CommandResponse.error(new KasperError(command.getCode(), command.getMessages()));
             createAccountCommandName = command.getName();
-            return CommandResult.ok();
+            return CommandResponse.ok();
         }
     }
 

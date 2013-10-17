@@ -46,15 +46,15 @@ public class QueryFilterITest {
     @XKasperUnregistered
     private class TestService implements QueryService<TestQuery, TestAnswer> {
         @Override
-        public QueryResult<TestAnswer> retrieve(final QueryMessage message) throws Exception {
-            return new QueryResult<>(new TestAnswer());
+        public QueryResponse<TestAnswer> retrieve(final QueryMessage message) throws Exception {
+            return new QueryResponse<>(new TestAnswer());
         }
     }
 
     @XKasperUnregistered
-    private class TestFilter implements QueryFilter<TestQuery>, ResultFilter<TestAnswer> {
+    private class TestFilter implements QueryFilter<TestQuery>, ResponseFilter<TestAnswer> {
         @Override
-        public <R extends QueryResult<TestAnswer>> R filter(Context context, R result) {
+        public <R extends QueryResponse<TestAnswer>> R filter(Context context, R result) {
             result.getAnswer().state = STATE_MODIFIED;
             return result;        }
 
@@ -101,14 +101,14 @@ public class QueryFilterITest {
         final TestQuery query = new TestQuery();
 
         // When
-        final QueryResult<TestAnswer> queryResult = gateway.retrieve(query, context);
+        final QueryResponse<TestAnswer> queryResponse = gateway.retrieve(query, context);
 
         // Then
         // verify(filter).filter(eq(context), any(TestQuery.class));
         assertEquals(STATE_MODIFIED, query.state);
 
-        // verify(filter).filter(eq(context), any(QueryResult.class));
-        assertEquals(STATE_MODIFIED, queryResult.getAnswer().state);
+        // verify(filter).filter(eq(context), any(QueryResponse.class));
+        assertEquals(STATE_MODIFIED, queryResponse.getAnswer().state);
 
         verify(filterGlobal).filter(eq(context), any(Query.class));
     }

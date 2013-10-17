@@ -8,10 +8,10 @@ package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
-import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 
-class CommandQueryResultDeserializerAdapter extends SimpleDeserializers {
+class CommandQueryResponseDeserializerAdapter extends SimpleDeserializers {
     private static final long serialVersionUID = 1995270375280248186L;
 
     @Override
@@ -20,11 +20,11 @@ class CommandQueryResultDeserializerAdapter extends SimpleDeserializers {
                                                     final BeanDescription beanDesc)
             throws JsonMappingException {
 
-        if (type.hasRawClass(QueryResult.class)) {
-            return new QueryResultDeserializer(type.containedType(0));
+        if (type.hasRawClass(QueryResponse.class)) {
+            return new QueryResponseDeserializer(type.containedType(0));
 
-        } else if (type.hasRawClass(CommandResult.class)) {
-            return new CommandResultDeserializer();
+        } else if (type.hasRawClass(CommandResponse.class)) {
+            return new CommandResponseDeserializer();
 
         } else {
             return super.findBeanDeserializer(type, config, beanDesc);

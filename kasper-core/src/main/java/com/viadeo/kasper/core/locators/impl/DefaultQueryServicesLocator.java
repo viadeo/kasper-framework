@@ -85,7 +85,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
      * The factory for caches
      */
     private final AnnotationQueryCacheActorFactory queryCacheFactory;
-    private final Map<Class<? extends Query>, RequestActorsChain<? extends Query, ? extends QueryResult>> requestActorChainCache = newHashMap();
+    private final Map<Class<? extends Query>, RequestActorsChain<? extends Query, ? extends QueryResponse>> requestActorChainCache = newHashMap();
 
     // ------------------------------------------------------------------------
 
@@ -235,7 +235,7 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <Q extends Query, P extends QueryAnswer, R extends QueryResult<P>>
+    public <Q extends Query, P extends QueryAnswer, R extends QueryResponse<P>>
     Optional<RequestActorsChain<Q, R>> getRequestActorChain(Class<? extends Q> queryClass) {
         RequestActorsChain<Q, R> chain = (RequestActorsChain<Q, R>) requestActorChainCache.get(queryClass);
 
@@ -285,8 +285,8 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
         final Collection<QueryFilter> queryFilters =
                 Lists.newArrayList(Iterables.filter(serviceFilters, QueryFilter.class));
 
-        final Collection<ResultFilter> resultFilters =
-                Lists.newArrayList(Iterables.filter(serviceFilters, ResultFilter.class));
+        final Collection<ResponseFilter> resultFilters =
+                Lists.newArrayList(Iterables.filter(serviceFilters, ResponseFilter.class));
 
         return new QueryFiltersActor(queryFilters, resultFilters);
     }

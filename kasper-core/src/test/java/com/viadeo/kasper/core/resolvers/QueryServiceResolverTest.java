@@ -25,13 +25,13 @@ public class QueryServiceResolverTest {
     @XKasperQueryService(domain = TestDomain.class)
     private static final class TestQueryService implements QueryService {
         @Override
-        public QueryResult retrieve(QueryMessage message) throws Exception { return null; }
+        public QueryResponse retrieve(QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperUnregistered
     private static final class TestQueryService2 implements QueryService {
         @Override
-        public QueryResult retrieve(QueryMessage message) throws Exception { return null; }
+        public QueryResponse retrieve(QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperUnregistered
@@ -43,7 +43,7 @@ public class QueryServiceResolverTest {
     @XKasperUnregistered
     private static final class TestQueryService3 implements  QueryService<TestQuery, TestQueryAnswer> {
         @Override
-        public QueryResult<TestQueryAnswer> retrieve(QueryMessage<TestQuery> message) throws Exception {
+        public QueryResponse<TestQueryAnswer> retrieve(QueryMessage<TestQuery> message) throws Exception {
             return null;
         }
     }

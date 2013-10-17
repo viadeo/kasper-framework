@@ -41,7 +41,7 @@ public class KasperQueryServicesLocatorBaseTest {
     @XKasperQueryService( domain = TestDomain.class )
 	private static class TestService implements QueryService<TestQuery, TestAnswer> {
 		@Override
-		public QueryResult<TestAnswer> retrieve(final QueryMessage<TestQuery> message) {
+		public QueryResponse<TestAnswer> retrieve(final QueryMessage<TestQuery> message) {
 			throw new UnsupportedOperationException();
 		}
 	}
@@ -162,7 +162,7 @@ public class KasperQueryServicesLocatorBaseTest {
     @XKasperQueryService( domain = TestDomain2.class )
     private static class TestService2 implements QueryService<TestQuery2, TestAnswer> {
         @Override
-        public QueryResult<TestAnswer> retrieve(final QueryMessage<TestQuery2> message) {
+        public QueryResponse<TestAnswer> retrieve(final QueryMessage<TestQuery2> message) {
             throw new UnsupportedOperationException();
         }
     }

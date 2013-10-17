@@ -19,12 +19,12 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.command.http.HTTPCommandResult;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.command.http.HTTPCommandResponse;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.http.HTTPQueryResult;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
+import com.viadeo.kasper.cqrs.query.http.HTTPQueryResponse;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.exception.KasperQueryAdapterException;
@@ -70,21 +70,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <pre>
  *      KasperClient client = new KasperClient();
  *      
- *      client.sendAsync(someCommand, new ICallback&lt;ICommandResult&gt;() {
- *          public void done(final ICommandResult result) {
+ *      client.sendAsync(someCommand, new ICallback&lt;ICommandResponse&gt;() {
+ *          public void done(final ICommandResponse result) {
  *              // do something smart with my result
  *          }
  *      });
  *      
  *      // or using a future
  *      
- *      Future&lt;ICommandResult&gt; futureCommandResult = client.sendAsync(someCommand);
+ *      Future&lt;ICommandResponse&gt; futureCommandResponse = client.sendAsync(someCommand);
  *      
  *      // do some other work while the command is being processed
  *      ...
  *      
  *      // block until the result is obtained
- *      ICommandResult commandResult = futureCommandResult.get();
+ *      ICommandResponse commandResponse = futureCommandResponse.get();
  * </pre>
  * 
  * Using a similar pattern you can submit a query.
@@ -106,9 +106,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * platform to implement a custom
  * {@link com.viadeo.kasper.query.exposition.TypeAdapter} for that specific
  * type.</li>
- * <li>At the moment the Result to which the result should be mapped is free,
+ * <li>At the moment the Response to which the result should be mapped is free,
  * but take care it must match the resulting stream. This will probably change
- * in the future by making IQuery parameterized with a Result. Thus query
+ * in the future by making IQuery parameterized with a Response. Thus query
  * methods signature could change.</li>
  * </ul>
  * </p>
@@ -222,9 +222,9 @@ public class KasperClient {
      *         from the command).
      * @throws KasperException
      *             KasperClientException if something went wrong.
-     * @see CommandResult
+     * @see CommandResponse
      */
-    public CommandResult send(final Command command) {
+    public CommandResponse send(final Command command) {
         checkNotNull(command);
 
         final ClientResponse response = client
@@ -247,9 +247,9 @@ public class KasperClient {
      * @return a Future allowing to retrieve the result later.
      * @throws KasperException
      *             if something went wrong.
-     * @see CommandResult
+     * @see CommandResponse
      */
-    public Future<? extends CommandResult> sendAsync(final Command command) {
+    public Future<? extends CommandResponse> sendAsync(final Command command) {
         checkNotNull(command);
 
         final Future<ClientResponse> futureResponse = client
@@ -260,14 +260,14 @@ public class KasperClient {
 
         // we need to decorate the Future returned by jersey in order to handle
         // exceptions and populate according to it the command result
-        return new CommandResultFuture(this, futureResponse);
+        return new CommandResponseFuture(this, futureResponse);
     }
 
     // --
 
     /**
      * Sends a command and returns immediately, when the response is ready the
-     * callback will be called with the obtained ICommandResult as parameter.
+     * callback will be called with the obtained ICommandResponse as parameter.
      * 
      * @param command
      *            to submit
@@ -275,9 +275,9 @@ public class KasperClient {
      *            to call when the response is ready.
      * @throws KasperException
      *             if something went wrong.
-     * @see CommandResult
+     * @see CommandResponse
      */
-    public void sendAsync(final Command command, final Callback<CommandResult> callback) {
+    public void sendAsync(final Command command, final Callback<CommandResponse> callback) {
         checkNotNull(command);
 
         client.asyncResource(resolveCommandPath(command.getClass()))
@@ -297,20 +297,20 @@ public class KasperClient {
                 }, command);
     }
 
-    CommandResult handleResponse(final ClientResponse response) {
+    CommandResponse handleResponse(final ClientResponse response) {
         if (response.getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
 
-            final CommandResult result = response.getEntity(CommandResult.class);
-            return new HTTPCommandResult(Response.Status.fromStatusCode(response.getStatus()), result);
+            final CommandResponse result = response.getEntity(CommandResponse.class);
+            return new HTTPCommandResponse(Response.Status.fromStatusCode(response.getStatus()), result);
 
         } else {
 
-            return new HTTPCommandResult(
+            return new HTTPCommandResponse(
                     Response.Status.fromStatusCode(response.getStatus()),
-                    CommandResult.Status.ERROR,
+                    CommandResponse.Status.ERROR,
                     new KasperError(
                             CoreErrorCode.UNKNOWN_ERROR,
-                            "Result from platform uses an unsupported type: " + response.getType())
+                            "Response from platform uses an unsupported type: " + response.getType())
             );
         }
     }
@@ -320,30 +320,30 @@ public class KasperClient {
     // ------------------------------------------------------------------------
 
     /**
-     * Send a query and maps the answer to a Result.
+     * Send a query and maps the answer to a Response.
      * 
      * @param query
      *            to submit.
      * @param mapTo
-     *            Result class to which we want to map the result.
-     * @return an instance of the Result for this query.
+     *            Response class to which we want to map the result.
+     * @return an instance of the Response for this query.
      * @throws KasperException
      *             if something went wrong.
      */
-    public <P extends QueryAnswer> QueryResult<P> query(final Query query, final Class<P> mapTo) {
+    public <P extends QueryAnswer> QueryResponse<P> query(final Query query, final Class<P> mapTo) {
         return query(query, TypeToken.of(mapTo));
     }
 
     /**
-     * Send a query and maps the result to a Result. Here we use guavas
+     * Send a query and maps the result to a Response. Here we use guavas
      * TypeToken allowing to define a generic type. This is useful if you want
-     * to map the result to a IQueryCollectionResult. <br/>
+     * to map the result to a IQueryCollectionResponse. <br/>
      * <p>
      * Type tokens are used like that:
      * 
      * <pre>
-     * SomeCollectionResult&lt;SomeResult&gt; someResultCollection = client.query(someQuery,
-     *         new TypeToken&lt;SomeCollectionResult&lt;SomeResult&gt;&gt;());
+     * SomeCollectionResponse&lt;SomeResponse&gt; someResponseCollection = client.query(someQuery,
+     *         new TypeToken&lt;SomeCollectionResponse&lt;SomeResponse&gt;&gt;());
      * </pre>
      * 
      * If you are not familiar with the concept of TypeTokens you can read <a
@@ -354,12 +354,12 @@ public class KasperClient {
      * @param query
      *            to submit.
      * @param mapTo
-     *            Result class to which we want to map the result.
-     * @return an instance of the Result for this query.
+     *            Response class to which we want to map the result.
+     * @return an instance of the Response for this query.
      * @throws KasperException
      *             if something went wrong.
      */
-    public <P extends QueryAnswer> QueryResult<P> query(final Query query, final TypeToken<P> mapTo) {
+    public <P extends QueryAnswer> QueryResponse<P> query(final Query query, final TypeToken<P> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
@@ -381,7 +381,7 @@ public class KasperClient {
 
     // --
 
-    public <P extends QueryAnswer> Future<QueryResult<P>> queryAsync(final Query query, final Class<P> mapTo) {
+    public <P extends QueryAnswer> Future<QueryResponse<P>> queryAsync(final Query query, final Class<P> mapTo) {
         return queryAsync(query, TypeToken.of(mapTo));
     }
 
@@ -392,7 +392,7 @@ public class KasperClient {
      * @see KasperClient#query(com.viadeo.kasper.cqrs.query.Query, Class)
      * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command)
      */
-    public <P extends QueryAnswer> Future<QueryResult<P>> queryAsync(final Query query, final TypeToken<P> mapTo) {
+    public <P extends QueryAnswer> Future<QueryResponse<P>> queryAsync(final Query query, final TypeToken<P> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
@@ -410,7 +410,7 @@ public class KasperClient {
             futureResponse = res.get(ClientResponse.class);
         }
 
-        return new QueryResultFuture<P>(this, futureResponse, mapTo);
+        return new QueryResponseFuture<P>(this, futureResponse, mapTo);
     }
 
     // --
@@ -421,7 +421,7 @@ public class KasperClient {
      *      Callback)
      */
     public <P extends QueryAnswer> void queryAsync(final Query query, final Class<P> mapTo,
-                                                    final Callback<QueryResult<P>> callback) {
+                                                    final Callback<QueryResponse<P>> callback) {
         queryAsync(query, TypeToken.of(mapTo), callback);
     }
 
@@ -431,7 +431,7 @@ public class KasperClient {
      *      Callback)
      */
     public <P extends QueryAnswer> void queryAsync(final Query query, final TypeToken<P> mapTo,
-                                                    final Callback<QueryResult<P>> callback) {
+                                                    final Callback<QueryResponse<P>> callback) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
@@ -452,7 +452,7 @@ public class KasperClient {
     private <P extends QueryAnswer> TypeListener<ClientResponse> createTypeListener(
             final Query query,
             final TypeToken<P> mapTo,
-            final Callback<QueryResult<P>> callback
+            final Callback<QueryResponse<P>> callback
     ) {
         return new TypeListener<ClientResponse>(ClientResponse.class) {
             @Override
@@ -468,25 +468,25 @@ public class KasperClient {
         };
     }
 
-    <P extends QueryAnswer> QueryResult<P> handleQueryResponse(final ClientResponse response,
+    <P extends QueryAnswer> QueryResponse<P> handleQueryResponse(final ClientResponse response,
                                                                 final TypeToken<P> mapTo) {
 
         if (response.getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
 
-            final TypeToken mappedType = new TypeToken<QueryResult<P>>() {
+            final TypeToken mappedType = new TypeToken<QueryResponse<P>>() {
                     private static final long serialVersionUID = -6868146773459098496L;
                 }.where(new TypeParameter<P>() { }, mapTo);
 
-            final QueryResult<P> result = response.getEntity(new GenericType<QueryResult<P>>(mappedType.getType()));
-            return new HTTPQueryResult<P>(Response.Status.fromStatusCode(response.getStatus()), result);
+            final QueryResponse<P> result = response.getEntity(new GenericType<QueryResponse<P>>(mappedType.getType()));
+            return new HTTPQueryResponse<P>(Response.Status.fromStatusCode(response.getStatus()), result);
 
         } else {
 
-            return new HTTPQueryResult<P>(
+            return new HTTPQueryResponse<P>(
                     Response.Status.fromStatusCode(response.getStatus()),
                     new KasperError(
                             CoreErrorCode.UNKNOWN_ERROR,
-                            "Result from platform uses an unsupported type: " + response.getType())
+                            "Response from platform uses an unsupported type: " + response.getType())
             );
         }
     }

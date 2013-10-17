@@ -10,13 +10,13 @@ import com.sun.jersey.api.client.ClientResponse;
 
 import java.util.concurrent.Future;
 
-abstract class ResultFuture<T> implements Future<T> {
+abstract class ResponseFuture<T> implements Future<T> {
 
     private final Future<ClientResponse> futureResponse;
 
     // ------------------------------------------------------------------------
 
-    public ResultFuture(final Future<ClientResponse> futureResponse) {
+    public ResponseFuture(final Future<ClientResponse> futureResponse) {
         this.futureResponse = futureResponse;
     }
 
