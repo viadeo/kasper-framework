@@ -15,24 +15,24 @@ import java.io.Serializable;
  *
  * A base value used to enclose a classical type, ex : PersonName extends KasperEnclosingValue<String
  *
- * @param <ANSWER> The enclosed type
+ * @param <RESULT> The enclosed type
  */
-public abstract class AbstractEnclosingValue<ANSWER extends Serializable> 
+public abstract class AbstractEnclosingValue<RESULT extends Serializable> 
 		implements Value {
 
 	private static final long serialVersionUID = -2912518894544854252L;
 
-	protected final ANSWER value;
+	protected final RESULT value;
 	
 	// ------------------------------------------------------------------------
 	
-	public AbstractEnclosingValue(final ANSWER value) {
+	public AbstractEnclosingValue(final RESULT value) {
 		super();
 		
 		this.value = Preconditions.checkNotNull(value);
 	}
 	
-	public ANSWER getValue() {
+	public RESULT getValue() {
 		return value;
 	}
 
@@ -48,7 +48,7 @@ public abstract class AbstractEnclosingValue<ANSWER extends Serializable>
 		}
 		if (this.getClass().isInstance(otherValue)) {
 			@SuppressWarnings("unchecked")
-			final AbstractEnclosingValue<ANSWER> other = (AbstractEnclosingValue<ANSWER>) otherValue;
+			final AbstractEnclosingValue<RESULT> other = (AbstractEnclosingValue<RESULT>) otherValue;
 			return value.equals(other.value);
 		}
 		return false;

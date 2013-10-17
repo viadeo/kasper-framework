@@ -25,7 +25,7 @@ So a domain :
 * is split between the **COMMAND** and **QUERY** architectural areas
 * offers an API composed of :
     * the **commands** it can handle
-    * the **queries** it can answer
+    * the **queries** it can result
     * the **query responses** it can send
     * the **events** it will emit
 * cannot have access to any part of another domain other than its api components (C/Q/E)

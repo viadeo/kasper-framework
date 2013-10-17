@@ -122,7 +122,7 @@ public interface Platform {
      * @return the response generated after processing of the query
      * @throws Exception when something bad occurs
      */
-    <ANSWER extends QueryResult> QueryResponse<ANSWER> retrieve(Query query, Context context) throws Exception;
+    <RESULT extends QueryResult> QueryResponse<RESULT> retrieve(Query query, Context context) throws Exception;
 
  	/** == Events ========================================================== */
 

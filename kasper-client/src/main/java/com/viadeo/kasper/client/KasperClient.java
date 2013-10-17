@@ -320,7 +320,7 @@ public class KasperClient {
     // ------------------------------------------------------------------------
 
     /**
-     * Send a query and maps the answer to a Response.
+     * Send a query and maps the result to a Response.
      * 
      * @param query
      *            to submit.

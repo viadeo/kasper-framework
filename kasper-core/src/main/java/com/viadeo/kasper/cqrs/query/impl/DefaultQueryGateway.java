@@ -43,7 +43,7 @@ public class DefaultQueryGateway implements QueryGateway {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <ANSWER extends QueryResult> QueryResponse<ANSWER> retrieve(final Query query, final Context context)
+    public <RESULT extends QueryResult> QueryResponse<RESULT> retrieve(final Query query, final Context context)
             throws Exception {
 
         checkNotNull(context);
@@ -70,11 +70,11 @@ public class DefaultQueryGateway implements QueryGateway {
         }
 
         Exception exception = null;
-        QueryResponse<ANSWER> ret = null;
+        QueryResponse<RESULT> ret = null;
 
         try {
             LOGGER.info("Call actor chain for query " + queryClass.getSimpleName());
-            ret = (QueryResponse<ANSWER>) optionalRequestChain.get().next(query, context);
+            ret = (QueryResponse<RESULT>) optionalRequestChain.get().next(query, context);
         } catch (final RuntimeException e) {
             exception = e;
         } catch (final Exception e) {

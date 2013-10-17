@@ -106,10 +106,10 @@ public class QueryServiceResolver extends AbstractResolver<QueryService> {
         final Optional<Class<? extends QueryResult>> queryResultClazz =
                 (Optional<Class<? extends QueryResult>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
-                                clazz, QueryService.class, QueryService.PARAMETER_ANSWER_POSITION);
+                                clazz, QueryService.class, QueryService.PARAMETER_RESULT_POSITION);
 
         if (!queryResultClazz.isPresent()) {
-            throw new KasperException("Unable to find query answer type for query service " + clazz.getClass());
+            throw new KasperException("Unable to find query result type for query service " + clazz.getClass());
         }
 
         cacheQueryResult.put(clazz, queryResultClazz.get());

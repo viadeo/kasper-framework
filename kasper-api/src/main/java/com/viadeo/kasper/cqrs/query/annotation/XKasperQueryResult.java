@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 
 /**
  *
- * Base marker for Kasper query answers
+ * Base marker for Kasper query results
  * 
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -21,7 +21,7 @@ import java.lang.annotation.Target;
 public @interface XKasperQueryResult {
 
     /**
-     * @return the query answer description
+     * @return the query result description
      */
     String description() default "";
 

@@ -8,7 +8,7 @@ Implementing queries consists on implementing four Kasper components :
 
 - one **event listener** used to listen for accurate events and index data
 - one **query** used by the client to send a request to the platform
-- one **query response** (with answer) used by the platform to send responses back to the client
+- one **query response** (with result) used by the platform to send responses back to the client
 - one **query service** which query the data according to the received query and sends back a response
 
 Kasper does not say anything about your indexation process, but you are heavily encouraged to :
@@ -19,7 +19,7 @@ Kasper does not say anything about your indexation process, but you are heavily 
 About implementing event listeners, see :ref:`events`.
 
 Kasper queries uses the **Command pattern**, the client does not ask a service for data, it sends queries to the
-platform and expects for a response with answer.
+platform and expects for a response with result.
 
 Queries
 -------
@@ -66,13 +66,13 @@ Some interfaces are available as a standard way to add some features to the quer
 - **OrderedQuery** can be implemented when the response can be ordered
 - **PaginatedQuery** can be implemented when the response can be paginated
 
-Query response answers
+Query response results
 ---------------------
 
-A Kasper query response answer is an immutable, anemic object used by a query service to send back data
+A Kasper query response result is an immutable, anemic object used by a query service to send back data
 to the requesting client, it ends with the suffix '**QueryResult**' (recommended).
 
-**A Query response answer is part of a domain API**.
+**A Query response result is part of a domain API**.
 
 A Kasper query response has to implement the interface **QueryResult** and can optionally defines some metadata
 using the **@XKasperQueryResult** annotation.
@@ -97,9 +97,9 @@ using the **@XKasperQueryResult** annotation.
 
 .. hint::
     The interface **QueryEntityResult** and proposed default implementation **AbstractQueryEntityResult** should be used for each
-    answer which is an entity (with an id, a type and optionally but preferably a last modification time)
+    result which is an entity (with an id, a type and optionally but preferably a last modification time)
 
-The interface **QueryCollectionResult** can be used to return a list of some other unit response answers.
+The interface **QueryCollectionResult** can be used to return a list of some other unit response results.
 
 The abstract class **AbstractQueryCollectionResult** is provided as a default implementation of the list methods
 required by the **QueryCollectionResult** interface.
@@ -114,10 +114,10 @@ required by the **QueryCollectionResult** interface.
         // Nothing more needs to be declared
     }
 
-Some interfaces are available as a standard way to add some features to the query response answers :
+Some interfaces are available as a standard way to add some features to the query response results :
 
-- **OrderedQueryResult** can be implemented when the response answer can be ordered
-- **PaginatedQueryResult** can be implemented when the response answer can be paginated
+- **OrderedQueryResult** can be implemented when the response result can be ordered
+- **PaginatedQueryResult** can be implemented when the response result can be paginated
 
 Query services
 --------------

@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class AnnotationQueryCacheActorFactory<QUERY extends Query, ANSWER extends QueryResult> {
+public class AnnotationQueryCacheActorFactory<QUERY extends Query, RESULT extends QueryResult> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationQueryCacheActorFactory.class);
 
     private CacheManager cacheManager;
@@ -50,9 +50,9 @@ public class AnnotationQueryCacheActorFactory<QUERY extends Query, ANSWER extend
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    public <QUERY extends Query, ANSWER extends QueryResult> Optional<QueryCacheActor<QUERY, ANSWER>> make(
+    public <QUERY extends Query, RESULT extends QueryResult> Optional<QueryCacheActor<QUERY, RESULT>> make(
             final Class<QUERY> queryClass,
-            final Class<? extends QueryService<QUERY, ANSWER>> queryServiceClass) {
+            final Class<? extends QueryService<QUERY, RESULT>> queryServiceClass) {
 
         if (null != cacheManager) {
             final XKasperQueryService queryServiceAnnotation =
@@ -62,8 +62,8 @@ public class AnnotationQueryCacheActorFactory<QUERY extends Query, ANSWER extend
                 final XKasperQueryCache kasperQueryCache = queryServiceAnnotation.cache();
 
                 if (kasperQueryCache.enabled()) {
-                    final Cache<Serializable, QueryResponse<ANSWER>> cache =
-                            cacheManager.<Serializable, QueryResponse<ANSWER>>
+                    final Cache<Serializable, QueryResponse<RESULT>> cache =
+                            cacheManager.<Serializable, QueryResponse<RESULT>>
                              createCacheBuilder(queryClass.getName())
                             .setStoreByValue(false)
                             .setExpiry(CacheConfiguration.ExpiryType.MODIFIED,

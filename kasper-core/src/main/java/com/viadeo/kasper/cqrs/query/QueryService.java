@@ -10,12 +10,12 @@ package com.viadeo.kasper.cqrs.query;
  * A Kasper query service
  *
  * @param <Q> the associated Query
- * @param <ANSWER> the associated Data Transfer Object
+ * @param <RESULT> the associated Data Transfer Object
  *
  * @see QueryResponse
  * @see Query
  */
-public interface QueryService<Q extends Query, ANSWER extends QueryResult> {
+public interface QueryService<Q extends Query, RESULT extends QueryResult> {
 
 	/**
 	 * Generic parameter position for Data Query Object
@@ -25,7 +25,7 @@ public interface QueryService<Q extends Query, ANSWER extends QueryResult> {
 	/**
 	 * Generic parameter position for Data Transfer Object
 	 */
-	int PARAMETER_ANSWER_POSITION = 1;
+	int PARAMETER_RESULT_POSITION = 1;
 
 	/**
 	 * Operates the service, retrieve a service Response satisfying the submitted
@@ -33,10 +33,10 @@ public interface QueryService<Q extends Query, ANSWER extends QueryResult> {
      *
      * You have to implement at least one retrieve() method
 	 *
-	 * @param message a message encapsulating the query to answer
+	 * @param message a message encapsulating the query to result
 	 * @return a filled Response
 	 */
-	QueryResponse<ANSWER> retrieve(QueryMessage<Q> message) throws Exception;
+	QueryResponse<RESULT> retrieve(QueryMessage<Q> message) throws Exception;
 
 }
 

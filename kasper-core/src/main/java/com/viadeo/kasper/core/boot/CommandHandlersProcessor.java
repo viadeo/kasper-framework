@@ -58,17 +58,17 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 	 */
 	private static class AxonCommandCastor<C extends Command> {
 
-		private final transient Class<? extends C> answer;
+		private final transient Class<? extends C> result;
 		private final transient org.axonframework.commandhandling.CommandHandler handler;
 
 		@SuppressWarnings("unchecked") // Safe by previous parent class typing
         AxonCommandCastor(final Class bean, final org.axonframework.commandhandling.CommandHandler container) {
-			this.answer = (Class<? extends C>) bean;
+			this.result = (Class<? extends C>) bean;
 			this.handler = container;
 		}
 
 		public Class<? extends C> getBeanClass() {
-			return this.answer;
+			return this.result;
 		}
 
 		public org.axonframework.commandhandling.CommandHandler getContainerClass() {

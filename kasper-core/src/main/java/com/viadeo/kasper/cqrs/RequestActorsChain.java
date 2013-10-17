@@ -30,7 +30,7 @@ public class RequestActorsChain<INPUT, OUTPUT> {
     };
 
     /*
-     * The actors chain element answer
+     * The actors chain element result
      */
     @VisibleForTesting
     final Optional<RequestActor<INPUT, OUTPUT>> actor;

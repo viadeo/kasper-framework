@@ -18,28 +18,28 @@ import org.slf4j.LoggerFactory;
 
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
-public class QueryServiceActor<Q extends Query, ANSWER extends QueryResult> implements RequestActor<Q, QueryResponse<ANSWER>> {
+public class QueryServiceActor<Q extends Query, RESULT extends QueryResult> implements RequestActor<Q, QueryResponse<RESULT>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryServiceActor.class);
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
     private static final Timer METRICLASSTIMER = METRICS.timer(name(QueryServiceActor.class, "requests-time"));
 
-    private final QueryService<Q, ANSWER> queryService;
+    private final QueryService<Q, RESULT> queryService;
 
     // ------------------------------------------------------------------------
 
-    public QueryServiceActor(final QueryService<Q, ANSWER> queryService) {
+    public QueryServiceActor(final QueryService<Q, RESULT> queryService) {
         this.queryService = queryService;
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryResponse<ANSWER> process(final Q query, final Context context,
-                                        final RequestActorsChain<Q, QueryResponse<ANSWER>> chain) throws Exception {
+    public QueryResponse<RESULT> process(final Q query, final Context context,
+                                        final RequestActorsChain<Q, QueryResponse<RESULT>> chain) throws Exception {
         /* Call the service */
         Exception exception = null;
-        QueryResponse<ANSWER> ret = null;
+        QueryResponse<RESULT> ret = null;
 
         final Timer.Context classTimer = METRICLASSTIMER.time();
         final Timer.Context timer = METRICS.timer(name(query.getClass(), "requests-time")).time();
@@ -54,7 +54,7 @@ public class QueryServiceActor<Q extends Query, ANSWER extends QueryResult> impl
 
             } catch (final UnsupportedOperationException e) {
                 if (AbstractQueryService.class.isAssignableFrom(queryService.getClass())) {
-                    ret = (QueryResponse<ANSWER>) ((AbstractQueryService) queryService).retrieve(message.getQuery());
+                    ret = (QueryResponse<RESULT>) ((AbstractQueryService) queryService).retrieve(message.getQuery());
                 } else {
                     timer.close();
                     classTimer.close();

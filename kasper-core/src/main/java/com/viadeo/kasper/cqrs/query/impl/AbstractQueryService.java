@@ -19,21 +19,21 @@ import com.viadeo.kasper.cqrs.query.*;
  * The query gateway is aware of this internal convenience and will deal with it
  *
  * @param <Q> the query
- * @param <ANSWER> the Response
+ * @param <RESULT> the Response
  */
-public abstract class AbstractQueryService<Q extends Query, ANSWER extends QueryResult>
-        implements QueryService<Q, ANSWER> {
+public abstract class AbstractQueryService<Q extends Query, RESULT extends QueryResult>
+        implements QueryService<Q, RESULT> {
 
     protected AbstractQueryService() { }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryResponse<ANSWER> retrieve(final QueryMessage<Q> message) throws Exception {
+    public QueryResponse<RESULT> retrieve(final QueryMessage<Q> message) throws Exception {
         return retrieve(message.getQuery());
     }
 
-    public QueryResponse<ANSWER> retrieve(final Q query) throws Exception {
+    public QueryResponse<RESULT> retrieve(final Q query) throws Exception {
         throw new UnsupportedOperationException();
     }
 
