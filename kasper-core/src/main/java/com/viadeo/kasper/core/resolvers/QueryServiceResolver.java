@@ -9,7 +9,7 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryAnswer;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
 import com.viadeo.kasper.ddd.Domain;
@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentMap;
 public class QueryServiceResolver extends AbstractResolver<QueryService> {
 
     private static final ConcurrentMap<Class, Class> cacheQuery = Maps.newConcurrentMap();
-    private static final ConcurrentMap<Class, Class> cacheQueryAnswer = Maps.newConcurrentMap();
+    private static final ConcurrentMap<Class, Class> cacheQueryResult = Maps.newConcurrentMap();
 
     // ------------------------------------------------------------------------
 
@@ -97,23 +97,23 @@ public class QueryServiceResolver extends AbstractResolver<QueryService> {
 
     // ------------------------------------------------------------------------
 
-    public Class<? extends QueryAnswer> getQueryAnswerClass(final Class<? extends QueryService> clazz) {
-        if (cacheQueryAnswer.containsKey(clazz)) {
-            return cacheQueryAnswer.get(clazz);
+    public Class<? extends QueryResult> getQueryResultClass(final Class<? extends QueryService> clazz) {
+        if (cacheQueryResult.containsKey(clazz)) {
+            return cacheQueryResult.get(clazz);
         }
 
         @SuppressWarnings("unchecked") // Safe
-        final Optional<Class<? extends QueryAnswer>> queryAnswerClazz =
-                (Optional<Class<? extends QueryAnswer>>)
+        final Optional<Class<? extends QueryResult>> queryResultClazz =
+                (Optional<Class<? extends QueryResult>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
                                 clazz, QueryService.class, QueryService.PARAMETER_ANSWER_POSITION);
 
-        if (!queryAnswerClazz.isPresent()) {
+        if (!queryResultClazz.isPresent()) {
             throw new KasperException("Unable to find query answer type for query service " + clazz.getClass());
         }
 
-        cacheQueryAnswer.put(clazz, queryAnswerClazz.get());
-        return queryAnswerClazz.get();
+        cacheQueryResult.put(clazz, queryResultClazz.get());
+        return queryResultClazz.get();
     }
 
 }

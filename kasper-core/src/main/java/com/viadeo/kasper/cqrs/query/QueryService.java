@@ -15,7 +15,7 @@ package com.viadeo.kasper.cqrs.query;
  * @see QueryResponse
  * @see Query
  */
-public interface QueryService<Q extends Query, ANSWER extends QueryAnswer> {
+public interface QueryService<Q extends Query, ANSWER extends QueryResult> {
 
 	/**
 	 * Generic parameter position for Data Query Object

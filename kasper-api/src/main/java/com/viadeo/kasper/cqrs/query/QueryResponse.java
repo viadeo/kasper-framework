@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Can be used to store some properties of a root entity which can be later the
  * base entity of a Kasper CQRS domain entity command.
  */
-public class QueryResponse<ANSWER extends QueryAnswer> implements Serializable, Immutable {
+public class QueryResponse<ANSWER extends QueryResult> implements Serializable, Immutable {
     private static final long serialVersionUID = -6543664128786160837L;
 
     private final ANSWER answer;
@@ -33,11 +33,11 @@ public class QueryResponse<ANSWER extends QueryAnswer> implements Serializable, 
 
     // ------------------------------------------------------------------------
 
-    public static <P extends QueryAnswer> QueryResponse<P> of(final KasperError error) {
+    public static <P extends QueryResult> QueryResponse<P> of(final KasperError error) {
         return new QueryResponse<P>(error);
     }
 
-    public static <P extends QueryAnswer> QueryResponse<P> of(final P result) {
+    public static <P extends QueryResult> QueryResponse<P> of(final P result) {
         return new QueryResponse<P>(result);
     }
 
@@ -64,7 +64,7 @@ public class QueryResponse<ANSWER extends QueryAnswer> implements Serializable, 
         return error;
     }
     
-    public ANSWER getAnswer() {
+    public ANSWER getResult() {
         return answer;
     }
     

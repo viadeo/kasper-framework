@@ -13,6 +13,8 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.resolvers.ResolverFactory;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
@@ -77,11 +79,11 @@ public class KasperLibrary {
     private final Map<String, DocumentedQuery> queryEntities;
 
     /**
-     * Store query answers (do not depend directly from a specific domain)
+     * Store queryResults (do not depend directly from a specific domain)
      */
-    private final Map<String, DocumentedQueryAnswer> queryAnswerEntities;
+    private final Map<String, DocumentedQueryResult> queryResultEntities;
 
-	/**
+    /**
 	 * Stores the concepts involved in a relation, as source or target entities
 	 */
 	private final Map<String, List<DocumentedRelation>> sourceConceptRelations;
@@ -101,6 +103,16 @@ public class KasperLibrary {
 	 * Stores all event listeners by event name
 	 */
 	private final Map<String, List<DocumentedListener>> eventListeners;
+
+    /**
+     * Stores all query services by query name
+     */
+    private final Map<String, DocumentedQueryService> queryServices;
+
+    /**
+     *  Stores all query services by queryResult name
+     */
+    private final Map<String, List<DocumentedQueryService>> queryResultServices;
 	
     /**
      * Stores all query services by query name
@@ -133,15 +145,21 @@ public class KasperLibrary {
 		this.queryServices = Maps.newHashMap();
 		this.queryAnswerServices = Maps.newHashMap();
 		
+        this.queryServices = Maps.newHashMap();
+        this.queryResultServices=Maps.newHashMap();
+		
 		this.domainEntities = Maps.newHashMap();
 		this.commandEntities = Maps.newHashMap();
-		this.queryEntities = Maps.newHashMap();
-		this.queryAnswerEntities = Maps.newHashMap();
+
+        this.queryEntities=Maps.newHashMap();
+        this.queryResultEntities=Maps.newHashMap();
 		
 		this.simpleTypes = Maps.newHashMap();
 		this.simpleTypes.put(DocumentedRepository.TYPE_NAME, DocumentedRepository.class);
 		this.simpleTypes.put(DocumentedCommand.TYPE_NAME, DocumentedCommand.class);
 		this.simpleTypes.put(DocumentedEvent.TYPE_NAME, DocumentedEvent.class);
+        this.simpleTypes.put(DocumentedQuery.TYPE_NAME, DocumentedQuery.class);
+        this.simpleTypes.put(DocumentedQueryResult.TYPE_NAME, DocumentedQueryResult.class);
 		this.simpleTypes.put(DocumentedConcept.TYPE_NAME, DocumentedConcept.class);
 		this.simpleTypes.put(DocumentedRelation.TYPE_NAME, DocumentedRelation.class);
 		this.simpleTypes.put(DocumentedListener.TYPE_NAME, DocumentedListener.class);
@@ -155,6 +173,9 @@ public class KasperLibrary {
 		this.pluralTypes.put(DocumentedCommand.PLURAL_TYPE_NAME, DocumentedCommand.class);
 		this.pluralTypes.put(DocumentedEvent.PLURAL_TYPE_NAME, DocumentedEvent.class);
 		this.pluralTypes.put(DocumentedConcept.PLURAL_TYPE_NAME, DocumentedConcept.class);
+        this.pluralTypes.put(DocumentedQuery.PLURAL_TYPE_NAME, DocumentedQuery.class);
+        this.pluralTypes.put(DocumentedQueryResult.PLURAL_TYPE_NAME, DocumentedQueryResult.class);
+        this.pluralTypes.put(DocumentedConcept.PLURAL_TYPE_NAME, DocumentedConcept.class);
 		this.pluralTypes.put(DocumentedRelation.PLURAL_TYPE_NAME, DocumentedRelation.class);
 		this.pluralTypes.put(DocumentedListener.PLURAL_TYPE_NAME, DocumentedListener.class);
 		this.pluralTypes.put(DocumentedHandler.PLURAL_TYPE_NAME, DocumentedHandler.class);
@@ -306,38 +327,39 @@ public class KasperLibrary {
         return Optional.fromNullable(queryEntities.get(queryName));
     }
 
-    // == QueryAnswers ========================================================
+    // == QueryResults =======================================================
     // ========================================================================
 
-    public DocumentedQueryAnswer recordQueryAnswer(final Class<? extends QueryAnswer> queryAnswerClazz){
-        final DocumentedQueryAnswer documentedQueryAnswer = new DocumentedQueryAnswer(this, queryAnswerClazz);
+    public DocumentedQueryResult recordQueryResult(final Class<? extends QueryResult> queryResultClazz){
+        final DocumentedQueryResult documentedQueryResult=new DocumentedQueryResult(this,queryResultClazz);
 
-        this.queryAnswerEntities.put(documentedQueryAnswer.getName(), documentedQueryAnswer);
+        this.queryResultEntities.put(documentedQueryResult.getName(), documentedQueryResult);
 
-        return documentedQueryAnswer;
+        return documentedQueryResult;
     }
 
     // --
-    // get queryAnswers from queryServices of a specific domain
-    public Map<String,DocumentedQueryAnswer> getQueryAnswers(final String domainName){
+    // get queryResults from queryServices of a specific domain
+    public Map<String,DocumentedQueryResult> getQueryResults(final String domainName){
         final Map<String,DocumentedQueryService> queryServices=getQueryServices(domainName);
 
-        final Map<String,DocumentedQueryAnswer> queryAnswers=Maps.newHashMap();
+        final Map<String,DocumentedQueryResult> queryResults=Maps.newHashMap();
         for (final DocumentedQueryService queryService:queryServices.values()){
-            final Optional<DocumentedQueryAnswer> queryAnswer=getQueryAnswer(queryService.getQueryAnswerName());
-            if (queryAnswer.isPresent()){
-                queryAnswers.put(queryAnswer.get().getName(),queryAnswer.get());
+            final Optional<DocumentedQueryResult> queryResult=getQueryResult(queryService.getQueryResultName());
+            if (queryResult.isPresent()) {
+                queryResults.put(queryResult.get().getName(),queryResult.get());
             }
         }
-        return queryAnswers;
+        return queryResults;
     }
 
     // --
-    // get queryAnswers from queryAnswerName
-    public Optional<DocumentedQueryAnswer> getQueryAnswer(final String queryAnswerName){
-        return Optional.fromNullable(queryAnswerEntities.get(queryAnswerName));
+    // get queryResults from queryResultName
+    public Optional<DocumentedQueryResult> getQueryResult(final String queryResultName){
+        return Optional.fromNullable(queryResultEntities.get(queryResultName));
     }
-	// == CONCEPTS ============================================================
+
+    // == CONCEPTS ============================================================
 	// ========================================================================
 	
 	public DocumentedConcept recordConcept(final Class<? extends Concept> conceptClazz) {
@@ -548,7 +570,9 @@ public class KasperLibrary {
 	// ========================================================================
 	
 	public DocumentedQueryService recordQueryService(final Class<? extends QueryService> queryServiceClazz) {
-		final DocumentedQueryService documentedQueryService = new DocumentedQueryService(this, queryServiceClazz);		
+		final DocumentedQueryService documentedQueryService = new DocumentedQueryService(this, queryServiceClazz);
+        registerQueryServiceForQuery(documentedQueryService, documentedQueryService.getQueryName());
+        registerQueryServiceForQueryResult(documentedQueryService, documentedQueryService.getQueryResultName());
 		recordElement(documentedQueryService.getDomainName(), documentedQueryService);
 		return documentedQueryService;
 	}		
@@ -581,16 +605,16 @@ public class KasperLibrary {
 
     // --
 
-    public void registerQueryServiceForQueryAnswer(final DocumentedQueryService queryService, final String queryAnswerName){
+    public void registerQueryServiceForQueryResult(final DocumentedQueryService queryService,final String queryResultName){
         Preconditions.checkNotNull(queryService);
-        Preconditions.checkNotNull(queryAnswerName);
+        Preconditions.checkNotNull(queryResultName);
 
         final List<DocumentedQueryService> queryServices;
-        if (!this.queryAnswerServices.containsKey(queryAnswerName)) {
+        if (!this.queryResultServices.containsKey(queryResultName)) {
             queryServices= Lists.newArrayList();
-            this.queryAnswerServices.put(queryAnswerName, queryServices);
+            this.queryResultServices.put(queryResultName, queryServices);
         } else {
-            queryServices = this.queryAnswerServices.get(queryAnswerName);
+            queryServices = this.queryResultServices.get(queryResultName);
         }
 
         queryServices.add(queryService);
@@ -598,21 +622,21 @@ public class KasperLibrary {
 
     // --
 
-    public Optional<DocumentedQueryService> getQueryServiceForQuery(final String queryName) {
-        return Optional.fromNullable(this.queryServices.get(queryName)); 
+    @SuppressWarnings("unchecked")
+    public Optional<DocumentedQueryService> getQueryServiceForQuery(final String queryName){
+        return Optional.fromNullable(this.queryServices.get(queryName));
     }
 
     // --
 
     @SuppressWarnings("unchecked")
-    public List<DocumentedQueryService> getQueryServicesForQueryAnswer(final String queryAnswerName){
-        if (this.queryAnswerServices.containsKey(queryAnswerName)){
-            return this.queryAnswerServices.get(queryAnswerName);
+    public List<DocumentedQueryService> getQueryServicesForQueryResult(final String queryResultName){
+        if (this.queryResultServices.containsKey(queryResultName)){
+            return this.queryResultServices.get(queryResultName);
         }
         return Collections.EMPTY_LIST;
     }
 
-	
 	// == Common generic methods ==============================================
 	// ========================================================================
 	
@@ -640,9 +664,9 @@ public class KasperLibrary {
 			ret = Optional.of((Map<String, T>) getCommands(domainName));
 		} else if(entityClass.equals(DocumentedQuery.class)){
             ret = Optional.of((Map<String, T>) getQueries(domainName));
-        } else if (entityClass.equals(DocumentedQueryAnswer.class)){
-            ret = Optional.of((Map<String, T>) getQueryAnswers(domainName));
-		} else {
+        } else if (entityClass.equals(DocumentedQueryResult.class)){
+            ret = Optional.of((Map<String, T>) getQueryResults(domainName));
+        } else {
 			ret = getEntities(domainName, entityClass, true);
 		}
 		

@@ -21,7 +21,7 @@ import com.viadeo.kasper.cqrs.query.*;
  * @param <Q> the query
  * @param <ANSWER> the Response
  */
-public abstract class AbstractQueryService<Q extends Query, ANSWER extends QueryAnswer>
+public abstract class AbstractQueryService<Q extends Query, ANSWER extends QueryResult>
         implements QueryService<Q, ANSWER> {
 
     protected AbstractQueryService() { }

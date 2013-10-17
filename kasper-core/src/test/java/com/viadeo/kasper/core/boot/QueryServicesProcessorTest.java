@@ -51,36 +51,36 @@ public class QueryServicesProcessorTest {
     @XKasperUnregistered
     public class TestFilter2 implements ServiceFilter { }
 
-    public class TestAnswer implements QueryAnswer { }
+    public class TestResult implements QueryResult { }
 
     // ------------------------------------------------------------------------
 
     @XKasperUnregistered
     @XKasperQueryService( name = SERVICE_NAME, domain = TestDomain.class )
-    public static class TestService implements QueryService<TestQuery, TestAnswer> {
+    public static class TestService implements QueryService<TestQuery, TestResult> {
         @Override
-        public QueryResponse<TestAnswer> retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperUnregistered
     @XKasperQueryService( domain = TestDomain.class )
-    public static class TestServiceNoName implements QueryService<TestQuery, TestAnswer> {
+    public static class TestServiceNoName implements QueryService<TestQuery, TestResult> {
         @Override
-        public QueryResponse<TestAnswer> retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperUnregistered
     @XKasperQueryService( domain = TestDomain.class, filters = TestFilter.class )
-    public static class TestServiceOneFilter implements QueryService<TestQuery, TestAnswer> {
+    public static class TestServiceOneFilter implements QueryService<TestQuery, TestResult> {
         @Override
-        public QueryResponse<TestAnswer> retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperUnregistered
     @XKasperQueryService( domain = TestDomain.class, filters = { TestFilter.class, TestFilter2.class } )
-    public static class TestServiceMultipleFilters implements QueryService<TestQuery, TestAnswer> {
+    public static class TestServiceMultipleFilters implements QueryService<TestQuery, TestResult> {
         @Override
-        public QueryResponse<TestAnswer> retrieve(final QueryMessage message) throws Exception { return null; }
+        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception { return null; }
     }
 
     // ------------------------------------------------------------------------

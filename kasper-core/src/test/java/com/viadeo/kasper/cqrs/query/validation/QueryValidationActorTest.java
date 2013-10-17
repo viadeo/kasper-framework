@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs.query.validation;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryAnswer;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import lombok.Data;
 import org.junit.Test;
@@ -27,13 +27,13 @@ public class QueryValidationActorTest {
     public void testValidation() throws Exception {
         // Given
         Locale.setDefault(Locale.US);
-        final QueryValidationActor<QueryToValidate, QueryAnswer> actor = new QueryValidationActor<>(Validation.buildDefaultValidatorFactory());
+        final QueryValidationActor<QueryToValidate, QueryResult> actor = new QueryValidationActor<>(Validation.buildDefaultValidatorFactory());
 
         // When
-        final QueryResponse<QueryAnswer> result = actor.process(
+        final QueryResponse<QueryResult> result = actor.process(
                 new QueryToValidate(),
                 new DefaultContextBuilder().build(),
-                RequestActorsChain.<QueryToValidate, QueryResponse<QueryAnswer>>tail());
+                RequestActorsChain.<QueryToValidate, QueryResponse<QueryResult>>tail());
 
         // Then
         assertTrue(result.isError());

@@ -18,7 +18,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface XKasperQueryAnswer {
+public @interface XKasperQueryResult {
 
     /**
      * @return the query answer description

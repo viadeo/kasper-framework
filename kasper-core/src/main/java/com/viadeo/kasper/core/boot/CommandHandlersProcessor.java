@@ -26,7 +26,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see XKasperCommandHandler
  */
 public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasperCommandHandler, CommandHandler> {
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(CommandHandlersProcessor.class);
 
 	/**

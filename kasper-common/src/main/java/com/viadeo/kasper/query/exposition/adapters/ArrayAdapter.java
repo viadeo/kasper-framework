@@ -15,7 +15,7 @@ import java.lang.reflect.Array;
 import static java.lang.System.arraycopy;
 
 public final class ArrayAdapter implements TypeAdapter<Object> {
-    private final TypeAdapter<Object> componentAdapter;
+    private final TypeAdapter componentAdapter;
     private final Class componentClass;
 
     // ------------------------------------------------------------------------
@@ -28,6 +28,7 @@ public final class ArrayAdapter implements TypeAdapter<Object> {
     // ------------------------------------------------------------------------
 
     @Override
+    @SuppressWarnings("unchecked")
     public void adapt(final Object array, final QueryBuilder builder) throws Exception {
         final int len = Array.getLength(array);
 

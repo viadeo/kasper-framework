@@ -70,23 +70,23 @@ Query result answers
 ---------------------
 
 A Kasper query result answer is an immutable, anemic object used by a query service to send back data
-to the requesting client, it ends with the suffix '**QueryAnswer**' (recommended).
+to the requesting client, it ends with the suffix '**QueryResult**' (recommended).
 
 **A Query result answer is part of a domain API**.
 
-A Kasper query result has to implement the interface **QueryAnswer** and can optionally defines some metadata
-using the **@XKasperQueryAnswer** annotation.
+A Kasper query result has to implement the interface **QueryResult** and can optionally defines some metadata
+using the **@XKasperQueryResult** annotation.
 
 **usage**
 
 .. code-block:: java
     :linenos:
 
-    @XKasperQueryAnswer( description = "A simple thing" )
-    public class ThingsQueryAnswer implements QueryAnswer {
+    @XKasperQueryResult( description = "A simple thing" )
+    public class ThingsQueryResult implements QueryResult {
         private final String name;
 
-        public ThingsQueryAnswer(final String nameOfThing) {
+        public ThingsQueryResult(final String nameOfThing) {
             this.name = nameOfThing;
         }
 
@@ -96,37 +96,37 @@ using the **@XKasperQueryAnswer** annotation.
     }
 
 .. hint::
-    The interface **QueryEntityAnswer** and proposed default implementation **AbstractQueryEntityAnswer** should be used for each
+    The interface **QueryEntityResult** and proposed default implementation **AbstractQueryEntityResult** should be used for each
     answer which is an entity (with an id, a type and optionally but preferably a last modification time)
 
-The interface **QueryCollectionAnswer** can be used to return a list of some other unit result answers.
+The interface **QueryCollectionResult** can be used to return a list of some other unit result answers.
 
-The abstract class **AbstractQueryCollectionAnswer** is provided as a default implementation of the list methods
-required by the **QueryCollectionAnswer** interface.
+The abstract class **AbstractQueryCollectionResult** is provided as a default implementation of the list methods
+required by the **QueryCollectionResult** interface.
 
 **usage**
 
 .. code-block:: java
     :linenos:
 
-    @XKasperQueryAnswer( description = "A List of things" )
-    public class ThingsListQueryAnswer extends AbstractQueryCollectionAnswer<ThingsQueryAnswer> {
+    @XKasperQueryResult( description = "A List of things" )
+    public class ThingsListQueryResult extends AbstractQueryCollectionResult<ThingsQueryResult> {
         // Nothing more needs to be declared
     }
 
 Some interfaces are available as a standard way to add some features to the query result answers :
 
-- **OrderedQueryAnswer** can be implemented when the result answer can be ordered
-- **PaginatedQueryAnswer** can be implemented when the result answer can be paginated
+- **OrderedQueryResult** can be implemented when the result answer can be ordered
+- **PaginatedQueryResult** can be implemented when the result answer can be paginated
 
 Query services
 --------------
 
-A Kasper query service is I/O component using a **Query** as input and responsible to return a **QueryAnswer**.
+A Kasper query service is I/O component using a **Query** as input and responsible to return a **QueryResult**.
 
 **A Query service is part of the QUERY architectural area**.
 
-It has to implement the **QueryService<Query, QueryAnswer>** interface and specify its owning domain with the **@XKasperQueryService**
+It has to implement the **QueryService<Query, QueryResult>** interface and specify its owning domain with the **@XKasperQueryService**
 annotation and ends with the '**QueryService**' suffix (recommended).
 
 **usage**
@@ -135,10 +135,10 @@ annotation and ends with the '**QueryService**' suffix (recommended).
     :linenos:
 
     @XKasperQueryService( domain = ThingsDomain.class )
-    public class GetThingsQueryService implements QueryService<GetThingsQuery, ThingsListQueryAnswer> {
+    public class GetThingsQueryService implements QueryService<GetThingsQuery, ThingsListQueryResult> {
 
         @Override
-        public QueryResponse<ThingsListQueryAnswer> retrieve(final QueryMessage<GetThingsQuery> message) throws KasperQueryException {
+        public QueryResponse<ThingsListQueryResult> retrieve(final QueryMessage<GetThingsQuery> message) throws KasperQueryException {
             ...
         }
 
@@ -153,10 +153,10 @@ when other message informations are not required :
     :linenos:
 
     @XKasperQueryService( domain = ThingsDomain.class )
-    public class GetThingsQueryService extends AbstractQueryService<GetThingsQuery, ThingsListQueryAnswer> {
+    public class GetThingsQueryService extends AbstractQueryService<GetThingsQuery, ThingsListQueryResult> {
 
         @Override
-        public QueryResponse<ThingsListQueryAnswer> retrieve(final GetThingsQuery query) throws KasperQueryException {
+        public QueryResponse<ThingsListQueryResult> retrieve(final GetThingsQuery query) throws KasperQueryException {
             ...
         }
 
@@ -176,7 +176,7 @@ To enable the cache for a query service with default configuration, just put **@
     :linenos:
 
     @XKasperQueryService( domain = AwesomeDomain.class, cache = @XKasperQueryCache )
-    public class GetNiceDataQueryService extends AbstractQueryService<GetNiceDataQuery, NiceDataQueryAnswer> {
+    public class GetNiceDataQueryService extends AbstractQueryService<GetNiceDataQuery, NiceDataQueryResult> {
         ...
     }
 
@@ -240,13 +240,13 @@ A filter can be defined global (set the global flag (**global = true**) on the a
     :linenos:
 
     @XKasperServiceFilter( global = true ) // Will be applied to all query services
-    public class IdEraserResponseFilter implements ResponseFilter<HasAnIdAnswer> {
+    public class IdEraserResponseFilter implements ResponseFilter<HasAnIdResult> {
 
         @Override
-        public QueryResponse<HasAnIdAnswer> filter(final Context context, final QueryResponse<HasAnIdAnswer> dto) throws KasperQueryException {
-            QueryResponse<HasAnIdAnswer res = dto; /* Answer DTO should be immutable */
-            if (!res.isError() && HasAnIdAnswer.class.isAssignableFrom(dto.getAnswer())) {
-                res = QueryResponse.of(new HasAnIdAnswer.Builder(dto.getAnswer()).setId("").build());
+        public QueryResponse<HasAnIdResult> filter(final Context context, final QueryResponse<HasAnIdResult> dto) throws KasperQueryException {
+            QueryResponse<HasAnIdResult res = dto; /* Result DTO should be immutable */
+            if (!res.isError() && HasAnIdResult.class.isAssignableFrom(dto.getResult())) {
+                res = QueryResponse.of(new HasAnIdResult.Builder(dto.getResult()).setId("").build());
             }
             return res;
         }
@@ -267,10 +267,10 @@ filling the 'filters' field.
     :linenos:
 
     @XKasperQueryService( ... , filters = ValidateIdQueryFilter.class )
-    public class GetThingsQueryService extends AbstractQueryService<GetThingsQuery, ThingsListQueryAnswer> {
+    public class GetThingsQueryService extends AbstractQueryService<GetThingsQuery, ThingsListQueryResult> {
 
         @Override
-        public QueryResponse<ThingsListQueryAnswer> retrieve(final GetThingsQuery query) throws KasperQueryException {
+        public QueryResponse<ThingsListQueryResult> retrieve(final GetThingsQuery query) throws KasperQueryException {
             ...
         }
 

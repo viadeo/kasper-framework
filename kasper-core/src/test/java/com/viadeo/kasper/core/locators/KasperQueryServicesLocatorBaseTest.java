@@ -36,12 +36,12 @@ public class KasperQueryServicesLocatorBaseTest {
     @XKasperUnregistered
 	private static final class TestQuery implements Query {}
 
-    private static final class TestAnswer implements QueryAnswer {}
+    private static final class TestResult implements QueryResult {}
 
     @XKasperQueryService( domain = TestDomain.class )
-	private static class TestService implements QueryService<TestQuery, TestAnswer> {
+	private static class TestService implements QueryService<TestQuery, TestResult> {
 		@Override
-		public QueryResponse<TestAnswer> retrieve(final QueryMessage<TestQuery> message) {
+		public QueryResponse<TestResult> retrieve(final QueryMessage<TestQuery> message) {
 			throw new UnsupportedOperationException();
 		}
 	}
@@ -160,9 +160,9 @@ public class KasperQueryServicesLocatorBaseTest {
     private static final class TestQuery2 implements Query {}
 
     @XKasperQueryService( domain = TestDomain2.class )
-    private static class TestService2 implements QueryService<TestQuery2, TestAnswer> {
+    private static class TestService2 implements QueryService<TestQuery2, TestResult> {
         @Override
-        public QueryResponse<TestAnswer> retrieve(final QueryMessage<TestQuery2> message) {
+        public QueryResponse<TestResult> retrieve(final QueryMessage<TestQuery2> message) {
             throw new UnsupportedOperationException();
         }
     }

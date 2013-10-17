@@ -218,7 +218,7 @@ public class KasperClientCommandTest extends JerseyTest {
     }
 
     @Test
-    public void send_withAnswerNot200_shouldFillErrorsInResponse() {
+    public void send_withResultNot200_shouldFillErrorsInResponse() {
         // Given
         final CreateMemberCommand command = new CreateMemberCommand(Status.REFUSED);
         try {
@@ -239,7 +239,7 @@ public class KasperClientCommandTest extends JerseyTest {
     }
 
     @Test
-    public void sendAsync_withAnswerNot200_shouldFillErrorsInResponse() throws MalformedURLException, InterruptedException,
+    public void sendAsync_withResultNot200_shouldFillErrorsInResponse() throws MalformedURLException, InterruptedException,
             ExecutionException {
 
         // Given

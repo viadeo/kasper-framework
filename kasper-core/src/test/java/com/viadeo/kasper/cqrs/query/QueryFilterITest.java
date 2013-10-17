@@ -39,23 +39,23 @@ public class QueryFilterITest {
     }
 
     @XKasperUnregistered
-    private class TestAnswer implements QueryAnswer {
+    private class TestResult implements QueryResult {
         public int state = STATE_START;
     }
 
     @XKasperUnregistered
-    private class TestService implements QueryService<TestQuery, TestAnswer> {
+    private class TestService implements QueryService<TestQuery, TestResult> {
         @Override
-        public QueryResponse<TestAnswer> retrieve(final QueryMessage message) throws Exception {
-            return new QueryResponse<>(new TestAnswer());
+        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception {
+            return new QueryResponse<>(new TestResult());
         }
     }
 
     @XKasperUnregistered
-    private class TestFilter implements QueryFilter<TestQuery>, ResponseFilter<TestAnswer> {
+    private class TestFilter implements QueryFilter<TestQuery>, ResponseFilter<TestResult> {
         @Override
-        public <R extends QueryResponse<TestAnswer>> R filter(Context context, R result) {
-            result.getAnswer().state = STATE_MODIFIED;
+        public <R extends QueryResponse<TestResult>> R filter(Context context, R result) {
+            result.getResult().state = STATE_MODIFIED;
             return result;        }
 
         @Override
@@ -101,14 +101,14 @@ public class QueryFilterITest {
         final TestQuery query = new TestQuery();
 
         // When
-        final QueryResponse<TestAnswer> queryResponse = gateway.retrieve(query, context);
+        final QueryResponse<TestResult> queryResponse = gateway.retrieve(query, context);
 
         // Then
         // verify(filter).filter(eq(context), any(TestQuery.class));
         assertEquals(STATE_MODIFIED, query.state);
 
         // verify(filter).filter(eq(context), any(QueryResponse.class));
-        assertEquals(STATE_MODIFIED, queryResponse.getAnswer().state);
+        assertEquals(STATE_MODIFIED, queryResponse.getResult().state);
 
         verify(filterGlobal).filter(eq(context), any(Query.class));
     }

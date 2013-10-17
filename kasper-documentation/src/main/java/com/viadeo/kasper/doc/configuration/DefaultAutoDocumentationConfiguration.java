@@ -33,6 +33,8 @@ public class DefaultAutoDocumentationConfiguration implements AutoDocumentationC
         this.getRelationsDocumentationProcessor(library);
         this.getListenersDocumentationProcessor(library);
         this.getHandlersDocumentationProcessor(library);
+        this.getQueriesDocumentationProcessor(library);
+        this.getQueryResultsDocumentationProcessor(library);
     }
 
     // ------------------------------------------------------------------------
@@ -127,6 +129,20 @@ public class DefaultAutoDocumentationConfiguration implements AutoDocumentationC
     @Override
     public HandlersDocumentationProcessor getHandlersDocumentationProcessor(final KasperLibrary library) {
         final HandlersDocumentationProcessor proc = new HandlersDocumentationProcessor();
+        proc.setKasperLibrary(library);
+        return this.registerProcessor(proc);
+    }
+
+    @Override
+    public QueriesDocumentationProcessor getQueriesDocumentationProcessor(final KasperLibrary library){
+        final QueriesDocumentationProcessor proc= new QueriesDocumentationProcessor();
+        proc.setKasperLibrary(library);
+        return this.registerProcessor(proc);
+    }
+
+    @Override
+    public QueryResultsDocumentationProcessor getQueryResultsDocumentationProcessor(final KasperLibrary library){
+        final QueryResultsDocumentationProcessor proc=new QueryResultsDocumentationProcessor();
         proc.setKasperLibrary(library);
         return this.registerProcessor(proc);
     }

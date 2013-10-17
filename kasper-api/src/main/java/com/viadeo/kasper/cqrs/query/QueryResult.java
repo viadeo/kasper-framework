@@ -10,6 +10,6 @@ import com.viadeo.kasper.annotation.Immutable;
 
 import java.io.Serializable;
 
-public interface QueryAnswer extends Serializable, Immutable {
+public interface QueryResult extends Serializable, Immutable {
 
 }

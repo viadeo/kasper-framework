@@ -7,7 +7,7 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.google.common.base.Objects;
-import com.viadeo.kasper.cqrs.query.CollectionQueryAnswer;
+import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,17 +15,17 @@ import java.util.Iterator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class AbstractQueryCollectionAnswer<RES> implements CollectionQueryAnswer<RES> {
+public abstract class AbstractQueryCollectionResult<RES> implements CollectionQueryResult<RES> {
     
 	private Collection<RES> list;
 
     // ------------------------------------------------------------------------
 
-    protected AbstractQueryCollectionAnswer() {
+    protected AbstractQueryCollectionResult() {
         /* Jackson */
     }
 
-	protected AbstractQueryCollectionAnswer(final Collection<RES> list) {
+	protected AbstractQueryCollectionResult(final Collection<RES> list) {
 		this.list = checkNotNull(list);
 	}
 
@@ -60,13 +60,13 @@ public abstract class AbstractQueryCollectionAnswer<RES> implements CollectionQu
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends AbstractQueryCollectionAnswer> P withList(final Collection<RES> list) {
+    public <P extends AbstractQueryCollectionResult> P withList(final Collection<RES> list) {
         this.setList(list);
         return (P) this;
     }
 
     @SuppressWarnings("unchecked")
-    public <P extends AbstractQueryCollectionAnswer> P withListAsIterator(final Iterator<RES> iterator) {
+    public <P extends AbstractQueryCollectionResult> P withListAsIterator(final Iterator<RES> iterator) {
         this.setListAsIterator(iterator);
         return (P) this;
     }
@@ -82,7 +82,7 @@ public abstract class AbstractQueryCollectionAnswer<RES> implements CollectionQu
             return false;
         }
 
-        final AbstractQueryCollectionAnswer that = (AbstractQueryCollectionAnswer) o;
+        final AbstractQueryCollectionResult that = (AbstractQueryCollectionResult) o;
         return Objects.equal(this.list, that.list);
     }
 

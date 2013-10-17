@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs.query;
 import com.viadeo.kasper.KasperID;
 import org.joda.time.DateTime;
 
-public interface QueryEntityAnswer extends QueryAnswer {
+public interface QueryEntityResult extends QueryResult {
 
     KasperID getId();
 

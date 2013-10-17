@@ -112,7 +112,7 @@ public class KasperDocResourceTest extends JerseyTest {
 	/**
 	 * Main run test method
 	 * 
-	 * Scans all available json files, makethe request to a standalone HTTP server and compare
+	 * Scans all available json files, make the request to a standalone HTTP server and compare
 	 * expected and retrieved results
 	 * @throws URISyntaxException 
 	 * 

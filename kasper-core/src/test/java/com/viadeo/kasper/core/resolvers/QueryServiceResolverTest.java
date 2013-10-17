@@ -38,12 +38,12 @@ public class QueryServiceResolverTest {
     private static final class TestQuery implements Query { }
 
     @XKasperUnregistered
-    private static final class TestQueryAnswer implements QueryAnswer { }
+    private static final class TestQueryResult implements QueryResult { }
 
     @XKasperUnregistered
-    private static final class TestQueryService3 implements  QueryService<TestQuery, TestQueryAnswer> {
+    private static final class TestQueryService3 implements  QueryService<TestQuery, TestQueryResult> {
         @Override
-        public QueryResponse<TestQueryAnswer> retrieve(QueryMessage<TestQuery> message) throws Exception {
+        public QueryResponse<TestQueryResult> retrieve(QueryMessage<TestQuery> message) throws Exception {
             return null;
         }
     }
@@ -109,26 +109,26 @@ public class QueryServiceResolverTest {
     // ------------------------------------------------------------------------
 
     @Test
-    public void testGetQueryAnswerFromValidService() {
+    public void testGetQueryResultFromValidService() {
         // Given
         final QueryServiceResolver resolver = new QueryServiceResolver();
 
         // When
-        final Class<? extends QueryAnswer> queryAnswer = resolver.getQueryAnswerClass(TestQueryService3.class);
+        final Class<? extends QueryResult> queryResult = resolver.getQueryResultClass(TestQueryService3.class);
 
         // Then
-        assertEquals(TestQueryAnswer.class, queryAnswer);
+        assertEquals(TestQueryResult.class, queryResult);
     }
 
 
     @Test
-    public void testGetQueryAnswerFromInvalidService() {
+    public void testGetQueryResultFromInvalidService() {
         // Given
         final QueryServiceResolver resolver = new QueryServiceResolver();
 
         // When
         try {
-            final Class<? extends QueryAnswer> queryAnswer = resolver.getQueryAnswerClass(TestQueryService.class);
+            final Class<? extends QueryResult> queryResult = resolver.getQueryResultClass(TestQueryService.class);
             fail();
         } catch (final KasperException e) {
             // Then should raise exception

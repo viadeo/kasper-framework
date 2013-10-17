@@ -19,7 +19,7 @@ violations as error messages.
         ...
     }
 
-    public class AddressQueryAnswer implements QueryAnswer {
+    public class AddressQueryResult implements QueryResult {
         @NotNull private String street;
         ...
     }

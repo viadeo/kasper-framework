@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs.query.cache.impl;
 import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryAnswer;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
@@ -27,7 +27,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class AnnotationQueryCacheActorFactory<QUERY extends Query, ANSWER extends QueryAnswer> {
+public class AnnotationQueryCacheActorFactory<QUERY extends Query, ANSWER extends QueryResult> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationQueryCacheActorFactory.class);
 
     private CacheManager cacheManager;
@@ -50,7 +50,7 @@ public class AnnotationQueryCacheActorFactory<QUERY extends Query, ANSWER extend
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    public <QUERY extends Query, ANSWER extends QueryAnswer> Optional<QueryCacheActor<QUERY, ANSWER>> make(
+    public <QUERY extends Query, ANSWER extends QueryResult> Optional<QueryCacheActor<QUERY, ANSWER>> make(
             final Class<QUERY> queryClass,
             final Class<? extends QueryService<QUERY, ANSWER>> queryServiceClass) {
 

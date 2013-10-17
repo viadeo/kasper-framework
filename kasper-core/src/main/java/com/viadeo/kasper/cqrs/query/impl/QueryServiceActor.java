@@ -18,7 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
-public class QueryServiceActor<Q extends Query, ANSWER extends QueryAnswer> implements RequestActor<Q, QueryResponse<ANSWER>> {
+public class QueryServiceActor<Q extends Query, ANSWER extends QueryResult> implements RequestActor<Q, QueryResponse<ANSWER>> {
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryServiceActor.class);
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
