@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Collections;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
@@ -62,6 +63,11 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
      */
     private final Map<Class<? extends Query>, QueryService> serviceQueryClasses = newHashMap();
 
+    /**
+     * Registered query answer classes and associated service instances
+     */
+    private final Map<Class<? extends QueryAnswer>, Collection<QueryService>> serviceQueryAnswerClasses = newHashMap();
+    
     /**
      * Registered services names and associated service instances
      */
@@ -115,13 +121,22 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
         if (this.serviceQueryClasses.containsKey(queryClass)) {
             throw new KasperQueryException("A service for the same query class is already registered : " + queryClass);
         }
+        this.serviceQueryClasses.put(queryClass, service);
+
+        @SuppressWarnings("unchecked") // Safe
+        final Class<? extends QueryAnswer> queryAnswerClass = queryServiceResolver.getQueryAnswerClass(serviceClass);
+        Collection<QueryService> qaClasses = this.serviceQueryAnswerClasses.get(queryAnswerClass);
+        if (qaClasses == null) {
+            qaClasses = new ArrayList<>();
+            this.serviceQueryAnswerClasses.put(queryAnswerClass, qaClasses);
+        }
+        qaClasses.add(service);
 
         if (this.serviceNames.containsKey(name)) {
             throw new KasperQueryException("A service by the same name is already registered : " + name);
         }
-
-        this.serviceQueryClasses.put(queryClass, service);
         this.serviceNames.put(name, service);
+        
         this.services.put(serviceClass, service);
         this.serviceDomains.put(serviceClass, domainClass);
     }
@@ -206,6 +221,16 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     public Optional<QueryService> getServiceFromQueryClass(final Class<? extends Query> queryClass) {
         final QueryService service = this.serviceQueryClasses.get(queryClass);
         return Optional.fromNullable(service);
+    }
+
+    @Override
+    @SuppressWarnings("rawtypes")
+    public Collection<QueryService> getServicesFromQueryAnswerClass(final Class<? extends QueryAnswer> queryAnswerClass) {
+        final Collection<QueryService> services = this.serviceQueryAnswerClasses.get(queryAnswerClass);
+        if (services == null) {
+            return Collections.emptyList();
+        }
+        return services;
     }
 
     @Override

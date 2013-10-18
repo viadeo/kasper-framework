@@ -129,11 +129,6 @@
         // Let's go !
         $(document).ready(function() {
           
-          // Cache results
-          $.ajaxSetup({
-            cache: true
-          });
-
           // Loads the Kasper domains base definition
           $.ajax({
             // FIXME: static var!
@@ -142,9 +137,18 @@
 
               if (data.list) {
 
-                var childTypes = [ 'commands', 'concepts', 'relations', 'events',
-                                   'repositories', 'listeners', 'handlers',
-                                   'queryServices'];
+                var childTypes = [ 
+                    ['commands', 'Commands'],
+                    ['concepts', 'Concepts'],
+                    ['relations', 'Relations'],
+                    ['events', 'Events'],
+                    ['repositories', 'Repositories'],
+                    ['listeners', 'Listeners'],
+                    ['handlers', 'Handlers'],
+                    ['queryServices', 'Query Services'],
+                    ['queries', 'Queries'],
+                    ['queryAnswers', 'Query Answers']
+                ];
 
                 $("#tree_domains").append("<ul id='tree_domains_list'></ul>");
 
@@ -161,7 +165,9 @@
                     $("#"+domain_id).data('node', domain);
                     nodes['#'+domain.name] = domain;
                     
-                    $.each(childTypes, function(n2, childType) { // Domain sections
+                    $.each(childTypes, function(n2, childTypeArray) { // Domain sections
+                      var childType = childTypeArray[0];                      
+                      var childTypeLabel = childTypeArray[1];
                       if (domain[childType].length > 0) {
 
                         var section_id = "tree_domain_" + domain.name + "_" + childType;
@@ -169,7 +175,7 @@
 
                         domain_ids.push(section_id_list);
 
-                        $("#"+domain_id_list).append("<li id='" + section_id + "'><a href=\"#\">" + childType + "</a></li>");
+                        $("#"+domain_id_list).append("<li id='" + section_id + "'><a href=\"#\">" + childTypeLabel + "</a></li>");
                         $("#"+section_id).append("<ul id='" + section_id_list + "'></ul>");
 
                         $.each(domain[childType], function(n3, element) { // Domain elements

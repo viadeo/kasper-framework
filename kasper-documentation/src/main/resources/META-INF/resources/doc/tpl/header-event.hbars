@@ -3,8 +3,8 @@
   <h2>Listeners</h2>
   {{#if node.listeners}}
   	<ul>
-  	{{#each node.relations}}
-  		<li>{{node.domain.name}}:<a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+  	{{#each node.listeners}}
+  		<li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
   	{{/each}}
   	</ul>
   {{else}}

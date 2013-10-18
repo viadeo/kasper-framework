@@ -1,0 +1,19 @@
+{{#if node.query}}
+<div class="row-fluid">
+    <div class="well well-small">
+        <h2>
+            <small>Query :</small>
+            <a class="klink" href="#{{node.query.name}}">{{node.query.label}}</a></h2>
+    </div>
+</div>
+{{/if}}
+
+{{#if node.queryAnswer}}
+<div class="row-fluid">
+    <div class="well well-small">
+        <h2>
+            <small>Query Answer :</small>
+            <a class="klink" href="#{{node.queryAnswer.name}}">{{node.queryAnswer.label}}</a></h2>
+    </div>
+</div>
+{{/if}}

@@ -97,4 +97,14 @@ public final class DocumentedDomain extends DocumentedNode {
 		return kl.simpleNodesFrom( kl.getQueryServices(getName()) ).values();
 	}
 
+	public Collection<DocumentedNode> getQueries() {
+		final KasperLibrary kl = this.getKasperLibrary();
+		return kl.simpleNodesFrom( kl.getQueries(getName()) ).values();
+	}
+
+	public Collection<DocumentedNode> getQueryAnswers() {
+		final KasperLibrary kl = this.getKasperLibrary();
+		return kl.simpleNodesFrom( kl.getQueryAnswers(getName()) ).values();
+	}
+
 }
