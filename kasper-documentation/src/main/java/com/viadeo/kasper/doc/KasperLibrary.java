@@ -13,11 +13,10 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.resolvers.ResolverFactory;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.doc.nodes.*;
@@ -105,14 +104,14 @@ public class KasperLibrary {
 	private final Map<String, List<DocumentedListener>> eventListeners;
 
     /**
-     * Stores all query services by query name
+     * Stores all query handlers by query name
      */
-    private final Map<String, DocumentedQueryService> queryServices;
+    private final Map<String, DocumentedQueryHandler> queryHandlers;
 
     /**
-     *  Stores all query services by queryResult name
+     *  Stores all query handlers by queryResult name
      */
-    private final Map<String, List<DocumentedQueryService>> queryResultServices;
+    private final Map<String, List<DocumentedQueryHandler>> queryResultHandlers;
 	
     /**
      * Stores all query services by query name
@@ -145,8 +144,8 @@ public class KasperLibrary {
 		this.queryServices = Maps.newHashMap();
 		this.queryAnswerServices = Maps.newHashMap();
 		
-        this.queryServices = Maps.newHashMap();
-        this.queryResultServices=Maps.newHashMap();
+        this.queryHandlers = Maps.newHashMap();
+        this.queryResultHandlers=Maps.newHashMap();
 		
 		this.domainEntities = Maps.newHashMap();
 		this.commandEntities = Maps.newHashMap();
@@ -164,9 +163,9 @@ public class KasperLibrary {
 		this.simpleTypes.put(DocumentedRelation.TYPE_NAME, DocumentedRelation.class);
 		this.simpleTypes.put(DocumentedListener.TYPE_NAME, DocumentedListener.class);
 		this.simpleTypes.put(DocumentedHandler.TYPE_NAME, DocumentedHandler.class);
-		this.simpleTypes.put(DocumentedQueryService.TYPE_NAME, DocumentedQueryService.class);
 		this.simpleTypes.put(DocumentedQuery.TYPE_NAME, DocumentedQuery.class);
 		this.simpleTypes.put(DocumentedQueryAnswer.TYPE_NAME, DocumentedQueryAnswer.class);
+		this.simpleTypes.put(DocumentedQueryHandler.TYPE_NAME, DocumentedQueryHandler.class);
 		
 		this.pluralTypes = Maps.newHashMap();
 		this.pluralTypes.put(DocumentedRepository.PLURAL_TYPE_NAME, DocumentedRepository.class);
@@ -179,9 +178,9 @@ public class KasperLibrary {
 		this.pluralTypes.put(DocumentedRelation.PLURAL_TYPE_NAME, DocumentedRelation.class);
 		this.pluralTypes.put(DocumentedListener.PLURAL_TYPE_NAME, DocumentedListener.class);
 		this.pluralTypes.put(DocumentedHandler.PLURAL_TYPE_NAME, DocumentedHandler.class);
-		this.pluralTypes.put(DocumentedQueryService.PLURAL_TYPE_NAME, DocumentedQueryService.class);
 		this.pluralTypes.put(DocumentedQuery.PLURAL_TYPE_NAME, DocumentedQuery.class);
 		this.pluralTypes.put(DocumentedQueryAnswer.PLURAL_TYPE_NAME, DocumentedQueryAnswer.class);
+		this.pluralTypes.put(DocumentedQueryHandler.PLURAL_TYPE_NAME, DocumentedQueryHandler.class);
 	}
 	
 	// == DOMAINS =============================================================	
@@ -307,13 +306,13 @@ public class KasperLibrary {
     }
 
     // --
-    // get queries from queryServices of a specific domain
+    // get queries from queryHandlers of a specific domain
     public Map<String,DocumentedQuery> getQueries(final String domainName) {
-        final Map<String,DocumentedQueryService> queryServices=getQueryServices(domainName);
+        final Map<String,DocumentedQueryHandler> queryHandlers=getQueryHandlers(domainName);
 
         final Map<String,DocumentedQuery> queries=Maps.newHashMap();
-        for (final DocumentedQueryService queryService:queryServices.values()){
-            final Optional<DocumentedQuery> query=getQuery(queryService.getQueryName());
+        for (final DocumentedQueryHandler queryHandler:queryHandlers.values()){
+            final Optional<DocumentedQuery> query=getQuery(queryHandler.getQueryName());
             if (query.isPresent()){
                 queries.put(query.get().getName(),query.get());
             }
@@ -339,14 +338,14 @@ public class KasperLibrary {
     }
 
     // --
-    // get queryResults from queryServices of a specific domain
+    // get queryResults from queryHandlers of a specific domain
     public Map<String,DocumentedQueryResult> getQueryResults(final String domainName){
-        final Map<String,DocumentedQueryService> queryServices=getQueryServices(domainName);
+        final Map<String,DocumentedQueryHandler> queryHandlers=getQueryHandlers(domainName);
 
         final Map<String,DocumentedQueryResult> queryResults=Maps.newHashMap();
-        for (final DocumentedQueryService queryService:queryServices.values()){
-            final Optional<DocumentedQueryResult> queryResult=getQueryResult(queryService.getQueryResultName());
-            if (queryResult.isPresent()) {
+        for (final DocumentedQueryHandler queryHandler:queryHandlers.values()){
+            final Optional<DocumentedQueryResult> queryResult=getQueryResult(queryHandler.getQueryResultName());
+            if (queryResult.isPresent()){
                 queryResults.put(queryResult.get().getName(),queryResult.get());
             }
         }
@@ -569,70 +568,70 @@ public class KasperLibrary {
 	// == QUERY SERVICES ======================================================
 	// ========================================================================
 	
-	public DocumentedQueryService recordQueryService(final Class<? extends QueryService> queryServiceClazz) {
-		final DocumentedQueryService documentedQueryService = new DocumentedQueryService(this, queryServiceClazz);
-        registerQueryServiceForQuery(documentedQueryService, documentedQueryService.getQueryName());
-        registerQueryServiceForQueryResult(documentedQueryService, documentedQueryService.getQueryResultName());
-		recordElement(documentedQueryService.getDomainName(), documentedQueryService);
-		return documentedQueryService;
+	public DocumentedQueryHandler recordQueryHandler(final Class<? extends QueryHandler> queryHandlerClazz) {
+		final DocumentedQueryHandler documentedQueryHandler = new DocumentedQueryHandler(this, queryHandlerClazz);		
+        registerQueryHandlerForQuery(documentedQueryHandler, documentedQueryHandler.getQueryName());
+        registerQueryHandlerForQueryResult(documentedQueryHandler, documentedQueryHandler.getQueryResultName());
+		recordElement(documentedQueryHandler.getDomainName(), documentedQueryHandler);
+		return documentedQueryHandler;
 	}		
 	
 	// --
 	
-	public Map<String, DocumentedQueryService> getQueryServices(final String domainName) {
-		return getEntities(domainName, DocumentedQueryService.class, false).get();
+	public Map<String, DocumentedQueryHandler> getQueryHandlers(final String domainName) {
+		return getEntities(domainName, DocumentedQueryHandler.class, false).get();
 	}		
 	
 	// --
 	
-	public Optional<DocumentedQueryService> getQueryService(final String domainName, final String queryServiceName) {
-		return Optional.fromNullable(getEntities(domainName, DocumentedQueryService.class, false).get().get(queryServiceName));
+	public Optional<DocumentedQueryHandler> getQueryHandler(final String domainName, final String queryHandlerName) {
+		return Optional.fromNullable(getEntities(domainName, DocumentedQueryHandler.class, false).get().get(queryHandlerName));
 	}
 
     // --
 
-    public void registerQueryServiceForQuery(final DocumentedQueryService queryService, final String queryName) {
-        Preconditions.checkNotNull(queryService);
+    public void registerQueryHandlerForQuery(final DocumentedQueryHandler queryHandler, final String queryName) {
+        Preconditions.checkNotNull(queryHandler);
         Preconditions.checkNotNull(queryName);
 
-        DocumentedQueryService oldQueryService = this.queryServices.get(queryName);
-        if (oldQueryService != null) {
-            Preconditions.checkState(false, "QueryService %s already registered for query %s.",  oldQueryService.getName(), queryName);
+        DocumentedQueryHandler oldQueryHandler = this.queryHandlers.get(queryName);
+        if (oldQueryHandler != null) {
+            Preconditions.checkState(false, "QueryHandler %s already registered for query %s.",  oldQueryHandler.getName(), queryName);
         }
 
-        this.queryServices.put(queryName, queryService);        
+        this.queryHandlers.put(queryName, queryHandler);
     }
 
     // --
 
-    public void registerQueryServiceForQueryResult(final DocumentedQueryService queryService,final String queryResultName){
-        Preconditions.checkNotNull(queryService);
+    public void registerQueryHandlerForQueryResult(final DocumentedQueryHandler queryHandler,final String queryResultName){
+        Preconditions.checkNotNull(queryHandler);
         Preconditions.checkNotNull(queryResultName);
 
-        final List<DocumentedQueryService> queryServices;
-        if (!this.queryResultServices.containsKey(queryResultName)) {
-            queryServices= Lists.newArrayList();
-            this.queryResultServices.put(queryResultName, queryServices);
+        final List<DocumentedQueryHandler> queryHandlers;
+        if (!this.queryResultHandlers.containsKey(queryResultName)) {
+            queryHandlers= Lists.newArrayList();
+            this.queryResultHandlers.put(queryResultName, queryHandlers);
         } else {
-            queryServices = this.queryResultServices.get(queryResultName);
+            queryHandlers = this.queryResultHandlers.get(queryResultName);
         }
 
-        queryServices.add(queryService);
+        queryHandlers.add(queryHandler);
     }
 
     // --
 
     @SuppressWarnings("unchecked")
-    public Optional<DocumentedQueryService> getQueryServiceForQuery(final String queryName){
-        return Optional.fromNullable(this.queryServices.get(queryName));
+    public Optional<DocumentedQueryHandler> getQueryHandlerForQuery(final String queryName){
+        return Optional.fromNullable(this.queryHandlers.get(queryName));
     }
 
     // --
 
     @SuppressWarnings("unchecked")
-    public List<DocumentedQueryService> getQueryServicesForQueryResult(final String queryResultName){
-        if (this.queryResultServices.containsKey(queryResultName)){
-            return this.queryResultServices.get(queryResultName);
+    public List<DocumentedQueryHandler> getQueryHandlersForQueryResult(final String queryResultName){
+        if (this.queryResultHandlers.containsKey(queryResultName)){
+            return this.queryResultHandlers.get(queryResultName);
         }
         return Collections.EMPTY_LIST;
     }

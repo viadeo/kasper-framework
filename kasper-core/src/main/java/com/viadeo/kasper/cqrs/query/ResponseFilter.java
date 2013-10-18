@@ -13,13 +13,13 @@ import com.viadeo.kasper.context.Context;
  *
  * @see Query
  */
-public interface ResponseFilter<P extends QueryResult> extends ServiceFilter {
+public interface ResponseFilter<P extends QueryResult> extends QueryHandlerFilter {
 
     /**
-     * Filter a Response after processing by its associated service
+     * Filter a Response after processing by its associated handler
      *
-     * @param response the Response to be returned by the service
-     * @param context the context used to execute the service
+     * @param response the Response to be returned by the handler
+     * @param context the context used to execute the handler
      *
      * @return the filtered response
      */

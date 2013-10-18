@@ -8,14 +8,14 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.resolvers.QueryServiceResolver;
+import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.google.common.base.Optional;
 
-public final class DocumentedQueryService extends DocumentedDomainNode {
+public final class DocumentedQueryHandler extends DocumentedDomainNode {
 	private static final long serialVersionUID = -4593630427564176805L;
 
 	public static final String TYPE_NAME = "queryservice";
@@ -24,36 +24,34 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
     private String queryName;
 	private String queryResultName;
 
-	DocumentedQueryService(final KasperLibrary kl) {
+	DocumentedQueryHandler(final KasperLibrary kl) { // Used as empty command to
+												     // populate
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 	}
 
-	public DocumentedQueryService(final KasperLibrary kl, final Class<? extends QueryService> queryServiceClazz) {
+	public DocumentedQueryHandler(final KasperLibrary kl, final Class<? extends QueryHandler> queryHandlerClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 
-        final QueryServiceResolver resolver = this.getKasperLibrary().getResolverFactory().getQueryServiceResolver();
-		final String label = resolver.getLabel(queryServiceClazz);
-		final String description = resolver.getDescription(queryServiceClazz);
-        final String domainName = resolver.getDomainClass(queryServiceClazz).get().getSimpleName();
+        final QueryHandlerResolver resolver = this.getKasperLibrary().getResolverFactory().getQueryHandlerResolver();
+		final String label = resolver.getLabel(queryHandlerClazz);
+		final String description = resolver.getDescription(queryHandlerClazz);
+        final String domainName = resolver.getDomainClass(queryHandlerClazz).get().getSimpleName();
 
 		// - Register the domain to the locator --------------------------------
-		this.setName(queryServiceClazz.getSimpleName());
+		this.setName(queryHandlerClazz.getSimpleName());
 		this.setDescription(description);
 		this.setLabel(label);
 		this.setDomainName(domainName);
 
-        final QueryServiceResolver queryServiceResolver =
-                this.getKasperLibrary().getResolverFactory().getQueryServiceResolver();
-
 		// - the Query --------------------------------------------------------
 		@SuppressWarnings("unchecked") // Safe
 		final Class<? extends Query> queryClass =
-                queryServiceResolver.getQueryClass(queryServiceClazz);
+                resolver.getQueryClass(queryHandlerClazz);
 		this.queryName = queryClass.getSimpleName();
 		
 		// - the Result -------------------------------------------------------
 		final Class<? extends QueryResult> queryResultClass =
-                resolver.getQueryResultClass(queryServiceClazz);
+                resolver.getQueryResultClass(queryHandlerClazz);
         this.queryResultName = queryResultClass.getSimpleName();
 
         this.getKasperLibrary().registerQueryServiceForQuery(this, this.queryName);

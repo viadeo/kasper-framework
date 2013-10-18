@@ -41,7 +41,7 @@
     "url": "/domain/Facebook"
   },
   "prefix": "tm",
-  "queryServices": [],
+  "queryHandlers": [],
   "relations": [
     {
       "description": "A status is attached to one timeline",

@@ -1,5 +1,5 @@
 {
-  "description": "The GetMembers query service",
+  "description": "The GetMembers query handler",
   "domain": {
     "description": "Root Facebook domain",
     "label": "Facebook",
@@ -9,7 +9,7 @@
     "url": "/domain/Facebook"
   },
   "label": "GetMembers",
-  "name": "GetMembersQueryService",
+  "name": "GetMembersQueryHandler",
   "query": [{
     "list": false,
     "name": "name",
@@ -34,5 +34,5 @@
   ],
   "type": "queryservice",
   "typePlural": "queryservices",
-  "url": "/domain/Facebook/queryservice/GetMembersQueryService"
+  "url": "/domain/Facebook/queryservice/GetMembersQueryHandler"
 }

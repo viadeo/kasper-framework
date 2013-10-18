@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * Process Kasper domain services dynamic registration at kasper platform boot
+ * Process Kasper domain components dynamic registration at kasper platform boot
  *
  * @see XKasperDomain
  */

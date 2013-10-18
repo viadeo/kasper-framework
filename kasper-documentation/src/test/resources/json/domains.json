@@ -27,7 +27,7 @@
         "url": "/domain/Facebook"
       },
       "prefix": "apps",
-      "queryServices": [],
+      "queryHandlers": [],
       "relations": [
         {
           "description": "The created_by relation between Application and Member",
@@ -128,13 +128,13 @@
       "name": "Facebook",
       "parent": null,
       "prefix": "fb",
-      "queryServices": [{
-        "description": "The GetMembers query service",
+      "queryHandlers": [{
+        "description": "The GetMembers query handler",
         "label": "GetMembers",
-        "name": "GetMembersQueryService",
+        "name": "GetMembersQueryHandler",
         "type": "queryservice",
         "typePlural": "queryservices",
-        "url": "/domain/Facebook/queryservice/GetMembersQueryService"
+        "url": "/domain/Facebook/queryservice/GetMembersQueryHandler"
       }],
       "relations": [{
         "description": "The connected_to relation between Member and Member",
@@ -211,7 +211,7 @@
         "url": "/domain/Facebook"
       },
       "prefix": "tm",
-      "queryServices": [],
+      "queryHandlers": [],
       "relations": [
         {
           "description": "A status is attached to one timeline",

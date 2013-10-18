@@ -15,28 +15,28 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Query service marker
+ * Query handler marker
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface XKasperServiceFilter {
+public @interface XKasperQueryHandlerFilter {
 
 	/**
-	 * @return the name of the service
+	 * @return the name of the handler
 	 */
 	String name() default "";
 
     /**
-     * Sets to true if this filter must be applied to every service in the runtime context
+     * Sets to true if this filter must be applied to every handler in the runtime context
      *
      * @return if this filter is global
      */
     boolean global() default false;
 
     /**
-     * Optional sticky domain for this service (in case of global filter)
+     * Optional sticky domain for this handler (in case of global filter)
      *
-     * The filter will only be applied on services of this domain
+     * The filter will only be applied on handlers of this domain
      */
     Class<? extends Domain> domain() default NullDomain.class;
 

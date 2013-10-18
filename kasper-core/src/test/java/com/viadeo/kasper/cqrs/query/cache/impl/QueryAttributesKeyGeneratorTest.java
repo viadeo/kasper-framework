@@ -80,7 +80,7 @@ public class QueryAttributesKeyGeneratorTest {
 
     public static class SomeQuery implements Query {
         public String str = "someStr";
-        private int integer = 11;
+        public int integer = 11;
     }
 
 }

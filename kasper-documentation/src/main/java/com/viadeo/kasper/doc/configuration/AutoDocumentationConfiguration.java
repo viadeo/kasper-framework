@@ -20,7 +20,7 @@ interface AutoDocumentationConfiguration {
 
      CommandsDocumentationProcessor getCommandsDocumentationProcessor( KasperLibrary library);
 
-     QueryServicesDocumentationProcessor getQueryServicesDocumentationProcessor( KasperLibrary library);
+     QueryHandlersDocumentationProcessor getQueryHandlersDocumentationProcessor( KasperLibrary library);
 
       QueriesDocumentationProcessor getQueriesDocumentationProcessor( KasperLibrary library);
  

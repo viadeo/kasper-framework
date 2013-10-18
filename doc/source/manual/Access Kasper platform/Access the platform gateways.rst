@@ -37,4 +37,4 @@ to the **Command** and **Query** gateways :
    final QueryResponse<MyQueryResult> res = retrieve(query, context);
 
 
-TODO: document the different ways to send commands and events from handlers, listeners and query services
+TODO: document the different ways to send commands and events from handlers, listeners and query handlers

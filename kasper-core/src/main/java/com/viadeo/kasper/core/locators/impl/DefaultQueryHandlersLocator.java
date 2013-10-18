@@ -8,15 +8,15 @@ package com.viadeo.kasper.core.locators.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
-import com.viadeo.kasper.core.resolvers.QueryServiceResolver;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
+import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
 import com.viadeo.kasper.cqrs.RequestActor;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.cache.impl.AnnotationQueryCacheActorFactory;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.QueryFiltersActor;
-import com.viadeo.kasper.cqrs.query.impl.QueryServiceActor;
+import com.viadeo.kasper.cqrs.query.impl.QueryHandlerActor;
 import com.viadeo.kasper.cqrs.query.validation.QueryValidationActor;
 import com.viadeo.kasper.ddd.Domain;
 import org.slf4j.Logger;
@@ -36,32 +36,32 @@ import static com.google.common.collect.Maps.newHashMap;
 import static java.util.Collections.unmodifiableCollection;
 
 /**
- * Base implementation for query services locator
+ * Base implementation for query handlers locator
  */
-public class DefaultQueryServicesLocator implements QueryServicesLocator {
+public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultQueryServicesLocator.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultQueryHandlersLocator.class);
 
-    private static final Collection<ServiceFilter> EMPTY_FILTERS =
-            unmodifiableCollection(new ArrayList<ServiceFilter>());
+    private static final Collection<QueryHandlerFilter> EMPTY_FILTERS =
+            unmodifiableCollection(new ArrayList<QueryHandlerFilter>());
 
     /**
-     * Registered services and filters
+     * Registered handlers and filters
      */
     @SuppressWarnings("rawtypes")
-    private final ClassToInstanceMap<QueryService> services = MutableClassToInstanceMap.create();
-    private final ClassToInstanceMap<ServiceFilter> filters = MutableClassToInstanceMap.create();
-    private final Map<Class<? extends QueryService>, Class<? extends Domain>> serviceDomains = Maps.newHashMap();
+    private final ClassToInstanceMap<QueryHandler> handlers = MutableClassToInstanceMap.create();
+    private final ClassToInstanceMap<QueryHandlerFilter> filters = MutableClassToInstanceMap.create();
+    private final Map<Class<? extends QueryHandler>, Class<? extends Domain>> handlerDomains = Maps.newHashMap();
 
     /**
      * Global filters *
      */
-    private final List<Class<? extends ServiceFilter>> globalFilters = Lists.newArrayList();
+    private final List<Class<? extends QueryHandlerFilter>> globalFilters = Lists.newArrayList();
 
     /**
-     * Registered query classes and associated service instances
+     * Registered query classes and associated handler instances
      */
-    private final Map<Class<? extends Query>, QueryService> serviceQueryClasses = newHashMap();
+    private final Map<Class<? extends Query>, QueryHandler> handlerQueryClasses = newHashMap();
 
     /**
      * Registered query answer classes and associated service instances
@@ -69,17 +69,17 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     private final Map<Class<? extends QueryAnswer>, Collection<QueryService>> serviceQueryAnswerClasses = newHashMap();
     
     /**
-     * Registered services names and associated service instances
+     * Registered handlers names and associated handler instances
      */
     @SuppressWarnings("rawtypes")
-    private final Map<String, QueryService> serviceNames = newHashMap();
+    private final Map<String, QueryHandler> handlerNames = newHashMap();
 
     /**
-     * Association of filters per service and domains *
+     * Association of filters per handler and domains *
      */
-    private final Map<Class<? extends QueryService>, List<Class<? extends ServiceFilter>>> appliedFilters = newHashMap();
-    private final Map<Class<? extends QueryService>, List<ServiceFilter>> instanceFilters = newHashMap();
-    private final Map<Class<? extends ServiceFilter>, Class<? extends Domain>> isDomainSticky = Maps.newHashMap();
+    private final Map<Class<? extends QueryHandler>, List<Class<? extends QueryHandlerFilter>>> appliedFilters = newHashMap();
+    private final Map<Class<? extends QueryHandler>, List<QueryHandlerFilter>> instanceFilters = newHashMap();
+    private final Map<Class<? extends QueryHandlerFilter>, Class<? extends Domain>> isDomainSticky = Maps.newHashMap();
 
     /**
      * The factory for caches
@@ -89,15 +89,15 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
     // ------------------------------------------------------------------------
 
-    private QueryServiceResolver queryServiceResolver;
+    private QueryHandlerResolver queryHandlerResolver;
 
     // ------------------------------------------------------------------------
 
-    public DefaultQueryServicesLocator() {
+    public DefaultQueryHandlersLocator() {
         queryCacheFactory = new AnnotationQueryCacheActorFactory();
     }
 
-    public DefaultQueryServicesLocator(final AnnotationQueryCacheActorFactory queryCacheFactory) {
+    public DefaultQueryHandlersLocator(final AnnotationQueryCacheActorFactory queryCacheFactory) {
         this.queryCacheFactory = queryCacheFactory;
     }
 
@@ -105,21 +105,21 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public void registerService(final String name, final QueryService service, final Class<? extends Domain> domainClass) {
+    public void registerHandler(final String name, final QueryHandler handler, final Class<? extends Domain> domainClass) {
         checkNotNull(name);
-        checkNotNull(service);
+        checkNotNull(handler);
 
         if (name.isEmpty()) {
-            throw new KasperQueryException("Name of services cannot be empty : " + service.getClass());
+            throw new KasperQueryException("Name of query handlers cannot be empty : " + handler.getClass());
         }
 
-        final Class<? extends QueryService> serviceClass = service.getClass();
+        final Class<? extends QueryHandler> handlerClass = handler.getClass();
 
         @SuppressWarnings("unchecked") // Safe
-        final Class<? extends Query> optQueryClass = queryServiceResolver.getQueryClass(serviceClass);
+        final Class<? extends Query> optQueryClass = queryHandlerResolver.getQueryClass(handlerClass);
         final Class<? extends Query> queryClass = optQueryClass;
-        if (this.serviceQueryClasses.containsKey(queryClass)) {
-            throw new KasperQueryException("A service for the same query class is already registered : " + queryClass);
+        if (this.handlerQueryClasses.containsKey(queryClass)) {
+            throw new KasperQueryException("An handler for the same query class is already registered : " + queryClass);
         }
         this.serviceQueryClasses.put(queryClass, service);
 
@@ -132,33 +132,33 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
         }
         qaClasses.add(service);
 
-        if (this.serviceNames.containsKey(name)) {
-            throw new KasperQueryException("A service by the same name is already registered : " + name);
+        if (this.handlerNames.containsKey(name)) {
+            throw new KasperQueryException("An handler with the same name is already registered : " + name);
         }
-        this.serviceNames.put(name, service);
-        
-        this.services.put(serviceClass, service);
-        this.serviceDomains.put(serviceClass, domainClass);
+        this.handlerQueryClasses.put(queryClass, handler);
+        this.handlerNames.put(name, handler);
+        this.handlers.put(handlerClass, handler);
+        this.handlerDomains.put(handlerClass, domainClass);
     }
 
     // ------------------------------------------------------------------------
 
     /* Filter name is not currently used in the locator */
     @Override
-    public void registerFilter(final String name, final ServiceFilter queryFilter, final boolean isGlobal, final Class<? extends Domain> stickyDomainClass) {
+    public void registerFilter(final String name, final QueryHandlerFilter queryFilter, final boolean isGlobal, final Class<? extends Domain> stickyDomainClass) {
         checkNotNull(name);
         checkNotNull(queryFilter);
 
         if (name.isEmpty()) {
-            throw new KasperQueryException("Name of service filters cannot be empty : " + queryFilter.getClass());
+            throw new KasperQueryException("Name of query handler filters cannot be empty : " + queryFilter.getClass());
         }
 
-        final Class<? extends ServiceFilter> filterClass = queryFilter.getClass();
+        final Class<? extends QueryHandlerFilter> filterClass = queryFilter.getClass();
         this.filters.put(filterClass, queryFilter);
 
         if (isGlobal) {
             this.globalFilters.add(filterClass);
-            this.instanceFilters.clear(); // Drop all service instances caches
+            this.instanceFilters.clear(); // Drop all handler instances caches
             if (null != stickyDomainClass) {
                 this.isDomainSticky.put(queryFilter.getClass(), stickyDomainClass);
             }
@@ -167,36 +167,36 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
     }
 
     @Override
-    public void registerFilter(final String name, final ServiceFilter queryFilter, boolean isGlobal) {
+    public void registerFilter(final String name, final QueryHandlerFilter queryFilter, boolean isGlobal) {
         this.registerFilter(name, queryFilter, isGlobal, null);
     }
 
     @Override
-    public void registerFilter(final String name, final ServiceFilter queryFilter) {
+    public void registerFilter(final String name, final QueryHandlerFilter queryFilter) {
         this.registerFilter(name, queryFilter, false, null);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public void registerFilterForService(final Class<? extends QueryService> queryServiceClass, final Class<? extends ServiceFilter> filterClass) {
-        checkNotNull(queryServiceClass);
+    public void registerFilterForQueryHandler(final Class<? extends QueryHandler> queryHandlerClass, final Class<? extends QueryHandlerFilter> filterClass) {
+        checkNotNull(queryHandlerClass);
         checkNotNull(filterClass);
 
-        final List<Class<? extends ServiceFilter>> serviceFilters;
+        final List<Class<? extends QueryHandlerFilter>> handlerFilters;
 
-        if (!this.appliedFilters.containsKey(queryServiceClass)) {
-            serviceFilters = newArrayList();
-            this.appliedFilters.put(queryServiceClass, serviceFilters);
-        } else if (!this.appliedFilters.get(queryServiceClass).contains(filterClass)) {
-            serviceFilters = this.appliedFilters.get(queryServiceClass);
+        if (!this.appliedFilters.containsKey(queryHandlerClass)) {
+            handlerFilters = newArrayList();
+            this.appliedFilters.put(queryHandlerClass, handlerFilters);
+        } else if (!this.appliedFilters.get(queryHandlerClass).contains(filterClass)) {
+            handlerFilters = this.appliedFilters.get(queryHandlerClass);
         } else {
-            serviceFilters = null;
+            handlerFilters = null;
         }
 
-        if (null != serviceFilters) {
-            serviceFilters.add(filterClass);
-            this.instanceFilters.remove(queryServiceClass); // Drop cache of instances
+        if (null != handlerFilters) {
+            handlerFilters.add(filterClass);
+            this.instanceFilters.remove(queryHandlerClass); // Drop cache of instances
         }
     }
 
@@ -204,23 +204,23 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public Optional<QueryService> getServiceFromClass(final Class<? extends QueryService> serviceClass) {
-        final QueryService service = this.services.getInstance(serviceClass);
-        return Optional.fromNullable(service);
+    public Optional<QueryHandler> getQueryHandlerFromClass(final Class<? extends QueryHandler> handlerClass) {
+        final QueryHandler handler = this.handlers.getInstance(handlerClass);
+        return Optional.fromNullable(handler);
     }
 
     @SuppressWarnings("rawtypes")
     @Override
-    public Optional<QueryService> getServiceByName(final String serviceName) {
-        final QueryService service = this.serviceNames.get(serviceName);
-        return Optional.fromNullable(service);
+    public Optional<QueryHandler> getHandlerByName(final String handlerName) {
+        final QueryHandler handler = this.handlerNames.get(handlerName);
+        return Optional.fromNullable(handler);
     }
 
     @Override
     @SuppressWarnings("rawtypes")
-    public Optional<QueryService> getServiceFromQueryClass(final Class<? extends Query> queryClass) {
-        final QueryService service = this.serviceQueryClasses.get(queryClass);
-        return Optional.fromNullable(service);
+    public Optional<QueryHandler> getHandlerFromQueryClass(final Class<? extends Query> queryClass) {
+        final QueryHandler handler = this.handlerQueryClasses.get(queryClass);
+        return Optional.fromNullable(handler);
     }
 
     @Override
@@ -240,13 +240,13 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
         RequestActorsChain<Q, R> chain = (RequestActorsChain<Q, R>) requestActorChainCache.get(queryClass);
 
         if (chain == null) {
-            final Optional<QueryService> optionalQS = getServiceFromQueryClass(queryClass);
+            final Optional<QueryHandler> optionalQS = getHandlerFromQueryClass(queryClass);
 
             if (optionalQS.isPresent()) {
-                final QueryService<Q, P> qs = optionalQS.get();
-                final Class<? extends QueryService<Q, P>> qsClass = (Class<? extends QueryService<Q, P>>) qs.getClass();
+                final QueryHandler<Q, P> qs = optionalQS.get();
+                final Class<? extends QueryHandler<Q, P>> qsClass = (Class<? extends QueryHandler<Q, P>>) qs.getClass();
 
-                final Collection<ServiceFilter> serviceFilters = getFiltersForServiceClass(qsClass);
+                final Collection<QueryHandlerFilter> handlerFilters = getFiltersForHandlerClass(qsClass);
                 final List<RequestActor<Q, R>> requestActors = Lists.newArrayList();
 
                 /* Add cache actor if required */
@@ -263,10 +263,10 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
                 }
 
                 /* Add filters actor */
-                requestActors.add(filtersActor(serviceFilters));
+                requestActors.add(filtersActor(handlerFilters));
 
-                /* Add service actor */
-                requestActors.add(new QueryServiceActor(qs));
+                /* Add handler actor */
+                requestActors.add(new QueryHandlerActor(qs));
 
                 /* Finally build the actors chan */
                 chain = RequestActorsChain.makeChain(requestActors);
@@ -280,46 +280,46 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
 
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private QueryFiltersActor filtersActor(final Collection<ServiceFilter> serviceFilters) {
+    private QueryFiltersActor filtersActor(final Collection<QueryHandlerFilter> handlerFilters) {
 
         final Collection<QueryFilter> queryFilters =
-                Lists.newArrayList(Iterables.filter(serviceFilters, QueryFilter.class));
+                Lists.newArrayList(Iterables.filter(handlerFilters, QueryFilter.class));
 
         final Collection<ResponseFilter> responseFilters =
-                Lists.newArrayList(Iterables.filter(serviceFilters, ResponseFilter.class));
+                Lists.newArrayList(Iterables.filter(handlerFilters, ResponseFilter.class));
 
         return new QueryFiltersActor(queryFilters, responseFilters);
     }
 
     @Override
-    public Collection<QueryService> getServices() {
-        return unmodifiableCollection(this.serviceQueryClasses.values());
+    public Collection<QueryHandler> getHandlers() {
+        return unmodifiableCollection(this.handlerQueryClasses.values());
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public Collection<ServiceFilter> getFiltersForServiceClass(final Class<? extends QueryService> serviceClass) {
+    public Collection<QueryHandlerFilter> getFiltersForHandlerClass(final Class<? extends QueryHandler> handlerClass) {
 
-        // Ensure service has filters
-        if (!this.appliedFilters.containsKey(serviceClass) && this.globalFilters.isEmpty()) {
+        // Ensure handler has filters
+        if (!this.appliedFilters.containsKey(handlerClass) && this.globalFilters.isEmpty()) {
             return EMPTY_FILTERS;
         }
 
 
         // Ensure instances has been collected, lazy loading
-        if (!this.instanceFilters.containsKey(serviceClass)) {
-            List<Class<? extends ServiceFilter>> filtersToApply = this.appliedFilters.get(serviceClass);
+        if (!this.instanceFilters.containsKey(handlerClass)) {
+            List<Class<? extends QueryHandlerFilter>> filtersToApply = this.appliedFilters.get(handlerClass);
 
             if (null == filtersToApply) {
                 filtersToApply = Lists.newArrayList();
             }
 
             // Apply required global filters
-            for (final Class<? extends ServiceFilter> globalFilterClass : this.globalFilters) {
+            for (final Class<? extends QueryHandlerFilter> globalFilterClass : this.globalFilters) {
                 if (this.isDomainSticky.containsKey(globalFilterClass)) {
                     final Class<? extends Domain> stickyDomainClass = this.isDomainSticky.get(globalFilterClass);
-                    if ((null != stickyDomainClass) && stickyDomainClass.equals(this.serviceDomains.get(serviceClass))) {
+                    if ((null != stickyDomainClass) && stickyDomainClass.equals(this.handlerDomains.get(handlerClass))) {
                         filtersToApply.add(globalFilterClass);
                     }
                 } else {
@@ -327,27 +327,27 @@ public class DefaultQueryServicesLocator implements QueryServicesLocator {
                 }
             }
 
-            // Copy required filters instances to this service cache
-            final List<ServiceFilter> instances = newArrayList();
-            for (Class<? extends ServiceFilter> filterClass : Sets.newHashSet(filtersToApply)) {
+            // Copy required filters instances to this handler cache
+            final List<QueryHandlerFilter> instances = newArrayList();
+            for (Class<? extends QueryHandlerFilter> filterClass : Sets.newHashSet(filtersToApply)) {
                 if (this.filters.containsKey(filterClass)) {
                     instances.add(this.filters.get(filterClass));
                 } else {
-                    LOGGER.error(String.format("Service %s asks to be filtered, but no instance of filter %s can be found in records",
-                            serviceClass, filterClass));
+                    LOGGER.error(String.format("Query handler %s asks to be filtered, but no instance of filter %s can be found in records",
+                            handlerClass, filterClass));
                 }
             }
-            this.instanceFilters.put(serviceClass, instances);
+            this.instanceFilters.put(handlerClass, instances);
         }
 
         // Return the filter instances
-        return unmodifiableCollection(this.instanceFilters.get(serviceClass));
+        return unmodifiableCollection(this.instanceFilters.get(handlerClass));
     }
 
     // ------------------------------------------------------------------------
 
-    public void setQueryServiceResolver(final QueryServiceResolver queryServiceResolver) {
-        this.queryServiceResolver = checkNotNull(queryServiceResolver);
+    public void setQueryHandlerResolver(final QueryHandlerResolver queryHandlerResolver) {
+        this.queryHandlerResolver = checkNotNull(queryHandlerResolver);
     }
 
 }

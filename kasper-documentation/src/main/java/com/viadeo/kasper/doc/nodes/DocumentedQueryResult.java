@@ -63,9 +63,9 @@ public class DocumentedQueryResult extends DocumentedDomainNode{
 
     // -------------------------------------------------------------------------------
 
-    public Collection<DocumentedNode> getQueryServices() {
+    public Collection<DocumentedNode> getQueryHandlers() {
         final KasperLibrary kl = this.getKasperLibrary();
-        return kl.simpleNodesFrom( kl.getQueryServicesForQueryResult(getName()) ).values();
+        return kl.simpleNodesFrom( kl.getQueryHandlersForQueryResult(getName()) ).values();
     }
 
     // -------------------------------------------------------------------------------
@@ -75,11 +75,11 @@ public class DocumentedQueryResult extends DocumentedDomainNode{
 
     // -------------------------------------------------------------------------------
     public DocumentedNode getDomain(){
-        final List<DocumentedQueryService> queryServices=
-                this.getKasperLibrary().getQueryServicesForQueryResult(this.getName());
+        final List<DocumentedQueryHandler> queryServices=
+                this.getKasperLibrary().getQueryHandlersForQueryResult(this.getName());
 
         Set<DocumentedNode> domains=new HashSet<DocumentedNode>();
-        for (DocumentedQueryService queryService:queryServices){
+        for (DocumentedQueryHandler queryService:queryServices){
             domains.add(queryService.getDomain());
         }
         if (!domains.isEmpty()){

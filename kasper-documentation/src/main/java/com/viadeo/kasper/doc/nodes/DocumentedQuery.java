@@ -47,12 +47,12 @@ public final class DocumentedQuery extends DocumentedDomainNode{
 
     // ----------------------------------------------------------------------
 
-    public DocumentedNode getQueryService(){
+    public DocumentedNode getQueryHandler(){
 		final KasperLibrary kl = this.getKasperLibrary();
-		final Optional<DocumentedQueryService> queryService = kl.getQueryServiceForQuery(getName());
+		final Optional<DocumentedQueryHandler> queryHandler = kl.getQueryHandlerForQuery(getName());
 
-		if (queryService.isPresent()) {
-			return kl.getSimpleNodeFrom(queryService.get());
+		if (queryHandler.isPresent()) {
+			return kl.getSimpleNodeFrom(queryHandler.get());
 		}
 
 		return null;
@@ -67,10 +67,10 @@ public final class DocumentedQuery extends DocumentedDomainNode{
     // ----------------------------------------------------------------------
 
     public DocumentedNode getDomain(){
-        final Optional<DocumentedQueryService> queryService = this.getKasperLibrary().getQueryServiceForQuery(this.getName());
+        final Optional<DocumentedQueryHandler> queryHandler = this.getKasperLibrary().getQueryHandlerForQuery(this.getName());
 
-        if (queryService.isPresent()) {
-            return queryService.get().getDomain();
+        if (queryHandler.isPresent()) {
+            return queryHandler.get().getDomain();
         }
         
         return null;

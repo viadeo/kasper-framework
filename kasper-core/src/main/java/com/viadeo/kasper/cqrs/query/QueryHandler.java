@@ -7,7 +7,7 @@
 package com.viadeo.kasper.cqrs.query;
 
 /**
- * A Kasper query service
+ * A Kasper query handler
  *
  * @param <Q> the associated Query
  * @param <RESULT> the associated Data Transfer Object
@@ -15,7 +15,7 @@ package com.viadeo.kasper.cqrs.query;
  * @see QueryResponse
  * @see Query
  */
-public interface QueryService<Q extends Query, RESULT extends QueryResult> {
+public interface QueryHandler<Q extends Query, RESULT extends QueryResult> {
 
 	/**
 	 * Generic parameter position for Data Query Object
@@ -28,7 +28,7 @@ public interface QueryService<Q extends Query, RESULT extends QueryResult> {
 	int PARAMETER_RESULT_POSITION = 1;
 
 	/**
-	 * Operates the service, retrieve a service Response satisfying the submitted
+	 * Operates the handler, retrieve an handler Response satisfying the submitted
 	 * filter
      *
      * You have to implement at least one retrieve() method

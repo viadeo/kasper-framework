@@ -11,9 +11,9 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.cache.QueryCacheKeyGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,14 +52,14 @@ public class AnnotationQueryCacheActorFactory<QUERY extends Query, RESULT extend
     @SuppressWarnings("unchecked")
     public <QUERY extends Query, RESULT extends QueryResult> Optional<QueryCacheActor<QUERY, RESULT>> make(
             final Class<QUERY> queryClass,
-            final Class<? extends QueryService<QUERY, RESULT>> queryServiceClass) {
+            final Class<? extends QueryHandler<QUERY, RESULT>> queryHandlerClass) {
 
         if (null != cacheManager) {
-            final XKasperQueryService queryServiceAnnotation =
-                    queryServiceClass.getAnnotation(XKasperQueryService.class);
+            final XKasperQueryHandler queryHandlerAnnotation =
+                    queryHandlerClass.getAnnotation(XKasperQueryHandler.class);
 
-            if (null != queryServiceAnnotation) {
-                final XKasperQueryCache kasperQueryCache = queryServiceAnnotation.cache();
+            if (null != queryHandlerAnnotation) {
+                final XKasperQueryCache kasperQueryCache = queryHandlerAnnotation.cache();
 
                 if (kasperQueryCache.enabled()) {
                     final Cache<Serializable, QueryResponse<RESULT>> cache =

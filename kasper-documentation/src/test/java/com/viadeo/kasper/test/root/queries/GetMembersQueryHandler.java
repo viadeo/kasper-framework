@@ -4,11 +4,11 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQuery;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryResult;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.test.root.Facebook;
 
-@XKasperQueryService(domain=Facebook.class)
-public class GetMembersQueryService implements QueryService<GetMembersQueryService.GetMembersQuery, GetMembersQueryService.MembersResult> {
+@XKasperQueryHandler(domain=Facebook.class)
+public class GetMembersQueryHandler implements QueryHandler<GetMembersQueryHandler.GetMembersQuery, GetMembersQueryHandler.MembersResult> {
 
 	public static class GetMembersQuery implements Query {
 		private static final long serialVersionUID = -6513893864054353478L;

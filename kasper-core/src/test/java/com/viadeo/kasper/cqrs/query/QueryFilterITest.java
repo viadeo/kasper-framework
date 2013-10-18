@@ -9,9 +9,9 @@ package com.viadeo.kasper.cqrs.query;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
+import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
-import com.viadeo.kasper.core.resolvers.QueryServiceResolver;
+import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
@@ -44,7 +44,7 @@ public class QueryFilterITest {
     }
 
     @XKasperUnregistered
-    private class TestService implements QueryService<TestQuery, TestResult> {
+    private class TestHandler implements QueryHandler<TestQuery, TestResult> {
         @Override
         public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception {
             return new QueryResponse<>(new TestResult());
@@ -80,22 +80,22 @@ public class QueryFilterITest {
     public void queryFilterShouldBeCalled() throws Exception {
 
         // Given
-        final TestService service = spy(new TestService());
+        final TestHandler service = spy(new TestHandler());
         final TestFilter filter = spy(new TestFilter());
         final TestFilterGlobal filterGlobal = spy(new TestFilterGlobal());
-        final DefaultQueryServicesLocator locator = new DefaultQueryServicesLocator();
+        final DefaultQueryHandlersLocator locator = new DefaultQueryHandlersLocator();
         final DomainResolver domainResolver = new DomainResolver();
-        final QueryServiceResolver queryServiceResolver = new QueryServiceResolver();
-        queryServiceResolver.setDomainResolver(domainResolver);
-        locator.setQueryServiceResolver(queryServiceResolver);
+        final QueryHandlerResolver queryHandlerResolver = new QueryHandlerResolver();
+        queryHandlerResolver.setDomainResolver(domainResolver);
+        locator.setQueryHandlerResolver(queryHandlerResolver);
 
-        locator.registerService("testService", service, TestDomain.class);
+        locator.registerHandler("testService", service, TestDomain.class);
         locator.registerFilter("testFilter", filter);
         locator.registerFilter("testFilter2", filterGlobal, true);
-        locator.registerFilterForService(service.getClass(), filter.getClass());
+        locator.registerFilterForQueryHandler(service.getClass(), filter.getClass());
 
         final DefaultQueryGateway gateway = new DefaultQueryGateway();
-        gateway.setQueryServicesLocator(locator);
+        gateway.setQueryHandlersLocator(locator);
 
         final Context context = DefaultContextBuilder.get();
         final TestQuery query = new TestQuery();

@@ -6,10 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
-import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
-import com.viadeo.kasper.cqrs.query.ServiceFilter;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperServiceFilter;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
+import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
+import com.viadeo.kasper.cqrs.query.QueryHandlerFilter;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandlerFilter;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
 
@@ -24,19 +24,19 @@ public class QueryFiltersProcessorTest {
 
     // ------------------------------------------------------------------------
 
-    final QueryServicesLocator locator = spy(new DefaultQueryServicesLocator());
-    final ServiceFiltersProcessor processor = new ServiceFiltersProcessor();
-    { processor.setQueryServicesLocator(locator); }
+    final QueryHandlersLocator locator = spy(new DefaultQueryHandlersLocator());
+    final QueryHandlerFiltersProcessor processor = new QueryHandlerFiltersProcessor();
+    { processor.setQueryHandlersLocator(locator); }
 
     // ------------------------------------------------------------------------
 
-    @XKasperServiceFilter( name = FILTER_NAME )
-    private static final class TestFilterSimple implements ServiceFilter {
+    @XKasperQueryHandlerFilter( name = FILTER_NAME )
+    private static final class TestFilterSimple implements QueryHandlerFilter {
         TestFilterSimple() {}
     }
 
-    @XKasperServiceFilter
-    private static final class TestFilterNoName implements ServiceFilter {
+    @XKasperQueryHandlerFilter
+    private static final class TestFilterNoName implements QueryHandlerFilter {
         TestFilterNoName() {}
     }
 

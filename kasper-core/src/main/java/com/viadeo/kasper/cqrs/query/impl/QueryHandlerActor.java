@@ -18,18 +18,18 @@ import org.slf4j.LoggerFactory;
 
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
-public class QueryServiceActor<Q extends Query, RESULT extends QueryResult> implements RequestActor<Q, QueryResponse<RESULT>> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueryServiceActor.class);
+public class QueryHandlerActor<Q extends Query, RESULT extends QueryResult> implements RequestActor<Q, QueryResponse<RESULT>> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandlerActor.class);
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
-    private static final Timer METRICLASSTIMER = METRICS.timer(name(QueryServiceActor.class, "requests-time"));
+    private static final Timer METRICLASSTIMER = METRICS.timer(name(QueryHandlerActor.class, "requests-time"));
 
-    private final QueryService<Q, RESULT> queryService;
+    private final QueryHandler<Q, RESULT> queryHandler;
 
     // ------------------------------------------------------------------------
 
-    public QueryServiceActor(final QueryService<Q, RESULT> queryService) {
-        this.queryService = queryService;
+    public QueryHandlerActor(final QueryHandler<Q, RESULT> queryHandler) {
+        this.queryHandler = queryHandler;
     }
 
     // ------------------------------------------------------------------------
@@ -37,7 +37,7 @@ public class QueryServiceActor<Q extends Query, RESULT extends QueryResult> impl
     @Override
     public QueryResponse<RESULT> process(final Q query, final Context context,
                                         final RequestActorsChain<Q, QueryResponse<RESULT>> chain) throws Exception {
-        /* Call the service */
+        /* Call the handler */
         Exception exception = null;
         QueryResponse<RESULT> ret = null;
 
@@ -49,12 +49,12 @@ public class QueryServiceActor<Q extends Query, RESULT extends QueryResult> impl
         try {
             try {
 
-                LOGGER.info("Call service " + queryService.getClass().getSimpleName());
-                ret = queryService.retrieve(message);
+                LOGGER.info("Call handler " + queryHandler.getClass().getSimpleName());
+                ret = queryHandler.retrieve(message);
 
             } catch (final UnsupportedOperationException e) {
-                if (AbstractQueryService.class.isAssignableFrom(queryService.getClass())) {
-                    ret = (QueryResponse<RESULT>) ((AbstractQueryService) queryService).retrieve(message.getQuery());
+                if (AbstractQueryHandler.class.isAssignableFrom(queryHandler.getClass())) {
+                    ret = (QueryResponse<RESULT>) ((AbstractQueryHandler) queryHandler).retrieve(message.getQuery());
                 } else {
                     timer.close();
                     classTimer.close();

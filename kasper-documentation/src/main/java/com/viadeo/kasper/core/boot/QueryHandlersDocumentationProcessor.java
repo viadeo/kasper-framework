@@ -6,34 +6,34 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import com.viadeo.kasper.cqrs.query.QueryService;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * Process Kasper command dynamic registration at platform boot
  *
- * @see QueryService
+ * @see QueryHandler
  */
-public class QueryServicesDocumentationProcessor extends DocumentationProcessor<XKasperQueryService, QueryService> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(QueryServicesDocumentationProcessor.class);
+public class QueryHandlersDocumentationProcessor extends DocumentationProcessor<XKasperQueryHandler, QueryHandler> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandlersDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------
 
 	/**
 	 * Process Kasper query
 	 * 
-	 * @see com.viadeo.kasper.cqrs.query.QueryService
+	 * @see com.viadeo.kasper.cqrs.query.QueryHandler
 	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public void process(final Class queryServiceClazz) {
-		LOGGER.info("Record on query services library : " + queryServiceClazz.getName());
+	public void process(final Class queryHandlerClazz) {
+		LOGGER.info("Record on query handlers library : " + queryHandlerClazz.getName());
 		
 		//- Register the domain to the locator --------------------------------
-		getKasperLibrary().recordQueryService((Class<? extends QueryService>) queryServiceClazz);
+		getKasperLibrary().recordQueryHandler((Class<? extends QueryHandler>) queryHandlerClazz);
 	}
 
 }

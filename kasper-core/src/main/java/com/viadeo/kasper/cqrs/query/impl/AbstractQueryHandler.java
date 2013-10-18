@@ -12,7 +12,7 @@ import com.viadeo.kasper.cqrs.query.*;
  *
  * This is a convenient class
  *
- * Extend it instead of implementing IQueryService will allow you to
+ * Extend it instead of implementing IQueryHandler will allow you to
  * override at your convenience retrieve(message) or simply retrieve(query)
  * if you are not interested by the message
  *
@@ -21,10 +21,10 @@ import com.viadeo.kasper.cqrs.query.*;
  * @param <Q> the query
  * @param <RESULT> the Response
  */
-public abstract class AbstractQueryService<Q extends Query, RESULT extends QueryResult>
-        implements QueryService<Q, RESULT> {
+public abstract class AbstractQueryHandler<Q extends Query, RESULT extends QueryResult>
+        implements QueryHandler<Q, RESULT> {
 
-    protected AbstractQueryService() { }
+    protected AbstractQueryHandler() { }
 
     // ------------------------------------------------------------------------
 

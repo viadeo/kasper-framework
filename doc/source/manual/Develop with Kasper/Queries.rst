@@ -9,7 +9,7 @@ Implementing queries consists on implementing four Kasper components :
 - one **event listener** used to listen for accurate events and index data
 - one **query** used by the client to send a request to the platform
 - one **query response** (with result) used by the platform to send responses back to the client
-- one **query service** which query the data according to the received query and sends back a response
+- one **query handler** which query the data according to the received query and sends back a response
 
 Kasper does not say anything about your indexation process, but you are heavily encouraged to :
 
@@ -29,7 +29,7 @@ ends with the suffix '**Query**' (recommended).
 
 **A Query is part of a domain API**.
 
-It is used by the client in order to send requests and by the query service to understand
+It is used by the client in order to send requests and by the query handler to understand
 the request and filter the indexed data.
 
 A Kasper query has to implement the interface **Query** and can optionally defines some metadata
@@ -69,7 +69,7 @@ Some interfaces are available as a standard way to add some features to the quer
 Query response results
 ---------------------
 
-A Kasper query response result is an immutable, anemic object used by a query service to send back data
+A Kasper query response result is an immutable, anemic object used by a query handler to send back data
 to the requesting client, it ends with the suffix '**QueryResult**' (recommended).
 
 **A Query response result is part of a domain API**.
@@ -122,20 +122,20 @@ Some interfaces are available as a standard way to add some features to the quer
 Query services
 --------------
 
-A Kasper query service is I/O component using a **Query** as input and responsible to return a **QueryResult**.
+A Kasper query handler is I/O component using a **Query** as input and responsible to return a **QueryResult**.
 
 **A Query service is part of the QUERY architectural area**.
 
-It has to implement the **QueryService<Query, QueryResult>** interface and specify its owning domain with the **@XKasperQueryService**
-annotation and ends with the '**QueryService**' suffix (recommended).
+It has to implement the **QueryHandler<Query, QueryResult>** interface and specify its owning domain with the **@XKasperQueryHandler**
+annotation and ends with the '**QueryHandler**' suffix (recommended).
 
 **usage**
 
 .. code-block:: java
     :linenos:
 
-    @XKasperQueryService( domain = ThingsDomain.class )
-    public class GetThingsQueryService implements QueryService<GetThingsQuery, ThingsListQueryResult> {
+    @XKasperQueryHandler( domain = ThingsDomain.class )
+    public class GetThingsQueryHandler implements QueryHandler<GetThingsQuery, ThingsListQueryResult> {
 
         @Override
         public QueryResponse<ThingsListQueryResult> retrieve(final QueryMessage<GetThingsQuery> message) throws KasperQueryException {
@@ -144,7 +144,7 @@ annotation and ends with the '**QueryService**' suffix (recommended).
 
     }
 
-The **AbstractQueryService** abstract class is provided in order to ease the extraction of the query from the message
+The **AbstractQueryHandler** abstract class is provided in order to ease the extraction of the query from the message
 when other message informations are not required :
 
 **usage**
@@ -152,8 +152,8 @@ when other message informations are not required :
 .. code-block:: java
     :linenos:
 
-    @XKasperQueryService( domain = ThingsDomain.class )
-    public class GetThingsQueryService extends AbstractQueryService<GetThingsQuery, ThingsListQueryResult> {
+    @XKasperQueryHandler( domain = ThingsDomain.class )
+    public class GetThingsQueryHandler extends AbstractQueryHandler<GetThingsQuery, ThingsListQueryResult> {
 
         @Override
         public QueryResponse<ThingsListQueryResult> retrieve(final GetThingsQuery query) throws KasperQueryException {
@@ -165,18 +165,18 @@ when other message informations are not required :
 QueryResponse Caching
 -------------------
 
-Kasper framework provides a way to cache query responses based on the submitted query, the cache is enabled per QueryService and is disabled by default.
+Kasper framework provides a way to cache query responses based on the submitted query, the cache is enabled per QueryHandler and is disabled by default.
 
 It is based on **JSR 107 - JCache** for selecting a cache implementation. By default no cache implementation is provided by the framework
 you can use any implementation of JCache (for example using ehcache-jcache).
 
-To enable the cache for a query service with default configuration, just put **@XKasperQueryCache** annotation:
+To enable the cache for a query handler with default configuration, just put **@XKasperQueryCache** annotation:
 
 .. code-block:: java
     :linenos:
 
-    @XKasperQueryService( domain = AwesomeDomain.class, cache = @XKasperQueryCache )
-    public class GetNiceDataQueryService extends AbstractQueryService<GetNiceDataQuery, NiceDataQueryResult> {
+    @XKasperQueryHandler( domain = AwesomeDomain.class, cache = @XKasperQueryCache )
+    public class GetNiceDataQueryHandler extends AbstractQueryHandler<GetNiceDataQuery, NiceDataQueryResult> {
         ...
     }
 
@@ -239,7 +239,7 @@ A filter can be defined global (set the global flag (**global = true**) on the a
 .. code-block:: java
     :linenos:
 
-    @XKasperServiceFilter( global = true ) // Will be applied to all query services
+    @XKasperServiceFilter( global = true ) // Will be applied to all query handlers
     public class IdEraserResponseFilter implements ResponseFilter<HasAnIdResult> {
 
         @Override
@@ -256,18 +256,18 @@ A filter can be defined global (set the global flag (**global = true**) on the a
 Global filters will be applied after user-defined filters, and user-defined filters are applied in the order of their definition within the annotation.
 
 A global service filter can be domain-sticky (only executed on services of the specified domain) using the **domain** field of the
-**@XKasperQueryService** annotation.
+**@XKasperQueryHandler** annotation.
 
-A non-global filter can then be associated to one or several services using the **@XKasperQueryService** annotation,
+A non-global filter can then be associated to one or several services using the **@XKasperQueryHandler** annotation,
 filling the 'filters' field.
 
-**GetThingsQueryService.class** :
+**GetThingsQueryHandler.class** :
 
 .. code-block:: java
     :linenos:
 
-    @XKasperQueryService( ... , filters = ValidateIdQueryFilter.class )
-    public class GetThingsQueryService extends AbstractQueryService<GetThingsQuery, ThingsListQueryResult> {
+    @XKasperQueryHandler( ... , filters = ValidateIdQueryFilter.class )
+    public class GetThingsQueryHandler extends AbstractQueryHandler<GetThingsQuery, ThingsListQueryResult> {
 
         @Override
         public QueryResponse<ThingsListQueryResult> retrieve(final GetThingsQuery query) throws KasperQueryException {

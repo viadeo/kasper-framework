@@ -88,7 +88,7 @@ A query is submitted using a **GET** request, the parameters will be in the quer
 This was the prefered way because we want to keep queries as simple as possible and we also think that using GET 
 is handy with tools such as curl. Of course it imposes restrictions on having flat/simple queries and limited query size.
 
-To enable Query exposition register HttpQueryExposer servlet, it will then use the **QueryServicesLocator** to locate each query service.
+To enable Query exposition register HttpQueryExposer servlet, it will then use the **QueryHandlersLocator** to locate each query handler.
 
 Ex: suppose we have the following query, it will be **available at http://host:port/someRootPath/getMemberMessages?memberId=999**.
 

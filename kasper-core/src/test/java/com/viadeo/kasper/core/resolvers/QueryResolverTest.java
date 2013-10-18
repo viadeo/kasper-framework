@@ -8,9 +8,9 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
 
@@ -33,18 +33,18 @@ public class QueryResolverTest {
         // Given
         final QueryResolver resolver = new QueryResolver();
         final DomainResolver domainResolver = mock(DomainResolver.class);
-        final QueryServiceResolver queryServiceResolver = mock(QueryServiceResolver.class);
-        final QueryServicesLocator queryServicesLocator = mock(QueryServicesLocator.class);
-        final QueryService queryService = mock(QueryService.class);
+        final QueryHandlerResolver queryHandlerResolver = mock(QueryHandlerResolver.class);
+        final QueryHandlersLocator queryHandlersLocator = mock(QueryHandlersLocator.class);
+        final QueryHandler queryHandler = mock(QueryHandler.class);
 
-        resolver.setQueryServiceResolver(queryServiceResolver);
-        resolver.setQueryServicesLocator(queryServicesLocator);
+        resolver.setQueryHandlerResolver(queryHandlerResolver);
+        resolver.setQueryHandlersLocator(queryHandlersLocator);
         resolver.setDomainResolver(domainResolver);
 
-        when( queryServicesLocator.getServiceFromQueryClass(TestQuery.class) )
-                .thenReturn(Optional.<QueryService>of(queryService) );
+        when( queryHandlersLocator.getHandlerFromQueryClass(TestQuery.class) )
+                .thenReturn(Optional.<QueryHandler>of(queryHandler) );
 
-        when( queryServiceResolver.getDomainClass(queryService.getClass()) )
+        when( queryHandlerResolver.getDomainClass(queryHandler.getClass()) )
                 .thenReturn(Optional.<Class<? extends Domain>>of(TestDomain.class));
 
         // When
@@ -55,11 +55,11 @@ public class QueryResolverTest {
         assertTrue(domain.isPresent());
         assertEquals(TestDomain.class, domain.get());
 
-        verify(queryServicesLocator, times(1)).getServiceFromQueryClass(TestQuery.class);
-        verifyNoMoreInteractions(queryServicesLocator);
+        verify(queryHandlersLocator, times(1)).getHandlerFromQueryClass(TestQuery.class);
+        verifyNoMoreInteractions(queryHandlersLocator);
 
-        verify(queryServiceResolver, times(1)).getDomainClass(queryService.getClass());
-        verifyNoMoreInteractions(queryServiceResolver);
+        verify(queryHandlerResolver, times(1)).getDomainClass(queryHandler.getClass());
+        verifyNoMoreInteractions(queryHandlerResolver);
     }
 
 }

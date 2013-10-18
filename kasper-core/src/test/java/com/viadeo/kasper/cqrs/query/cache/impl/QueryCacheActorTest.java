@@ -13,9 +13,9 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
-import com.viadeo.kasper.cqrs.query.impl.AbstractQueryService;
-import com.viadeo.kasper.cqrs.query.impl.QueryServiceActor;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
+import com.viadeo.kasper.cqrs.query.impl.AbstractQueryHandler;
+import com.viadeo.kasper.cqrs.query.impl.QueryHandlerActor;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Before;
 import org.junit.Test;
@@ -41,19 +41,19 @@ public class QueryCacheActorTest {
                 (QueryCacheActor<DummyQuery, DummyResult>)
                         factory.make(
                                 DummyQuery.class,
-                                WithCacheQueryService.class
+                                WithCacheQueryHandler.class
                         ).get(),
-                new QueryServiceActor<>(new WithCacheQueryService()));
+                new QueryHandlerActor<>(new WithCacheQueryHandler()));
     }
 
     @Test
-    public void testFactoryForQueryServiceWithoutCache() {
-        assertFalse(factory.make(DummyQuery.class, WithoutCacheQueryService.class).isPresent());
+    public void testFactoryForQueryHandlerWithoutCache() {
+        assertFalse(factory.make(DummyQuery.class, WithoutCacheQueryHandler.class).isPresent());
     }
 
     @Test
-    public void testFactoryForQueryServiceWithCache() {
-        assertEquals(QueryCacheActor.class, factory.make(DummyQuery.class, WithCacheQueryService.class).get().getClass());
+    public void testFactoryForQueryHandlerWithCache() {
+        assertEquals(QueryCacheActor.class, factory.make(DummyQuery.class, WithCacheQueryHandler.class).get().getClass());
     }
 
     @Test
@@ -100,8 +100,8 @@ public class QueryCacheActorTest {
         chain = RequestActorsChain.makeChain(
                 (QueryCacheActor<DummyQuery, DummyResult>) factory.make(
                         DummyQuery.class,
-                        WithFilteredFieldsCacheQueryService.class).get(),
-                new QueryServiceActor<>(new WithFilteredFieldsCacheQueryService()));
+                        WithFilteredFieldsCacheQueryHandler.class).get(),
+                new QueryHandlerActor<>(new WithFilteredFieldsCacheQueryHandler()));
 
         // When
         final QueryResponse<DummyResult> expected = chain.next(new DummyQuery("aa", 2), new DefaultContext());
@@ -114,8 +114,8 @@ public class QueryCacheActorTest {
     // ------------------------------------------------------------------------
 
     @XKasperUnregistered
-    @XKasperQueryService(domain = DummyDomain.class, cache = @XKasperQueryCache(keys = "someField"))
-    public static class WithFilteredFieldsCacheQueryService extends AbstractQueryService<DummyQuery, DummyResult> {
+    @XKasperQueryHandler(domain = DummyDomain.class, cache = @XKasperQueryCache(keys = "someField"))
+    public static class WithFilteredFieldsCacheQueryHandler extends AbstractQueryHandler<DummyQuery, DummyResult> {
         @Override
         public QueryResponse<DummyResult> retrieve(DummyQuery query) throws Exception {
             return QueryResponse.of(new DummyResult());
@@ -123,8 +123,8 @@ public class QueryCacheActorTest {
     }
 
     @XKasperUnregistered
-    @XKasperQueryService(domain = DummyDomain.class, cache = @XKasperQueryCache(ttl = TTL))
-    public static class WithCacheQueryService extends AbstractQueryService<DummyQuery, DummyResult> {
+    @XKasperQueryHandler(domain = DummyDomain.class, cache = @XKasperQueryCache(ttl = TTL))
+    public static class WithCacheQueryHandler extends AbstractQueryHandler<DummyQuery, DummyResult> {
         @Override
         public QueryResponse<DummyResult> retrieve(DummyQuery query) throws Exception {
             return QueryResponse.of(new DummyResult());
@@ -132,8 +132,8 @@ public class QueryCacheActorTest {
     }
 
     @XKasperUnregistered
-    @XKasperQueryService(domain = DummyDomain.class)
-    public static class WithoutCacheQueryService extends AbstractQueryService<DummyQuery, DummyResult> {
+    @XKasperQueryHandler(domain = DummyDomain.class)
+    public static class WithoutCacheQueryHandler extends AbstractQueryHandler<DummyQuery, DummyResult> {
         @Override
         public QueryResponse<DummyResult> retrieve(DummyQuery query) throws Exception {
             return QueryResponse.of(new DummyResult());

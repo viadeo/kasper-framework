@@ -9,27 +9,27 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.cqrs.query.*;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.exception.KasperException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
-public class QueryServiceResolverTest {
+public class QueryHandlerResolverTest {
 
     @XKasperUnregistered
     private static final class TestDomain implements Domain { }
 
     @XKasperUnregistered
-    @XKasperQueryService(domain = TestDomain.class)
-    private static final class TestQueryService implements QueryService {
+    @XKasperQueryHandler(domain = TestDomain.class)
+    private static final class TestQueryHandler implements QueryHandler {
         @Override
         public QueryResponse retrieve(QueryMessage message) throws Exception { return null; }
     }
 
     @XKasperUnregistered
-    private static final class TestQueryService2 implements QueryService {
+    private static final class TestQueryHandler2 implements QueryHandler {
         @Override
         public QueryResponse retrieve(QueryMessage message) throws Exception { return null; }
     }
@@ -41,7 +41,7 @@ public class QueryServiceResolverTest {
     private static final class TestQueryResult implements QueryResult { }
 
     @XKasperUnregistered
-    private static final class TestQueryService3 implements  QueryService<TestQuery, TestQueryResult> {
+    private static final class TestQueryHandler3 implements  QueryHandler<TestQuery, TestQueryResult> {
         @Override
         public QueryResponse<TestQueryResult> retrieve(QueryMessage<TestQuery> message) throws Exception {
             return null;
@@ -51,13 +51,13 @@ public class QueryServiceResolverTest {
     // ------------------------------------------------------------------------
 
     @Test
-    public void testGetDomainWithDecoratedQueryService() {
+    public void testGetDomainWithDecoratedQueryHandler() {
         // Given
-        final QueryServiceResolver resolver = new QueryServiceResolver();
+        final QueryHandlerResolver resolver = new QueryHandlerResolver();
 
         // When
         final Optional<Class<? extends Domain>> domain =
-                resolver.getDomainClass(TestQueryService.class);
+                resolver.getDomainClass(TestQueryHandler.class);
 
         // Then
         assertTrue(domain.isPresent());
@@ -65,13 +65,13 @@ public class QueryServiceResolverTest {
     }
 
     @Test
-    public void testGetDomainWithNonDecoratedQueryService() {
+    public void testGetDomainWithNonDecoratedQueryHandler() {
         // Given
-        final QueryServiceResolver resolver = new QueryServiceResolver();
+        final QueryHandlerResolver resolver = new QueryHandlerResolver();
 
         // When
         final Optional<Class<? extends Domain>> domain =
-                resolver.getDomainClass(TestQueryService2.class);
+                resolver.getDomainClass(TestQueryHandler2.class);
 
         // Then
         assertFalse(domain.isPresent());
@@ -82,10 +82,10 @@ public class QueryServiceResolverTest {
     @Test
     public void testGetQueryFromValidService() {
         // Given
-        final QueryServiceResolver resolver = new QueryServiceResolver();
+        final QueryHandlerResolver resolver = new QueryHandlerResolver();
 
         // When
-        final Class<? extends Query> query = resolver.getQueryClass(TestQueryService3.class);
+        final Class<? extends Query> query = resolver.getQueryClass(TestQueryHandler3.class);
 
         // Then
         assertEquals(TestQuery.class, query);
@@ -93,13 +93,13 @@ public class QueryServiceResolverTest {
 
 
     @Test
-    public void testGetQueryFromInvalidService() {
+    public void testGetQueryFromInvalidHandler() {
         // Given
-        final QueryServiceResolver resolver = new QueryServiceResolver();
+        final QueryHandlerResolver resolver = new QueryHandlerResolver();
 
         // When
         try {
-            final Class<? extends Query> query = resolver.getQueryClass(TestQueryService.class);
+            final Class<? extends Query> query = resolver.getQueryClass(TestQueryHandler.class);
             fail();
         } catch (final KasperException e) {
             // Then should raise exception
@@ -109,12 +109,12 @@ public class QueryServiceResolverTest {
     // ------------------------------------------------------------------------
 
     @Test
-    public void testGetQueryResultFromValidService() {
+    public void testGetQueryResultFromValidHandler() {
         // Given
-        final QueryServiceResolver resolver = new QueryServiceResolver();
+        final QueryHandlerResolver resolver = new QueryHandlerResolver();
 
         // When
-        final Class<? extends QueryResult> queryResult = resolver.getQueryResultClass(TestQueryService3.class);
+        final Class<? extends QueryResult> queryResult = resolver.getQueryResultClass(TestQueryHandler3.class);
 
         // Then
         assertEquals(TestQueryResult.class, queryResult);
@@ -122,13 +122,13 @@ public class QueryServiceResolverTest {
 
 
     @Test
-    public void testGetQueryResultFromInvalidService() {
+    public void testGetQueryResultFromInvalidHandler() {
         // Given
-        final QueryServiceResolver resolver = new QueryServiceResolver();
+        final QueryHandlerResolver resolver = new QueryHandlerResolver();
 
         // When
         try {
-            final Class<? extends QueryResult> queryResult = resolver.getQueryResultClass(TestQueryService.class);
+            final Class<? extends QueryResult> queryResult = resolver.getQueryResultClass(TestQueryHandler.class);
             fail();
         } catch (final KasperException e) {
             // Then should raise exception

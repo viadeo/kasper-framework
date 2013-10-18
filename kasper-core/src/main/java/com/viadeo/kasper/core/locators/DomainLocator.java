@@ -20,7 +20,7 @@ import java.util.Set;
 /**
  *
  * The domain locator interface
- * - record domains, entities, repositories and services
+ * - record domains, entities, repositories and handlers
  * 
  * TODO: terminate javadoc
  * 

@@ -25,7 +25,7 @@ The following documentation processors must be registered :
 * ListenersDocumentationProcessor
 * RelationsDocumentationProcessor
 * RepositoriesDocumentationProcessor
-* QueryServicesDocumentationProcessor
+* QueryHandlersDocumentationProcessor
 
 Configuration without Spring
 ............................

@@ -23,7 +23,7 @@
     "url": "/domain/Facebook"
   },
   "prefix": "apps",
-  "queryServices": [],
+  "queryHandlers": [],
   "relations": [
     {
       "description": "The created_by relation between Application and Member",

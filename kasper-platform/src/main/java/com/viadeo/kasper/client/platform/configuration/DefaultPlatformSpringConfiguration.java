@@ -10,7 +10,7 @@ import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
@@ -77,8 +77,8 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public QueryServicesLocator queryServicesLocator(final QueryServiceResolver queryServiceResolver) {
-        return super.queryServicesLocator(queryServiceResolver);
+    public QueryHandlersLocator queryHandlersLocator(final QueryHandlerResolver queryHandlerResolver) {
+        return super.queryHandlersLocator(queryHandlerResolver);
     }
 
     @Bean
@@ -96,8 +96,8 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public ServiceFiltersProcessor serviceFiltersProcessor(QueryServicesLocator locator) {
-        return super.serviceFiltersProcessor(locator);
+    public QueryHandlerFiltersProcessor queryHandlerFiltersProcessor(QueryHandlersLocator locator) {
+        return super.queryHandlerFiltersProcessor(locator);
     }
 
     @Bean
@@ -108,8 +108,8 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public QueryServicesProcessor queryServicesProcessor(final QueryServicesLocator locator){
-        return super.queryServicesProcessor(locator);
+    public QueryHandlersProcessor queryHandlersProcessor(final QueryHandlersLocator locator){
+        return super.queryHandlersProcessor(locator);
     }
 
     @Bean
@@ -120,7 +120,7 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public QueryGateway queryGateway(final QueryServicesLocator locator){
+    public QueryGateway queryGateway(final QueryHandlersLocator locator){
         return super.queryGateway(locator);
     }
 
@@ -160,10 +160,10 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
     @Override
     public QueryResolver queryResolver(
             final DomainResolver domainResolver,
-            final QueryServiceResolver queryServiceResolver,
-            final QueryServicesLocator queryServicesLocator
+            final QueryHandlerResolver queryHandlerResolver,
+            final QueryHandlersLocator queryHandlersLocator
     ) {
-        return super.queryResolver(domainResolver, queryServiceResolver, queryServicesLocator);
+        return super.queryResolver(domainResolver, queryHandlerResolver, queryHandlersLocator);
     }
 
     @Bean
@@ -178,8 +178,8 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public QueryServiceResolver queryServiceResolver(final DomainResolver domainResolver) {
-        return super.queryServiceResolver(domainResolver);
+    public QueryHandlerResolver queryHandlerResolver(final DomainResolver domainResolver) {
+        return super.queryHandlerResolver(domainResolver);
     }
 
     @Bean

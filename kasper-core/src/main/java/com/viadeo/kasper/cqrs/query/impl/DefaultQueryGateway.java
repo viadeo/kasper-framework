@@ -13,7 +13,7 @@ import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
@@ -37,7 +37,7 @@ public class DefaultQueryGateway implements QueryGateway {
     private static final Meter METRICLASSREQUESTS = METRICS.meter(name(QueryGateway.class, "requests"));
     private static final Meter METRICLASSERRORS = METRICS.meter(name(QueryGateway.class, "errors"));
 
-    private QueryServicesLocator queryServicesLocator;
+    private QueryHandlersLocator queryHandlersLocator;
 
     // -----------------------------------------------------------------------
 
@@ -58,15 +58,15 @@ public class DefaultQueryGateway implements QueryGateway {
         /* Sets current thread context */
         CurrentContext.set(context);
 
-        // Search for associated service --------------------------------------
+        // Search for associated handler --------------------------------------
         LOGGER.debug("Retrieve request processor chain for query " + queryClass.getSimpleName());
         Optional<RequestActorsChain<Query, QueryResponse<QueryResult>>> optionalRequestChain =
-                queryServicesLocator.getRequestActorChain(queryClass);
+                queryHandlersLocator.getRequestActorChain(queryClass);
 
         if (!optionalRequestChain.isPresent()) {
             timer.close();
             classTimer.close();
-            throw new KasperException("Unable to find the service implementing query class " + queryClass);
+            throw new KasperException("Unable to find the handler implementing query class " + queryClass);
         }
 
         Exception exception = null;
@@ -102,8 +102,8 @@ public class DefaultQueryGateway implements QueryGateway {
 
     // -----------------------------------------------------------------------
 
-    public void setQueryServicesLocator(final QueryServicesLocator queryServicesLocator) {
-        this.queryServicesLocator = queryServicesLocator;
+    public void setQueryHandlersLocator(final QueryHandlersLocator queryHandlersLocator) {
+        this.queryHandlersLocator = queryHandlersLocator;
     }
 
 }

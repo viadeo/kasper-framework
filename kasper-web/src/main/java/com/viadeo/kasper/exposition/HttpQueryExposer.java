@@ -24,12 +24,12 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.context.impl.DefaultKasperId;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
 import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
@@ -111,7 +111,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
-    private final transient QueryServicesLocator queryServicesLocator;
+    private final transient QueryHandlersLocator queryHandlersLocator;
     private final transient QueryFactory queryAdapterFactory;
     private final ObjectMapper mapper;
     private final transient QueryGateway queryGateway;
@@ -119,17 +119,17 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     public HttpQueryExposer(final QueryGateway queryGateway,
-                            final QueryServicesLocator queryServicesLocator,
+                            final QueryHandlersLocator queryHandlersLocator,
                             final QueryFactory queryAdapterFactory,
                             final ObjectMapper mapper) {
 
         this.queryGateway = queryGateway;
-        this.queryServicesLocator = queryServicesLocator;
+        this.queryHandlersLocator = queryHandlersLocator;
         this.queryAdapterFactory = queryAdapterFactory;
         this.mapper = mapper;
     }
 
-    public HttpQueryExposer(final QueryGateway queryGateway, final QueryServicesLocator queryLocator) {
+    public HttpQueryExposer(final QueryGateway queryGateway, final QueryHandlersLocator queryLocator) {
         this(queryGateway, queryLocator, new QueryFactoryBuilder().create(), ObjectMapperProvider.INSTANCE.mapper());
     }
 
@@ -140,8 +140,8 @@ public class HttpQueryExposer extends HttpExposer {
         LOGGER.info("=============== Exposing queries ===============");
 
         /* expose all registered queries and commands */
-        for (final QueryService queryService : queryServicesLocator.getServices()) {
-            expose(queryService);
+        for (final QueryHandler queryHandler : queryHandlersLocator.getHandlers()) {
+            expose(queryHandler);
         }
 
         if (exposedQueries.isEmpty()) {
@@ -379,13 +379,13 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected HttpQueryExposer expose(final QueryService queryService) {
-        checkNotNull(queryService);
+    protected HttpQueryExposer expose(final QueryHandler queryHandler) {
+        checkNotNull(queryHandler);
 
-        final TypeToken<? extends QueryService> typeToken = TypeToken.of(queryService.getClass());
+        final TypeToken<? extends QueryHandler> typeToken = TypeToken.of(queryHandler.getClass());
         final Class<? super Query> queryClass = (Class<? super Query>) typeToken
-                .getSupertype(QueryService.class)
-                .resolveType(QueryService.class.getTypeParameters()[0])
+                .getSupertype(QueryHandler.class)
+                .resolveType(QueryHandler.class.getTypeParameters()[0])
                 .getRawType();
 
         final String queryPath = queryToPath(queryClass);

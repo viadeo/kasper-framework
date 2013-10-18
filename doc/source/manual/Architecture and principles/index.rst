@@ -93,7 +93,7 @@ BUT, you'll have to be perhaps a bit more strict on the usages of classes depede
     * Command handlers should only know domain classes.. and commands
     * Commands, and events must not have any dependency to other domain classes
     * Commands must be known only by command handlers
-    * DQOs and DTOs should only be used by query services
+    * DQOs and DTOs should only be used by query handlers
     * **NEVER, NEVER, NEVER, NEVER** allow usage of DOMAIN (COMMAND) module by QUERY module
     * **NEVER, NEVER, NEVER, NEVER** allow usage of QUERY module by DOMAIN module
     * **NEVER, NEVER, NEVER, NEVER** allow usage of QUERY or DOMAIN modules by the API module

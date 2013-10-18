@@ -11,9 +11,9 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.client.KasperClientBuilder;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.cqrs.query.*;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionResult;
 import org.junit.Test;
@@ -39,8 +39,8 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     public static class SomeCollectionResponse extends AbstractQueryCollectionResult<SomeResponse> {
     }
 
-    @XKasperQueryService(domain = AccountDomain.class)
-    public static class SomeCollectionQueryService implements QueryService<SomeCollectionQuery, SomeCollectionResponse> {
+    @XKasperQueryHandler(domain = AccountDomain.class)
+    public static class SomeCollectionQueryHandler implements QueryHandler<SomeCollectionQuery, SomeCollectionResponse> {
         @Override
         public QueryResponse<SomeCollectionResponse> retrieve(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
@@ -112,8 +112,8 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         }
     }
 
-    @XKasperQueryService(domain = AccountDomain.class)
-    public static class SomeQueryService implements QueryService<SomeQuery, SomeResponse> {
+    @XKasperQueryHandler(domain = AccountDomain.class)
+    public static class SomeQueryHandler implements QueryHandler<SomeQuery, SomeResponse> {
         @Override
         public QueryResponse<SomeResponse> retrieve(final QueryMessage<SomeQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
@@ -155,7 +155,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
 
     @Override
     protected HttpQueryExposer createExposer(final ApplicationContext ctx) {
-        return new HttpQueryExposer(ctx.getBean(QueryGateway.class), ctx.getBean(QueryServicesLocator.class));
+        return new HttpQueryExposer(ctx.getBean(QueryGateway.class), ctx.getBean(QueryHandlersLocator.class));
     }
 
     @Test
@@ -178,7 +178,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     // ------------------------------------------------------------------------
 
     @Test
-    public void testQueryServiceThrowingException() {
+    public void testQueryHandlerThrowingException() {
         // Given
         final SomeQuery query = new SomeQuery();
         query.doThrowSomeException = true;
@@ -196,7 +196,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     // ------------------------------------------------------------------------
 
     @Test
-    public void testQueryServiceReturningCollectionResponse() {
+    public void testQueryHandlerReturningCollectionResponse() {
         // Given
         final SomeCollectionQuery query = new SomeCollectionQuery();
 
@@ -210,7 +210,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     // ------------------------------------------------------------------------
 
     @Test
-    public void testQueryServiceThrowListOfErrors() {
+    public void testQueryHandlerThrowListOfErrors() {
         // Given
         final SomeQuery query = new SomeQuery();
         query.setDoThrowSomeException(true);

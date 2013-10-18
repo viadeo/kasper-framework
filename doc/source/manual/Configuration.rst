@@ -18,7 +18,7 @@ specified in parenthesis):
     * CommandGateway (*CommandGateway interface*)
         * CommandBus (*KasperCommandBus*)
     * QueryGateway (*DefaultQueryGateway*)
-        * QueryServicesLocator (*DefaultQueryServicesLocator*)
+        * QueryHandlersLocator (*DefaultQueryHandlersLocator*)
     * EventBus (*KasperEventBus*)
     * RootProcessor (*AnnotationRootProcessor*)
         * ComponentsInstanceManager (*SimpleComponentsInstanceManager*)
@@ -30,12 +30,12 @@ specified in parenthesis):
             * DomainLocator
         * EventListenersProcessor
             * EventBus
-        * QueryServicesProcessor
-            * QueryServicesLocator
+        * QueryHandlersProcessor
+            * QueryHandlersLocator
         * DomainsProcessor
             * DomainLocator
         * ServiceFiltersProcessor
-            * QueryServicesLocator
+            * QueryHandlersLocator
 
 Boot Kasper platform without Spring
 ...................................

@@ -12,7 +12,7 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
-import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.ddd.impl.Repository;
@@ -40,7 +40,7 @@ public class ResolverFactory {
     private EventListenerResolver eventListenerResolver;
     private QueryResolver queryResolver;
     private QueryAnswerResolver queryAnswerResolver;
-    private QueryServiceResolver queryServiceResolver;
+    private QueryHandlerResolver queryHandlerResolver;
     private RepositoryResolver repositoryResolver;
     private EntityResolver entityResolver;
     private ConceptResolver conceptResolver;
@@ -55,7 +55,7 @@ public class ResolverFactory {
             put(EventListener.class, eventListenerResolver);
             put(Query.class, queryResolver);
             put(QueryAnswer.class, queryAnswerResolver);
-            put(QueryService.class, queryServiceResolver);
+            put(QueryHandler.class, queryHandlerResolver);
             put(Repository.class, repositoryResolver);
             put(Event.class, eventResolver);
 
@@ -140,12 +140,12 @@ public class ResolverFactory {
 
     //-------------------------------------------------------------------------
 
-    public QueryServiceResolver getQueryServiceResolver() {
-        return queryServiceResolver;
+    public QueryHandlerResolver getQueryHandlerResolver() {
+        return queryHandlerResolver;
     }
 
-    public void setQueryServiceResolver(final QueryServiceResolver queryServiceResolver) {
-        this.queryServiceResolver = checkNotNull(queryServiceResolver);
+    public void setQueryHandlerResolver(final QueryHandlerResolver queryHandlerResolver) {
+        this.queryHandlerResolver = checkNotNull(queryHandlerResolver);
     }
 
     //-------------------------------------------------------------------------

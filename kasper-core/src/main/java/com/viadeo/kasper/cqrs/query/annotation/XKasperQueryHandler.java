@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.annotation;
 
-import com.viadeo.kasper.cqrs.query.ServiceFilter;
+import com.viadeo.kasper.cqrs.query.QueryHandlerFilter;
 import com.viadeo.kasper.ddd.Domain;
 
 import java.lang.annotation.ElementType;
@@ -15,19 +15,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Query service marker
+ * Query handler marker
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface XKasperQueryService {
+public @interface XKasperQueryHandler {
 
     /**
-     * @return the name of the service
+     * @return the name of the handler
      */
     String name() default "";
 
     /**
-     * @return the description of the service
+     * @return the description of the handler
      */
     String description() default "";
 
@@ -37,12 +37,12 @@ public @interface XKasperQueryService {
     Class<? extends Domain> domain();
 
     /**
-     * @return the associated query service filters
+     * @return the associated query handler filters
      */
-    Class<? extends ServiceFilter>[] filters() default {};
+    Class<? extends QueryHandlerFilter>[] filters() default {};
 
     /**
-     * Whether the response of this query service should be cached.
+     * Whether the response of this query handler should be cached.
      * False by default.
      */
     XKasperQueryCache cache() default @XKasperQueryCache(enabled = false);

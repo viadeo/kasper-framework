@@ -44,7 +44,7 @@ The following annotations are currently used by the framework :
 
 - **XKasperEventListener**
 - **XKasperServiceFilter**
-- **XKasperQueryService**
+- **XKasperQueryHandler**
 - **XKasperCommandHandler**
 - **XKasperRepository**
 - **XKasperRelation**
@@ -64,7 +64,7 @@ Naming practices
 It is heavily recommended to name your components using an explicit suffix :
 
 - ServiceFilter
-- QueryService
+- QueryHandler
 - DomainService
 - [Command]Handler
 - [Event]Listener
@@ -82,7 +82,7 @@ Concerning Commands/Handlers, Queries/Services, Responses and Events/Listeners t
 reflecting directly your ubiquitous language elements, eg:
 
 - SetMemberAsPremiumForOneYear*Command* / SetMemberAsPremiumForOneYear*CommandHandler*
-- FindNameOfMembersFromIds*Query* / FindNameOfMembersFromIds*QueryService*
+- FindNameOfMembersFromIds*Query* / FindNameOfMembersFromIds*QueryHandler*
 - ListOfMembersWithNames*Response*
 - MemberHasBeenSetAsPremiumForOneYear*Event* / MemberHasBeenSetAsPremiumForOneYear*EventListener*
 
