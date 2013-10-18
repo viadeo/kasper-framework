@@ -63,5 +63,9 @@ public final class DocumentedListener extends DocumentedDomainNode {
 			.setDescription("[Not resolved]")
 			.toSimpleNode();
 	}
+
+    public String getEventName() {
+        return this.eventName;
+    }
 	
 }
