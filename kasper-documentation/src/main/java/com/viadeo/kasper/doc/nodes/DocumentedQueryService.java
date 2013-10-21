@@ -17,8 +17,8 @@ import com.google.common.base.Optional;
 public final class DocumentedQueryService extends DocumentedDomainNode {
 	private static final long serialVersionUID = -4593630427564176805L;
 
-	public static final String TYPE_NAME = "queryService";
-	public static final String PLURAL_TYPE_NAME = "queryServices";
+	public static final String TYPE_NAME = "queryservice";
+	public static final String PLURAL_TYPE_NAME = "queryservices";
 
 	private String queryName;
 	private String queryAnswerName;

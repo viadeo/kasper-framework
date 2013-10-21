@@ -7,6 +7,7 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.core.resolvers.CommandResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.doc.KasperLibrary;
 
@@ -27,12 +28,16 @@ public final class DocumentedCommand extends DocumentedDomainNode {
 	public DocumentedCommand(final KasperLibrary kl, final Class<? extends Command> commandClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 
-        final String description =
-                this.getKasperLibrary().getResolverFactory().getCommandResolver().getDescription(commandClazz);
+        final CommandResolver resolver =
+                this.getKasperLibrary().getResolverFactory().getCommandResolver();
+
+        final String description = resolver.getDescription(commandClazz);
+        final String label = resolver.getLabel(commandClazz);
 
 		// - Register the domain to the locator --------------------------------
 		this.setName(commandClazz.getSimpleName());
 		this.setDescription(description);
+        this.setLabel(label);
 		this.properties = new DocumentedBean(commandClazz);
 	}
 

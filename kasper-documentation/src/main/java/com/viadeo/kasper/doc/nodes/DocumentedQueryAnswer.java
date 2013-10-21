@@ -22,8 +22,8 @@ public class DocumentedQueryAnswer extends DocumentedDomainNode {
 
     private static final long serialVersionUID = -5368242490125523480L;
 
-    public static final String TYPE_NAME="queryAnswer";
-    public static final String PLURAL_TYPE_NAME="queryAnswers";
+    public static final String TYPE_NAME="queryanswer";
+    public static final String PLURAL_TYPE_NAME="queryanswers";
 
     private DocumentedBean properties;
 
