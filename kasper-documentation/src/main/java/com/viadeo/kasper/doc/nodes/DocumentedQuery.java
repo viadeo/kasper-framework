@@ -6,18 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
+import com.google.common.base.Optional;
+import com.viadeo.kasper.core.resolvers.QueryResolver;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.exception.KasperException;
-
-import com.viadeo.kasper.core.resolvers.QueryResolver;
-
-import com.google.common.base.Optional;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 public final class DocumentedQuery extends DocumentedDomainNode{
 

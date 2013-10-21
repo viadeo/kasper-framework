@@ -7,8 +7,8 @@
 package com.viadeo.kasper.cqrs.query.http;
 
 import com.viadeo.kasper.KasperError;
-import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.core.Response.Status;

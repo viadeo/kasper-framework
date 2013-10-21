@@ -9,8 +9,8 @@ package com.viadeo.kasper.cqrs.query.validation;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import lombok.Data;
 import org.junit.Test;
 

@@ -9,7 +9,6 @@ package com.viadeo.kasper.cqrs.query;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.annotation.Immutable;
 import com.viadeo.kasper.cqrs.TransportMode;
-import com.viadeo.kasper.cqrs.command.http.HTTPCommandResponse;
 import com.viadeo.kasper.cqrs.query.http.HTTPQueryResponse;
 import com.viadeo.kasper.exception.KasperException;
 

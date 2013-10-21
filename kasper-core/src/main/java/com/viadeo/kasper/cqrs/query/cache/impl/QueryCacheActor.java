@@ -9,9 +9,9 @@ package com.viadeo.kasper.cqrs.query.cache.impl;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryRequestActor;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.cqrs.query.cache.QueryCacheKeyGenerator;
 

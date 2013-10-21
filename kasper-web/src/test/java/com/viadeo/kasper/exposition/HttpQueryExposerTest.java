@@ -8,7 +8,6 @@ package com.viadeo.kasper.exposition;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.CoreErrorCode;
 import com.viadeo.kasper.KasperError;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;

@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.google.common.base.Optional;
 

@@ -7,8 +7,6 @@
 package com.viadeo.kasper.context.impl;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContext;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import junit.framework.TestCase;
 import org.junit.Test;
 

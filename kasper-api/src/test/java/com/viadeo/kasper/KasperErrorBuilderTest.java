@@ -6,13 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper;
 
-import com.google.common.collect.Lists;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.KasperError.Builder;
 import static org.junit.Assert.assertEquals;
 
