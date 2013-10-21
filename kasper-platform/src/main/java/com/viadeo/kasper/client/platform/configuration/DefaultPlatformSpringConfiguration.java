@@ -168,16 +168,6 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public QueryAnswerResolver queryAnswerResolver(
-            final DomainResolver domainResolver,
-            final QueryServiceResolver queryServiceResolver,
-            final QueryServicesLocator queryServicesLocator
-    ) {
-        return super.queryAnswerResolver(domainResolver, queryServiceResolver, queryServicesLocator);
-    }
-
-    @Bean
-    @Override
     public QueryServiceResolver queryServiceResolver(final DomainResolver domainResolver) {
         return super.queryServiceResolver(domainResolver);
     }

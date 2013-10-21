@@ -33,13 +33,11 @@ public final class DocumentedRepository extends DocumentedDomainNode {
 
 		// Find associated domain ---------------------------------------------
 		final String domainName = resolver.getDomainClass(repositoryClazz).get().getSimpleName();
-        final String label = resolver.getLabel(repositoryClazz);
         final String description = resolver.getDescription(repositoryClazz);
 
 		// Set properties -----------------------------------------------------
 		this.setName(repositoryClazz.getSimpleName());
 		this.setDomainName(domainName);
-		this.setLabel(label);
 		this.setDescription(description);
 		this.aggregate = agr.getSimpleName();
 	}	

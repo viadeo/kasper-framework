@@ -11,9 +11,6 @@ import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryAnswer;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.core.resolvers.QueryAnswerResolver;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -21,39 +18,62 @@ import java.util.List;
 import java.util.Set;
 
 
-public class DocumentedQueryAnswer extends DocumentedDomainNode {
+public class DocumentedQueryAnswer extends DocumentedDomainNode{
 
     private static final long serialVersionUID = -5368242490125523480L;
 
     public static final String TYPE_NAME="queryAnswer";
     public static final String PLURAL_TYPE_NAME="queryAnswers";
 
-    private DocumentedProperties properties;
+    private DocumentedProperties properties=null;
+
+    // ----------------------------------------------------------------------------------------
 
     DocumentedQueryAnswer(final KasperLibrary kl){
-        super(kl,TYPE_NAME,PLURAL_TYPE_NAME);
+        super(kl,TYPE_NAME,PLURAL_TYPE_NAME); // Used as empty queryAnswer to populate
     }
 
     public DocumentedQueryAnswer(KasperLibrary kl, final Class<? extends QueryAnswer> queryAnswerClazz){
-        this(kl);
-        
-        final QueryAnswerResolver resolver = this.getKasperLibrary().getResolverFactory().getQueryAnswerResolver();
+        super(kl,TYPE_NAME,PLURAL_TYPE_NAME);
 
-        setName(queryAnswerClazz.getSimpleName());
-        setLabel(resolver.getLabel(queryAnswerClazz));
-        setDescription(resolver.getDescription(queryAnswerClazz));
-        properties = new DocumentedProperties(queryAnswerClazz);
+        final XKasperQueryAnswer annotation=queryAnswerClazz.getAnnotation(XKasperQueryAnswer.class);
+
+        // Get description -----------------------------------------------------------
+        String description="";
+        if (null!=annotation){
+            description=annotation.description();
+        }
+        if (description.isEmpty()){
+            description=String.format("The %s queryAnswer",
+                    queryAnswerClazz.getSimpleName().replaceAll("QueryAnswer", ""));
+        }
+
+        this.setName(queryAnswerClazz.getSimpleName());
+        this.setDescription(description);
+        this.properties=new DocumentedProperties(queryAnswerClazz);
     }
 
-    public Collection<DocumentedNode> getQueryServices(){
-        final KasperLibrary kl=this.getKasperLibrary();
+    // -------------------------------------------------------------------------------
+    public String getLabel(){
+        if (null== this.label){
+            return this.getName().replaceAll("QueryAnswer","");
+        }
+        return super.getLabel();
+    }
+
+    // -------------------------------------------------------------------------------
+
+    public Collection<DocumentedNode> getQueryServices() {
+        final KasperLibrary kl = this.getKasperLibrary();
         return kl.simpleNodesFrom( kl.getQueryServicesForQueryAnswer(getName()) ).values();
     }
 
+    // -------------------------------------------------------------------------------
     public DocumentedProperties getProperties(){
         return this.properties;
     }
 
+    // -------------------------------------------------------------------------------
     public DocumentedNode getDomain(){
         final List<DocumentedQueryService> queryServices=
                 this.getKasperLibrary().getQueryServicesForQueryAnswer(this.getName());
@@ -71,5 +91,4 @@ public class DocumentedQueryAnswer extends DocumentedDomainNode {
         }
         return null;
     }
-	
 }

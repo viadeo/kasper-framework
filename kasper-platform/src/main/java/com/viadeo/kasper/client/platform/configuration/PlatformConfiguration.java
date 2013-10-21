@@ -239,22 +239,6 @@ public interface PlatformConfiguration {
      * Warning : override the two methods at once
      *
      * @param domainResolver the domain resolver
-     * @param queryServiceResolver the query service resolver
-     * @param queryServicesLocator the query services locator
-     *
-     * @return the query resolver
-     */
-    QueryAnswerResolver queryAnswerResolver(
-            DomainResolver domainResolver,
-            QueryServiceResolver queryServiceResolver,
-            QueryServicesLocator queryServicesLocator
-    );
-    QueryAnswerResolver queryAnswerResolver();
-
-    /**
-     * Warning : override the two methods at once
-     *
-     * @param domainResolver the domain resolver
      *
      * @return the query services resolver
      */
@@ -342,7 +326,6 @@ public interface PlatformConfiguration {
             CommandHandlerResolver commandHandlerResolver,
             EventListenerResolver eventListenerResolver,
             QueryResolver queryResolver,
-            QueryAnswerResolver queryAnswerResolver,
             QueryServiceResolver queryServiceResolver,
             RepositoryResolver repositoryResolver,
             EntityResolver entityResolver,

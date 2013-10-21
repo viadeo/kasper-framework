@@ -1,6 +1,13 @@
 
-{{#if node.queryService}}
-    <div class="well well-small">
-        <h2><small>Query Service :</small> <a class="klink" href="#{{node.queryService.name}}">{{node.queryService.label}}</a></h2>
-    </div>
-{{/if}}
+<div class="well well-small">
+    <h2>QueryService</h2>
+    {{#if node.queryServices}}
+    <ul>
+        {{#each node.queryServices}}
+        <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+        {{/each}}
+    </ul>
+    {{else}}
+    <i>nothing declared</i>
+    {{/if}}
+</div><!--/span-->

@@ -502,30 +502,6 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryAnswerResolver queryAnswerResolver(
-        final DomainResolver domainResolver,
-        final QueryServiceResolver queryServiceResolver,
-        final QueryServicesLocator queryServicesLocator
-    ) {
-        this.ensureNotPresent(QueryAnswerResolver.class);
-
-        final QueryAnswerResolver queryAnswerResolver = new QueryAnswerResolver();
-        queryAnswerResolver.setQueryServiceResolver(queryServiceResolver);
-        queryAnswerResolver.setQueryServicesLocator(queryServicesLocator);
-        queryAnswerResolver.setDomainResolver(domainResolver);
-
-        components.putInstance(QueryAnswerResolver.class, queryAnswerResolver);
-        return queryAnswerResolver;
-    }
-
-    @Override
-    public QueryAnswerResolver queryAnswerResolver() {
-        return this.getAvailableInstance(QueryAnswerResolver.class);
-    }
-
-    // ------------------------------------------------------------------------
-
-    @Override
     public QueryServiceResolver queryServiceResolver(final DomainResolver domainResolver) {
         this.ensureNotPresent(QueryServiceResolver.class);
 
@@ -630,7 +606,6 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
             CommandHandlerResolver commandHandlerResolver,
             EventListenerResolver eventListenerResolver,
             QueryResolver queryResolver,
-            QueryAnswerResolver queryAnswerResolver,
             QueryServiceResolver queryServiceResolver,
             RepositoryResolver repositoryResolver,
             EntityResolver entityResolver,
@@ -646,7 +621,6 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         resolverFactory.setCommandHandlerResolver(commandHandlerResolver);
         resolverFactory.setEventListenerResolver(eventListenerResolver);
         resolverFactory.setQueryResolver(queryResolver);
-        resolverFactory.setQueryAnswerResolver(queryAnswerResolver);
         resolverFactory.setQueryServiceResolver(queryServiceResolver);
         resolverFactory.setRepositoryResolver(repositoryResolver);
         resolverFactory.setEntityResolver(entityResolver);

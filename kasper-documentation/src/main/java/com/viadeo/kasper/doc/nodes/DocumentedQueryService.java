@@ -13,7 +13,6 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.google.common.base.Optional;
 
 public final class DocumentedQueryService extends DocumentedDomainNode {
 	private static final long serialVersionUID = -4593630427564176805L;
@@ -21,11 +20,13 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
 	public static final String TYPE_NAME = "queryservice";
 	public static final String PLURAL_TYPE_NAME = "queryservices";
 
-	private String queryName;
+    private String queryName;
 	private String queryAnswerName;
 	
+	// ------------------------------------------------------------------------
 
-	DocumentedQueryService(final KasperLibrary kl) {
+	DocumentedQueryService(final KasperLibrary kl) { // Used as empty command to
+												     // populate
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 	}
 
@@ -44,54 +45,56 @@ public final class DocumentedQueryService extends DocumentedDomainNode {
 		this.setDomainName(domainName);
 
 		// - the Query --------------------------------------------------------
-		@SuppressWarnings("unchecked") // Safe
-		final Class<? extends Query> queryClass = resolver.getQueryClass(queryServiceClazz);
+		final Class<? extends Query> queryClass =
+                resolver.getQueryClass(queryServiceClazz);
 		this.queryName = queryClass.getSimpleName();
 		
-		// - the Answer -------------------------------------------------------
-		@SuppressWarnings("unchecked") // Safe
-		final Class<? extends QueryAnswer> queryAnswerClass = resolver.getQueryAnswerClass(queryServiceClazz);
-		this.queryAnswerName = queryAnswerClass.getSimpleName();
+		// - the Result -------------------------------------------------------
+		final Class<? extends QueryAnswer> queryAnswerClass =
+                resolver.getQueryAnswerClass(queryServiceClazz);
+        this.queryAnswerName = queryAnswerClass.getSimpleName();
 	}
 
-	@JsonIgnore
-	public String getQueryName(){
-		return this.queryName;
-	}
+	// ------------------------------------------------------------------------
 
 	public DocumentedNode getQuery() {
-		final KasperLibrary kl = this.getKasperLibrary();
-		final Optional<DocumentedQuery> query = kl.getQuery(this.queryName);
-		
-		if (query.isPresent()) {
-			return kl.getSimpleNodeFrom( query.get() ); 
-		}
-		
-		return new DocumentedQuery(getKasperLibrary())
-			.setDomainName(getDomainName())
-			.setName(this.queryName)
-			.setDescription("[Not resolved]")
-			.toSimpleNode();
-	}
-	
-	@JsonIgnore
-	public String getQueryAnswerName(){
-		return this.queryAnswerName;
-	}
+		final KasperLibrary kl=this.getKasperLibrary();
+        final Optional<DocumentedQuery> query=kl.getQuery(this.queryName);
 
-	public DocumentedNode getQueryAnswer() {
-		final KasperLibrary kl = this.getKasperLibrary();
-		final Optional<DocumentedQueryAnswer> queryAnswer = kl.getQueryAnswer(this.queryAnswerName);
-		
-		if (queryAnswer.isPresent()) {
-			return kl.getSimpleNodeFrom( queryAnswer.get() ); 
-		}
-		
-		return new DocumentedQueryAnswer(getKasperLibrary())
-			.setDomainName(getDomainName())
-			.setName(this.queryAnswerName)
-			.setDescription("[Not resolved]")
-			.toSimpleNode();
+        if (query.isPresent()){
+            return kl.getSimpleNodeFrom(query.get());
+        }
+
+        return new DocumentedQuery(getKasperLibrary())
+                .setDomainName(getDomainName())
+                .setName(this.queryName)
+                .setDescription("[Not resolved]")
+                .toSimpleNode();
 	}
+    @JsonIgnore
+    public String getQueryName(){
+        return this.queryName;
+    }
+
+	// ------------------------------------------------------------------------
+
+    public DocumentedNode getQueryAnswer(){
+        final KasperLibrary kl=this.getKasperLibrary();
+        final Optional<DocumentedQueryAnswer> queryAnswer=kl.getQueryAnswer(this.queryAnswerName);
+
+        if (queryAnswer.isPresent()){
+            return kl.getSimpleNodeFrom(queryAnswer.get());
+        }
+
+        return new DocumentedQueryAnswer(getKasperLibrary())
+                .setDomainName(getDomainName())
+                .setName(this.queryAnswerName)
+                .setDescription("[Not resolved]")
+                .toSimpleNode();
+    }
+    @JsonIgnore
+    public String getQueryAnswerName(){
+        return this.queryAnswerName;
+    }
 
 }

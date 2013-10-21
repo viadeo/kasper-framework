@@ -13,31 +13,31 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * Process Kasper query answer dynamic registration at platform boot
+ * Process Kasper event dynamic registration at platform boot
  *
  * @see XKasperQueryAnswer
  */
 
-public class QueryAnswersDocumentationProcessor extends DocumentationProcessor<XKasperQueryAnswer, QueryAnswer>{
+public class QueryAnswersDocumentationProcessor  extends DocumentationProcessor<XKasperQueryAnswer, QueryAnswer>{
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueryAnswersDocumentationProcessor.class);
+    private static final Logger LOGGER =LoggerFactory.getLogger(QueryAnswersDocumentationProcessor.class);
 
     /**
-    * Annotation is optional for query answers
+    * Annotation is optional for query payloads
     */
     public boolean isAnnotationMandatory(){
         return false;
     }
 
     /**
-     * Process Kasper query answer
+     * Process Kasper command
      *
      * @see com.viadeo.kasper.cqrs.query.QueryAnswer
      * @see AnnotationProcessor#process(java.lang.Class)
      */
     @Override
     @SuppressWarnings("unchecked")
-    public void process(final Class queryAnswerClazz) {
+    public void process(final Class queryAnswerClazz){
         LOGGER.info("Record on queryAnswer library : " + queryAnswerClazz.getName());
 
         //- Register the domain to the locator --------------------------
