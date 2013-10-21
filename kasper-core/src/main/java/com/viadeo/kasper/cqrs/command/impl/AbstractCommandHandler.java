@@ -39,12 +39,10 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
     private static final Timer METRICLASSTIMER = METRICS.timer(name(CommandGateway.class, "requests-time"));
-    private static final Histogram METRICLASSREQUESTSTIMES = METRICS.histogram(name(CommandGateway.class, "requests-times"));
     private static final Meter METRICLASSREQUESTS = METRICS.meter(name(CommandGateway.class, "requests"));
     private static final Meter METRICLASSERRORS = METRICS.meter(name(CommandGateway.class, "errors"));
 
     private final Timer metricTimer;
-    private final Histogram metricRequestsTimes;
     private final Meter metricRequests;
     private final Meter metricErrors;
 
@@ -65,7 +63,6 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         }
 
         metricTimer = METRICS.timer(name(commandClass.get(), "requests-time"));
-        metricRequestsTimes = METRICS.histogram(name(commandClass.get(), "requests-times"));
         metricRequests = METRICS.meter(name(commandClass.get(), "requests"));
         metricErrors = METRICS.meter(name(commandClass.get(), "errors"));
     }
@@ -132,8 +129,6 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         /* Monitor the request calls */
         timer.close();
         final long time = classTimer.stop();
-        METRICLASSREQUESTSTIMES.update(time);
-        metricRequestsTimes.update(time);
         METRICLASSREQUESTS.mark();
         metricRequests.mark();
         if ((null != exception) || ret.isError()) {

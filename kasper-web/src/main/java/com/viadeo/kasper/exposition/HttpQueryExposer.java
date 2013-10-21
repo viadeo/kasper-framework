@@ -61,7 +61,7 @@ public class HttpQueryExposer extends HttpExposer {
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
     private static final Timer METRICLASSTIMER = METRICS.timer(name(HttpQueryExposer.class, "requests-time"));
-    private static final Histogram METRICLASSREQUESTSTIME = METRICS.histogram(name(HttpQueryExposer.class, "requests-times"));
+    private static final Timer METRICLASSHANDLETIMER = METRICS.timer(name(HttpQueryExposer.class, "requests-handle-time"));
     private static final Meter METRICLASSREQUESTS = METRICS.meter(name(HttpQueryExposer.class, "requests"));
     private static final Meter METRICLASSERRORS = METRICS.meter(name(HttpQueryExposer.class, "errors"));
 
@@ -199,7 +199,13 @@ public class HttpQueryExposer extends HttpExposer {
 
             QueryResult result = null;
             if (!resp.isCommitted()) {
+                final Timer.Context queryHandleTimer = METRICS.timer(name(query.getClass(), "requests-handle-time")).time();
+                final Timer.Context classHandleTimer = METRICLASSHANDLETIMER.time();
+
                 result = handleQuery(queryName, query, req, resp, requestCorrelationUUID );
+
+                queryHandleTimer.stop();
+                classHandleTimer.stop();
             }
 
             /* need to check again as something might go wrong in handleQuery */
@@ -217,7 +223,6 @@ public class HttpQueryExposer extends HttpExposer {
             /* Log & metrics */
             final long time = classTimer.stop();
             QUERY_LOGGER.info("Execution Time '{}' ms",time);
-            METRICLASSREQUESTSTIME.update(time);
             METRICLASSREQUESTS.mark();
         }
 
