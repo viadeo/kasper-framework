@@ -9,25 +9,12 @@
     {{/if}}
 
     <div class="row-fluid">
-        <div class="span4 well well-small">
-            <h2>Concepts</h2>
-            {{#if node.concepts}}
-            <ul>
-                {{#each node.concepts}}
-                <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
-                {{/each}}
-            </ul>
-            {{else}}
-            <i>nothing declared</i>
-            {{/if}}
-        </div>
-        <!--/span-->
 
         <div class="span4 well well-small">
-            <h2>Relations</h2>
-            {{#if node.relations}}
+            <h2>Queries</h2>
+            {{#if node.queries}}
             <ul>
-                {{#each node.relations}}
+                {{#each node.queries}}
                 <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
                 {{/each}}
             </ul>
@@ -35,16 +22,13 @@
             <i>nothing declared</i>
             {{/if}}
         </div>
-        <!--/span-->
-    </div>
-    <!--/row-->
 
-    <div class="row-fluid">
+        <!--/span-->
         <div class="span4 well well-small">
-            <h2>Events</h2>
-            {{#if node.events}}
+            <h2>Query Services</h2>
+            {{#if node.queryServices}}
             <ul>
-                {{#each node.events}}
+                {{#each node.queryServices}}
                 <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
                 {{/each}}
             </ul>
@@ -52,12 +36,13 @@
             <i>nothing declared</i>
             {{/if}}
         </div>
+
         <!--/span-->
         <div class="span4 well well-small">
-            <h2>Listeners</h2>
-            {{#if node.listeners}}
+            <h2>Query Answers</h2>
+            {{#if node.queryAnswers}}
             <ul>
-                {{#each node.listeners}}
+                {{#each node.queryAnswers}}
                 <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
                 {{/each}}
             </ul>
@@ -70,7 +55,6 @@
     <!--/row-->
 
     <div class="row-fluid">
-
         <div class="span4 well well-small">
             <h2>Commands</h2>
             {{#if node.commands}}
@@ -84,6 +68,7 @@
             {{/if}}
         </div>
         <!--/span-->
+        
         <div class="span4 well well-small">
             <h2>Handlers</h2>
             {{#if node.handlers}}
@@ -104,10 +89,10 @@
     <div class="row-fluid">
 
         <div class="span4 well well-small">
-            <h2>Query Services</h2>
-            {{#if node.queryServices}}
+            <h2>Events</h2>
+            {{#if node.events}}
             <ul>
-                {{#each node.queryServices}}
+                {{#each node.events}}
                 <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
                 {{/each}}
             </ul>
@@ -116,11 +101,12 @@
             {{/if}}
         </div>
         <!--/span-->
+
         <div class="span4 well well-small">
-            <h2>Queries</h2>
-            {{#if node.queries}}
+            <h2>Listeners</h2>
+            {{#if node.listeners}}
             <ul>
-                {{#each node.queries}}
+                {{#each node.listeners}}
                 <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
                 {{/each}}
             </ul>
@@ -133,14 +119,27 @@
     </div>
     <!--/row-->
 
-
     <div class="row-fluid">
 
         <div class="span4 well well-small">
-            <h2>QueryAnswers</h2>
-            {{#if node.queryAnswers}}
+            <h2>Concepts</h2>
+            {{#if node.concepts}}
             <ul>
-                {{#each node.queryAnswers}}
+                {{#each node.concepts}}
+                <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+                {{/each}}
+            </ul>
+            {{else}}
+            <i>nothing declared</i>
+            {{/if}}
+        </div>
+        <!--/span-->
+        
+        <div class="span4 well well-small">
+            <h2>Relations</h2>
+            {{#if node.relations}}
+            <ul>
+                {{#each node.relations}}
                 <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
                 {{/each}}
             </ul>
@@ -163,8 +162,8 @@
             {{/if}}
         </div>
         <!--/span-->
+
     </div>
     <!--/row-->
-
 
 </div>

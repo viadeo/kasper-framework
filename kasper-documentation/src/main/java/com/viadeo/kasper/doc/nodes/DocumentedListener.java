@@ -65,8 +65,8 @@ public final class DocumentedListener extends DocumentedDomainNode {
 
     // ------------------------------------------------------------------------
 
-    public String getEventName(){
+    public String getEventName() {
         return this.eventName;
     }
-
+	
 }
