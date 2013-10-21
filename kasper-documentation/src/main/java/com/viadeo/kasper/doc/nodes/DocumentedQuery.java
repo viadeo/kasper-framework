@@ -11,6 +11,13 @@ import com.viadeo.kasper.cqrs.query.annotation.XKasperQuery;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.exception.KasperException;
 
+import com.viadeo.kasper.doc.KasperLibrary;
+import com.viadeo.kasper.exception.KasperException;
+
+import com.viadeo.kasper.core.resolvers.QueryResolver;
+
+import com.google.common.base.Optional;
+
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -28,44 +35,31 @@ public final class DocumentedQuery extends DocumentedDomainNode{
     // ----------------------------------------------------------------------------------
 
     DocumentedQuery(final KasperLibrary kl){
-        super(kl,TYPE_NAME,PLURAL_TYPE_NAME);  // Used as empty query to populate
+        super(kl,TYPE_NAME,PLURAL_TYPE_NAME);
     }
 
     public DocumentedQuery(KasperLibrary kl, final Class<? extends Query> queryClazz) {
-        super(kl,TYPE_NAME,PLURAL_TYPE_NAME);
+        this(kl);
+    
+        final QueryResolver resolver = this.getKasperLibrary().getResolverFactory().getQueryResolver();
 
-        final XKasperQuery annotation=queryClazz.getAnnotation(XKasperQuery.class);
-
-        // Get description --------------------------------------------------
-        String description="";
-        if (null!=annotation){
-            description=annotation.description();
-        }
-        if (description.isEmpty()){
-            description=String.format("The %s query",
-                    queryClazz.getSimpleName().replaceAll("Query", ""));
-        }
-
-        // - Register the domain to the locator -------------------------
         this.setName(queryClazz.getSimpleName());
-        this.setDescription(description);
-        this.properties=new DocumentedProperties(queryClazz);
+        this.setLabel(resolver.getLabel(queryClazz));
+        this.setDescription(resolver.getDescription(queryClazz));
+        this.properties = new DocumentedProperties(queryClazz);
     }
 
     // ----------------------------------------------------------------------
 
-    public String getLabel(){
-        if (null == this.label){
-            return this.getName().replaceAll("Query", "");
-        }
-        return super.getLabel();
-    }
+    public DocumentedNode getQueryService(){
+		final KasperLibrary kl = this.getKasperLibrary();
+		final Optional<DocumentedQueryService> queryService = kl.getQueryServiceForQuery(getName());
 
-    // ----------------------------------------------------------------------
+		if (queryService.isPresent()) {
+			return kl.getSimpleNodeFrom(queryService.get());
+		}
 
-    public Collection<DocumentedNode> getQueryServices(){
-        final KasperLibrary kl = this.getKasperLibrary();
-        return kl.simpleNodesFrom( kl.getQueryServicesForQuery(getName()) ).values();
+		return null;
     }
 
     // ----------------------------------------------------------------------
@@ -77,20 +71,12 @@ public final class DocumentedQuery extends DocumentedDomainNode{
     // ----------------------------------------------------------------------
 
     public DocumentedNode getDomain(){
-        final List<DocumentedQueryService> queryServices=
-                this.getKasperLibrary().getQueryServicesForQuery(this.getName());
+        final Optional<DocumentedQueryService> queryService = this.getKasperLibrary().getQueryServiceForQuery(this.getName());
 
-        Set<DocumentedNode> domains=new HashSet<DocumentedNode>();
-        for (DocumentedQueryService queryService:queryServices){
-            domains.add(queryService.getDomain());
+        if (queryService.isPresent()) {
+            return queryService.get().getDomain();
         }
-        if (!domains.isEmpty()){
-            if (1==domains.size()){
-                return domains.iterator().next();
-            } else {
-                throw new KasperException("More than one domain found");
-            }
-        }
+        
         return null;
     }
 

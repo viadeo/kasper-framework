@@ -43,6 +43,16 @@ public class DefaultAutoDocumentationSpringConfiguration extends DefaultAutoDocu
     }
 
     @Bean
+    public QueriesDocumentationProcessor getQueriesDocumentationProcessor(final KasperLibrary library) {
+        return super.getQueriesDocumentationProcessor(library);
+    }
+
+    @Bean
+    public QueryAnswersDocumentationProcessor getQueryAnswersDocumentationProcessor(final KasperLibrary library){
+        return super.getQueryAnswersDocumentationProcessor(library);
+    }
+
+    @Bean
     @Override
     public EventsDocumentationProcessor getEventsDocumentationProcessor(final KasperLibrary library) {
         return super.getEventsDocumentationProcessor(library);
@@ -70,16 +80,6 @@ public class DefaultAutoDocumentationSpringConfiguration extends DefaultAutoDocu
     @Override
     public HandlersDocumentationProcessor getHandlersDocumentationProcessor(final KasperLibrary library) {
         return super.getHandlersDocumentationProcessor(library);
-    }
-
-    @Bean
-    public QueriesDocumentationProcessor getQueriesDocumentationProcessor(final KasperLibrary library) {
-        return super.getQueriesDocumentationProcessor(library);
-    }
-
-    @Bean
-    public QueryAnswersDocumentationProcessor getQueryAnswersDocumentationProcessor(final KasperLibrary library){
-        return super.getQueryAnswersDocumentationProcessor(library);
     }
 
 }

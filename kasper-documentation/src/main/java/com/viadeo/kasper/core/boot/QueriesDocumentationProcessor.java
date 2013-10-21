@@ -13,13 +13,13 @@ import org.slf4j.LoggerFactory;
 
 /**
  *
- * Process Kasper event dynamic registration at platform boot
+ * Process Kasper query dynamic registration at platform boot
  *
  * @see XKasperQuery
  */
 public class QueriesDocumentationProcessor extends DocumentationProcessor<XKasperQuery,Query>{
 
-    private static final Logger LOGGER =LoggerFactory.getLogger(QueriesDocumentationProcessor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueriesDocumentationProcessor.class);
 
     /**
      * Annotation is optional for queries
@@ -36,7 +36,7 @@ public class QueriesDocumentationProcessor extends DocumentationProcessor<XKaspe
      */
     @Override
     @SuppressWarnings("unchecked")
-    public void process(final Class queryClazz){
+    public void process(final Class queryClazz) {
         LOGGER.info("Record on query library : " + queryClazz.getName());
 
         //- Register the domain to the locator --------------------------

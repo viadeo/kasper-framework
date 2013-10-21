@@ -55,6 +55,15 @@ public interface QueryServicesLocator {
 	@SuppressWarnings("rawtypes")
 	Optional<QueryService> getServiceFromQueryClass(Class<? extends Query> queryClass);
 
+	/**
+	 * Retrieve a service instance from its query class
+	 *
+	 * @param queryClass the query class
+	 * @return a corresponding service instance
+	 */
+	@SuppressWarnings("rawtypes")
+	Collection<QueryService> getServicesFromQueryAnswerClass(Class<? extends QueryAnswer> queryClass);
+
     /*
      * Retrieve the actors chain for a specified query class
      *

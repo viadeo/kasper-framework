@@ -16,6 +16,8 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.doc.nodes.*;
@@ -70,18 +72,18 @@ public class KasperLibrary {
 	 * Store commands (do not depend directly from a specific domain)
 	 */
 	private final Map<String, DocumentedCommand> commandEntities;
-
+	
     /**
      * Store queries (do not depend directly from a specific domain)
      */
     private final Map<String, DocumentedQuery> queryEntities;
 
     /**
-     * Store queryAnswers (do not depend directly from a specific domain)
+     * Store query answers (do not depend directly from a specific domain)
      */
     private final Map<String, DocumentedQueryAnswer> queryAnswerEntities;
 
-    /**
+	/**
 	 * Stores the concepts involved in a relation, as source or target entities
 	 */
 	private final Map<String, List<DocumentedRelation>> sourceConceptRelations;
@@ -105,14 +107,14 @@ public class KasperLibrary {
     /**
      * Stores all query services by query name
      */
-    private final Map<String, List<DocumentedQueryService>> queryServices;
+    private final Map<String, DocumentedQueryService> queryServices;
 
     /**
      *  Stores all query services by queryAnswer name
      */
     private final Map<String, List<DocumentedQueryService>> queryAnswerServices;
 	
-	/**
+    /**
 	 * Static mapping between string component type names and associated classes
 	 */
 	private final Map<String, Class<? extends DocumentedDomainNode>> simpleTypes;
@@ -130,13 +132,13 @@ public class KasperLibrary {
 		this.aggregateComponents = Maps.newHashMap();
 		this.commandHandlers = Maps.newHashMap();
 		this.eventListeners = Maps.newHashMap();
-        this.queryServices = Maps.newHashMap();
-        this.queryAnswerServices=Maps.newHashMap();
+		this.queryServices = Maps.newHashMap();
+		this.queryAnswerServices = Maps.newHashMap();
 		
 		this.domainEntities = Maps.newHashMap();
 		this.commandEntities = Maps.newHashMap();
-        this.queryEntities=Maps.newHashMap();
-        this.queryAnswerEntities=Maps.newHashMap();
+		this.queryEntities = Maps.newHashMap();
+		this.queryAnswerEntities = Maps.newHashMap();
 		
 		this.simpleTypes = Maps.newHashMap();
 		this.simpleTypes.put(DocumentedRepository.TYPE_NAME, DocumentedRepository.class);
@@ -149,6 +151,8 @@ public class KasperLibrary {
 		this.simpleTypes.put(DocumentedListener.TYPE_NAME, DocumentedListener.class);
 		this.simpleTypes.put(DocumentedHandler.TYPE_NAME, DocumentedHandler.class);
 		this.simpleTypes.put(DocumentedQueryService.TYPE_NAME, DocumentedQueryService.class);
+		this.simpleTypes.put(DocumentedQuery.TYPE_NAME, DocumentedQuery.class);
+		this.simpleTypes.put(DocumentedQueryAnswer.TYPE_NAME, DocumentedQueryAnswer.class);
 		
 		this.pluralTypes = Maps.newHashMap();
 		this.pluralTypes.put(DocumentedRepository.PLURAL_TYPE_NAME, DocumentedRepository.class);
@@ -161,6 +165,8 @@ public class KasperLibrary {
 		this.pluralTypes.put(DocumentedListener.PLURAL_TYPE_NAME, DocumentedListener.class);
 		this.pluralTypes.put(DocumentedHandler.PLURAL_TYPE_NAME, DocumentedHandler.class);
 		this.pluralTypes.put(DocumentedQueryService.PLURAL_TYPE_NAME, DocumentedQueryService.class);
+		this.pluralTypes.put(DocumentedQuery.PLURAL_TYPE_NAME, DocumentedQuery.class);
+		this.pluralTypes.put(DocumentedQueryAnswer.PLURAL_TYPE_NAME, DocumentedQueryAnswer.class);
 	}
 	
 	// == DOMAINS =============================================================	
@@ -273,12 +279,12 @@ public class KasperLibrary {
 	public Optional<DocumentedEvent> getEvent(final String domainName, final String eventName) {
 		return Optional.fromNullable(getEntities(domainName, DocumentedEvent.class, false).get().get(eventName));
 	}
-
+	
     // == Queries =============================================================
     // ========================================================================
 
-    public DocumentedQuery recordQuery(final Class<? extends Query> queryClazz){
-        final DocumentedQuery documentedQuery =new DocumentedQuery(this,queryClazz);
+    public DocumentedQuery recordQuery(final Class<? extends Query> queryClazz) {
+        final DocumentedQuery documentedQuery = new DocumentedQuery(this,queryClazz);
 
         this.queryEntities.put(documentedQuery.getName(),documentedQuery);
 
@@ -287,7 +293,7 @@ public class KasperLibrary {
 
     // --
     // get queries from queryServices of a specific domain
-    public Map<String,DocumentedQuery> getQueries(final String domainName){
+    public Map<String,DocumentedQuery> getQueries(final String domainName) {
         final Map<String,DocumentedQueryService> queryServices=getQueryServices(domainName);
 
         final Map<String,DocumentedQuery> queries=Maps.newHashMap();
@@ -306,11 +312,11 @@ public class KasperLibrary {
         return Optional.fromNullable(queryEntities.get(queryName));
     }
 
-    // == QueryAnswers =======================================================
+    // == QueryAnswers ========================================================
     // ========================================================================
 
     public DocumentedQueryAnswer recordQueryAnswer(final Class<? extends QueryAnswer> queryAnswerClazz){
-        final DocumentedQueryAnswer documentedQueryAnswer=new DocumentedQueryAnswer(this,queryAnswerClazz);
+        final DocumentedQueryAnswer documentedQueryAnswer = new DocumentedQueryAnswer(this, queryAnswerClazz);
 
         this.queryAnswerEntities.put(documentedQueryAnswer.getName(), documentedQueryAnswer);
 
@@ -326,7 +332,7 @@ public class KasperLibrary {
         for (final DocumentedQueryService queryService:queryServices.values()){
             final Optional<DocumentedQueryAnswer> queryAnswer=getQueryAnswer(queryService.getQueryAnswerName());
             if (queryAnswer.isPresent()){
-            queryAnswers.put(queryAnswer.get().getName(),queryAnswer.get());
+                queryAnswers.put(queryAnswer.get().getName(),queryAnswer.get());
             }
         }
         return queryAnswers;
@@ -338,7 +344,7 @@ public class KasperLibrary {
         return Optional.fromNullable(queryAnswerEntities.get(queryAnswerName));
     }
 
-    // == CONCEPTS ============================================================
+	// == CONCEPTS ============================================================
 	// ========================================================================
 	
 	public DocumentedConcept recordConcept(final Class<? extends Concept> conceptClazz) {
@@ -572,24 +578,21 @@ public class KasperLibrary {
 
     // --
 
-    public void registerQueryServiceForQuery(final DocumentedQueryService queryService,final String queryName){
+    public void registerQueryServiceForQuery(final DocumentedQueryService queryService, final String queryName) {
         Preconditions.checkNotNull(queryService);
         Preconditions.checkNotNull(queryName);
 
-        final List<DocumentedQueryService> queryServices;
-        if (!this.queryServices.containsKey(queryName)) {
-            queryServices= Lists.newArrayList();
-            this.queryServices.put(queryName, queryServices);
-        } else {
-            queryServices = this.queryServices.get(queryName);
+        DocumentedQueryService oldQueryService = this.queryServices.get(queryName);
+        if (oldQueryService != null) {
+            Preconditions.checkState(false, "QueryService %s already registered for query %s.",  oldQueryService.getName(), queryName);
         }
 
-        queryServices.add(queryService);
+        this.queryServices.put(queryName, queryService);        
     }
 
     // --
 
-    public void registerQueryServiceForQueryAnswer(final DocumentedQueryService queryService,final String queryAnswerName){
+    public void registerQueryServiceForQueryAnswer(final DocumentedQueryService queryService, final String queryAnswerName){
         Preconditions.checkNotNull(queryService);
         Preconditions.checkNotNull(queryAnswerName);
 
@@ -606,12 +609,8 @@ public class KasperLibrary {
 
     // --
 
-    @SuppressWarnings("unchecked")
-    public List<DocumentedQueryService> getQueryServicesForQuery(final String queryName){
-        if (this.queryServices.containsKey(queryName)) {
-                return this.queryServices.get(queryName);
-        }
-        return Collections.EMPTY_LIST;
+    public Optional<DocumentedQueryService> getQueryServiceForQuery(final String queryName) {
+        return Optional.fromNullable(this.queryServices.get(queryName)); 
     }
 
     // --
@@ -654,7 +653,7 @@ public class KasperLibrary {
             ret = Optional.of((Map<String, T>) getQueries(domainName));
         } else if (entityClass.equals(DocumentedQueryAnswer.class)){
             ret = Optional.of((Map<String, T>) getQueryAnswers(domainName));
-        } else {
+		} else {
 			ret = getEntities(domainName, entityClass, true);
 		}
 		

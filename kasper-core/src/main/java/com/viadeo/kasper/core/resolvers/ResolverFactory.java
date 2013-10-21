@@ -11,6 +11,7 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryAnswer;
 import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
@@ -38,6 +39,7 @@ public class ResolverFactory {
     private CommandHandlerResolver commandHandlerResolver;
     private EventListenerResolver eventListenerResolver;
     private QueryResolver queryResolver;
+    private QueryAnswerResolver queryAnswerResolver;
     private QueryServiceResolver queryServiceResolver;
     private RepositoryResolver repositoryResolver;
     private EntityResolver entityResolver;
@@ -52,6 +54,7 @@ public class ResolverFactory {
             put(CommandHandler.class, commandHandlerResolver);
             put(EventListener.class, eventListenerResolver);
             put(Query.class, queryResolver);
+            put(QueryAnswer.class, queryAnswerResolver);
             put(QueryService.class, queryServiceResolver);
             put(Repository.class, repositoryResolver);
             put(Event.class, eventResolver);
@@ -123,6 +126,16 @@ public class ResolverFactory {
 
     public void setQueryResolver(final QueryResolver queryResolver) {
         this.queryResolver = checkNotNull(queryResolver);
+    }
+
+    //-------------------------------------------------------------------------
+
+    public QueryAnswerResolver getQueryAnswerResolver() {
+        return queryAnswerResolver;
+    }
+
+    public void setQueryAnswerResolver(final QueryAnswerResolver queryAnswerResolver) {
+        this.queryAnswerResolver = checkNotNull(queryAnswerResolver);
     }
 
     //-------------------------------------------------------------------------
