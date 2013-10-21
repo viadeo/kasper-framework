@@ -22,14 +22,14 @@ import java.util.*;
  * FIXME: use the same fields inference mechanisms than jackson serializer..
  * FIXME: improve Map resolution : the two types must be extracted
  */
-public class DocumentedProperties extends ArrayList<DocumentedProperty> {
+public class DocumentedBean extends ArrayList<DocumentedProperty> {
 	private static final long serialVersionUID = 4149894288444871301L;
 
-	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentedProperties.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentedBean.class);
 
     // ------------------------------------------------------------------------
 
-	DocumentedProperties(final Class<?> componentClazz) {
+	DocumentedBean(final Class componentClazz) {
 		final List<Field> properties = Lists.newArrayList();
 		getAllFields(properties, componentClazz);
 		

@@ -13,7 +13,7 @@ import java.util.Collection;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class DocumentedPropertiesTest {
+public class DocumentedBeanTest {
 
     public class ClassWithFieldCollection {
         @SuppressWarnings("unused")
@@ -23,7 +23,7 @@ public class DocumentedPropertiesTest {
     @Test
     public void testDetectCollection() {
         // Given
-        final DocumentedProperties bean = new DocumentedProperties(ClassWithFieldCollection.class);
+        final DocumentedBean bean = new DocumentedBean(ClassWithFieldCollection.class);
 
         // Then
         assertEquals(1, bean.size());
@@ -46,7 +46,7 @@ public class DocumentedPropertiesTest {
     @Test
     public void testDetectCollectionGeneric() {
         // Given
-        final DocumentedProperties bean = new DocumentedProperties(ClassExtendingCollectionGeneric.class);
+        final DocumentedBean bean = new DocumentedBean(ClassExtendingCollectionGeneric.class);
 
         // Then
         assertEquals(1, bean.size());
