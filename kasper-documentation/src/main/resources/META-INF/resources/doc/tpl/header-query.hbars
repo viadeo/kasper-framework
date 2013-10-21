@@ -1,6 +1,6 @@
 
-{{#if node.queryService}}
+{{#if node.queryHandler}}
     <div class="well well-small">
-        <h2><small>Query Service :</small> <a class="klink" href="#{{node.queryService.name}}">{{node.queryService.label}}</a></h2>
+        <h2><small>Query Handler :</small> <a class="klink" href="#{{node.queryHandler.name}}">{{node.queryHandler.label}}</a></h2>
     </div>
 {{/if}}
