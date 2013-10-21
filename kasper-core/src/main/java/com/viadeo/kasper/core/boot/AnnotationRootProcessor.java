@@ -282,9 +282,7 @@ public class AnnotationRootProcessor {
 
                                 } catch (final Exception e) {
                                     final String message = "Unexpected error during processor delegationfor class " + clazz.getName();
-                                    LOGGER.warn(message, e);
-                                    // FIXME: should be enabled but platform must be a bit refactored before
-                                    // throw new KasperException(message, e);
+                                    throw new KasperException(message, e);
                                 }
 
                             } else {
