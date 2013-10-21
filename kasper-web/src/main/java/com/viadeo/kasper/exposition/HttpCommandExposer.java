@@ -54,7 +54,7 @@ public class HttpCommandExposer extends HttpExposer {
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
     private static final Timer METRICLASSTIMER = METRICS.timer(name(HttpCommandExposer.class, "requests-time"));
-    private static final Timer METRICLASSHANDLETIMER = METRICS.timer(name(HttpCommandExposer.class, "requests-handle-time"));
+    private static final Histogram METRICLASSREQUESTSTIME = METRICS.histogram(name(HttpCommandExposer.class, "requests-times"));
     private static final Meter METRICLASSREQUESTS = METRICS.meter(name(HttpCommandExposer.class, "requests"));
     private static final Meter METRICLASSERRORS = METRICS.meter(name(HttpCommandExposer.class, "errors"));
 
@@ -189,14 +189,7 @@ public class HttpCommandExposer extends HttpExposer {
             }
 
             /* send now that command to the platform and wait for the result */
-            final Timer.Context commandHandleTime = METRICS.timer(name(command.getClass(), "requests-handle-time")).time();
-            final Timer.Context classHandleTime = METRICLASSHANDLETIMER.time();
-
             result = commandGateway.sendCommandAndWaitForAResultWithException(command, context);
-
-            commandHandleTime.stop();
-            classHandleTime.stop();
-
             checkNotNull(result);
 
         } catch (final JSR303ViolationException validationException) {
@@ -240,6 +233,7 @@ public class HttpCommandExposer extends HttpExposer {
             /* Log & metrics */
             final long time = classTimer.stop();
             REQUEST_LOGGER.info("Execution Time '{}' ms",time);
+            METRICLASSREQUESTSTIME.update(time);
             METRICLASSREQUESTS.mark();
         }
 
