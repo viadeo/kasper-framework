@@ -22,22 +22,33 @@ public class CommandResponseSerializer extends JsonSerializer<CommandResponse> {
 
         jgen.writeStartObject();
         jgen.writeStringField(ObjectMapperProvider.STATUS, value.getStatus().name());
+
+        jgen.writeFieldName(ObjectMapperProvider.REASONS);
+        this.writeReasons(value, jgen);
+
+        /* FIXME - retro-compatibility - TO BE REMOVED */
         jgen.writeFieldName(ObjectMapperProvider.ERRORS);
+        this.writeReasons(value, jgen);
+
+        jgen.writeEndObject();
+    }
+
+    private void writeReasons(final CommandResponse value, final JsonGenerator jgen) throws IOException {
         jgen.writeStartArray();
-        if (value.isError()) {
-            final KasperReason error = value.getReason();
-            for (String message : error.getMessages()) {
+        if (!value.isOK()) {
+            final KasperReason reason = value.getReason();
+            for (String message : reason.getMessages()) {
                 jgen.writeStartObject();
-                
-                jgen.writeStringField(ObjectMapperProvider.CODE, error.getCode());
+
+                jgen.writeStringField(ObjectMapperProvider.ID, reason.getId().toString());
+                jgen.writeStringField(ObjectMapperProvider.CODE, reason.getCode());
                 jgen.writeStringField(ObjectMapperProvider.MESSAGE, message);
                 jgen.writeNullField(ObjectMapperProvider.USERMESSAGE);
-                
+
                 jgen.writeEndObject();
             }
         }
         jgen.writeEndArray();
-        jgen.writeEndObject();
     }
 
 }

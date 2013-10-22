@@ -28,12 +28,12 @@ public class QueryResponse<RESULT extends QueryResult> implements Serializable, 
     private static final long serialVersionUID = -6543664128786160837L;
 
     private final RESULT result;
-    private final KasperReason error;
+    private final KasperReason reason;
 
     // ------------------------------------------------------------------------
 
-    public static <P extends QueryResult> QueryResponse<P> of(final KasperReason error) {
-        return new QueryResponse<P>(error);
+    public static <P extends QueryResult> QueryResponse<P> of(final KasperReason reason) {
+        return new QueryResponse<P>(reason);
     }
 
     public static <P extends QueryResult> QueryResponse<P> of(final P response) {
@@ -44,31 +44,31 @@ public class QueryResponse<RESULT extends QueryResult> implements Serializable, 
 
     public QueryResponse(final QueryResponse<RESULT> response) {
         this.result = response.result;
-        this.error = response.error;
+        this.reason = response.reason;
     }
 
     public QueryResponse(final RESULT result) {
         this.result = checkNotNull(result);
-        this.error = null;
+        this.reason = null;
     }
     
-    public QueryResponse(final KasperReason error) {
+    public QueryResponse(final KasperReason reason) {
         this.result = null;
-        this.error = checkNotNull(error);
+        this.reason = checkNotNull(reason);
     }
 
     // ------------------------------------------------------------------------
 
     public KasperReason getReason() {
-        return error;
+        return reason;
     }
     
     public RESULT getResult() {
         return result;
     }
     
-    public boolean isError() {
-        return error != null;
+    public boolean isOK() {
+        return null == reason;
     }
 
     // ------------------------------------------------------------------------

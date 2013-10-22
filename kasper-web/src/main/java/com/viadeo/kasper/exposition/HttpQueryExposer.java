@@ -309,7 +309,7 @@ public class HttpQueryExposer extends HttpExposer {
         final ObjectWriter writer = mapper.writer();
 
         final int status;
-        if (response.isError()) {
+        if ( ! response.isOK()) {
             status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         } else {
             status = HttpServletResponse.SC_OK;
@@ -356,9 +356,9 @@ public class HttpQueryExposer extends HttpExposer {
 
         final KasperReason error;
         if ((null != exception) && (null != exception.getMessage())) {
-            error = new KasperReason(CoreReasonCode.UNKNOWN_ERROR, message, exception.getMessage());
+            error = new KasperReason(CoreReasonCode.UNKNOWN_REASON, message, exception.getMessage());
         } else {
-            error = new KasperReason(CoreReasonCode.UNKNOWN_ERROR, message);
+            error = new KasperReason(CoreReasonCode.UNKNOWN_REASON, message);
         }
 
         writer.writeValue(resp.getOutputStream(), new QueryResponse<>(error));

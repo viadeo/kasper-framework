@@ -22,24 +22,24 @@ public class KasperReasonBuilderTest {
         final Builder builder = Builder.empty();
 
         // When
-        final KasperReason error = builder.build();
+        final KasperReason reason = builder.build();
 
         // Then
-        assertEquals(CoreReasonCode.UNKNOWN_ERROR.string(), error.getCode());
-        assertEquals(0, error.getMessages().size());
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.string(), reason.getCode());
+        assertEquals(0, reason.getMessages().size());
     }
 
     @Test
     public void testFromCoreCode() {
         // Given
-        final Builder builder = Builder.from(CoreReasonCode.UNKNOWN_ERROR);
+        final Builder builder = Builder.from(CoreReasonCode.UNKNOWN_REASON);
 
         // When
-        final KasperReason error = builder.build();
+        final KasperReason reason = builder.build();
 
         // Then
-        assertEquals(CoreReasonCode.UNKNOWN_ERROR.string(), error.getCode());
-        assertEquals(0, error.getMessages().size());
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.string(), reason.getCode());
+        assertEquals(0, reason.getMessages().size());
     }
 
     @Test
@@ -48,30 +48,30 @@ public class KasperReasonBuilderTest {
         final Collection<String> messages = new ArrayList<String>() {{
             add("foo");
         }};
-        final Builder builder = Builder.from(CoreReasonCode.UNKNOWN_ERROR, messages);
+        final Builder builder = Builder.from(CoreReasonCode.UNKNOWN_REASON, messages);
 
         // When
-        final KasperReason error = builder.build();
+        final KasperReason reason = builder.build();
 
         // Then
-        assertEquals(CoreReasonCode.UNKNOWN_ERROR.string(), error.getCode());
-        assertEquals(1, error.getMessages().size());
-        assertEquals("foo", error.getMessages().toArray()[0]);
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.string(), reason.getCode());
+        assertEquals(1, reason.getMessages().size());
+        assertEquals("foo", reason.getMessages().toArray()[0]);
     }
 
     @Test
     public void testFromCoreCodeAndMessages() {
         // Given
-        final Builder builder = Builder.from(CoreReasonCode.UNKNOWN_ERROR, "foo", "bar");
+        final Builder builder = Builder.from(CoreReasonCode.UNKNOWN_REASON, "foo", "bar");
 
         // When
-        final KasperReason error = builder.build();
+        final KasperReason reason = builder.build();
 
         // Then
-        assertEquals(CoreReasonCode.UNKNOWN_ERROR.string(), error.getCode());
-        assertEquals(2, error.getMessages().size());
-        assertEquals("foo", error.getMessages().toArray()[0]);
-        assertEquals("bar", error.getMessages().toArray()[1]);
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.string(), reason.getCode());
+        assertEquals(2, reason.getMessages().size());
+        assertEquals("foo", reason.getMessages().toArray()[0]);
+        assertEquals("bar", reason.getMessages().toArray()[1]);
     }
 
     @Test
@@ -84,13 +84,13 @@ public class KasperReasonBuilderTest {
         ));
 
         // When
-        final KasperReason error = builder.build();
+        final KasperReason reason = builder.build();
 
         // Then
-        assertEquals("code", error.getCode());
-        assertEquals(2, error.getMessages().size());
-        assertEquals("foo", error.getMessages().toArray()[0]);
-        assertEquals("bar", error.getMessages().toArray()[1]);
+        assertEquals("code", reason.getCode());
+        assertEquals(2, reason.getMessages().size());
+        assertEquals("foo", reason.getMessages().toArray()[0]);
+        assertEquals("bar", reason.getMessages().toArray()[1]);
     }
 
     @Test
@@ -102,12 +102,12 @@ public class KasperReasonBuilderTest {
         final Builder builder = Builder.from("code", messages);
 
         // When
-        final KasperReason error = builder.build();
+        final KasperReason reason = builder.build();
 
         // Then
-        assertEquals("code", error.getCode());
-        assertEquals(1, error.getMessages().size());
-        assertEquals("foo", error.getMessages().toArray()[0]);
+        assertEquals("code", reason.getCode());
+        assertEquals(1, reason.getMessages().size());
+        assertEquals("foo", reason.getMessages().toArray()[0]);
     }
 
     @Test
@@ -116,13 +116,13 @@ public class KasperReasonBuilderTest {
         final Builder builder = Builder.from("foo", "foo", "bar");
 
         // When
-        final KasperReason error = builder.build();
+        final KasperReason reason = builder.build();
 
         // Then
-        assertEquals("foo", error.getCode());
-        assertEquals(2, error.getMessages().size());
-        assertEquals("foo", error.getMessages().toArray()[0]);
-        assertEquals("bar", error.getMessages().toArray()[1]);
+        assertEquals("foo", reason.getCode());
+        assertEquals(2, reason.getMessages().size());
+        assertEquals("foo", reason.getMessages().toArray()[0]);
+        assertEquals("bar", reason.getMessages().toArray()[1]);
     }
 
     /*

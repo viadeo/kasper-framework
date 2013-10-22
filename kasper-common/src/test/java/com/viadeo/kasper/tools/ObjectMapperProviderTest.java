@@ -63,7 +63,7 @@ public class ObjectMapperProviderTest {
         final QueryResponse<SomeResult> actual = objectReader.readValue(objectReader.getFactory()
                 .createJsonParser(json), new TypeReference<QueryResponse<SomeResult>>() {});
         
-        assertFalse(actual.isError());
+        assertTrue(actual.isOK());
         assertNull(actual.getReason());
         assertEquals(expected.getResult().getStr(), actual.getResult().getStr());
     }
@@ -81,7 +81,7 @@ public class ObjectMapperProviderTest {
                 .createJsonParser(json), QueryResponse.class);
 
         // Then
-        assertTrue(actual.isError());
+        assertFalse(actual.isOK());
         assertEquals(expected.getReason().getCode(), actual.getReason().getCode());
         assertEquals(expected.getReason().getMessages().size(),
                      actual.getReason().getMessages().size());
@@ -95,7 +95,7 @@ public class ObjectMapperProviderTest {
     @Test
     public void deserializeErrorCommandResponseWithSingleKasperReason() throws IOException {
         // Given
-        final KasperReason expectedError = new KasperReason(CoreReasonCode.UNKNOWN_ERROR, "some error");
+        final KasperReason expectedError = new KasperReason(CoreReasonCode.UNKNOWN_REASON, "some error");
         final CommandResponse expectedResponse = CommandResponse.error(expectedError);
 
         // When

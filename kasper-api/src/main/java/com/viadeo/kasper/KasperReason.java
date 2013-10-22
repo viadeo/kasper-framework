@@ -29,7 +29,7 @@ public final class KasperReason implements Serializable, Immutable {
 
     public final static class Builder {
 
-        String code = CoreReasonCode.UNKNOWN_ERROR.string();
+        String code = CoreReasonCode.UNKNOWN_REASON.string();
         Collection<String> messages;
 
         // -----
@@ -43,7 +43,7 @@ public final class KasperReason implements Serializable, Immutable {
         }
 
         public static Builder from(final String code, final Collection<String> messages) {
-            return from(code, messages.toArray(new String[0]));
+            return from(code, messages.toArray(new String[1]));
         }
 
         public static Builder from(final String code, final String...messages) {
@@ -124,6 +124,12 @@ public final class KasperReason implements Serializable, Immutable {
 
     public KasperReason(final String code, final Collection<String> messages) {
         this.id = UUID.randomUUID();
+        this.code = checkNotNull(code);
+        this.messages = ImmutableList.copyOf(checkNotNull(messages));
+    }
+
+    public KasperReason(final UUID id, final String code, final Collection<String> messages) {
+        this.id = checkNotNull(id);
         this.code = checkNotNull(code);
         this.messages = ImmutableList.copyOf(checkNotNull(messages));
     }

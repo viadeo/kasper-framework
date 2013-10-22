@@ -29,19 +29,19 @@ public class CommandResponse implements Serializable, Immutable {
     public static enum Status {
         OK,         /** All is ok */
         REFUSED,    /** Refused by some intermediate validation mechanisms */
-        ERROR       /** Just error in command handling or domain business */
+        ERROR       /** Just reason in command handling or domain business */
     }
 
     /**
      * The current command status
      */
     private final Status status;
-    private final KasperReason error;
+    private final KasperReason reason;
 
     // ------------------------------------------------------------------------
 
-    public static CommandResponse error(final KasperReason error) {
-        return new CommandResponse(Status.ERROR, error);
+    public static CommandResponse error(final KasperReason reason) {
+        return new CommandResponse(Status.ERROR, reason);
     }
 
     public static CommandResponse error(final String code, final String message) {
@@ -76,21 +76,21 @@ public class CommandResponse implements Serializable, Immutable {
 
     public CommandResponse(final CommandResponse response) {
         this.status = response.status;
-        this.error = response.error;
+        this.reason = response.reason;
     }
 
-    public CommandResponse(final Status status, final KasperReason error) {
+    public CommandResponse(final Status status, final KasperReason reason) {
         this.status = checkNotNull(status);
         
-        if (!status.equals(Status.OK) && (null == error)) {
-            throw new IllegalStateException("Please provide an error to the command response");
+        if (!status.equals(Status.OK) && (null == reason)) {
+            throw new IllegalStateException("Please provide a reason to the command response");
         }
 
-        if (status.equals(Status.OK) && (null != error)) {
-            throw new IllegalStateException("Invalid command response OK provided with an error");
+        if (status.equals(Status.OK) && (null != reason)) {
+            throw new IllegalStateException("Invalid command response OK provided with an reason");
         }
         
-        this.error = error;
+        this.reason = reason;
     }
 
     // ------------------------------------------------------------------------
@@ -99,20 +99,27 @@ public class CommandResponse implements Serializable, Immutable {
      * @return the current command response execution status
      */
     public Status getStatus() {
-        return status;
+        return this.status;
     }
 
     /**
-     * @return a list of errors or empty if command succeeded.
+     * @return true if the current status is OK
+     */
+    public boolean isOK() {
+        return (this.status.equals(Status.OK));
+    }
+
+    /**
+     * @return a list of reasons or empty if command succeeded.
      */
     public KasperReason getReason() {
-        return error;
+        return reason;
     }
 
     /**
-     * @return true if this command has responseed to an error
+     * @return true if this command has answered with a reason
      */
-    public boolean isError() {
+    public boolean hasReason() {
         return this.status != Status.OK;
     }
 

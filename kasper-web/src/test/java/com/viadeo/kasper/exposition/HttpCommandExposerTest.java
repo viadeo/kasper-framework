@@ -121,7 +121,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         final CommandResponse response = client().send(command);
 
         // Then
-        assertTrue(response.isError());
+        assertFalse(response.isOK());
         final List<String> errorStrings = new ArrayList<String>() {{
             add("innerObject.age : must be greater than or equal to 2");
             add("str : size must be between 1 and 2147483647");

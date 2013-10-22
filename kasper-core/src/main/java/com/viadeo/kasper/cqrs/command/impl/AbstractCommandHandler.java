@@ -131,7 +131,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         final long time = classTimer.stop();
         METRICLASSREQUESTS.mark();
         metricRequests.mark();
-        if ((null != exception) || ret.isError()) {
+        if ((null != exception) || ! ret.isOK()) {
             METRICLASSERRORS.mark();
             metricErrors.mark();
         }

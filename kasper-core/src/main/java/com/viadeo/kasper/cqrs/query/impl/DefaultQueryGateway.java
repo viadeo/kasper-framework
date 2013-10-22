@@ -88,7 +88,7 @@ public class DefaultQueryGateway implements QueryGateway {
         METRICS.histogram(name(queryClass, "requests-times")).update(time);
         METRICLASSREQUESTS.mark();
         METRICS.meter(name(queryClass, "requests")).mark();
-        if ((null != exception) || ret.isError()) {
+        if ((null != exception) || ! ret.isOK()) {
             METRICLASSERRORS.mark();
             METRICS.meter(name(queryClass, "errors")).mark();
         }

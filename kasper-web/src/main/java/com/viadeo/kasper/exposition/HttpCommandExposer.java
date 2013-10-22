@@ -258,7 +258,7 @@ public class HttpCommandExposer extends HttpExposer {
         JsonGenerator generator = null;
 
         final int status;
-        if (response.isError()) {
+        if ( ! response.isOK()) {
             status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
         } else {
             status = HttpServletResponse.SC_OK;
@@ -318,7 +318,7 @@ public class HttpCommandExposer extends HttpExposer {
         /* write also into the body the response as json */
         mapper.writer().writeValue(response.getOutputStream(),
                                    CommandResponse.error(
-                                          new KasperReason(CoreReasonCode.UNKNOWN_ERROR, reason)
+                                          new KasperReason(CoreReasonCode.UNKNOWN_REASON, reason)
                                    )
         );
 

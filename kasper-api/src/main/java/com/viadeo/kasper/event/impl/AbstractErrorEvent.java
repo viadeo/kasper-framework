@@ -45,14 +45,14 @@ public class AbstractErrorEvent extends AbstractEvent implements ErrorEvent {
 
     public AbstractErrorEvent(final Context context, final String message) {
         super(context);
-        this.code = CoreReasonCode.UNKNOWN_ERROR.toString();
+        this.code = CoreReasonCode.UNKNOWN_REASON.toString();
         this.exception = null;
         this.message = checkNotNull(message);
     }
 
     public AbstractErrorEvent(final Context context, final Exception exception) {
         super(context);
-        this.code = CoreReasonCode.UNKNOWN_ERROR.toString();
+        this.code = CoreReasonCode.UNKNOWN_REASON.toString();
         this.exception = checkNotNull(exception);
         this.message = null;
     }

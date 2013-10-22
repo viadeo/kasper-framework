@@ -280,7 +280,7 @@ public class KasperClientQueryTest extends JerseyTest {
         final QueryResponse<MemberResult> response = client.query(query, MemberResult.class);
 
         // Then
-        Assert.assertEquals(CoreReasonCode.UNKNOWN_ERROR.toString(), response.getReason().getCode());
+        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.toString(), response.getReason().getCode());
         Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
         Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }
@@ -296,7 +296,7 @@ public class KasperClientQueryTest extends JerseyTest {
         final QueryResponse<MemberResult> response = client.queryAsync(query, MemberResult.class).get();
 
         // Then
-        Assert.assertEquals(CoreReasonCode.UNKNOWN_ERROR.toString(), response.getReason().getCode());
+        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.toString(), response.getReason().getCode());
         Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
         Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }

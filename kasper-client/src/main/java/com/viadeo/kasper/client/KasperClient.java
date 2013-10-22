@@ -309,7 +309,7 @@ public class KasperClient {
                     Response.Status.fromStatusCode(clientResponse.getStatus()),
                     CommandResponse.Status.ERROR,
                     new KasperReason(
-                            CoreReasonCode.UNKNOWN_ERROR,
+                            CoreReasonCode.UNKNOWN_REASON,
                             "Response from platform uses an unsupported type: " + clientResponse.getType())
             );
         }
@@ -485,7 +485,7 @@ public class KasperClient {
             return new HTTPQueryResponse<P>(
                     Response.Status.fromStatusCode(clientResponse.getStatus()),
                     new KasperReason(
-                            CoreReasonCode.UNKNOWN_ERROR,
+                            CoreReasonCode.UNKNOWN_REASON,
                             "Response from platform uses an unsupported type: " + clientResponse.getType())
             );
         }

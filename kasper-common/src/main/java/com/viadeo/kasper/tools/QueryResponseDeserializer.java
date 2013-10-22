@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class); 
@@ -35,9 +36,10 @@ public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
         ObjectNode root = jp.readValueAs(ObjectNode.class);
 
         if (root.has(ObjectMapperProvider.ERROR)) {
-            String globalCode = root.get(ObjectMapperProvider.MESSAGE).asText();
-            List<String> messages = new ArrayList<String>();
-            for (JsonNode node : root.get(ObjectMapperProvider.ERRORS)) {
+            final JsonNode id = root.get(ObjectMapperProvider.ID);
+            final String globalCode = root.get(ObjectMapperProvider.MESSAGE).asText();
+            final List<String> messages = new ArrayList<String>();
+            for (JsonNode node : root.get(ObjectMapperProvider.REASONS)) {
                 String code = node.get(ObjectMapperProvider.CODE).asText();
                 String message = node.get(ObjectMapperProvider.MESSAGE).asText();
                 if (globalCode.equals(code)) {
@@ -47,7 +49,16 @@ public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
                             globalCode, code, message);
                 }
             }
-            return QueryResponse.of(new KasperReason(globalCode, messages));
+            if (null != id) {
+                try {
+                    return QueryResponse.of(new KasperReason(UUID.fromString(id.asText()), globalCode, messages));
+                } catch (final IllegalArgumentException e) {
+                    LOGGER.warn("Error when deserializing reason id", e);
+                    return QueryResponse.of(new KasperReason(globalCode, messages));
+                }
+            } else {
+                return QueryResponse.of(new KasperReason(globalCode, messages));
+            }
         } else {
             // not very efficient but will be fine for now
             return QueryResponse.of((QueryResult) ((ObjectMapper) jp.getCodec()).convertValue(root, responseType));

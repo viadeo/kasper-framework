@@ -19,7 +19,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 public class QueryValidationActorTest {
 
@@ -36,7 +36,7 @@ public class QueryValidationActorTest {
                 RequestActorsChain.<QueryToValidate, QueryResponse<QueryResult>>tail());
 
         // Then
-        assertTrue(response.isError());
+        assertFalse(response.isOK());
         assertEquals("notNullField : may not be null", response.getReason().getMessages().toArray()[0]);
     }
 

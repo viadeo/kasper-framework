@@ -22,13 +22,13 @@ public class HTTPCommandResponse extends CommandResponse {
         this.httpStatus = httpStatus;
     }
 
-    public HTTPCommandResponse(final CommandResponse.Status status, KasperReason error) {
-        super(status, error);
+    public HTTPCommandResponse(final CommandResponse.Status status, KasperReason reason) {
+        super(status, reason);
         this.httpStatus = Response.Status.OK;
     }
 
-    public HTTPCommandResponse(final Response.Status httpStatus, final CommandResponse.Status status, KasperReason error) {
-        super(status, error);
+    public HTTPCommandResponse(final Response.Status httpStatus, final CommandResponse.Status status, KasperReason reason) {
+        super(status, reason);
         this.httpStatus = httpStatus;
     }
 

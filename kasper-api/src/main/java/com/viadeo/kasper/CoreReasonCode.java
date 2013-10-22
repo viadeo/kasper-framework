@@ -8,10 +8,10 @@ package com.viadeo.kasper;
 
 public enum CoreReasonCode {
 
-    /* Unknown error */
-    UNKNOWN_ERROR(0),
+    /* Unknown reason */
+    UNKNOWN_REASON(0),
 
-    /* Input errors */
+    /* Input reasons */
     REQUIRED_INPUT(1001),
     INVALID_INPUT(1002),
     TOO_MANY_ENTRIES(1003),
@@ -19,11 +19,11 @@ public enum CoreReasonCode {
     INVALID_ID(1005),
     NOT_FOUND(1006),
 
-    /* Security errors */
+    /* Security reasons */
     REQUIRE_AUTHENTICATION(2001),
     REQUIRE_AUTHORIZATION(2002),
 
-    /* Internal errors */
+    /* Internal reasons */
     INTERNAL_COMPONENT_TIMEOUT(3001),
     INTERNAL_COMPONENT_ERROR(3002);
 

@@ -34,8 +34,8 @@ public class HTTPQueryResponse<RESULT extends QueryResult>  extends QueryRespons
         this.httpStatus = checkNotNull(httpStatus);
     }
 
-    public HTTPQueryResponse(final Status httpStatus, final KasperReason error) {
-        super(checkNotNull(error));
+    public HTTPQueryResponse(final Status httpStatus, final KasperReason reason) {
+        super(checkNotNull(reason));
         this.httpStatus = checkNotNull(httpStatus);
     }
 

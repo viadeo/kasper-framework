@@ -24,6 +24,8 @@ import java.util.List;
 
 public final class ObjectMapperProvider {
 
+    static final String ID = "id";
+    static final String REASONS = "reasons";
     static final String ERROR = "error";
     static final String ERRORS = "errors";
     static final String MESSAGE = "message";
@@ -79,7 +81,7 @@ public final class ObjectMapperProvider {
         final String globalCode = root.get(ObjectMapperProvider.MESSAGE).asText();
         final List<String> messages = new ArrayList<String>();
 
-        for (final JsonNode node : root.get(ObjectMapperProvider.ERRORS)) {
+        for (final JsonNode node : root.get(ObjectMapperProvider.REASONS)) {
             final String code = node.get(ObjectMapperProvider.CODE).asText();
             final String message = node.get(ObjectMapperProvider.MESSAGE).asText();
 

@@ -187,7 +187,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         final QueryResponse<SomeResponse> actual = client().query(query, SomeResponse.class);
 
         // Then
-        assertTrue(actual.isError());
+        assertFalse(actual.isOK());
         assertEquals(query.aValue, actual.getReason().getCode());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, actual.asHttp().getHTTPStatus());
     }
@@ -220,7 +220,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         final QueryResponse<SomeCollectionResponse> actual = client().query(query, SomeCollectionResponse.class);
        
         // Then
-        assertTrue(actual.isError());
+        assertFalse(actual.isOK());
         assertEquals(query.getAValue(), actual.getReason().getCode());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, actual.asHttp().getHTTPStatus());
         final String[] actualMessages = actual.getReason().getMessages().toArray(new String[0]);

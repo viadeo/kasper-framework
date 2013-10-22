@@ -19,6 +19,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public final class CommandResponseDeserializer extends JsonDeserializer<CommandResponse> {
     static final Logger LOGGER = LoggerFactory.getLogger(CommandResponseDeserializer.class);
@@ -32,7 +33,7 @@ public final class CommandResponseDeserializer extends JsonDeserializer<CommandR
     @Override
     public CommandResponse deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException {
         Status status = null;
-        KasperReason error = null;
+        KasperReason reason = null;
         
         while ((null != jp.nextToken()) && !jp.getCurrentToken().equals(JsonToken.END_OBJECT)) {
             final String name = jp.getCurrentName();
@@ -41,19 +42,20 @@ public final class CommandResponseDeserializer extends JsonDeserializer<CommandR
             
             if (ObjectMapperProvider.STATUS.equals(name)) {
                 status = jp.readValueAs(Status.class);
-            } else if (ObjectMapperProvider.ERRORS.equals(name)) {
+            } else if (ObjectMapperProvider.REASONS.equals(name)) {
                 if (jp.getCurrentToken() != JsonToken.START_ARRAY) {
                     throw new IllegalStateException("Expected START_ARRAY encountered " + jp.getCurrentToken());
                 }
 
-                error = readKasperReason(jp);
+                reason = readKasperReason(jp);
             }
         }
 
-        return new CommandResponse(status, error);
+        return new CommandResponse(status, reason);
     }
 
     private KasperReason readKasperReason(final JsonParser jp) throws IOException {
+        UUID id = null;
         String globalCode = null;
         List<String> messages = new ArrayList<String>();
         
@@ -69,10 +71,21 @@ public final class CommandResponseDeserializer extends JsonDeserializer<CommandR
                 }
             } else if (ObjectMapperProvider.MESSAGE.equals(name)) {
                 messages.add(jp.nextTextValue());
+            } else if (ObjectMapperProvider.ID.equals(name)) {
+                try {
+                    id = UUID.fromString(jp.nextTextValue());
+                } catch (final IllegalArgumentException e) {
+                    LOGGER.warn("Error when deserializing reason id", e);
+                    // Ignore error, id wil be null and managed below
+                }
             } // else lets just ignore usermessage and others...
         }
         
-        return globalCode != null ? new KasperReason(globalCode, messages) : null;
+        return (null != globalCode) ?
+                    (null != id) ?
+                            new KasperReason(id, globalCode, messages)
+                          : new KasperReason(globalCode, messages)
+              : null;
     }
 
 }
