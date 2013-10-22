@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.annotation.Immutable;
 import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.cqrs.query.http.HTTPQueryResponse;
@@ -28,11 +28,11 @@ public class QueryResponse<RESULT extends QueryResult> implements Serializable, 
     private static final long serialVersionUID = -6543664128786160837L;
 
     private final RESULT result;
-    private final KasperError error;
+    private final KasperReason error;
 
     // ------------------------------------------------------------------------
 
-    public static <P extends QueryResult> QueryResponse<P> of(final KasperError error) {
+    public static <P extends QueryResult> QueryResponse<P> of(final KasperReason error) {
         return new QueryResponse<P>(error);
     }
 
@@ -52,14 +52,14 @@ public class QueryResponse<RESULT extends QueryResult> implements Serializable, 
         this.error = null;
     }
     
-    public QueryResponse(final KasperError error) {
+    public QueryResponse(final KasperReason error) {
         this.result = null;
         this.error = checkNotNull(error);
     }
 
     // ------------------------------------------------------------------------
 
-    public KasperError getError() {
+    public KasperReason getError() {
         return error;
     }
     

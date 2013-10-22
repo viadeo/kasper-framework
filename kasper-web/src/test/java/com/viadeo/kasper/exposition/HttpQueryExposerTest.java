@@ -8,7 +8,7 @@ package com.viadeo.kasper.exposition;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.cqrs.query.*;
@@ -124,7 +124,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
                         messages.add(q.getErrorCodes().get(i));
                 }
 
-                return QueryResponse.of(new KasperError(q.aValue, messages));
+                return QueryResponse.of(new KasperReason(q.aValue, messages));
             }
 
             final SomeResponse response = new SomeResponse();

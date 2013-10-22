@@ -18,8 +18,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.CoreErrorCode;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
@@ -207,8 +207,8 @@ public class HttpCommandExposer extends HttpExposer {
 
             sendResponse(
                     CommandResponse.error(
-                        new KasperError(
-                            CoreErrorCode.INVALID_INPUT.name(),
+                        new KasperReason(
+                            CoreReasonCode.INVALID_INPUT.name(),
                             errorMessages
                         )
                     ),
@@ -318,7 +318,7 @@ public class HttpCommandExposer extends HttpExposer {
         /* write also into the body the response as json */
         mapper.writer().writeValue(response.getOutputStream(),
                                    CommandResponse.error(
-                                          new KasperError(CoreErrorCode.UNKNOWN_ERROR, reason)
+                                          new KasperReason(CoreReasonCode.UNKNOWN_ERROR, reason)
                                    )
         );
 

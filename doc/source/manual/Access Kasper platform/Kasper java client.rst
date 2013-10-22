@@ -33,7 +33,7 @@ KasperClient is thread safe and should be reused for optimal performances.
    final KasperClient client = new KasperClient();
    final QueryResponse<SuperCoolResponse> response = client.query(new SuperCoolQuery("what's up?"), SuperCoolResponse.class);
    if (response.isError()) {
-	KasperError error = response.getError();
+	KasperReason error = response.getError();
         // do something using the error code or the messages list
    } else {
      // if no error occured you can access the result

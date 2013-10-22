@@ -17,7 +17,7 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
-import com.viadeo.kasper.CoreErrorCode;
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
@@ -280,7 +280,7 @@ public class KasperClientQueryTest extends JerseyTest {
         final QueryResponse<MemberResult> response = client.query(query, MemberResult.class);
 
         // Then
-        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), response.getError().getCode());
+        Assert.assertEquals(CoreReasonCode.UNKNOWN_ERROR.toString(), response.getError().getCode());
         Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
         Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }
@@ -296,7 +296,7 @@ public class KasperClientQueryTest extends JerseyTest {
         final QueryResponse<MemberResult> response = client.queryAsync(query, MemberResult.class).get();
 
         // Then
-        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), response.getError().getCode());
+        Assert.assertEquals(CoreReasonCode.UNKNOWN_ERROR.toString(), response.getError().getCode());
         Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
         Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }

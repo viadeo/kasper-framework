@@ -13,7 +13,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import org.slf4j.Logger;
@@ -75,7 +75,7 @@ public final class ObjectMapperProvider {
 
     // ------------------------------------------------------------------------
 
-    static KasperError translateOldErrorToKasperError(final ObjectNode root) {
+    static KasperReason translateOldErrorToKasperReason(final ObjectNode root) {
         final String globalCode = root.get(ObjectMapperProvider.MESSAGE).asText();
         final List<String> messages = new ArrayList<String>();
 
@@ -90,7 +90,7 @@ public final class ObjectMapperProvider {
                             globalCode, code, message);
             }
         }
-        return new KasperError(globalCode, messages);
+        return new KasperReason(globalCode, messages);
     }
     
     /**

@@ -10,7 +10,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonToken;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.CommandResponse.Status;
 import org.slf4j.Logger;
@@ -32,7 +32,7 @@ public final class CommandResponseDeserializer extends JsonDeserializer<CommandR
     @Override
     public CommandResponse deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException {
         Status status = null;
-        KasperError error = null;
+        KasperReason error = null;
         
         while ((null != jp.nextToken()) && !jp.getCurrentToken().equals(JsonToken.END_OBJECT)) {
             final String name = jp.getCurrentName();
@@ -46,14 +46,14 @@ public final class CommandResponseDeserializer extends JsonDeserializer<CommandR
                     throw new IllegalStateException("Expected START_ARRAY encountered " + jp.getCurrentToken());
                 }
 
-                error = readKasperError(jp);
+                error = readKasperReason(jp);
             }
         }
 
         return new CommandResponse(status, error);
     }
 
-    private KasperError readKasperError(final JsonParser jp) throws IOException {
+    private KasperReason readKasperReason(final JsonParser jp) throws IOException {
         String globalCode = null;
         List<String> messages = new ArrayList<String>();
         
@@ -72,7 +72,7 @@ public final class CommandResponseDeserializer extends JsonDeserializer<CommandR
             } // else lets just ignore usermessage and others...
         }
         
-        return globalCode != null ? new KasperError(globalCode, messages) : null;
+        return globalCode != null ? new KasperReason(globalCode, messages) : null;
     }
 
 }

@@ -14,12 +14,14 @@ import com.viadeo.kasper.annotation.Immutable;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public final class KasperError implements Serializable, Immutable {
+public final class KasperReason implements Serializable, Immutable {
     private static final long serialVersionUID = 7839349411722371919L;
-    
+
+    private final UUID id;
     private final String code;
     private final List<String> messages;
 
@@ -27,7 +29,7 @@ public final class KasperError implements Serializable, Immutable {
 
     public final static class Builder {
 
-        String code = CoreErrorCode.UNKNOWN_ERROR.string();
+        String code = CoreReasonCode.UNKNOWN_ERROR.string();
         Collection<String> messages;
 
         // -----
@@ -51,26 +53,26 @@ public final class KasperError implements Serializable, Immutable {
             return builder;
         }
 
-        public static Builder from(final KasperError error) {
-            checkNotNull(error);
-            return from(error.getCode(), error.getMessages());
+        public static Builder from(final KasperReason reason) {
+            checkNotNull(reason);
+            return from(reason.getCode(), reason.getMessages());
         }
 
-        public static Builder from(final CoreErrorCode code, final Collection<String> messages) {
+        public static Builder from(final CoreReasonCode code, final Collection<String> messages) {
             return from(code.string(), messages.toArray(new String[0]));
         }
 
-        public static Builder from(final CoreErrorCode code, final String...messages) {
+        public static Builder from(final CoreReasonCode code, final String...messages) {
             return from(code.string(), messages);
         }
 
         // -----
 
-        public KasperError build() {
+        public KasperReason build() {
             if (null == messages) {
                 this.messages = Lists.newArrayList();
             }
-            return new KasperError(code, messages);
+            return new KasperReason(code, messages);
         }
 
         // -----
@@ -80,7 +82,7 @@ public final class KasperError implements Serializable, Immutable {
             return this;
         }
 
-        public Builder code(final CoreErrorCode code) {
+        public Builder code(final CoreReasonCode code) {
             this.code = checkNotNull(code).toString();
             return this;
         }
@@ -104,9 +106,9 @@ public final class KasperError implements Serializable, Immutable {
             return this;
         }
 
-        public Builder error(final KasperError error) {
-            this.code = error.code;
-            this.messages = error.messages;
+        public Builder reason(final KasperReason reason) {
+            this.code = reason.code;
+            this.messages = reason.messages;
             return this;
         }
 
@@ -114,29 +116,35 @@ public final class KasperError implements Serializable, Immutable {
 
     // ------------------------------------------------------------------------
 
-    public KasperError(final String code, final String...messages) {
+    public KasperReason(final String code, final String...messages) {
+        this.id = UUID.randomUUID();
         this.code = checkNotNull(code);
         this.messages = ImmutableList.copyOf(checkNotNull(messages));
     }
 
-    public KasperError(final String code, final Collection<String> messages) {
+    public KasperReason(final String code, final Collection<String> messages) {
+        this.id = UUID.randomUUID();
         this.code = checkNotNull(code);
         this.messages = ImmutableList.copyOf(checkNotNull(messages));
     }
 
-    public KasperError(final CoreErrorCode code, final String message) {
+    public KasperReason(final CoreReasonCode code, final String message) {
         this(checkNotNull(code).toString(), checkNotNull(message));
     }
 
-    public KasperError(final CoreErrorCode code, final String...messages) {
+    public KasperReason(final CoreReasonCode code, final String...messages) {
         this(checkNotNull(code).toString(), checkNotNull(messages));
     }
 
-    public KasperError(final CoreErrorCode code, final Collection<String> messages) {
+    public KasperReason(final CoreReasonCode code, final Collection<String> messages) {
         this(checkNotNull(code).toString(), checkNotNull(messages));
     }
 
     // ------------------------------------------------------------------------
+
+    public UUID getId() {
+        return this.id;
+    }
 
     public String getCode() {
         return code;
@@ -166,15 +174,16 @@ public final class KasperError implements Serializable, Immutable {
             return false;
         }
 
-        final KasperError other = (KasperError) obj;
+        final KasperReason other = (KasperReason) obj;
 
         return Objects.equal(this.code, other.code) &&
-                Objects.equal(this.messages, other.messages);
+               Objects.equal(this.messages, other.messages);
     }
 
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
+                .addValue(this.id)
                 .addValue(this.code)
                 .addValue(this.messages)
                 .toString();

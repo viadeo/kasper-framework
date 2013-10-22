@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.validation;
 
-import com.viadeo.kasper.CoreErrorCode;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
@@ -45,7 +45,7 @@ public class QueryValidationActor<Q extends Query, P extends QueryResult> implem
             for (final ConstraintViolation<Q> violation : validations) {
                 errors.add(violation.getPropertyPath() + " : " + violation.getMessage());
             }
-            queryResponse = QueryResponse.of(new KasperError(CoreErrorCode.INVALID_INPUT.name(), errors));
+            queryResponse = QueryResponse.of(new KasperReason(CoreReasonCode.INVALID_INPUT.name(), errors));
         }
 
         return queryResponse;

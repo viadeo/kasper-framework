@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper;
 
-public enum CoreErrorCode {
+public enum CoreReasonCode {
 
     /* Unknown error */
     UNKNOWN_ERROR(0),
@@ -30,23 +30,23 @@ public enum CoreErrorCode {
     // ------------------------------------------------------------------------
 
     private int code;
-    private KasperError error;
+    private KasperReason reason;
 
     // ------------------------------------------------------------------------
 
-    CoreErrorCode(final int code) {
+    CoreReasonCode(final int code) {
         this.code = code;
-        this.error = new KasperError(String.valueOf(this.code), this.name());
+        this.reason = new KasperReason(String.valueOf(this.code), this.name());
     }
 
     // ------------------------------------------------------------------------
 
-    public KasperError error() {
-        return this.error;
+    public KasperReason reason() {
+        return this.reason;
     }
 
-    public KasperError.Builder builder() {
-        return KasperError.Builder.from(error);
+    public KasperReason.Builder builder() {
+        return KasperReason.Builder.from(reason);
     }
 
     public String string() {

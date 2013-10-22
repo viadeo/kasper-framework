@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import com.viadeo.kasper.CoreErrorCode;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.annotation.Immutable;
 import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.cqrs.command.http.HTTPCommandResponse;
@@ -36,34 +36,34 @@ public class CommandResponse implements Serializable, Immutable {
      * The current command status
      */
     private final Status status;
-    private final KasperError error;
+    private final KasperReason error;
 
     // ------------------------------------------------------------------------
 
-    public static CommandResponse error(final KasperError error) {
+    public static CommandResponse error(final KasperReason error) {
         return new CommandResponse(Status.ERROR, error);
     }
 
     public static CommandResponse error(final String code, final String message) {
-        return error(new KasperError(code, message));
+        return error(new KasperReason(code, message));
     }
 
-    public static CommandResponse error(final CoreErrorCode code, final String message) {
-        return error(new KasperError(checkNotNull(code).toString(), message));
+    public static CommandResponse error(final CoreReasonCode code, final String message) {
+        return error(new KasperReason(checkNotNull(code).toString(), message));
     }
 
     // ------------------------------------------------------------------------
 
-    public static CommandResponse refused(final KasperError error) {
-        return new CommandResponse(Status.REFUSED, error);
+    public static CommandResponse refused(final KasperReason reason) {
+        return new CommandResponse(Status.REFUSED, reason);
     }
 
     public static CommandResponse refused(final String code, final String message) {
-        return refused(new KasperError(code, message));
+        return refused(new KasperReason(code, message));
     }
 
-    public static CommandResponse refused(final CoreErrorCode code, final String message) {
-        return refused(new KasperError(code, message));
+    public static CommandResponse refused(final CoreReasonCode code, final String message) {
+        return refused(new KasperReason(code, message));
     }
 
     // ------------------------------------------------------------------------
@@ -79,7 +79,7 @@ public class CommandResponse implements Serializable, Immutable {
         this.error = response.error;
     }
 
-    public CommandResponse(final Status status, final KasperError error) {
+    public CommandResponse(final Status status, final KasperReason error) {
         this.status = checkNotNull(status);
         
         if (!status.equals(Status.OK) && (null == error)) {
@@ -105,7 +105,7 @@ public class CommandResponse implements Serializable, Immutable {
     /**
      * @return a list of errors or empty if command succeeded.
      */
-    public KasperError getError() {
+    public KasperReason getError() {
         return error;
     }
 

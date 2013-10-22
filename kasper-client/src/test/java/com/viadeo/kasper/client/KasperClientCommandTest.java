@@ -13,8 +13,8 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
-import com.viadeo.kasper.CoreErrorCode;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
@@ -126,7 +126,7 @@ public class KasperClientCommandTest extends JerseyTest {
         @Consumes(MediaType.APPLICATION_JSON)
         public CommandResponse getMember(final CreateMemberCommand command) {
             return new CommandResponse(command.getStatus(),
-                    Status.OK != command.getStatus() ? new KasperError("", "") : null);
+                    Status.OK != command.getStatus() ? new KasperReason("", "") : null);
         }
     }
 
@@ -233,7 +233,7 @@ public class KasperClientCommandTest extends JerseyTest {
         // Then
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getError());
-        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), response.getError().getCode());
+        Assert.assertEquals(CoreReasonCode.UNKNOWN_ERROR.toString(), response.getError().getCode());
         Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
         Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }
@@ -252,7 +252,7 @@ public class KasperClientCommandTest extends JerseyTest {
         // Then
         Assert.assertNotNull(response);
         Assert.assertNotNull(response.getError());
-        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), response.getError().getCode());
+        Assert.assertEquals(CoreReasonCode.UNKNOWN_ERROR.toString(), response.getError().getCode());
         Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
         Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }

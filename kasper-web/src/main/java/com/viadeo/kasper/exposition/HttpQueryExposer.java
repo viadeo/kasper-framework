@@ -18,8 +18,8 @@ import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.SetMultimap;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.CoreErrorCode;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
@@ -354,11 +354,11 @@ public class HttpQueryExposer extends HttpExposer {
 
         final ObjectWriter writer = mapper.writer();
 
-        final KasperError error;
+        final KasperReason error;
         if ((null != exception) && (null != exception.getMessage())) {
-            error = new KasperError(CoreErrorCode.UNKNOWN_ERROR, message, exception.getMessage());
+            error = new KasperReason(CoreReasonCode.UNKNOWN_ERROR, message, exception.getMessage());
         } else {
-            error = new KasperError(CoreErrorCode.UNKNOWN_ERROR, message);
+            error = new KasperReason(CoreReasonCode.UNKNOWN_ERROR, message);
         }
 
         writer.writeValue(resp.getOutputStream(), new QueryResponse<>(error));

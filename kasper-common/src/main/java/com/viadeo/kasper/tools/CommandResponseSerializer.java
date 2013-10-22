@@ -9,7 +9,7 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 
 import java.io.IOException;
@@ -25,7 +25,7 @@ public class CommandResponseSerializer extends JsonSerializer<CommandResponse> {
         jgen.writeFieldName(ObjectMapperProvider.ERRORS);
         jgen.writeStartArray();
         if (value.isError()) {
-            final KasperError error = value.getError();
+            final KasperReason error = value.getError();
             for (String message : error.getMessages()) {
                 jgen.writeStartObject();
                 

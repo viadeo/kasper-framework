@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.http;
 
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 
@@ -34,7 +34,7 @@ public class HTTPQueryResponse<RESULT extends QueryResult>  extends QueryRespons
         this.httpStatus = checkNotNull(httpStatus);
     }
 
-    public HTTPQueryResponse(final Status httpStatus, final KasperError error) {
+    public HTTPQueryResponse(final Status httpStatus, final KasperReason error) {
         super(checkNotNull(error));
         this.httpStatus = checkNotNull(httpStatus);
     }

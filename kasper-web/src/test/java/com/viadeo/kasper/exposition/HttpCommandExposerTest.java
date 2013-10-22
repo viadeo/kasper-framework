@@ -7,7 +7,7 @@
 package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.ImmutableList;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
@@ -182,7 +182,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
             if (command.isThrowException())
                 throw new KasperException("Something bad happened!");
             if (command.getCode() != null)
-                return CommandResponse.error(new KasperError(command.getCode(), command.getMessages()));
+                return CommandResponse.error(new KasperReason(command.getCode(), command.getMessages()));
             createAccountCommandName = command.getName();
             return CommandResponse.ok();
         }

@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.http;
 
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 
 import javax.ws.rs.core.Response;
@@ -22,12 +22,12 @@ public class HTTPCommandResponse extends CommandResponse {
         this.httpStatus = httpStatus;
     }
 
-    public HTTPCommandResponse(final CommandResponse.Status status, KasperError error) {
+    public HTTPCommandResponse(final CommandResponse.Status status, KasperReason error) {
         super(status, error);
         this.httpStatus = Response.Status.OK;
     }
 
-    public HTTPCommandResponse(final Response.Status httpStatus, final CommandResponse.Status status, KasperError error) {
+    public HTTPCommandResponse(final Response.Status httpStatus, final CommandResponse.Status status, KasperReason error) {
         super(status, error);
         this.httpStatus = httpStatus;
     }

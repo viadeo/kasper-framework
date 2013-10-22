@@ -11,10 +11,10 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import static com.viadeo.kasper.KasperError.Builder;
+import static com.viadeo.kasper.KasperReason.Builder;
 import static org.junit.Assert.assertEquals;
 
-public class KasperErrorBuilderTest {
+public class KasperReasonBuilderTest {
 
     @Test
     public void testEmpty() {
@@ -22,23 +22,23 @@ public class KasperErrorBuilderTest {
         final Builder builder = Builder.empty();
 
         // When
-        final KasperError error = builder.build();
+        final KasperReason error = builder.build();
 
         // Then
-        assertEquals(CoreErrorCode.UNKNOWN_ERROR.string(), error.getCode());
+        assertEquals(CoreReasonCode.UNKNOWN_ERROR.string(), error.getCode());
         assertEquals(0, error.getMessages().size());
     }
 
     @Test
     public void testFromCoreCode() {
         // Given
-        final Builder builder = Builder.from(CoreErrorCode.UNKNOWN_ERROR);
+        final Builder builder = Builder.from(CoreReasonCode.UNKNOWN_ERROR);
 
         // When
-        final KasperError error = builder.build();
+        final KasperReason error = builder.build();
 
         // Then
-        assertEquals(CoreErrorCode.UNKNOWN_ERROR.string(), error.getCode());
+        assertEquals(CoreReasonCode.UNKNOWN_ERROR.string(), error.getCode());
         assertEquals(0, error.getMessages().size());
     }
 
@@ -48,13 +48,13 @@ public class KasperErrorBuilderTest {
         final Collection<String> messages = new ArrayList<String>() {{
             add("foo");
         }};
-        final Builder builder = Builder.from(CoreErrorCode.UNKNOWN_ERROR, messages);
+        final Builder builder = Builder.from(CoreReasonCode.UNKNOWN_ERROR, messages);
 
         // When
-        final KasperError error = builder.build();
+        final KasperReason error = builder.build();
 
         // Then
-        assertEquals(CoreErrorCode.UNKNOWN_ERROR.string(), error.getCode());
+        assertEquals(CoreReasonCode.UNKNOWN_ERROR.string(), error.getCode());
         assertEquals(1, error.getMessages().size());
         assertEquals("foo", error.getMessages().toArray()[0]);
     }
@@ -62,29 +62,29 @@ public class KasperErrorBuilderTest {
     @Test
     public void testFromCoreCodeAndMessages() {
         // Given
-        final Builder builder = Builder.from(CoreErrorCode.UNKNOWN_ERROR, "foo", "bar");
+        final Builder builder = Builder.from(CoreReasonCode.UNKNOWN_ERROR, "foo", "bar");
 
         // When
-        final KasperError error = builder.build();
+        final KasperReason error = builder.build();
 
         // Then
-        assertEquals(CoreErrorCode.UNKNOWN_ERROR.string(), error.getCode());
+        assertEquals(CoreReasonCode.UNKNOWN_ERROR.string(), error.getCode());
         assertEquals(2, error.getMessages().size());
         assertEquals("foo", error.getMessages().toArray()[0]);
         assertEquals("bar", error.getMessages().toArray()[1]);
     }
 
     @Test
-    public void testFromKasperError() {
+    public void testFromKasperReason() {
         // Given
-        final Builder builder = Builder.from(new KasperError(
+        final Builder builder = Builder.from(new KasperReason(
                 "code",
                 "foo",
                 "bar"
         ));
 
         // When
-        final KasperError error = builder.build();
+        final KasperReason error = builder.build();
 
         // Then
         assertEquals("code", error.getCode());
@@ -102,7 +102,7 @@ public class KasperErrorBuilderTest {
         final Builder builder = Builder.from("code", messages);
 
         // When
-        final KasperError error = builder.build();
+        final KasperReason error = builder.build();
 
         // Then
         assertEquals("code", error.getCode());
@@ -116,7 +116,7 @@ public class KasperErrorBuilderTest {
         final Builder builder = Builder.from("foo", "foo", "bar");
 
         // When
-        final KasperError error = builder.build();
+        final KasperReason error = builder.build();
 
         // Then
         assertEquals("foo", error.getCode());
@@ -127,11 +127,11 @@ public class KasperErrorBuilderTest {
 
     /*
 
-    public static Builder from(final CoreErrorCode code, final Collection<String> messages) {
+    public static Builder from(final CoreReasonCode code, final Collection<String> messages) {
         return from(code.string(), (String[]) messages.toArray());
     }
 
-    public static Builder from(final CoreErrorCode code, final String...messages) {
+    public static Builder from(final CoreReasonCode code, final String...messages) {
         return from(code.string(), messages);
     }
     */

@@ -16,8 +16,8 @@ import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.async.TypeListener;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import com.viadeo.kasper.CoreErrorCode;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.http.HTTPCommandResponse;
@@ -308,8 +308,8 @@ public class KasperClient {
             return new HTTPCommandResponse(
                     Response.Status.fromStatusCode(clientResponse.getStatus()),
                     CommandResponse.Status.ERROR,
-                    new KasperError(
-                            CoreErrorCode.UNKNOWN_ERROR,
+                    new KasperReason(
+                            CoreReasonCode.UNKNOWN_ERROR,
                             "Response from platform uses an unsupported type: " + clientResponse.getType())
             );
         }
@@ -484,8 +484,8 @@ public class KasperClient {
 
             return new HTTPQueryResponse<P>(
                     Response.Status.fromStatusCode(clientResponse.getStatus()),
-                    new KasperError(
-                            CoreErrorCode.UNKNOWN_ERROR,
+                    new KasperReason(
+                            CoreReasonCode.UNKNOWN_ERROR,
                             "Response from platform uses an unsupported type: " + clientResponse.getType())
             );
         }

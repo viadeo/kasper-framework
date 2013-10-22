@@ -1,5 +1,5 @@
 - rename QueryHandler -> QueryHandler
-- rename KasperError -> ResponseReason + add CommandResponse.rejected() with HTTP 40x
+- rename KasperReason -> ResponseReason + add CommandResponse.rejected() with HTTP 40x
 - ensure correct renamings
 - HTTP codes mappings
 

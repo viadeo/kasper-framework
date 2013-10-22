@@ -8,8 +8,8 @@ package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.viadeo.kasper.CoreErrorCode;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
@@ -71,7 +71,7 @@ public class ObjectMapperProviderTest {
     @Test
     public void queryResponseErrorRoundTrip() throws IOException {
         // Given
-        final QueryResponse expected = QueryResponse.of(new KasperError("CODE", "aCode", "aMessage"));
+        final QueryResponse expected = QueryResponse.of(new KasperReason("CODE", "aCode", "aMessage"));
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
@@ -93,9 +93,9 @@ public class ObjectMapperProviderTest {
     }
 
     @Test
-    public void deserializeErrorCommandResponseWithSingleKasperError() throws IOException {
+    public void deserializeErrorCommandResponseWithSingleKasperReason() throws IOException {
         // Given
-        final KasperError expectedError = new KasperError(CoreErrorCode.UNKNOWN_ERROR, "some error");
+        final KasperReason expectedError = new KasperReason(CoreReasonCode.UNKNOWN_ERROR, "some error");
         final CommandResponse expectedResponse = CommandResponse.error(expectedError);
 
         // When
@@ -112,9 +112,9 @@ public class ObjectMapperProviderTest {
     }
 
     @Test
-    public void deserializeErrorCommandResponseWithMultipleKasperError() throws IOException {
+    public void deserializeErrorCommandResponseWithMultipleKasperReason() throws IOException {
         // Given
-        final KasperError expectedError = new KasperError(CoreErrorCode.CONFLICT, "too late...",
+        final KasperReason expectedError = new KasperReason(CoreReasonCode.CONFLICT, "too late...",
                 "some error");
 
         final CommandResponse expectedResponse = CommandResponse.error(expectedError);
