@@ -14,6 +14,7 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.exception.KasperException;
@@ -109,6 +110,9 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
             final Timer.Context timer = metricTimerSave.time();
 
             try {
+                if (null == aggregate.getIdentifier()) {
+                    throw new KasperCommandException("Aggregates must have an ID (use setID()) before saves");
+                }
 			    this.kasperRepository.doSave(aggregate);
             } catch (final RuntimeException e) {
                 metricClassSaveErrors.mark();
