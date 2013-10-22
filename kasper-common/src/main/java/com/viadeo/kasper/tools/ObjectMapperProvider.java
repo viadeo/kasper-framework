@@ -25,6 +25,7 @@ import java.util.List;
 public final class ObjectMapperProvider {
 
     static final String ID = "id";
+    static final String REASON = "reason";
     static final String REASONS = "reasons";
     static final String ERROR = "error";
     static final String ERRORS = "errors";

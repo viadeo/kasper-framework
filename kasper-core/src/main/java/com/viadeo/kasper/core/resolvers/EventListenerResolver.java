@@ -52,6 +52,10 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
     @Override
     public String getLabel(Class<? extends EventListener> clazz) {
         return clazz.getSimpleName()
+                .replace("QueryEventListener", "")
+                .replace("CommandEventListener", "")
+                .replace("QueryListener", "")
+                .replace("CommandListener", "")
                 .replace("EventListener", "")
                 .replace("Listener", "");
     }

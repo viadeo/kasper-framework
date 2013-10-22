@@ -67,7 +67,7 @@ Some interfaces are available as a standard way to add some features to the quer
 - **PaginatedQuery** can be implemented when the response can be paginated
 
 Query response results
----------------------
+----------------------
 
 A Kasper query response result is an immutable, anemic object used by a query handler to send back data
 to the requesting client, it ends with the suffix '**QueryResult**' (recommended).
@@ -163,7 +163,7 @@ when other message informations are not required :
     }
 
 QueryResponse Caching
--------------------
+---------------------
 
 Kasper framework provides a way to cache query responses based on the submitted query, the cache is enabled per QueryHandler and is disabled by default.
 

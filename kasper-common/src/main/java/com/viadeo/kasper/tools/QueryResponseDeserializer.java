@@ -35,11 +35,12 @@ public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
 
         ObjectNode root = jp.readValueAs(ObjectNode.class);
 
-        if (root.has(ObjectMapperProvider.ERROR)) {
-            final JsonNode id = root.get(ObjectMapperProvider.ID);
+        if (root.has(ObjectMapperProvider.REASON)) {
+            String id = null;
             final String globalCode = root.get(ObjectMapperProvider.MESSAGE).asText();
             final List<String> messages = new ArrayList<String>();
             for (JsonNode node : root.get(ObjectMapperProvider.REASONS)) {
+                id = node.get(ObjectMapperProvider.ID).asText();
                 String code = node.get(ObjectMapperProvider.CODE).asText();
                 String message = node.get(ObjectMapperProvider.MESSAGE).asText();
                 if (globalCode.equals(code)) {
@@ -51,7 +52,7 @@ public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
             }
             if (null != id) {
                 try {
-                    return QueryResponse.of(new KasperReason(UUID.fromString(id.asText()), globalCode, messages));
+                    return QueryResponse.of(new KasperReason(UUID.fromString(id), globalCode, messages));
                 } catch (final IllegalArgumentException e) {
                     LOGGER.warn("Error when deserializing reason id", e);
                     return QueryResponse.of(new KasperReason(globalCode, messages));

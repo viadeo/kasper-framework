@@ -70,9 +70,9 @@ The following table lists all metrics directly provided by the framework :
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
 | Query gateway   | Timer     | com.viadeo.kasper.cqrs.query.QueryGateway.**requests-time**          | Time to handle the query (all)                              |
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
-| Query gateway   | Timer     | <Query Class>.**requests-response-filters-time**                       | Time to filter the query filters                            |
+| Query gateway   | Timer     | <Query Class>.**requests-response-filters-time**                     | Time to filter the query filters                            |
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
-| Query gateway   | Timer     | <Query Class>.**requests-query-filters-time**                        | Time to filter the query response                             |
+| Query gateway   | Timer     | <Query Class>.**requests-query-filters-time**                        | Time to filter the query response                           |
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
 | Query gateway   | Histogram | <Query Class>.**requests-times**                                     | Distribution of request handling time for this query        |
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+

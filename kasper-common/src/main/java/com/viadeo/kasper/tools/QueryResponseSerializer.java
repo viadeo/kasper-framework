@@ -25,6 +25,10 @@ public class QueryResponseSerializer extends JsonSerializer<QueryResponse> {
 
             // lets write a boolean telling that this is an reason, can be useful
             // for js consumers
+            jgen.writeFieldName(ObjectMapperProvider.REASON);
+            jgen.writeBoolean(true);
+
+            /* FIXME - retro-compatibility - TO BE REMOVED */
             jgen.writeFieldName(ObjectMapperProvider.ERROR);
             jgen.writeBoolean(true);
             

@@ -32,12 +32,12 @@ public class QueryResponse<RESULT extends QueryResult> implements Serializable, 
 
     // ------------------------------------------------------------------------
 
-    public static <P extends QueryResult> QueryResponse<P> of(final KasperReason reason) {
-        return new QueryResponse<P>(reason);
+    public static <R extends QueryResult> QueryResponse<R> of(final KasperReason reason) {
+        return new QueryResponse<R>(checkNotNull(reason));
     }
 
-    public static <P extends QueryResult> QueryResponse<P> of(final P response) {
-        return new QueryResponse<P>(response);
+    public static <R extends QueryResult> QueryResponse<R> of(final R response) {
+        return new QueryResponse<R>(checkNotNull(response));
     }
 
     // ------------------------------------------------------------------------

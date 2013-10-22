@@ -34,7 +34,7 @@ Goals
  * Be extensible in order to allow customization and extension/addition of new features.
 
 Commands & CommandResponse
-------------------------
+--------------------------
 
 Commands are submitted using **POST** or **PUT** requests, there are no query parameters, everything is in the body.
 Actually only json content is supported as input and output.
@@ -81,7 +81,7 @@ In response you receive a json of the following form (see :ref:`Error_codes`).
 
 
 Queries & Responses
------------------
+-------------------
 
 A query is submitted using a **GET** request, the parameters will be in the query string not in the body.
 
@@ -117,8 +117,9 @@ information on what happened, see :ref:`Error_codes`.
     :linenos:
 
     {
+        "id": "edbe1970-3b5e-11e3-aa6e-0800200c9a66",
         "message": "Some query was not found...", // a technical global error message
-        "errors": [ // can be empty
+        "reasons": [ // can be empty
             {
                 "code": "INVALID_INPUT", // awlays present, a readable code telling what happened
                 "message": "Some technical message", // a detailed free technical message

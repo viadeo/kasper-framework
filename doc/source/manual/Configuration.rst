@@ -11,32 +11,6 @@ Booting Kasper platform
 
 First add a dependency in your project to **com.viadeo.kasper:kasper-platform**.
 
-In order to boot a Kasper platform you will need to initialize the following dependency tree (with default implementation
-specified in parenthesis):
-
-* Platform (*KasperPlatform*)
-    * CommandGateway (*CommandGateway interface*)
-        * CommandBus (*KasperCommandBus*)
-    * QueryGateway (*DefaultQueryGateway*)
-        * QueryHandlersLocator (*DefaultQueryHandlersLocator*)
-    * EventBus (*KasperEventBus*)
-    * RootProcessor (*AnnotationRootProcessor*)
-        * ComponentsInstanceManager (*SimpleComponentsInstanceManager*)
-        * CommandHandlersProcessor
-            * CommandBus
-            * DomainLocator (*DefaultDomainLocator*)
-        * RepositoriesProcessor
-            * EventBus
-            * DomainLocator
-        * EventListenersProcessor
-            * EventBus
-        * QueryHandlersProcessor
-            * QueryHandlersLocator
-        * DomainsProcessor
-            * DomainLocator
-        * ServiceFiltersProcessor
-            * QueryHandlersLocator
-
 Boot Kasper platform without Spring
 ...................................
 
@@ -76,6 +50,10 @@ In order to boot the platform without Spring, you can use the **PlatformFactory*
     /* Platform can be booted during the creation process */
     final PlatformFactory pf = new PlatformFactory();
     final Platform kasper = pf.getPlatform(true);
+
+    /* Platform can be booted on the same line than creation one */
+    final PlatformFactory pf = new PlatformFactory();
+    final Platform kasper = pf.getPlatform().boot();
 
     /* Once booted you can then get references to the different platform components */
     /* You'll get exceptions if you try to get references to parameterized components */
