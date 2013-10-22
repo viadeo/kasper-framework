@@ -25,7 +25,7 @@ public class CommandResponseSerializer extends JsonSerializer<CommandResponse> {
         jgen.writeFieldName(ObjectMapperProvider.ERRORS);
         jgen.writeStartArray();
         if (value.isError()) {
-            final KasperReason error = value.getError();
+            final KasperReason error = value.getReason();
             for (String message : error.getMessages()) {
                 jgen.writeStartObject();
                 

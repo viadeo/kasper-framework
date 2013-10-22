@@ -28,7 +28,7 @@ public class QueryResponseSerializer extends JsonSerializer<QueryResponse> {
             jgen.writeFieldName(ObjectMapperProvider.ERROR);
             jgen.writeBoolean(true);
             
-            KasperReason error = value.getError();
+            KasperReason error = value.getReason();
 
             jgen.writeFieldName(ObjectMapperProvider.MESSAGE);
             jgen.writeString(error.getCode());

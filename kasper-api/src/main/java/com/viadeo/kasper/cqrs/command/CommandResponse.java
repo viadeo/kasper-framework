@@ -105,7 +105,7 @@ public class CommandResponse implements Serializable, Immutable {
     /**
      * @return a list of errors or empty if command succeeded.
      */
-    public KasperReason getError() {
+    public KasperReason getReason() {
         return error;
     }
 

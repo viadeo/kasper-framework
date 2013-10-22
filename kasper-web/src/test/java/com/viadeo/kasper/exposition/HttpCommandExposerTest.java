@@ -55,7 +55,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 
         // Then
         assertEquals(Status.ERROR, response.getStatus());
-        assertNotNull(response.getError().getMessages().toArray()[0]);
+        assertNotNull(response.getReason().getMessages().toArray()[0]);
     }
 
     // ------------------------------------------------------------------------
@@ -104,8 +104,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 
         // Then
         assertEquals(Status.ERROR, response.getStatus());
-        assertEquals(command.getCode(), response.getError().getCode());
-        final String[] responseMessages = response.getError().getMessages().toArray(new String[0]);
+        assertEquals(command.getCode(), response.getReason().getCode());
+        final String[] responseMessages = response.getReason().getMessages().toArray(new String[0]);
         for (int i = 0; i < command.getMessages().size(); i++) {
             assertEquals(command.getMessages().get(i), responseMessages[i]);
         }
@@ -126,7 +126,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
             add("innerObject.age : must be greater than or equal to 2");
             add("str : size must be between 1 and 2147483647");
         }};
-        for (final String errorMessage : response.getError().getMessages()) {
+        for (final String errorMessage : response.getReason().getMessages()) {
             if (!errorStrings.contains(errorMessage)) {
                 fail(String.format("Cannot find expected validation message : %s", errorMessage));
             }

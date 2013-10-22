@@ -59,7 +59,7 @@ public class QueryResponse<RESULT extends QueryResult> implements Serializable, 
 
     // ------------------------------------------------------------------------
 
-    public KasperReason getError() {
+    public KasperReason getReason() {
         return error;
     }
     

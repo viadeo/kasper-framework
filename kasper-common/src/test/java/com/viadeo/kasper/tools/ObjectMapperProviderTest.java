@@ -64,7 +64,7 @@ public class ObjectMapperProviderTest {
                 .createJsonParser(json), new TypeReference<QueryResponse<SomeResult>>() {});
         
         assertFalse(actual.isError());
-        assertNull(actual.getError());
+        assertNull(actual.getReason());
         assertEquals(expected.getResult().getStr(), actual.getResult().getStr());
     }
 
@@ -82,13 +82,13 @@ public class ObjectMapperProviderTest {
 
         // Then
         assertTrue(actual.isError());
-        assertEquals(expected.getError().getCode(), actual.getError().getCode());
-        assertEquals(expected.getError().getMessages().size(),
-                     actual.getError().getMessages().size());
+        assertEquals(expected.getReason().getCode(), actual.getReason().getCode());
+        assertEquals(expected.getReason().getMessages().size(),
+                     actual.getReason().getMessages().size());
 
-        for (int i = 0; i < expected.getError().getMessages().size(); i++) {
-            assertEquals(expected.getError().getMessages().toArray()[i],
-                         actual.getError().getMessages().toArray()[i]);
+        for (int i = 0; i < expected.getReason().getMessages().size(); i++) {
+            assertEquals(expected.getReason().getMessages().toArray()[i],
+                         actual.getReason().getMessages().toArray()[i]);
         }
     }
 
@@ -106,9 +106,9 @@ public class ObjectMapperProviderTest {
 
         // Then
         assertEquals(expectedResponse.getStatus(), actualResponse.getStatus());
-        assertEquals(expectedError.getCode(), actualResponse.getError().getCode());
+        assertEquals(expectedError.getCode(), actualResponse.getReason().getCode());
         assertEquals(expectedError.getMessages().toArray()[0],
-                     actualResponse.getError().getMessages().toArray()[0]);
+                     actualResponse.getReason().getMessages().toArray()[0]);
     }
 
     @Test
@@ -127,14 +127,14 @@ public class ObjectMapperProviderTest {
 
         // Then
         assertEquals(expectedResponse.getStatus(), actualResponse.getStatus());
-        assertEquals(expectedError.getMessages().size(), actualResponse.getError().getMessages()
+        assertEquals(expectedError.getMessages().size(), actualResponse.getReason().getMessages()
                 .size());
 
-        assertEquals(expectedError.getCode(), actualResponse.getError().getCode());
+        assertEquals(expectedError.getCode(), actualResponse.getReason().getCode());
 
         for (int i = 0; i < expectedError.getMessages().size(); i++) {
             assertEquals(expectedError.getMessages().toArray()[i],
-                         actualResponse.getError().getMessages().toArray()[i]);
+                         actualResponse.getReason().getMessages().toArray()[i]);
         }
     }
 
