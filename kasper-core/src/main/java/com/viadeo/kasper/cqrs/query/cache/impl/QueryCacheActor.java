@@ -23,14 +23,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class QueryCacheActor<Q extends Query, P extends QueryResult>
         implements QueryRequestActor<Q, P> {
 
-    private final Cache<Serializable, QueryResponse<P>> cache;
+    private final Cache<Serializable, P> cache;
     private final XKasperQueryCache cacheAnnotation;
     private final QueryCacheKeyGenerator<Q> keyGenerator;
 
     // ------------------------------------------------------------------------
 
     public QueryCacheActor(final XKasperQueryCache cacheAnnotation,
-                           final Cache<Serializable, QueryResponse<P>> cache,
+                           final Cache<Serializable, P> cache,
                            final QueryCacheKeyGenerator<Q> keyGenerator) {
         this.cache = checkNotNull(cache);
         this.cacheAnnotation = checkNotNull(cacheAnnotation);
@@ -45,11 +45,13 @@ public class QueryCacheActor<Q extends Query, P extends QueryResult>
             Exception {
         final Serializable key = keyGenerator.computeKey(cacheAnnotation, q);
 
-        if (cache.containsKey(key)) {
-            return cache.get(key);
+        if (cache.containsKey(key) && (null != cache.get(key))) {
+            return QueryResponse.of(cache.get(key));
         } else {
             final QueryResponse<P> response = chain.next(q, context);
-            cache.put(key, response);
+            if (response.isOK()) {
+                cache.put(key, response.getResult());
+            }
             return response;
         }
     }

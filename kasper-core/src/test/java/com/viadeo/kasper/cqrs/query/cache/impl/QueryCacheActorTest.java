@@ -67,8 +67,8 @@ public class QueryCacheActorTest {
         final QueryResponse<DummyResult> anotherNotPresentInCache = chain.next(new DummyQuery(), new DefaultContext());
 
         // Then
-        assertSame(expected, actual);
-        assertNotSame(expected, anotherNotPresentInCache);
+        assertSame(expected.getResult(), actual.getResult());
+        assertNotSame(expected.getResult(), anotherNotPresentInCache.getResult());
     }
 
     @Test
@@ -89,8 +89,8 @@ public class QueryCacheActorTest {
         final QueryResponse<DummyResult> shouldBeNewAsExpiredFromCache = chain.next(nullFields, new DefaultContext());
 
         // Then
-        assertSame(expected, actual);
-        assertNotSame(expected, shouldBeNewAsExpiredFromCache);
+        assertSame(expected.getResult(), actual.getResult());
+        assertNotSame(expected.getResult(), shouldBeNewAsExpiredFromCache.getResult());
     }
 
     @Test
@@ -108,7 +108,7 @@ public class QueryCacheActorTest {
         final QueryResponse<DummyResult> actual = chain.next(new DummyQuery("aa", 3333), new DefaultContext());
 
         // Then
-        assertSame(expected, actual);
+        assertSame(expected.getResult(), actual.getResult());
     }
 
     // ------------------------------------------------------------------------

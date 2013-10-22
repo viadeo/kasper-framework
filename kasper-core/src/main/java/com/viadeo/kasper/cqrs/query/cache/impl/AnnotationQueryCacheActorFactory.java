@@ -10,7 +10,6 @@ import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
@@ -62,8 +61,8 @@ public class AnnotationQueryCacheActorFactory<QUERY extends Query, RESULT extend
                 final XKasperQueryCache kasperQueryCache = queryHandlerAnnotation.cache();
 
                 if (kasperQueryCache.enabled()) {
-                    final Cache<Serializable, QueryResponse<RESULT>> cache =
-                            cacheManager.<Serializable, QueryResponse<RESULT>>
+                    final Cache<Serializable, RESULT> cache =
+                            cacheManager.<Serializable, RESULT>
                              createCacheBuilder(queryClass.getName())
                             .setStoreByValue(false)
                             .setExpiry(CacheConfiguration.ExpiryType.MODIFIED,
