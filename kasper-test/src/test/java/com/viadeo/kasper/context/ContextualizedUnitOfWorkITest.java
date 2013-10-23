@@ -18,10 +18,10 @@ import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.ddd.impl.Repository;
+import com.viadeo.kasper.ddd.impl.ClientRepository;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.er.impl.AbstractRootConcept;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
@@ -78,7 +78,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 
             StaticChecker.verify(CurrentContext.value().get());
 
-            final IRepository<ContextTestAGR> repo = this.getRepository();
+            final ClientRepository<ContextTestAGR> repo = this.getRepository();
 
             try {
                 repo.load(new KasperTestId("42"), 0L);

@@ -225,7 +225,18 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	@Override
 	public void add(final AGR aggregate) {
 		this.axonRepository.add(aggregate);
-	}	
+	}
+
+    /**
+     * To be overriden by child classes if wanted
+     *
+     * @param id the aggregate id
+     * @return true if this aggregate exists
+     */
+    @Override
+    public boolean has(final KasperID id) {
+        throw new UnsupportedOperationException("has() operation not implemented");
+    }
 
 	// ========================================================================
 	
