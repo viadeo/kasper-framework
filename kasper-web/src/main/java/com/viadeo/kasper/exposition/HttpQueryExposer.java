@@ -26,7 +26,6 @@ import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.context.impl.DefaultKasperId;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -44,6 +43,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.beans.Introspector;
 import java.io.IOException;
 import java.util.Arrays;
@@ -53,7 +53,7 @@ import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
-import static javax.servlet.http.HttpServletResponse.*;
+import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
 public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
@@ -159,7 +159,7 @@ public class HttpQueryExposer extends HttpExposer {
     @Override
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
         if ( ! req.getContentType().startsWith("application/json")) {
-            sendError(SC_NOT_ACCEPTABLE, "Accepting only application/json; charset=utf-8", req, resp, null);
+            sendError(Response.Status.NOT_ACCEPTABLE.getStatusCode(), "Accepting only application/json; charset=utf-8", req, resp, null);
         } else {
             handleQuery(jsonBodyToQueryMap, req, resp);
         }
@@ -216,7 +216,7 @@ public class HttpQueryExposer extends HttpExposer {
 
         } catch (final Throwable t) {
             sendError(
-                    SC_INTERNAL_SERVER_ERROR,
+                    INTERNAL_SERVER_ERROR.getStatusCode(),
                     String.format("Could not handle query [%s] with parameters [%s]", req.getRequestURI(), req.getQueryString()),
                     req, resp, t);
 
@@ -245,7 +245,7 @@ public class HttpQueryExposer extends HttpExposer {
 
         if (null == queryClass) {
 
-            sendError(HttpServletResponse.SC_NOT_FOUND,
+            sendError(Response.Status.NOT_FOUND.getStatusCode(),
                       "No such query[" + queryName + "].",
                       req, resp, null);
 
@@ -258,7 +258,7 @@ public class HttpQueryExposer extends HttpExposer {
                 query = adapter.adapt(new QueryParser(queryMap));
 
             } catch (final Throwable t) {
-                sendError(SC_BAD_REQUEST, String.format(
+                sendError(Response.Status.BAD_REQUEST.getStatusCode(), String.format(
                         "Unable to parse Query [%s] with parameters [%s]", queryName,
                         req.getQueryString()), req, resp, t);
             }
@@ -292,7 +292,7 @@ public class HttpQueryExposer extends HttpExposer {
              * it is ok to eat all kind of exceptions as they occur at parsing
              * level so we know what approximately failed.
              */
-            sendError(SC_INTERNAL_SERVER_ERROR,
+            sendError(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                       String.format("ERROR Submiting query[%s] to Kasper platform.", queryName),
                       req, resp, e);
         }
@@ -312,12 +312,12 @@ public class HttpQueryExposer extends HttpExposer {
         final int status;
         if ( ! response.isOK()) {
             if (null == response.getReason()) {
-                status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                status = Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
             } else {
                 status = CoreReasonHttpCodes.toStatus(response.getReason().getCode());
             }
         } else {
-            status = HttpServletResponse.SC_OK;
+            status = Response.Status.OK.getStatusCode();
         }
 
         try {
@@ -329,7 +329,7 @@ public class HttpQueryExposer extends HttpExposer {
             QUERY_LOGGER.info("HTTP Response {} '{}' : {}", req.getMethod(), req.getRequestURI(), status);
 
         } catch (final Throwable t) {
-            sendError(SC_INTERNAL_SERVER_ERROR,
+            sendError(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                       String.format("ERROR sending Response [%s] for query [%s]", response.getClass().getSimpleName(),queryName),
                       req, resp, t);
         } finally {

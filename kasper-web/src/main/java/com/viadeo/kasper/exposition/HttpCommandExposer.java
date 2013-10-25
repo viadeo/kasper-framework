@@ -41,6 +41,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ConstraintViolation;
+import javax.ws.rs.core.Response;
 import java.beans.Introspector;
 import java.io.IOException;
 import java.util.*;
@@ -157,7 +158,7 @@ public class HttpCommandExposer extends HttpExposer {
         /* locate corresponding command class */
         final Class<? extends Command> commandClass = exposedCommands.get(commandName);
         if (null == commandClass) {
-            sendError(req, resp, HttpServletResponse.SC_NOT_FOUND,
+            sendError(req, resp, Response.Status.NOT_FOUND.getStatusCode(),
                       "Command[" + commandName + "] not found.");
             return;
         }
@@ -168,7 +169,7 @@ public class HttpCommandExposer extends HttpExposer {
         try {
 
             if (!req.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)) {
-                sendError(req, resp, HttpServletResponse.SC_UNSUPPORTED_MEDIA_TYPE,
+                sendError(req, resp, Response.Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode(),
                           "Accepting and producing only " + MediaType.APPLICATION_JSON_VALUE);
                 return;
             }
@@ -218,13 +219,13 @@ public class HttpCommandExposer extends HttpExposer {
 
             LOGGER.error("Error in command [" + commandClass.getName() + "]", e);
             final String errorMessage = (null == e.getMessage()) ? "Unknown" : e.getMessage();
-            sendError(req, resp, HttpServletResponse.SC_BAD_REQUEST, errorMessage);
+            sendError(req, resp, Response.Status.BAD_REQUEST.getStatusCode(), errorMessage);
 
         } catch (final Throwable th) {
             // we catch any other exception in order to still respond with json
             LOGGER.error("Error in command [" + commandClass.getName() + "]", th);
             final String errorMessage = (null == th.getMessage()) ? "Unknown" : th.getMessage();
-            sendError(req, resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, errorMessage);
+            sendError(req, resp, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(), errorMessage);
 
         } finally {
             if (null != parser) {
@@ -260,12 +261,12 @@ public class HttpCommandExposer extends HttpExposer {
         final int status;
         if ( ! response.isOK()) {
             if (null == response.getReason()) {
-                status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+                status = Response.Status.INTERNAL_SERVER_ERROR.getStatusCode();
             } else {
                 status = CoreReasonHttpCodes.toStatus(response.getReason().getCode());
             }
         } else {
-            status = HttpServletResponse.SC_OK;
+            status = Response.Status.OK.getStatusCode();
         }
 
         try {
@@ -295,7 +296,7 @@ public class HttpCommandExposer extends HttpExposer {
                                       final Class<? extends Command> commandClass, final CommandResponse response,
                                       final Exception e)
             throws IOException {
-         this.sendError(req, resp, HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
+         this.sendError(req, resp, Response.Status.INTERNAL_SERVER_ERROR.getStatusCode(),
                   String.format("Error outputting response to JSON for command [%s] and response [%s]error = %s",
                           commandClass.getSimpleName(), response, e)
          );
