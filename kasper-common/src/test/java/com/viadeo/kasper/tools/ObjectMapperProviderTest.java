@@ -71,7 +71,7 @@ public class ObjectMapperProviderTest {
     @Test
     public void queryResponseErrorRoundTrip() throws IOException {
         // Given
-        final QueryResponse expected = QueryResponse.of(new KasperReason("CODE", "aCode", "aMessage"));
+        final QueryResponse expected = QueryResponse.error(new KasperReason("CODE", "aCode", "aMessage"));
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(

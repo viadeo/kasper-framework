@@ -7,6 +7,7 @@
 package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.ImmutableList;
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -25,6 +26,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -88,6 +90,22 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 
         // Then
         assertEquals(Status.ERROR, response.getStatus());
+    }
+
+    @Test
+    public void testCommandResponseWithStatusCode() throws Exception {
+        // Given valid input
+        final CreateAccountCommand command = new CreateAccountCommand();
+        command.code = CoreReasonCode.CONFLICT.toString();
+        command.messages = ImmutableList.of("ignored");
+
+        // When
+        final CommandResponse response = client().send(command);
+
+        // Then
+        assertEquals(Status.ERROR, response.getStatus());
+        assertEquals(command.getCode(), response.getReason().getCode());
+        assertEquals(Response.Status.CONFLICT, response.asHttp().getHTTPStatus());
     }
 
     // ------------------------------------------------------------------------

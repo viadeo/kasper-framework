@@ -8,6 +8,7 @@ package com.viadeo.kasper.exposition;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
@@ -112,6 +113,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     }
 
     @XKasperQueryHandler(domain = AccountDomain.class)
+    @SuppressWarnings("unchecked")
     public static class SomeQueryHandler implements QueryHandler<SomeQuery, SomeResponse> {
         @Override
         public QueryResponse<SomeResponse> retrieve(final QueryMessage<SomeQuery> message) throws KasperQueryException {
@@ -124,7 +126,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
                         messages.add(q.getErrorCodes().get(i));
                 }
 
-                return QueryResponse.of(new KasperReason(q.aValue, messages));
+                return QueryResponse.error(new KasperReason(q.aValue, messages));
             }
 
             final SomeResponse response = new SomeResponse();
@@ -190,6 +192,24 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         assertFalse(actual.isOK());
         assertEquals(query.aValue, actual.getReason().getCode());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, actual.asHttp().getHTTPStatus());
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void testQueryHandlerHttpCode() {
+        // Given
+        final SomeQuery query = new SomeQuery();
+        query.doThrowSomeException = true;
+        query.aValue = CoreReasonCode.NOT_FOUND.toString();
+
+        // When
+        final QueryResponse<SomeResponse> actual = client().query(query, SomeResponse.class);
+
+        // Then
+        assertFalse(actual.isOK());
+        assertEquals(query.aValue, actual.getReason().getCode());
+        assertEquals(Response.Status.NOT_FOUND, actual.asHttp().getHTTPStatus());
     }
 
     // ------------------------------------------------------------------------

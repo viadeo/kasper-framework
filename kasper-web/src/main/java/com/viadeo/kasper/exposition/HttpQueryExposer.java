@@ -26,6 +26,7 @@ import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.context.impl.DefaultKasperId;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -310,7 +311,11 @@ public class HttpQueryExposer extends HttpExposer {
 
         final int status;
         if ( ! response.isOK()) {
-            status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            if (null == response.getReason()) {
+                status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            } else {
+                status = CoreReasonHttpCodes.toStatus(response.getReason().getCode());
+            }
         } else {
             status = HttpServletResponse.SC_OK;
         }

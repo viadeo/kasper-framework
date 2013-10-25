@@ -259,7 +259,11 @@ public class HttpCommandExposer extends HttpExposer {
 
         final int status;
         if ( ! response.isOK()) {
-            status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            if (null == response.getReason()) {
+                status = HttpServletResponse.SC_INTERNAL_SERVER_ERROR;
+            } else {
+                status = CoreReasonHttpCodes.toStatus(response.getReason().getCode());
+            }
         } else {
             status = HttpServletResponse.SC_OK;
         }

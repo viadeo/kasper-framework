@@ -27,13 +27,30 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class QueryResponse<RESULT extends QueryResult> implements Serializable, Immutable {
     private static final long serialVersionUID = -6543664128786160837L;
 
+    /**
+     * Accepted values for query response statuses
+     */
+    public static enum Status {
+        OK,         /** All is ok */
+        REFUSED,    /** Refused by some intermediate validation mechanisms */
+        ERROR       /** Just reason in command handling or domain business */
+    }
+
+    /**
+     * The current command status
+     */
+    private final Status status;
     private final RESULT result;
     private final KasperReason reason;
 
     // ------------------------------------------------------------------------
 
-    public static <R extends QueryResult> QueryResponse<R> of(final KasperReason reason) {
+    public static <R extends QueryResult> QueryResponse<R> error(final KasperReason reason) {
         return new QueryResponse<R>(checkNotNull(reason));
+    }
+
+    public static <R extends QueryResult> QueryResponse<R> refused(final KasperReason reason) {
+        return new QueryResponse<R>(Status.REFUSED, checkNotNull(reason));
     }
 
     public static <R extends QueryResult> QueryResponse<R> of(final R response) {
@@ -43,21 +60,34 @@ public class QueryResponse<RESULT extends QueryResult> implements Serializable, 
     // ------------------------------------------------------------------------
 
     public QueryResponse(final QueryResponse<RESULT> response) {
+        this.status = Status.OK;
         this.result = response.result;
         this.reason = response.reason;
     }
 
     public QueryResponse(final RESULT result) {
+        this.status = Status.OK;
         this.result = checkNotNull(result);
         this.reason = null;
     }
     
     public QueryResponse(final KasperReason reason) {
+        this.status= Status.ERROR;
+        this.result = null;
+        this.reason = checkNotNull(reason);
+    }
+
+    public QueryResponse(final Status status, final KasperReason reason) {
+        this.status = status;
         this.result = null;
         this.reason = checkNotNull(reason);
     }
 
     // ------------------------------------------------------------------------
+
+    public Status getStatus() {
+        return this.status;
+    }
 
     public KasperReason getReason() {
         return reason;

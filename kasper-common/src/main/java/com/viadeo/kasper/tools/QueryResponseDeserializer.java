@@ -52,13 +52,13 @@ public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
             }
             if (null != id) {
                 try {
-                    return QueryResponse.of(new KasperReason(UUID.fromString(id), globalCode, messages));
+                    return QueryResponse.error(new KasperReason(UUID.fromString(id), globalCode, messages));
                 } catch (final IllegalArgumentException e) {
                     LOGGER.warn("Error when deserializing reason id", e);
-                    return QueryResponse.of(new KasperReason(globalCode, messages));
+                    return QueryResponse.error(new KasperReason(globalCode, messages));
                 }
             } else {
-                return QueryResponse.of(new KasperReason(globalCode, messages));
+                return QueryResponse.error(new KasperReason(globalCode, messages));
             }
         } else {
             // not very efficient but will be fine for now
