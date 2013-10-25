@@ -216,4 +216,27 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
         return super.eventResolver(domainResolver);
     }
 
+    @Bean
+    @Override
+    public ResolverFactory resolverFactory(
+            final DomainResolver domainResolver,
+            final CommandResolver commandResolver,
+            final CommandHandlerResolver commandHandlerResolver,
+            final EventListenerResolver eventListenerResolver,
+            final QueryResolver queryResolver,
+            final QueryHandlerResolver queryHandlerResolver,
+            final RepositoryResolver repositoryResolver,
+            final EntityResolver entityResolver,
+            final ConceptResolver conceptResolver,
+            final RelationResolver relationResolver,
+            final EventResolver eventResolver
+    ) {
+        return super.resolverFactory(
+                domainResolver, commandResolver,
+                commandHandlerResolver, eventListenerResolver,
+                queryResolver, queryHandlerResolver,
+                repositoryResolver, entityResolver,
+                conceptResolver, relationResolver, eventResolver);
+    }
+
 }
