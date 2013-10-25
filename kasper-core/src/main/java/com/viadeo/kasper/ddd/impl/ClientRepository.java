@@ -27,6 +27,13 @@ public final class ClientRepository<AGR extends AggregateRoot> {
 
     // -----
 
+    @SuppressWarnings("unchecked")
+    public <I extends IRepository<AGR>> I original() {
+        return (I) this.repository;
+    }
+
+    // -----
+
     public Optional<AGR> load(final KasperID id, final Long expectedVersion) {
         try {
             return Optional.of((AGR) this.repository.load(id, expectedVersion));
