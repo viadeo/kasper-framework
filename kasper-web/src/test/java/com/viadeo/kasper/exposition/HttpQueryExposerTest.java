@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.KasperClientBuilder;
+import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
@@ -168,7 +169,8 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         query.intArray = new int[] { 1, 2, 3 };
 
         // When
-        final QueryResponse<SomeResponse> response = client().query(query, SomeResponse.class);
+        final QueryResponse<SomeResponse> response = client().query(
+                DefaultContextBuilder.get(), query, SomeResponse.class);
 
         // Then
         assertEquals(query.aValue, response.getResult().query.aValue);
@@ -186,7 +188,8 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         query.aValue = "aaa";
 
         // When
-        final QueryResponse<SomeResponse> actual = client().query(query, SomeResponse.class);
+        final QueryResponse<SomeResponse> actual = client().query(
+                DefaultContextBuilder.get(), query, SomeResponse.class);
 
         // Then
         assertFalse(actual.isOK());
@@ -204,7 +207,8 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         query.aValue = CoreReasonCode.NOT_FOUND.toString();
 
         // When
-        final QueryResponse<SomeResponse> actual = client().query(query, SomeResponse.class);
+        final QueryResponse<SomeResponse> actual = client().query(
+                DefaultContextBuilder.get(), query, SomeResponse.class);
 
         // Then
         assertFalse(actual.isOK());
@@ -220,9 +224,11 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         final SomeCollectionQuery query = new SomeCollectionQuery();
 
         // When
-        final QueryResponse<SomeCollectionResponse> response = client().query(query, SomeCollectionResponse.class);
+        final QueryResponse<SomeCollectionResponse> response = client().query(
+                DefaultContextBuilder.get(), query, SomeCollectionResponse.class);
 
         // Then
+        assertTrue(response.isOK());
         assertEquals(1, response.getResult().getCount());
     }
 
@@ -237,7 +243,8 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         query.setErrorCodes(Arrays.asList("a", "b"));
 
         // When
-        final QueryResponse<SomeCollectionResponse> actual = client().query(query, SomeCollectionResponse.class);
+        final QueryResponse<SomeCollectionResponse> actual = client().query(
+                DefaultContextBuilder.get(), query, SomeCollectionResponse.class);
        
         // Then
         assertFalse(actual.isOK());

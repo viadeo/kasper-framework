@@ -9,6 +9,7 @@ package com.viadeo.kasper.exposition;
 import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
@@ -53,7 +54,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         final Command unknownCommand = new Command() {};
 
         // When
-        final CommandResponse response = client().send(unknownCommand);
+        final CommandResponse response = client().send(DefaultContextBuilder.get(), unknownCommand);
 
         // Then
         assertEquals(Status.ERROR, response.getStatus());
@@ -69,7 +70,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.name = "foo bar";
 
         // When
-        final CommandResponse response = client().send(command);
+        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
 
         // Then
         assertEquals(Status.OK, response.getStatus());
@@ -86,7 +87,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.throwException = true;
 
         // When
-        final CommandResponse response = client().send(command);
+        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
 
         // Then
         assertEquals(Status.ERROR, response.getStatus());
@@ -100,7 +101,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.messages = ImmutableList.of("ignored");
 
         // When
-        final CommandResponse response = client().send(command);
+        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
 
         // Then
         assertEquals(Status.ERROR, response.getStatus());
@@ -118,7 +119,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.messages = ImmutableList.of("a", "aa", "aaa");
 
         // When
-        final CommandResponse response = client().send(command);
+        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
 
         // Then
         assertEquals(Status.ERROR, response.getStatus());
@@ -136,7 +137,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.innerObject = new InnerObject();
 
         // When
-        final CommandResponse response = client().send(command);
+        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
 
         // Then
         assertFalse(response.isOK());

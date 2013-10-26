@@ -18,6 +18,7 @@ import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
 import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
@@ -205,7 +206,8 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When
-        final QueryResponse<MemberResult> response = client.query(query, MemberResult.class);
+        final QueryResponse<MemberResult> response = client.query(
+                DefaultContextBuilder.get(), query, MemberResult.class);
 
         // Then
         checkRoundTrip(query, response);
@@ -218,7 +220,8 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When 
-        final QueryResponse<MemberResult> response = client.queryAsync(query, MemberResult.class).get();
+        final QueryResponse<MemberResult> response = client.queryAsync(
+                DefaultContextBuilder.get(), query, MemberResult.class).get();
 
         // Then
         checkRoundTrip(query, response);
@@ -241,7 +244,7 @@ public class KasperClientQueryTest extends JerseyTest {
         final ArgumentCaptor<QueryResponse> response = ArgumentCaptor.forClass(QueryResponse.class);
 
         // When
-        client.queryAsync(query, MemberResult.class, callback);
+        client.queryAsync(DefaultContextBuilder.get(), query, MemberResult.class, callback);
 
         // Then
         latch.await(5, TimeUnit.SECONDS);
@@ -258,7 +261,8 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When
-        final QueryResponse<MemberResult> response = client.query(query, MemberResult.class);
+        final QueryResponse<MemberResult> response = client.query(
+                DefaultContextBuilder.get(), query, MemberResult.class);
 
         // Then
         checkRoundTrip(query, response);
@@ -277,7 +281,8 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When
-        final QueryResponse<MemberResult> response = client.query(query, MemberResult.class);
+        final QueryResponse<MemberResult> response = client.query(
+                DefaultContextBuilder.get(), query, MemberResult.class);
 
         // Then
         Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.toString(), response.getReason().getCode());
@@ -293,7 +298,8 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When
-        final QueryResponse<MemberResult> response = client.queryAsync(query, MemberResult.class).get();
+        final QueryResponse<MemberResult> response = client.queryAsync(
+                DefaultContextBuilder.get(), query, MemberResult.class).get();
 
         // Then
         Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.toString(), response.getReason().getCode());

@@ -21,9 +21,6 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.AbstractContext;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
-import com.viadeo.kasper.context.impl.DefaultKasperId;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.query.Query;
@@ -116,22 +113,27 @@ public class HttpQueryExposer extends HttpExposer {
     private final transient QueryFactory queryAdapterFactory;
     private final ObjectMapper mapper;
     private final transient QueryGateway queryGateway;
+    private final transient HttpContextDeserializer contextDeserializer;
 
     // ------------------------------------------------------------------------
 
     public HttpQueryExposer(final QueryGateway queryGateway,
                             final QueryHandlersLocator queryHandlersLocator,
                             final QueryFactory queryAdapterFactory,
+                            final HttpContextDeserializer contextDeserializer,
                             final ObjectMapper mapper) {
 
         this.queryGateway = queryGateway;
         this.queryHandlersLocator = queryHandlersLocator;
         this.queryAdapterFactory = queryAdapterFactory;
+        this.contextDeserializer = contextDeserializer;
         this.mapper = mapper;
     }
 
     public HttpQueryExposer(final QueryGateway queryGateway, final QueryHandlersLocator queryLocator) {
-        this(queryGateway, queryLocator, new QueryFactoryBuilder().create(), ObjectMapperProvider.INSTANCE.mapper());
+        this(queryGateway, queryLocator, new QueryFactoryBuilder().create(),
+                new HttpContextDeserializer(),
+                ObjectMapperProvider.INSTANCE.mapper());
     }
 
     // ------------------------------------------------------------------------
@@ -276,12 +278,10 @@ public class HttpQueryExposer extends HttpExposer {
 
         QueryResponse response = null;
 
-         /* TODO: handle context from request */
-        final Context context = new DefaultContextBuilder().build();
-        if (AbstractContext.class.isAssignableFrom(context.getClass())) {
-            ((AbstractContext) context).setKasperCorrelationId(new DefaultKasperId(requestCorrelationUUID));
-        }
+        /* extract context from request */
+        final Context context = contextDeserializer.deserialize(req, requestCorrelationUUID);
 
+        /* send the query to the platform */
         try {
 
             response = queryGateway.retrieve(query, context);

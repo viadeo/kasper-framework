@@ -21,9 +21,6 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.AbstractContext;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
-import com.viadeo.kasper.context.impl.DefaultKasperId;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -63,18 +60,23 @@ public class HttpCommandExposer extends HttpExposer {
     private final transient DomainLocator domainLocator;
     private final ObjectMapper mapper;
     private final transient CommandGateway commandGateway;
+    private final transient HttpContextDeserializer contextDeserializer;
 
     // ------------------------------------------------------------------------
 
     public HttpCommandExposer(final CommandGateway commandGateway, final DomainLocator domainLocator) {
-        this(commandGateway, domainLocator, ObjectMapperProvider.INSTANCE.mapper());
+        this(commandGateway, domainLocator,
+                new HttpContextDeserializer(),
+                ObjectMapperProvider.INSTANCE.mapper());
     }
     
     public HttpCommandExposer(final CommandGateway commandGateway,
                               final DomainLocator domainLocator,
+                              final HttpContextDeserializer contextDeserializer,
                               final ObjectMapper mapper) {
         this.commandGateway = commandGateway;
         this.domainLocator = checkNotNull(domainLocator);
+        this.contextDeserializer = contextDeserializer;
         this.mapper = mapper;
     }
 
@@ -142,9 +144,9 @@ public class HttpCommandExposer extends HttpExposer {
         final Timer.Context classTimer = METRICLASSTIMER.time();
 
         /* Create a request correlation id */
-        final UUID kasperCorrelationUUID = UUID.randomUUID();
-        MDC.put("correlationId", kasperCorrelationUUID.toString());
-        resp.addHeader("UUID", kasperCorrelationUUID.toString());
+        final UUID requestCorrelationUUID = UUID.randomUUID();
+        MDC.put("correlationId", requestCorrelationUUID.toString());
+        resp.addHeader("UUID", requestCorrelationUUID.toString());
 
         /* Log starting request */
         REQUEST_LOGGER.info("Processing HTTP Command '{}' '{}'", req.getMethod(), getFullRequestURI(req));
@@ -180,14 +182,8 @@ public class HttpCommandExposer extends HttpExposer {
             parser = reader.getFactory().createJsonParser(req.getInputStream());
             final Command command = reader.readValue(parser, commandClass);
 
-            // FIXME 1 Use context from request
-            // FIXME 2 Does it make sense to have async commands here? In any
-            // FIXME 2 case the user is expecting a response success or failure
-            final Context context = new DefaultContextBuilder().build();
-
-            if (AbstractContext.class.isAssignableFrom(context.getClass())) {
-                ((AbstractContext) context).setKasperCorrelationId(new DefaultKasperId(kasperCorrelationUUID));
-            }
+            /* extract context from request */
+            final Context context = contextDeserializer.deserialize(req, requestCorrelationUUID);
 
             /* send now that command to the platform and wait for the result */
             final Timer.Context commandHandleTime = METRICS.timer(name(command.getClass(), "requests-handle-time")).time();

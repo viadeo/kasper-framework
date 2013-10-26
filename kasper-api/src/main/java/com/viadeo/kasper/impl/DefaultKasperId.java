@@ -4,9 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.context.impl;
-
-import com.viadeo.kasper.impl.AbstractKasperID;
+package com.viadeo.kasper.impl;
 
 import java.util.UUID;
 

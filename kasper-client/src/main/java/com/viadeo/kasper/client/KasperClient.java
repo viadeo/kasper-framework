@@ -18,6 +18,7 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.http.HTTPCommandResponse;
@@ -125,6 +126,9 @@ public class KasperClient {
     @VisibleForTesting
     protected final QueryFactory queryFactory;
 
+    @VisibleForTesting
+    protected final ContextSerializer contextSerializer;
+
     // ------------------------------------------------------------------------
 
     public static final class Flags {
@@ -166,6 +170,7 @@ public class KasperClient {
         this.commandBaseLocation = DEFAULT_KASPER_CLIENT.commandBaseLocation;
         this.queryBaseLocation = DEFAULT_KASPER_CLIENT.queryBaseLocation;
         this.queryFactory = DEFAULT_KASPER_CLIENT.queryFactory;
+        this.contextSerializer = DEFAULT_KASPER_CLIENT.contextSerializer;
         this.flags = Flags.defaults();
     }
 
@@ -173,6 +178,7 @@ public class KasperClient {
 
     KasperClient(final QueryFactory queryFactory, final ObjectMapper mapper,
                  final URL commandBaseUrl, final URL queryBaseUrl,
+                 final ContextSerializer contextSerializer,
                  final Flags flags) {
 
         final DefaultClientConfig cfg = new DefaultClientConfig();
@@ -182,30 +188,35 @@ public class KasperClient {
         this.commandBaseLocation = commandBaseUrl;
         this.queryBaseLocation = queryBaseUrl;
         this.queryFactory = queryFactory;
+        this.contextSerializer = contextSerializer;
         this.flags = flags;
     }
 
     KasperClient(final QueryFactory queryFactory, final ObjectMapper mapper,
-                 final URL commandBaseUrl, final URL queryBaseUrl) {
-        this(queryFactory, mapper, commandBaseUrl, queryBaseUrl, Flags.defaults());
+                 final URL commandBaseUrl, final URL queryBaseUrl,
+                 final ContextSerializer contextSerializer) {
+        this(queryFactory, mapper, commandBaseUrl, queryBaseUrl, contextSerializer, Flags.defaults());
     }
 
     // --
 
     KasperClient(final QueryFactory queryFactory, final Client client,
                  final URL commandBaseUrl, final URL queryBaseUrl,
+                 final ContextSerializer contextSerializer,
                  final Flags flags) {
 
         this.client = client;
         this.commandBaseLocation = commandBaseUrl;
         this.queryBaseLocation = queryBaseUrl;
         this.queryFactory = queryFactory;
+        this.contextSerializer = contextSerializer;
         this.flags = flags;
     }
 
      KasperClient(final QueryFactory queryFactory, final Client client,
-                  final URL commandBaseUrl, final URL queryBaseUrl) {
-        this(queryFactory, client, commandBaseUrl, queryBaseUrl, Flags.defaults());
+                  final URL commandBaseUrl, final URL queryBaseUrl,
+                  final ContextSerializer contextSerializer) {
+        this(queryFactory, client, commandBaseUrl, queryBaseUrl, contextSerializer, Flags.defaults());
      }
 
     // ------------------------------------------------------------------------
@@ -224,14 +235,17 @@ public class KasperClient {
      *             KasperClientException if something went wrong.
      * @see CommandResponse
      */
-    public CommandResponse send(final Command command) {
+    public CommandResponse send(final Context context, final Command command) {
         checkNotNull(command);
 
-        final ClientResponse response = client
+        final WebResource.Builder builder = client
                 .resource(resolveCommandPath(command.getClass()))
                 .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON)
-                .put(ClientResponse.class, command);
+                .type(MediaType.APPLICATION_JSON);
+
+        contextSerializer.serialize(context, builder);
+
+        final ClientResponse response = builder.put(ClientResponse.class, command);
 
         return handleResponse(response);
     }
@@ -249,14 +263,17 @@ public class KasperClient {
      *             if something went wrong.
      * @see CommandResponse
      */
-    public Future<? extends CommandResponse> sendAsync(final Command command) {
+    public Future<? extends CommandResponse> sendAsync(final Context context, final Command command) {
         checkNotNull(command);
 
-        final Future<ClientResponse> futureResponse = client
+        final AsyncWebResource.Builder builder = client
                 .asyncResource(resolveCommandPath(command.getClass()))
                 .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON)
-                .put(ClientResponse.class, command);
+                .type(MediaType.APPLICATION_JSON);
+
+        contextSerializer.serialize(context, builder);
+
+        final Future<ClientResponse> futureResponse = builder.put(ClientResponse.class, command);
 
         // we need to decorate the Future returned by jersey in order to handle
         // exceptions and populate according to it the command response
@@ -277,13 +294,16 @@ public class KasperClient {
      *             if something went wrong.
      * @see CommandResponse
      */
-    public void sendAsync(final Command command, final Callback<CommandResponse> callback) {
+    public void sendAsync(final Context context, final Command command, final Callback<CommandResponse> callback) {
         checkNotNull(command);
 
-        client.asyncResource(resolveCommandPath(command.getClass()))
+        final AsyncWebResource.Builder builder = client.asyncResource(resolveCommandPath(command.getClass()))
                 .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON)
-                .put(new TypeListener<ClientResponse>(ClientResponse.class) {
+                .type(MediaType.APPLICATION_JSON);
+
+        contextSerializer.serialize(context, builder);
+
+        builder.put(new TypeListener<ClientResponse>(ClientResponse.class) {
                     @Override
                     public void onComplete(final Future<ClientResponse> f)
                             throws InterruptedException {
@@ -330,8 +350,8 @@ public class KasperClient {
      * @throws KasperException
      *             if something went wrong.
      */
-    public <P extends QueryResult> QueryResponse<P> query(final Query query, final Class<P> mapTo) {
-        return query(query, TypeToken.of(mapTo));
+    public <P extends QueryResult> QueryResponse<P> query(final Context context, final Query query, final Class<P> mapTo) {
+        return query(context, query, TypeToken.of(mapTo));
     }
 
     /**
@@ -359,21 +379,23 @@ public class KasperClient {
      * @throws KasperException
      *             if something went wrong.
      */
-    public <P extends QueryResult> QueryResponse<P> query(final Query query, final TypeToken<P> mapTo) {
+    public <P extends QueryResult> QueryResponse<P> query(final Context context, final Query query, final TypeToken<P> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
-        final WebResource.Builder res = client
+        final WebResource.Builder builder = client
                 .resource(resolveQueryPath(query.getClass()))
                 .queryParams(prepareQueryParams(query))
                 .accept(MediaType.APPLICATION_JSON)
                 .type(MediaType.APPLICATION_JSON);
 
+        contextSerializer.serialize(context, builder);
+
         final ClientResponse response;
         if (flags.usePostForQueries()) {
-            response = res.post(ClientResponse.class, queryToSetMap(query));
+            response = builder.post(ClientResponse.class, queryToSetMap(query));
         } else {
-            response = res.get(ClientResponse.class);
+            response = builder.get(ClientResponse.class);
         }
 
         return handleQueryResponse(response, mapTo);
@@ -381,33 +403,37 @@ public class KasperClient {
 
     // --
 
-    public <P extends QueryResult> Future<QueryResponse<P>> queryAsync(final Query query, final Class<P> mapTo) {
-        return queryAsync(query, TypeToken.of(mapTo));
+    public <P extends QueryResult> Future<QueryResponse<P>> queryAsync(
+            final Context context, final Query query, final Class<P> mapTo) {
+        return queryAsync(context, query, TypeToken.of(mapTo));
     }
 
     /**
      * FIXME should we also handle async in the platform side ?? Is it really
      * useful?
      * 
-     * @see KasperClient#query(com.viadeo.kasper.cqrs.query.Query, Class)
-     * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command)
+     * @see KasperClient#query(Context, com.viadeo.kasper.cqrs.query.Query, Class)
+     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command)
      */
-    public <P extends QueryResult> Future<QueryResponse<P>> queryAsync(final Query query, final TypeToken<P> mapTo) {
+    public <P extends QueryResult> Future<QueryResponse<P>> queryAsync(
+            final Context context, final Query query, final TypeToken<P> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
-        final AsyncWebResource.Builder res = client
+        final AsyncWebResource.Builder builder = client
                 .asyncResource(resolveQueryPath(query.getClass()))
                 .queryParams(prepareQueryParams(query))
                 .accept(MediaType.APPLICATION_JSON)
                 .type(MediaType.APPLICATION_JSON);
 
+        contextSerializer.serialize(context, builder);
+
         final Future<ClientResponse> futureResponse;
 
         if (flags.usePostForQueries()) {
-            futureResponse = res.post(ClientResponse.class, queryToSetMap(query));
+            futureResponse = builder.post(ClientResponse.class, queryToSetMap(query));
         } else {
-            futureResponse = res.get(ClientResponse.class);
+            futureResponse = builder.get(ClientResponse.class);
         }
 
         return new QueryResponseFuture<P>(this, futureResponse, mapTo);
@@ -416,36 +442,37 @@ public class KasperClient {
     // --
 
     /**
-     * @see KasperClient#query(com.viadeo.kasper.cqrs.query.Query, Class)
-     * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command,
-     *      Callback)
+     * @see KasperClient#query(Context, com.viadeo.kasper.cqrs.query.Query, Class)
+     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command, Callback)
      */
-    public <P extends QueryResult> void queryAsync(final Query query, final Class<P> mapTo,
-                                                    final Callback<QueryResponse<P>> callback) {
-        queryAsync(query, TypeToken.of(mapTo), callback);
+    public <P extends QueryResult> void queryAsync(final Context context, final Query query, final Class<P> mapTo,
+                                                   final Callback<QueryResponse<P>> callback) {
+        queryAsync(context, query, TypeToken.of(mapTo), callback);
     }
 
     /**
-     * @see KasperClient#query(com.viadeo.kasper.cqrs.query.Query, Class)
-     * @see KasperClient#sendAsync(com.viadeo.kasper.cqrs.command.Command,
+     * @see KasperClient#query(Context, com.viadeo.kasper.cqrs.query.Query, Class)
+     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command,
      *      Callback)
      */
-    public <P extends QueryResult> void queryAsync(final Query query, final TypeToken<P> mapTo,
-                                                    final Callback<QueryResponse<P>> callback) {
+    public <P extends QueryResult> void queryAsync(final Context context, final Query query, final TypeToken<P> mapTo,
+                                                   final Callback<QueryResponse<P>> callback) {
         checkNotNull(query);
         checkNotNull(mapTo);
 
-        final AsyncWebResource.Builder res = client.asyncResource(resolveQueryPath(query.getClass()))
+        final AsyncWebResource.Builder builder = client.asyncResource(resolveQueryPath(query.getClass()))
                 .queryParams(prepareQueryParams(query))
                 .accept(MediaType.APPLICATION_JSON)
                 .type(MediaType.APPLICATION_JSON);
 
+        contextSerializer.serialize(context, builder);
+
         final TypeListener<ClientResponse> typeListener = createTypeListener(query, mapTo, callback);
 
         if (flags.usePostForQueries()) {
-            res.post(typeListener, queryToSetMap(query));
+            builder.post(typeListener, queryToSetMap(query));
         } else {
-            res.get(typeListener);
+            builder.get(typeListener);
         }
     }
 
