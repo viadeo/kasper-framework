@@ -246,3 +246,16 @@ For query & command errors some codes have been predefined, but users a free to 
 | INTERNAL_COMPONENT_ERROR
 | INVALID_ID
 
+Context headers
+---------------
+
+The following HTTP headers can be set to set the queries and commands context :
+
+* X-KASPER-SESSION-CID (UUID)
+* X-KASPER-FUNNEL-CID (UUID)
+* X-KASPER-REQUEST-CID (UUID)
+* X-KASPER-UID (String)
+* X-KASPER-LANG (String - ISO 639)
+* X-KASPER-COUNTRY (String - ISO 3166)
+* X-KASPER-SECURITY-TOKEN (String)
+

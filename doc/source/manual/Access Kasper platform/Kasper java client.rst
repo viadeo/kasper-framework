@@ -30,8 +30,10 @@ KasperClient is thread safe and should be reused for optimal performances.
 .. code-block:: java
    :linenos:
 
+   final Context context = ...
    final KasperClient client = new KasperClient();
-   final QueryResponse<SuperCoolResponse> response = client.query(new SuperCoolQuery("what's up?"), SuperCoolResponse.class);
+   final QueryResponse<SuperCoolResponse> response =
+                client.query(context, new SuperCoolQuery("what's up?"), SuperCoolResponse.class);
    if (response.isError()) {
 	KasperReason error = response.getReason();
         // do something using the error code or the messages list
@@ -39,8 +41,6 @@ KasperClient is thread safe and should be reused for optimal performances.
      // if no error occured you can access the result
      SuperCoolResponse result = response.get();
    }
-
-Hard to make it shorter! :)
 
 If an error occurred during query processing on client side a **KasperQueryException** will be raised, if something goes wrong on server side then a QueryResponse with an error is returned.
 
@@ -63,7 +63,7 @@ If an error occurred during query processing on client side a **KasperQueryExcep
 .. code-block:: java
    :linenos:
 
-   final CommandResponse response = client.send(new ICommandYouTo("Enjoy Coding!"));
+   final CommandResponse response = client.send(context, new ICommandYouTo("Enjoy Coding!"));
    if (response.isError()) {
       // do something useful with response.getError()
    }
@@ -101,7 +101,7 @@ Kasper client provides two ways of doing asynchronous operations, using Futures 
    
    /* or using a future */
    
-   final Future<ICommandResponse> futureCommandResponse = client.sendAsync(someCommand);
+   final Future<ICommandResponse> futureCommandResponse = client.sendAsync(context, someCommand);
    
    // do some other work while the command is being processed
    ...
