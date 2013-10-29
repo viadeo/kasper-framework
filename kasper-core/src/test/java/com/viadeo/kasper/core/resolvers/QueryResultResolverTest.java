@@ -8,9 +8,9 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
-import com.viadeo.kasper.cqrs.query.QueryAnswer;
-import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
+import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
 
@@ -20,48 +20,48 @@ import static org.mockito.Mockito.*;
 
 import java.util.Collections;
 
-public class QueryAnswerResolverTest {
+public class QueryResultResolverTest {
 
     @XKasperUnregistered
     private static final class TestDomain implements Domain {}
 
     @XKasperUnregistered
-    private static final class TestQueryAnswer implements QueryAnswer { }
+    private static final class TestQueryResult implements QueryResult { }
 
     // ------------------------------------------------------------------------
 
     @Test
     public void testGetDomain() {
         // Given
-        final QueryAnswerResolver resolver = new QueryAnswerResolver();
+        final QueryResultResolver resolver = new QueryResultResolver();
         final DomainResolver domainResolver = mock(DomainResolver.class);
-        final QueryServiceResolver queryServiceResolver = mock(QueryServiceResolver.class);
-        final QueryServicesLocator queryServicesLocator = mock(QueryServicesLocator.class);
-        final QueryService queryService = mock(QueryService.class);
+        final QueryHandlerResolver queryHandlerResolver = mock(QueryHandlerResolver.class);
+        final QueryHandlersLocator queryHandlersLocator = mock(QueryHandlersLocator.class);
+        final QueryHandler queryHandler = mock(QueryHandler.class);
 
-        resolver.setQueryServiceResolver(queryServiceResolver);
-        resolver.setQueryServicesLocator(queryServicesLocator);
+        resolver.setQueryHandlerResolver(queryHandlerResolver);
+        resolver.setQueryHandlersLocator(queryHandlersLocator);
         resolver.setDomainResolver(domainResolver);
 
-        when( queryServicesLocator.getServicesFromQueryAnswerClass(TestQueryAnswer.class) )
-                .thenReturn(Collections.singletonList(queryService) );
+        when( queryHandlersLocator.getHandlersFromQueryResultClass(TestQueryResult.class) )
+                .thenReturn(Collections.singletonList(queryHandler) );
 
-        when( queryServiceResolver.getDomainClass(queryService.getClass()) )
+        when( queryHandlerResolver.getDomainClass(queryHandler.getClass()) )
                 .thenReturn(Optional.<Class<? extends Domain>>of(TestDomain.class));
 
         // When
         final Optional<Class<? extends Domain>> domain =
-                resolver.getDomainClass(TestQueryAnswer.class);
+                resolver.getDomainClass(TestQueryResult.class);
 
         // Then
         assertTrue(domain.isPresent());
         assertEquals(TestDomain.class, domain.get());
 
-        verify(queryServicesLocator, times(1)).getServicesFromQueryAnswerClass(TestQueryAnswer.class);
-        verifyNoMoreInteractions(queryServicesLocator);
+        verify(queryHandlersLocator, times(1)).getHandlersFromQueryResultClass(TestQueryResult.class);
+        verifyNoMoreInteractions(queryHandlersLocator);
 
-        verify(queryServiceResolver, times(1)).getDomainClass(queryService.getClass());
-        verifyNoMoreInteractions(queryServiceResolver);
+        verify(queryHandlerResolver, times(1)).getDomainClass(queryHandler.getClass());
+        verifyNoMoreInteractions(queryHandlerResolver);
     }
 
 }

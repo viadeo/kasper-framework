@@ -64,9 +64,9 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     private final Map<Class<? extends Query>, QueryHandler> handlerQueryClasses = newHashMap();
 
     /**
-     * Registered query answer classes and associated service instances
+     * Registered query answer classes and associated handler instances
      */
-    private final Map<Class<? extends QueryAnswer>, Collection<QueryService>> serviceQueryAnswerClasses = newHashMap();
+    private final Map<Class<? extends QueryResult>, Collection<QueryHandler>> handlerQueryResultClasses = newHashMap();
     
     /**
      * Registered handlers names and associated handler instances
@@ -121,16 +121,16 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
         if (this.handlerQueryClasses.containsKey(queryClass)) {
             throw new KasperQueryException("An handler for the same query class is already registered : " + queryClass);
         }
-        this.serviceQueryClasses.put(queryClass, service);
+        this.handlerQueryClasses.put(queryClass, handler);
 
         @SuppressWarnings("unchecked") // Safe
-        final Class<? extends QueryAnswer> queryAnswerClass = queryServiceResolver.getQueryAnswerClass(serviceClass);
-        Collection<QueryService> qaClasses = this.serviceQueryAnswerClasses.get(queryAnswerClass);
+        final Class<? extends QueryResult> queryResultClass = queryHandlerResolver.getQueryResultClass(handlerClass);
+        Collection<QueryHandler> qaClasses = this.handlerQueryResultClasses.get(queryResultClass);
         if (qaClasses == null) {
             qaClasses = new ArrayList<>();
-            this.serviceQueryAnswerClasses.put(queryAnswerClass, qaClasses);
+            this.handlerQueryResultClasses.put(queryResultClass, qaClasses);
         }
-        qaClasses.add(service);
+        qaClasses.add(handler);
 
         if (this.handlerNames.containsKey(name)) {
             throw new KasperQueryException("An handler with the same name is already registered : " + name);
@@ -225,12 +225,12 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
     @Override
     @SuppressWarnings("rawtypes")
-    public Collection<QueryService> getServicesFromQueryAnswerClass(final Class<? extends QueryAnswer> queryAnswerClass) {
-        final Collection<QueryService> services = this.serviceQueryAnswerClasses.get(queryAnswerClass);
-        if (services == null) {
+    public Collection<QueryHandler> getHandlersFromQueryResultClass(final Class<? extends QueryResult> queryResultClass) {
+        final Collection<QueryHandler> handlers = this.handlerQueryResultClasses.get(queryResultClass);
+        if (handlers == null) {
             return Collections.emptyList();
         }
-        return services;
+        return handlers;
     }
 
     @Override

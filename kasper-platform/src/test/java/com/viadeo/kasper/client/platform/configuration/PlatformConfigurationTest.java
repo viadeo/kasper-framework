@@ -66,8 +66,8 @@ public class PlatformConfigurationTest {
         final QueryResolver queryResolver =
                 this.testCachedComponent(pf, "queryResolver", domainResolver, queryHandlerResolver, queryHandlersLocator);
 
-        final QueryAnswerResolver queryAnswerResolver =
-                this.testCachedComponent(pf, "queryAnswerResolver", domainResolver, queryServiceResolver, queryServicesLocator);
+        final QueryResultResolver queryResultResolver =
+                this.testCachedComponent(pf, "queryResultResolver", domainResolver, queryHandlerResolver, queryHandlersLocator);
         
         final ConceptResolver conceptResolver =
                 this.testCachedComponent(pf, "conceptResolver", domainResolver);
@@ -93,7 +93,7 @@ public class PlatformConfigurationTest {
         resolverFactory.setCommandHandlerResolver(commandHandlerResolver);
         resolverFactory.setEventListenerResolver(eventListenerResolver);
         resolverFactory.setQueryResolver(queryResolver);
-        resolverFactory.setQueryAnswerResolver(queryAnswerResolver);
+        resolverFactory.setQueryResultResolver(queryResultResolver);
         resolverFactory.setQueryHandlerResolver(queryHandlerResolver);
         resolverFactory.setRepositoryResolver(repositoryResolver);
         resolverFactory.setEntityResolver(entityResolver);

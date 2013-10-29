@@ -53,9 +53,6 @@ public final class DocumentedQueryHandler extends DocumentedDomainNode {
 		final Class<? extends QueryResult> queryResultClass =
                 resolver.getQueryResultClass(queryHandlerClazz);
         this.queryResultName = queryResultClass.getSimpleName();
-
-        this.getKasperLibrary().registerQueryServiceForQuery(this, this.queryName);
-        this.getKasperLibrary().registerQueryServiceForQueryAnswer(this, this.queryResultName);
 	}
 
 	// ------------------------------------------------------------------------

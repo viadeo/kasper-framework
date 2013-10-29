@@ -103,24 +103,14 @@ public class KasperLibrary {
 	private final Map<String, List<DocumentedListener>> eventListeners;
 
     /**
-     * Stores all query handlers by query name
+     * Stores all query services by query name
      */
     private final Map<String, DocumentedQueryHandler> queryHandlers;
 
     /**
-     *  Stores all query handlers by queryResult name
+     *  Stores all query services by queryResult name
      */
     private final Map<String, List<DocumentedQueryHandler>> queryResultHandlers;
-	
-    /**
-     * Stores all query services by query name
-     */
-    private final Map<String, DocumentedQueryService> queryServices;
-
-    /**
-     *  Stores all query services by queryAnswer name
-     */
-    private final Map<String, List<DocumentedQueryService>> queryAnswerServices;
 	
     /**
 	 * Static mapping between string component type names and associated classes
@@ -140,11 +130,9 @@ public class KasperLibrary {
 		this.aggregateComponents = Maps.newHashMap();
 		this.commandHandlers = Maps.newHashMap();
 		this.eventListeners = Maps.newHashMap();
-		this.queryServices = Maps.newHashMap();
-		this.queryAnswerServices = Maps.newHashMap();
-		
-        this.queryHandlers = Maps.newHashMap();
-        this.queryResultHandlers=Maps.newHashMap();
+		this.queryHandlers = Maps.newHashMap();
+
+        this.queryResultHandlers = Maps.newHashMap();
 		
 		this.domainEntities = Maps.newHashMap();
 		this.commandEntities = Maps.newHashMap();
@@ -163,7 +151,7 @@ public class KasperLibrary {
 		this.simpleTypes.put(DocumentedListener.TYPE_NAME, DocumentedListener.class);
 		this.simpleTypes.put(DocumentedHandler.TYPE_NAME, DocumentedHandler.class);
 		this.simpleTypes.put(DocumentedQuery.TYPE_NAME, DocumentedQuery.class);
-		this.simpleTypes.put(DocumentedQueryAnswer.TYPE_NAME, DocumentedQueryAnswer.class);
+		this.simpleTypes.put(DocumentedQueryResult.TYPE_NAME, DocumentedQueryResult.class);
 		this.simpleTypes.put(DocumentedQueryHandler.TYPE_NAME, DocumentedQueryHandler.class);
 		
 		this.pluralTypes = Maps.newHashMap();
@@ -178,7 +166,7 @@ public class KasperLibrary {
 		this.pluralTypes.put(DocumentedListener.PLURAL_TYPE_NAME, DocumentedListener.class);
 		this.pluralTypes.put(DocumentedHandler.PLURAL_TYPE_NAME, DocumentedHandler.class);
 		this.pluralTypes.put(DocumentedQuery.PLURAL_TYPE_NAME, DocumentedQuery.class);
-		this.pluralTypes.put(DocumentedQueryAnswer.PLURAL_TYPE_NAME, DocumentedQueryAnswer.class);
+		this.pluralTypes.put(DocumentedQueryResult.PLURAL_TYPE_NAME, DocumentedQueryResult.class);
 		this.pluralTypes.put(DocumentedQueryHandler.PLURAL_TYPE_NAME, DocumentedQueryHandler.class);
 	}
 	

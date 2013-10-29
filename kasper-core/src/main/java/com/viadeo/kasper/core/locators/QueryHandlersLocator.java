@@ -58,11 +58,11 @@ public interface QueryHandlersLocator {
 	/**
 	 * Retrieve a service instance from its query class
 	 *
-	 * @param queryClass the query class
+	 * @param queryResultClass the query class
 	 * @return a corresponding service instance
 	 */
 	@SuppressWarnings("rawtypes")
-	Collection<QueryService> getServicesFromQueryAnswerClass(Class<? extends QueryAnswer> queryClass);
+	Collection<QueryHandler> getHandlersFromQueryResultClass(Class<? extends QueryResult> queryResultClass);
 
     /*
      * Retrieve the actors chain for a specified query class

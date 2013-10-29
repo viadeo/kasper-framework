@@ -26,7 +26,7 @@ public class DefaultAutoDocumentationConfiguration implements AutoDocumentationC
         this.getRepositoriesDocumentationProcessor(library);
         this.getCommandsDocumentationProcessor(library);
         this.getQueriesDocumentationProcessor(library);
-        this.getQueryAnswersDocumentationProcessor(library);
+        this.getQueryResultsDocumentationProcessor(library);
         this.getQueryHandlersDocumentationProcessor(library);
         this.getEventsDocumentationProcessor(library);
         this.getConceptsDocumentationProcessor(library);
@@ -81,19 +81,6 @@ public class DefaultAutoDocumentationConfiguration implements AutoDocumentationC
     @Override
     public QueryHandlersDocumentationProcessor getQueryHandlersDocumentationProcessor(final KasperLibrary library) {
         final QueryHandlersDocumentationProcessor proc = new QueryHandlersDocumentationProcessor();
-        proc.setKasperLibrary(library);
-        return this.registerProcessor(proc);
-    }
-
-    @Override
-    public QueriesDocumentationProcessor getQueriesDocumentationProcessor(final KasperLibrary library){
-        final QueriesDocumentationProcessor proc= new QueriesDocumentationProcessor();
-        proc.setKasperLibrary(library);
-        return this.registerProcessor(proc);
-    }
- 
-    public QueryAnswersDocumentationProcessor getQueryAnswersDocumentationProcessor(final KasperLibrary library){
-        final QueryAnswersDocumentationProcessor proc=new QueryAnswersDocumentationProcessor();
         proc.setKasperLibrary(library);
         return this.registerProcessor(proc);
     }

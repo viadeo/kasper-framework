@@ -7,6 +7,7 @@
 
 package com.viadeo.kasper.doc.nodes;
 
+import com.viadeo.kasper.core.resolvers.QueryResultResolver;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryResult;
 import com.viadeo.kasper.doc.KasperLibrary;
@@ -34,31 +35,14 @@ public class DocumentedQueryResult extends DocumentedDomainNode{
     }
 
     public DocumentedQueryResult(KasperLibrary kl, final Class<? extends QueryResult> queryResultClazz){
-        super(kl,TYPE_NAME,PLURAL_TYPE_NAME);
+        this(kl);
 
-        final XKasperQueryResult annotation=queryResultClazz.getAnnotation(XKasperQueryResult.class);
+        final QueryResultResolver resolver = this.getKasperLibrary().getResolverFactory().getQueryResultResolver();
 
-        // Get description -----------------------------------------------------------
-        String description="";
-        if (null!=annotation){
-            description=annotation.description();
-        }
-        if (description.isEmpty()){
-            description=String.format("The %s queryResult",
-                    queryResultClazz.getSimpleName().replaceAll("QueryResult", ""));
-        }
-
-        this.setName(queryResultClazz.getSimpleName());
-        this.setDescription(description);
-        this.properties=new DocumentedBean(queryResultClazz);
-    }
-
-    // -------------------------------------------------------------------------------
-    public String getLabel(){
-        if (null== this.label){
-            return this.getName().replaceAll("QueryResult","");
-        }
-        return super.getLabel();
+        setName(queryResultClazz.getSimpleName());
+        setLabel(resolver.getLabel(queryResultClazz));
+        setDescription(resolver.getDescription(queryResultClazz));
+        properties = new DocumentedBean(queryResultClazz);
     }
 
     // -------------------------------------------------------------------------------
@@ -69,11 +53,13 @@ public class DocumentedQueryResult extends DocumentedDomainNode{
     }
 
     // -------------------------------------------------------------------------------
+
     public DocumentedBean getProperties(){
         return this.properties;
     }
 
     // -------------------------------------------------------------------------------
+
     public DocumentedNode getDomain(){
         final List<DocumentedQueryHandler> queryServices=
                 this.getKasperLibrary().getQueryHandlersForQueryResult(this.getName());
@@ -99,4 +85,5 @@ public class DocumentedQueryResult extends DocumentedDomainNode{
         }
         return null;
     }
+
 }

@@ -107,7 +107,7 @@ public class PlatformFactory {
 
         final QueryResolver queryResolver = platformConfiguration.queryResolver(domainResolver, queryHandlerResolver, queryHandlersLocator);
 
-        final QueryAnswerResolver queryAnswerResolver = platformConfiguration.queryAnswerResolver(domainResolver, queryServiceResolver, queryServicesLocator);
+        final QueryResultResolver queryResultResolver = platformConfiguration.queryResultResolver(domainResolver, queryHandlerResolver, queryHandlersLocator);
         
         final ResolverFactory resolverFactory = platformConfiguration.resolverFactory(
                 domainResolver,
@@ -115,7 +115,7 @@ public class PlatformFactory {
                 commandHandlerResolver,
                 eventListenerResolver,
                 queryResolver,
-                queryAnswerResolver,
+                queryResultResolver,
                 queryHandlerResolver,
                 repositoryResolver,
                 entityResolver,

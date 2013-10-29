@@ -7,10 +7,10 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
-import com.viadeo.kasper.cqrs.query.QueryAnswer;
-import com.viadeo.kasper.cqrs.query.QueryService;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryAnswer;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
+import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryResult;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.exception.KasperException;
 
@@ -18,33 +18,33 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Collection;
 
-public class QueryAnswerResolver extends AbstractResolver<QueryAnswer> {
+public class QueryResultResolver extends AbstractResolver<QueryResult> {
 
-    private QueryServicesLocator queryServicesLocator;
-    private QueryServiceResolver queryServiceResolver;
+    private QueryHandlersLocator queryHandlersLocator;
+    private QueryHandlerResolver queryHandlerResolver;
 
     // ------------------------------------------------------------------------
 
     @Override
     public String getTypeName() {
-        return "QueryAnswer";
+        return "QueryResult";
     }
 
     // ------------------------------------------------------------------------
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends QueryAnswer> clazz) {
+    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends QueryResult> clazz) {
         if (cacheDomains.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
         }
 
-        final Collection<QueryService> queryServices = this.queryServicesLocator.getServicesFromQueryAnswerClass(clazz);
+        final Collection<QueryHandler> queryHandlers = this.queryHandlersLocator.getHandlersFromQueryResultClass(clazz);
 
         Optional<Class<? extends Domain>> result = Optional.absent();
-        for (QueryService queryService : queryServices) {
+        for (QueryHandler queryHandler : queryHandlers) {
             final Optional<Class<? extends Domain>> domain =
-                    this.queryServiceResolver.getDomainClass(queryService.getClass());
+                    this.queryHandlerResolver.getDomainClass(queryHandler.getClass());
             if (domain.isPresent()) {
                 if (result.isPresent()) {
                     throw new KasperException("More than one domain found");
@@ -64,8 +64,8 @@ public class QueryAnswerResolver extends AbstractResolver<QueryAnswer> {
     // ------------------------------------------------------------------------
 
     @Override
-    public String getDescription(Class<? extends QueryAnswer> clazz) {
-        final XKasperQueryAnswer annotation = clazz.getAnnotation(XKasperQueryAnswer.class);
+    public String getDescription(Class<? extends QueryResult> clazz) {
+        final XKasperQueryResult annotation = clazz.getAnnotation(XKasperQueryResult.class);
 
         String description = "";
         if (null != annotation) {
@@ -79,18 +79,18 @@ public class QueryAnswerResolver extends AbstractResolver<QueryAnswer> {
     }
 
     @Override
-    public String getLabel(Class<? extends QueryAnswer> clazz) {
-        return clazz.getSimpleName().replace("QueryAnswer", "");
+    public String getLabel(Class<? extends QueryResult> clazz) {
+        return clazz.getSimpleName().replace("QueryResult", "");
     }
 
     // ------------------------------------------------------------------------
 
-    public void setQueryServicesLocator(final QueryServicesLocator queryServicesLocator) {
-        this.queryServicesLocator = checkNotNull(queryServicesLocator);
+    public void setQueryHandlersLocator(final QueryHandlersLocator queryHandlersLocator) {
+        this.queryHandlersLocator = checkNotNull(queryHandlersLocator);
     }
 
-    public void setQueryServiceResolver(final QueryServiceResolver queryServiceResolver) {
-        this.queryServiceResolver = checkNotNull(queryServiceResolver);
+    public void setQueryHandlerResolver(final QueryHandlerResolver queryHandlerResolver) {
+        this.queryHandlerResolver = checkNotNull(queryHandlerResolver);
     }
 
 }

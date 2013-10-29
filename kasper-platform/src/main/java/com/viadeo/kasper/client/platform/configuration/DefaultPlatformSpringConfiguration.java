@@ -168,12 +168,12 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public QueryAnswerResolver queryAnswerResolver(
+    public QueryResultResolver queryResultResolver(
             final DomainResolver domainResolver,
-            final QueryServiceResolver queryServiceResolver,
-            final QueryServicesLocator queryServicesLocator
+            final QueryHandlerResolver queryHandlerResolver,
+            final QueryHandlersLocator queryHandlersLocator
     ) {
-        return super.queryAnswerResolver(domainResolver, queryServiceResolver, queryServicesLocator);
+        return super.queryResultResolver(domainResolver, queryHandlerResolver, queryHandlersLocator);
     }
 
     @Bean
@@ -224,6 +224,7 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
             final CommandHandlerResolver commandHandlerResolver,
             final EventListenerResolver eventListenerResolver,
             final QueryResolver queryResolver,
+            final QueryResultResolver queryResultResolver,
             final QueryHandlerResolver queryHandlerResolver,
             final RepositoryResolver repositoryResolver,
             final EntityResolver entityResolver,
@@ -234,7 +235,7 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
         return super.resolverFactory(
                 domainResolver, commandResolver,
                 commandHandlerResolver, eventListenerResolver,
-                queryResolver, queryHandlerResolver,
+                queryResolver, queryResultResolver, queryHandlerResolver,
                 repositoryResolver, entityResolver,
                 conceptResolver, relationResolver, eventResolver);
     }

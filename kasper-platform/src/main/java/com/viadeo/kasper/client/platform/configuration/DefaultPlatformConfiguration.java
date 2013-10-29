@@ -502,25 +502,25 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryAnswerResolver queryAnswerResolver(
+    public QueryResultResolver queryResultResolver(
         final DomainResolver domainResolver,
-        final QueryServiceResolver queryServiceResolver,
-        final QueryServicesLocator queryServicesLocator
+        final QueryHandlerResolver queryHandlerResolver,
+        final QueryHandlersLocator queryHandlersLocator
     ) {
-        this.ensureNotPresent(QueryAnswerResolver.class);
+        this.ensureNotPresent(QueryResultResolver.class);
 
-        final QueryAnswerResolver queryAnswerResolver = new QueryAnswerResolver();
-        queryAnswerResolver.setQueryServiceResolver(queryServiceResolver);
-        queryAnswerResolver.setQueryServicesLocator(queryServicesLocator);
-        queryAnswerResolver.setDomainResolver(domainResolver);
+        final QueryResultResolver queryResultResolver = new QueryResultResolver();
+        queryResultResolver.setQueryHandlerResolver(queryHandlerResolver);
+        queryResultResolver.setQueryHandlersLocator(queryHandlersLocator);
+        queryResultResolver.setDomainResolver(domainResolver);
 
-        components.putInstance(QueryAnswerResolver.class, queryAnswerResolver);
-        return queryAnswerResolver;
+        components.putInstance(QueryResultResolver.class, queryResultResolver);
+        return queryResultResolver;
     }
 
     @Override
-    public QueryAnswerResolver queryAnswerResolver() {
-        return this.getAvailableInstance(QueryAnswerResolver.class);
+    public QueryResultResolver queryResultResolver() {
+        return this.getAvailableInstance(QueryResultResolver.class);
     }
 
     // ------------------------------------------------------------------------
@@ -630,7 +630,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
             CommandHandlerResolver commandHandlerResolver,
             EventListenerResolver eventListenerResolver,
             QueryResolver queryResolver,
-            QueryAnswerResolver queryAnswerResolver,
+            QueryResultResolver queryResultResolver,
             QueryHandlerResolver queryHandlerResolver,
             RepositoryResolver repositoryResolver,
             EntityResolver entityResolver,
@@ -646,7 +646,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         resolverFactory.setCommandHandlerResolver(commandHandlerResolver);
         resolverFactory.setEventListenerResolver(eventListenerResolver);
         resolverFactory.setQueryResolver(queryResolver);
-        resolverFactory.setQueryAnswerResolver(queryAnswerResolver);
+        resolverFactory.setQueryResultResolver(queryResultResolver);
         resolverFactory.setQueryHandlerResolver(queryHandlerResolver);
         resolverFactory.setRepositoryResolver(repositoryResolver);
         resolverFactory.setEntityResolver(entityResolver);
