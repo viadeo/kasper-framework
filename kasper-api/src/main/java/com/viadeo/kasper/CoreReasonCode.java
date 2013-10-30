@@ -68,4 +68,8 @@ public enum CoreReasonCode {
                 .toString();
     }
 
+    public boolean equals(final String other) {
+        return this.toString().contentEquals(other);
+    }
+
 }
