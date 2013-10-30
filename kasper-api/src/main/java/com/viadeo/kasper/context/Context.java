@@ -33,6 +33,7 @@ public interface Context extends Serializable  {
     KasperID DEFAULT_SESSCORR_ID = DEFAULT_KASPER_ID;
     KasperID DEFAULT_KASPERCORR_ID = DEFAULT_KASPER_ID;
 
+    String DEFAULT_APPLICATION_ID = "UNKNOWN";
     String DEFAULT_SECURITY_TOKEN = "unauthenticated";
 
     // ------------------------------------------------------------------------
@@ -68,6 +69,19 @@ public interface Context extends Serializable  {
 	 * @return the current {@link Context} instance
 	 */
 	Context setUserId(KasperID userId);
+
+    // ------------------------------------------------------------------------
+
+	/**
+	 * @return the caller application id
+	 */
+	String getApplicationId();
+
+	/**
+	 * @param applicationId the caller application id
+	 * @return the current {@link Context} instance
+	 */
+	Context setApplicationId(String applicationId);
 
     // ------------------------------------------------------------------------
 

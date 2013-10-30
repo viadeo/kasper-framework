@@ -25,6 +25,7 @@ public class DefaultContext extends AbstractContext {
     private String userLang;
     private String userCountry;
 
+    private String applicationId;
     private KasperID requestCorrelationId;
     private KasperID funnelCorrelationId;
     private KasperID sessionCorrelationId;
@@ -42,6 +43,7 @@ public class DefaultContext extends AbstractContext {
         this.requestCorrelationId = DEFAULT_REQCORR_ID;
         this.funnelCorrelationId = DEFAULT_FUNCORR_ID;
         this.sessionCorrelationId = DEFAULT_SESSCORR_ID;
+        this.applicationId = DEFAULT_APPLICATION_ID;
         this.securityToken = DEFAULT_SECURITY_TOKEN;
     }
 
@@ -66,6 +68,17 @@ public class DefaultContext extends AbstractContext {
     @Override
     public DefaultContext setUserId(final KasperID userId) {
         this.userId = checkNotNull(userId);
+        return this;
+    }
+
+    @Override
+    public String getApplicationId() {
+        return this.applicationId;
+    }
+
+    @Override
+    public Context setApplicationId(final String applicationId) {
+        this.applicationId = checkNotNull(applicationId);
         return this;
     }
 
