@@ -24,6 +24,7 @@ public class TestContexts {
         context_full.setUserId(new StringKasperId("42"));
         context_full.setUserLang("us");
         context_full.setUserCountry("US");
+        context_full.setApplicationId("TEST");
         context_full.setSecurityToken(UUID.randomUUID().toString());
     };
 

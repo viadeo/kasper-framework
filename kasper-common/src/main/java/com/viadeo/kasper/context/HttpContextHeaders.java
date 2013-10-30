@@ -17,6 +17,7 @@ public class HttpContextHeaders {
     public static final String HEADER_USER_LANG = "X-KASPER-LANG";
     public static final String HEADER_USER_COUNTRY = "X-KASPER-COUNTRY";
 
+    public static final String HEADER_APPLICATION_ID = "X-KASPER-CLIENT-APPID";
     public static final String HEADER_SECURITY_TOKEN = "X-KASPER-SECURITY-TOKEN";
 
 }

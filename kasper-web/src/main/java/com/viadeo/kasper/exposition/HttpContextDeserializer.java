@@ -35,6 +35,7 @@ public class HttpContextDeserializer {
         String userLang = null;
         String userCountry = null;
         String securityToken = null;
+        String applicationId = null;
 
         // --------------------------------------------------------------------
 
@@ -66,6 +67,11 @@ public class HttpContextDeserializer {
         final String headerUserCountry = req.getHeader(HEADER_USER_COUNTRY);
         if (null != headerUserCountry) {
             userCountry = headerUserCountry;
+        }
+
+        final String headerApplicationId = req.getHeader(HEADER_APPLICATION_ID);
+        if (null != headerApplicationId) {
+            securityToken = headerApplicationId;
         }
 
         final String headerSecurityToken = req.getHeader(HEADER_SECURITY_TOKEN);
@@ -103,6 +109,10 @@ public class HttpContextDeserializer {
 
         if (null != userCountry) {
             context.setUserCountry(userCountry);
+        }
+
+        if (null != applicationId) {
+            context.setApplicationId(applicationId);
         }
 
         if (null != securityToken) {

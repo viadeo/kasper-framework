@@ -255,6 +255,7 @@ The following HTTP headers can be set to set the queries and commands context :
 * X-KASPER-FUNNEL-CID (UUID)
 * X-KASPER-REQUEST-CID (UUID)
 * X-KASPER-UID (String)
+* X-KASPER-CLIENT-APPID (String)
 * X-KASPER-LANG (String - ISO 639)
 * X-KASPER-COUNTRY (String - ISO 3166)
 * X-KASPER-SECURITY-TOKEN (String)

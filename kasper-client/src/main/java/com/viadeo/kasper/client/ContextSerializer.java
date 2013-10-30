@@ -39,6 +39,10 @@ public class ContextSerializer {
             builder.header(HEADER_USER_COUNTRY, context.getUserCountry());
         }
 
+        if (null != context.getApplicationId()) {
+            builder.header(HEADER_APPLICATION_ID, context.getApplicationId());
+        }
+
         if (null != context.getSecurityToken()) {
             builder.header(HEADER_SECURITY_TOKEN, context.getSecurityToken());
         }
