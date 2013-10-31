@@ -89,12 +89,12 @@ public abstract class AbstractAggregateRoot
 		return this.modificationDate;
 	}
 
-	public void setCreationDate(final DateTime creationDate) {
+	protected void setCreationDate(final DateTime creationDate) {
 		this.creationDate = Preconditions.checkNotNull(creationDate);
 		this.modificationDate = creationDate;
 	}
 	
-	public void setModificationDate(final DateTime modificationDate) {
+	protected void setModificationDate(final DateTime modificationDate) {
 		this.modificationDate = Preconditions.checkNotNull(modificationDate);
 	}
 	

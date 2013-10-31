@@ -54,12 +54,8 @@ public final class ClientRepository<AGR extends AggregateRoot> {
         this.repository.add(aggregate);
     }
 
-    public void del(final AGR aggregate) {
-        this.del(aggregate);
-    }
-
     public boolean has(final KasperID id) {
-        return this.has(id);
+        return this.repository.has(id);
     }
 
 }

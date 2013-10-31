@@ -228,14 +228,14 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	}
 
     /**
-     * To be overriden by child classes if wanted
+     * (Optional) indicates existence of an aggregate in the repository
      *
      * @param id the aggregate id
      * @return true if this aggregate exists
      */
     @Override
     public boolean has(final KasperID id) {
-        throw new UnsupportedOperationException("has() operation not implemented");
+        return this.doHas(id);
     }
 
 	// ========================================================================
@@ -291,6 +291,16 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * 
 	 * @param aggregate the aggregate to be deleted from the repository
 	 */
-	protected abstract void doDelete(final AGR aggregate);		
-	
+	protected abstract void doDelete(final AGR aggregate);
+
+    /**
+     * (Optional) indicates existence of an aggregate in the repository
+     *
+     * @param aggregateIdentifier the aggregate identifier
+     * @return true if an aggregate exists with this id
+     */
+    protected boolean doHas(final KasperID aggregateIdentifier) {
+        throw new UnsupportedOperationException("has() operation not implemented");
+    }
+
 }
