@@ -419,7 +419,7 @@ You are encouraged to add the suffix **Factory** to your class names.
         }
 
         @Override
-        public Member build() {
+        public Member build(final Context context) {
             final Mamber ret = new Member(this.id, this.entityFromLegacy.getName());
             if (0 != this.age) {
                 ret.setAge(this.age);
@@ -479,13 +479,12 @@ In order to create a Kasper repository you have to extend **Repository<Aggregate
 
     }
 
-You can then add new public methods to this repository in order to access to your business indexes (logically hosted in your
+You can also add new public methods to this repository in order to access to your business indexes (logically hosted in your
 COMMAND architectural area).
 
-In order to support the special case of repositories backed by legacy constraints which are using auto-incremented keys, Kasper
-framework provides you with the SQLRepository :
+Repositories are then accessed using the methods load() or add(), generally in command handlers only.
 
-**TODO**
+If you want to delete an aggregate, use the markDeleted() method in your aggregates, this last will then be deleted at the end of the unit of work.
 
 Value objects
 -------------
