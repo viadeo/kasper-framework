@@ -8,6 +8,8 @@ package com.viadeo.kasper.context;
 
 public class HttpContextHeaders {
 
+    private HttpContextHeaders() { /* Utility class */ }
+
     public static final String HEADER_SESSION_CORRELATION_ID = "X-KASPER-SESSION-CID";
     public static final String HEADER_FUNNEL_CORRELATION_ID = "X-KASPER-FUNNEL-CID";
     public static final String HEADER_REQUEST_CORRELATION_ID = "X-KASPER-REQUEST-CID";

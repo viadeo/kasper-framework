@@ -18,6 +18,10 @@ public class CoreReasonHttpCodes {
 
     private static final Map<String, CoreReasonHttpCodesTranslationTable> STRING_CODES = Maps.newHashMap();
 
+    private CoreReasonHttpCodes() { /* Utility class */ }
+
+    // ------------------------------------------------------------------------
+
     private static enum CoreReasonHttpCodesTranslationTable {
         UNKNOWN_REASON(CoreReasonCode.UNKNOWN_REASON, Status.INTERNAL_SERVER_ERROR),
 

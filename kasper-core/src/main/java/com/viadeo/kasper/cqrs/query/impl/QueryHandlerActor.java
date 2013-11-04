@@ -71,8 +71,9 @@ public class QueryHandlerActor<Q extends Query, RESULT extends QueryResult> impl
         timer.stop();
         classTimer.stop();
 
-        if (exception != null)
+        if (null != exception) {
             throw exception;
+        }
 
         return ret;
     }
