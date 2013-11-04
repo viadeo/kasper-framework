@@ -71,7 +71,7 @@ public class HttpContextDeserializer {
 
         final String headerApplicationId = req.getHeader(HEADER_APPLICATION_ID);
         if (null != headerApplicationId) {
-            securityToken = headerApplicationId;
+            applicationId = headerApplicationId;
         }
 
         final String headerSecurityToken = req.getHeader(HEADER_SECURITY_TOKEN);

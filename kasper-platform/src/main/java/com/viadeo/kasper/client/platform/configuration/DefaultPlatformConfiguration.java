@@ -39,7 +39,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 public class DefaultPlatformConfiguration implements PlatformConfiguration {
-    private final static Logger LOGGER = LoggerFactory.getLogger(DefaultPlatformConfiguration.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultPlatformConfiguration.class);
 
     private static final String INSTANCE_NOT_YET_AVAILABLE = "Component %s cannot be retrieved : it has not yet been instanciated (platform not yet booted ?)";
     private static final String INSTANCE_ALREADY_CREATED = "Component %s has already been created !";

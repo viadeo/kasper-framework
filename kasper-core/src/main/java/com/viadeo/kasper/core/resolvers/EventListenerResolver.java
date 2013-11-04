@@ -34,15 +34,15 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends EventListener> clazz) {
 
-        if (cacheDomains.containsKey(clazz)) {
-            return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
+        if (DOMAINS_CACHE.containsKey(clazz)) {
+            return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
         final XKasperEventListener eventAnnotation = clazz.getAnnotation(XKasperEventListener.class);
 
         if (null != eventAnnotation) {
             final Class<? extends Domain> domain = eventAnnotation.domain();
-            cacheDomains.put(clazz, domain);
+            DOMAINS_CACHE.put(clazz, domain);
             return Optional.<Class<? extends Domain>>of(domain);
         } else {
             throw new KasperException("Event event is not decorated : " + clazz.getName());

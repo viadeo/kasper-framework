@@ -16,9 +16,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class AbstractResolver<T> implements Resolver<T> {
 
-    private DomainResolver domainResolver;
+    protected static final ConcurrentMap<Class, Class> DOMAINS_CACHE = Maps.newConcurrentMap();
 
-    protected static final ConcurrentMap<Class, Class> cacheDomains = Maps.newConcurrentMap();
+    private DomainResolver domainResolver;
 
     // ------------------------------------------------------------------------
 
@@ -45,7 +45,7 @@ public abstract class AbstractResolver<T> implements Resolver<T> {
     public void clearCache() {
         // FIXME: only clear keys related to an assignable class via identification
         //        of the generic
-        cacheDomains.clear();
+        DOMAINS_CACHE.clear();
     }
 
 }

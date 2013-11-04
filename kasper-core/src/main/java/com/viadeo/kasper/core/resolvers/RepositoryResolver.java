@@ -33,14 +33,14 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends IRepository> clazz) {
 
-        if (cacheDomains.containsKey(clazz)) {
-            return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
+        if (DOMAINS_CACHE.containsKey(clazz)) {
+            return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
         final Class<? extends AggregateRoot> agr = this.getStoredEntityClass(clazz);
         final Optional<Class<? extends Domain>> domain = this.entityResolver.getDomainClass(agr);
         if (domain.isPresent()) {
-            cacheDomains.put(clazz, domain.get());
+            DOMAINS_CACHE.put(clazz, domain.get());
             return domain;
         }
 

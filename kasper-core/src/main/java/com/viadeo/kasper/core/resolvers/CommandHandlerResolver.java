@@ -17,13 +17,9 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.concurrent.ConcurrentMap;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
 
     private static ConcurrentMap<Class, Class> cacheCommands = Maps.newConcurrentMap();
-
-    private CommandResolver commandResolver;
 
     // ------------------------------------------------------------------------
 
@@ -38,14 +34,14 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends CommandHandler> clazz) {
 
-        if (cacheDomains.containsKey(clazz)) {
-            return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
+        if (DOMAINS_CACHE.containsKey(clazz)) {
+            return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
         final XKasperCommandHandler handlerAnnotation = clazz.getAnnotation(XKasperCommandHandler.class);
         if (null != handlerAnnotation) {
             final Class<? extends Domain> domain = handlerAnnotation.domain();
-            cacheDomains.put(clazz, domain);
+            DOMAINS_CACHE.put(clazz, domain);
             return Optional.<Class<? extends Domain>>of(domain);
         } else {
             throw new KasperException("Command handler is not decorated : " + clazz.getName());
@@ -106,12 +102,6 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
     public void clearCache() {
         super.clearCache();
         cacheCommands.clear();
-    }
-
-    // ------------------------------------------------------------------------
-
-    public void setCommandResolver(final CommandResolver commandResolver) {
-        this.commandResolver = checkNotNull(commandResolver);
     }
 
 }

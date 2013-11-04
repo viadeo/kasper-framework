@@ -16,7 +16,7 @@ import static javax.ws.rs.core.Response.Status;
 
 public class CoreReasonHttpCodes {
 
-    final static Map<String, CoreReasonHttpCodesTranslationTable> stringCodes = Maps.newHashMap();
+    private static final Map<String, CoreReasonHttpCodesTranslationTable> STRING_CODES = Maps.newHashMap();
 
     private static enum CoreReasonHttpCodesTranslationTable {
         UNKNOWN_REASON(CoreReasonCode.UNKNOWN_REASON, Status.INTERNAL_SERVER_ERROR),
@@ -37,15 +37,15 @@ public class CoreReasonHttpCodes {
         //---------------------------------------------------------------------
 
 
-        final CoreReasonCode code;
-        final Status httpStatus;
+        private final CoreReasonCode code;
+        private final Status httpStatus;
 
         // --------------------------------------------------------------------
 
         CoreReasonHttpCodesTranslationTable(final CoreReasonCode code, final Status httpStatus) {
             this.code = code;
             this.httpStatus = httpStatus;
-            stringCodes.put(code.toString(), this);
+            STRING_CODES.put(code.toString(), this);
         }
 
         // --------------------------------------------------------------------
@@ -59,8 +59,8 @@ public class CoreReasonHttpCodes {
         }
 
         public static CoreReasonHttpCodesTranslationTable fromString(final String stringCode) {
-           if (stringCodes.containsKey(stringCode)) {
-               return stringCodes.get(stringCode);
+           if (STRING_CODES.containsKey(stringCode)) {
+               return STRING_CODES.get(stringCode);
            }
            throw new IllegalArgumentException(stringCode + " is not a valid code code");
         }

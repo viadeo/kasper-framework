@@ -9,6 +9,7 @@ package com.viadeo.kasper;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class CoreReasonCodeTest {
 
@@ -23,6 +24,18 @@ public class CoreReasonCodeTest {
         // Then
         assertEquals("[1003] - TOO_MANY_ENTRIES", codeString);
         assertEquals(code.reason().getClass(), KasperReason.class);
+    }
+
+    @Test
+    public void shouldEqualsWithStringCorrectly() {
+        // Given
+        final CoreReasonCode code = CoreReasonCode.TOO_MANY_ENTRIES;
+
+        // When
+        final String codeString = code.toString();
+
+        // Then
+        assertTrue(code.equals(codeString));
     }
 
 }

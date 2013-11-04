@@ -35,8 +35,8 @@ public class QueryResultResolver extends AbstractResolver<QueryResult> {
     @Override
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends QueryResult> clazz) {
-        if (cacheDomains.containsKey(clazz)) {
-            return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
+        if (DOMAINS_CACHE.containsKey(clazz)) {
+            return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
         final Collection<QueryHandler> queryHandlers = this.queryHandlersLocator.getHandlersFromQueryResultClass(clazz);
@@ -55,7 +55,7 @@ public class QueryResultResolver extends AbstractResolver<QueryResult> {
         }
         
         if (result.isPresent()) {
-            cacheDomains.put(clazz, result.get());
+            DOMAINS_CACHE.put(clazz, result.get());
         } 
     
         return result;

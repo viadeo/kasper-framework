@@ -23,15 +23,15 @@ public class ConceptResolver extends AbstractResolver<Concept> {
     @Override
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Concept> clazz) {
 
-        if (cacheDomains.containsKey(clazz)) {
-            return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
+        if (DOMAINS_CACHE.containsKey(clazz)) {
+            return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
         final XKasperConcept conceptAnnotation = clazz.getAnnotation(XKasperConcept.class);
 
         if (null != conceptAnnotation) {
             final Class<? extends Domain> domain = conceptAnnotation.domain();
-            cacheDomains.put(clazz, domain);
+            DOMAINS_CACHE.put(clazz, domain);
             return Optional.<Class<? extends Domain>>of(domain);
         }
 

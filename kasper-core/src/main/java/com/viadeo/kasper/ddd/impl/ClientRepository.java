@@ -19,7 +19,7 @@ import org.axonframework.repository.AggregateNotFoundException;
  */
 public final class ClientRepository<AGR extends AggregateRoot> {
 
-    final IRepository<AGR> repository;
+    private final IRepository<AGR> repository;
 
     public ClientRepository(final IRepository repository) {
         this.repository = repository;

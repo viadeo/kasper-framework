@@ -64,13 +64,13 @@ public class HttpQueryExposer extends HttpExposer {
 
     // ------------------------------------------------------------------------
 
-    private final static TypeReference<ImmutableSetMultimap<String, String>> mapOfStringsType = new TypeReference<ImmutableSetMultimap<String, String>>() {};
+    private static final TypeReference<ImmutableSetMultimap<String, String>> STRINGS_TYPE = new TypeReference<ImmutableSetMultimap<String, String>>() {};
 
     interface QueryToQueryMap {
         SetMultimap<String, String> toQueryMap(final HttpServletRequest req, final HttpServletResponse resp) throws IOException;
     }
 
-    private final static QueryToQueryMap jsonBodyToQueryMap = new QueryToQueryMap() {
+    private static final QueryToQueryMap JSON_TO_QUERY_MAP = new QueryToQueryMap() {
         @Override
         public SetMultimap<String, String> toQueryMap(
                 final HttpServletRequest req,
@@ -80,13 +80,13 @@ public class HttpQueryExposer extends HttpExposer {
             final ObjectMapper mapper = ObjectMapperProvider.INSTANCE.mapper();
             final JsonParser parser = mapper.reader().getFactory().createParser(req.getInputStream());
 
-            final SetMultimap<String, String> queryMap = mapper.reader().readValue(parser, mapOfStringsType);
+            final SetMultimap<String, String> queryMap = mapper.reader().readValue(parser, STRINGS_TYPE);
 
             return queryMap;
         }
     };
 
-    private final static QueryToQueryMap queryStringToMap = new QueryToQueryMap() {
+    private static final QueryToQueryMap STRING_REQ_TO_RESP_MAP = new QueryToQueryMap() {
         @Override
         public SetMultimap<String, String> toQueryMap(
                 final HttpServletRequest req,
@@ -162,7 +162,7 @@ public class HttpQueryExposer extends HttpExposer {
         if ( ! req.getContentType().startsWith("application/json")) {
             sendError(Response.Status.NOT_ACCEPTABLE.getStatusCode(), "Accepting only application/json; charset=utf-8", req, resp, null);
         } else {
-            handleQuery(jsonBodyToQueryMap, req, resp);
+            handleQuery(JSON_TO_QUERY_MAP, req, resp);
         }
     }
 
@@ -170,7 +170,7 @@ public class HttpQueryExposer extends HttpExposer {
     protected void doGet(final HttpServletRequest req, final HttpServletResponse resp)
             throws ServletException, IOException {
 
-        handleQuery(queryStringToMap, req, resp);
+        handleQuery(STRING_REQ_TO_RESP_MAP, req, resp);
     }
 
     // ------------------------------------------------------------------------

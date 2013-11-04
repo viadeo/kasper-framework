@@ -20,8 +20,8 @@ import java.util.concurrent.ConcurrentMap;
 
 public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
 
-    private static final ConcurrentMap<Class, Class> cacheQuery = Maps.newConcurrentMap();
-    private static final ConcurrentMap<Class, Class> cacheQueryResult = Maps.newConcurrentMap();
+    private static final ConcurrentMap<Class, Class> QUERY_CACHE = Maps.newConcurrentMap();
+    private static final ConcurrentMap<Class, Class> RESULT_CACHE = Maps.newConcurrentMap();
 
     // ------------------------------------------------------------------------
 
@@ -36,15 +36,15 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends QueryHandler> clazz) {
 
-        if (cacheDomains.containsKey(clazz)) {
-            return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
+        if (DOMAINS_CACHE.containsKey(clazz)) {
+            return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
         final XKasperQueryHandler annotation = clazz.getAnnotation(XKasperQueryHandler.class);
 
         if (null != annotation) {
             final Class<? extends Domain> domain = annotation.domain();
-            cacheDomains.put(clazz, domain);
+            DOMAINS_CACHE.put(clazz, domain);
             return Optional.<Class<? extends Domain>>of(domain);
         }
 
@@ -77,8 +77,8 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
     // ------------------------------------------------------------------------
 
     public Class<? extends Query> getQueryClass(final Class<? extends QueryHandler> clazz) {
-        if (cacheQuery.containsKey(clazz)) {
-            return cacheQuery.get(clazz);
+        if (QUERY_CACHE.containsKey(clazz)) {
+            return QUERY_CACHE.get(clazz);
         }
 
         @SuppressWarnings("unchecked") // Safe
@@ -91,15 +91,15 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
             throw new KasperException("Unable to find query type for query handler " + clazz.getClass());
         }
 
-        cacheQuery.put(clazz, queryClazz.get());
+        QUERY_CACHE.put(clazz, queryClazz.get());
         return queryClazz.get();
     }
 
     // ------------------------------------------------------------------------
 
     public Class<? extends QueryResult> getQueryResultClass(final Class<? extends QueryHandler> clazz) {
-        if (cacheQueryResult.containsKey(clazz)) {
-            return cacheQueryResult.get(clazz);
+        if (RESULT_CACHE.containsKey(clazz)) {
+            return RESULT_CACHE.get(clazz);
         }
 
         @SuppressWarnings("unchecked") // Safe
@@ -112,7 +112,7 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
             throw new KasperException("Unable to find query result type for query handler " + clazz.getClass());
         }
 
-        cacheQueryResult.put(clazz, queryResultClazz.get());
+        RESULT_CACHE.put(clazz, queryResultClazz.get());
         return queryResultClazz.get();
     }
 

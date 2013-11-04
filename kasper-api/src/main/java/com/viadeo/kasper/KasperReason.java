@@ -27,10 +27,10 @@ public final class KasperReason implements Serializable, Immutable {
 
     // ------------------------------------------------------------------------
 
-    public final static class Builder {
+    public static final class Builder {
 
-        String code = CoreReasonCode.UNKNOWN_REASON.string();
-        Collection<String> messages;
+        private String code = CoreReasonCode.UNKNOWN_REASON.string();
+        private Collection<String> messages;
 
         // -----
 

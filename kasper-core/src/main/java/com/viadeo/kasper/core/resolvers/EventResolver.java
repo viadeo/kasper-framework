@@ -32,8 +32,8 @@ public class EventResolver extends AbstractResolver<Event> {
             return Optional.absent();
         }
 
-        if (cacheDomains.containsKey(clazz)) {
-            return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
+        if (DOMAINS_CACHE.containsKey(clazz)) {
+            return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
         final Optional<Class<? extends Domain>> domainClazz =
@@ -48,7 +48,7 @@ public class EventResolver extends AbstractResolver<Event> {
         }
 
         if (domainClazz.isPresent()) {
-            cacheDomains.put(clazz, domainClazz.get());
+            DOMAINS_CACHE.put(clazz, domainClazz.get());
         }
 
         return domainClazz;

@@ -20,8 +20,8 @@ import java.util.concurrent.ConcurrentMap;
 
 public class RelationResolver extends AbstractResolver<Relation> {
 
-    private static final ConcurrentMap<Class, Class> cacheSources = Maps.newConcurrentMap();
-    private static final ConcurrentMap<Class, Class> cacheTargets = Maps.newConcurrentMap();
+    private static final ConcurrentMap<Class, Class> SOURCES_CACHE = Maps.newConcurrentMap();
+    private static final ConcurrentMap<Class, Class> TARGETS_CACHE = Maps.newConcurrentMap();
 
     private ConceptResolver conceptResolver;
 
@@ -38,15 +38,15 @@ public class RelationResolver extends AbstractResolver<Relation> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Relation> clazz) {
 
-        if (cacheDomains.containsKey(clazz)) {
-            return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
+        if (DOMAINS_CACHE.containsKey(clazz)) {
+            return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
         final XKasperRelation relationAnnotation = clazz.getAnnotation(XKasperRelation.class);
 
         if (null != relationAnnotation) {
             final Class<? extends Domain> domain = relationAnnotation.domain();
-            cacheDomains.put(clazz, domain);
+            DOMAINS_CACHE.put(clazz, domain);
             return Optional.<Class<? extends Domain>>of(domain);
         }
 
@@ -91,8 +91,8 @@ public class RelationResolver extends AbstractResolver<Relation> {
 
     @SuppressWarnings("unchecked")
     public Class<? extends RootConcept> getSourceEntityClass(final Class<? extends Relation> clazz) {
-        if (cacheSources.containsKey(clazz)) {
-            return (Class<? extends RootConcept>) cacheSources.get(clazz);
+        if (SOURCES_CACHE.containsKey(clazz)) {
+            return (Class<? extends RootConcept>) SOURCES_CACHE.get(clazz);
         }
 
         @SuppressWarnings("unchecked") // Safe
@@ -105,14 +105,14 @@ public class RelationResolver extends AbstractResolver<Relation> {
             throw new KasperException("Unable to find source concept type for relation " + clazz.getClass());
         }
 
-        cacheSources.put(clazz, sourceClazz.get());
+        SOURCES_CACHE.put(clazz, sourceClazz.get());
         return sourceClazz.get();
     }
 
     @SuppressWarnings("unchecked")
     public Class<? extends RootConcept> getTargetEntityClass(final Class<? extends Relation> clazz) {
-        if (cacheTargets.containsKey(clazz)) {
-            return (Class<? extends RootConcept>) cacheTargets.get(clazz);
+        if (TARGETS_CACHE.containsKey(clazz)) {
+            return (Class<? extends RootConcept>) TARGETS_CACHE.get(clazz);
         }
 
         @SuppressWarnings("unchecked") // Safe
@@ -125,7 +125,7 @@ public class RelationResolver extends AbstractResolver<Relation> {
             throw new KasperException("Unable to find target concept type for relation " + clazz.getClass());
         }
 
-        cacheTargets.put(clazz, targetClazz.get());
+        TARGETS_CACHE.put(clazz, targetClazz.get());
         return targetClazz.get();
     }
 

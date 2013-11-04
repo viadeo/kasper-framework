@@ -33,7 +33,7 @@ public class QueryAttributesKeyGenerator implements QueryCacheKeyGenerator {
 
     private final ConcurrentHashMap<FieldCacheKey, Set<Field>> cache = new ConcurrentHashMap<>();
 
-    private final static Comparator<Field> FIELD_BY_NAME_COMPARATOR = new Comparator<Field>() {
+    private static final Comparator<Field> FIELD_BY_NAME_COMPARATOR = new Comparator<Field>() {
         @Override
         public int compare(final Field o1, final Field o2) {
             return o1.getName().compareTo(o2.getName());

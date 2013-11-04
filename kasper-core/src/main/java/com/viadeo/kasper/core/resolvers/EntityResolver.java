@@ -99,10 +99,8 @@ public class EntityResolver extends AbstractResolver<Entity> {
         for (Method method : methods) {
             if (null != method.getAnnotation(EventHandler.class)) {
                 final Class[] types = method.getParameterTypes();
-                if (types.length == 1) {
-                    if (Event.class.isAssignableFrom(types[0])) {
-                        listenedSourceEvents.add((Class<? extends Event>) types[0]);
-                    }
+                if ((types.length == 1) && Event.class.isAssignableFrom(types[0])) {
+                    listenedSourceEvents.add((Class<? extends Event>) types[0]);
                 }
             }
         }
