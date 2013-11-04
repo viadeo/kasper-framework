@@ -180,9 +180,9 @@ public class HttpQueryExposer extends HttpExposer {
         final Timer.Context classTimer = METRICLASSTIMER.time();
 
         /* Create a kasper correlation id */
-        final UUID requestCorrelationUUID = UUID.randomUUID();
-        MDC.put("correlationId", requestCorrelationUUID.toString());
-        resp.addHeader("UUID", requestCorrelationUUID.toString());
+        final UUID kasperCorrelationUUID = UUID.randomUUID();
+        MDC.put("kasperCorrelationId", kasperCorrelationUUID.toString());
+        resp.addHeader("UUID", kasperCorrelationUUID.toString());
 
         /* Log starting request */
         QUERY_LOGGER.info("Processing HTTP Query '{}' '{}'", req.getMethod(), getFullRequestURI(req));
@@ -204,7 +204,7 @@ public class HttpQueryExposer extends HttpExposer {
                 final Timer.Context queryHandleTimer = METRICS.timer(name(query.getClass(), "requests-handle-time")).time();
                 final Timer.Context classHandleTimer = METRICLASSHANDLETIMER.time();
 
-                response = handleQuery(queryName, query, req, resp, requestCorrelationUUID );
+                response = handleQuery(queryName, query, req, resp, kasperCorrelationUUID );
 
                 queryHandleTimer.stop();
                 classHandleTimer.stop();
@@ -272,13 +272,13 @@ public class HttpQueryExposer extends HttpExposer {
 
     // can not use sendError it is forcing response to text/html
     protected QueryResponse handleQuery(final String queryName, final Query query, final HttpServletRequest req,
-                                         final HttpServletResponse resp, final UUID requestCorrelationUUID)
+                                         final HttpServletResponse resp, final UUID kasperCorrelationUUID)
             throws IOException {
 
         QueryResponse response = null;
 
         /* extract context from request */
-        final Context context = contextDeserializer.deserialize(req, requestCorrelationUUID);
+        final Context context = contextDeserializer.deserialize(req, kasperCorrelationUUID);
 
         /* send the query to the platform */
         try {

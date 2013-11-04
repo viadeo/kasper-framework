@@ -143,9 +143,9 @@ public class HttpCommandExposer extends HttpExposer {
         final Timer.Context classTimer = METRICLASSTIMER.time();
 
         /* Create a request correlation id */
-        final UUID requestCorrelationUUID = UUID.randomUUID();
-        MDC.put("correlationId", requestCorrelationUUID.toString());
-        resp.addHeader("UUID", requestCorrelationUUID.toString());
+        final UUID kasperCorrelationUUID = UUID.randomUUID();
+        MDC.put("kasperCorrelationId", kasperCorrelationUUID.toString());
+        resp.addHeader("UUID", kasperCorrelationUUID.toString());
 
         /* Log starting request */
         REQUEST_LOGGER.info("Processing HTTP Command '{}' '{}'", req.getMethod(), getFullRequestURI(req));
@@ -182,7 +182,7 @@ public class HttpCommandExposer extends HttpExposer {
             final Command command = reader.readValue(parser, commandClass);
 
             /* extract context from request */
-            final Context context = contextDeserializer.deserialize(req, requestCorrelationUUID);
+            final Context context = contextDeserializer.deserialize(req,kasperCorrelationUUID);
 
             /* send now that command to the platform and wait for the result */
             final Timer.Context commandHandleTime = METRICS.timer(name(command.getClass(), "requests-handle-time")).time();
