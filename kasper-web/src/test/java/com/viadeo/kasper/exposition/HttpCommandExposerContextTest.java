@@ -77,7 +77,7 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest<HttpComma
         @Override
         public CommandResponse handle(final KasperCommandMessage<ContextCheckCommand> message) throws Exception {
             if (message.getCommand().getContextName().contentEquals(CONTEXT_FULL)) {
-                assertTrue(((DefaultContext) message.getContext()).equals(context_full, false));
+                assertTrue(((DefaultContext) message.getContext()).equals(context_full));
             }
             return CommandResponse.ok();
         }

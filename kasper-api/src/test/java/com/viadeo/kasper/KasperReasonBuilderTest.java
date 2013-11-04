@@ -94,6 +94,19 @@ public class KasperReasonBuilderTest {
     }
 
     @Test
+    public void testFromCode() {
+        // Given
+        final Builder builder = Builder.from(CoreReasonCode.UNKNOWN_REASON.toString());
+
+        // When
+        final KasperReason reason = builder.build();
+
+        // Then
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.string(), reason.getCode());
+        assertEquals(0, reason.getMessages().size());
+    }
+
+    @Test
     public void testFromCodeAndMessagesCollection() {
         // Given
         final Collection<String> messages = new ArrayList<String>() {{

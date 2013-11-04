@@ -35,11 +35,13 @@ public class KasperDefaultContextBuilderTest extends TestCase {
         // When
         assertEquals(context.getRequestCorrelationId(), newContext.getRequestCorrelationId());
         assertEquals(context.getSessionCorrelationId(), newContext.getSessionCorrelationId());
+        assertEquals(context.getApplicationId(), newContext.getApplicationId());
         assertEquals(context.getUserId(), newContext.getUserId());
         assertEquals(context.getUserLang(), newContext.getUserLang());
         assertEquals(context.getKasperCorrelationId(), newContext.getKasperCorrelationId());
         assertEquals(context.getProperties().size(), newContext.getProperties().size());
         assertEquals(context.getSequenceIncrement() + 1, newContext.getSequenceIncrement());
+        assertEquals(context, newContext);
     }
 	
 }

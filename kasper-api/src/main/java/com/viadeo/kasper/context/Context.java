@@ -27,6 +27,7 @@ public interface Context extends Serializable  {
 
     String DEFAULT_USER_LANG = "fr";
     String DEFAULT_USER_COUNTRY = "FR";
+
     KasperID DEFAULT_USER_ID = DEFAULT_KASPER_ID;
     KasperID DEFAULT_REQCORR_ID = DEFAULT_KASPER_ID;
     KasperID DEFAULT_FUNCORR_ID = DEFAULT_KASPER_ID;

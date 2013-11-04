@@ -151,6 +151,7 @@ public class DefaultContext extends AbstractContext {
         newContext.sessionCorrelationId = this.sessionCorrelationId;
 
         newContext.securityToken = this.securityToken;
+        newContext.applicationId = this.applicationId;
 
         return newContext;
     }
@@ -159,10 +160,6 @@ public class DefaultContext extends AbstractContext {
 
     @Override
     public boolean equals(final Object obj) {
-        return this.equals(obj, true);
-    }
-
-    public boolean equals(final Object obj, final boolean useSuper) {
         if (null == obj) {
             return false;
         }
@@ -172,13 +169,14 @@ public class DefaultContext extends AbstractContext {
 
         final DefaultContext other = (DefaultContext) obj;
 
-        return  (useSuper && super.equals(obj) || !useSuper)
+        return  super.equals(obj)
                 && Objects.equal(this.sessionCorrelationId, other.sessionCorrelationId)
                 && Objects.equal(this.funnelCorrelationId, other.funnelCorrelationId)
                 && Objects.equal(this.requestCorrelationId, other.requestCorrelationId)
                 && Objects.equal(this.userId, other.userId)
                 && Objects.equal(this.userLang, other.userLang)
                 && Objects.equal(this.userCountry, other.userCountry)
+                && Objects.equal(this.applicationId,  other.applicationId)
                 && Objects.equal(this.securityToken, other.securityToken);
     }
 
@@ -186,6 +184,7 @@ public class DefaultContext extends AbstractContext {
     public int hashCode() {
         return Objects.hashCode( super.hashCode(),
                 this.sessionCorrelationId, this.funnelCorrelationId, this.requestCorrelationId,
+                this.applicationId,
                 this.userId, this.userLang, this.userCountry, this.securityToken);
     }
 
@@ -199,6 +198,7 @@ public class DefaultContext extends AbstractContext {
                 .addValue(this.userId)
                 .addValue(this.userLang)
                 .addValue(this.userCountry)
+                .addValue(this.applicationId)
                 .addValue(this.securityToken)
                 .toString();
     }

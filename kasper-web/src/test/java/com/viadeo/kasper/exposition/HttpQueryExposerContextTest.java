@@ -77,7 +77,7 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest<HttpQueryEx
         @Override
         public QueryResponse<ContextCheckResult> retrieve(final QueryMessage<ContextCheckQuery> message) throws Exception {
             if (message.getQuery().getContextName().contentEquals(CONTEXT_FULL)) {
-                assertTrue(((DefaultContext) message.getContext()).equals(context_full, false));
+                assertTrue(((DefaultContext) message.getContext()).equals(context_full));
             }
             return QueryResponse.of(new ContextCheckResult());
         }

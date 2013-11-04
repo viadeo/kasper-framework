@@ -31,6 +31,7 @@ public abstract class AbstractContext implements Context {
 	private Map<String, Serializable> properties;
     private KasperID kasperCorrelationId = DEFAULT_KASPERCORR_ID;
 
+    /* Used to check child contexts, NOT USED IN EQUALITY CHECKS */
     private int sequenceIncrement = INITIAL_SEQUENCE_INCREMENT;
 
 	// ------------------------------------------------------------------------
@@ -158,8 +159,7 @@ public abstract class AbstractContext implements Context {
 
         final AbstractContext other = (AbstractContext) obj;
 
-        final boolean equals = Objects.equal(this.kasperCorrelationId, other.getKasperCorrelationId())
-                && Objects.equal(this.sequenceIncrement, other.sequenceIncrement);
+        final boolean equals = Objects.equal(this.kasperCorrelationId, other.getKasperCorrelationId());
 
         if ( ! equals) {
             return false;
@@ -190,9 +190,8 @@ public abstract class AbstractContext implements Context {
     }
 
     @Override
-    public int hashCode()
-    {
-        return Objects.hashCode( this.kasperCorrelationId, this.sequenceIncrement, this.properties);
+    public int hashCode() {
+        return Objects.hashCode( this.kasperCorrelationId, this.properties);
     }
 
     @Override

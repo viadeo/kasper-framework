@@ -160,7 +160,7 @@ public final class KasperReason implements Serializable, Immutable {
         return messages;
     }
     
-    public boolean hasMessage(String message) {
+    public boolean hasMessage(final String message) {
         return messages.contains(message);
     }
 
