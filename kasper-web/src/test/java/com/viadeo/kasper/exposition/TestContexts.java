@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.impl.StringKasperId;
@@ -16,7 +15,7 @@ import java.util.UUID;
 public class TestContexts {
 
     public static final String CONTEXT_FULL = "full";
-    public static final Context context_full = new DefaultContext();
+    public static final DefaultContext context_full = new DefaultContext();
     {
         context_full.setSessionCorrelationId(new DefaultKasperId(UUID.randomUUID()));
         context_full.setFunnelCorrelationId(new DefaultKasperId(UUID.randomUUID()));

@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -77,7 +78,12 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest<HttpComma
         @Override
         public CommandResponse handle(final KasperCommandMessage<ContextCheckCommand> message) throws Exception {
             if (message.getCommand().getContextName().contentEquals(CONTEXT_FULL)) {
-                assertTrue(((DefaultContext) message.getContext()).equals(context_full));
+
+                /* Kasper correlation id is set by the gateway or auto-expo layer */
+                final DefaultContext clonedContext = ((DefaultContext) message.getContext()).child();
+                clonedContext.setKasperCorrelationId(context_full.getKasperCorrelationId());
+
+                assertTrue(clonedContext.equals(context_full));
             }
             return CommandResponse.ok();
         }

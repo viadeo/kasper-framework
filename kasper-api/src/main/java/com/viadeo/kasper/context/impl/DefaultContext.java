@@ -139,7 +139,9 @@ public class DefaultContext extends AbstractContext {
 
     // ------------------------------------------------------------------------
 
-    public Context child() {
+    @SuppressWarnings("unchecked") // must be ensured by client
+    @Override
+    public <C extends Context> C child() {
         final DefaultContext newContext = (DefaultContext) super.child();
 
         newContext.userId = this.userId;
@@ -153,7 +155,7 @@ public class DefaultContext extends AbstractContext {
         newContext.securityToken = this.securityToken;
         newContext.applicationId = this.applicationId;
 
-        return newContext;
+        return (C) newContext;
     }
 
     // ------------------------------------------------------------------------

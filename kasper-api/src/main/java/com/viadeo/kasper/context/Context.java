@@ -208,6 +208,6 @@ public interface Context extends Serializable  {
      *
      * @return a new child context
      */
-    Context child();
+    <C extends Context> C child();
 
 }

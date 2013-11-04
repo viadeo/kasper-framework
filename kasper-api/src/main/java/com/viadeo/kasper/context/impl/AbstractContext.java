@@ -123,8 +123,9 @@ public abstract class AbstractContext implements Context {
         return this.sequenceIncrement;
     }
 
+    @SuppressWarnings("unchecked") // must be ensured by client
     @Override
-    public Context child() {
+    public <C extends Context> C child() {
         final AbstractContext newContext;
 
         try {
@@ -142,7 +143,7 @@ public abstract class AbstractContext implements Context {
         newContext.kasperCorrelationId = this.kasperCorrelationId;
         newContext.sequenceIncrement = this.sequenceIncrement + 1;
 
-        return newContext;
+        return (C) newContext;
     }
 
     // ------------------------------------------------------------------------
