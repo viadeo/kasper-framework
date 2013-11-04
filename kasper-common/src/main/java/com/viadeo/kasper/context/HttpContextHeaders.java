@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.context;
 
-public class HttpContextHeaders {
+public final class HttpContextHeaders {
 
     private HttpContextHeaders() { /* Utility class */ }
 

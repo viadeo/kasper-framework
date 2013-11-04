@@ -77,10 +77,10 @@ public class HttpQueryExposer extends HttpExposer {
                 final HttpServletResponse resp
         ) throws IOException {
 
-            final ObjectMapper mapper = ObjectMapperProvider.INSTANCE.mapper();
-            final JsonParser parser = mapper.reader().getFactory().createParser(req.getInputStream());
+            final ObjectMapper tmpMapper = ObjectMapperProvider.INSTANCE.mapper();
+            final JsonParser parser = tmpMapper.reader().getFactory().createParser(req.getInputStream());
 
-            final SetMultimap<String, String> queryMap = mapper.reader().readValue(parser, STRINGS_TYPE);
+            final SetMultimap<String, String> queryMap = tmpMapper.reader().readValue(parser, STRINGS_TYPE);
 
             return queryMap;
         }

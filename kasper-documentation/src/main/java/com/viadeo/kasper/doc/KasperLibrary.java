@@ -295,10 +295,10 @@ public class KasperLibrary {
     // --
     // get queries from queryHandlers of a specific domain
     public Map<String,DocumentedQuery> getQueries(final String domainName) {
-        final Map<String,DocumentedQueryHandler> queryHandlers=getQueryHandlers(domainName);
+        final Map<String,DocumentedQueryHandler> tmpQueryHandlers = getQueryHandlers(domainName);
 
         final Map<String,DocumentedQuery> queries=Maps.newHashMap();
-        for (final DocumentedQueryHandler queryHandler:queryHandlers.values()){
+        for (final DocumentedQueryHandler queryHandler:tmpQueryHandlers.values()){
             final Optional<DocumentedQuery> query=getQuery(queryHandler.getQueryName());
             if (query.isPresent()){
                 queries.put(query.get().getName(),query.get());
@@ -327,10 +327,10 @@ public class KasperLibrary {
     // --
     // get queryResults from queryHandlers of a specific domain
     public Map<String,DocumentedQueryResult> getQueryResults(final String domainName){
-        final Map<String,DocumentedQueryHandler> queryHandlers=getQueryHandlers(domainName);
+        final Map<String,DocumentedQueryHandler> tmpQueryHandlers = getQueryHandlers(domainName);
 
         final Map<String,DocumentedQueryResult> queryResults=Maps.newHashMap();
-        for (final DocumentedQueryHandler queryHandler:queryHandlers.values()){
+        for (final DocumentedQueryHandler queryHandler:tmpQueryHandlers.values()){
             final Optional<DocumentedQueryResult> queryResult=getQueryResult(queryHandler.getQueryResultName());
             if (queryResult.isPresent()){
                 queryResults.put(queryResult.get().getName(),queryResult.get());
@@ -595,15 +595,15 @@ public class KasperLibrary {
         Preconditions.checkNotNull(queryHandler);
         Preconditions.checkNotNull(queryResultName);
 
-        final List<DocumentedQueryHandler> queryHandlers;
+        final List<DocumentedQueryHandler> tmpQueryHandlers;
         if (!this.queryResultHandlers.containsKey(queryResultName)) {
-            queryHandlers= Lists.newArrayList();
-            this.queryResultHandlers.put(queryResultName, queryHandlers);
+            tmpQueryHandlers= Lists.newArrayList();
+            this.queryResultHandlers.put(queryResultName, tmpQueryHandlers);
         } else {
-            queryHandlers = this.queryResultHandlers.get(queryResultName);
+            tmpQueryHandlers = this.queryResultHandlers.get(queryResultName);
         }
 
-        queryHandlers.add(queryHandler);
+        tmpQueryHandlers.add(queryHandler);
     }
 
     // --

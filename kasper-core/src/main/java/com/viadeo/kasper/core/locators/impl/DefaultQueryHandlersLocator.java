@@ -222,11 +222,11 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     @Override
     @SuppressWarnings("rawtypes")
     public Collection<QueryHandler> getHandlersFromQueryResultClass(final Class<? extends QueryResult> queryResultClass) {
-        final Collection<QueryHandler> handlers = this.handlerQueryResultClasses.get(queryResultClass);
-        if (handlers == null) {
+        final Collection<QueryHandler> tmpHandlers = this.handlerQueryResultClasses.get(queryResultClass);
+        if (tmpHandlers == null) {
             return Collections.emptyList();
         }
-        return handlers;
+        return tmpHandlers;
     }
 
     @Override

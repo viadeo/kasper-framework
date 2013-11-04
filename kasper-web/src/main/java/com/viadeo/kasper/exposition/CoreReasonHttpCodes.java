@@ -14,7 +14,7 @@ import java.util.Map;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static javax.ws.rs.core.Response.Status;
 
-public class CoreReasonHttpCodes {
+public final class CoreReasonHttpCodes {
 
     private static final Map<String, CoreReasonHttpCodesTranslationTable> STRING_CODES = Maps.newHashMap();
 
@@ -56,6 +56,10 @@ public class CoreReasonHttpCodes {
 
         public Status getHttpStatus() {
             return this.httpStatus;
+        }
+
+        public CoreReasonCode getCode() {
+            return this.code;
         }
 
         public int getStatusCode() {
