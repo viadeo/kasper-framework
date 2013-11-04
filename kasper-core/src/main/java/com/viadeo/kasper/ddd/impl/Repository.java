@@ -125,11 +125,6 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
             try {
 
-                /* All aggregates must have an ID */
-                if (null == aggregate.getIdentifier()) {
-                    throw new KasperCommandException("Aggregates must have an ID (use setID()) before saves");
-                }
-
 			    this.kasperRepository.doSave(aggregate);
 
             } catch (final RuntimeException e) {
@@ -291,6 +286,11 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 */
 	@Override
 	public void add(final AGR aggregate) {
+        /* All aggregates must have an ID */
+        if (null == aggregate.getIdentifier()) {
+            throw new KasperCommandException("Aggregates must have an ID (use setID()) before saves");
+        }
+
 		this.axonRepository.add(aggregate);
 	}
 

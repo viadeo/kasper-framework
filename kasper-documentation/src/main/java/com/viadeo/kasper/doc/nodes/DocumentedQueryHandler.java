@@ -13,7 +13,6 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.google.common.base.Optional;
 
 public final class DocumentedQueryHandler extends DocumentedDomainNode {
 	private static final long serialVersionUID = -4593630427564176805L;

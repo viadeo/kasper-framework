@@ -9,16 +9,16 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
-import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
+
+import java.util.Collections;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
-
-import java.util.Collections;
 
 public class QueryResultResolverTest {
 

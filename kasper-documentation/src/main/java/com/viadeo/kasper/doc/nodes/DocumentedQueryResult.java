@@ -9,7 +9,6 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.viadeo.kasper.core.resolvers.QueryResultResolver;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryResult;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.exception.KasperException;
 

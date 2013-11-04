@@ -8,15 +8,15 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
-import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryResult;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.exception.KasperException;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Collection;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class QueryResultResolver extends AbstractResolver<QueryResult> {
 
