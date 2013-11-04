@@ -166,7 +166,9 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
             }
 
             /* Record the modification date during load */
-            this.loadedModificationTimes.put(agr, agr.getModificationDate());
+            if (null != agr.getModificationDate()) {
+                this.loadedModificationTimes.put(agr, agr.getModificationDate());
+            }
 
             return agr;
 		}
