@@ -34,18 +34,18 @@ KasperClient is thread safe and should be reused for optimal performances.
    final KasperClient client = new KasperClient();
    final QueryResponse<SuperCoolResponse> response =
                 client.query(context, new SuperCoolQuery("what's up?"), SuperCoolResponse.class);
-   if (response.isError()) {
-	KasperReason error = response.getReason();
-        // do something using the error code or the messages list
+   if ( ! response.isOK()) {
+    KasperReason error = response.getReason();
+    // do something using the error code or the messages list
    } else {
-     // if no error occured you can access the result
+    // if no error occured you can access the result
      SuperCoolResponse result = response.get();
    }
 
 If an error occurred during query processing on client side a **KasperQueryException** will be raised, if something goes wrong on server side then a QueryResponse with an error is returned.
 
-.. note:: 
-   
+.. note::
+
    By default KasperClient is configured to hit queries at **http://localhost:8080/query** and commands at **http://localhost:8080/command**.
 
    This can be configured using **KasperClientBuilder**.
@@ -57,15 +57,15 @@ If an error occurred during query processing on client side a **KasperQueryExcep
                                         .queryBaseLocation("http://kasper-platform/query")
                                         .commandBaseLocation("http://kasper-platform/command")
                                         .create();
-                              
+
 **Sending a command** is also quite simple:
 
 .. code-block:: java
    :linenos:
 
    final CommandResponse response = client.send(context, new ICommandYouTo("Enjoy Coding!"));
-   if (response.isError()) {
-      // do something useful with response.getError()
+   if ( ! response.isOK()) {
+      // do something useful with response.getReason()
    }
 
 |

@@ -233,30 +233,31 @@ put your adapter into a file named **com.viadeo.kasper.query.exposition.query.Be
 Predefined Error codes
 ----------------------
 
-For query & command errors some codes have been predefined, but users a free to use new ones.
+For query & command errors some codes have been predefined, but users a free to use new ones, defined codes are mapped to HTTP status codes (defaults to 500).
 
-| REQUIRED_INPUT
-| INVALID_INPUT
-| TOO_MANY_ENTRIES
-| CONFLICT
-| REQUIRE_AUTHENTICATION
-| REQUIRE_AUTHORIZATION
-| UNKNOWN_ERROR
-| INTERNAL_COMPONENT_TIMEOUT
-| INTERNAL_COMPONENT_ERROR
-| INVALID_ID
+| REQUIRED_INPUT (400 - BAD REQUEST)
+| INVALID_INPUT (400 - BAD REQUEST)
+| TOO_MANY_ENTRIES (400 - BAD REQUEST)
+| CONFLICT (409 - CONFLICT)
+| REQUIRE_AUTHENTICATION (401 - UNAUTHORIZED)
+| REQUIRE_AUTHORIZATION (403 - FORBIDDEN)
+| UNKNOWN_REASON (500 - INTERNAL SERVER ERROR)
+| INTERNAL_COMPONENT_TIMEOUT (500 - INTERNAL SERVER ERROR)
+| INTERNAL_COMPONENT_ERROR (500 - INTERNAL SERVER ERROR)
+| INVALID_ID (400 - BAD REQUEST)
+| NOT_FOUND (404 - NOT FOUND)
 
 Context headers
 ---------------
 
 The following HTTP headers can be set to set the queries and commands context :
 
-* X-KASPER-SESSION-CID (UUID)
-* X-KASPER-FUNNEL-CID (UUID)
-* X-KASPER-REQUEST-CID (UUID)
-* X-KASPER-UID (String)
-* X-KASPER-CLIENT-APPID (String)
-* X-KASPER-LANG (String - ISO 639)
-* X-KASPER-COUNTRY (String - ISO 3166)
-* X-KASPER-SECURITY-TOKEN (String)
+* X-KASPER-SESSION-CID (UUID) : the client SESSION correlation id used for logging and events
+* X-KASPER-FUNNEL-CID (UUID) : the client FUNNEL (functional tunnel) correlation id used for logging and events
+* X-KASPER-REQUEST-CID (UUID) : the client REQUEST correlation id used for logging and events
+* X-KASPER-UID (String) : the USER id concerned by this request if any, used for authorization behaviour
+* X-KASPER-CLIENT-APPID (String) : the CLIENT APPLICATION ID used for logging and authorization behaviour
+* X-KASPER-LANG (String - ISO 639) : the user language used for strings internationalization (will be removed when Kasper security will be made available)
+* X-KASPER-COUNTRY (String - ISO 3166) : the user country (will be removed when Kasper security will be made available)
+* X-KASPER-SECURITY-TOKEN (String) : the security token used for authentication
 
