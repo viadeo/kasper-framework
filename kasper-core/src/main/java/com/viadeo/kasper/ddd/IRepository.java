@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.ddd;
 
+import com.viadeo.kasper.KasperID;
+
 /**
  *
  * The base domain CQRS repository
@@ -34,5 +36,10 @@ public interface IRepository<AGR extends AggregateRoot> extends org.axonframewor
 	 * Initialize repository
 	 */
 	void init();
+
+    /**
+     * Checks if an aggregate if exists
+     */
+    boolean has(KasperID id);
 
 }

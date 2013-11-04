@@ -38,9 +38,9 @@ public interface Value extends Serializable {
 	
 	/**
 	 * @param otherValue
-	 * @return true if two objects or answers are equal
+	 * @return true if two objects or results are equal
 	 *
-	 * can be used to compare an IValue with a answer for instance
+	 * can be used to compare an IValue with a result for instance
 	 */
 	boolean equals(Object otherValue);
 	

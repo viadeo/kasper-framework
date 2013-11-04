@@ -61,6 +61,8 @@ public class RepositoryResolverTest {
         @Override
         public void init() { }
         @Override
+        public boolean has(KasperID id) { return false; }
+        @Override
         public TestAggregateRoot load(Object aggregateIdentifier, Long expectedVersion) { return null; }
         @Override
         public TestAggregateRoot load(Object aggregateIdentifier) { return null; }
@@ -72,6 +74,8 @@ public class RepositoryResolverTest {
     private static final class TestGenericRepository implements IRepository {
         @Override
         public void init() { }
+        @Override
+        public boolean has(KasperID id) { return false; }
         @Override
         public Object load(Object aggregateIdentifier, Long expectedVersion) { return null; }
         @Override

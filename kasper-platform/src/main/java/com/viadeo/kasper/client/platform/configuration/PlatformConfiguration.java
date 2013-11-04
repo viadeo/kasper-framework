@@ -10,7 +10,7 @@ import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
@@ -33,7 +33,7 @@ public interface PlatformConfiguration {
 
      /**
       * @return the manager responsible to keep a reference to all Kasper platform
-      * elements (domains, handlers, listeners, query services, repositories, service filters, ...)
+      * elements (domains, command handlers, listeners, query handlers, repositories, filters, ...)
      */
      ComponentsInstanceManager getComponentsInstanceManager();
 
@@ -79,10 +79,10 @@ public interface PlatformConfiguration {
     /**
      * Warning : override the two methods at once
      *
-     * @param locator the query services locator to be used
+     * @param locator the query handlers locator to be used
      * @return the query gateway
      */
-     QueryGateway queryGateway(QueryServicesLocator locator);
+     QueryGateway queryGateway(QueryHandlersLocator locator);
      QueryGateway queryGateway();
 
     /**
@@ -104,12 +104,12 @@ public interface PlatformConfiguration {
     /**
      * Warning : override the two methods at once
      *
-     * @param queryServiceResolver the resolver factory
+     * @param queryHandlerResolver the resolver factory
      *
-     * @return the query services locator
+     * @return the query handlers locator
      */
-    QueryServicesLocator queryServicesLocator(QueryServiceResolver queryServiceResolver);
-    QueryServicesLocator queryServicesLocator();
+    QueryHandlersLocator queryHandlersLocator(QueryHandlerResolver queryHandlerResolver);
+    QueryHandlersLocator queryHandlersLocator();
 
     /**
      * Warning : override the two methods at once
@@ -142,11 +142,11 @@ public interface PlatformConfiguration {
     /**
      * Warning : override the two methods at once
      *
-     * @param locator the query services locator to be used
+     * @param locator the query handlers locator to be used
      * @return the processor
      */
-     QueryServicesProcessor queryServicesProcessor(QueryServicesLocator locator);
-     QueryServicesProcessor queryServicesProcessor();
+     QueryHandlersProcessor queryHandlersProcessor(QueryHandlersLocator locator);
+     QueryHandlersProcessor queryHandlersProcessor();
 
     /**
      * Warning : override the two methods at once
@@ -161,11 +161,11 @@ public interface PlatformConfiguration {
     /**
      * Warning : override the two methods at once
      *
-     * @param locator the query services locator to be used
+     * @param locator the query handlers locator to be used
      * @return the processor
      */
-     ServiceFiltersProcessor serviceFiltersProcessor(QueryServicesLocator locator);
-     ServiceFiltersProcessor serviceFiltersProcessor();
+     QueryHandlerFiltersProcessor queryHandlerFiltersProcessor(QueryHandlersLocator locator);
+     QueryHandlerFiltersProcessor queryHandlerFiltersProcessor();
 
     /**
      * Initialize one or several Yammer metrics reporters
@@ -223,15 +223,15 @@ public interface PlatformConfiguration {
      * Warning : override the two methods at once
      *
      * @param domainResolver the domain resolver
-     * @param queryServiceResolver the query service resolver
-     * @param queryServicesLocator the query services locator
+     * @param queryHandlerResolver the query handler resolver
+     * @param queryHandlersLocator the query handlers locator
      *
      * @return the query resolver
      */
     QueryResolver queryResolver(
             DomainResolver domainResolver,
-            QueryServiceResolver queryServiceResolver,
-            QueryServicesLocator queryServicesLocator
+            QueryHandlerResolver queryHandlerResolver,
+            QueryHandlersLocator queryHandlersLocator
     );
     QueryResolver queryResolver();
 
@@ -239,27 +239,27 @@ public interface PlatformConfiguration {
      * Warning : override the two methods at once
      *
      * @param domainResolver the domain resolver
-     * @param queryServiceResolver the query service resolver
-     * @param queryServicesLocator the query services locator
+     * @param queryHandlerResolver the query service resolver
+     * @param queryHandlersLocator the query services locator
      *
      * @return the query resolver
      */
-    QueryAnswerResolver queryAnswerResolver(
+    QueryResultResolver queryResultResolver(
             DomainResolver domainResolver,
-            QueryServiceResolver queryServiceResolver,
-            QueryServicesLocator queryServicesLocator
+            QueryHandlerResolver queryHandlerResolver,
+            QueryHandlersLocator queryHandlersLocator
     );
-    QueryAnswerResolver queryAnswerResolver();
+    QueryResultResolver queryResultResolver();
 
     /**
      * Warning : override the two methods at once
      *
      * @param domainResolver the domain resolver
      *
-     * @return the query services resolver
+     * @return the query handlers resolver
      */
-    QueryServiceResolver queryServiceResolver(final DomainResolver domainResolver);
-    QueryServiceResolver queryServiceResolver();
+    QueryHandlerResolver queryHandlerResolver(final DomainResolver domainResolver);
+    QueryHandlerResolver queryHandlerResolver();
 
     /**
      * Warning : override the two methods at once
@@ -327,7 +327,7 @@ public interface PlatformConfiguration {
      * @param commandHandlerResolver the command handler resolver
      * @param eventListenerResolver the event listener resolver
      * @param queryResolver the query resolver
-     * @param queryServiceResolver the query service resolver
+     * @param queryHandlerResolver the query handler resolver
      * @param repositoryResolver the repository resolver
      * @param entityResolver the entity resolver
      * @param conceptResolver the concept resolver
@@ -342,8 +342,8 @@ public interface PlatformConfiguration {
             CommandHandlerResolver commandHandlerResolver,
             EventListenerResolver eventListenerResolver,
             QueryResolver queryResolver,
-            QueryAnswerResolver queryAnswerResolver,
-            QueryServiceResolver queryServiceResolver,
+            QueryResultResolver queryResultResolver,
+            QueryHandlerResolver queryHandlerResolver,
             RepositoryResolver repositoryResolver,
             EntityResolver entityResolver,
             ConceptResolver conceptResolver,

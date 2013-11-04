@@ -10,7 +10,7 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
@@ -57,17 +57,17 @@ public class PlatformConfigurationTest {
         final EventListenerResolver eventListenerResolver =
                 this.testCachedComponent(pf, "eventListenerResolver", domainResolver);
 
-        final QueryServiceResolver queryServiceResolver =
-                this.testCachedComponent(pf, "queryServiceResolver", domainResolver);
+        final QueryHandlerResolver queryHandlerResolver =
+                this.testCachedComponent(pf, "queryHandlerResolver", domainResolver);
 
-        final QueryServicesLocator queryServicesLocator=
-                this.testCachedComponent(pf, "queryServicesLocator", queryServiceResolver);
+        final QueryHandlersLocator queryHandlersLocator=
+                this.testCachedComponent(pf, "queryHandlersLocator", queryHandlerResolver);
 
         final QueryResolver queryResolver =
-                this.testCachedComponent(pf, "queryResolver", domainResolver, queryServiceResolver, queryServicesLocator);
+                this.testCachedComponent(pf, "queryResolver", domainResolver, queryHandlerResolver, queryHandlersLocator);
 
-        final QueryAnswerResolver queryAnswerResolver =
-                this.testCachedComponent(pf, "queryAnswerResolver", domainResolver, queryServiceResolver, queryServicesLocator);
+        final QueryResultResolver queryResultResolver =
+                this.testCachedComponent(pf, "queryResultResolver", domainResolver, queryHandlerResolver, queryHandlersLocator);
         
         final ConceptResolver conceptResolver =
                 this.testCachedComponent(pf, "conceptResolver", domainResolver);
@@ -93,8 +93,8 @@ public class PlatformConfigurationTest {
         resolverFactory.setCommandHandlerResolver(commandHandlerResolver);
         resolverFactory.setEventListenerResolver(eventListenerResolver);
         resolverFactory.setQueryResolver(queryResolver);
-        resolverFactory.setQueryAnswerResolver(queryAnswerResolver);
-        resolverFactory.setQueryServiceResolver(queryServiceResolver);
+        resolverFactory.setQueryResultResolver(queryResultResolver);
+        resolverFactory.setQueryHandlerResolver(queryHandlerResolver);
         resolverFactory.setRepositoryResolver(repositoryResolver);
         resolverFactory.setEntityResolver(entityResolver);
         resolverFactory.setConceptResolver(conceptResolver);
@@ -108,7 +108,7 @@ public class PlatformConfigurationTest {
                 this.testCachedComponent(pf, "commandGateway", commandBus);
 
         final QueryGateway queryGateway =
-                this.testCachedComponent(pf, "queryGateway", queryServicesLocator);
+                this.testCachedComponent(pf, "queryGateway", queryHandlersLocator);
 
         final KasperEventBus eventBus =
                 this.testCachedComponent(pf, "eventBus");
@@ -128,14 +128,14 @@ public class PlatformConfigurationTest {
         final EventListenersProcessor eventListenersProcessor =
                 this.testCachedComponent(pf, "eventListenersProcessor", eventBus, commandGateway);
 
-        final QueryServicesProcessor queryServicesProcessor =
-                this.testCachedComponent(pf, "queryServicesProcessor", queryServicesLocator);
+        final QueryHandlersProcessor queryHandlersProcessor =
+                this.testCachedComponent(pf, "queryHandlersProcessor", queryHandlersLocator);
 
         final RepositoriesProcessor repositoriesProcessor=
                 this.testCachedComponent(pf, "repositoriesProcessor", domainLocator, eventBus);
 
-        final ServiceFiltersProcessor serviceFiltersProcessor=
-                this.testCachedComponent(pf, "serviceFiltersProcessor", queryServicesLocator);
+        final QueryHandlerFiltersProcessor queryHandlerFiltersProcessor =
+                this.testCachedComponent(pf, "queryHandlerFiltersProcessor", queryHandlersLocator);
 
         final Platform platform =
                 this.testCachedComponent(pf, "kasperPlatform",

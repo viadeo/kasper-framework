@@ -8,14 +8,14 @@ package com.viadeo.kasper.cqrs.query;
 
 import com.viadeo.kasper.context.Context;
 
-/** The Kasper query gateway, used to answer queries from the kasper platform */
+/** The Kasper query gateway, used to result queries from the kasper platform */
 public interface QueryGateway {
 
 	/**
 	 * @param context the query execution context
-	 * @param query the query to be answered
-	 * @return the Data Transfer Object as an answer
+	 * @param query the query to be resulted
+	 * @return the Data Transfer Object as an result
 	 */
-    <ANSWER extends QueryAnswer> QueryResult<ANSWER> retrieve(Query query, Context context) throws Exception;
+    <RESULT extends QueryResult> QueryResponse<RESULT> retrieve(Query query, Context context) throws Exception;
 
 }

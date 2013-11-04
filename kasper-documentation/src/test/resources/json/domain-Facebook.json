@@ -54,13 +54,13 @@
   "name": "Facebook",
   "parent": null,
   "prefix": "fb",
-  "queryServices": [{
-    "description": "The GetMembers query service",
+  "queryHandlers": [{
+    "description": "The GetMembers query handler",
     "label": "GetMembers",
-    "name": "GetMembersQueryService",
+    "name": "GetMembersQueryHandler",
     "type": "queryservice",
     "typePlural": "queryservices",
-    "url": "/domain/Facebook/queryservice/GetMembersQueryService"
+    "url": "/domain/Facebook/queryservice/GetMembersQueryHandler"
   }],
   "relations": [{
     "description": "The connected_to relation between Member and Member",

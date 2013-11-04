@@ -12,14 +12,21 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.repository.AggregateNotFoundException;
+import org.joda.time.DateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.ConcurrentMap;
 
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
@@ -37,6 +44,7 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  */
 public abstract class Repository<AGR extends AggregateRoot> implements IRepository<AGR> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(Repository.class);
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 	
 	/**
@@ -77,6 +85,8 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
         private final Meter metricDeletes;
         private final Meter metricDeleteErrors;
 
+        private final ConcurrentMap<AggregateRoot, DateTime> loadedModificationTimes; /* Used to track to loaded modification date */
+
         // --------------------------------------------------------------------
 		
 		protected AxonRepository(final Repository<AGR> kasperRepository, final Class<AGR> aggregateType) {
@@ -100,6 +110,8 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
             metricDeleteTimes = METRICS.histogram(name(kasperRepositoryClass, "delete-times"));
             metricDeletes = METRICS.meter(name(kasperRepositoryClass, "deletes"));
             metricDeleteErrors = METRICS.meter(name(kasperRepositoryClass, "delete-errors"));
+
+            loadedModificationTimes = Maps.newConcurrentMap();
 		}
 
         // --------------------------------------------------------------------
@@ -108,8 +120,18 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 		protected void doSave(final AGR aggregate) {
             final Timer.Context timer = metricTimerSave.time();
 
+            /* Ensure dates are correctly set */
+            this.ensureDates(aggregate);
+
             try {
+
+                /* All aggregates must have an ID */
+                if (null == aggregate.getIdentifier()) {
+                    throw new KasperCommandException("Aggregates must have an ID (use setID()) before saves");
+                }
+
 			    this.kasperRepository.doSave(aggregate);
+
             } catch (final RuntimeException e) {
                 metricClassSaveErrors.mark();
                 metricSaveErrors.mark();
@@ -126,7 +148,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
 		@Override
 		protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
-             final Timer.Context timer = metricTimerLoad.time();
+            final Timer.Context timer = metricTimerLoad.time();
 
             final AGR agr;
             try {
@@ -143,12 +165,18 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
                 metricClassLoads.mark();
             }
 
+            /* Record the modification date during load */
+            this.loadedModificationTimes.put(agr, agr.getModificationDate());
+
             return agr;
 		}
 
 		@Override
 		protected void doDelete(final AGR aggregate) {
             final Timer.Context timer = metricTimerDelete.time();
+
+            /* Ensure dates are correctly set */
+            this.ensureDates(aggregate);
 
             try {
  			    this.kasperRepository.doDelete(aggregate);
@@ -165,6 +193,47 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
             }
 
 		}
+
+        // --------------------------------------------------------------------
+
+        /**
+         * Ensure aggregate dates are correctly set before saving / deleting
+         *
+         * @param aggregate the aggregate to check for correct dates
+         */
+        private void ensureDates(final AGR aggregate) {
+             if (AbstractAggregateRoot.class.isAssignableFrom(aggregate.getClass())) {
+                final AbstractAggregateRoot agr = (AbstractAggregateRoot) aggregate;
+                final DateTime now = DateTime.now();
+
+                if (null == agr.getCreationDate()) { /* aggregate seems to be under creation */
+                    if (null != agr.getVersion()) {
+                        LOGGER.warn(
+                                "The aggregate {} with id {} had not a creation date while it's not a new aggregate",
+                                agr.getClass().getSimpleName(),
+                                agr.getEntityId()
+                        );
+                    }
+                    agr.setCreationDate(now);
+                    agr.setModificationDate(now);
+                } else if (null == agr.getModificationDate()) { /* aggregate seems to be under modification */
+                    if (null == agr.getVersion()) { /* it's a new aggregate */
+                        agr.setModificationDate(agr.getCreationDate());
+                    } else {
+                        agr.setModificationDate(now);
+                    }
+                }
+
+                /* The modification date has not been changed since loading */
+                if (this.loadedModificationTimes.containsKey(agr)) {
+                    final DateTime loadedModificationTime = this.loadedModificationTimes.get(agr);
+                    if (agr.getModificationDate().equals(loadedModificationTime)) {
+                        agr.setModificationDate(now);
+                    }
+                    this.loadedModificationTimes.remove(agr, loadedModificationTime);
+                }
+            }
+        }
 		
 	}
 	
@@ -221,7 +290,18 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	@Override
 	public void add(final AGR aggregate) {
 		this.axonRepository.add(aggregate);
-	}	
+	}
+
+    /**
+     * (Optional) indicates existence of an aggregate in the repository
+     *
+     * @param id the aggregate id
+     * @return true if this aggregate exists
+     */
+    @Override
+    public boolean has(final KasperID id) {
+        return this.doHas(id);
+    }
 
 	// ========================================================================
 	
@@ -276,6 +356,16 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * 
 	 * @param aggregate the aggregate to be deleted from the repository
 	 */
-	protected abstract void doDelete(final AGR aggregate);		
-	
+	protected abstract void doDelete(final AGR aggregate);
+
+    /**
+     * (Optional) indicates existence of an aggregate in the repository
+     *
+     * @param aggregateIdentifier the aggregate identifier
+     * @return true if an aggregate exists with this id
+     */
+    protected boolean doHas(final KasperID aggregateIdentifier) {
+        throw new UnsupportedOperationException("has() operation not implemented");
+    }
+
 }

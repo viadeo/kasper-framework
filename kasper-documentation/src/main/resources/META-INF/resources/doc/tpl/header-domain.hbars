@@ -39,10 +39,10 @@
         <!--/span-->
 
         <div class="span4 well well-small">
-            <h2>Query Answers</h2>
-            {{#if node.queryAnswers}}
+            <h2>Query Results</h2>
+            {{#if node.queryResults}}
             <ul>
-                {{#each node.queryAnswers}}
+                {{#each node.queryResults}}
                 <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
                 {{/each}}
             </ul>

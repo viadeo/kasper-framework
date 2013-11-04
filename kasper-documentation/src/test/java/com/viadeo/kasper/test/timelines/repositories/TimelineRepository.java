@@ -1,5 +1,6 @@
 package com.viadeo.kasper.test.timelines.repositories;
 
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.test.timelines.entities.Timeline;
@@ -30,6 +31,11 @@ public class TimelineRepository implements IRepository<Timeline> {
 		// TODO Auto-generated method stub
 		
 	}
+
+    @Override
+    public boolean has(KasperID id) {
+        return false;
+    }
 
 
 }

@@ -33,8 +33,8 @@ Goals
  * Uniformize the communication
  * Be extensible in order to allow customization and extension/addition of new features.
 
-Commands & CommandResult
-------------------------
+Commands & CommandResponse
+--------------------------
 
 Commands are submitted using **POST** or **PUT** requests, there are no query parameters, everything is in the body.
 Actually only json content is supported as input and output.
@@ -80,15 +80,15 @@ In response you receive a json of the following form (see :ref:`Error_codes`).
     }
 
 
-Queries & Results
------------------
+Queries & Responses
+-------------------
 
 A query is submitted using a **GET** request, the parameters will be in the query string not in the body.
 
 This was the prefered way because we want to keep queries as simple as possible and we also think that using GET 
 is handy with tools such as curl. Of course it imposes restrictions on having flat/simple queries and limited query size.
 
-To enable Query exposition register HttpQueryExposer servlet, it will then use the **QueryServicesLocator** to locate each query service.
+To enable Query exposition register HttpQueryExposer servlet, it will then use the **QueryHandlersLocator** to locate each query handler.
 
 Ex: suppose we have the following query, it will be **available at http://host:port/someRootPath/getMemberMessages?memberId=999**.
 
@@ -117,8 +117,9 @@ information on what happened, see :ref:`Error_codes`.
     :linenos:
 
     {
+        "id": "edbe1970-3b5e-11e3-aa6e-0800200c9a66",
         "message": "Some query was not found...", // a technical global error message
-        "errors": [ // can be empty
+        "reasons": [ // can be empty
             {
                 "code": "INVALID_INPUT", // awlays present, a readable code telling what happened
                 "message": "Some technical message", // a detailed free technical message
@@ -127,8 +128,8 @@ information on what happened, see :ref:`Error_codes`.
         ]
     }
 
-In case of a success a query Result will be returned serialized to json, this is done with Jackson. That allows you to use standard Jackson
-annotations on your query Result (if you want to use constructors with args for example).
+In case of a success a query Response will be returned serialized to json, this is done with Jackson. That allows you to use standard Jackson
+annotations on your query Response (if you want to use constructors with args for example).
 
 ..  _TypeAdapters:
 
@@ -244,4 +245,18 @@ For query & command errors some codes have been predefined, but users a free to 
 | INTERNAL_COMPONENT_TIMEOUT
 | INTERNAL_COMPONENT_ERROR
 | INVALID_ID
+
+Context headers
+---------------
+
+The following HTTP headers can be set to set the queries and commands context :
+
+* X-KASPER-SESSION-CID (UUID)
+* X-KASPER-FUNNEL-CID (UUID)
+* X-KASPER-REQUEST-CID (UUID)
+* X-KASPER-UID (String)
+* X-KASPER-CLIENT-APPID (String)
+* X-KASPER-LANG (String - ISO 639)
+* X-KASPER-COUNTRY (String - ISO 3166)
+* X-KASPER-SECURITY-TOKEN (String)
 

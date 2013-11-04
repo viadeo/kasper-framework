@@ -17,6 +17,7 @@ import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.ddd.impl.ClientRepository;
 import com.viadeo.kasper.exception.KasperException;
 
 import java.util.*;
@@ -153,9 +154,9 @@ public class DefaultDomainLocator implements DomainLocator {
     @SuppressWarnings("unchecked")
     // Safe
     @Override
-    public <E extends AggregateRoot> Optional<IRepository<E>> getEntityRepository(final E entity) {
+    public <E extends AggregateRoot> Optional<ClientRepository<E>> getEntityRepository(final E entity) {
         checkNotNull(entity);
-        return Optional.of((IRepository<E>) this.entityRepositories.get(entity.getClass()));
+        return Optional.of(new ClientRepository<E>((IRepository<E>) this.entityRepositories.get(entity.getClass())));
     }
 
     /**
@@ -163,10 +164,10 @@ public class DefaultDomainLocator implements DomainLocator {
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <E extends AggregateRoot> Optional<IRepository<E>> getEntityRepository(final Class<E> entityClass) {
+    public <E extends AggregateRoot> Optional<ClientRepository<E>> getEntityRepository(final Class<E> entityClass) {
         checkNotNull(entityClass);
 
-        return Optional.of((IRepository<E>) this.entityRepositories.get(entityClass));
+        return Optional.of(new ClientRepository<E>((IRepository<E>) this.entityRepositories.get(entityClass)));
     }
 
     // ========================================================================

@@ -8,12 +8,12 @@
 </div>
 {{/if}}
 
-{{#if node.queryAnswer}}
+{{#if node.queryResult}}
 <div class="row-fluid">
     <div class="well well-small">
         <h2>
-            <small>Query Answer :</small>
-            <a class="klink" href="#{{node.queryAnswer.name}}">{{node.queryAnswer.label}}</a></h2>
+            <small>Query Result :</small>
+            <a class="klink" href="#{{node.queryResult.name}}">{{node.queryResult.label}}</a></h2>
     </div>
 </div>
 {{/if}}

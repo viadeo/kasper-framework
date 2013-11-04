@@ -1,8 +1,9 @@
+
 <div class="well well-small">
-    <h2>Query Services</h2>
-    {{#if node.queryServices}}
+    <h2>Query Handlers</h2>
+    {{#if node.queryHandlers}}
     <ul>
-        {{#each node.queryServices}}
+        {{#each node.queryHandlers}}
             <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
         {{/each}}
     </ul>

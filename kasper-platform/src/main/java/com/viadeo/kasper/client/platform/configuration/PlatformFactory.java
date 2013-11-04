@@ -10,7 +10,7 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
@@ -101,13 +101,13 @@ public class PlatformFactory {
 
         final EventListenerResolver eventListenerResolver = platformConfiguration.eventListenerResolver(domainResolver);
 
-        final QueryServiceResolver queryServiceResolver = platformConfiguration.queryServiceResolver(domainResolver);
+        final QueryHandlerResolver queryHandlerResolver = platformConfiguration.queryHandlerResolver(domainResolver);
 
-        final QueryServicesLocator queryServicesLocator = platformConfiguration.queryServicesLocator(queryServiceResolver);
+        final QueryHandlersLocator queryHandlersLocator = platformConfiguration.queryHandlersLocator(queryHandlerResolver);
 
-        final QueryResolver queryResolver = platformConfiguration.queryResolver(domainResolver, queryServiceResolver, queryServicesLocator);
+        final QueryResolver queryResolver = platformConfiguration.queryResolver(domainResolver, queryHandlerResolver, queryHandlersLocator);
 
-        final QueryAnswerResolver queryAnswerResolver = platformConfiguration.queryAnswerResolver(domainResolver, queryServiceResolver, queryServicesLocator);
+        final QueryResultResolver queryResultResolver = platformConfiguration.queryResultResolver(domainResolver, queryHandlerResolver, queryHandlersLocator);
         
         final ResolverFactory resolverFactory = platformConfiguration.resolverFactory(
                 domainResolver,
@@ -115,8 +115,8 @@ public class PlatformFactory {
                 commandHandlerResolver,
                 eventListenerResolver,
                 queryResolver,
-                queryAnswerResolver,
-                queryServiceResolver,
+                queryResultResolver,
+                queryHandlerResolver,
                 repositoryResolver,
                 entityResolver,
                 conceptResolver,
@@ -125,7 +125,7 @@ public class PlatformFactory {
         );
 
         // -- QUERY
-        final QueryGateway queryGateway = platformConfiguration.queryGateway(queryServicesLocator);
+        final QueryGateway queryGateway = platformConfiguration.queryGateway(queryHandlersLocator);
 
         // -- EVENT
         final KasperEventBus eventBus = platformConfiguration.eventBus();
@@ -143,14 +143,14 @@ public class PlatformFactory {
         final EventListenersProcessor eventListenersProcessor = platformConfiguration.eventListenersProcessor(eventBus, commandGateway);
         annotationRootProcessor.registerProcessor(eventListenersProcessor);
 
-        final QueryServicesProcessor queryServicesProcessor = platformConfiguration.queryServicesProcessor(queryServicesLocator);
-        annotationRootProcessor.registerProcessor(queryServicesProcessor);
+        final QueryHandlersProcessor queryHandlersProcessor = platformConfiguration.queryHandlersProcessor(queryHandlersLocator);
+        annotationRootProcessor.registerProcessor(queryHandlersProcessor);
 
         final RepositoriesProcessor repositoriesProcessor = platformConfiguration.repositoriesProcessor(domainLocator, eventBus);
         annotationRootProcessor.registerProcessor(repositoriesProcessor);
 
-        final ServiceFiltersProcessor serviceFiltersProcessor = platformConfiguration.serviceFiltersProcessor(queryServicesLocator);
-        annotationRootProcessor.registerProcessor(serviceFiltersProcessor);
+        final QueryHandlerFiltersProcessor queryHandlerFiltersProcessor = platformConfiguration.queryHandlerFiltersProcessor(queryHandlersLocator);
+        annotationRootProcessor.registerProcessor(queryHandlerFiltersProcessor);
 
         // -- Metrics
         KasperMetrics.setResolverFactory(resolverFactory);

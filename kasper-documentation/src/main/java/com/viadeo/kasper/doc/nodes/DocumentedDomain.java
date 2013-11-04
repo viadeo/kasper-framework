@@ -92,19 +92,19 @@ public final class DocumentedDomain extends DocumentedNode {
 		return kl.simpleNodesFrom( kl.getHandlers(getName()) ).values();
 	}
 	
-	public Collection<DocumentedNode> getQueryServices() {
+	public Collection<DocumentedNode> getQueryHandlers() {
 		final KasperLibrary kl = this.getKasperLibrary();
-		return kl.simpleNodesFrom( kl.getQueryServices(getName()) ).values();
+		return kl.simpleNodesFrom( kl.getQueryHandlers(getName()) ).values();
 	}
 
-	public Collection<DocumentedNode> getQueries() {
-		final KasperLibrary kl = this.getKasperLibrary();
-		return kl.simpleNodesFrom( kl.getQueries(getName()) ).values();
-	}
+    public Collection<DocumentedNode> getQueries(){
+        final KasperLibrary kl=this.getKasperLibrary();
+        return kl.simpleNodesFrom( kl.getQueries(getName()) ).values();
+    }
 
-	public Collection<DocumentedNode> getQueryAnswers() {
-		final KasperLibrary kl = this.getKasperLibrary();
-		return kl.simpleNodesFrom( kl.getQueryAnswers(getName()) ).values();
-	}
+    public Collection<DocumentedNode> getQueryResults(){
+        final KasperLibrary kl=this.getKasperLibrary();
+        return kl.simpleNodesFrom( kl.getQueryResults(getName()) ).values();
+    }
 
 }

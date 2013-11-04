@@ -1,5 +1,6 @@
 package com.viadeo.kasper.test.root.repositories;
 
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.test.root.entities.Member;
@@ -30,5 +31,10 @@ public class MemberRepository implements IRepository<Member> {
 		// TODO Auto-generated method stub
 		
 	}
+
+    @Override
+    public boolean has(KasperID id) {
+        return false;
+    }
 
 }

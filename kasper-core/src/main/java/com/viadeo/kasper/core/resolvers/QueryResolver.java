@@ -7,9 +7,9 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQuery;
 import com.viadeo.kasper.ddd.Domain;
 
@@ -17,8 +17,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class QueryResolver extends AbstractResolver<Query> {
 
-    private QueryServicesLocator queryServicesLocator;
-    private QueryServiceResolver queryServiceResolver;
+    private QueryHandlersLocator queryHandlersLocator;
+    private QueryHandlerResolver queryHandlerResolver;
 
     // ------------------------------------------------------------------------
 
@@ -37,11 +37,11 @@ public class QueryResolver extends AbstractResolver<Query> {
             return Optional.<Class<? extends Domain>>of(cacheDomains.get(clazz));
         }
 
-        final Optional<QueryService> service = this.queryServicesLocator.getServiceFromQueryClass(clazz);
+        final Optional<QueryHandler> handler = this.queryHandlersLocator.getHandlerFromQueryClass(clazz);
 
-        if (service.isPresent()) {
+        if (handler.isPresent()) {
             final Optional<Class<? extends Domain>> domain =
-                    this.queryServiceResolver.getDomainClass(service.get().getClass());
+                    this.queryHandlerResolver.getDomainClass(handler.get().getClass());
 
             if (domain.isPresent()) {
                 cacheDomains.put(clazz, domain.get());
@@ -76,12 +76,12 @@ public class QueryResolver extends AbstractResolver<Query> {
 
     // ------------------------------------------------------------------------
 
-    public void setQueryServicesLocator(final QueryServicesLocator queryServicesLocator) {
-        this.queryServicesLocator = checkNotNull(queryServicesLocator);
+    public void setQueryHandlersLocator(final QueryHandlersLocator queryHandlersLocator) {
+        this.queryHandlersLocator = checkNotNull(queryHandlersLocator);
     }
 
-    public void setQueryServiceResolver(final QueryServiceResolver queryServiceResolver) {
-        this.queryServiceResolver = checkNotNull(queryServiceResolver);
+    public void setQueryHandlerResolver(final QueryHandlerResolver queryHandlerResolver) {
+        this.queryHandlerResolver = checkNotNull(queryHandlerResolver);
     }
 
 }

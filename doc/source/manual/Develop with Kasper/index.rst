@@ -8,7 +8,7 @@ Components which are part of a domain API (sometimes referred later as **C/Q/E**
 
 - **C** - Commands
 - **Q** - Queries
-- **QR** - Query results
+- **QR** - Query responses
 - **E** - Events
 
 Components which manipulates I/O between layers :

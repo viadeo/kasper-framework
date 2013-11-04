@@ -20,11 +20,7 @@ interface AutoDocumentationConfiguration {
 
      CommandsDocumentationProcessor getCommandsDocumentationProcessor( KasperLibrary library);
 
-     QueryServicesDocumentationProcessor getQueryServicesDocumentationProcessor( KasperLibrary library);
-
-      QueriesDocumentationProcessor getQueriesDocumentationProcessor( KasperLibrary library);
- 
-      QueryAnswersDocumentationProcessor getQueryAnswersDocumentationProcessor( KasperLibrary library);
+     QueryHandlersDocumentationProcessor getQueryHandlersDocumentationProcessor( KasperLibrary library);
 
      EventsDocumentationProcessor getEventsDocumentationProcessor( KasperLibrary library);
 
@@ -35,5 +31,9 @@ interface AutoDocumentationConfiguration {
      ListenersDocumentationProcessor getListenersDocumentationProcessor( KasperLibrary library);
 
      HandlersDocumentationProcessor getHandlersDocumentationProcessor( KasperLibrary library);
+
+     QueriesDocumentationProcessor getQueriesDocumentationProcessor( KasperLibrary library);
+
+     QueryResultsDocumentationProcessor getQueryResultsDocumentationProcessor( KasperLibrary library);
 
 }

@@ -8,12 +8,12 @@ package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.viadeo.kasper.CoreErrorCode;
-import com.viadeo.kasper.KasperError;
-import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.query.QueryAnswer;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionAnswer;
+import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionResult;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
@@ -26,14 +26,14 @@ import static org.junit.Assert.*;
 public class ObjectMapperProviderTest {
     final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
 
-    static class SomeAnswer implements QueryAnswer {
+    static class SomeResult implements QueryResult {
         private String str;
 
-        public SomeAnswer() {
+        public SomeResult() {
             
         }
         
-        public SomeAnswer(String str) {
+        public SomeResult(String str) {
             this.str = str;
         }
 
@@ -46,112 +46,112 @@ public class ObjectMapperProviderTest {
         }
     }
 
-    static class SomeCollectionResult extends AbstractQueryCollectionAnswer<SomeAnswer> {
+    static class SomeCollectionResponse extends AbstractQueryCollectionResult<SomeResult> {
     }
 
     // ------------------------------------------------------------------------
 
     @Test
-    public void queryResultSuccessRoundTrip() throws IOException {
+    public void queryResponseSuccessRoundTrip() throws IOException {
         // Given
-        final QueryResult<SomeAnswer> expected = new QueryResult<SomeAnswer>(new SomeAnswer("foo"));
+        final QueryResponse<SomeResult> expected = new QueryResponse<SomeResult>(new SomeResult("foo"));
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
                 expected);
 
-        final QueryResult<SomeAnswer> actual = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), new TypeReference<QueryResult<SomeAnswer>>() {});
+        final QueryResponse<SomeResult> actual = objectReader.readValue(objectReader.getFactory()
+                .createJsonParser(json), new TypeReference<QueryResponse<SomeResult>>() {});
         
-        assertFalse(actual.isError());
-        assertNull(actual.getError());
-        assertEquals(expected.getAnswer().getStr(), actual.getAnswer().getStr());
+        assertTrue(actual.isOK());
+        assertNull(actual.getReason());
+        assertEquals(expected.getResult().getStr(), actual.getResult().getStr());
     }
 
     @Test
-    public void queryResultErrorRoundTrip() throws IOException {
+    public void queryResponseErrorRoundTrip() throws IOException {
         // Given
-        final QueryResult expected = QueryResult.of(new KasperError("CODE", "aCode", "aMessage"));
+        final QueryResponse expected = QueryResponse.error(new KasperReason("CODE", "aCode", "aMessage"));
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
                 expected);
         @SuppressWarnings("unchecked")
-        final QueryResult actual = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), QueryResult.class);
+        final QueryResponse actual = objectReader.readValue(objectReader.getFactory()
+                .createJsonParser(json), QueryResponse.class);
 
         // Then
-        assertTrue(actual.isError());
-        assertEquals(expected.getError().getCode(), actual.getError().getCode());
-        assertEquals(expected.getError().getMessages().size(),
-                     actual.getError().getMessages().size());
+        assertFalse(actual.isOK());
+        assertEquals(expected.getReason().getCode(), actual.getReason().getCode());
+        assertEquals(expected.getReason().getMessages().size(),
+                     actual.getReason().getMessages().size());
 
-        for (int i = 0; i < expected.getError().getMessages().size(); i++) {
-            assertEquals(expected.getError().getMessages().toArray()[i],
-                         actual.getError().getMessages().toArray()[i]);
+        for (int i = 0; i < expected.getReason().getMessages().size(); i++) {
+            assertEquals(expected.getReason().getMessages().toArray()[i],
+                         actual.getReason().getMessages().toArray()[i]);
         }
     }
 
     @Test
-    public void deserializeErrorCommandResultWithSingleKasperError() throws IOException {
+    public void deserializeErrorCommandResponseWithSingleKasperReason() throws IOException {
         // Given
-        final KasperError expectedError = new KasperError(CoreErrorCode.UNKNOWN_ERROR, "some error");
-        final CommandResult expectedResult = CommandResult.error(expectedError);
+        final KasperReason expectedError = new KasperReason(CoreReasonCode.UNKNOWN_REASON, "some error");
+        final CommandResponse expectedResponse = CommandResponse.error(expectedError);
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
-                expectedResult);
-        final CommandResult actualResult = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), CommandResult.class);
+                expectedResponse);
+        final CommandResponse actualResponse = objectReader.readValue(objectReader.getFactory()
+                .createJsonParser(json), CommandResponse.class);
 
         // Then
-        assertEquals(expectedResult.getStatus(), actualResult.getStatus());
-        assertEquals(expectedError.getCode(), actualResult.getError().getCode());
+        assertEquals(expectedResponse.getStatus(), actualResponse.getStatus());
+        assertEquals(expectedError.getCode(), actualResponse.getReason().getCode());
         assertEquals(expectedError.getMessages().toArray()[0],
-                     actualResult.getError().getMessages().toArray()[0]);
+                     actualResponse.getReason().getMessages().toArray()[0]);
     }
 
     @Test
-    public void deserializeErrorCommandResultWithMultipleKasperError() throws IOException {
+    public void deserializeErrorCommandResponseWithMultipleKasperReason() throws IOException {
         // Given
-        final KasperError expectedError = new KasperError(CoreErrorCode.CONFLICT, "too late...",
+        final KasperReason expectedError = new KasperReason(CoreReasonCode.CONFLICT, "too late...",
                 "some error");
 
-        final CommandResult expectedResult = CommandResult.error(expectedError);
+        final CommandResponse expectedResponse = CommandResponse.error(expectedError);
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
-                expectedResult);
-        final CommandResult actualResult = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), CommandResult.class);
+                expectedResponse);
+        final CommandResponse actualResponse = objectReader.readValue(objectReader.getFactory()
+                .createJsonParser(json), CommandResponse.class);
 
         // Then
-        assertEquals(expectedResult.getStatus(), actualResult.getStatus());
-        assertEquals(expectedError.getMessages().size(), actualResult.getError().getMessages()
+        assertEquals(expectedResponse.getStatus(), actualResponse.getStatus());
+        assertEquals(expectedError.getMessages().size(), actualResponse.getReason().getMessages()
                 .size());
 
-        assertEquals(expectedError.getCode(), actualResult.getError().getCode());
+        assertEquals(expectedError.getCode(), actualResponse.getReason().getCode());
 
         for (int i = 0; i < expectedError.getMessages().size(); i++) {
             assertEquals(expectedError.getMessages().toArray()[i],
-                         actualResult.getError().getMessages().toArray()[i]);
+                         actualResponse.getReason().getMessages().toArray()[i]);
         }
     }
 
     @Test
     public void dontFailOnUnknownProperty() throws IOException {
         // Given
-        final SomeCollectionResult result = new SomeCollectionResult();
-        result.setList(Arrays.asList(new SomeAnswer("foo"), new SomeAnswer("bar")));
+        final SomeCollectionResponse response = new SomeCollectionResponse();
+        response.setList(Arrays.asList(new SomeResult("foo"), new SomeResult("bar")));
 
         // When
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(result);
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(response);
         final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final SomeCollectionResult actual = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), SomeCollectionResult.class);
+        final SomeCollectionResponse actual = objectReader.readValue(objectReader.getFactory()
+                .createJsonParser(json), SomeCollectionResponse.class);
 
         // Then
-        assertEquals(result.getCount(), actual.getCount());
+        assertEquals(response.getCount(), actual.getCount());
     }
 
     @Test

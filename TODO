@@ -1,71 +1,27 @@
-Urgent :
-========
 
-- verifier la bonne prise en compte des noms présents dans les annotations
-    -> doc, auto-expo
-    -> une seule méthode de noms par défaut
-- improve kasper queries documentation
-- revoir les nodes de kasper-doc, voir à utiliser les locators globaux ?
-- possibilité de virer les qques @Inject ou @Autowired qui traînent ?
+- test context
+- doc context + headers
+- platform : check non reg.. !!
 
 Query :
 =======
 
-- Introduce KasperSerializeFilterVisitor, KasperDeserializeFilterVisitor
-- Base Viadeo query services
-   - SimpleEntityRetrieverService(id)
-   - AutoCompleteService
-   - FacetedSearchService
-   - CollectionSearcherService
-   - ...
  - Possibilit� d'un lien du type d'objet afin de retrouver les commandes associ�es ?
- - orderby, limit, page, .. ?
  - default query repository (graph+concepts) + domain : http://www.w3.org/TR/2012/WD-ldp-20121025/  ? (Linked Data Platform 1.0)
  - OData ? http://code.google.com/p/odata4j/
- - notion de query interceptors sur le sch�m des Axon command interceptors
-   
- Securit� :
- ==========
- 
-  - Plugins li�s � l'identification, � l'authentification et � l'authorisation sous forme de command interceptors et query interceptors 
    
  Domain :
  ========
  
- - Basic constraints on value objects, language de validation ?
  - business rules : http://openrules.com/?
  - strat�gie de partage des contraintes sur les champs entre domaine et ui ?
- - forcer ids statiques sur les referenceValues (pour utilisation de l'id dans la ui)
  - la gateway est responsable de retourner l'erreur en mode synchrone ou de g�n�rer un event error, intercept� par le eventhandler commandErrorsHandler
  - feature toggles, sous forme de specification ? Quel param�tres ?
     --> Feature flags : http://www.togglz.org/  ?
  
- Events : 
- ========
- 
- - Parse and record event classes (4 annotations : Event, CreatedEvent, DeletedEvent, UpdatedEvent
-    -> little change on annotationProcessors to accept multiple annotations..
-    -> adapt XKasperCommandHandler processor to understand EntityCreator, EntityErase, EntityUpdater
- 
  Platform :
  ==========
  
- - Configuration management
  - Unit test framework
- - Finish Kasper internal tests + documentation
- - simplification usage externe configuration Spring, utilisations des listeners Kasper, etc..
- 
  - validationProcessor sur les locators, applications des règles de consistance etc..
- - REST auto layer
- - Stratégie de cache
- - Sécurité (cf Shiro ?)
  
- Framework :
- ===========
- 
- 
- Other :
- =======
- 
- 
-  

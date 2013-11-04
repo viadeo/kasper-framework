@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.ddd;
 
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
@@ -39,7 +40,12 @@ public class KasperRepositoryTest<ENTITY extends AggregateRoot> implements IRepo
 		// DO nothing
 	}
 
-	//------------------------------------------------------------------------
+    @Override
+    public boolean has(KasperID id) {
+        return false;
+    }
+
+    //------------------------------------------------------------------------
 	
 	public KasperRepositoryTest(final FixtureConfiguration<ENTITY> fixture) {
 		this.axonRepository = fixture.getRepository();

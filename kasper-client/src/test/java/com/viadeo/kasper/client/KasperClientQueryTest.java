@@ -17,10 +17,11 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
-import com.viadeo.kasper.CoreErrorCode;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryAnswer;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import junit.framework.Assert;
@@ -53,7 +54,7 @@ public class KasperClientQueryTest extends JerseyTest {
 
     // ------------------------------------------------------------------------
 
-    public static class MemberAnswer implements QueryAnswer {
+    public static class MemberResult implements QueryResult {
         private static final long serialVersionUID = 5377830561251071588L;
         
         private String memberName;
@@ -61,10 +62,10 @@ public class KasperClientQueryTest extends JerseyTest {
 
         // --
 
-        public MemberAnswer() {
+        public MemberResult() {
         }
 
-        public MemberAnswer(final String memberName, final List<Integer> ids) {
+        public MemberResult(final String memberName, final List<Integer> ids) {
             this.memberName = memberName;
             this.ids = ids;
         }
@@ -126,16 +127,16 @@ public class KasperClientQueryTest extends JerseyTest {
         @GET
         @Produces(MediaType.APPLICATION_JSON)
         @Consumes(MediaType.APPLICATION_JSON)
-        public MemberAnswer getMember(@QueryParam("memberName") final String memberName,
+        public MemberResult getMember(@QueryParam("memberName") final String memberName,
                                       @QueryParam("ids") final List<Integer> ids) {
-            return new MemberAnswer(memberName, ids);
+            return new MemberResult(memberName, ids);
         }
 
         @POST
         @Produces(MediaType.APPLICATION_JSON)
         @Consumes(MediaType.APPLICATION_JSON)
-        public MemberAnswer getPostMember(ImmutableSetMultimap<String, String> query) {
-            return new MemberAnswer(query.get("memberName").iterator().next(), Lists.newArrayList(Iterables.transform(query.get("ids"), new Function<String, Integer>() {
+        public MemberResult getPostMember(ImmutableSetMultimap<String, String> query) {
+            return new MemberResult(query.get("memberName").iterator().next(), Lists.newArrayList(Iterables.transform(query.get("ids"), new Function<String, Integer>() {
                 @Override
                 public Integer apply(String input) {
                     return Integer.parseInt(input);
@@ -153,11 +154,11 @@ public class KasperClientQueryTest extends JerseyTest {
 
     // ------------------------------------------------------------------------
 
-    private void checkRoundTrip(final GetMemberQuery original, final QueryResult<MemberAnswer> obtained) {
-        assertEquals(original.getMemberName(), obtained.getAnswer().getMemberName());
+    private void checkRoundTrip(final GetMemberQuery original, final QueryResponse<MemberResult> obtained) {
+        assertEquals(original.getMemberName(), obtained.getResult().getMemberName());
 
         final List<Integer> expected = original.getIds();
-        final List<Integer> actual = obtained.getAnswer().getIds();
+        final List<Integer> actual = obtained.getResult().getIds();
         assertEquals(expected.size(), actual.size());
 
         for (int i = 0; i < expected.size(); i++) {
@@ -205,10 +206,11 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When
-        final QueryResult<MemberAnswer> result = client.query(query, MemberAnswer.class);
+        final QueryResponse<MemberResult> response = client.query(
+                DefaultContextBuilder.get(), query, MemberResult.class);
 
         // Then
-        checkRoundTrip(query, result);
+        checkRoundTrip(query, response);
     }
 
     @Test
@@ -218,10 +220,11 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When 
-        final QueryResult<MemberAnswer> result = client.queryAsync(query, MemberAnswer.class).get();
+        final QueryResponse<MemberResult> response = client.queryAsync(
+                DefaultContextBuilder.get(), query, MemberResult.class).get();
 
         // Then
-        checkRoundTrip(query, result);
+        checkRoundTrip(query, response);
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -231,22 +234,22 @@ public class KasperClientQueryTest extends JerseyTest {
         // Given
         final CountDownLatch latch = new CountDownLatch(1);
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
-        final Callback<QueryResult<MemberAnswer>> callback = spy(new Callback<QueryResult<MemberAnswer>>() {
+        final Callback<QueryResponse<MemberResult>> callback = spy(new Callback<QueryResponse<MemberResult>>() {
             @Override
-            public void done(QueryResult<MemberAnswer> result) {
+            public void done(QueryResponse<MemberResult> response) {
                 latch.countDown();
             }
         });
         @SuppressWarnings("rawtypes")
-        final ArgumentCaptor<QueryResult> result = ArgumentCaptor.forClass(QueryResult.class);
+        final ArgumentCaptor<QueryResponse> response = ArgumentCaptor.forClass(QueryResponse.class);
 
         // When
-        client.queryAsync(query, MemberAnswer.class, callback);
+        client.queryAsync(DefaultContextBuilder.get(), query, MemberResult.class, callback);
 
         // Then
         latch.await(5, TimeUnit.SECONDS);
-        verify(callback).done(result.capture());
-        checkRoundTrip(query, result.getValue());
+        verify(callback).done(response.capture());
+        checkRoundTrip(query, response.getValue());
     }
 
     @Test public void testQueryUsingPost() throws MalformedURLException {
@@ -258,13 +261,14 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When
-        final QueryResult<MemberAnswer> result = client.query(query, MemberAnswer.class);
+        final QueryResponse<MemberResult> response = client.query(
+                DefaultContextBuilder.get(), query, MemberResult.class);
 
         // Then
-        checkRoundTrip(query, result);
+        checkRoundTrip(query, response);
     }
 
-    @Test public void query_withAnswerNot200_shouldFillErrorsInResult() {
+    @Test public void query_withResultNot200_shouldFillErrorsInResponse() {
         // Given
         KasperClient client = null;
         try {
@@ -277,15 +281,16 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When
-        final QueryResult<MemberAnswer> result = client.query(query, MemberAnswer.class);
+        final QueryResponse<MemberResult> response = client.query(
+                DefaultContextBuilder.get(), query, MemberResult.class);
 
         // Then
-        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), result.getError().getCode());
-        Assert.assertEquals(Response.Status.NOT_FOUND, result.asHttp().getHTTPStatus());
-        Assert.assertEquals(TransportMode.HTTP, result.getTransportMode());
+        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.toString(), response.getReason().getCode());
+        Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
+        Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }
 
-    @Test public void queryAsync_withAnswerNot200_shouldFillErrorsInResult() throws MalformedURLException, InterruptedException, ExecutionException {
+    @Test public void queryAsync_withResultNot200_shouldFillErrorsInResponse() throws MalformedURLException, InterruptedException, ExecutionException {
         // Given
         client = new KasperClientBuilder()
                 .queryBaseLocation(new URL("http://localhost:" + port + "/404/"))
@@ -293,11 +298,12 @@ public class KasperClientQueryTest extends JerseyTest {
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
 
         // When
-        final QueryResult<MemberAnswer> result = client.queryAsync(query, MemberAnswer.class).get();
+        final QueryResponse<MemberResult> response = client.queryAsync(
+                DefaultContextBuilder.get(), query, MemberResult.class).get();
 
         // Then
-        Assert.assertEquals(CoreErrorCode.UNKNOWN_ERROR.toString(), result.getError().getCode());
-        Assert.assertEquals(Response.Status.NOT_FOUND, result.asHttp().getHTTPStatus());
-        Assert.assertEquals(TransportMode.HTTP, result.getTransportMode());
+        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.toString(), response.getReason().getCode());
+        Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
+        Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }
 }

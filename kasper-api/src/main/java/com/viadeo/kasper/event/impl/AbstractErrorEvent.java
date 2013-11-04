@@ -7,7 +7,7 @@
 package com.viadeo.kasper.event.impl;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.CoreErrorCode;
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.ErrorEvent;
 
@@ -45,28 +45,28 @@ public class AbstractErrorEvent extends AbstractEvent implements ErrorEvent {
 
     public AbstractErrorEvent(final Context context, final String message) {
         super(context);
-        this.code = CoreErrorCode.UNKNOWN_ERROR.toString();
+        this.code = CoreReasonCode.UNKNOWN_REASON.toString();
         this.exception = null;
         this.message = checkNotNull(message);
     }
 
     public AbstractErrorEvent(final Context context, final Exception exception) {
         super(context);
-        this.code = CoreErrorCode.UNKNOWN_ERROR.toString();
+        this.code = CoreReasonCode.UNKNOWN_REASON.toString();
         this.exception = checkNotNull(exception);
         this.message = null;
     }
 
-    public AbstractErrorEvent(final Context context, final CoreErrorCode code,
+    public AbstractErrorEvent(final Context context, final CoreReasonCode code,
                               final String message, final Exception exception) {
          this(context, code.toString(), message, exception);
     }
 
-    public AbstractErrorEvent(final Context context, final CoreErrorCode code, final Exception exception) {
+    public AbstractErrorEvent(final Context context, final CoreReasonCode code, final Exception exception) {
         this(context, code.toString(), exception);
     }
 
-    public AbstractErrorEvent(final Context context, final CoreErrorCode code, final String message) {
+    public AbstractErrorEvent(final Context context, final CoreReasonCode code, final String message) {
         this(context, code.toString(), message);
     }
 

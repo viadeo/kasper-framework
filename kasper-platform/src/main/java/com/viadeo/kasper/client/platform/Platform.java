@@ -14,7 +14,7 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
-import com.viadeo.kasper.cqrs.query.QueryAnswer;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.event.Event;
 
@@ -36,7 +36,7 @@ import com.viadeo.kasper.event.Event;
  *
  * A root processor has to be supplied to the platform during its building, this root processor
  * will be called during the boot process in order to analyze, depending on its settings, parts
- * of your classpath searching for your Kasper components (aka. Handlers, Services, Listeners,
+ * of your classpath searching for your Kasper components (aka. Handlers, Listeners,
  * Repositories, ...)
  *
  */
@@ -114,15 +114,15 @@ public interface Platform {
 	QueryGateway getQueryGateway();
 
     /**
-     * Sends a query to the platform, retrieving a result for this query
+     * Sends a query to the platform, retrieving a response for this query
      *
      * @param query the query to be processed by the platform
      * @param context the query context
      *
-     * @return the result generated after processing of the query
+     * @return the response generated after processing of the query
      * @throws Exception when something bad occurs
      */
-    <ANSWER extends QueryAnswer> QueryResult<ANSWER> retrieve(Query query, Context context) throws Exception;
+    <RESULT extends QueryResult> QueryResponse<RESULT> retrieve(Query query, Context context) throws Exception;
 
  	/** == Events ========================================================== */
 

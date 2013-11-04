@@ -25,14 +25,16 @@ public class DefaultAutoDocumentationConfiguration implements AutoDocumentationC
         this.getDomainsDocumentationProcessor(library);
         this.getRepositoriesDocumentationProcessor(library);
         this.getCommandsDocumentationProcessor(library);
-        this.getQueryServicesDocumentationProcessor(library);
         this.getQueriesDocumentationProcessor(library);
-        this.getQueryAnswersDocumentationProcessor(library);
+        this.getQueryResultsDocumentationProcessor(library);
+        this.getQueryHandlersDocumentationProcessor(library);
         this.getEventsDocumentationProcessor(library);
         this.getConceptsDocumentationProcessor(library);
         this.getRelationsDocumentationProcessor(library);
         this.getListenersDocumentationProcessor(library);
         this.getHandlersDocumentationProcessor(library);
+        this.getQueriesDocumentationProcessor(library);
+        this.getQueryResultsDocumentationProcessor(library);
     }
 
     // ------------------------------------------------------------------------
@@ -77,21 +79,8 @@ public class DefaultAutoDocumentationConfiguration implements AutoDocumentationC
     }
 
     @Override
-    public QueryServicesDocumentationProcessor getQueryServicesDocumentationProcessor(final KasperLibrary library) {
-        final QueryServicesDocumentationProcessor proc = new QueryServicesDocumentationProcessor();
-        proc.setKasperLibrary(library);
-        return this.registerProcessor(proc);
-    }
-
-    @Override
-    public QueriesDocumentationProcessor getQueriesDocumentationProcessor(final KasperLibrary library){
-        final QueriesDocumentationProcessor proc= new QueriesDocumentationProcessor();
-        proc.setKasperLibrary(library);
-        return this.registerProcessor(proc);
-    }
- 
-    public QueryAnswersDocumentationProcessor getQueryAnswersDocumentationProcessor(final KasperLibrary library){
-        final QueryAnswersDocumentationProcessor proc=new QueryAnswersDocumentationProcessor();
+    public QueryHandlersDocumentationProcessor getQueryHandlersDocumentationProcessor(final KasperLibrary library) {
+        final QueryHandlersDocumentationProcessor proc = new QueryHandlersDocumentationProcessor();
         proc.setKasperLibrary(library);
         return this.registerProcessor(proc);
     }
@@ -127,6 +116,20 @@ public class DefaultAutoDocumentationConfiguration implements AutoDocumentationC
     @Override
     public HandlersDocumentationProcessor getHandlersDocumentationProcessor(final KasperLibrary library) {
         final HandlersDocumentationProcessor proc = new HandlersDocumentationProcessor();
+        proc.setKasperLibrary(library);
+        return this.registerProcessor(proc);
+    }
+
+    @Override
+    public QueriesDocumentationProcessor getQueriesDocumentationProcessor(final KasperLibrary library){
+        final QueriesDocumentationProcessor proc= new QueriesDocumentationProcessor();
+        proc.setKasperLibrary(library);
+        return this.registerProcessor(proc);
+    }
+
+    @Override
+    public QueryResultsDocumentationProcessor getQueryResultsDocumentationProcessor(final KasperLibrary library){
+        final QueryResultsDocumentationProcessor proc=new QueryResultsDocumentationProcessor();
         proc.setKasperLibrary(library);
         return this.registerProcessor(proc);
     }

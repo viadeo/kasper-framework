@@ -7,12 +7,14 @@
 package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.ImmutableList;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
-import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.command.CommandResult.Status;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.command.CommandResponse.Status;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
 import com.viadeo.kasper.exception.KasperException;
@@ -25,6 +27,7 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -51,11 +54,11 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         final Command unknownCommand = new Command() {};
 
         // When
-        final CommandResult result = client().send(unknownCommand);
+        final CommandResponse response = client().send(DefaultContextBuilder.get(), unknownCommand);
 
         // Then
-        assertEquals(Status.ERROR, result.getStatus());
-        assertNotNull(result.getError().getMessages().toArray()[0]);
+        assertEquals(Status.ERROR, response.getStatus());
+        assertNotNull(response.getReason().getMessages().toArray()[0]);
     }
 
     // ------------------------------------------------------------------------
@@ -67,10 +70,10 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.name = "foo bar";
 
         // When
-        final CommandResult result = client().send(command);
+        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
 
         // Then
-        assertEquals(Status.OK, result.getStatus());
+        assertEquals(Status.OK, response.getStatus());
         assertEquals(command.name, CreateAccountCommandHandler.createAccountCommandName);
     }
 
@@ -84,30 +87,46 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.throwException = true;
 
         // When
-        final CommandResult result = client().send(command);
+        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
 
         // Then
-        assertEquals(Status.ERROR, result.getStatus());
+        assertEquals(Status.ERROR, response.getStatus());
+    }
+
+    @Test
+    public void testCommandResponseWithStatusCode() throws Exception {
+        // Given valid input
+        final CreateAccountCommand command = new CreateAccountCommand();
+        command.code = CoreReasonCode.CONFLICT.toString();
+        command.messages = ImmutableList.of("ignored");
+
+        // When
+        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
+
+        // Then
+        assertEquals(Status.ERROR, response.getStatus());
+        assertEquals(command.getCode(), response.getReason().getCode());
+        assertEquals(Response.Status.CONFLICT, response.asHttp().getHTTPStatus());
     }
 
     // ------------------------------------------------------------------------
 
     @Test
-    public void testCommandResultWithListOfErrors() throws Exception {
+    public void testCommandResponseWithListOfErrors() throws Exception {
         // Given valid input
         final CreateAccountCommand command = new CreateAccountCommand();
         command.code = "code";
         command.messages = ImmutableList.of("a", "aa", "aaa");
 
         // When
-        final CommandResult result = client().send(command);
+        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
 
         // Then
-        assertEquals(Status.ERROR, result.getStatus());
-        assertEquals(command.getCode(), result.getError().getCode());
-        final String[] resultMessages = result.getError().getMessages().toArray(new String[0]);
+        assertEquals(Status.ERROR, response.getStatus());
+        assertEquals(command.getCode(), response.getReason().getCode());
+        final String[] responseMessages = response.getReason().getMessages().toArray(new String[0]);
         for (int i = 0; i < command.getMessages().size(); i++) {
-            assertEquals(command.getMessages().get(i), resultMessages[i]);
+            assertEquals(command.getMessages().get(i), responseMessages[i]);
         }
     }
 
@@ -118,15 +137,15 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         command.innerObject = new InnerObject();
 
         // When
-        final CommandResult result = client().send(command);
+        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
 
         // Then
-        assertTrue(result.isError());
+        assertFalse(response.isOK());
         final List<String> errorStrings = new ArrayList<String>() {{
             add("innerObject.age : must be greater than or equal to 2");
             add("str : size must be between 1 and 2147483647");
         }};
-        for (final String errorMessage : result.getError().getMessages()) {
+        for (final String errorMessage : response.getReason().getMessages()) {
             if (!errorStrings.contains(errorMessage)) {
                 fail(String.format("Cannot find expected validation message : %s", errorMessage));
             }
@@ -178,13 +197,13 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         static String createAccountCommandName = null;
 
         @Override
-        public CommandResult handle(final CreateAccountCommand command) throws Exception {
+        public CommandResponse handle(final CreateAccountCommand command) throws Exception {
             if (command.isThrowException())
                 throw new KasperException("Something bad happened!");
             if (command.getCode() != null)
-                return CommandResult.error(new KasperError(command.getCode(), command.getMessages()));
+                return CommandResponse.error(new KasperReason(command.getCode(), command.getMessages()));
             createAccountCommandName = command.getName();
-            return CommandResult.ok();
+            return CommandResponse.ok();
         }
     }
 

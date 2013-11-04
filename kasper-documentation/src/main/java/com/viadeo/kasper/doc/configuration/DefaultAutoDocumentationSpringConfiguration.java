@@ -38,8 +38,8 @@ public class DefaultAutoDocumentationSpringConfiguration extends DefaultAutoDocu
 
     @Bean
     @Override
-    public QueryServicesDocumentationProcessor getQueryServicesDocumentationProcessor(final KasperLibrary library) {
-        return super.getQueryServicesDocumentationProcessor(library);
+    public QueryHandlersDocumentationProcessor getQueryHandlersDocumentationProcessor(final KasperLibrary library) {
+        return super.getQueryHandlersDocumentationProcessor(library);
     }
 
     @Bean
@@ -48,8 +48,8 @@ public class DefaultAutoDocumentationSpringConfiguration extends DefaultAutoDocu
     }
 
     @Bean
-    public QueryAnswersDocumentationProcessor getQueryAnswersDocumentationProcessor(final KasperLibrary library){
-        return super.getQueryAnswersDocumentationProcessor(library);
+    public QueryResultsDocumentationProcessor getQueryResultsDocumentationProcessor(final KasperLibrary library){
+        return super.getQueryResultsDocumentationProcessor(library);
     }
 
     @Bean

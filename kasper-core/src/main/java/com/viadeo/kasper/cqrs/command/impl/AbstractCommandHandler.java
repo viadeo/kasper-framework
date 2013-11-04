@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
-import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
@@ -88,7 +87,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         final Timer.Context classTimer = METRICLASSTIMER.time();
         final Timer.Context timer = metricTimer.time();
 
-        CommandResult ret = null;
+        CommandResponse ret = null;
         Exception exception = null;
         try {
 
@@ -113,8 +112,8 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
                 uow.start();
             }
             /*
-             * FIXME should we transform to a command result or just rollback and propagate the exception as is
-             * let's propagate the error as is and keep CommandResult for business operation result (success and failure) ?
+             * FIXME should we transform to a command response or just rollback and propagate the exception as is
+             * let's propagate the error as is and keep CommandResponse for business operation response (success and failure) ?
              */
 
             /* Stop timer on error and propage exception */
@@ -131,7 +130,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         final long time = classTimer.stop();
         METRICLASSREQUESTS.mark();
         metricRequests.mark();
-        if ((null != exception) || ret.isError()) {
+        if ((null != exception) || ! ret.isOK()) {
             METRICLASSERRORS.mark();
             metricErrors.mark();
         }
@@ -148,19 +147,19 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
     /**
      * @param message the command handler encapsulating message
      * @param uow Axon unit of work
-     * @return the command result
+     * @return the command response
      * @throws Exception
      */
-    public CommandResult handle(final KasperCommandMessage<C> message, final UnitOfWork uow) throws Exception {
+    public CommandResponse handle(final KasperCommandMessage<C> message, final UnitOfWork uow) throws Exception {
         throw new UnsupportedOperationException();
     }
 
     /**
      * @param message the command handler encapsulating message
-     * @return the command result
+     * @return the command response
      * @throws Exception
      */
-    public CommandResult handle(final KasperCommandMessage<C> message) throws Exception {
+    public CommandResponse handle(final KasperCommandMessage<C> message) throws Exception {
         throw new UnsupportedOperationException();
     }
 
@@ -168,7 +167,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
      * @param command The command to handle
      * @throws Exception
      */
-    public CommandResult handle(final C command) throws Exception {
+    public CommandResponse handle(final C command) throws Exception {
         throw new UnsupportedOperationException();
     }
 

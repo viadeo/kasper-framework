@@ -35,6 +35,7 @@ public class KasperClientBuilder {
     private URL commandBaseLocation;
     private URL queryBaseLocation;
     private QueryFactory queryFactory;
+    private ContextSerializer contextSerializer;
     private final QueryFactoryBuilder qFactoryBuilder = new QueryFactoryBuilder();
     private KasperClient.Flags flags = KasperClient.Flags.defaults();
 
@@ -177,10 +178,14 @@ public class KasperClientBuilder {
             queryFactory = qFactoryBuilder.create();
         }
 
+        if (null == contextSerializer) {
+            contextSerializer = new ContextSerializer();
+        }
+
         if (null == client) {
-            return new KasperClient(queryFactory, mapper, commandBaseLocation, queryBaseLocation, flags);
+            return new KasperClient(queryFactory, mapper, commandBaseLocation, queryBaseLocation, contextSerializer, flags);
         } else {
-            return new KasperClient(queryFactory, client, commandBaseLocation, queryBaseLocation, flags);
+            return new KasperClient(queryFactory, client, commandBaseLocation, queryBaseLocation, contextSerializer, flags);
         }
     }
 
