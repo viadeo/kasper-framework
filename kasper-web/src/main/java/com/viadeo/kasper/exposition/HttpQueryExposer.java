@@ -225,7 +225,7 @@ public class HttpQueryExposer extends HttpExposer {
         } finally {
             /* Log & metrics */
             final long time = classTimer.stop();
-            QUERY_LOGGER.info("Execution Time '{}' ms",time);
+            QUERY_LOGGER.info("Execution Time '{}' ns",time);
             METRICLASSREQUESTS.mark();
         }
 

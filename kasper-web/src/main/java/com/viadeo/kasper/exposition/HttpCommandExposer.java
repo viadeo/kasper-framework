@@ -235,7 +235,7 @@ public class HttpCommandExposer extends HttpExposer {
 
             /* Log & metrics */
             final long time = classTimer.stop();
-            REQUEST_LOGGER.info("Execution Time '{}' ms",time);
+            REQUEST_LOGGER.info("Execution Time '{}' ns",time);
             METRICLASSREQUESTS.mark();
         }
 
