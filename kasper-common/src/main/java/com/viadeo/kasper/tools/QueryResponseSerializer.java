@@ -21,30 +21,32 @@ public class QueryResponseSerializer extends JsonSerializer<QueryResponse> {
     public void serialize(QueryResponse value, JsonGenerator jgen, SerializerProvider provider)
             throws IOException {
         if (!value.isOK()) {
+
             jgen.writeStartObject();
+
+             /* FIXME - retro-compatibility - TO BE REMOVED */
+            jgen.writeFieldName(ObjectMapperProvider.ERROR);
+            jgen.writeBoolean(true);
 
             // lets write a boolean telling that this is an reason, can be useful
             // for js consumers
             jgen.writeFieldName(ObjectMapperProvider.REASON);
             jgen.writeBoolean(true);
 
-            /* FIXME - retro-compatibility - TO BE REMOVED */
-            jgen.writeFieldName(ObjectMapperProvider.ERROR);
-            jgen.writeBoolean(true);
-            
             KasperReason reason = value.getReason();
 
             jgen.writeFieldName(ObjectMapperProvider.MESSAGE);
             jgen.writeString(reason.getCode());
 
-            jgen.writeFieldName(ObjectMapperProvider.REASONS);
-            this.writeReason(reason, jgen);
-
             /* FIXME - retro-compatibility - TO BE REMOVED */
             jgen.writeFieldName(ObjectMapperProvider.ERRORS);
             this.writeReason(reason, jgen);
 
+            jgen.writeFieldName(ObjectMapperProvider.REASONS);
+            this.writeReason(reason, jgen);
+
             jgen.writeEndObject();
+
         } else {
             jgen.writeObject(value.getResult());
         }

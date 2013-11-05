@@ -23,11 +23,11 @@ public class CommandResponseSerializer extends JsonSerializer<CommandResponse> {
         jgen.writeStartObject();
         jgen.writeStringField(ObjectMapperProvider.STATUS, value.getStatus().name());
 
-        jgen.writeFieldName(ObjectMapperProvider.REASONS);
+         /* FIXME - retro-compatibility - TO BE REMOVED */
+        jgen.writeFieldName(ObjectMapperProvider.ERRORS);
         this.writeReasons(value, jgen);
 
-        /* FIXME - retro-compatibility - TO BE REMOVED */
-        jgen.writeFieldName(ObjectMapperProvider.ERRORS);
+        jgen.writeFieldName(ObjectMapperProvider.REASONS);
         this.writeReasons(value, jgen);
 
         jgen.writeEndObject();
