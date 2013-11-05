@@ -11,6 +11,7 @@ import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
@@ -238,6 +239,12 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
                 queryResolver, queryResultResolver, queryHandlerResolver,
                 repositoryResolver, entityResolver,
                 conceptResolver, relationResolver, eventResolver);
+    }
+
+    @Bean
+    public KasperMetrics initKasperMetrics(final ResolverFactory resolverFactory) {
+        KasperMetrics.setResolverFactory(resolverFactory);
+        return KasperMetrics.instance();
     }
 
 }

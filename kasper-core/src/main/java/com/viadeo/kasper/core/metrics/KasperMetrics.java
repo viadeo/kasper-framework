@@ -36,7 +36,7 @@ public final class KasperMetrics {
 
     KasperMetrics() { /* Utility class */ }
 
-    private static KasperMetrics instance() {
+    public static KasperMetrics instance() {
         if (null == instance) {
             instance = new KasperMetrics();
         }
