@@ -11,6 +11,8 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.command.CreateCommand;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  *
  * Convenient base implementation for idToUse simple management
@@ -28,7 +30,7 @@ public abstract class AbstractCreateCommand implements CreateCommand {
 	}
 
 	public AbstractCreateCommand(final KasperID providedId) {
-		this.idToUse = Preconditions.checkNotNull(providedId);
+		this.idToUse = checkNotNull(providedId);
 	}
 
 	// ------------------------------------------------------------------------
@@ -36,7 +38,7 @@ public abstract class AbstractCreateCommand implements CreateCommand {
 	@SuppressWarnings("unchecked") // To be ensured by caller
 	@Override
 	public <C extends CreateCommand> C  setIdToUse(final KasperID providedId) {
-		this.idToUse = Preconditions.checkNotNull(providedId);
+		this.idToUse = checkNotNull(providedId);
 		return (C) this;
 	}
 

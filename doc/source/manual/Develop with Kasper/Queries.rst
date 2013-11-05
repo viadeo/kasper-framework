@@ -96,13 +96,13 @@ using the **@XKasperQueryResult** annotation.
     }
 
 .. hint::
-    The interface **QueryEntityResult** and proposed default implementation **AbstractQueryEntityResult** should be used for each
+    The interface **EntityQueryResult** and proposed default implementation **AbstractEntityQueryResult** should be used for each
     result which is an entity (with an id, a type and optionally but preferably a last modification time)
 
-The interface **QueryCollectionResult** can be used to return a list of some other unit response results.
+The interface **CollectionQueryResult** can be used to return a list of some other unit response results.
 
-The abstract class **AbstractQueryCollectionResult** is provided as a default implementation of the list methods
-required by the **QueryCollectionResult** interface.
+The abstract class **AbstractCollectionQueryResult** is provided as a default implementation of the list methods
+required by the **CollectionQueryResult** interface.
 
 **usage**
 
@@ -110,7 +110,7 @@ required by the **QueryCollectionResult** interface.
     :linenos:
 
     @XKasperQueryResult( description = "A List of things" )
-    public class ThingsListQueryResult extends AbstractQueryCollectionResult<ThingsQueryResult> {
+    public class ThingsListQueryResult extends AbstractCollectionQueryResult<ThingsQueryResult> {
         // Nothing more needs to be declared
     }
 

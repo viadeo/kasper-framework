@@ -44,12 +44,12 @@ public class CommandResponse implements Serializable, Immutable {
         return new CommandResponse(Status.ERROR, reason);
     }
 
-    public static CommandResponse error(final String code, final String message) {
-        return error(new KasperReason(code, message));
+    public static CommandResponse error(final String code, final String reason) {
+        return error(new KasperReason(code, reason));
     }
 
-    public static CommandResponse error(final CoreReasonCode code, final String message) {
-        return error(new KasperReason(checkNotNull(code).toString(), message));
+    public static CommandResponse error(final CoreReasonCode code, final String reason) {
+        return error(new KasperReason(checkNotNull(code).toString(), reason));
     }
 
     // ------------------------------------------------------------------------
@@ -58,12 +58,12 @@ public class CommandResponse implements Serializable, Immutable {
         return new CommandResponse(Status.REFUSED, reason);
     }
 
-    public static CommandResponse refused(final String code, final String message) {
-        return refused(new KasperReason(code, message));
+    public static CommandResponse refused(final String code, final String reason) {
+        return refused(new KasperReason(code, reason));
     }
 
-    public static CommandResponse refused(final CoreReasonCode code, final String message) {
-        return refused(new KasperReason(code, message));
+    public static CommandResponse refused(final CoreReasonCode code, final String reason) {
+        return refused(new KasperReason(code, reason));
     }
 
     // ------------------------------------------------------------------------

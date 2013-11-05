@@ -7,12 +7,12 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.cqrs.query.QueryEntityResult;
+import com.viadeo.kasper.cqrs.query.EntityQueryResult;
 import org.joda.time.DateTime;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class AbstractQueryEntityResult implements QueryEntityResult {
+public class AbstractEntityQueryResult implements EntityQueryResult {
 
     private final KasperID id;
     private final String type;
@@ -20,11 +20,11 @@ public class AbstractQueryEntityResult implements QueryEntityResult {
 
     // ------------------------------------------------------------------------
 
-    public AbstractQueryEntityResult(final KasperID id, final String type) {
+    public AbstractEntityQueryResult(final KasperID id, final String type) {
         this(id, type, new DateTime(0, 0, 0, 0, 0));
     }
 
-    public AbstractQueryEntityResult(final KasperID id, final String type, final DateTime time) {
+    public AbstractEntityQueryResult(final KasperID id, final String type, final DateTime time) {
         this.id = checkNotNull(id);
         this.type = checkNotNull(type);
         this.lastModificationTime = checkNotNull(time);
