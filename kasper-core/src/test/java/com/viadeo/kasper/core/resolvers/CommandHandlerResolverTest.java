@@ -47,7 +47,7 @@ public class CommandHandlerResolverTest {
     // ------------------------------------------------------------------------
 
     @Test
-    public void testGetDomainFromDecoratedCommandHandler() {
+    public void testGetDomainFromCommandHandler() {
         // Given
         final CommandHandlerResolver resolver = new CommandHandlerResolver();
 
@@ -58,21 +58,6 @@ public class CommandHandlerResolverTest {
         // Then
         assertTrue(domain.isPresent());
         assertEquals(TestDomain.class, domain.get());
-    }
-
-    @Test
-    public void testGetDomainFromNonDecoratedCommandHandler() {
-        // Given
-        final CommandHandlerResolver resolver = new CommandHandlerResolver();
-
-        // When
-        try {
-            final Optional<Class<? extends Domain>> domain =
-                    resolver.getDomainClass(TestCommandHandler2.class);
-            fail();
-        } catch (final KasperException e) {
-            // Then exception is raised
-        }
     }
 
     @Test

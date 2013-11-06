@@ -65,7 +65,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 
         // When
 		this.getPlatform().publishEvent(event);
-        Thread.sleep(1000);
+        Thread.sleep(2000);
 
         // Then
 		assertTrue(received);

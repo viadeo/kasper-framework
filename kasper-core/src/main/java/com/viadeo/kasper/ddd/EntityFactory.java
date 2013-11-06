@@ -29,7 +29,7 @@ public interface EntityFactory<E extends Entity> extends UbiquitousLanguageEleme
      * Finalize the build of the entity
      *
      * @param context the current context to be used to build the entity
-     * @return
+     * @return the built entity
      */
     E build(final Context context);
 
