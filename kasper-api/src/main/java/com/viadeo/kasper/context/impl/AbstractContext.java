@@ -28,6 +28,9 @@ import java.util.UUID;
 public abstract class AbstractContext implements Context {
 	private static final long serialVersionUID = 1887660968377933167L;
 
+    private static final String KASPER_CID_SHORTNAME = "kcid";
+    private static final String SEQ_INC_SHORTNAME = "seq";
+
 	private Map<String, Serializable> properties;
     private KasperID kasperCorrelationId = DEFAULT_KASPERCORR_ID;
 
@@ -163,8 +166,8 @@ public abstract class AbstractContext implements Context {
 
     @Override
     public Map<String, Serializable> asMap(final Map<String, Serializable> retMap) {
-        retMap.put("kasperCorrelationId", safeObject(this.kasperCorrelationId));
-        retMap.put("sequenceIncrement", safeObject(this.sequenceIncrement));
+        retMap.put(KASPER_CID_SHORTNAME, safeObject(this.kasperCorrelationId));
+        retMap.put(SEQ_INC_SHORTNAME, safeObject(this.sequenceIncrement));
 
         if ( null != this.properties ) {
             for (final Map.Entry<String, Serializable> entry : this.properties.entrySet()) {

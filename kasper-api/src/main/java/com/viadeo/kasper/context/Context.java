@@ -37,6 +37,9 @@ public interface Context extends Serializable  {
     String DEFAULT_APPLICATION_ID = "UNKNOWN";
     String DEFAULT_SECURITY_TOKEN = "unauthenticated";
 
+    String DEFAULT_FUNNEL_NAME = "";
+    String DEFAULT_FUNNEL_VERSION = "";
+
     // ------------------------------------------------------------------------
 
 	/**
@@ -141,6 +144,33 @@ public interface Context extends Serializable  {
      * @return the application request correlation id
      */
     KasperID getFunnelCorrelationId();
+
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Sets the funnel name
+     *
+     * @param funnelName the funnel name of the context
+     */
+    Context setFunnelName(String funnelName);
+
+    /**
+     * Sets the funnel version (funnel declination)
+     *
+     * @param funnelVersion
+     */
+    Context setFunnelVersion(String funnelVersion);
+
+    /**
+     * @return the current funnel name
+     */
+    String getFunnelName();
+
+    /**
+     * @return the current funnel version
+     */
+    String getFunnelVersion();
 
     // ------------------------------------------------------------------------
 
