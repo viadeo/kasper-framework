@@ -13,7 +13,7 @@ import com.viadeo.kasper.event.ErrorEvent;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class AbstractErrorEvent extends AbstractEvent implements ErrorEvent {
+public abstract class AbstractErrorEvent extends AbstractEvent implements ErrorEvent {
 
     private final String code;
     private final Exception exception;
