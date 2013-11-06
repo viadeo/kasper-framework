@@ -8,6 +8,7 @@ package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.exception.KasperException;
@@ -334,7 +335,7 @@ public class AnnotationRootProcessor {
         if (null == this.scanPrefixes) {
             this.scanPrefixes = new ArrayList<>();
         }
-        this.scanPrefixes = Arrays.asList(scanPrefixes.clone());
+        this.scanPrefixes = Lists.newArrayList(scanPrefixes.clone());
     }
 
     // -----
