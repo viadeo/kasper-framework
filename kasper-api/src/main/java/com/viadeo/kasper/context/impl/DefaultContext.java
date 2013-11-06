@@ -7,8 +7,12 @@
 package com.viadeo.kasper.context.impl;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
+
+import java.io.Serializable;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -156,6 +160,29 @@ public class DefaultContext extends AbstractContext {
         newContext.applicationId = this.applicationId;
 
         return (C) newContext;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public Map<String, Serializable> asMap() {
+        return this.asMap(Maps.<String, Serializable>newHashMap());
+    }
+
+    @Override
+    public Map<String, Serializable> asMap(final Map<String, Serializable> retMap) {
+        super.asMap(retMap);
+
+        retMap.put("userId", this.userId);
+        retMap.put("userLang", this.userLang);
+        retMap.put("userCountry", this.userCountry);
+        retMap.put("requestCorrelationId", this.requestCorrelationId);
+        retMap.put("funnelCorrelationId", this.funnelCorrelationId);
+        retMap.put("sessionCorrelationId", this.sessionCorrelationId);
+        retMap.put("applicationId", this.applicationId);
+        retMap.put("securityToken", this.securityToken);
+
+        return retMap;
     }
 
     // ------------------------------------------------------------------------

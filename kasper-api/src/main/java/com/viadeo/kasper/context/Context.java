@@ -210,4 +210,13 @@ public interface Context extends Serializable  {
      */
     <C extends Context> C child();
 
+    // ------------------------------------------------------------------------
+
+    /**
+     * @return the context as a map
+     */
+    Map<String, Serializable> asMap();
+    Map<String, Serializable> asMap(Map<String, Serializable> map);
+
+
 }

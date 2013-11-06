@@ -148,6 +148,35 @@ public abstract class AbstractContext implements Context {
 
     // ------------------------------------------------------------------------
 
+    protected Serializable safeObject(final Serializable unsafeObject) {
+        if (null == unsafeObject) {
+            return "";
+        }
+        return unsafeObject;
+    }
+
+    @Override
+    public Map<String, Serializable> asMap() {
+        final Map<String, Serializable> retMap = Maps.newHashMap();
+        return asMap(retMap);
+    }
+
+    @Override
+    public Map<String, Serializable> asMap(final Map<String, Serializable> retMap) {
+        retMap.put("kasperCorrelationId", safeObject(this.kasperCorrelationId));
+        retMap.put("sequenceIncrement", safeObject(this.sequenceIncrement));
+
+        if ( null != this.properties ) {
+            for (final Map.Entry<String, Serializable> entry : this.properties.entrySet()) {
+                retMap.put("_" + entry.getKey(), entry.getValue());
+            }
+        }
+
+        return retMap;
+    }
+
+    // ------------------------------------------------------------------------
+
     @Override
     public boolean equals(Object obj)
     {
