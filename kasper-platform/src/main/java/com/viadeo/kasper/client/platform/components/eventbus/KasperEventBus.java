@@ -37,8 +37,9 @@ public class KasperEventBus extends ClusteringEventBus {
 
     private static final String KASPER_CLUSTER_NAME = "kasper";
 
-    private static final int CORE_POOL_SIZE = 2;
-    private static final int MAXIMUM_POOL_SIZE = 10;
+    /* FIXME: make it configurable */
+    private static final int CORE_POOL_SIZE = 10;
+    private static final int MAXIMUM_POOL_SIZE = 100;
     private static final long KEEP_ALIVE_TIME = 60L;
     private static final TimeUnit TIME_UNIT = TimeUnit.MINUTES;
 
