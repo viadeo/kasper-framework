@@ -19,8 +19,7 @@ import org.axonframework.unitofwork.NoTransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -42,6 +41,7 @@ public class KasperEventBus extends ClusteringEventBus {
     private static final int CORE_POOL_SIZE = 10;
     private static final int MAXIMUM_POOL_SIZE = 100;
     private static final long KEEP_ALIVE_TIME = 60L;
+    private static final int QUEUE_SIZE = 50;
     private static final TimeUnit TIME_UNIT = TimeUnit.MINUTES;
 
     public static enum Policy {
@@ -95,7 +95,7 @@ public class KasperEventBus extends ClusteringEventBus {
                             MAXIMUM_POOL_SIZE,
                             KEEP_ALIVE_TIME,
                             TIME_UNIT,
-                            new LinkedBlockingQueue<Runnable>()
+                            new ArrayBlockingQueue<Runnable>(QUEUE_SIZE)
                     ),
                     new DefaultUnitOfWorkFactory(new NoTransactionManager()),
                     new SequentialPolicy(),
