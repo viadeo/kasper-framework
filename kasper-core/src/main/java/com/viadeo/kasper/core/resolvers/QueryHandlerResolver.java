@@ -8,6 +8,7 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResult;
@@ -46,6 +47,10 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
             final Class<? extends Domain> domain = annotation.domain();
             DOMAINS_CACHE.put(clazz, domain);
             return Optional.<Class<? extends Domain>>of(domain);
+        } else {
+            if (null == clazz.getAnnotation(XKasperUnregistered.class)) {
+                throw new KasperException("Query handler is not decorated : " + clazz.getName());
+            }
         }
 
         return Optional.absent();
