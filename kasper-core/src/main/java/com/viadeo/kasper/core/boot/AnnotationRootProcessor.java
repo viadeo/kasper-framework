@@ -282,7 +282,7 @@ public class AnnotationRootProcessor {
 
                                 } catch (final Exception e) {
                                     final String message = "Unexpected error during processor delegation for class " + clazz.getName();
-                                    LOGGER.error(message);
+                                    LOGGER.error(message, e);
                                     // Currently deactivated while we cannot currently provide a nice tests configuration in platform
                                     // throw new KasperException(message, e);
                                 }
