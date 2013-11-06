@@ -173,14 +173,14 @@ public class DefaultContext extends AbstractContext {
     public Map<String, Serializable> asMap(final Map<String, Serializable> retMap) {
         super.asMap(retMap);
 
-        retMap.put("userId", this.userId);
-        retMap.put("userLang", this.userLang);
-        retMap.put("userCountry", this.userCountry);
-        retMap.put("requestCorrelationId", this.requestCorrelationId);
-        retMap.put("funnelCorrelationId", this.funnelCorrelationId);
-        retMap.put("sessionCorrelationId", this.sessionCorrelationId);
-        retMap.put("applicationId", this.applicationId);
-        retMap.put("securityToken", this.securityToken);
+        retMap.put("userId", safeObject(this.userId));
+        retMap.put("userLang", safeObject(this.userLang));
+        retMap.put("userCountry", safeObject(this.userCountry));
+        retMap.put("requestCorrelationId", safeObject(this.requestCorrelationId));
+        retMap.put("funnelCorrelationId", safeObject(this.funnelCorrelationId));
+        retMap.put("sessionCorrelationId", safeObject(this.sessionCorrelationId));
+        retMap.put("applicationId", safeObject(this.applicationId));
+        retMap.put("securityToken", safeObject(this.securityToken));
 
         return retMap;
     }
