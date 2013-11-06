@@ -206,24 +206,24 @@ public class DefaultContext extends AbstractContext {
     // ------------------------------------------------------------------------
 
     @Override
-    public Map<String, Serializable> asMap() {
-        return this.asMap(Maps.<String, Serializable>newHashMap());
+    public Map<String, String> asMap() {
+        return this.asMap(Maps.<String, String>newHashMap());
     }
 
     @Override
-    public Map<String, Serializable> asMap(final Map<String, Serializable> retMap) {
+    public Map<String, String> asMap(final Map<String, String> retMap) {
         super.asMap(retMap);
 
-        retMap.put(UID_SHORTNAME, safeObject(this.userId));
-        retMap.put(ULAND_SHORTNAME, safeObject(this.userLang));
-        retMap.put(UCOUNTRY_SHORTNAME, safeObject(this.userCountry));
-        retMap.put(REQUEST_CID_SHORTNAME, safeObject(this.requestCorrelationId));
-        retMap.put(FUNNEL_CID_SHORTNAME, safeObject(this.funnelCorrelationId));
-        retMap.put(SESSION_CID_SHORTNAME, safeObject(this.sessionCorrelationId));
-        retMap.put(APPLICATION_CID_SHORTNAME, safeObject(this.applicationId));
-        retMap.put(SECURITY_TOKEN_SHORTNAME, safeObject(this.securityToken));
-        retMap.put(FUNNEL_NAME_SHORTNAME, safeObject(this.funnelName));
-        retMap.put(FUNNEL_VERS_SHORTNAME, safeObject(this.funnelVersion));
+        retMap.put(UID_SHORTNAME, safeStringObject(this.userId));
+        retMap.put(ULAND_SHORTNAME, safeStringObject(this.userLang));
+        retMap.put(UCOUNTRY_SHORTNAME, safeStringObject(this.userCountry));
+        retMap.put(REQUEST_CID_SHORTNAME, safeStringObject(this.requestCorrelationId));
+        retMap.put(FUNNEL_CID_SHORTNAME, safeStringObject(this.funnelCorrelationId));
+        retMap.put(SESSION_CID_SHORTNAME, safeStringObject(this.sessionCorrelationId));
+        retMap.put(APPLICATION_CID_SHORTNAME, safeStringObject(this.applicationId));
+        retMap.put(SECURITY_TOKEN_SHORTNAME, safeStringObject(this.securityToken));
+        retMap.put(FUNNEL_NAME_SHORTNAME, safeStringObject(this.funnelName));
+        retMap.put(FUNNEL_VERS_SHORTNAME, safeStringObject(this.funnelVersion));
 
         return retMap;
     }

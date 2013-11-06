@@ -245,8 +245,8 @@ public interface Context extends Serializable  {
     /**
      * @return the context as a map
      */
-    Map<String, Serializable> asMap();
-    Map<String, Serializable> asMap(Map<String, Serializable> map);
+    Map<String, String> asMap();
+    Map<String, String> asMap(Map<String, String> map);
 
 
 }
