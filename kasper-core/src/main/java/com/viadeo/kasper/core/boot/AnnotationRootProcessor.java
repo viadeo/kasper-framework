@@ -335,7 +335,7 @@ public class AnnotationRootProcessor {
         if (null == this.scanPrefixes) {
             this.scanPrefixes = new ArrayList<>();
         }
-        this.scanPrefixes = Lists.newArrayList(scanPrefixes.clone());
+        this.scanPrefixes = Lists.newArrayList(scanPrefixes);
     }
 
     // -----
