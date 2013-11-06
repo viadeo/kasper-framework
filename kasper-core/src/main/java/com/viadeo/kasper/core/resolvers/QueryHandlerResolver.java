@@ -47,10 +47,6 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
             final Class<? extends Domain> domain = annotation.domain();
             DOMAINS_CACHE.put(clazz, domain);
             return Optional.<Class<? extends Domain>>of(domain);
-        } else {
-            if (null == clazz.getAnnotation(XKasperUnregistered.class)) {
-                throw new KasperException("Query handler is not decorated : " + clazz.getName());
-            }
         }
 
         return Optional.absent();

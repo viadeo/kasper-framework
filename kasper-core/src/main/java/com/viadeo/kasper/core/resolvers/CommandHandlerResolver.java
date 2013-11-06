@@ -44,10 +44,6 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
             final Class<? extends Domain> domain = handlerAnnotation.domain();
             DOMAINS_CACHE.put(clazz, domain);
             return Optional.<Class<? extends Domain>>of(domain);
-        } else {
-            if (null == clazz.getAnnotation(XKasperUnregistered.class)) {
-                throw new KasperException("Command handler is not decorated : " + clazz.getName());
-            }
         }
 
         return Optional.absent();

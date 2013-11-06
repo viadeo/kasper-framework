@@ -45,10 +45,6 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
             final Class<? extends Domain> domain = eventAnnotation.domain();
             DOMAINS_CACHE.put(clazz, domain);
             return Optional.<Class<? extends Domain>>of(domain);
-        } else {
-            if (null == clazz.getAnnotation(XKasperUnregistered.class)) {
-                throw new KasperException("Event listener is not decorated : " + clazz.getName());
-            }
         }
 
         return Optional.absent();
