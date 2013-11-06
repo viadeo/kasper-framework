@@ -28,7 +28,7 @@ public class DefaultContext extends AbstractContext {
     private static final String UID_SHORTNAME = "uid";
     private static final String ULAND_SHORTNAME = "lang";
     private static final String UCOUNTRY_SHORTNAME = "cntry";
-    private static final String APPLICATION_CID_SHORTNAME = "acid";
+    private static final String APPLICATION_ID_SHORTNAME = "appid";
     private static final String REQUEST_CID_SHORTNAME = "rcid";
     private static final String FUNNEL_CID_SHORTNAME = "fcid";
     private static final String SESSION_CID_SHORTNAME = "scid";
@@ -41,6 +41,7 @@ public class DefaultContext extends AbstractContext {
     private String userCountry;
 
     private String applicationId;
+
     private KasperID requestCorrelationId;
     private KasperID funnelCorrelationId;
     private KasperID sessionCorrelationId;
@@ -220,7 +221,7 @@ public class DefaultContext extends AbstractContext {
         retMap.put(REQUEST_CID_SHORTNAME, safeStringObject(this.requestCorrelationId));
         retMap.put(FUNNEL_CID_SHORTNAME, safeStringObject(this.funnelCorrelationId));
         retMap.put(SESSION_CID_SHORTNAME, safeStringObject(this.sessionCorrelationId));
-        retMap.put(APPLICATION_CID_SHORTNAME, safeStringObject(this.applicationId));
+        retMap.put(APPLICATION_ID_SHORTNAME, safeStringObject(this.applicationId));
         retMap.put(SECURITY_TOKEN_SHORTNAME, safeStringObject(this.securityToken));
         retMap.put(FUNNEL_NAME_SHORTNAME, safeStringObject(this.funnelName));
         retMap.put(FUNNEL_VERS_SHORTNAME, safeStringObject(this.funnelVersion));
