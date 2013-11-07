@@ -58,6 +58,8 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
 		private final Repository<AGR> kasperRepository;
 
+        private final Class kasperRepositoryClass;
+
         private final Histogram metricClassSaveTimes = METRICS.histogram(name(IRepository.class, "save-times"));
         private final Meter metricClassSaves = METRICS.meter(name(IRepository.class, "saves"));
         private final Meter metricClassSaveErrors = METRICS.meter(name(IRepository.class, "save-errors"));
@@ -70,20 +72,20 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
         private final Meter metricClassDeletes= METRICS.meter(name(IRepository.class, "deletes"));
         private final Meter metricClassDeleteErrors = METRICS.meter(name(IRepository.class, "delete-errors"));
 
-        private final Timer metricTimerSave;
-        private final Histogram metricSaveTimes;
-        private final Meter metricSaves;
-        private final Meter metricSaveErrors;
+        private Timer metricTimerSave;
+        private Histogram metricSaveTimes;
+        private Meter metricSaves;
+        private Meter metricSaveErrors;
 
-        private final Timer metricTimerLoad;
-        private final Histogram metricLoadTimes;
-        private final Meter metricLoads;
-        private final Meter metricLoadErrors;
+        private Timer metricTimerLoad;
+        private Histogram metricLoadTimes;
+        private Meter metricLoads;
+        private Meter metricLoadErrors;
 
-        private final Timer metricTimerDelete;
-        private final Histogram metricDeleteTimes;
-        private final Meter metricDeletes;
-        private final Meter metricDeleteErrors;
+        private Timer metricTimerDelete;
+        private Histogram metricDeleteTimes;
+        private Meter metricDeletes;
+        private Meter metricDeleteErrors;
 
         private final ConcurrentMap<AggregateRoot, DateTime> loadedModificationTimes; /* Used to track to loaded modification date */
 
@@ -92,32 +94,37 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 		protected AxonRepository(final Repository<AGR> kasperRepository, final Class<AGR> aggregateType) {
 			super(aggregateType);
 
-            final Class kasperRepositoryClass = kasperRepository.getClass();
-
+            this.kasperRepositoryClass = kasperRepository.getClass();
 			this.kasperRepository = kasperRepository;
-
-            metricTimerSave = METRICS.timer(name(kasperRepositoryClass, "save-time"));
-            metricSaveTimes = METRICS.histogram(name(kasperRepositoryClass, "save-times"));
-            metricSaves = METRICS.meter(name(kasperRepositoryClass, "saves"));
-            metricSaveErrors = METRICS.meter(name(kasperRepositoryClass, "save-errors"));
-
-            metricTimerLoad = METRICS.timer(name(kasperRepositoryClass, "load-time"));
-            metricLoadTimes = METRICS.histogram(name(kasperRepositoryClass, "load-times"));
-            metricLoads = METRICS.meter(name(kasperRepositoryClass, "loads"));
-            metricLoadErrors = METRICS.meter(name(kasperRepositoryClass, "load-errors"));
-
-            metricTimerDelete = METRICS.timer(name(kasperRepositoryClass, "delete-time"));
-            metricDeleteTimes = METRICS.histogram(name(kasperRepositoryClass, "delete-times"));
-            metricDeletes = METRICS.meter(name(kasperRepositoryClass, "deletes"));
-            metricDeleteErrors = METRICS.meter(name(kasperRepositoryClass, "delete-errors"));
 
             loadedModificationTimes = Maps.newConcurrentMap();
 		}
+
+        private final void initMetrics() {
+            if (null == metricTimerSave) {
+                metricTimerSave = METRICS.timer(name(kasperRepositoryClass, "save-time"));
+                metricSaveTimes = METRICS.histogram(name(kasperRepositoryClass, "save-times"));
+                metricSaves = METRICS.meter(name(kasperRepositoryClass, "saves"));
+                metricSaveErrors = METRICS.meter(name(kasperRepositoryClass, "save-errors"));
+
+                metricTimerLoad = METRICS.timer(name(kasperRepositoryClass, "load-time"));
+                metricLoadTimes = METRICS.histogram(name(kasperRepositoryClass, "load-times"));
+                metricLoads = METRICS.meter(name(kasperRepositoryClass, "loads"));
+                metricLoadErrors = METRICS.meter(name(kasperRepositoryClass, "load-errors"));
+
+                metricTimerDelete = METRICS.timer(name(kasperRepositoryClass, "delete-time"));
+                metricDeleteTimes = METRICS.histogram(name(kasperRepositoryClass, "delete-times"));
+                metricDeletes = METRICS.meter(name(kasperRepositoryClass, "deletes"));
+                metricDeleteErrors = METRICS.meter(name(kasperRepositoryClass, "delete-errors"));
+            }
+        }
 
         // --------------------------------------------------------------------
 
 		@Override
 		protected void doSave(final AGR aggregate) {
+            initMetrics();;
+
             final Timer.Context timer = metricTimerSave.time();
 
             /* Ensure dates are correctly set */
@@ -143,6 +150,8 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
 		@Override
 		protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
+            initMetrics();;
+
             final Timer.Context timer = metricTimerLoad.time();
 
             final AGR agr;
@@ -170,6 +179,8 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
 		@Override
 		protected void doDelete(final AGR aggregate) {
+            initMetrics();;
+
             final Timer.Context timer = metricTimerDelete.time();
 
             /* Ensure dates are correctly set */

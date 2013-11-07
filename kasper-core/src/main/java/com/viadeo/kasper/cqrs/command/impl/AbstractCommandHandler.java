@@ -41,12 +41,14 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
     private static final Meter METRICLASSREQUESTS = METRICS.meter(name(CommandGateway.class, "requests"));
     private static final Meter METRICLASSERRORS = METRICS.meter(name(CommandGateway.class, "errors"));
 
-    private final Timer metricTimer;
-    private final Meter metricRequests;
-    private final Meter metricErrors;
+    private Timer metricTimer;
+    private Meter metricRequests;
+    private Meter metricErrors;
 
     private transient DomainLocator domainLocator;
     private transient EventBus eventBus;
+
+    private transient Class<C> commandClass;
 
     // ------------------------------------------------------------------------
 
@@ -61,9 +63,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
                     + this.getClass().getSimpleName());
         }
 
-        metricTimer = METRICS.timer(name(commandClass.get(), "requests-time"));
-        metricRequests = METRICS.meter(name(commandClass.get(), "requests"));
-        metricErrors = METRICS.meter(name(commandClass.get(), "errors"));
+        this.commandClass = commandClass.get();
     }
 
     // ------------------------------------------------------------------------
@@ -79,7 +79,11 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         final KasperCommandMessage<C> kmessage = new DefaultKasperCommandMessage<>(message);
         CurrentContext.set(kmessage.getContext());
 
-        final Class commandClass = message.getPayload().getClass();
+        if (null == metricTimer) {
+            metricTimer = METRICS.timer(name(commandClass, "requests-time"));
+            metricRequests = METRICS.meter(name(commandClass, "requests"));
+            metricErrors = METRICS.meter(name(commandClass, "errors"));
+        }
 
         AbstractCommandHandler.LOGGER.debug("Handle command " + commandClass.getSimpleName());
 
