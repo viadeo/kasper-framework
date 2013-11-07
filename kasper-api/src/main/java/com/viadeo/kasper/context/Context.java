@@ -234,6 +234,11 @@ public interface Context extends Serializable  {
     int getSequenceIncrement();
 
     /**
+     * Add 1 (one) to the sequence increment
+     */
+    void incSequence();
+
+    /**
      * Childify this context
      *
      * @return a new child context

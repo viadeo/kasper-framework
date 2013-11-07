@@ -126,6 +126,11 @@ public abstract class AbstractContext implements Context {
         return this.sequenceIncrement;
     }
 
+    @Override
+    public void incSequence() {
+        this.sequenceIncrement++;
+    }
+
     @SuppressWarnings("unchecked") // must be ensured by client
     @Override
     public <C extends Context> C child() {
