@@ -63,6 +63,10 @@ public class RepositoryResolverTest {
         @Override
         public boolean has(KasperID id) { return false; }
         @Override
+        public TestAggregateRoot get(KasperID aggregateIdentifier, Long expectedVersion) { return null; }
+        @Override
+        public TestAggregateRoot get(KasperID aggregateIdentifier) { return null; }
+        @Override
         public TestAggregateRoot load(Object aggregateIdentifier, Long expectedVersion) { return null; }
         @Override
         public TestAggregateRoot load(Object aggregateIdentifier) { return null; }
@@ -76,6 +80,10 @@ public class RepositoryResolverTest {
         public void init() { }
         @Override
         public boolean has(KasperID id) { return false; }
+        @Override
+        public TestAggregateRoot get(KasperID aggregateIdentifier, Long expectedVersion) { return null; }
+        @Override
+        public TestAggregateRoot get(KasperID aggregateIdentifier) { return null; }
         @Override
         public Object load(Object aggregateIdentifier, Long expectedVersion) { return null; }
         @Override

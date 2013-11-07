@@ -37,4 +37,14 @@ public class ApplicationMemberFansRepository implements IRepository<Member_fanOf
         return false;
     }
 
+    @Override
+    public Member_fanOf_Application get(KasperID aggregateIdentifier, Long expectedVersion) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Member_fanOf_Application get(KasperID aggregateIdentifier) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 }

@@ -37,5 +37,15 @@ public class TimelineRepository implements IRepository<Timeline> {
         return false;
     }
 
+    @Override
+    public Timeline get(KasperID aggregateIdentifier, Long expectedVersion) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Timeline get(KasperID aggregateIdentifier) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 
 }

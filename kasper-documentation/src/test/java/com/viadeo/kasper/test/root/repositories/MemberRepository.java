@@ -37,4 +37,14 @@ public class MemberRepository implements IRepository<Member> {
         return false;
     }
 
+    @Override
+    public Member get(KasperID aggregateIdentifier, Long expectedVersion) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Member get(KasperID aggregateIdentifier) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 }

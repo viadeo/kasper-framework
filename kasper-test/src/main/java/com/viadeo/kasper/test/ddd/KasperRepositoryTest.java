@@ -45,6 +45,16 @@ public class KasperRepositoryTest<ENTITY extends AggregateRoot> implements IRepo
         return false;
     }
 
+    @Override
+    public ENTITY get(KasperID aggregateIdentifier, Long expectedVersion) {
+        throw new UnsupportedOperationException("FIXME: Get is not supported by enclosed axon repository");
+    }
+
+    @Override
+    public ENTITY get(KasperID aggregateIdentifier) {
+        throw new UnsupportedOperationException("FIXME: Get is not supported by enclosed axon repository");
+    }
+
     //------------------------------------------------------------------------
 	
 	public KasperRepositoryTest(final FixtureConfiguration<ENTITY> fixture) {

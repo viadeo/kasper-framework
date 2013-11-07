@@ -281,6 +281,29 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 		return this.axonRepository.load(aggregateIdentifier);
 	}
 
+    /**
+     * Get an aggregate without planning further save on UOW commit
+     *
+     * @param aggregateIdentifier the aggregate identifier to fetch
+     * @param expectedVersion the aggregate expected version to fetch
+     * @return the fetched aggregate if any
+     */
+    @Override
+    public AGR get(final KasperID aggregateIdentifier, final Long expectedVersion) {
+        return this.doLoad((Object) aggregateIdentifier, expectedVersion);
+    }
+
+    /**
+     * Get an aggregate without planning further save on UOW commit
+     *
+     * @param aggregateIdentifier
+     * @return the fetched aggregate if any
+     */
+    @Override
+    public AGR get(final KasperID aggregateIdentifier) {
+        return this.get(aggregateIdentifier, null);
+    }
+
 	/**
 	 * @see org.axonframework.repository.Repository#add(Object)
 	 */

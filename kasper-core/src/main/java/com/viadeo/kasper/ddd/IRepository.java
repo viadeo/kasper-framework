@@ -39,7 +39,31 @@ public interface IRepository<AGR extends AggregateRoot> extends org.axonframewor
 
     /**
      * Checks if an aggregate if exists
+     *
+     * @param id
+     * @return
      */
     boolean has(KasperID id);
+
+    /**
+     * Get an aggregate without planning further save on UOW commit
+     * Deprecated design : aggregates should only be loaded, with idea of change, other data must be obtained from a query ad apssed to the command
+     *
+     * @param aggregateIdentifier the aggregate identifier to fetch
+     * @param expectedVersion the aggregate expected version to fetch
+     * @return the fetched aggregate if any
+     */
+    @Deprecated
+    AGR get(KasperID aggregateIdentifier, final Long expectedVersion);
+
+    /**
+     * Get an aggregate without planning further save on UOW commit
+     * Deprecated design : aggregates should only be loaded, with idea of change, other data must be obtained from a query ad apssed to the command
+     *
+     * @param aggregateIdentifier
+     * @return the fetched aggregate if any
+     */
+    @Deprecated
+    AGR get(KasperID aggregateIdentifier);
 
 }
