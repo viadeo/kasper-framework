@@ -7,7 +7,11 @@
 
 package com.viadeo.kasper.client.platform.components.eventbus;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventUtils;
 import com.viadeo.kasper.exception.KasperException;
@@ -24,6 +28,7 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /*
  * Default Kasper event bus based on Axon's Cluster
@@ -34,6 +39,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class KasperEventBus extends ClusteringEventBus {
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBus.class);
+    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
+
+    private static final Meter METRICLASSREQUESTS = METRICS.meter(name(KasperEventBus.class, "events"));
 
     private static final String KASPER_CLUSTER_NAME = "kasper";
 
@@ -159,6 +167,12 @@ public class KasperEventBus extends ClusteringEventBus {
     }
 
     // ------------------------------------------------------------------------
+
+    @Override
+    public void publish(final EventMessage... events) {
+        METRICLASSREQUESTS.mark();
+        super.publish(events);
+    }
 
     /*
      * Publish a contextualized Kasper event
