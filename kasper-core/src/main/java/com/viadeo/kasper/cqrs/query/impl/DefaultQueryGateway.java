@@ -83,7 +83,7 @@ public class DefaultQueryGateway implements QueryGateway {
 
         /* Monitor the request calls */
         timer.stop();
-        Cfinal long time = classTimer.stop();
+        final long time = classTimer.stop();
         METRICLASSREQUESTSTIME.update(time);
         METRICS.histogram(name(queryClass, "requests-times")).update(time);
         METRICLASSREQUESTS.mark();
