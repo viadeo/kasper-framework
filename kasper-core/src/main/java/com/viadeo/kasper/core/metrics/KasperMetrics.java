@@ -88,7 +88,7 @@ public final class KasperMetrics {
             if (resolver.isPresent()) {
                 final String domainName = resolver.get().getDomainLabel(clazz);
                 final String type = resolver.get().getTypeName();
-                componentPath = domainName + "." + type + "." + name;
+                componentPath = String.format("%s.%s.%s", domainName, type, name);
             }
         }
 
