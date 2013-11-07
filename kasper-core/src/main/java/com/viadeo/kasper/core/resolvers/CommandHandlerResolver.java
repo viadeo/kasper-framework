@@ -8,6 +8,7 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
@@ -43,9 +44,9 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
             final Class<? extends Domain> domain = handlerAnnotation.domain();
             DOMAINS_CACHE.put(clazz, domain);
             return Optional.<Class<? extends Domain>>of(domain);
-        } else {
-            throw new KasperException("Command handler is not decorated : " + clazz.getName());
         }
+
+        return Optional.absent();
     }
 
     // ------------------------------------------------------------------------

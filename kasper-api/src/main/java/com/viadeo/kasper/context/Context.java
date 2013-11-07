@@ -34,8 +34,11 @@ public interface Context extends Serializable  {
     KasperID DEFAULT_SESSCORR_ID = DEFAULT_KASPER_ID;
     KasperID DEFAULT_KASPERCORR_ID = DEFAULT_KASPER_ID;
 
-    String DEFAULT_APPLICATION_ID = "UNKNOWN";
-    String DEFAULT_SECURITY_TOKEN = "unauthenticated";
+    String DEFAULT_APPLICATION_ID = "";
+    String DEFAULT_SECURITY_TOKEN = "";
+
+    String DEFAULT_FUNNEL_NAME = "";
+    String DEFAULT_FUNNEL_VERSION = "";
 
     // ------------------------------------------------------------------------
 
@@ -142,6 +145,33 @@ public interface Context extends Serializable  {
      */
     KasperID getFunnelCorrelationId();
 
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Sets the funnel name
+     *
+     * @param funnelName the funnel name of the context
+     */
+    Context setFunnelName(String funnelName);
+
+    /**
+     * Sets the funnel version (funnel declination)
+     *
+     * @param funnelVersion
+     */
+    Context setFunnelVersion(String funnelVersion);
+
+    /**
+     * @return the current funnel name
+     */
+    String getFunnelName();
+
+    /**
+     * @return the current funnel version
+     */
+    String getFunnelVersion();
+
     // ------------------------------------------------------------------------
 
     /**
@@ -204,10 +234,24 @@ public interface Context extends Serializable  {
     int getSequenceIncrement();
 
     /**
+     * Add 1 (one) to the sequence increment
+     */
+    void incSequence();
+
+    /**
      * Childify this context
      *
      * @return a new child context
      */
     <C extends Context> C child();
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * @return the context as a map
+     */
+    Map<String, String> asMap();
+    Map<String, String> asMap(Map<String, String> map);
+
 
 }

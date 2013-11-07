@@ -127,7 +127,7 @@ public class KasperClient {
     protected final QueryFactory queryFactory;
 
     @VisibleForTesting
-    protected final ContextSerializer contextSerializer;
+    protected final HttpContextSerializer contextSerializer;
 
     // ------------------------------------------------------------------------
 
@@ -178,7 +178,7 @@ public class KasperClient {
 
     KasperClient(final QueryFactory queryFactory, final ObjectMapper mapper,
                  final URL commandBaseUrl, final URL queryBaseUrl,
-                 final ContextSerializer contextSerializer,
+                 final HttpContextSerializer contextSerializer,
                  final Flags flags) {
 
         final DefaultClientConfig cfg = new DefaultClientConfig();
@@ -194,7 +194,7 @@ public class KasperClient {
 
     KasperClient(final QueryFactory queryFactory, final ObjectMapper mapper,
                  final URL commandBaseUrl, final URL queryBaseUrl,
-                 final ContextSerializer contextSerializer) {
+                 final HttpContextSerializer contextSerializer) {
         this(queryFactory, mapper, commandBaseUrl, queryBaseUrl, contextSerializer, Flags.defaults());
     }
 
@@ -202,7 +202,7 @@ public class KasperClient {
 
     KasperClient(final QueryFactory queryFactory, final Client client,
                  final URL commandBaseUrl, final URL queryBaseUrl,
-                 final ContextSerializer contextSerializer,
+                 final HttpContextSerializer contextSerializer,
                  final Flags flags) {
 
         this.client = client;
@@ -215,7 +215,7 @@ public class KasperClient {
 
      KasperClient(final QueryFactory queryFactory, final Client client,
                   final URL commandBaseUrl, final URL queryBaseUrl,
-                  final ContextSerializer contextSerializer) {
+                  final HttpContextSerializer contextSerializer) {
         this(queryFactory, client, commandBaseUrl, queryBaseUrl, contextSerializer, Flags.defaults());
      }
 

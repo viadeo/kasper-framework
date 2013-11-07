@@ -7,7 +7,11 @@
 
 package com.viadeo.kasper.client.platform.components.eventbus;
 
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventUtils;
 import com.viadeo.kasper.exception.KasperException;
@@ -19,11 +23,12 @@ import org.axonframework.unitofwork.NoTransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.SynchronousQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /*
  * Default Kasper event bus based on Axon's Cluster
@@ -34,11 +39,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class KasperEventBus extends ClusteringEventBus {
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBus.class);
+    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
+
+    private static final Meter METRICLASSREQUESTS = METRICS.meter(name(KasperEventBus.class, "events"));
 
     private static final String KASPER_CLUSTER_NAME = "kasper";
 
-    private static final int CORE_POOL_SIZE = 2;
-    private static final int MAXIMUM_POOL_SIZE = 10;
+    /* FIXME: make it configurable */
+    private static final int CORE_POOL_SIZE = 10;
+    private static final int MAXIMUM_POOL_SIZE = 100;
     private static final long KEEP_ALIVE_TIME = 60L;
     private static final TimeUnit TIME_UNIT = TimeUnit.MINUTES;
 
@@ -93,7 +102,7 @@ public class KasperEventBus extends ClusteringEventBus {
                             MAXIMUM_POOL_SIZE,
                             KEEP_ALIVE_TIME,
                             TIME_UNIT,
-                            new SynchronousQueue<Runnable>(true)
+                            new LinkedBlockingQueue<Runnable>()
                     ),
                     new DefaultUnitOfWorkFactory(new NoTransactionManager()),
                     new SequentialPolicy(),
@@ -158,6 +167,12 @@ public class KasperEventBus extends ClusteringEventBus {
     }
 
     // ------------------------------------------------------------------------
+
+    @Override
+    public void publish(final EventMessage... events) {
+        METRICLASSREQUESTS.mark();
+        super.publish(events);
+    }
 
     /*
      * Publish a contextualized Kasper event

@@ -87,19 +87,20 @@ public class PlatformConfigurationTest {
         final CommandResolver commandResolver =
                 this.testCachedComponent(pf, "commandResolver", domainLocator, domainResolver, commandHandlerResolver);
 
-        final ResolverFactory resolverFactory = new ResolverFactory();
-        resolverFactory.setDomainResolver(domainResolver);
-        resolverFactory.setCommandResolver(commandResolver);
-        resolverFactory.setCommandHandlerResolver(commandHandlerResolver);
-        resolverFactory.setEventListenerResolver(eventListenerResolver);
-        resolverFactory.setQueryResolver(queryResolver);
-        resolverFactory.setQueryResultResolver(queryResultResolver);
-        resolverFactory.setQueryHandlerResolver(queryHandlerResolver);
-        resolverFactory.setRepositoryResolver(repositoryResolver);
-        resolverFactory.setEntityResolver(entityResolver);
-        resolverFactory.setConceptResolver(conceptResolver);
-        resolverFactory.setRelationResolver(relationResolver);
-        resolverFactory.setEventResolver(eventResolver);
+        final ResolverFactory resolverFactory =
+                this.testCachedComponent(pf, "resolverFactory",
+                        domainResolver,
+                        commandResolver,
+                        commandHandlerResolver,
+                        eventListenerResolver,
+                        queryResolver,
+                        queryResultResolver,
+                        queryHandlerResolver,
+                        repositoryResolver,
+                        entityResolver,
+                        conceptResolver,
+                        relationResolver,
+                        eventResolver);
 
         final CommandBus commandBus =
                 this.testCachedComponent(pf, "commandBus");

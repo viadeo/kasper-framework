@@ -8,6 +8,7 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
@@ -44,9 +45,9 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
             final Class<? extends Domain> domain = eventAnnotation.domain();
             DOMAINS_CACHE.put(clazz, domain);
             return Optional.<Class<? extends Domain>>of(domain);
-        } else {
-            throw new KasperException("Event event is not decorated : " + clazz.getName());
         }
+
+        return Optional.absent();
     }
 
     @Override

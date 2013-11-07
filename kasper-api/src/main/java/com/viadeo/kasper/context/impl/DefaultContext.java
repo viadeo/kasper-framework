@@ -7,8 +7,12 @@
 package com.viadeo.kasper.context.impl;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
+
+import java.io.Serializable;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -21,16 +25,31 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class DefaultContext extends AbstractContext {
     private static final long serialVersionUID = -2357451589032314740L;
 
+    private static final String UID_SHORTNAME = "uid";
+    private static final String ULAND_SHORTNAME = "lang";
+    private static final String UCOUNTRY_SHORTNAME = "cntry";
+    private static final String APPLICATION_ID_SHORTNAME = "appid";
+    private static final String REQUEST_CID_SHORTNAME = "rcid";
+    private static final String FUNNEL_CID_SHORTNAME = "fcid";
+    private static final String SESSION_CID_SHORTNAME = "scid";
+    private static final String SECURITY_TOKEN_SHORTNAME = "tok";
+    private static final String FUNNEL_NAME_SHORTNAME = "fname";
+    private static final String FUNNEL_VERS_SHORTNAME = "fvers";
+
     private KasperID userId;
     private String userLang;
     private String userCountry;
 
     private String applicationId;
+
     private KasperID requestCorrelationId;
     private KasperID funnelCorrelationId;
     private KasperID sessionCorrelationId;
 
     private String securityToken;
+
+    private String funnelName;
+    private String funnelVersion;
 
     // ------------------------------------------------------------------------
 
@@ -45,6 +64,8 @@ public class DefaultContext extends AbstractContext {
         this.sessionCorrelationId = DEFAULT_SESSCORR_ID;
         this.applicationId = DEFAULT_APPLICATION_ID;
         this.securityToken = DEFAULT_SECURITY_TOKEN;
+        this.funnelName = DEFAULT_FUNNEL_NAME;
+        this.funnelVersion = DEFAULT_FUNNEL_VERSION;
     }
 
     // ------------------------------------------------------------------------
@@ -127,6 +148,28 @@ public class DefaultContext extends AbstractContext {
     }
 
     @Override
+    public Context setFunnelName(final String funnelName) {
+        this.funnelName = checkNotNull(funnelName);
+        return this;
+    }
+
+    @Override
+    public Context setFunnelVersion(final String funnelVersion) {
+        this.funnelVersion = checkNotNull(funnelVersion);
+        return this;
+    }
+
+    @Override
+    public String getFunnelName() {
+        return funnelName;
+    }
+
+    @Override
+    public String getFunnelVersion() {
+        return funnelVersion;
+    }
+
+    @Override
     public Context setSessionCorrelationId(KasperID sessionCorrelationId) {
         this.sessionCorrelationId = checkNotNull(sessionCorrelationId);
         return this;
@@ -155,16 +198,46 @@ public class DefaultContext extends AbstractContext {
         newContext.securityToken = this.securityToken;
         newContext.applicationId = this.applicationId;
 
+        newContext.funnelName = this.funnelName;
+        newContext.funnelVersion = this.funnelVersion;
+
         return (C) newContext;
     }
 
     // ------------------------------------------------------------------------
 
     @Override
+    public Map<String, String> asMap() {
+        return this.asMap(Maps.<String, String>newHashMap());
+    }
+
+    @Override
+    public Map<String, String> asMap(final Map<String, String> retMap) {
+        super.asMap(retMap);
+
+        retMap.put(UID_SHORTNAME, safeStringObject(this.userId));
+        retMap.put(ULAND_SHORTNAME, safeStringObject(this.userLang));
+        retMap.put(UCOUNTRY_SHORTNAME, safeStringObject(this.userCountry));
+        retMap.put(REQUEST_CID_SHORTNAME, safeStringObject(this.requestCorrelationId));
+        retMap.put(FUNNEL_CID_SHORTNAME, safeStringObject(this.funnelCorrelationId));
+        retMap.put(SESSION_CID_SHORTNAME, safeStringObject(this.sessionCorrelationId));
+        retMap.put(APPLICATION_ID_SHORTNAME, safeStringObject(this.applicationId));
+        retMap.put(SECURITY_TOKEN_SHORTNAME, safeStringObject(this.securityToken));
+        retMap.put(FUNNEL_NAME_SHORTNAME, safeStringObject(this.funnelName));
+        retMap.put(FUNNEL_VERS_SHORTNAME, safeStringObject(this.funnelVersion));
+
+        return retMap;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
     public boolean equals(final Object obj) {
+
         if (null == obj) {
             return false;
         }
+
         if (getClass() != obj.getClass()) {
             return false;
         }
@@ -179,14 +252,17 @@ public class DefaultContext extends AbstractContext {
                 && Objects.equal(this.userLang, other.userLang)
                 && Objects.equal(this.userCountry, other.userCountry)
                 && Objects.equal(this.applicationId,  other.applicationId)
-                && Objects.equal(this.securityToken, other.securityToken);
+                && Objects.equal(this.securityToken, other.securityToken)
+                && Objects.equal(this.funnelName, other.funnelName)
+                && Objects.equal(this.funnelVersion, other.funnelVersion)
+                ;
     }
 
     @Override
     public int hashCode() {
         return Objects.hashCode( super.hashCode(),
                 this.sessionCorrelationId, this.funnelCorrelationId, this.requestCorrelationId,
-                this.applicationId,
+                this.applicationId, this.funnelName, this.funnelVersion,
                 this.userId, this.userLang, this.userCountry, this.securityToken);
     }
 
@@ -202,6 +278,8 @@ public class DefaultContext extends AbstractContext {
                 .addValue(this.userCountry)
                 .addValue(this.applicationId)
                 .addValue(this.securityToken)
+                .addValue(this.funnelName)
+                .addValue(this.funnelVersion)
                 .toString();
     }
 

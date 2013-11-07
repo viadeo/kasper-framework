@@ -47,24 +47,30 @@ public class ResolverFactory {
     private RelationResolver relationResolver;
     private EventResolver eventResolver;
 
-    private Map<Class, Resolver> resolvers = new LinkedHashMap<Class, Resolver>() {
-        {
-            put(Domain.class, domainResolver);
-            put(Command.class, commandResolver);
-            put(CommandHandler.class, commandHandlerResolver);
-            put(EventListener.class, eventListenerResolver);
-            put(Query.class, queryResolver);
-            put(QueryResult.class, queryResultResolver);
-            put(QueryHandler.class, queryHandlerResolver);
-            put(Repository.class, repositoryResolver);
-            put(Event.class, eventResolver);
+    private Map<Class, Resolver> resolvers;
 
-            /* Order is important here (Concept/Relation before Entity) */
-            put(Concept.class, conceptResolver);
-            put(Relation.class, relationResolver);
-            put(Entity.class, entityResolver);
+    private void initResolvers() {
+        if (null == resolvers) {
+            resolvers = new LinkedHashMap<Class, Resolver>() {
+                {
+                    put(Domain.class, domainResolver);
+                    put(Command.class, commandResolver);
+                    put(CommandHandler.class, commandHandlerResolver);
+                    put(EventListener.class, eventListenerResolver);
+                    put(Query.class, queryResolver);
+                    put(QueryResult.class, queryResultResolver);
+                    put(QueryHandler.class, queryHandlerResolver);
+                    put(Repository.class, repositoryResolver);
+                    put(Event.class, eventResolver);
+
+                /* Order is important here (Concept/Relation before Entity) */
+                    put(Concept.class, conceptResolver);
+                    put(Relation.class, relationResolver);
+                    put(Entity.class, entityResolver);
+                }
+            };
         }
-    };
+    }
 
     // ------------------------------------------------------------------------
 
@@ -73,6 +79,8 @@ public class ResolverFactory {
         if (cache.containsKey(clazz)) {
             return cache.get(clazz);
         }
+
+        initResolvers();
 
         Resolver resolver = null;
 

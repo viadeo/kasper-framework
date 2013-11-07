@@ -25,6 +25,8 @@ public class TestContexts {
         context_full.setUserCountry("US");
         context_full.setApplicationId("TEST");
         context_full.setSecurityToken(UUID.randomUUID().toString());
+        context_full.setFunnelName("MyFunnel");
+        context_full.setFunnelVersion("case_1");
     };
 
 }

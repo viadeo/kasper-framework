@@ -260,4 +260,5 @@ The following HTTP headers can be set to set the queries and commands context :
 * X-KASPER-LANG (String - ISO 639) : the user language used for strings internationalization (will be removed when Kasper security will be made available)
 * X-KASPER-COUNTRY (String - ISO 3166) : the user country (will be removed when Kasper security will be made available)
 * X-KASPER-SECURITY-TOKEN (String) : the security token used for authentication
-
+* X-KASPER-FUNNEL-NAME (String) : the funnel name declared by the application during this request
+* X-KASPER-FUNNEL-VERSION (String) : the funnel version (declination) declared by the application during this request

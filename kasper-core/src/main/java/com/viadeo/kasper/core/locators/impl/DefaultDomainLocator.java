@@ -156,7 +156,7 @@ public class DefaultDomainLocator implements DomainLocator {
     @Override
     public <E extends AggregateRoot> Optional<ClientRepository<E>> getEntityRepository(final E entity) {
         checkNotNull(entity);
-        return Optional.of(new ClientRepository<E>((IRepository<E>) this.entityRepositories.get(entity.getClass())));
+        return Optional.fromNullable(new ClientRepository<E>((IRepository<E>) this.entityRepositories.get(entity.getClass())));
     }
 
     /**
@@ -167,7 +167,7 @@ public class DefaultDomainLocator implements DomainLocator {
     public <E extends AggregateRoot> Optional<ClientRepository<E>> getEntityRepository(final Class<E> entityClass) {
         checkNotNull(entityClass);
 
-        return Optional.of(new ClientRepository<E>((IRepository<E>) this.entityRepositories.get(entityClass)));
+        return Optional.fromNullable(new ClientRepository<E>((IRepository<E>) this.entityRepositories.get(entityClass)));
     }
 
     // ========================================================================

@@ -36,7 +36,7 @@ public final class KasperMetrics {
 
     KasperMetrics() { /* Utility class */ }
 
-    private static KasperMetrics instance() {
+    public static KasperMetrics instance() {
         if (null == instance) {
             instance = new KasperMetrics();
         }
@@ -88,10 +88,11 @@ public final class KasperMetrics {
             if (resolver.isPresent()) {
                 final String domainName = resolver.get().getDomainLabel(clazz);
                 final String type = resolver.get().getTypeName();
-                componentPath = domainName + "." + type + "." + name;
+                componentPath = String.format("%s.%s.%s", domainName, type, name);
             }
         }
 
+        componentPath = componentPath.toLowerCase();
         pathCache.put(clazz, componentPath);
         return componentPath;
     }

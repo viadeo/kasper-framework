@@ -36,6 +36,8 @@ public class HttpContextDeserializer {
         String userCountry = null;
         String securityToken = null;
         String applicationId = null;
+        String funnelName = null;
+        String funnelVersion = null;
 
         // --------------------------------------------------------------------
 
@@ -79,6 +81,16 @@ public class HttpContextDeserializer {
             securityToken = headerSecurityToken;
         }
 
+        final String headerFunnelName = req.getHeader(HEADER_FUNNEL_NAME);
+        if (null != headerFunnelName) {
+            funnelName = headerFunnelName;
+        }
+
+        final String headerFunnelVersion = req.getHeader(HEADER_FUNNEL_VERSION);
+        if (null != headerFunnelVersion) {
+            funnelVersion = headerFunnelVersion;
+        }
+
         // --------------------------------------------------------------------
 
         final Context context = DefaultContextBuilder.get();
@@ -117,6 +129,14 @@ public class HttpContextDeserializer {
 
         if (null != securityToken) {
             context.setSecurityToken(securityToken);
+        }
+
+        if (null != funnelName) {
+            context.setFunnelName(funnelName);
+        }
+
+        if (null != funnelVersion) {
+            context.setFunnelVersion(funnelVersion);
         }
 
         return context;

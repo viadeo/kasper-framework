@@ -22,4 +22,7 @@ public final class HttpContextHeaders {
     public static final String HEADER_APPLICATION_ID = "X-KASPER-CLIENT-APPID";
     public static final String HEADER_SECURITY_TOKEN = "X-KASPER-SECURITY-TOKEN";
 
+    public static final String HEADER_FUNNEL_NAME = "X-KASPER-FUNNEL-NAME";
+    public static final String HEADER_FUNNEL_VERSION= "X-KASPER-FUNNEL-VERSION";
+
 }

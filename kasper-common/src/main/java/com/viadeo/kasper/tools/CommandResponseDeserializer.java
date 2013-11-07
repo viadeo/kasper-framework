@@ -48,7 +48,10 @@ public final class CommandResponseDeserializer extends JsonDeserializer<CommandR
                 }
 
                 reason = readKasperReason(jp);
+            } else if (jp.getCurrentToken() == JsonToken.START_ARRAY) {
+                jp.skipChildren();
             }
+
         }
 
         return new CommandResponse(status, reason);

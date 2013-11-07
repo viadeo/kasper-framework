@@ -35,7 +35,7 @@ public class KasperClientBuilder {
     private URL commandBaseLocation;
     private URL queryBaseLocation;
     private QueryFactory queryFactory;
-    private ContextSerializer contextSerializer;
+    private HttpContextSerializer contextSerializer;
     private final QueryFactoryBuilder qFactoryBuilder = new QueryFactoryBuilder();
     private KasperClient.Flags flags = KasperClient.Flags.defaults();
 
@@ -179,7 +179,7 @@ public class KasperClientBuilder {
         }
 
         if (null == contextSerializer) {
-            contextSerializer = new ContextSerializer();
+            contextSerializer = new HttpContextSerializer();
         }
 
         if (null == client) {

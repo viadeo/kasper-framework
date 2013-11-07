@@ -181,8 +181,7 @@ public class HttpQueryExposer extends HttpExposer {
 
         /* Create a kasper correlation id */
         final UUID kasperCorrelationUUID = UUID.randomUUID();
-        MDC.put("kasperCorrelationId", kasperCorrelationUUID.toString());
-        resp.addHeader("UUID", kasperCorrelationUUID.toString());
+        resp.addHeader("kasperCorrelationId", kasperCorrelationUUID.toString());
 
         /* Log starting request */
         QUERY_LOGGER.info("Processing HTTP Query '{}' '{}'", req.getMethod(), getFullRequestURI(req));
@@ -279,6 +278,7 @@ public class HttpQueryExposer extends HttpExposer {
 
         /* extract context from request */
         final Context context = contextDeserializer.deserialize(req, kasperCorrelationUUID);
+        MDC.setContextMap(context.asMap());
 
         /* send the query to the platform */
         try {

@@ -28,6 +28,9 @@ import java.util.UUID;
 public abstract class AbstractContext implements Context {
 	private static final long serialVersionUID = 1887660968377933167L;
 
+    private static final String KASPER_CID_SHORTNAME = "kcid";
+    private static final String SEQ_INC_SHORTNAME = "seq";
+
 	private Map<String, Serializable> properties;
     private KasperID kasperCorrelationId = DEFAULT_KASPERCORR_ID;
 
@@ -123,6 +126,11 @@ public abstract class AbstractContext implements Context {
         return this.sequenceIncrement;
     }
 
+    @Override
+    public void incSequence() {
+        this.sequenceIncrement++;
+    }
+
     @SuppressWarnings("unchecked") // must be ensured by client
     @Override
     public <C extends Context> C child() {
@@ -144,6 +152,35 @@ public abstract class AbstractContext implements Context {
         newContext.sequenceIncrement = this.sequenceIncrement + 1;
 
         return (C) newContext;
+    }
+
+    // ------------------------------------------------------------------------
+
+    protected String safeStringObject(final Serializable unsafeObject) {
+        if (null == unsafeObject) {
+            return "";
+        }
+        return unsafeObject.toString();
+    }
+
+    @Override
+    public Map<String, String> asMap() {
+        final Map<String, String> retMap = Maps.newHashMap();
+        return asMap(retMap);
+    }
+
+    @Override
+    public Map<String, String> asMap(final Map<String, String> retMap) {
+        retMap.put(KASPER_CID_SHORTNAME, safeStringObject(this.kasperCorrelationId));
+        retMap.put(SEQ_INC_SHORTNAME, safeStringObject(this.sequenceIncrement));
+
+        if ( null != this.properties ) {
+            for (final Map.Entry<String, Serializable> entry : this.properties.entrySet()) {
+                retMap.put("_" + entry.getKey(), safeStringObject(entry.getValue()));
+            }
+        }
+
+        return retMap;
     }
 
     // ------------------------------------------------------------------------

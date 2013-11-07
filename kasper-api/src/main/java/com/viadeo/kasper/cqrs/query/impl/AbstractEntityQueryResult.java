@@ -12,7 +12,7 @@ import org.joda.time.DateTime;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class AbstractEntityQueryResult implements EntityQueryResult {
+public abstract class AbstractEntityQueryResult implements EntityQueryResult {
 
     private final KasperID id;
     private final String type;

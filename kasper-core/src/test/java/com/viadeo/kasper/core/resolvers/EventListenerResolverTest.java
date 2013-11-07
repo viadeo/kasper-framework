@@ -52,7 +52,7 @@ public class EventListenerResolverTest {
     // ------------------------------------------------------------------------
 
     @Test
-    public void testGetDomainFromDecoratedEventListener() {
+    public void testGetDomainFromEventListener() {
         // Given
         final EventListenerResolver resolver = new EventListenerResolver();
 
@@ -63,21 +63,6 @@ public class EventListenerResolverTest {
         // Then
         assertTrue(domain.isPresent());
         assertEquals(TestDomain.class, domain.get());
-    }
-
-    @Test
-    public void testGetDomainFromNonDecoratedEventListener() {
-        // Given
-        final EventListenerResolver resolver = new EventListenerResolver();
-
-        // When
-        try {
-            final Optional<Class<? extends Domain>> domain =
-                    resolver.getDomainClass(TestEventListener2.class);
-            fail();
-        } catch (final KasperException e) {
-            // Then exception is raised
-        }
     }
 
     @Test
