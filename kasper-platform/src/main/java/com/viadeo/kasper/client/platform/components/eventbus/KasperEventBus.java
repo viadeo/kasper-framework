@@ -41,7 +41,6 @@ public class KasperEventBus extends ClusteringEventBus {
     private static final int CORE_POOL_SIZE = 10;
     private static final int MAXIMUM_POOL_SIZE = 100;
     private static final long KEEP_ALIVE_TIME = 60L;
-    private static final int QUEUE_SIZE = 50;
     private static final TimeUnit TIME_UNIT = TimeUnit.MINUTES;
 
     public static enum Policy {
@@ -95,7 +94,7 @@ public class KasperEventBus extends ClusteringEventBus {
                             MAXIMUM_POOL_SIZE,
                             KEEP_ALIVE_TIME,
                             TIME_UNIT,
-                            new LinkedBlockingQueue<Runnable>(QUEUE_SIZE)
+                            new LinkedBlockingQueue<Runnable>()
                     ),
                     new DefaultUnitOfWorkFactory(new NoTransactionManager()),
                     new SequentialPolicy(),
