@@ -92,6 +92,7 @@ public final class KasperMetrics {
             }
         }
 
+        componentPath = componentPath.toLowerCase();
         pathCache.put(clazz, componentPath);
         return componentPath;
     }
