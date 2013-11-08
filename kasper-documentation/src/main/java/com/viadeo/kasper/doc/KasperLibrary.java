@@ -793,6 +793,12 @@ public class KasperLibrary {
 		if (DocumentedRelation.class.isAssignableFrom(node.getClass())) {
 			return new DocumentedSimpleRelation(DocumentedRelation.class.cast(node));
 		}
+        if (DocumentedQueryHandler.class.isAssignableFrom(node.getClass())) {
+            return new DocumentedSimpleQueryHandler(DocumentedQueryHandler.class.cast(node));
+        }
+        if (DocumentedHandler.class.isAssignableFrom(node.getClass())) {
+            return new DocumentedSimpleHandler(DocumentedHandler.class.cast(node));
+        }
 		return new DocumentedNode(node);
 	}
 
