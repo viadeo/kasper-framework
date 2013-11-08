@@ -17,6 +17,9 @@ import java.util.UUID;
 public class DefaultKasperId extends AbstractKasperID<UUID> {
     private static final long serialVersionUID = 2557821277131061279L;
 
+    public static final int UUID_LENGHT = 36;
+    public static final String UUID_REGEXP = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
+
     public static DefaultKasperId random() {
         return new DefaultKasperId();
     }
