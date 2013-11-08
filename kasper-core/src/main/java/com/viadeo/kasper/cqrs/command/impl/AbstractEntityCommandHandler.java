@@ -31,10 +31,6 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 public abstract class AbstractEntityCommandHandler<C extends Command, AGR extends AggregateRoot>
         extends AbstractCommandHandler<C> implements EntityCommandHandler<C, AGR> {
 
-    private transient DomainLocator domainLocator;
-
-    // ------------------------------------------------------------------------
-
     // Consistent data container for entity class and repository
     private static final class ConsistentRepositoryEntity<E extends AggregateRoot> {
         private ClientRepository<E> repository;
@@ -79,15 +75,6 @@ public abstract class AbstractEntityCommandHandler<C extends Command, AGR extend
     // ------------------------------------------------------------------------
 
     /**
-     * @param domainLocator
-     */
-    public void setDomainLocator(final DomainLocator domainLocator) {
-        this.domainLocator = domainLocator;
-    }
-
-    // ========================================================================
-
-    /**
      * @see com.viadeo.kasper.cqrs.command.EntityCommandHandler#setRepository(com.viadeo.kasper.ddd.IRepository)
      */
     @Override
@@ -104,12 +91,12 @@ public abstract class AbstractEntityCommandHandler<C extends Command, AGR extend
     public ClientRepository<AGR> getRepository() {
         if (null == this.consistentRepositoryEntity.repository) {
 
-            if (null == this.domainLocator) {
+            if (null == this.getDomainLocator()) {
                 throw new KasperCommandException("Unable to resolve repository, no domain locator was provided");
             }
 
             final Optional<ClientRepository<AGR>> optRepo =
-                    this.domainLocator.getEntityRepository(this.consistentRepositoryEntity.entityClass);
+                    this.getDomainLocator().getEntityRepository(this.consistentRepositoryEntity.entityClass);
 
             if (!optRepo.isPresent()) {
                 throw new KasperCommandException(String.format("The entity %s has not been recorded on any domain",
