@@ -13,6 +13,9 @@ import java.lang.annotation.Annotation;
 
 public abstract class DocumentationProcessor<T extends Annotation, I> implements AnnotationProcessor<T, I> {
 
+    /* Fallback library */
+    private static final KasperLibrary defaultKasperLibrary = new KasperLibrary();
+
 	private KasperLibrary kasperLibrary;
 
     /**
@@ -27,6 +30,9 @@ public abstract class DocumentationProcessor<T extends Annotation, I> implements
 	}
 	
 	public KasperLibrary getKasperLibrary() {
+        if (null == this.kasperLibrary) {
+            return defaultKasperLibrary;
+        }
 		return this.kasperLibrary;
 	}
 	
