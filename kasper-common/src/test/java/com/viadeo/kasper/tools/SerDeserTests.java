@@ -7,6 +7,8 @@
 package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.impl.DefaultKasperId;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -19,19 +21,19 @@ public class SerDeserTests {
 
     public static class SimpleBean {
 
-        private String field;
+        private KasperID field;
 
         public SimpleBean() { }
 
-        public SimpleBean(final String field) {
+        public SimpleBean(final KasperID field) {
             this.field = field;
         }
 
-        public void setField(final String field) {
+        public void setField(final KasperID field) {
             this.field = field;
         }
 
-        public String getField() {
+        public KasperID getField() {
             return this.field;
         }
 
@@ -71,7 +73,7 @@ public class SerDeserTests {
     @Test
     public void test_SimpleBean() throws IOException {
         // Given
-        final SimpleBean bean = new SimpleBean("test");
+        final SimpleBean bean = new SimpleBean(DefaultKasperId.random());
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(bean);

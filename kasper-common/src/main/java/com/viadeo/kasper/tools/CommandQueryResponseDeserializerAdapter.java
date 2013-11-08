@@ -8,6 +8,7 @@ package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 
@@ -25,6 +26,9 @@ class CommandQueryResponseDeserializerAdapter extends SimpleDeserializers {
 
         } else if (type.hasRawClass(CommandResponse.class)) {
             return new CommandResponseDeserializer();
+
+        } else if (type.hasRawClass(KasperID.class)) {
+            return new KasperIdDeserializer();
 
         } else {
             return super.findBeanDeserializer(type, config, beanDesc);

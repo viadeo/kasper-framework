@@ -13,6 +13,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
@@ -63,9 +64,11 @@ public final class ObjectMapperProvider {
 
         /* Register a specific module for Kasper Ser/Deser */
         final SimpleModule kasperClientModule = new SimpleModule()
+                .addSerializer(KasperID.class, new KasperIdSerializer())
+                .addDeserializer(KasperID.class, new KasperIdDeserializer())
                 .addSerializer(CommandResponse.class, new CommandResponseSerializer())
-                .addDeserializer(CommandResponse.class, new CommandResponseDeserializer())
-                .addSerializer(QueryResponse.class, new QueryResponseSerializer());
+                .addSerializer(QueryResponse.class, new QueryResponseSerializer())
+                .addDeserializer(CommandResponse.class, new CommandResponseDeserializer());
 
         kasperClientModule.setDeserializers(new CommandQueryResponseDeserializerAdapter());
 
