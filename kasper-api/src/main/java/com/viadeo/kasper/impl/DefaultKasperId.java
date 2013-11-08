@@ -17,7 +17,11 @@ import java.util.UUID;
 public class DefaultKasperId extends AbstractKasperID<UUID> {
     private static final long serialVersionUID = 2557821277131061279L;
 
-    DefaultKasperId() {
+    public static DefaultKasperId random() {
+        return new DefaultKasperId();
+    }
+
+    public DefaultKasperId() {
         super(UUID.randomUUID());
     }
 
