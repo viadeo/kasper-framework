@@ -59,17 +59,29 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         }
     }
 
+    public <T> void registerInstance(final Class<T> clazz, T instance) {
+        components.putInstance(clazz, instance);
+    }
+
+    public boolean containsInstance(final Class<?> clazz) {
+        return components.containsKey(clazz);
+    }
+
+    public <T> T getInstance(final Class<T> clazz) {
+        return components.getInstance(clazz);
+    }
+
     // ------------------------------------------------------------------------
 
     @Override
     public ComponentsInstanceManager getComponentsInstanceManager() {
-        if (components.containsKey(ComponentsInstanceManager.class)) {
-            return components.getInstance(ComponentsInstanceManager.class);
+        if (containsInstance(ComponentsInstanceManager.class)) {
+            return getInstance(ComponentsInstanceManager.class);
         } else {
 
             final SimpleComponentsInstanceManager sman = new SimpleComponentsInstanceManager();
 
-            components.putInstance(ComponentsInstanceManager.class, sman);
+            registerInstance(ComponentsInstanceManager.class, sman);
             return sman;
         }
     }
@@ -83,7 +95,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         final AnnotationRootProcessor rootProcessor =  new AnnotationRootProcessor();
         rootProcessor.setComponentsInstanceManager(instancesManager);
 
-        components.putInstance(AnnotationRootProcessor.class, rootProcessor);
+        registerInstance(AnnotationRootProcessor.class, rootProcessor);
         return rootProcessor;
     }
 
@@ -108,7 +120,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         kasperPlatform.setRootProcessor(annotationRootProcessor);
         kasperPlatform.setEventBus(eventBus);
 
-        components.putInstance(KasperPlatform.class, kasperPlatform);
+        registerInstance(KasperPlatform.class, kasperPlatform);
 
          /* Initialize metrics reporters */
         this.initializeMetricsReporters();
@@ -126,12 +138,12 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // FIXME: put a configurable policy (then specific bean)
     @Override
     public KasperEventBus eventBus() {
-        if (components.containsKey(KasperEventBus.class)) {
-            return components.getInstance(KasperEventBus.class);
+        if (containsInstance(KasperEventBus.class)) {
+            return getInstance(KasperEventBus.class);
         } else {
             final KasperEventBus eventBus = new KasperEventBus();
 
-            components.putInstance(KasperEventBus.class, eventBus);
+            registerInstance(KasperEventBus.class, eventBus);
             return eventBus;
         }
     }
@@ -147,7 +159,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
             final CommandGatewayFactoryBean commandGatewayFactoryBean = commandGatewayFactoryBean(commandBus);
             final CommandGateway commandGateway = (CommandGateway) commandGatewayFactoryBean.getObject();
 
-            components.putInstance(CommandGateway.class, commandGateway);
+            registerInstance(CommandGateway.class, commandGateway);
             return commandGateway;
 
         } catch (final Exception e) {
@@ -164,14 +176,14 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
 
     @Override
     public CommandBus commandBus() {
-        if (components.containsKey(CommandBus.class)) {
-            return components.getInstance(CommandBus.class);
+        if (containsInstance(CommandBus.class)) {
+            return getInstance(CommandBus.class);
         } else {
 
             final KasperCommandBus commandBus = new KasperCommandBus();
             commandBus.setHandlerInterceptors(commandHandlerInterceptors());
 
-            components.putInstance(CommandBus.class, commandBus);
+            registerInstance(CommandBus.class, commandBus);
             return commandBus;
         }
     }
@@ -202,7 +214,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
             throw new KasperException("Unable to bind Axon Command Gateway", e);
         }
 
-        components.putInstance(CommandGatewayFactoryBean.class, commandGatewayFactoryBean);
+        registerInstance(CommandGatewayFactoryBean.class, commandGatewayFactoryBean);
         return commandGatewayFactoryBean;
     }
 
@@ -216,7 +228,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         domainLocator.setCommandHandlerResolver(commandHandlerResolver);
         domainLocator.setRepositoryResolver(repositoryResolver);
 
-        components.putInstance(DomainLocator.class, domainLocator);
+        registerInstance(DomainLocator.class, domainLocator);
         return domainLocator;
     }
 
@@ -234,7 +246,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         final DefaultQueryHandlersLocator queryHandlersLocator = new DefaultQueryHandlersLocator();
         queryHandlersLocator.setQueryHandlerResolver(queryHandlerResolver);
 
-        components.putInstance(QueryHandlersLocator.class, queryHandlersLocator);
+        registerInstance(QueryHandlersLocator.class, queryHandlersLocator);
         return queryHandlersLocator;
     }
 
@@ -260,7 +272,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         commandHandlersProcessor.setEventBus(eventBus);
         commandHandlersProcessor.setCommandHandlerResolver(commandHandlerResolver);
 
-        components.putInstance(CommandHandlersProcessor.class, commandHandlersProcessor);
+        registerInstance(CommandHandlersProcessor.class, commandHandlersProcessor);
         return commandHandlersProcessor;
     }
 
@@ -279,7 +291,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         repositoriesProcessor.setDomainLocator(locator);
         repositoriesProcessor.setEventBus(eventBus);
 
-        components.putInstance(RepositoriesProcessor.class, repositoriesProcessor);
+        registerInstance(RepositoriesProcessor.class, repositoriesProcessor);
         return repositoriesProcessor;
     }
 
@@ -297,7 +309,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         final QueryHandlerFiltersProcessor queryHandlerFiltersProcessor = new QueryHandlerFiltersProcessor();
         queryHandlerFiltersProcessor.setQueryHandlersLocator(locator);
 
-        components.putInstance(QueryHandlerFiltersProcessor.class, queryHandlerFiltersProcessor);
+        registerInstance(QueryHandlerFiltersProcessor.class, queryHandlerFiltersProcessor);
         return queryHandlerFiltersProcessor;
     }
 
@@ -316,7 +328,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         eventListenersProcessor.setEventBus(eventBus);
         eventListenersProcessor.setCommandGateway(commandGateway);
 
-        components.putInstance(EventListenersProcessor.class, eventListenersProcessor);
+        registerInstance(EventListenersProcessor.class, eventListenersProcessor);
         return eventListenersProcessor;
     }
 
@@ -334,7 +346,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         final QueryHandlersProcessor queryHandlersProcessor = new QueryHandlersProcessor();
         queryHandlersProcessor.setQueryHandlersLocator(locator);
 
-        components.putInstance(QueryHandlersProcessor.class, queryHandlersProcessor);
+        registerInstance(QueryHandlersProcessor.class, queryHandlersProcessor);
         return queryHandlersProcessor;
     }
 
@@ -352,7 +364,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         final DomainsProcessor domainsProcessor = new DomainsProcessor();
         domainsProcessor.setDomainLocator(domainLocator);
 
-        components.putInstance(DomainsProcessor.class, domainsProcessor);
+        registerInstance(DomainsProcessor.class, domainsProcessor);
         return domainsProcessor;
     }
 
@@ -370,7 +382,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         final DefaultQueryGateway queryGateway = new DefaultQueryGateway();
         queryGateway.setQueryHandlersLocator(locator);
 
-        components.putInstance(QueryGateway.class, queryGateway);
+        registerInstance(QueryGateway.class, queryGateway);
         return queryGateway;
     }
 
@@ -388,7 +400,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         final CommandHandlerResolver commandHandlerResolver = new CommandHandlerResolver();
         commandHandlerResolver.setDomainResolver(domainResolver);
 
-        components.putInstance(CommandHandlerResolver.class, commandHandlerResolver);
+        registerInstance(CommandHandlerResolver.class, commandHandlerResolver);
         return commandHandlerResolver;
     }
 
@@ -401,14 +413,14 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
 
     @Override
     public DomainResolver domainResolver() {
-        if (components.containsKey(DomainResolver.class)) {
-            return components.getInstance(DomainResolver.class);
+        if (containsInstance(DomainResolver.class)) {
+            return getInstance(DomainResolver.class);
         } else {
             this.ensureNotPresent(DomainResolver.class);
 
             final DomainResolver domainResolver = new DomainResolver();
 
-            components.putInstance(DomainResolver.class, domainResolver);
+            registerInstance(DomainResolver.class, domainResolver);
             return domainResolver;
         }
     }
@@ -428,7 +440,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         commandResolver.setCommandHandlerResolver(commandHandlerResolver);
         commandResolver.setDomainResolver(domainResolver);
 
-        components.putInstance(CommandResolver.class, commandResolver);
+        registerInstance(CommandResolver.class, commandResolver);
         return commandResolver;
     }
 
@@ -448,7 +460,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         final EventListenerResolver eventListenerResolver = new EventListenerResolver();
         eventListenerResolver.setDomainResolver(domainResolver);
 
-        components.putInstance(EventListenerResolver.class, eventListenerResolver);
+        registerInstance(EventListenerResolver.class, eventListenerResolver);
         return eventListenerResolver;
     }
 
@@ -466,7 +478,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         final EventResolver eventResolver = new EventResolver();
         eventResolver.setDomainResolver(domainResolver);
 
-        components.putInstance(EventResolver.class, eventResolver);
+        registerInstance(EventResolver.class, eventResolver);
         return eventResolver;
     }
 
@@ -490,7 +502,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         queryResolver.setQueryHandlersLocator(queryHandlersLocator);
         queryResolver.setDomainResolver(domainResolver);
 
-        components.putInstance(QueryResolver.class, queryResolver);
+        registerInstance(QueryResolver.class, queryResolver);
         return queryResolver;
     }
 
@@ -514,7 +526,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         queryResultResolver.setQueryHandlersLocator(queryHandlersLocator);
         queryResultResolver.setDomainResolver(domainResolver);
 
-        components.putInstance(QueryResultResolver.class, queryResultResolver);
+        registerInstance(QueryResultResolver.class, queryResultResolver);
         return queryResultResolver;
     }
 
@@ -532,7 +544,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         final QueryHandlerResolver queryHandlerResolver = new QueryHandlerResolver();
         queryHandlerResolver.setDomainResolver(domainResolver);
 
-        components.putInstance(QueryHandlerResolver.class, queryHandlerResolver);
+        registerInstance(QueryHandlerResolver.class, queryHandlerResolver);
         return queryHandlerResolver;
     }
 
@@ -551,7 +563,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         repositoryResolver.setEntityResolver(entityResolver);
         repositoryResolver.setDomainResolver(domainResolver);
 
-        components.putInstance(RepositoryResolver.class, repositoryResolver);
+        registerInstance(RepositoryResolver.class, repositoryResolver);
         return repositoryResolver;
     }
 
@@ -575,7 +587,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         entityResolver.setRelationResolver(relationResolver);
         entityResolver.setDomainResolver(domainResolver);
 
-        components.putInstance(EntityResolver.class, entityResolver);
+        registerInstance(EntityResolver.class, entityResolver);
         return entityResolver;
     }
 
@@ -593,7 +605,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         final ConceptResolver conceptResolver = new ConceptResolver();
         conceptResolver.setDomainResolver(domainResolver);
 
-        components.putInstance(ConceptResolver.class, conceptResolver);
+        registerInstance(ConceptResolver.class, conceptResolver);
         return conceptResolver;
     }
 
@@ -612,7 +624,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         relationResolver.setDomainResolver(domainResolver);
         relationResolver.setConceptResolver(conceptResolver);
 
-        components.putInstance(RelationResolver.class, relationResolver);
+        registerInstance(RelationResolver.class, relationResolver);
         return relationResolver;
     }
 
@@ -654,7 +666,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         resolverFactory.setRelationResolver(relationResolver);
         resolverFactory.setEventResolver(eventResolver);
 
-        components.putInstance(ResolverFactory.class, resolverFactory);
+        registerInstance(ResolverFactory.class, resolverFactory);
         return resolverFactory;
     }
 

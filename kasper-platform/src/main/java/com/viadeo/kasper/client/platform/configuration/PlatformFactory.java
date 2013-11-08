@@ -49,7 +49,7 @@ public class PlatformFactory {
 
     public PlatformFactory boot() {
         if (null == platform) {
-            throw new KasperException("Platform factory is not configured");
+            this.configure();
         }
         if (platform.isBooted()) {
             throw new KasperException("Platform has already been booted");
