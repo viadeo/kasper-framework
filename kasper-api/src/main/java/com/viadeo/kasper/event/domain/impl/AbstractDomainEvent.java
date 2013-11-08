@@ -22,10 +22,7 @@ public abstract class AbstractDomainEvent<D extends Domain>
 
 	private static final long serialVersionUID = 1948164207419476512L;
 
-    protected AbstractDomainEvent() {
-        /* for serialization */
-        super();
-    }
+    protected AbstractDomainEvent() { super(); }
 
 	protected AbstractDomainEvent(final Context context) {
         super(context);

@@ -24,13 +24,17 @@ public abstract class AbstractEntityEvent<D extends Domain>
 
 	private static final long serialVersionUID = -1948165707419476512L;
 
-	private KasperID entityId;
-	private DateTime lastEntityModificationDate;
+	private final KasperID entityId;
+	private final DateTime lastEntityModificationDate;
 
 	// ------------------------------------------------------------------------
-    protected AbstractEntityEvent() {
-        /* For serialization */
+
+    protected AbstractEntityEvent(final KasperID id,
+                                  final DateTime lastModificationDate) {
         super();
+
+        this.entityId = Preconditions.checkNotNull(id);
+        this.lastEntityModificationDate = Preconditions.checkNotNull(lastModificationDate);
     }
 
 	protected AbstractEntityEvent(final Context context,

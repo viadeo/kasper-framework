@@ -4,23 +4,17 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-
 package com.viadeo.kasper.event.domain;
 
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.Event;
 
 /**
  *
- * Kasper domain event marker
- * 
- * Mainly all events are domain events, but external systems could send
- * events to the bus, they will not be domain events..
+ * A Kasper event related to an entity deletion
  *
- * @see com.viadeo.kasper.event.Event
  */
-public interface DomainEvent<D extends Domain> extends Event {
-
-    int DOMAIN_PARAMETER_POSITION = 0;
+public interface EntityDeletedEvent<D extends Domain> extends EntityEvent<D> {
 
 }
+
+

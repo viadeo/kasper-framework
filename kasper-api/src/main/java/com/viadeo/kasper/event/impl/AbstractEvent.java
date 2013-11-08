@@ -14,11 +14,11 @@ import com.viadeo.kasper.event.Event;
 public abstract class AbstractEvent implements Event {
 	private static final long serialVersionUID = 7345041953962326298L;
 
-	private transient Context context;
+	private Context context;
 
 	// ------------------------------------------------------------------------
 
-    protected AbstractEvent() { /* for serialization */ }
+    protected AbstractEvent() { }
 
 	protected AbstractEvent(final Context context) {
         this.context = Preconditions.checkNotNull(context);

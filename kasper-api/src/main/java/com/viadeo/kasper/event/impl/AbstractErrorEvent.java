@@ -72,6 +72,57 @@ public abstract class AbstractErrorEvent extends AbstractEvent implements ErrorE
 
     // ------------------------------------------------------------------------
 
+     public AbstractErrorEvent(final String code,
+                               final String message, final Exception exception) {
+        super();
+        this.code = checkNotNull(code);
+        this.exception = checkNotNull(exception);
+        this.message = checkNotNull(message);
+    }
+
+    public AbstractErrorEvent(final String code, final Exception exception) {
+        super();
+        this.code = checkNotNull(code);
+        this.exception = checkNotNull(exception);
+        this.message = null;
+    }
+
+    public AbstractErrorEvent(final String code, final String message) {
+        super();
+        this.code = checkNotNull(code);
+        this.exception = null;
+        this.message = checkNotNull(message);
+    }
+
+    public AbstractErrorEvent(final String message) {
+        super();
+        this.code = CoreReasonCode.UNKNOWN_REASON.toString();
+        this.exception = null;
+        this.message = checkNotNull(message);
+    }
+
+    public AbstractErrorEvent(final Exception exception) {
+        super();
+        this.code = CoreReasonCode.UNKNOWN_REASON.toString();
+        this.exception = checkNotNull(exception);
+        this.message = null;
+    }
+
+    public AbstractErrorEvent(final CoreReasonCode code,
+                              final String message, final Exception exception) {
+         this(code.toString(), message, exception);
+    }
+
+    public AbstractErrorEvent(final CoreReasonCode code, final Exception exception) {
+        this(code.toString(), exception);
+    }
+
+    public AbstractErrorEvent(final CoreReasonCode code, final String message) {
+        this(code.toString(), message);
+    }
+
+    // ------------------------------------------------------------------------
+
     @Override
     public Optional<Exception> getException() {
         return Optional.fromNullable(this.exception);
