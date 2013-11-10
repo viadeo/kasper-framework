@@ -10,6 +10,7 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.domain.EntityEvent;
+import com.viadeo.kasper.event.domain.EntityUpdatedEvent;
 import org.joda.time.DateTime;
 
 /**
@@ -19,7 +20,9 @@ import org.joda.time.DateTime;
  * @see com.viadeo.kasper.event.domain.EntityEvent
  */
 public abstract class AbstractEntityUpdatedEvent<D extends Domain>
-        extends AbstractEntityEvent<D> implements EntityEvent<D> {
+        extends AbstractEntityEvent<D>
+        implements EntityUpdatedEvent<D>
+{
 
     protected AbstractEntityUpdatedEvent(final KasperID id,
                                          final DateTime lastModificationDate) {

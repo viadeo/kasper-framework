@@ -10,6 +10,7 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.event.domain.EntityCreatedEvent;
 import com.viadeo.kasper.event.domain.EntityEvent;
 import org.joda.time.DateTime;
 
@@ -20,7 +21,8 @@ import org.joda.time.DateTime;
  * @see com.viadeo.kasper.event.domain.EntityEvent
  */
 public abstract class AbstractEntityCreatedEvent<D extends Domain>
-        extends AbstractEntityEvent<D> implements EntityEvent<D> {
+        extends AbstractEntityEvent<D>
+        implements EntityCreatedEvent<D> {
 
     protected AbstractEntityCreatedEvent(final KasperID id,
                                          final DateTime lastModificationDate) {
