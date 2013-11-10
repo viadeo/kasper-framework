@@ -21,7 +21,7 @@ public abstract class AbstractEntityQueryResult implements EntityQueryResult {
     // ------------------------------------------------------------------------
 
     public AbstractEntityQueryResult(final KasperID id, final String type) {
-        this(id, type, new DateTime(0, 0, 0, 0, 0));
+        this(id, type, new DateTime(0L));
     }
 
     public AbstractEntityQueryResult(final KasperID id, final String type, final DateTime time) {
