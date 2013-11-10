@@ -42,7 +42,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
 	@XKasperEvent(action = "test")
 	public static class TestEvent extends AbstractEntityEvent<TestDomain> {
 		public TestEvent(final KasperID idShortMessage, final DateTime creationDate) {
-			super(DefaultContextBuilder.get(), idShortMessage, creationDate);
+			super(DefaultContextBuilder.get(), idShortMessage, 1L, creationDate);
 		}
 	}
 
