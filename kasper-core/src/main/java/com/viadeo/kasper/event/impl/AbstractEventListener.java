@@ -86,10 +86,10 @@ public abstract class AbstractEventListener<E extends Event>
 	@SuppressWarnings({"unchecked", "rawtypes"}) // Safe
 	@Override
 	public void handle(final org.axonframework.domain.EventMessage eventMessage) {
-
-        if ( ! eventMessage.getPayloadType().isAssignableFrom(this.getEventClass())) {
-            return;
-        }
+		
+		if (!this.getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
+			return;
+		}
 
         if (null == metricTimer) {
             metricTimer = METRICS.timer(name(this.getClass(), "handle-time"));
