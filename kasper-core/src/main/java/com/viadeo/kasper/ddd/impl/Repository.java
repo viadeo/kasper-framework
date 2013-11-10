@@ -157,6 +157,11 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
             final AGR agr;
             try {
                 agr = this.kasperRepository.doLoad(aggregateIdentifier, expectedVersion);
+
+                if (agr.isDeleted()) {
+                    throw new AggregateNotFoundException(agr.getEntityId(), "Not found");
+                }
+
              } catch (final RuntimeException e) {
                 metricClassLoadErrors.mark();
                 metricLoadErrors.mark();
