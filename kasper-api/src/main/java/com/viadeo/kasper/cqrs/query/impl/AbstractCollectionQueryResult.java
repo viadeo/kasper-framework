@@ -9,6 +9,7 @@ package com.viadeo.kasper.cqrs.query.impl;
 import com.google.common.base.Objects;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -16,7 +17,7 @@ import java.util.Iterator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class AbstractCollectionQueryResult<RES> implements CollectionQueryResult<RES> {
+public abstract class AbstractCollectionQueryResult<RES extends QueryResult> implements CollectionQueryResult<RES> {
     
 	private Collection<RES> list;
 
