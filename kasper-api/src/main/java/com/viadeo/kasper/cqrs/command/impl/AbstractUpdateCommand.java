@@ -9,31 +9,44 @@ package com.viadeo.kasper.cqrs.command.impl;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.command.CreateCommand;
+import com.viadeo.kasper.cqrs.command.UpdateCommand;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  *
- * Convenient base implementation for idToUse simple management
+ * Convenient base implementation for id and version management
  * 
  */
-public abstract class AbstractCreateCommand implements CreateCommand {
-    private static final long serialVersionUID = -432287057793281452L;
+public abstract class AbstractUpdateCommand implements UpdateCommand {
+    private static final long serialVersionUID = -432287057423281452L;
 
-	private final KasperID idToUse;
+	private final KasperID id;
+    private final Long version;
 
 	// ------------------------------------------------------------------------
 
-	public AbstractCreateCommand(final KasperID providedId) {
-		this.idToUse = checkNotNull(providedId);
+	public AbstractUpdateCommand(final KasperID id) {
+		this.id = checkNotNull(id);
+        this.version = null;
+	}
+
+ 	public AbstractUpdateCommand(final KasperID id, final Long version) {
+		this.id = checkNotNull(id);
+        this.version = checkNotNull(version);
 	}
 
 	// ------------------------------------------------------------------------
 
 	@Override
-	public KasperID getIdToUse() {
-		return this.idToUse;
+	public KasperID getId() {
+		return this.id;
 	}
+
+    @Override
+    public Optional<Long> getVersion() {
+        return Optional.fromNullable(this.version);
+    }
 
     // ------------------------------------------------------------------------
 
@@ -45,20 +58,22 @@ public abstract class AbstractCreateCommand implements CreateCommand {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final AbstractCreateCommand other = (AbstractCreateCommand) obj;
+        final AbstractUpdateCommand other = (AbstractUpdateCommand) obj;
 
-        return com.google.common.base.Objects.equal(this.idToUse, other.idToUse);
+        return com.google.common.base.Objects.equal(this.id, other.id)
+                && com.google.common.base.Objects.equal(this.version, other.version);
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(this.idToUse);
+        return com.google.common.base.Objects.hashCode(this.id, this.version);
     }
 
     @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
-                .addValue(this.idToUse)
+                .addValue(this.id)
+                .addValue(this.version)
                 .toString();
     }
 

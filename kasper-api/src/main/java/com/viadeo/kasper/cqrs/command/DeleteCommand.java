@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
+import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 
 /**
@@ -14,11 +15,16 @@ import com.viadeo.kasper.KasperID;
  * The submitted id can then be used by handlers as the created element's id
  *
  */
-public interface CreateCommand extends Command {
+public interface DeleteCommand extends Command {
 
-	/**
-	 * @return the (optional) user requested id to be used
-	 */
-	KasperID getIdToUse();
+    /**
+     * @return the entity id to delete
+     */
+    KasperID getId();
+
+    /**
+     * @return the (optional) entity version to be deleted
+     */
+    Optional<Long> getVersion();
 
 }
