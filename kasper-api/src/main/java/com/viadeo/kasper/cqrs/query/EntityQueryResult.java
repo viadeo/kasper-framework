@@ -17,6 +17,6 @@ public interface EntityQueryResult extends QueryResult {
 
     Long getVersion();
 
-    DateTime getLastModificationTime();
+    DateTime getLastModificationDate();
 
 }

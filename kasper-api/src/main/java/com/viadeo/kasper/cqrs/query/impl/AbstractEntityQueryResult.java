@@ -17,7 +17,7 @@ public abstract class AbstractEntityQueryResult implements EntityQueryResult {
     private final KasperID id;
     private final String type;
     private final Long version;
-    private final DateTime lastModificationTime;
+    private final DateTime lastModificationDate;
 
     // ------------------------------------------------------------------------
 
@@ -29,7 +29,7 @@ public abstract class AbstractEntityQueryResult implements EntityQueryResult {
         this.id = checkNotNull(id);
         this.type = checkNotNull(type);
         this.version = checkNotNull(version);
-        this.lastModificationTime = checkNotNull(time);
+        this.lastModificationDate = checkNotNull(time);
     }
 
     // ------------------------------------------------------------------------
@@ -50,8 +50,8 @@ public abstract class AbstractEntityQueryResult implements EntityQueryResult {
     }
 
     @Override
-    public DateTime getLastModificationTime() {
-        return this.lastModificationTime;
+    public DateTime getLastModificationDate() {
+        return this.lastModificationDate;
     }
 
 }
