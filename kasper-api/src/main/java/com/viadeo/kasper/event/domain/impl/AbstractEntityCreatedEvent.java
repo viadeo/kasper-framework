@@ -6,12 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.event.domain.impl;
 
-import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.domain.EntityCreatedEvent;
-import com.viadeo.kasper.event.domain.EntityEvent;
 import org.joda.time.DateTime;
 
 /**
@@ -26,13 +24,13 @@ public abstract class AbstractEntityCreatedEvent<D extends Domain>
 
     protected AbstractEntityCreatedEvent(final KasperID id,
                                          final DateTime lastModificationDate) {
-        super(id, lastModificationDate);
+        super(id, 1L, lastModificationDate);
     }
 
     protected AbstractEntityCreatedEvent(final Context context,
-                                  final KasperID id,
-                                  final DateTime lastModificationDate) {
-        super(context, id, lastModificationDate);
+                                         final KasperID id,
+                                         final DateTime lastModificationDate) {
+        super(context, id, 1L, lastModificationDate);
     }
 
 }

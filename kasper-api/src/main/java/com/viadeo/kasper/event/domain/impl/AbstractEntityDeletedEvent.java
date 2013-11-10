@@ -10,7 +10,6 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.domain.EntityDeletedEvent;
-import com.viadeo.kasper.event.domain.EntityEvent;
 import org.joda.time.DateTime;
 
 /**
@@ -25,14 +24,16 @@ public abstract class AbstractEntityDeletedEvent<D extends Domain>
 {
 
     protected AbstractEntityDeletedEvent(final KasperID id,
+                                         final Long version,
                                          final DateTime lastModificationDate) {
-        super(id, lastModificationDate);
+        super(id, version, lastModificationDate);
     }
 
     protected AbstractEntityDeletedEvent(final Context context,
                                          final KasperID id,
+                                         final Long version,
                                          final DateTime lastModificationDate) {
-        super(context, id, lastModificationDate);
+        super(context, id, version, lastModificationDate);
     }
 
 }

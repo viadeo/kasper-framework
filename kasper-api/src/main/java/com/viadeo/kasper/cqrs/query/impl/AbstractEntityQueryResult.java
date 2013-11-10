@@ -16,17 +16,19 @@ public abstract class AbstractEntityQueryResult implements EntityQueryResult {
 
     private final KasperID id;
     private final String type;
+    private final Long version;
     private final DateTime lastModificationTime;
 
     // ------------------------------------------------------------------------
 
-    public AbstractEntityQueryResult(final KasperID id, final String type) {
-        this(id, type, new DateTime(0L));
+    public AbstractEntityQueryResult(final KasperID id, final String type, final Long version) {
+        this(id, type, version, new DateTime(0L));
     }
 
-    public AbstractEntityQueryResult(final KasperID id, final String type, final DateTime time) {
+    public AbstractEntityQueryResult(final KasperID id, final String type, final Long version, final DateTime time) {
         this.id = checkNotNull(id);
         this.type = checkNotNull(type);
+        this.version = checkNotNull(version);
         this.lastModificationTime = checkNotNull(time);
     }
 
@@ -40,6 +42,11 @@ public abstract class AbstractEntityQueryResult implements EntityQueryResult {
     @Override
     public String getType() {
         return this.type;
+    }
+
+    @Override
+    public Long getVersion() {
+        return this.version;
     }
 
     @Override

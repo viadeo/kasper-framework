@@ -27,6 +27,11 @@ public interface EntityEvent<D extends Domain> extends DomainEvent<D> {
 	 */
 	DateTime getEntityLastModificationDate();
 
+    /**
+     * @return the version of the entity
+     */
+    Long getVersion();
+
 }
 
 

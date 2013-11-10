@@ -11,7 +11,6 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventUtils;
 import com.viadeo.kasper.exception.KasperException;

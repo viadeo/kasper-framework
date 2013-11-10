@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;

@@ -7,7 +7,6 @@
 package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.command.CreateCommand;
 

@@ -11,7 +11,6 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;

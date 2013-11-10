@@ -8,7 +8,6 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;

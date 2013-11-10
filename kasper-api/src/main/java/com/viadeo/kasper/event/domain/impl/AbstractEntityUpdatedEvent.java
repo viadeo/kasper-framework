@@ -9,7 +9,6 @@ package com.viadeo.kasper.event.domain.impl;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.domain.EntityEvent;
 import com.viadeo.kasper.event.domain.EntityUpdatedEvent;
 import org.joda.time.DateTime;
 
@@ -25,14 +24,16 @@ public abstract class AbstractEntityUpdatedEvent<D extends Domain>
 {
 
     protected AbstractEntityUpdatedEvent(final KasperID id,
+                                         final Long version,
                                          final DateTime lastModificationDate) {
-        super(id, lastModificationDate);
+        super(id, version, lastModificationDate);
     }
 
     protected AbstractEntityUpdatedEvent(final Context context,
                                          final KasperID id,
+                                         final Long version,
                                          final DateTime lastModificationDate) {
-        super(context, id, lastModificationDate);
+        super(context, id, version, lastModificationDate);
     }
 
 }

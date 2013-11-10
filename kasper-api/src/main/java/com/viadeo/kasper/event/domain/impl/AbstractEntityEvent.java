@@ -6,12 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.event.domain.impl;
 
-import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.domain.EntityEvent;
 import org.joda.time.DateTime;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  *
@@ -25,41 +26,47 @@ public abstract class AbstractEntityEvent<D extends Domain>
 	private static final long serialVersionUID = -1948165707419476512L;
 
 	private final KasperID entityId;
+    private final Long version;
 	private final DateTime lastEntityModificationDate;
 
 	// ------------------------------------------------------------------------
 
     protected AbstractEntityEvent(final KasperID id,
+                                  final Long version,
                                   final DateTime lastModificationDate) {
         super();
 
-        this.entityId = Preconditions.checkNotNull(id);
-        this.lastEntityModificationDate = Preconditions.checkNotNull(lastModificationDate);
+        this.entityId = checkNotNull(id);
+        this.version = checkNotNull(version);
+        this.lastEntityModificationDate = checkNotNull(lastModificationDate);
     }
 
 	protected AbstractEntityEvent(final Context context,
                                   final KasperID id,
+                                  final Long version,
                                   final DateTime lastModificationDate) {
         super(context);
 
-		this.entityId = Preconditions.checkNotNull(id);
-		this.lastEntityModificationDate = Preconditions.checkNotNull(lastModificationDate);
+		this.entityId = checkNotNull(id);
+        this.version = checkNotNull(version);
+		this.lastEntityModificationDate = checkNotNull(lastModificationDate);
 	}
 
 	// ------------------------------------------------------------------------
 
-	/**
-	 * @see com.viadeo.kasper.event.domain.EntityEvent#getEntityId()
-	 */
 	@Override
 	public KasperID getEntityId() {
 		return this.entityId;
 	}
 
-	// ------------------------------------------------------------------------
-
+    @Override
 	public DateTime getEntityLastModificationDate() {
 		return this.lastEntityModificationDate;
 	}
+
+    @Override
+    public Long getVersion() {
+        return this.version;
+    }
 
 }
