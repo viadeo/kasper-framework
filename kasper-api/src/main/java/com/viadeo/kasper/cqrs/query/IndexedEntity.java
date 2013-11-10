@@ -18,7 +18,7 @@ public interface IndexedEntity {
     /**
      * @return the id of the indexed entity
      */
-    KasperID getEntityId();
+    KasperID getId();
 
     /**
      * @return the type of the indexed entity

@@ -44,8 +44,8 @@ public abstract class AbstractIndexedEntity implements IndexedEntity {
     // ------------------------------------------------------------------------
 
     @Override
-    public KasperID getEntityId() {
-        return this.getEntityId();
+    public KasperID getId() {
+        return this.id;
     }
 
     @Override
@@ -74,7 +74,7 @@ public abstract class AbstractIndexedEntity implements IndexedEntity {
     @SuppressWarnings("unchecked") // Must be checked by client
     public <I extends IndexedEntity> I setLastModificationDate(final DateTime date) {
        this.lastModificationDate = checkNotNull(date);
-        return (I) this;
+       return (I) this;
     }
 
 }
