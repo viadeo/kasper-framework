@@ -6,9 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.command.CreateCommand;
+
+import javax.validation.constraints.NotNull;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -20,6 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class AbstractCreateCommand implements CreateCommand {
     private static final long serialVersionUID = -432287057793281452L;
 
+    @NotNull
 	private final KasperID idToUse;
 
 	// ------------------------------------------------------------------------

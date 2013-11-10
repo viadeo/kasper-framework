@@ -11,6 +11,8 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.command.CreateCommand;
 import com.viadeo.kasper.cqrs.command.UpdateCommand;
 
+import javax.validation.constraints.NotNull;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -21,7 +23,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class AbstractUpdateCommand implements UpdateCommand {
     private static final long serialVersionUID = -432287057423281452L;
 
+    @NotNull
 	private final KasperID id;
+
     private final Long version;
 
 	// ------------------------------------------------------------------------
