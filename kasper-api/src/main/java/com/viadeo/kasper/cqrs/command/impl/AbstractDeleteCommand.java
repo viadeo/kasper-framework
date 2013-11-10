@@ -36,7 +36,7 @@ public abstract class AbstractDeleteCommand implements UpdateCommand {
 
  	public AbstractDeleteCommand(final KasperID id, final Long version) {
 		this.id = checkNotNull(id);
-        this.version = checkNotNull(version);
+        this.version = version; /* can be null */
 	}
 
 	// ------------------------------------------------------------------------

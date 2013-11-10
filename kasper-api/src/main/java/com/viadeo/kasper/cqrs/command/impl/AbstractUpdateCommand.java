@@ -37,7 +37,7 @@ public abstract class AbstractUpdateCommand implements UpdateCommand {
 
  	public AbstractUpdateCommand(final KasperID id, final Long version) {
 		this.id = checkNotNull(id);
-        this.version = checkNotNull(version);
+        this.version = version; /* can be null */
 	}
 
 	// ------------------------------------------------------------------------
