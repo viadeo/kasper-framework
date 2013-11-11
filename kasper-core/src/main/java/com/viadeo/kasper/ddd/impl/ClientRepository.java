@@ -56,6 +56,25 @@ public final class ClientRepository<AGR extends AggregateRoot> {
      * Try to load an aggregate, planning its save on UOW commit
      *
      * @param id the aggregate id
+     * @param expectedVersion the (optional) aggregate expected version
+     * @return the (optional) aggregate
+     */
+    public Optional<AGR> load(final KasperID id, final Optional<Long> expectedVersion) {
+        try {
+            Long version = null;
+            if (expectedVersion.isPresent()) {
+                version = expectedVersion.get();
+            }
+            return Optional.of(this.repository.load(id, version));
+        } catch (final AggregateNotFoundException e) {
+            return Optional.absent();
+        }
+    }
+
+    /**
+     * Try to load an aggregate, planning its save on UOW commit
+     *
+     * @param id the aggregate id
      * @return the (optional) aggregate
      */
     public Optional<AGR> load(final KasperID id) {
