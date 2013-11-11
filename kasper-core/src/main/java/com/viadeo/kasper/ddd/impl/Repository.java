@@ -21,6 +21,7 @@ import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.EventBus;
+import org.axonframework.eventsourcing.AggregateDeletedException;
 import org.axonframework.repository.AggregateNotFoundException;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
@@ -158,8 +159,14 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
             try {
                 agr = this.kasperRepository.doLoad(aggregateIdentifier, expectedVersion);
 
+                /* manages with deleted aggregates */
                 if (agr.isDeleted()) {
-                    throw new AggregateNotFoundException(agr.getEntityId(), "Not found");
+                    throw new AggregateDeletedException(agr.getEntityId(), "Not found");
+                }
+
+                /* manages with bad versions */
+                if ((null != expectedVersion) && (expectedVersion != agr.getVersion())) {
+                    throw new AggregateNotFoundException(agr.getEntityId(), "Version do not match");
                 }
 
              } catch (final RuntimeException e) {
