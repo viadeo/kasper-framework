@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.impl;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.query.IndexedEntity;
 import org.joda.time.DateTime;
@@ -54,8 +53,8 @@ public abstract class AbstractIndexedEntity implements IndexedEntity {
     }
 
     @Override
-    public Optional<Long> getVersion() {
-        return Optional.fromNullable(this.version);
+    public Long getVersion() {
+        return (null == this.version) ? 1L : this.version;
     }
 
     @Override

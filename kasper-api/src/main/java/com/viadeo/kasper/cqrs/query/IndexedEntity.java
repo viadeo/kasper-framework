@@ -28,7 +28,7 @@ public interface IndexedEntity {
     /**
      * @return the version of the indexed entity
      */
-    Optional<Long> getVersion();
+    Long getVersion();
     <I extends IndexedEntity> I setVersion(Long version);
 
     /**
