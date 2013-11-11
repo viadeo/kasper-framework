@@ -8,7 +8,6 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.cqrs.command.CreateCommand;
 import com.viadeo.kasper.cqrs.command.UpdateCommand;
 
 import javax.validation.constraints.NotNull;

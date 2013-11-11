@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import org.joda.time.DateTime;
 

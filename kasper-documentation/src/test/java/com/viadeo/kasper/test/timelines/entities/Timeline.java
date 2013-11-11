@@ -94,4 +94,8 @@ public class Timeline implements RootConcept {
 		return false;
 	}
 
+    @Override
+    public void setVersion(Long version) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.impl;
 
-import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.ddd.AggregateRoot;
@@ -76,7 +75,9 @@ public abstract class AbstractAggregateRoot
 
     @Override
     public void setVersion(final Long version) {
-        this.version = checkNotNull(version);
+        if (null == super.getVersion()) { /* if aggregate is not event-sourced */
+            this.version = checkNotNull(version);
+        }
     }
 
     /**
@@ -85,7 +86,11 @@ public abstract class AbstractAggregateRoot
      */
     @Override
     public Long getVersion() {
-        return this.version;
+        final Long superVersion = super.getVersion();
+        if (null == superVersion) { /* if aggregate is not event-sourced */
+            return this.version;
+        }
+        return superVersion;
     }
 
 	// ========================================================================

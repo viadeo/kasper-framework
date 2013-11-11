@@ -113,5 +113,9 @@ public class Member_connectedTo_Member implements RootRelation<Member, Member> {
 		return false;
 	}
 
-	
+
+    @Override
+    public void setVersion(Long version) {
+        //To change body of implemented methods use File | Settings | File Templates.
+    }
 }

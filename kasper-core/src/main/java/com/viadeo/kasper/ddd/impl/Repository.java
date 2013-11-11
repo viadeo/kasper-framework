@@ -140,7 +140,11 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
                     aggregate.setVersion(aggregate.getVersion() + 1L);
                 }
 
-			    this.kasperRepository.doSave(aggregate);
+                if (null == aggregate.getVersion()) {
+			        this.kasperRepository.doSave(aggregate);
+                } else {
+                    this.kasperRepository.doUpdate(aggregate);
+                }
 
             } catch (final RuntimeException e) {
                 metricClassSaveErrors.mark();
@@ -412,10 +416,25 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	
 	/**
 	 * saves a new (create) or existing (update) aggregate to the repository
+     *
+     * in case of an update, the aggregate version will be set to null
+     *
+     * if you override doUpdate() this method will only be called on save
 	 * 
 	 * @param aggregate the aggregate to be saved on the repository
 	 */
 	protected abstract void doSave(final AGR aggregate);
+
+ 	/**
+	 * updates an existing aggregate to the repository
+     *
+     * Overrides this method if you want to clearly separate saves and updates in two methods
+	 *
+	 * @param aggregate the aggregate to be saved on the repository
+	 */
+	protected void doUpdate(final AGR aggregate) {
+        this.doSave(aggregate);
+    }
 	
 	/**
 	 * deletes (or mark as deleted) an existing aggregate from the repository
