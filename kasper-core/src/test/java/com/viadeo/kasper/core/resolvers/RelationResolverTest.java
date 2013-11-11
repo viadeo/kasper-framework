@@ -76,6 +76,8 @@ public class RelationResolverTest {
         public DateTime getCreationDate() { return null; }
         @Override
         public DateTime getModificationDate() { return null; }
+        @Override
+        public void setVersion(Long version) { }
     }
 
     @XKasperUnregistered

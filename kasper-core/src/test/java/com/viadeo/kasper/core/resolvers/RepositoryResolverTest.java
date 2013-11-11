@@ -54,6 +54,8 @@ public class RepositoryResolverTest {
         public DateTime getModificationDate() { return null; }
         @Override
         public void initializeState(DomainEventStream domainEventStream) { }
+        @Override
+        public void setVersion(Long version) { }
     }
 
     @XKasperUnregistered
