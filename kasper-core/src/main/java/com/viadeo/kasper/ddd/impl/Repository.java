@@ -133,6 +133,13 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
             try {
 
+                /**
+                 * Increment non-null version
+                 */
+                if (null != aggregate.getVersion()) {
+                    aggregate.setVersion(aggregate.getVersion() + 1L);
+                }
+
 			    this.kasperRepository.doSave(aggregate);
 
             } catch (final RuntimeException e) {
@@ -159,14 +166,16 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
             try {
                 agr = this.kasperRepository.doLoad(aggregateIdentifier, expectedVersion);
 
+                /**
+                 * Set null version to 0L
+                 */
+                if (null == agr.getVersion()) {
+                    agr.setVersion(0L);
+                }
+
                 /* manages with deleted aggregates */
                 if (agr.isDeleted()) {
                     throw new AggregateDeletedException(agr.getEntityId(), "Not found");
-                }
-
-                /* manages with bad versions */
-                if ((null != expectedVersion) && (0L != expectedVersion) && (expectedVersion != agr.getVersion())) {
-                    throw new AggregateNotFoundException(agr.getEntityId(), "Version do not match");
                 }
 
              } catch (final RuntimeException e) {
@@ -199,7 +208,16 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
             this.ensureDates(aggregate);
 
             try {
+
+                /**
+                 * Set null version to 0L
+                 */
+                if (null == aggregate.getVersion()) {
+                    aggregate.setVersion(0L);
+                }
+
  			    this.kasperRepository.doDelete(aggregate);
+
              } catch (final RuntimeException e) {
                 metricClassDeleteErrors.mark();
                 metricDeleteErrors.mark();

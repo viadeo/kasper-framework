@@ -31,4 +31,9 @@ import org.axonframework.eventsourcing.EventSourcedAggregateRoot;
  */
 public interface AggregateRoot extends EventSourcedAggregateRoot<KasperID>, Entity {
 
+    /**
+     * Used by the repository to set the aggregate version
+     */
+    void setVersion(Long version);
+
 }

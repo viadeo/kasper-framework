@@ -16,6 +16,8 @@ import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  *
  * Base AGR implementation
@@ -28,7 +30,9 @@ public abstract class AbstractAggregateRoot
 		implements AggregateRoot {
 	
 	private static final long serialVersionUID = 8352516744342839116L;
-	
+
+    private Long version;
+
 	@Autowired // FIXME: remove autowiring ??
 	private transient DomainLocator domainLocator;
 	
@@ -68,11 +72,27 @@ public abstract class AbstractAggregateRoot
 		return domainLocator.getEntityDomain(this).get();
 	}
 
+    // ========================================================================
+
+    @Override
+    public void setVersion(final Long version) {
+        this.version = checkNotNull(version);
+    }
+
+    /**
+     * A newly created aggregate will have version null
+     * A firstly loaded aggregate (new aggregate, first loaded) will have version 0L
+     */
+    @Override
+    public Long getVersion() {
+        return this.version;
+    }
+
 	// ========================================================================
 	
 	@Override
 	public void setDomainLocator(final DomainLocator domainLocator) {
-		this.domainLocator = Preconditions.checkNotNull(domainLocator);
+		this.domainLocator = checkNotNull(domainLocator);
 	}
 	
 	public DomainLocator getDomainLocator() {
@@ -90,12 +110,12 @@ public abstract class AbstractAggregateRoot
 	}
 
 	protected void setCreationDate(final DateTime creationDate) {
-		this.creationDate = Preconditions.checkNotNull(creationDate);
+		this.creationDate = checkNotNull(creationDate);
 		this.modificationDate = creationDate;
 	}
 	
 	protected void setModificationDate(final DateTime modificationDate) {
-		this.modificationDate = Preconditions.checkNotNull(modificationDate);
+		this.modificationDate = checkNotNull(modificationDate);
 	}
 	
 }
