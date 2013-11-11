@@ -25,18 +25,10 @@ public abstract class AbstractDeleteCommand implements UpdateCommand {
     @NotNull
 	private final KasperID id;
 
-    private final Long version;
-
 	// ------------------------------------------------------------------------
 
 	public AbstractDeleteCommand(final KasperID id) {
 		this.id = checkNotNull(id);
-        this.version = null;
-	}
-
- 	public AbstractDeleteCommand(final KasperID id, final Long version) {
-		this.id = checkNotNull(id);
-        this.version = version; /* can be null */
 	}
 
 	// ------------------------------------------------------------------------
@@ -45,11 +37,6 @@ public abstract class AbstractDeleteCommand implements UpdateCommand {
 	public KasperID getId() {
 		return this.id;
 	}
-
-    @Override
-    public Optional<Long> getVersion() {
-        return Optional.fromNullable(this.version);
-    }
 
     // ------------------------------------------------------------------------
 
@@ -63,20 +50,18 @@ public abstract class AbstractDeleteCommand implements UpdateCommand {
         }
         final AbstractDeleteCommand other = (AbstractDeleteCommand) obj;
 
-        return com.google.common.base.Objects.equal(this.id, other.id)
-                && com.google.common.base.Objects.equal(this.version, other.version);
+        return com.google.common.base.Objects.equal(this.id, other.id);
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(this.id, this.version);
+        return com.google.common.base.Objects.hashCode(this.id);
     }
 
     @Override
     public String toString() {
         return com.google.common.base.Objects.toStringHelper(this)
                 .addValue(this.id)
-                .addValue(this.version)
                 .toString();
     }
 
