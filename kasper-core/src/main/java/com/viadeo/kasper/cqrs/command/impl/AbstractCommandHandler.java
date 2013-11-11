@@ -10,6 +10,7 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -22,6 +23,7 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
+import org.axonframework.repository.ConflictingAggregateVersionException;
 import org.axonframework.unitofwork.CurrentUnitOfWork;
 import org.axonframework.unitofwork.UnitOfWork;
 import org.slf4j.Logger;
@@ -93,36 +95,48 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
 
         CommandResponse ret = null;
         Exception exception = null;
+        boolean isError = false;
         try {
 
             try {
                 ret = this.handle(kmessage);
             } catch (final UnsupportedOperationException e) {
                 try {
-                    ret = this.handle(kmessage, uow);
-                } catch (final UnsupportedOperationException e2) {
                     ret = this.handle(message.getPayload());
+                } catch (final UnsupportedOperationException e2) {
+                    ret = this.handle(kmessage, uow);
                 }
             }
 
+        } catch (final ConflictingAggregateVersionException e) {
+            LOGGER.error("Error command [{}]", commandClass, e);
+            isError = true;
+
+            /**
+             * Conflicting version encountered : generate a CONFLICT error
+             */
+            ret = CommandResponse.error(CoreReasonCode.CONFLICT, e.getMessage());
+
         } catch (final RuntimeException e) {
             LOGGER.error("Error command [{}]", commandClass, e);
-
             exception = e;
+            isError = true;
 
-            /* rollback uow on failure */
-            if (uow.isStarted()) {
-                uow.rollback(e);
-                uow.start();
-            }
-            /*
-             * FIXME should we transform to a command response or just rollback and propagate the exception as is
-             * let's propagate the error as is and keep CommandResponse for business operation response (success and failure) ?
-             */
-
-            /* Stop timer on error and propage exception */
+        } finally {
             classTimer.close();
             timer.close();
+
+            if (isError) {
+                /* rollback uow on failure */
+                if (uow.isStarted()) {
+                    if (null != exception) {
+                        uow.rollback(exception);
+                    } else {
+                        uow.rollback();
+                    }
+                    uow.start();
+                }
+            }
         }
 
         if (null == exception) {
@@ -130,8 +144,6 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         }
 
         /* Monitor the request calls */
-        timer.close();
-        classTimer.stop();
         METRICLASSREQUESTS.mark();
         metricRequests.mark();
         if ((null != exception) || ! ret.isOK()) {
@@ -141,9 +153,10 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
 
         if (null != exception) {
             throw exception;
+        } else {
+            return ret;
         }
 
-        return ret;
     }
 
     // ------------------------------------------------------------------------
