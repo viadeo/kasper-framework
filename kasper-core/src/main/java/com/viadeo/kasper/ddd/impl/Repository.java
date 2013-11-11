@@ -165,7 +165,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
                 }
 
                 /* manages with bad versions */
-                if ((null != expectedVersion) && (expectedVersion != agr.getVersion())) {
+                if ((null != expectedVersion) && (0L != expectedVersion) && (expectedVersion != agr.getVersion())) {
                     throw new AggregateNotFoundException(agr.getEntityId(), "Version do not match");
                 }
 

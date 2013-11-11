@@ -124,7 +124,7 @@ public class RepositoryTest {
         doReturn(Optional.of(retAgr)).when(repo).doLoad(any(KasperID.class), any(Long.class));
 
         // When
-        final TestAggregate agr = repo.load(new StringKasperId("foo"), 1L);
+        final TestAggregate agr = repo.load(new StringKasperId("foo"), null);
         CurrentUnitOfWork.commit();
 
         // Then
