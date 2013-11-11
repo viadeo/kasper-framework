@@ -2,8 +2,6 @@
 CQRS: Queries
 =============
 
-
-
 Implementing queries consists on implementing four Kasper components :
 
 - one **event listener** used to listen for accurate events and index data
@@ -14,7 +12,10 @@ Implementing queries consists on implementing four Kasper components :
 Kasper does not say anything about your indexation process, but you are heavily encouraged to :
 
 - always provide one full and one incremental strategy for all your indexes
-- prefer event listeners to implement your incremental strategy
+- prefer event listeners to implement your incremental strategy (you are encouraged to use the suffix *QueryListener*)
+- you can use *IndexedEntity* interface and base implementation *AbstractIndexedEntity* to store your entities in your indexes,
+  this interface is compatible with the *QueryResult* interface so you can just store your entities in order to allow a
+  direct restitution in your query handlers
 
 About implementing event listeners, see :ref:`events`.
 
