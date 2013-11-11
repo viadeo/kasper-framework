@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 
 /**
@@ -21,10 +20,5 @@ public interface DeleteCommand extends Command {
      * @return the entity id to delete
      */
     KasperID getId();
-
-    /**
-     * @return the (optional) entity version to be deleted
-     */
-    Optional<Long> getVersion();
 
 }

@@ -6,9 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.cqrs.command.UpdateCommand;
+import com.viadeo.kasper.cqrs.command.DeleteCommand;
 
 import javax.validation.constraints.NotNull;
 
@@ -19,7 +18,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Convenient base implementation for id and version management
  * 
  */
-public abstract class AbstractDeleteCommand implements UpdateCommand {
+public abstract class AbstractDeleteCommand implements DeleteCommand {
     private static final long serialVersionUID = -432287057423281452L;
 
     @NotNull
