@@ -1,6 +1,8 @@
 package com.viadeo.kasper.security.query;
 
 
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.query.QueryMessage;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
@@ -21,21 +23,21 @@ public class GetIdentityQueryHandler extends AbstractQueryHandler<GetIdentityQue
 	@Override
 	public QueryResponse<IdentityResult> retrieve(final QueryMessage<GetIdentityQuery> message) throws KasperQueryException {
         String securityToken = message.getContext().getSecurityToken();
-		final int memberId = getIdentityFromToken(securityToken);
-		return QueryResponse.of(new IdentityResult(memberId));
-	}
-
-	private int getIdentityFromToken(final String securityToken) {
-        int identity = 0;
         try {
-            int version = Encryption.getVersion(securityToken);
-            if (version == VIADEO_LEGACY_REMEMBERME_COOKIE_VERSION) {
-                identity = Integer.parseInt(Encryption.decrypt(securityToken));
-            }
+            final int memberId = getIdentityFromToken(securityToken);
+            return QueryResponse.of(new IdentityResult(memberId));
         } catch (Exception e) {
-            LOGGER.error("Cannot decrypt security token", e);
+            return QueryResponse.refused(KasperReason.Builder.from(CoreReasonCode.INVALID_ID, "Cannot decrypt security token").build());
         }
-		return identity;
+    }
+
+	private int getIdentityFromToken(final String securityToken) throws Exception{
+        int identity = 0;
+        int version = Encryption.getVersion(securityToken);
+        if (version == VIADEO_LEGACY_REMEMBERME_COOKIE_VERSION) {
+            identity = Integer.parseInt(Encryption.decrypt(securityToken));
+        }
+        return identity;
 	}
 
     private boolean isValidIdentity(final int memberId){
