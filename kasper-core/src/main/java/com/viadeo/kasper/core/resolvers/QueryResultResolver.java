@@ -80,7 +80,9 @@ public class QueryResultResolver extends AbstractResolver<QueryResult> {
 
     @Override
     public String getLabel(Class<? extends QueryResult> clazz) {
-        return clazz.getSimpleName().replace("QueryResult", "");
+        return clazz.getSimpleName()
+                .replace("Result", "")
+                .replace("QueryResult", "");
     }
 
     // ------------------------------------------------------------------------

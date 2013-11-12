@@ -103,12 +103,12 @@ public class KasperLibrary {
 	private final Map<String, List<DocumentedListener>> eventListeners;
 
     /**
-     * Stores all query services by query name
+     * Stores all query handlers by query name
      */
     private final Map<String, DocumentedQueryHandler> queryHandlers;
 
     /**
-     *  Stores all query services by queryResult name
+     *  Stores all query handlers by queryResult name
      */
     private final Map<String, List<DocumentedQueryHandler>> queryResultHandlers;
 	

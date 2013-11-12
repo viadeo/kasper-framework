@@ -17,8 +17,8 @@ import com.viadeo.kasper.doc.KasperLibrary;
 public final class DocumentedQueryHandler extends DocumentedDomainNode {
 	private static final long serialVersionUID = -4593630427564176805L;
 
-	public static final String TYPE_NAME = "queryservice";
-	public static final String PLURAL_TYPE_NAME = "queryservices";
+	public static final String TYPE_NAME = "queryhandler";
+	public static final String PLURAL_TYPE_NAME = "queryhandlers";
 
     private String queryName;
 	private String queryResultName;
