@@ -69,7 +69,9 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
     public String getLabel(final Class<? extends CommandHandler> clazz) {
         return clazz.getSimpleName()
                 .replace("CommandHandler", "")
-                .replace("Handler", "");
+                .replace("Handler", "")
+                .replace("QueryService", "")
+                .replace("Service", "");
     }
 
     // ------------------------------------------------------------------------
