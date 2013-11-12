@@ -18,21 +18,27 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.junit.Assert.assertEquals;
+
 
 public class GetIdentityQueryHandlerTest {
 
-    static final Logger LOGGER = LoggerFactory.getLogger(GetIdentityQueryHandlerTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(GetIdentityQueryHandlerTest.class);
 
     @Test
     public void platformShouldBeBuiltByFactoryWithoutError() throws Exception {
+// Given
        final PlatformFactory factory = new PlatformFactory();
-       Platform platform = factory.getPlatform();
-       platform.boot();
-       QueryGateway queryGateAway = platform.getQueryGateway();
-       Context context = new DefaultContext();
+       final Platform platform = factory.getPlatform();
+       final Context context = new DefaultContext();
        context.setSecurityToken("0031");
+       platform.boot();
+// When
+       final QueryGateway queryGateAway = platform.getQueryGateway();
        QueryResponse<IdentityResult> response = queryGateAway.retrieve(new GetIdentityQuery(), context);
-       LOGGER.info("response : "+response.getResult().getIdentity());
+// Then ... to be completed
+        LOGGER.info("response : "+response.getResult().getIdentity());
+       assertEquals(1, response.getResult().getIdentity());
     }
 
 
