@@ -76,4 +76,39 @@ public abstract class AbstractIndexedEntity implements IndexedEntity {
        return (I) this;
     }
 
+    // ------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final AbstractIndexedEntity other = (AbstractIndexedEntity) obj;
+
+        return com.google.common.base.Objects.equal(this.id, other.id)
+                && com.google.common.base.Objects.equal(this.type, other.type)
+                && com.google.common.base.Objects.equal(this.version, other.version)
+                && com.google.common.base.Objects.equal(this.lastModificationDate, other.lastModificationDate)
+                ;
+    }
+
+    @Override
+    public int hashCode() {
+        return com.google.common.base.Objects.hashCode(
+                this.id, this.type, this.version, this.lastModificationDate);
+    }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(this)
+                .addValue(this.id)
+                .addValue(this.type)
+                .addValue(this.version)
+                .addValue(this.lastModificationDate)
+                .toString();
+    }
+
 }
