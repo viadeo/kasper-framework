@@ -29,11 +29,21 @@ public interface AnnotationProcessor<T extends Annotation, I> {
 	 * Generic parameter position for the interface class
 	 */
 	int INTERFACE_PARAMETER_POSITION = 1;
-	
+
+    /**
+     * Called before starting to process all annotations
+     */
+    void beforeProcess();
+
 	/**
 	 * @param clazz a matching class to process
 	 */
 	void process(Class clazz);
+
+    /**
+     * Called after finishing to process all annotations
+     */
+    void afterProcess();
 
     /**
      * @return true if the annotation must be present on each class

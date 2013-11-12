@@ -37,6 +37,11 @@ public abstract class SingletonAnnotationProcessor<T extends Annotation, I> impl
         return true;
     }
 
+    @Override
+    public void beforeProcess() {
+        /* do nothing */
+    }
+
 	@SuppressWarnings("unchecked") // Must be controlled by child class (C)
 	@Override
 	public void process(final Class clazz) {
@@ -67,7 +72,12 @@ public abstract class SingletonAnnotationProcessor<T extends Annotation, I> impl
 	}
 	
 	protected abstract void process(final Class clazz, I instance);
-	
+
+    @Override
+    public void afterProcess() {
+        /* do nothing */
+    }
+
 	// ------------------------------------------------------------------------
 
     /**

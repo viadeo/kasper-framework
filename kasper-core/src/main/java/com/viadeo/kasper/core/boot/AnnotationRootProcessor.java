@@ -250,6 +250,12 @@ public class AnnotationRootProcessor {
     protected void process() {
         LOGGER.info("Delegate to Kasper annotation processors");
 
+        // Call beforeProcess()
+        for (final AnnotationProcessor processor : this.processorsInterface.keySet()) {
+            processor.beforeProcess();
+        }
+
+        // Process with discovered classes
         for (final Class tplClass : processors.keySet()) {
             for (final AnnotationProcessor processor : processors.get(tplClass)) {
                 final Class<? extends Annotation> annotation = processorsInterface.get(processor);
@@ -302,6 +308,12 @@ public class AnnotationRootProcessor {
                 }
             }
         }
+
+        // Call afterProcess()
+        for (final AnnotationProcessor processor : this.processorsInterface.keySet()) {
+            processor.beforeProcess();
+        }
+
     }
 
     // ------------------------------------------------------------------------
