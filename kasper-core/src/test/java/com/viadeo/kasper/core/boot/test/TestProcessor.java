@@ -19,8 +19,18 @@ public class TestProcessor implements AnnotationProcessor<TestProcessor.XTestAnn
     }
 
     @Override
+    public void beforeProcess() {
+        // Do nothing
+    }
+
+    @Override
     public void process(final Class clazz) {
         // Do nothing, we are just interested by execution
+    }
+
+    @Override
+    public void afterProcess() {
+        // Do nothing
     }
 
     public static interface TestInterface { }

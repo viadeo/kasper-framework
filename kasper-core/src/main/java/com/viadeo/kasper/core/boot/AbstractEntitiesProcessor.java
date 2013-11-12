@@ -39,6 +39,11 @@ public abstract class AbstractEntitiesProcessor<T extends Annotation, I extends 
 
     // -------------------------------------------------------------------------
 
+    @Override
+    public void beforeProcess() {
+        /* do nothing */
+    }
+
 	/**
 	 * Process Kasper repository
 	 *
@@ -49,6 +54,11 @@ public abstract class AbstractEntitiesProcessor<T extends Annotation, I extends 
 	public void process(final Class entityClass) {
         // Currently does nothing
 	}
+
+    @Override
+    public void afterProcess() {
+        /* do nothing */
+    }
 
 	// ------------------------------------------------------------------------
 	

@@ -29,5 +29,15 @@ public abstract class DocumentationProcessor<T extends Annotation, I> implements
 	public KasperLibrary getKasperLibrary() {
 		return this.kasperLibrary;
 	}
-	
+
+    @Override
+    public void beforeProcess() {
+        /* do nothing */
+    }
+
+    @Override
+    public void afterProcess() {
+        /* do nothing */
+    }
+
 }
