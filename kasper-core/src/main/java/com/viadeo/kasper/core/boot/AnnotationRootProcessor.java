@@ -179,12 +179,6 @@ public class AnnotationRootProcessor {
                 if (annoClass.isPresent() && interfaceClass.isPresent()) {
                     Object objInstance = null;
 
-                    if (!interfaceClass.get().isInterface()) {
-                        throw new KasperException(interfaceClass.get().getSimpleName()
-                                + " is not an interface in processor "
-                                + clazz.getSimpleName());
-                    }
-
                     // 1- User supplied processor
                     if (null != this.userProcessors) {
                         for (final AnnotationProcessor processor : this.userProcessors) {
