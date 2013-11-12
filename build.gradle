@@ -131,6 +131,10 @@ subprojects {
   // Dependency management -----------------------------------------------------
   ext.libraries = [
 
+      // Viadeo legacy party dependencies --------------------------------------
+
+      VIADEO_ENCRYPTION     : 'com.viadeo.framework:viadeo-encryption:7.47',
+
       // Third party dependencies ----------------------------------------------
       JACKSON_DATABIND      : 'com.fasterxml.jackson.core:jackson-databind:2.1.4',
       JACKSON_ANNOTATIONS   : 'com.fasterxml.jackson.core:jackson-annotations:2.1.4',
@@ -195,7 +199,6 @@ subprojects {
       LOMBOK                : "org.projectlombok:lombok:0.12.0",
       HIBERNATE_VALIDATOR   : 'org.hibernate:hibernate-validator:5.0.1.Final',
       GLASSFISH_EXPR_LANG   : 'org.glassfish.web:javax.el:2.2.3'
-
   ] // see http://stackoverflow.com/questions/9547170/in-gradle-how-do-i-declare-common-dependencies-in-a-single-place
 
   dependencies {

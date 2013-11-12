@@ -10,4 +10,12 @@ dependencies {
     compile project(':kasper-core')
     compile project(':kasper-api')
     compile project(':kasper-security:kasper-security-api')
+
+    //MyBatis dep
+    //compile libraries.KVIADEO_DATASOURCE
+    //compile ('com.viadeo.platform:kviadeo-datasource:0.0.10')
+    //compile ('com.viadeo.platform:kviadeo-common:kviadeo-datasource:0.0.10')
+    //Legacy Viadeo parties
+    compile libraries.VIADEO_ENCRYPTION
+
 }
