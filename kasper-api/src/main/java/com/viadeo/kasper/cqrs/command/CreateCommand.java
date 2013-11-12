@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 
 /**
@@ -18,13 +17,8 @@ import com.viadeo.kasper.KasperID;
 public interface CreateCommand extends Command {
 
 	/**
-	 * @param providedId for the command handler to use this id for aggregate root creation
-	 */
-	<C extends CreateCommand> C setIdToUse(KasperID providedId);
-
-	/**
 	 * @return the (optional) user requested id to be used
 	 */
-	Optional<KasperID> getIdToUse();
+	KasperID getIdToUse();
 
 }

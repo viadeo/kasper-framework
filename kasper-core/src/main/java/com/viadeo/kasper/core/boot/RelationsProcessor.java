@@ -31,7 +31,7 @@ public class RelationsProcessor extends AbstractEntitiesProcessor<XKasperRelatio
 	 * @see AnnotationProcessor#process(Class)
 	 */
 	@Override
-	public void process(final Class<?> conceptClass) {
+	public void process(final Class conceptClass) {
         super.process(conceptClass);
 
         // Currently does nothing

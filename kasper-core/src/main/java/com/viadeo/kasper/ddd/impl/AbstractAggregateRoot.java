@@ -6,16 +6,16 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.impl;
 
-import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.ddd.IRepository;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  *
@@ -29,7 +29,9 @@ public abstract class AbstractAggregateRoot
 		implements AggregateRoot {
 	
 	private static final long serialVersionUID = 8352516744342839116L;
-	
+
+    private Long version;
+
 	@Autowired // FIXME: remove autowiring ??
 	private transient DomainLocator domainLocator;
 	
@@ -48,9 +50,9 @@ public abstract class AbstractAggregateRoot
 	
 	// ========================================================================
 
-	public <E extends AggregateRoot> IRepository<E> getRepository() {
+	public <E extends AggregateRoot> ClientRepository<E> getRepository() {
         @SuppressWarnings("unchecked")
-        final IRepository<E> repo = (IRepository<E>)
+        final ClientRepository<E> repo = (ClientRepository<E>)
             this.getDomainLocator().getEntityRepository(this.getClass()).get();
 
         return repo;
@@ -69,11 +71,33 @@ public abstract class AbstractAggregateRoot
 		return domainLocator.getEntityDomain(this).get();
 	}
 
+    // ========================================================================
+
+    @Override
+    public void setVersion(final Long version) {
+        if (null == super.getVersion()) { /* if aggregate is not event-sourced */
+            this.version = checkNotNull(version);
+        }
+    }
+
+    /**
+     * A newly created aggregate will have version null
+     * A firstly loaded aggregate (new aggregate, first loaded) will have version 0L
+     */
+    @Override
+    public Long getVersion() {
+        final Long superVersion = super.getVersion();
+        if (null == superVersion) { /* if aggregate is not event-sourced */
+            return this.version;
+        }
+        return superVersion;
+    }
+
 	// ========================================================================
 	
 	@Override
 	public void setDomainLocator(final DomainLocator domainLocator) {
-		this.domainLocator = Preconditions.checkNotNull(domainLocator);
+		this.domainLocator = checkNotNull(domainLocator);
 	}
 	
 	public DomainLocator getDomainLocator() {
@@ -90,13 +114,13 @@ public abstract class AbstractAggregateRoot
 		return this.modificationDate;
 	}
 
-	public void setCreationDate(final DateTime creationDate) {
-		this.creationDate = Preconditions.checkNotNull(creationDate);
+	protected void setCreationDate(final DateTime creationDate) {
+		this.creationDate = checkNotNull(creationDate);
 		this.modificationDate = creationDate;
 	}
 	
-	public void setModificationDate(final DateTime modificationDate) {
-		this.modificationDate = Preconditions.checkNotNull(modificationDate);
+	protected void setModificationDate(final DateTime modificationDate) {
+		this.modificationDate = checkNotNull(modificationDate);
 	}
 	
 }

@@ -83,13 +83,13 @@ defining a command mainly dedicated to create, modify and delete a domain entity
     @XKasperCommandHandler( domain = UserDomain.class, description = "Creates a user known to the application" )
     public class CreateAUserCommandHandler extends AbstractEntityCommandHandler<User, CreateAUserCommand> {
         
-        public CommandResult handle(final CreateAUserCommand command) {
+        public CommandResponse handle(final CreateAUserCommand command) {
             final UserRepository repository = this.getRepository();
 
             final User user = new User(command.getIdToUse(), command.getUsername());
             repository.add(user);
 
-            return CommandResult.ok();
+            return CommandResponse.ok();
         }
 
     }
@@ -113,17 +113,17 @@ If you need to retrieve a different repository, use the platform domain locator 
             return thing;
         }
 
-        public CommandResult handle(final CreateAUserCommand command) {
+        public CommandResponse handle(final CreateAUserCommand command) {
             final UserRepository userRepository = this.getRepository();
 
             if (null != this.getThing()) {
                 final User user = new User(command.getIdToUse(), command.getUsername());
                 userRepository.add(user);
             } else {
-                return CommandResult.error(CoreErrorCode.INVALID_INPUT, "Thing was not found");
+                return CommandResponse.error(CoreErrorCode.INVALID_INPUT, "Thing was not found");
             }
 
-            return CommandResult.ok();
+            return CommandResponse.ok();
         }
 
     }   

@@ -7,11 +7,11 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.core.resolvers.EntityResolver;
+import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.ComponentEntity;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.doc.KasperLibrary;
-import com.viadeo.kasper.er.RootConcept;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.Collection;
 
@@ -56,17 +56,16 @@ public class DocumentedEntity extends DocumentedDomainNode {
 	
 	protected void fillParent(final Class<? extends Entity> entityClazz) {
 		if (ComponentEntity.class.isAssignableFrom(entityClazz)) {
-			
+
+            final EntityResolver resolver =
+                    this.getKasperLibrary().getResolverFactory().getEntityResolver();
+
 			@SuppressWarnings("unchecked") // Safe
-			final Optional<Class<? extends RootConcept>> agr =
-				(Optional<Class<? extends RootConcept>>)
-					ReflectionGenericsResolver.getParameterTypeFromClass(
-						entityClazz, ComponentEntity.class, ComponentEntity.PARENT_ARGUMENT_POSITION);
-			
-			if (agr.isPresent()) {
-				this.parent = agr.get().getSimpleName();
-				this.getKasperLibrary().registerAggregateComponent(this.parent, this.getName());
-			}
+			Class<? extends AggregateRoot> agr =
+                    resolver.getComponentParent((Class<? extends ComponentEntity>) entityClazz);
+
+            this.parent = agr.getSimpleName();
+            this.getKasperLibrary().registerAggregateComponent(this.parent, this.getName());
 		}
 	}
 	

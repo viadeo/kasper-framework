@@ -6,13 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.validation;
 
-import com.viadeo.kasper.CoreErrorCode;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryRequestActor;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 
 import javax.validation.ConstraintViolation;
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-public class QueryValidationActor<Q extends Query, P extends QueryPayload> implements QueryRequestActor<Q, P> {
+public class QueryValidationActor<Q extends Query, P extends QueryResult> implements QueryRequestActor<Q, P> {
 
     private final ValidatorFactory validatorFactory;
 
@@ -34,21 +34,21 @@ public class QueryValidationActor<Q extends Query, P extends QueryPayload> imple
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryResult<P> process(final Q q, final Context context, final RequestActorsChain<Q, QueryResult<P>> chain) throws Exception {
-        final QueryResult<P> queryResult;
+    public QueryResponse<P> process(final Q q, final Context context, final RequestActorsChain<Q, QueryResponse<P>> chain) throws Exception {
+        final QueryResponse<P> queryResponse;
 
         final Set<ConstraintViolation<Q>> validations = validatorFactory.getValidator().validate(q);
         if (validations.isEmpty()) {
-            queryResult = chain.next(q, context);
+            queryResponse = chain.next(q, context);
         } else {
             final List<String> errors = new ArrayList<>();
             for (final ConstraintViolation<Q> violation : validations) {
                 errors.add(violation.getPropertyPath() + " : " + violation.getMessage());
             }
-            queryResult = QueryResult.of(new KasperError(CoreErrorCode.INVALID_INPUT.name(), errors));
+            queryResponse = QueryResponse.error(new KasperReason(CoreReasonCode.INVALID_INPUT.name(), errors));
         }
 
-        return queryResult;
+        return queryResponse;
     }
 
 }

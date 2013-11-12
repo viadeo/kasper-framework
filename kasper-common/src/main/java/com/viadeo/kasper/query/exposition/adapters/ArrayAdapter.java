@@ -15,12 +15,12 @@ import java.lang.reflect.Array;
 import static java.lang.System.arraycopy;
 
 public final class ArrayAdapter implements TypeAdapter<Object> {
-    private final TypeAdapter<Object> componentAdapter;
-    private final Class<?> componentClass;
+    private final TypeAdapter componentAdapter;
+    private final Class componentClass;
 
     // ------------------------------------------------------------------------
 
-    public ArrayAdapter(final TypeAdapter<Object> componentAdapter, final Class<?> componentClass) {
+    public ArrayAdapter(final TypeAdapter componentAdapter, final Class componentClass) {
         this.componentAdapter = componentAdapter;
         this.componentClass = componentClass;
     }
@@ -28,6 +28,7 @@ public final class ArrayAdapter implements TypeAdapter<Object> {
     // ------------------------------------------------------------------------
 
     @Override
+    @SuppressWarnings("unchecked")
     public void adapt(final Object array, final QueryBuilder builder) throws Exception {
         final int len = Array.getLength(array);
 

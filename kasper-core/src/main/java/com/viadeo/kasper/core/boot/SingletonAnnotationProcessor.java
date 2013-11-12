@@ -39,7 +39,7 @@ public abstract class SingletonAnnotationProcessor<T extends Annotation, I> impl
 
 	@SuppressWarnings("unchecked") // Must be controlled by child class (C)
 	@Override
-	public void process(final Class<?> clazz) {
+	public void process(final Class clazz) {
 		
 		I instance = null;
 		try {
@@ -66,7 +66,7 @@ public abstract class SingletonAnnotationProcessor<T extends Annotation, I> impl
         this.process(clazz, instance);
 	}
 	
-	protected abstract void process(final Class<?> clazz, I instance);
+	protected abstract void process(final Class clazz, I instance);
 	
 	// ------------------------------------------------------------------------
 

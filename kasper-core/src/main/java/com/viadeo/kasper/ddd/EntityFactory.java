@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.ddd;
 
+import com.viadeo.kasper.context.Context;
+
 /**
  * A proposal marker interface for entity factories
  * The builder pattern is a good way to build objects.. :)
@@ -19,15 +21,16 @@ package com.viadeo.kasper.ddd;
 public interface EntityFactory<E extends Entity> extends UbiquitousLanguageElement {
 
 	/**
-	 * Generic parameter position of the AGR
+	 * Generic parameter position of the Entity
 	 */
 	int ENTITY_PARAMETER_POSITION = 0;
 
     /**
      * Finalize the build of the entity
      *
+     * @param context the current context to be used to build the entity
      * @return the built entity
      */
-    E build();
+    E build(final Context context);
 
 }

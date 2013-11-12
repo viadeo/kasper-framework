@@ -11,22 +11,6 @@ of your platform and exposes a JSON documentation webservice and a javascript-on
 
 You will first have to add a dependency to **com.viadeo.kasper:kasper-documentation**.
 
-
-In order to configure the auto-documentation, you'll need to instanciate all the documentation processors passing them
-a reference to a common **KasperLibrary** then register them to the **platform's root processor** before platform boot.
-
-The following documentation processors must be registered :
-
-* CommandsDocumentationProcessor
-* ConceptsDocumentationProcessor
-* DomainsDocumentationProcessor
-* EventsDocumentationProcessor
-* HandlersDocumentationProcessor
-* ListenersDocumentationProcessor
-* RelationsDocumentationProcessor
-* RepositoriesDocumentationProcessor
-* QueryServicesDocumentationProcessor
-
 Configuration without Spring
 ............................
 

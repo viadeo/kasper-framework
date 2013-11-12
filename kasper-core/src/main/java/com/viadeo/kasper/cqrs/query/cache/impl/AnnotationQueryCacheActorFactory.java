@@ -9,11 +9,10 @@ package com.viadeo.kasper.cqrs.query.cache.impl;
 import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.QueryService;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.cache.QueryCacheKeyGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class AnnotationQueryCacheActorFactory<QUERY extends Query, PAYLOAD extends QueryPayload> {
+public class AnnotationQueryCacheActorFactory<QUERY extends Query, RESULT extends QueryResult> {
     private static final Logger LOGGER = LoggerFactory.getLogger(AnnotationQueryCacheActorFactory.class);
 
     private CacheManager cacheManager;
@@ -50,20 +49,20 @@ public class AnnotationQueryCacheActorFactory<QUERY extends Query, PAYLOAD exten
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    public <QUERY extends Query, PAYLOAD extends QueryPayload> Optional<QueryCacheActor<QUERY, PAYLOAD>> make(
+    public <QUERY extends Query, RESULT extends QueryResult> Optional<QueryCacheActor<QUERY, RESULT>> make(
             final Class<QUERY> queryClass,
-            final Class<? extends QueryService<QUERY, PAYLOAD>> queryServiceClass) {
+            final Class<? extends QueryHandler<QUERY, RESULT>> queryHandlerClass) {
 
         if (null != cacheManager) {
-            final XKasperQueryService queryServiceAnnotation =
-                    queryServiceClass.getAnnotation(XKasperQueryService.class);
+            final XKasperQueryHandler queryHandlerAnnotation =
+                    queryHandlerClass.getAnnotation(XKasperQueryHandler.class);
 
-            if (null != queryServiceAnnotation) {
-                final XKasperQueryCache kasperQueryCache = queryServiceAnnotation.cache();
+            if (null != queryHandlerAnnotation) {
+                final XKasperQueryCache kasperQueryCache = queryHandlerAnnotation.cache();
 
                 if (kasperQueryCache.enabled()) {
-                    final Cache<Serializable, QueryResult<PAYLOAD>> cache =
-                            cacheManager.<Serializable, QueryResult<PAYLOAD>>
+                    final Cache<Serializable, RESULT> cache =
+                            cacheManager.<Serializable, RESULT>
                              createCacheBuilder(queryClass.getName())
                             .setStoreByValue(false)
                             .setExpiry(CacheConfiguration.ExpiryType.MODIFIED,
@@ -100,7 +99,7 @@ public class AnnotationQueryCacheActorFactory<QUERY extends Query, PAYLOAD exten
 
         try {
 
-            final TypeToken<?> typeOfQuery = TypeToken
+            final TypeToken typeOfQuery = TypeToken
                     .of(keyGenClass)
                     .getSupertype(QueryCacheKeyGenerator.class)
                     .resolveType(

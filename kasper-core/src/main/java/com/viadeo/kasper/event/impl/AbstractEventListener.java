@@ -35,10 +35,10 @@ public abstract class AbstractEventListener<E extends Event>
     private static final Meter METRICLASSHANDLES = METRICS.meter(name(EventListener.class, "handles"));
     private static final Meter METRICLASSERRORS = METRICS.meter(name(EventListener.class, "errors"));
 
-    private final Timer metricTimer;
-    private final Histogram metricHandleTimes;
-    private final Meter metricHandles;
-    private final Meter metricErrors;
+    private Timer metricTimer;
+    private Histogram metricHandleTimes;
+    private Meter metricHandles;
+    private Meter metricErrors;
 
 	private final Class<? extends Event> eventClass;
 	private CommandGateway commandGateway;
@@ -58,11 +58,6 @@ public abstract class AbstractEventListener<E extends Event>
 			throw new KasperException("Unable to identify event class for " + this.getClass());
 		}
 
-        /* Start timer */
-        metricTimer = METRICS.timer(name(this.getClass(), "handle-time"));
-        metricHandleTimes = METRICS.histogram(name(this.getClass(), "handle-times"));
-        metricHandles = METRICS.meter(name(this.getClass(), "handles"));
-        metricErrors = METRICS.meter(name(this.getClass(), "errors"));
 	}
 	
 	// ------------------------------------------------------------------------
@@ -95,7 +90,14 @@ public abstract class AbstractEventListener<E extends Event>
 		if (!this.getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
 			return;
 		}
-		
+
+        if (null == metricTimer) {
+            metricTimer = METRICS.timer(name(this.getClass(), "handle-time"));
+            metricHandleTimes = METRICS.histogram(name(this.getClass(), "handle-times"));
+            metricHandles = METRICS.meter(name(this.getClass(), "handles"));
+            metricErrors = METRICS.meter(name(this.getClass(), "errors"));
+        }
+
 		final com.viadeo.kasper.event.EventMessage<E> message = new DefaultEventMessage(eventMessage);
 
         /* Start timer */

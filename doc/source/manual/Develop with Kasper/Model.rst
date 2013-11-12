@@ -419,7 +419,7 @@ You are encouraged to add the suffix **Factory** to your class names.
         }
 
         @Override
-        public Member build() {
+        public Member build(final Context context) {
             final Mamber ret = new Member(this.id, this.entityFromLegacy.getName());
             if (0 != this.age) {
                 ret.setAge(this.age);
@@ -456,11 +456,11 @@ In order to create a Kasper repository you have to extend **Repository<Aggregate
 
         @Override
         protected abstract Optional<Member> doLoad(final KasperID memberId, final Long expectedVersion) {
-            final result = sql.selectFirst(String.format(REQ_SELECT, memberId, expectedVersion));
-            if (null != result) {
+            final response = sql.selectFirst(String.format(REQ_SELECT, memberId, expectedVersion));
+            if (null != response) {
                 return Optional.of(new Member(memberId,
                                               expectedVersion,
-                                              result.get('name')));
+                                              response.get('name')));
             }
             return Optional.absent();
         }
@@ -479,13 +479,25 @@ In order to create a Kasper repository you have to extend **Repository<Aggregate
 
     }
 
-You can then add new public methods to this repository in order to access to your business indexes (logically hosted in your
+You can also add new public methods to this repository in order to access to your business indexes (logically hosted in your
 COMMAND architectural area).
 
-In order to support the special case of repositories backed by legacy constraints which are using auto-incremented keys, Kasper
-framework provides you with the SQLRepository :
+Repositories are then accessed using the methods load() or add(), generally in command handlers only.
 
-**TODO**
+Once loaded by a command handler, an entity will then ba automatically saved on unit of work completion. If you
+just need to retrieve an entity without planning to save it on handling completion you can use the get() method
+facility.
+
+The doSave() method is use for entity creation AND update. If your backend needs to make the difference between
+a creation or an update, you can :
+
+- test aggregate.getVersion() for nullity in the doSave() method (newly created entities does not have a version)
+- implement the doUpdate() method, so entity creation will be automatically made calling doSave() and updates through doUpdate()
+
+If you want to delete an aggregate, use the markDeleted() method in your aggregates, this last will then be deleted at the
+end of the unit of work calling doDelete(). You are heavily encouraged to never delete date in your domains by just marking them
+as deleted. So in major cases doDelete() can just call doSave(), the loading of entities in Kasper repositories will take
+care of not loading deleted aggregates.
 
 Value objects
 -------------

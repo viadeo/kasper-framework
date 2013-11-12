@@ -33,8 +33,8 @@ Goals
  * Uniformize the communication
  * Be extensible in order to allow customization and extension/addition of new features.
 
-Commands & CommandResult
-------------------------
+Commands & CommandResponse
+--------------------------
 
 Commands are submitted using **POST** or **PUT** requests, there are no query parameters, everything is in the body.
 Actually only json content is supported as input and output.
@@ -80,15 +80,15 @@ In response you receive a json of the following form (see :ref:`Error_codes`).
     }
 
 
-Queries & Results
------------------
+Queries & Responses
+-------------------
 
 A query is submitted using a **GET** request, the parameters will be in the query string not in the body.
 
 This was the prefered way because we want to keep queries as simple as possible and we also think that using GET 
 is handy with tools such as curl. Of course it imposes restrictions on having flat/simple queries and limited query size.
 
-To enable Query exposition register HttpQueryExposer servlet, it will then use the **QueryServicesLocator** to locate each query service.
+To enable Query exposition register HttpQueryExposer servlet, it will then use the **QueryHandlersLocator** to locate each query handler.
 
 Ex: suppose we have the following query, it will be **available at http://host:port/someRootPath/getMemberMessages?memberId=999**.
 
@@ -117,8 +117,9 @@ information on what happened, see :ref:`Error_codes`.
     :linenos:
 
     {
+        "id": "edbe1970-3b5e-11e3-aa6e-0800200c9a66",
         "message": "Some query was not found...", // a technical global error message
-        "errors": [ // can be empty
+        "reasons": [ // can be empty
             {
                 "code": "INVALID_INPUT", // awlays present, a readable code telling what happened
                 "message": "Some technical message", // a detailed free technical message
@@ -127,8 +128,8 @@ information on what happened, see :ref:`Error_codes`.
         ]
     }
 
-In case of a success a query Result will be returned serialized to json, this is done with Jackson. That allows you to use standard Jackson
-annotations on your query Result (if you want to use constructors with args for example).
+In case of a success a query Response will be returned serialized to json, this is done with Jackson. That allows you to use standard Jackson
+annotations on your query Response (if you want to use constructors with args for example).
 
 ..  _TypeAdapters:
 
@@ -232,16 +233,32 @@ put your adapter into a file named **com.viadeo.kasper.query.exposition.query.Be
 Predefined Error codes
 ----------------------
 
-For query & command errors some codes have been predefined, but users a free to use new ones.
+For query & command errors some codes have been predefined, but users a free to use new ones, defined codes are mapped to HTTP status codes (defaults to 500).
 
-| REQUIRED_INPUT
-| INVALID_INPUT
-| TOO_MANY_ENTRIES
-| CONFLICT
-| REQUIRE_AUTHENTICATION
-| REQUIRE_AUTHORIZATION
-| UNKNOWN_ERROR
-| INTERNAL_COMPONENT_TIMEOUT
-| INTERNAL_COMPONENT_ERROR
-| INVALID_ID
+| REQUIRED_INPUT (400 - BAD REQUEST)
+| INVALID_INPUT (400 - BAD REQUEST)
+| TOO_MANY_ENTRIES (400 - BAD REQUEST)
+| CONFLICT (409 - CONFLICT)
+| REQUIRE_AUTHENTICATION (401 - UNAUTHORIZED)
+| REQUIRE_AUTHORIZATION (403 - FORBIDDEN)
+| UNKNOWN_REASON (500 - INTERNAL SERVER ERROR)
+| INTERNAL_COMPONENT_TIMEOUT (500 - INTERNAL SERVER ERROR)
+| INTERNAL_COMPONENT_ERROR (500 - INTERNAL SERVER ERROR)
+| INVALID_ID (400 - BAD REQUEST)
+| NOT_FOUND (404 - NOT FOUND)
 
+Context headers
+---------------
+
+The following HTTP headers can be set to set the queries and commands context :
+
+* X-KASPER-SESSION-CID (UUID) : the client SESSION correlation id used for logging and events
+* X-KASPER-FUNNEL-CID (UUID) : the client FUNNEL (functional tunnel) correlation id used for logging and events
+* X-KASPER-REQUEST-CID (UUID) : the client REQUEST correlation id used for logging and events
+* X-KASPER-UID (String) : the USER id concerned by this request if any, used for authorization behaviour
+* X-KASPER-CLIENT-APPID (String) : the CLIENT APPLICATION ID used for logging and authorization behaviour
+* X-KASPER-LANG (String - ISO 639) : the user language used for strings internationalization (will be removed when Kasper security will be made available)
+* X-KASPER-COUNTRY (String - ISO 3166) : the user country (will be removed when Kasper security will be made available)
+* X-KASPER-SECURITY-TOKEN (String) : the security token used for authentication
+* X-KASPER-FUNNEL-NAME (String) : the funnel name declared by the application during this request
+* X-KASPER-FUNNEL-VERSION (String) : the funnel version (declination) declared by the application during this request

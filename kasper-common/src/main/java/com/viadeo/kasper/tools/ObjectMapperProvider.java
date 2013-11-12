@@ -13,9 +13,10 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.viadeo.kasper.KasperError;
-import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,6 +25,9 @@ import java.util.List;
 
 public final class ObjectMapperProvider {
 
+    static final String ID = "id";
+    static final String REASON = "reason";
+    static final String REASONS = "reasons";
     static final String ERROR = "error";
     static final String ERRORS = "errors";
     static final String MESSAGE = "message";
@@ -60,11 +64,13 @@ public final class ObjectMapperProvider {
 
         /* Register a specific module for Kasper Ser/Deser */
         final SimpleModule kasperClientModule = new SimpleModule()
-                .addSerializer(CommandResult.class, new CommandResultSerializer())
-                .addDeserializer(CommandResult.class, new CommandResultDeserializer())
-                .addSerializer(QueryResult.class, new QueryResultSerializer());
+                .addSerializer(KasperID.class, new KasperIdSerializer())
+                .addDeserializer(KasperID.class, new KasperIdDeserializer())
+                .addSerializer(CommandResponse.class, new CommandResponseSerializer())
+                .addSerializer(QueryResponse.class, new QueryResponseSerializer())
+                .addDeserializer(CommandResponse.class, new CommandResponseDeserializer());
 
-        kasperClientModule.setDeserializers(new CommandQueryResultDeserializerAdapter());
+        kasperClientModule.setDeserializers(new CommandQueryResponseDeserializerAdapter());
 
         mapper.registerModule(kasperClientModule);
 
@@ -75,11 +81,11 @@ public final class ObjectMapperProvider {
 
     // ------------------------------------------------------------------------
 
-    static KasperError translateOldErrorToKasperError(final ObjectNode root) {
+    static KasperReason translateOldErrorToKasperReason(final ObjectNode root) {
         final String globalCode = root.get(ObjectMapperProvider.MESSAGE).asText();
         final List<String> messages = new ArrayList<String>();
 
-        for (final JsonNode node : root.get(ObjectMapperProvider.ERRORS)) {
+        for (final JsonNode node : root.get(ObjectMapperProvider.REASONS)) {
             final String code = node.get(ObjectMapperProvider.CODE).asText();
             final String message = node.get(ObjectMapperProvider.MESSAGE).asText();
 
@@ -90,7 +96,7 @@ public final class ObjectMapperProvider {
                             globalCode, code, message);
             }
         }
-        return new KasperError(globalCode, messages);
+        return new KasperReason(globalCode, messages);
     }
     
     /**

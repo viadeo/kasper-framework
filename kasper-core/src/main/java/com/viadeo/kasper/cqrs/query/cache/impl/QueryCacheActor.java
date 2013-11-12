@@ -9,8 +9,8 @@ package com.viadeo.kasper.cqrs.query.cache.impl;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
 import com.viadeo.kasper.cqrs.query.QueryRequestActor;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.cqrs.query.cache.QueryCacheKeyGenerator;
@@ -20,17 +20,17 @@ import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class QueryCacheActor<Q extends Query, P extends QueryPayload>
+public class QueryCacheActor<Q extends Query, P extends QueryResult>
         implements QueryRequestActor<Q, P> {
 
-    private final Cache<Serializable, QueryResult<P>> cache;
+    private final Cache<Serializable, P> cache;
     private final XKasperQueryCache cacheAnnotation;
     private final QueryCacheKeyGenerator<Q> keyGenerator;
 
     // ------------------------------------------------------------------------
 
     public QueryCacheActor(final XKasperQueryCache cacheAnnotation,
-                           final Cache<Serializable, QueryResult<P>> cache,
+                           final Cache<Serializable, P> cache,
                            final QueryCacheKeyGenerator<Q> keyGenerator) {
         this.cache = checkNotNull(cache);
         this.cacheAnnotation = checkNotNull(cacheAnnotation);
@@ -41,16 +41,18 @@ public class QueryCacheActor<Q extends Query, P extends QueryPayload>
 
 
     @Override
-    public QueryResult<P> process(Q q, Context context, RequestActorsChain<Q, QueryResult<P>> chain) throws
+    public QueryResponse<P> process(Q q, Context context, RequestActorsChain<Q, QueryResponse<P>> chain) throws
             Exception {
         final Serializable key = keyGenerator.computeKey(cacheAnnotation, q);
 
-        if (cache.containsKey(key)) {
-            return cache.get(key);
+        if (cache.containsKey(key) && (null != cache.get(key))) {
+            return QueryResponse.of(cache.get(key));
         } else {
-            final QueryResult<P> result = chain.next(q, context);
-            cache.put(key, result);
-            return result;
+            final QueryResponse<P> response = chain.next(q, context);
+            if (response.isOK()) {
+                cache.put(key, response.getResult());
+            }
+            return response;
         }
     }
 

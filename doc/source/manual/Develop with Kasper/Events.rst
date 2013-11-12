@@ -112,6 +112,13 @@ provided, with a default implementation **AbstractEntityEvent<Domain, Entity>**.
         }
     }
 
+Additionally three marker interfaces are provided with their associated base implementation in order to
+better identify (and listen) atomic entity modification events :
+
+- EntityCreatedEvent (AbstractEntityCreatedEvent)
+- EntityUpdatedEvent (AbstractEntityUpdatedEvent)
+- EntityDeletedEvent (AbstractEntityDeletedEvent)
+
 Event listeners
 ---------------
 

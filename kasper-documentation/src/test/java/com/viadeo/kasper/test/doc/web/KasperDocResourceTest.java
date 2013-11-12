@@ -49,12 +49,12 @@ import static org.junit.Assert.fail;
 /**
  * This class manage with automated testing of KasperDocumentation HTTP/JSON endpoints
  * 
- * Add your JSON test result in src/test/resources/json
+ * Add your JSON test response in src/test/resources/json
  * Just name it with the path ofthe resource to request, replacing slashes '/' by underscores '_'
  * Ex:
  *     "json/domain_Facebook_concept_Member.json"
  *     will request the kasper doc HTTP endpoint for /domain/Facebook/concept/Member and it will
- *     apply a simple JSON comparison of the result to the contents of the json test file
+ *     apply a simple JSON comparison of the response to the contents of the json test file
  *
  */
 public class KasperDocResourceTest extends JerseyTest {
@@ -112,7 +112,7 @@ public class KasperDocResourceTest extends JerseyTest {
 	/**
 	 * Main run test method
 	 * 
-	 * Scans all available json files, makethe request to a standalone HTTP server and compare
+	 * Scans all available json files, make the request to a standalone HTTP server and compare
 	 * expected and retrieved results
 	 * @throws URISyntaxException 
 	 * 
@@ -121,7 +121,7 @@ public class KasperDocResourceTest extends JerseyTest {
     @Test
     public void test() throws IOException, JSONException, URISyntaxException {
     	
-    	// Traverse available json results ------------------------------------
+    	// Traverse available json responses ------------------------------------
         final Predicate<String> filter = new FilterBuilder().include(".*\\.json");
         final Reflections reflections = new Reflections(new ConfigurationBuilder()
                 .filterInputsBy(filter)
@@ -133,7 +133,7 @@ public class KasperDocResourceTest extends JerseyTest {
         // Execute against Kasper documentation -------------------------------
         boolean failed = false;
     	for (final String jsonFilename : resolved) {
-			LOGGER.info("** Test result file " + jsonFilename);
+			LOGGER.info("** Test response file " + jsonFilename);
 			
     		final String json = getJson(jsonFilename);
     		
@@ -192,7 +192,7 @@ public class KasperDocResourceTest extends JerseyTest {
     	final InputStream jsonStream = ClassLoader.getSystemResourceAsStream(jsonFilename);
     	
     	if (null == jsonStream) {
-    		fail(String.format("Unable to find result file %s", jsonFilename));
+    		fail(String.format("Unable to find response file %s", jsonFilename));
     	}
     	
     	final String jsonString = IOUtils.toString(jsonStream, "UTF-8"); // Check jsonStream null

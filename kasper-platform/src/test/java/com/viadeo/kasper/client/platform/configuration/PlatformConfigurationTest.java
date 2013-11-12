@@ -10,13 +10,19 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
+import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandBus;
 import org.junit.Test;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import static com.mongodb.util.MyAsserts.assertNotNull;
+import static com.mongodb.util.MyAsserts.assertTrue;
 import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.fail;
 
@@ -34,348 +40,165 @@ public class PlatformConfigurationTest {
 
     // ------------------------------------------------------------------------
 
+    /* FIXME: add tests for resolvers */
     @SuppressWarnings("unused")
-    private void testPlatformConfiguration(final PlatformConfiguration platformConfiguration) throws Exception {
+    private void testPlatformConfiguration(final PlatformConfiguration pf) throws Exception {
 
-        final CommandBus commandBus =
-                this.testCommandBus(platformConfiguration);
 
-        final CommandGateway commandGateway =
-                this.testCommandGateway(platformConfiguration, commandBus);
+        final DomainResolver domainResolver =
+                this.testCachedComponent(pf, "domainResolver");
 
-        final QueryServicesLocator queryServicesLocator=
-                this.testQueryServicesLocator(platformConfiguration);
+        final CommandHandlerResolver commandHandlerResolver =
+                this.testCachedComponent(pf, "commandHandlerResolver", domainResolver);
 
-        final QueryGateway queryGateway =
-                this.testQueryGateway(platformConfiguration, queryServicesLocator);
+        final EventResolver eventResolver =
+                this.testCachedComponent(pf, "eventResolver", domainResolver);
 
-        final KasperEventBus eventBus =
-                this.testEventBus(platformConfiguration);
+        final EventListenerResolver eventListenerResolver =
+                this.testCachedComponent(pf, "eventListenerResolver", domainResolver);
 
-        final ComponentsInstanceManager componentsInstanceManager =
-                this.testComponentsInstanceManager(platformConfiguration);
+        final QueryHandlerResolver queryHandlerResolver =
+                this.testCachedComponent(pf, "queryHandlerResolver", domainResolver);
 
-        final AnnotationRootProcessor annotationRootProcessor =
-                this.testAnnotationRootProcessor(platformConfiguration, componentsInstanceManager);
+        final QueryHandlersLocator queryHandlersLocator=
+                this.testCachedComponent(pf, "queryHandlersLocator", queryHandlerResolver);
+
+        final QueryResolver queryResolver =
+                this.testCachedComponent(pf, "queryResolver", domainResolver, queryHandlerResolver, queryHandlersLocator);
+
+        final QueryResultResolver queryResultResolver =
+                this.testCachedComponent(pf, "queryResultResolver", domainResolver, queryHandlerResolver, queryHandlersLocator);
+        
+        final ConceptResolver conceptResolver =
+                this.testCachedComponent(pf, "conceptResolver", domainResolver);
+
+        final RelationResolver relationResolver =
+                this.testCachedComponent(pf, "relationResolver", domainResolver, conceptResolver);
+
+        final EntityResolver entityResolver =
+                this.testCachedComponent(pf, "entityResolver", conceptResolver, relationResolver, domainResolver);
+
+        final RepositoryResolver repositoryResolver =
+                this.testCachedComponent(pf, "repositoryResolver", entityResolver, domainResolver);
 
         final DomainLocator domainLocator =
-                this.testDomainLocator(platformConfiguration);
+                this.testCachedComponent(pf, "domainLocator", commandHandlerResolver, repositoryResolver);
+
+        final CommandResolver commandResolver =
+                this.testCachedComponent(pf, "commandResolver", domainLocator, domainResolver, commandHandlerResolver);
+
+        final ResolverFactory resolverFactory =
+                this.testCachedComponent(pf, "resolverFactory",
+                        domainResolver,
+                        commandResolver,
+                        commandHandlerResolver,
+                        eventListenerResolver,
+                        queryResolver,
+                        queryResultResolver,
+                        queryHandlerResolver,
+                        repositoryResolver,
+                        entityResolver,
+                        conceptResolver,
+                        relationResolver,
+                        eventResolver);
+
+        final CommandBus commandBus =
+                this.testCachedComponent(pf, "commandBus");
+
+        final CommandGateway commandGateway =
+                this.testCachedComponent(pf, "commandGateway", commandBus);
+
+        final QueryGateway queryGateway =
+                this.testCachedComponent(pf, "queryGateway", queryHandlersLocator);
+
+        final KasperEventBus eventBus =
+                this.testCachedComponent(pf, "eventBus");
+
+        final ComponentsInstanceManager componentsInstanceManager =
+                this.testCachedComponent(pf, "getComponentsInstanceManager");
+
+        final AnnotationRootProcessor annotationRootProcessor =
+                this.testCachedComponent(pf, "annotationRootProcessor", componentsInstanceManager);
 
         final CommandHandlersProcessor commandHandlersProcessor =
-                this.testCommandHandlersProcessor(platformConfiguration, commandBus, domainLocator, eventBus);
+                this.testCachedComponent(pf, "commandHandlersProcessor", commandBus, domainLocator, eventBus, commandHandlerResolver);
 
         final DomainsProcessor domainsProcessor =
-                this.testDomainsProcessor(platformConfiguration, domainLocator);
+                this.testCachedComponent(pf, "domainsProcessor", domainLocator);
 
         final EventListenersProcessor eventListenersProcessor =
-                this.testEventListenersProcessor(platformConfiguration, eventBus, commandGateway);
+                this.testCachedComponent(pf, "eventListenersProcessor", eventBus, commandGateway);
 
-        final QueryServicesProcessor queryServicesProcessor =
-                this.testQueryServicesProcessor(platformConfiguration, queryServicesLocator);
+        final QueryHandlersProcessor queryHandlersProcessor =
+                this.testCachedComponent(pf, "queryHandlersProcessor", queryHandlersLocator);
 
         final RepositoriesProcessor repositoriesProcessor=
-                this.testRepositoriesProcessor(platformConfiguration, domainLocator, eventBus);
+                this.testCachedComponent(pf, "repositoriesProcessor", domainLocator, eventBus);
 
-        final ServiceFiltersProcessor serviceFiltersProcessor=
-                this.testServiceFiltersProcessor(platformConfiguration, queryServicesLocator);
+        final QueryHandlerFiltersProcessor queryHandlerFiltersProcessor =
+                this.testCachedComponent(pf, "queryHandlerFiltersProcessor", queryHandlersLocator);
 
         final Platform platform =
-                this.testPlatform(platformConfiguration,
+                this.testCachedComponent(pf, "kasperPlatform",
                                   commandGateway, queryGateway,
                                   eventBus, annotationRootProcessor);
     }
 
     // ------------------------------------------------------------------------
 
-    private CommandBus testCommandBus(final PlatformConfiguration platformConfiguration) {
-        final CommandBus commandBus = platformConfiguration.commandBus();
-        assertSame(commandBus, platformConfiguration.commandBus());
-        return commandBus;
+    @SuppressWarnings("unchecked")
+    private <T> T testCachedComponent(final PlatformConfiguration pf,
+                                      final String confName,
+                                      final Object... parameters) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
+
+        Method methodWithParameters = null;
+        Method methodEmpty = null;
+
+        final Method[] methods = pf.getClass().getMethods();
+        for (final Method method : methods) {
+            if (method.getName().contentEquals(confName)) {
+                if (0 == method.getParameterTypes().length) {
+                    methodEmpty = method;
+                } else {
+                    methodWithParameters = method;
+                }
+            }
+        }
+
+        System.out.println(confName);
+        assertNotNull(methodEmpty);
+
+        if (null == methodWithParameters) {
+            final Object ret1 = methodEmpty.invoke(pf);
+            final Object ret2 = methodEmpty.invoke(pf);
+            assertSame(ret1, ret2);
+            return (T) ret1;
+        } else {
+            try {
+                methodEmpty.invoke(pf);
+                fail();
+            } catch (final InvocationTargetException e) {
+                assertTrue(KasperException.class.equals(e.getTargetException().getClass()));
+            }
+
+            final Object ret1 = methodWithParameters.invoke(pf, parameters);
+            final Object ret2 = methodEmpty.invoke(pf);
+
+            assertSame(ret1, ret2);
+
+            try {
+                methodWithParameters.invoke(pf, parameters);
+                fail();
+            } catch (final InvocationTargetException e) {
+                assertTrue(KasperException.class.equals(e.getTargetException().getClass()));
+            }
+
+            return (T) ret1;
+        }
     }
 
-    // ------------------------------------------------------------------------
-
-    private CommandGateway testCommandGateway(final PlatformConfiguration platformConfiguration,
-                                              final CommandBus commandBus) {
-
-        try {
-            platformConfiguration.commandGateway();
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        final CommandGateway commandGateway = platformConfiguration.commandGateway(commandBus);
-        assertSame(commandGateway, platformConfiguration.commandGateway());
-
-        try {
-            platformConfiguration.commandGateway(commandBus);
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        return commandGateway;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private QueryServicesLocator testQueryServicesLocator(final PlatformConfiguration platformConfiguration) {
-        final QueryServicesLocator queryServicesLocator = platformConfiguration.queryServicesLocator();
-        assertSame(queryServicesLocator, platformConfiguration.queryServicesLocator());
-
-        return queryServicesLocator;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private QueryGateway testQueryGateway(final PlatformConfiguration platformConfiguration,
-                                          final QueryServicesLocator queryServicesLocator) {
-        try {
-            platformConfiguration.queryGateway();
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        final QueryGateway queryGateway = platformConfiguration.queryGateway(queryServicesLocator);
-        assertSame(queryGateway, platformConfiguration.queryGateway());
-
-        try {
-            platformConfiguration.queryGateway(queryServicesLocator);
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        return queryGateway;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private KasperEventBus testEventBus(final PlatformConfiguration platformConfiguration) {
-        final KasperEventBus eventBus = platformConfiguration.eventBus();
-        assertSame(eventBus, platformConfiguration.eventBus());
-
-        return eventBus;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private ComponentsInstanceManager testComponentsInstanceManager(final PlatformConfiguration platformConfiguration) {
-        final ComponentsInstanceManager componentsInstanceManager = platformConfiguration.getComponentsInstanceManager();
-        assertSame(componentsInstanceManager, platformConfiguration.getComponentsInstanceManager());
-
-        return componentsInstanceManager;
-    }
-
-    // --------------------------------------------------------------------
-
-    private AnnotationRootProcessor testAnnotationRootProcessor(final PlatformConfiguration platformConfiguration,
-                                                                final ComponentsInstanceManager componentsInstanceManager) {
-        try {
-            platformConfiguration.annotationRootProcessor();
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        final AnnotationRootProcessor annotationRootProcessor = platformConfiguration.annotationRootProcessor(componentsInstanceManager);
-        assertSame(annotationRootProcessor, platformConfiguration.annotationRootProcessor());
-
-        try {
-            platformConfiguration.annotationRootProcessor(componentsInstanceManager);
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        return annotationRootProcessor;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private DomainLocator testDomainLocator(final PlatformConfiguration platformConfiguration) {
-        final DomainLocator domainLocator = platformConfiguration.domainLocator();
-        assertSame(domainLocator, platformConfiguration.domainLocator());
-
-        return domainLocator;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private CommandHandlersProcessor testCommandHandlersProcessor(final PlatformConfiguration platformConfiguration,
-                                                                  final CommandBus commandBus,
-                                                                  final DomainLocator domainLocator,
-                                                                  final KasperEventBus eventBus) {
-        try {
-            platformConfiguration.commandHandlersProcessor();
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        final CommandHandlersProcessor commandHandlersProcessor = platformConfiguration.commandHandlersProcessor(commandBus, domainLocator, eventBus);
-        assertSame(commandHandlersProcessor, platformConfiguration.commandHandlersProcessor());
-
-        try {
-            platformConfiguration.commandHandlersProcessor(commandBus, domainLocator, eventBus);
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        return commandHandlersProcessor;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private DomainsProcessor testDomainsProcessor(final PlatformConfiguration platformConfiguration,
-                                                  final DomainLocator domainLocator) {
-        try {
-            platformConfiguration.domainsProcessor();
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        final DomainsProcessor domainsProcessor = platformConfiguration.domainsProcessor(domainLocator);
-        assertSame(domainsProcessor, platformConfiguration.domainsProcessor());
-
-        try {
-            platformConfiguration.domainsProcessor(domainLocator);
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        return domainsProcessor;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private EventListenersProcessor testEventListenersProcessor(final PlatformConfiguration platformConfiguration,
-                                                                final KasperEventBus eventBus,
-                                                                final CommandGateway commandGateway) {
-        try {
-            platformConfiguration.eventListenersProcessor();
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        final EventListenersProcessor eventListenersProcessor =
-                platformConfiguration.eventListenersProcessor(eventBus, commandGateway);
-        assertSame(eventListenersProcessor, platformConfiguration.eventListenersProcessor());
-
-        try {
-            platformConfiguration.eventListenersProcessor(eventBus, commandGateway);
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        return eventListenersProcessor;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private QueryServicesProcessor testQueryServicesProcessor(final PlatformConfiguration platformConfiguration,
-                                                              final QueryServicesLocator queryServicesLocator){
-        try {
-            platformConfiguration.queryServicesProcessor();
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        final QueryServicesProcessor queryServicesProcessor = platformConfiguration.queryServicesProcessor(queryServicesLocator);
-        assertSame(queryServicesProcessor, platformConfiguration.queryServicesProcessor());
-
-        try {
-            platformConfiguration.queryServicesProcessor(queryServicesLocator);
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        return queryServicesProcessor;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private RepositoriesProcessor testRepositoriesProcessor(final PlatformConfiguration platformConfiguration,
-                                                            final DomainLocator domainLocator,
-                                                            final KasperEventBus eventBus) {
-        try {
-            platformConfiguration.repositoriesProcessor();
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        final RepositoriesProcessor repositoriesProcessor = platformConfiguration.repositoriesProcessor(domainLocator, eventBus);
-        assertSame(repositoriesProcessor, platformConfiguration.repositoriesProcessor());
-
-        try {
-            platformConfiguration.repositoriesProcessor(domainLocator, eventBus);
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        return repositoriesProcessor;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private ServiceFiltersProcessor testServiceFiltersProcessor(final PlatformConfiguration platformConfiguration,
-                                                                final QueryServicesLocator queryServicesLocator) {
-        try {
-            platformConfiguration.serviceFiltersProcessor();
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        final ServiceFiltersProcessor serviceFiltersProcessor = platformConfiguration.serviceFiltersProcessor(queryServicesLocator);
-        assertSame(serviceFiltersProcessor, platformConfiguration.serviceFiltersProcessor());
-
-        try {
-            platformConfiguration.serviceFiltersProcessor(queryServicesLocator);
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        return serviceFiltersProcessor;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private Platform testPlatform(final PlatformConfiguration platformConfiguration,
-                                  final CommandGateway commandGateway,
-                                  final QueryGateway queryGateway,
-                                  final KasperEventBus eventBus,
-                                  final AnnotationRootProcessor annotationRootProcessor) {
-        try {
-            platformConfiguration.kasperPlatform();
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        final Platform platform = platformConfiguration.kasperPlatform(commandGateway, queryGateway, eventBus, annotationRootProcessor);
-        assertSame(platform, platformConfiguration.kasperPlatform());
-
-        try {
-            platformConfiguration.kasperPlatform(commandGateway, queryGateway, eventBus, annotationRootProcessor);
-            fail();
-        } catch (final KasperException e) {
-            // Ignore
-        }
-
-        return platform;
+    private String up(String string) {
+        return string.substring(0, 1).toUpperCase() + string.substring(1);
     }
 
 }

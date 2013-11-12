@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.ddd;
 
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
@@ -39,7 +40,22 @@ public class KasperRepositoryTest<ENTITY extends AggregateRoot> implements IRepo
 		// DO nothing
 	}
 
-	//------------------------------------------------------------------------
+    @Override
+    public boolean has(KasperID id) {
+        return false;
+    }
+
+    @Override
+    public ENTITY get(KasperID aggregateIdentifier, Long expectedVersion) {
+        throw new UnsupportedOperationException("FIXME: Get is not supported by enclosed axon repository");
+    }
+
+    @Override
+    public ENTITY get(KasperID aggregateIdentifier) {
+        throw new UnsupportedOperationException("FIXME: Get is not supported by enclosed axon repository");
+    }
+
+    //------------------------------------------------------------------------
 	
 	public KasperRepositoryTest(final FixtureConfiguration<ENTITY> fixture) {
 		this.axonRepository = fixture.getRepository();
@@ -106,7 +122,7 @@ public class KasperRepositoryTest<ENTITY extends AggregateRoot> implements IRepo
 					that.setEventBus(eventBus);
 		            return "";
 		         }				
-			}).when((Repository<?>) mocked).setEventBus(any(EventBus.class));
+			}).when((Repository) mocked).setEventBus(any(EventBus.class));
 		}
 		
 		doAnswer(new Answer<Object>() {

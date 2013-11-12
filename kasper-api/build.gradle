@@ -11,4 +11,5 @@ targetCompatibility = 1.6
 
 dependencies {
     compile libraries.VALIDATION_API
+    compile libraries.JERSEY_CORE
 }

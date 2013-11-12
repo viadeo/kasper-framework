@@ -7,11 +7,12 @@
 package com.viadeo.kasper.doc.configuration;
 
 import com.viadeo.kasper.core.boot.*;
+import com.viadeo.kasper.core.resolvers.ResolverFactory;
 import com.viadeo.kasper.doc.KasperLibrary;
 
 interface AutoDocumentationConfiguration {
 
-     KasperLibrary getKasperLibrary();
+     KasperLibrary getKasperLibrary(ResolverFactory resolverFactory);
 
      DomainsDocumentationProcessor getDomainsDocumentationProcessor( KasperLibrary library);
 
@@ -19,7 +20,7 @@ interface AutoDocumentationConfiguration {
 
      CommandsDocumentationProcessor getCommandsDocumentationProcessor( KasperLibrary library);
 
-     QueryServicesDocumentationProcessor getQueryServicesDocumentationProcessor( KasperLibrary library);
+     QueryHandlersDocumentationProcessor getQueryHandlersDocumentationProcessor( KasperLibrary library);
 
      EventsDocumentationProcessor getEventsDocumentationProcessor( KasperLibrary library);
 
@@ -30,5 +31,9 @@ interface AutoDocumentationConfiguration {
      ListenersDocumentationProcessor getListenersDocumentationProcessor( KasperLibrary library);
 
      HandlersDocumentationProcessor getHandlersDocumentationProcessor( KasperLibrary library);
+
+     QueriesDocumentationProcessor getQueriesDocumentationProcessor( KasperLibrary library);
+
+     QueryResultsDocumentationProcessor getQueryResultsDocumentationProcessor( KasperLibrary library);
 
 }

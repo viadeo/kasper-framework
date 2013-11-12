@@ -51,7 +51,7 @@ public class EventMatcher<E extends Event> extends BaseMatcher<E> {
                 && fieldsMatch(expected.getClass(), expected, actual);
     }
 
-    private boolean fieldsMatch(final Class<?> aClass, final Object expectedValue, final Object actual) {
+    private boolean fieldsMatch(final Class aClass, final Object expectedValue, final Object actual) {
         boolean match = true;
         
         for (Field field : aClass.getDeclaredFields()) {

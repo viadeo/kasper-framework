@@ -35,6 +35,7 @@ public class KasperClientBuilder {
     private URL commandBaseLocation;
     private URL queryBaseLocation;
     private QueryFactory queryFactory;
+    private HttpContextSerializer contextSerializer;
     private final QueryFactoryBuilder qFactoryBuilder = new QueryFactoryBuilder();
     private KasperClient.Flags flags = KasperClient.Flags.defaults();
 
@@ -73,7 +74,7 @@ public class KasperClientBuilder {
         return this;
     }
 
-    public KasperClientBuilder use(final TypeAdapter<?> adapter) {
+    public KasperClientBuilder use(final TypeAdapter adapter) {
         qFactoryBuilder.use(adapter);
         return this;
     }
@@ -81,7 +82,7 @@ public class KasperClientBuilder {
     /**
      * @see #use(com.viadeo.kasper.query.exposition.TypeAdapter)
      */
-    public KasperClientBuilder use(final TypeAdapterFactory<?> factory) {
+    public KasperClientBuilder use(final TypeAdapterFactory factory) {
         qFactoryBuilder.use(factory);
         return this;
     }
@@ -93,7 +94,7 @@ public class KasperClientBuilder {
      * @throws KasperException
      */
     public KasperClientBuilder queryBaseLocation(final String url) {
-        return queryBaseLocation(createURL(checkNotNull(url)));
+        return queryBaseLocation(createURL(getCanonicalUrl(url)));
     }
 
     /**
@@ -102,7 +103,18 @@ public class KasperClientBuilder {
      * @throws KasperException
      */
     public KasperClientBuilder commandBaseLocation(final String url) {
-        return commandBaseLocation(createURL(checkNotNull(url)));
+        return commandBaseLocation(createURL(getCanonicalUrl(url)));
+    }
+
+    /**
+     * Add a trailing "/" at the end of the base URL.
+     * Also check url is not null as a precondition
+     * In case of URL without trailing "/", the last part of it is removed by java.net.URL constructor otherwise
+     * @param url
+     * @return url plus trailing "/"
+     */
+    private String getCanonicalUrl(String url) {
+        return checkNotNull(url).endsWith("/") ? url : url + "/";
     }
 
     /**
@@ -166,10 +178,14 @@ public class KasperClientBuilder {
             queryFactory = qFactoryBuilder.create();
         }
 
+        if (null == contextSerializer) {
+            contextSerializer = new HttpContextSerializer();
+        }
+
         if (null == client) {
-            return new KasperClient(queryFactory, mapper, commandBaseLocation, queryBaseLocation, flags);
+            return new KasperClient(queryFactory, mapper, commandBaseLocation, queryBaseLocation, contextSerializer, flags);
         } else {
-            return new KasperClient(queryFactory, client, commandBaseLocation, queryBaseLocation, flags);
+            return new KasperClient(queryFactory, client, commandBaseLocation, queryBaseLocation, contextSerializer, flags);
         }
     }
 

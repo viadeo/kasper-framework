@@ -14,7 +14,7 @@ import java.io.Serializable;
  *
  * Encapsulate Kasper events during bus traversal
  *
- * @param <E> The payload event
+ * @param <E> The result event
  * 
  */
 public interface EventMessage<E extends Event> extends Serializable {

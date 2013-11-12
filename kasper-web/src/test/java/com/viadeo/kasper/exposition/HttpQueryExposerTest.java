@@ -8,18 +8,21 @@ package com.viadeo.kasper.exposition;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.KasperClientBuilder;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.cqrs.query.*;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryService;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.cqrs.query.impl.AbstractQueryCollectionPayload;
+import com.viadeo.kasper.cqrs.query.impl.AbstractCollectionQueryResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.springframework.context.ApplicationContext;
 
+import javax.ws.rs.core.Response;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -34,21 +37,21 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         private static final long serialVersionUID = 104409802777527460L;
     }
 
-    public static class SomeCollectionResult extends AbstractQueryCollectionPayload<SomeResult> {
+    public static class SomeCollectionResponse extends AbstractCollectionQueryResult<SomeResponse> {
     }
 
-    @XKasperQueryService(domain = AccountDomain.class)
-    public static class SomeCollectionQueryService implements QueryService<SomeCollectionQuery, SomeCollectionResult> {
+    @XKasperQueryHandler(domain = AccountDomain.class)
+    public static class SomeCollectionQueryHandler implements QueryHandler<SomeCollectionQuery, SomeCollectionResponse> {
         @Override
-        public QueryResult<SomeCollectionResult> retrieve(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
+        public QueryResponse<SomeCollectionResponse> retrieve(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
-            final SomeCollectionResult list = new SomeCollectionResult();
-            final SomeResult result = new SomeResult();
+            final SomeCollectionResponse list = new SomeCollectionResponse();
+            final SomeResponse response = new SomeResponse();
 
-            result.setQuery(q);
-            list.setList(Arrays.asList(result));
+            response.setQuery(q);
+            list.setList(Arrays.asList(response));
 
-            return QueryResult.of(list);
+            return QueryResponse.of(list);
         }
     }
 
@@ -98,7 +101,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         }
     }
 
-    public static class SomeResult implements QueryPayload {
+    public static class SomeResponse implements QueryResult {
         private SomeQuery query;
 
         public SomeQuery getQuery() {
@@ -110,10 +113,11 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         }
     }
 
-    @XKasperQueryService(domain = AccountDomain.class)
-    public static class SomeQueryService implements QueryService<SomeQuery, SomeResult> {
+    @XKasperQueryHandler(domain = AccountDomain.class)
+    @SuppressWarnings("unchecked")
+    public static class SomeQueryHandler implements QueryHandler<SomeQuery, SomeResponse> {
         @Override
-        public QueryResult<SomeResult> retrieve(final QueryMessage<SomeQuery> message) throws KasperQueryException {
+        public QueryResponse<SomeResponse> retrieve(final QueryMessage<SomeQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
 
             if (q.isDoThrowSomeException()) {
@@ -123,12 +127,12 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
                         messages.add(q.getErrorCodes().get(i));
                 }
 
-                return QueryResult.of(new KasperError(q.aValue, messages));
+                return QueryResponse.error(new KasperReason(q.aValue, messages));
             }
 
-            final SomeResult result = new SomeResult();
-            result.setQuery(q);
-            return QueryResult.of(result);
+            final SomeResponse response = new SomeResponse();
+            response.setQuery(q);
+            return QueryResponse.of(response);
         }
     }
 
@@ -153,7 +157,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
 
     @Override
     protected HttpQueryExposer createExposer(final ApplicationContext ctx) {
-        return new HttpQueryExposer(ctx.getBean(QueryGateway.class), ctx.getBean(QueryServicesLocator.class));
+        return new HttpQueryExposer(ctx.getBean(QueryGateway.class), ctx.getBean(QueryHandlersLocator.class));
     }
 
     @Test
@@ -165,49 +169,73 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         query.intArray = new int[] { 1, 2, 3 };
 
         // When
-        final QueryResult<SomeResult> result = client().query(query, SomeResult.class);
+        final QueryResponse<SomeResponse> response = client().query(
+                DefaultContextBuilder.get(), query, SomeResponse.class);
 
         // Then
-        assertEquals(query.aValue, result.getPayload().query.aValue);
-        assertEquals(query.doThrowSomeException, result.getPayload().query.doThrowSomeException);
-        assertArrayEquals(query.intArray, result.getPayload().query.intArray);
+        assertEquals(query.aValue, response.getResult().query.aValue);
+        assertEquals(query.doThrowSomeException, response.getResult().query.doThrowSomeException);
+        assertArrayEquals(query.intArray, response.getResult().query.intArray);
     }
 
     // ------------------------------------------------------------------------
 
     @Test
-    public void testQueryServiceThrowingException() {
+    public void testQueryHandlerThrowingException() {
         // Given
         final SomeQuery query = new SomeQuery();
         query.doThrowSomeException = true;
         query.aValue = "aaa";
 
         // When
-        final QueryResult<SomeResult> actual = client().query(query, SomeResult.class);
+        final QueryResponse<SomeResponse> actual = client().query(
+                DefaultContextBuilder.get(), query, SomeResponse.class);
 
         // Then
-        assertTrue(actual.isError());
-        assertEquals(query.aValue, actual.getError().getCode());
+        assertFalse(actual.isOK());
+        assertEquals(query.aValue, actual.getReason().getCode());
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR, actual.asHttp().getHTTPStatus());
     }
 
     // ------------------------------------------------------------------------
 
     @Test
-    public void testQueryServiceReturningCollectionResult() {
+    public void testQueryHandlerHttpCode() {
+        // Given
+        final SomeQuery query = new SomeQuery();
+        query.doThrowSomeException = true;
+        query.aValue = CoreReasonCode.NOT_FOUND.toString();
+
+        // When
+        final QueryResponse<SomeResponse> actual = client().query(
+                DefaultContextBuilder.get(), query, SomeResponse.class);
+
+        // Then
+        assertFalse(actual.isOK());
+        assertEquals(query.aValue, actual.getReason().getCode());
+        assertEquals(Response.Status.NOT_FOUND, actual.asHttp().getHTTPStatus());
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void testQueryHandlerReturningCollectionResponse() {
         // Given
         final SomeCollectionQuery query = new SomeCollectionQuery();
 
         // When
-        final QueryResult<SomeCollectionResult> result = client().query(query, SomeCollectionResult.class);
+        final QueryResponse<SomeCollectionResponse> response = client().query(
+                DefaultContextBuilder.get(), query, SomeCollectionResponse.class);
 
         // Then
-        assertEquals(1, result.getPayload().getCount());
+        assertTrue(response.isOK());
+        assertEquals(1, response.getResult().getCount());
     }
 
     // ------------------------------------------------------------------------
 
     @Test
-    public void testQueryServiceThrowListOfErrors() {
+    public void testQueryHandlerThrowListOfErrors() {
         // Given
         final SomeQuery query = new SomeQuery();
         query.setDoThrowSomeException(true);
@@ -215,12 +243,16 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         query.setErrorCodes(Arrays.asList("a", "b"));
 
         // When
-        final QueryResult<SomeCollectionResult> actual = client().query(query, SomeCollectionResult.class);
+        final QueryResponse<SomeCollectionResponse> actual = client().query(
+                DefaultContextBuilder.get(), query, SomeCollectionResponse.class);
        
         // Then
-        assertEquals(query.getAValue(), actual.getError().getCode());
+        assertFalse(actual.isOK());
+        assertEquals(query.getAValue(), actual.getReason().getCode());
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR, actual.asHttp().getHTTPStatus());
+        final String[] actualMessages = actual.getReason().getMessages().toArray(new String[0]);
         for (int i = 0; i < query.getErrorCodes().size(); i++) {
-            assertEquals(query.getErrorCodes().get(i), actual.getError().getMessages().get(i));
+            assertEquals(query.getErrorCodes().get(i), actualMessages[i]);
         }
     }
 

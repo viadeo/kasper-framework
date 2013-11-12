@@ -13,12 +13,12 @@ import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
@@ -37,13 +37,13 @@ public class DefaultQueryGateway implements QueryGateway {
     private static final Meter METRICLASSREQUESTS = METRICS.meter(name(QueryGateway.class, "requests"));
     private static final Meter METRICLASSERRORS = METRICS.meter(name(QueryGateway.class, "errors"));
 
-    private QueryServicesLocator queryServicesLocator;
+    private QueryHandlersLocator queryHandlersLocator;
 
     // -----------------------------------------------------------------------
 
     @Override
     @SuppressWarnings("unchecked")
-    public <PAYLOAD extends QueryPayload> QueryResult<PAYLOAD> retrieve(final Query query, final Context context)
+    public <RESULT extends QueryResult> QueryResponse<RESULT> retrieve(final Query query, final Context context)
             throws Exception {
 
         checkNotNull(context);
@@ -58,23 +58,23 @@ public class DefaultQueryGateway implements QueryGateway {
         /* Sets current thread context */
         CurrentContext.set(context);
 
-        // Search for associated service --------------------------------------
+        // Search for associated handler --------------------------------------
         LOGGER.debug("Retrieve request processor chain for query " + queryClass.getSimpleName());
-        Optional<RequestActorsChain<Query, QueryResult<QueryPayload>>> optionalRequestChain =
-                queryServicesLocator.getRequestActorChain(queryClass);
+        Optional<RequestActorsChain<Query, QueryResponse<QueryResult>>> optionalRequestChain =
+                queryHandlersLocator.getRequestActorChain(queryClass);
 
         if (!optionalRequestChain.isPresent()) {
             timer.close();
             classTimer.close();
-            throw new KasperException("Unable to find the service implementing query class " + queryClass);
+            throw new KasperException("Unable to find the handler implementing query class " + queryClass);
         }
 
         Exception exception = null;
-        QueryResult<PAYLOAD> ret = null;
+        QueryResponse<RESULT> ret = null;
 
         try {
             LOGGER.info("Call actor chain for query " + queryClass.getSimpleName());
-            ret = (QueryResult<PAYLOAD>) optionalRequestChain.get().next(query, context);
+            ret = (QueryResponse<RESULT>) optionalRequestChain.get().next(query, context);
         } catch (final RuntimeException e) {
             exception = e;
         } catch (final Exception e) {
@@ -88,7 +88,7 @@ public class DefaultQueryGateway implements QueryGateway {
         METRICS.histogram(name(queryClass, "requests-times")).update(time);
         METRICLASSREQUESTS.mark();
         METRICS.meter(name(queryClass, "requests")).mark();
-        if ((null != exception) || ret.isError()) {
+        if ((null != exception) || ! ret.isOK()) {
             METRICLASSERRORS.mark();
             METRICS.meter(name(queryClass, "errors")).mark();
         }
@@ -102,8 +102,8 @@ public class DefaultQueryGateway implements QueryGateway {
 
     // -----------------------------------------------------------------------
 
-    public void setQueryServicesLocator(final QueryServicesLocator queryServicesLocator) {
-        this.queryServicesLocator = queryServicesLocator;
+    public void setQueryHandlersLocator(final QueryHandlersLocator queryHandlersLocator) {
+        this.queryHandlersLocator = queryHandlersLocator;
     }
 
 }

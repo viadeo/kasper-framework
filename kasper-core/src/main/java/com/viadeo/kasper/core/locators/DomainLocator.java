@@ -13,6 +13,7 @@ import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.ddd.impl.ClientRepository;
 
 import java.util.Collection;
 import java.util.Set;
@@ -20,7 +21,7 @@ import java.util.Set;
 /**
  *
  * The domain locator interface
- * - record domains, entities, repositories and services
+ * - record domains, entities, repositories and handlers
  * 
  * TODO: terminate javadoc
  * 
@@ -30,12 +31,17 @@ public interface DomainLocator {
     /**
      * Register a new commandHandler
      */
-    void registerHandler(CommandHandler<? extends Command> commandHandler);
+    void registerHandler(CommandHandler commandHandler);
 
     /**
      * Get all registered command handlers
      */
-    Collection<CommandHandler<? extends Command>> getHandlers();
+    Collection<CommandHandler> getHandlers();
+
+    /**
+     * @return an optional handler for the specified command class
+     */
+    Optional<CommandHandler> getHandlerForCommandClass(Class<? extends Command> commandClass);
 
 	/**
 	 * Register a new domain to the locator
@@ -107,13 +113,12 @@ public interface DomainLocator {
 	 */
 	<D extends Domain> Set<? extends Entity> getDomainEntities(Class<D> domain);
 
-
 	/**
 	 * Register a new domain repository
 	 * 
 	 * @param repository the repository to register
 	 */
-	void registerRepository(IRepository<?> repository);
+	void registerRepository(IRepository repository);
 
 	/**
 	 * Get the repository for an entity
@@ -121,7 +126,7 @@ public interface DomainLocator {
 	 * @param entity the entity
 	 * @return the repository responsible for storing this entity
 	 */
-	<E extends AggregateRoot> Optional<IRepository<E>> getEntityRepository(E entity);
+	<E extends AggregateRoot> Optional<ClientRepository<E>> getEntityRepository(E entity);
 
 	/**
 	 * Get the repository for an entity class
@@ -129,6 +134,6 @@ public interface DomainLocator {
 	 * @param entityClass the entity class
 	 * @return the repository responsible for storing this class of entities
 	 */
-	<E extends AggregateRoot> Optional<IRepository<E>> getEntityRepository(Class<E> entityClass);
+	<E extends AggregateRoot> Optional<ClientRepository<E>> getEntityRepository(Class<E> entityClass);
 
 }

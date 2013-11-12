@@ -32,7 +32,7 @@ Kasper generally also provides you some abstract classes in order to ease your d
 
     @XKasperCommandHandler( domain = MyDomain.class )
     public class DoSomethingCommandHandler extends AbstractCommandHandler<DoSomethingCommand> {
-        public CommandResult handle(final DoSomethingCommand command) {
+        public CommandResponse handle(final DoSomethingCommand command) {
             ...
         }
     }
@@ -44,7 +44,7 @@ The following annotations are currently used by the framework :
 
 - **XKasperEventListener**
 - **XKasperServiceFilter**
-- **XKasperQueryService**
+- **XKasperQueryHandler**
 - **XKasperCommandHandler**
 - **XKasperRepository**
 - **XKasperRelation**
@@ -64,7 +64,7 @@ Naming practices
 It is heavily recommended to name your components using an explicit suffix :
 
 - ServiceFilter
-- QueryService
+- QueryHandler
 - DomainService
 - [Command]Handler
 - [Event]Listener
@@ -78,12 +78,12 @@ Except for domain elements like **concepts** where it is more readable to direct
 names *(eg. User, Member, Group, ...)* or **relations** where the Kasper convention *<Concept>_<verb>_<Concept>*
 is encouraged *(eg. Member_isConnectedTo_Member, ..)*.
 
-Concerning Commands/Handlers, Queries/Services, Results and Events/Listeners the rule is **Intention Revealing Interfaces**,
+Concerning Commands/Handlers, Queries/Services, Responses and Events/Listeners the rule is **Intention Revealing Interfaces**,
 reflecting directly your ubiquitous language elements, eg:
 
 - SetMemberAsPremiumForOneYear*Command* / SetMemberAsPremiumForOneYear*CommandHandler*
-- FindNameOfMembersFromIds*Query* / FindNameOfMembersFromIds*QueryService*
-- ListOfMembersWithNames*Result*
+- FindNameOfMembersFromIds*Query* / FindNameOfMembersFromIds*QueryHandler*
+- ListOfMembersWithNames*Response*
 - MemberHasBeenSetAsPremiumForOneYear*Event* / MemberHasBeenSetAsPremiumForOneYear*EventListener*
 
 instead of (**the following are bad practices**) :

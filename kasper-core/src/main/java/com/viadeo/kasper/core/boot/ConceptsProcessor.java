@@ -31,7 +31,7 @@ public class ConceptsProcessor extends AbstractEntitiesProcessor<XKasperConcept,
 	 * @see com.viadeo.kasper.core.boot.AnnotationProcessor#process(Class)
 	 */
 	@Override
-	public void process(final Class<?> conceptClass) {
+	public void process(final Class conceptClass) {
         super.process(conceptClass);
 
         // Currently does nothing

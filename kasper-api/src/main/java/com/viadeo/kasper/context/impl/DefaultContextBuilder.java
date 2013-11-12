@@ -22,6 +22,11 @@ public class DefaultContextBuilder implements ContextBuilder {
 		return new DefaultContext();
 	}
 
+    /**
+     * Helper method for direct, external access
+     *
+     * @return a new default context instance
+     */
     public static Context get() {
         return new DefaultContext();
     }

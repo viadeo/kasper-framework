@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * Process Kasper listener dynamic registration at platform boot
  *
  */
-public class ListenersDocumentationProcessor extends DocumentationProcessor<XKasperEventListener, EventListener<?>> {
+public class ListenersDocumentationProcessor extends DocumentationProcessor<XKasperEventListener, EventListener> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(ListenersDocumentationProcessor.class);
 
 	// ------------------------------------------------------------------------
@@ -29,11 +29,11 @@ public class ListenersDocumentationProcessor extends DocumentationProcessor<XKas
 	 */
 	@Override
 	@SuppressWarnings("unchecked")
-	public void process(final Class<?> listenerClazz) {
+	public void process(final Class listenerClazz) {
 		LOGGER.info("Record on listener library : " + listenerClazz.getName());
 		
 		//- Register the domain to the locator --------------------------------
-		getKasperLibrary().recordListener((Class<? extends EventListener<?>>) listenerClazz);
+		getKasperLibrary().recordListener((Class<? extends EventListener>) listenerClazz);
 	}
 	
 }

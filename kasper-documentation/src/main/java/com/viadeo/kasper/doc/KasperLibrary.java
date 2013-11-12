@@ -10,9 +10,12 @@ import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.core.resolvers.ResolverFactory;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.query.QueryService;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.doc.nodes.*;
@@ -26,6 +29,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Kasper autodoc library
@@ -43,7 +48,12 @@ import java.util.TreeMap;
  */
 @Component
 public class KasperLibrary {
-	
+
+    /**
+     * Access to the Kasper components resolvers
+     */
+    private ResolverFactory resolverFactory;
+
 	/**
 	 * Keeps track of registered domains, by name and by prefix
 	 */
@@ -52,6 +62,7 @@ public class KasperLibrary {
 	
 	/**
 	 * Stores all registered domain-related components
+     * FIXME: replace with MultiMap
 	 */
 	private final Map<Class<? extends DocumentedDomainNode>, Map<String, ?>> domainEntities;
 	
@@ -60,7 +71,17 @@ public class KasperLibrary {
 	 */
 	private final Map<String, DocumentedCommand> commandEntities;
 	
-	/**
+    /**
+     * Store queries (do not depend directly from a specific domain)
+     */
+    private final Map<String, DocumentedQuery> queryEntities;
+
+    /**
+     * Store queryResults (do not depend directly from a specific domain)
+     */
+    private final Map<String, DocumentedQueryResult> queryResultEntities;
+
+    /**
 	 * Stores the concepts involved in a relation, as source or target entities
 	 */
 	private final Map<String, List<DocumentedRelation>> sourceConceptRelations;
@@ -80,8 +101,18 @@ public class KasperLibrary {
 	 * Stores all event listeners by event name
 	 */
 	private final Map<String, List<DocumentedListener>> eventListeners;
+
+    /**
+     * Stores all query handlers by query name
+     */
+    private final Map<String, DocumentedQueryHandler> queryHandlers;
+
+    /**
+     *  Stores all query handlers by queryResult name
+     */
+    private final Map<String, List<DocumentedQueryHandler>> queryResultHandlers;
 	
-	/**
+    /**
 	 * Static mapping between string component type names and associated classes
 	 */
 	private final Map<String, Class<? extends DocumentedDomainNode>> simpleTypes;
@@ -99,29 +130,44 @@ public class KasperLibrary {
 		this.aggregateComponents = Maps.newHashMap();
 		this.commandHandlers = Maps.newHashMap();
 		this.eventListeners = Maps.newHashMap();
+		this.queryHandlers = Maps.newHashMap();
+
+        this.queryResultHandlers = Maps.newHashMap();
 		
 		this.domainEntities = Maps.newHashMap();
 		this.commandEntities = Maps.newHashMap();
+
+        this.queryEntities=Maps.newHashMap();
+        this.queryResultEntities=Maps.newHashMap();
 		
 		this.simpleTypes = Maps.newHashMap();
 		this.simpleTypes.put(DocumentedRepository.TYPE_NAME, DocumentedRepository.class);
 		this.simpleTypes.put(DocumentedCommand.TYPE_NAME, DocumentedCommand.class);
 		this.simpleTypes.put(DocumentedEvent.TYPE_NAME, DocumentedEvent.class);
+        this.simpleTypes.put(DocumentedQuery.TYPE_NAME, DocumentedQuery.class);
+        this.simpleTypes.put(DocumentedQueryResult.TYPE_NAME, DocumentedQueryResult.class);
 		this.simpleTypes.put(DocumentedConcept.TYPE_NAME, DocumentedConcept.class);
 		this.simpleTypes.put(DocumentedRelation.TYPE_NAME, DocumentedRelation.class);
 		this.simpleTypes.put(DocumentedListener.TYPE_NAME, DocumentedListener.class);
 		this.simpleTypes.put(DocumentedHandler.TYPE_NAME, DocumentedHandler.class);
-		this.simpleTypes.put(DocumentedQueryService.TYPE_NAME, DocumentedQueryService.class);
+		this.simpleTypes.put(DocumentedQuery.TYPE_NAME, DocumentedQuery.class);
+		this.simpleTypes.put(DocumentedQueryResult.TYPE_NAME, DocumentedQueryResult.class);
+		this.simpleTypes.put(DocumentedQueryHandler.TYPE_NAME, DocumentedQueryHandler.class);
 		
 		this.pluralTypes = Maps.newHashMap();
 		this.pluralTypes.put(DocumentedRepository.PLURAL_TYPE_NAME, DocumentedRepository.class);
 		this.pluralTypes.put(DocumentedCommand.PLURAL_TYPE_NAME, DocumentedCommand.class);
 		this.pluralTypes.put(DocumentedEvent.PLURAL_TYPE_NAME, DocumentedEvent.class);
 		this.pluralTypes.put(DocumentedConcept.PLURAL_TYPE_NAME, DocumentedConcept.class);
+        this.pluralTypes.put(DocumentedQuery.PLURAL_TYPE_NAME, DocumentedQuery.class);
+        this.pluralTypes.put(DocumentedQueryResult.PLURAL_TYPE_NAME, DocumentedQueryResult.class);
+        this.pluralTypes.put(DocumentedConcept.PLURAL_TYPE_NAME, DocumentedConcept.class);
 		this.pluralTypes.put(DocumentedRelation.PLURAL_TYPE_NAME, DocumentedRelation.class);
 		this.pluralTypes.put(DocumentedListener.PLURAL_TYPE_NAME, DocumentedListener.class);
 		this.pluralTypes.put(DocumentedHandler.PLURAL_TYPE_NAME, DocumentedHandler.class);
-		this.pluralTypes.put(DocumentedQueryService.PLURAL_TYPE_NAME, DocumentedQueryService.class);
+		this.pluralTypes.put(DocumentedQuery.PLURAL_TYPE_NAME, DocumentedQuery.class);
+		this.pluralTypes.put(DocumentedQueryResult.PLURAL_TYPE_NAME, DocumentedQueryResult.class);
+		this.pluralTypes.put(DocumentedQueryHandler.PLURAL_TYPE_NAME, DocumentedQueryHandler.class);
 	}
 	
 	// == DOMAINS =============================================================	
@@ -145,7 +191,7 @@ public class KasperLibrary {
 	// --
 	
 	public Optional<DocumentedDomain> getDomainFromName(final String domainName) {
-		Preconditions.checkNotNull(domainName);
+		checkNotNull(domainName);
 		
 		if (this.domainNames.containsKey(domainName)) {
 			return Optional.of(this.domainNames.get(domainName));
@@ -157,7 +203,7 @@ public class KasperLibrary {
 	// --
 	
 	public Optional<DocumentedDomain> getDomainFromPrefix(final String domainPrefix) {
-		Preconditions.checkNotNull(domainPrefix);
+		checkNotNull(domainPrefix);
 		
 		if (this.domainPrefixes.containsKey(domainPrefix)) {
 			return Optional.of(this.domainPrefixes.get(domainPrefix));
@@ -169,7 +215,7 @@ public class KasperLibrary {
 	// == REPOSITORIES ========================================================
 	// ========================================================================
 	
-	public DocumentedRepository recordRepository(final Class<? extends IRepository<?>> repositoryClazz) {
+	public DocumentedRepository recordRepository(final Class<? extends IRepository> repositoryClazz) {
 		final DocumentedRepository documentedRepository = new DocumentedRepository(this, repositoryClazz);		
 		recordElement(documentedRepository.getDomainName(), documentedRepository);
 		return documentedRepository;
@@ -235,7 +281,71 @@ public class KasperLibrary {
 		return Optional.fromNullable(getEntities(domainName, DocumentedEvent.class, false).get().get(eventName));
 	}
 	
-	// == CONCEPTS ============================================================
+    // == Queries =============================================================
+    // ========================================================================
+
+    public DocumentedQuery recordQuery(final Class<? extends Query> queryClazz) {
+        final DocumentedQuery documentedQuery = new DocumentedQuery(this,queryClazz);
+
+        this.queryEntities.put(documentedQuery.getName(),documentedQuery);
+
+        return documentedQuery;
+    }
+
+    // --
+    // get queries from queryHandlers of a specific domain
+    public Map<String,DocumentedQuery> getQueries(final String domainName) {
+        final Map<String,DocumentedQueryHandler> tmpQueryHandlers = getQueryHandlers(domainName);
+
+        final Map<String,DocumentedQuery> queries=Maps.newHashMap();
+        for (final DocumentedQueryHandler queryHandler:tmpQueryHandlers.values()){
+            final Optional<DocumentedQuery> query=getQuery(queryHandler.getQueryName());
+            if (query.isPresent()){
+                queries.put(query.get().getName(),query.get());
+            }
+        }
+        return queries;
+    }
+
+    // --
+    // get queries from queryName
+    public Optional<DocumentedQuery> getQuery(final String queryName){
+        return Optional.fromNullable(queryEntities.get(queryName));
+    }
+
+    // == QueryResults =======================================================
+    // ========================================================================
+
+    public DocumentedQueryResult recordQueryResult(final Class<? extends QueryResult> queryResultClazz){
+        final DocumentedQueryResult documentedQueryResult=new DocumentedQueryResult(this,queryResultClazz);
+
+        this.queryResultEntities.put(documentedQueryResult.getName(), documentedQueryResult);
+
+        return documentedQueryResult;
+    }
+
+    // --
+    // get queryResults from queryHandlers of a specific domain
+    public Map<String,DocumentedQueryResult> getQueryResults(final String domainName){
+        final Map<String,DocumentedQueryHandler> tmpQueryHandlers = getQueryHandlers(domainName);
+
+        final Map<String,DocumentedQueryResult> queryResults=Maps.newHashMap();
+        for (final DocumentedQueryHandler queryHandler:tmpQueryHandlers.values()){
+            final Optional<DocumentedQueryResult> queryResult=getQueryResult(queryHandler.getQueryResultName());
+            if (queryResult.isPresent()){
+                queryResults.put(queryResult.get().getName(),queryResult.get());
+            }
+        }
+        return queryResults;
+    }
+
+    // --
+    // get queryResults from queryResultName
+    public Optional<DocumentedQueryResult> getQueryResult(final String queryResultName){
+        return Optional.fromNullable(queryResultEntities.get(queryResultName));
+    }
+
+    // == CONCEPTS ============================================================
 	// ========================================================================
 	
 	public DocumentedConcept recordConcept(final Class<? extends Concept> conceptClazz) {
@@ -259,8 +369,8 @@ public class KasperLibrary {
 	// --
 	
 	public void registerAggregateComponent(final String agrName, final String componentName) {
-		Preconditions.checkNotNull(agrName);
-		Preconditions.checkNotNull(componentName);
+		checkNotNull(agrName);
+		checkNotNull(componentName);
 		
 		final List<String> components;
 		if (!this.aggregateComponents.containsKey(agrName)) {
@@ -307,7 +417,7 @@ public class KasperLibrary {
 	// == RELATIONS ===========================================================
 	// ========================================================================
 	
-	public DocumentedRelation recordRelation(final Class<? extends Relation<?,?>> relationClazz) {
+	public DocumentedRelation recordRelation(final Class<? extends Relation> relationClazz) {
 		final DocumentedRelation documentedRelation = new DocumentedRelation(this, relationClazz);		
 
 		recordElement(documentedRelation.getDomainName(), documentedRelation);
@@ -348,7 +458,7 @@ public class KasperLibrary {
 	// --
 	
 	public List<DocumentedRelation> getSourceConceptRelations(final String conceptName) {
-		if (sourceConceptRelations.containsKey(Preconditions.checkNotNull(conceptName))) {
+		if (sourceConceptRelations.containsKey(checkNotNull(conceptName))) {
 			return Collections.unmodifiableList(sourceConceptRelations.get(conceptName));
 		}
 		return Collections.emptyList();
@@ -357,7 +467,7 @@ public class KasperLibrary {
 	// --
 	
 	public List<DocumentedRelation> getTargetConceptRelations(final String conceptName) {
-		if (targetConceptRelations.containsKey(Preconditions.checkNotNull(conceptName))) {
+		if (targetConceptRelations.containsKey(checkNotNull(conceptName))) {
 			return Collections.unmodifiableList(targetConceptRelations.get(conceptName));
 		}
 		return Collections.emptyList();
@@ -372,7 +482,7 @@ public class KasperLibrary {
 	// == LISTENERS ===========================================================
 	// ========================================================================
 	
-	public DocumentedListener recordListener(final Class<? extends EventListener<?>> listenerClazz) {
+	public DocumentedListener recordListener(final Class<? extends EventListener> listenerClazz) {
 		final DocumentedListener documentedListener = new DocumentedListener(this, listenerClazz);
 		recordElement(documentedListener.getDomainName(), documentedListener);
 		return documentedListener;
@@ -387,8 +497,8 @@ public class KasperLibrary {
 	// --
 	
 	public void registerListener(final DocumentedListener listener,final String eventName) {
-		Preconditions.checkNotNull(listener);
-		Preconditions.checkNotNull(eventName);
+		checkNotNull(listener);
+		checkNotNull(eventName);
 		
 		final List<DocumentedListener> listeners;
 		if (!this.eventListeners.containsKey(eventName)) {
@@ -415,7 +525,7 @@ public class KasperLibrary {
 	// == HANDLERS ============================================================
 	// ========================================================================
 	
-	public DocumentedHandler recordHandler(final Class<? extends CommandHandler<?>> handlerClazz) {
+	public DocumentedHandler recordHandler(final Class<? extends CommandHandler> handlerClazz) {
 		final DocumentedHandler documentedHandler = new DocumentedHandler(this, handlerClazz);
 		recordElement(documentedHandler.getDomainName(), documentedHandler);
 		return documentedHandler;
@@ -430,8 +540,8 @@ public class KasperLibrary {
 	// --
 	
 	public void registerHandler(final DocumentedHandler handler, final String commandName){
-		Preconditions.checkNotNull(handler);
-		Preconditions.checkNotNull(commandName);
+		checkNotNull(handler);
+		checkNotNull(commandName);
 		
 		this.commandHandlers.put(commandName, handler);
 	}
@@ -445,31 +555,80 @@ public class KasperLibrary {
 	// == QUERY SERVICES ======================================================
 	// ========================================================================
 	
-	public DocumentedQueryService recordQueryService(final Class<? extends QueryService<?,?>> queryServiceClazz) {
-		final DocumentedQueryService documentedQueryService = new DocumentedQueryService(this, queryServiceClazz);		
-		recordElement(documentedQueryService.getDomainName(), documentedQueryService);
-		return documentedQueryService;
+	public DocumentedQueryHandler recordQueryHandler(final Class<? extends QueryHandler> queryHandlerClazz) {
+		final DocumentedQueryHandler documentedQueryHandler = new DocumentedQueryHandler(this, queryHandlerClazz);		
+        registerQueryHandlerForQuery(documentedQueryHandler, documentedQueryHandler.getQueryName());
+        registerQueryHandlerForQueryResult(documentedQueryHandler, documentedQueryHandler.getQueryResultName());
+		recordElement(documentedQueryHandler.getDomainName(), documentedQueryHandler);
+		return documentedQueryHandler;
 	}		
 	
 	// --
 	
-	public Map<String, DocumentedQueryService> getQueryServices(final String domainName) {
-		return getEntities(domainName, DocumentedQueryService.class, false).get();
+	public Map<String, DocumentedQueryHandler> getQueryHandlers(final String domainName) {
+		return getEntities(domainName, DocumentedQueryHandler.class, false).get();
 	}		
 	
 	// --
 	
-	public Optional<DocumentedQueryService> getQueryService(final String domainName, final String queryServiceName) {
-		return Optional.fromNullable(getEntities(domainName, DocumentedQueryService.class, false).get().get(queryServiceName));
+	public Optional<DocumentedQueryHandler> getQueryHandler(final String domainName, final String queryHandlerName) {
+		return Optional.fromNullable(getEntities(domainName, DocumentedQueryHandler.class, false).get().get(queryHandlerName));
 	}
 
-	
+    // --
+
+    public void registerQueryHandlerForQuery(final DocumentedQueryHandler queryHandler, final String queryName) {
+        Preconditions.checkNotNull(queryHandler);
+        Preconditions.checkNotNull(queryName);
+
+        DocumentedQueryHandler oldQueryHandler = this.queryHandlers.get(queryName);
+        if (oldQueryHandler != null) {
+            Preconditions.checkState(false, "QueryHandler %s already registered for query %s.",  oldQueryHandler.getName(), queryName);
+        }
+
+        this.queryHandlers.put(queryName, queryHandler);
+    }
+
+    // --
+
+    public void registerQueryHandlerForQueryResult(final DocumentedQueryHandler queryHandler,final String queryResultName){
+        Preconditions.checkNotNull(queryHandler);
+        Preconditions.checkNotNull(queryResultName);
+
+        final List<DocumentedQueryHandler> tmpQueryHandlers;
+        if (!this.queryResultHandlers.containsKey(queryResultName)) {
+            tmpQueryHandlers= Lists.newArrayList();
+            this.queryResultHandlers.put(queryResultName, tmpQueryHandlers);
+        } else {
+            tmpQueryHandlers = this.queryResultHandlers.get(queryResultName);
+        }
+
+        tmpQueryHandlers.add(queryHandler);
+    }
+
+    // --
+
+    @SuppressWarnings("unchecked")
+    public Optional<DocumentedQueryHandler> getQueryHandlerForQuery(final String queryName){
+        return Optional.fromNullable(this.queryHandlers.get(queryName));
+    }
+
+    // --
+
+    @SuppressWarnings("unchecked")
+    public List<DocumentedQueryHandler> getQueryHandlersForQueryResult(final String queryResultName){
+        if (this.queryResultHandlers.containsKey(queryResultName)){
+            return this.queryResultHandlers.get(queryResultName);
+        }
+        return Collections.EMPTY_LIST;
+    }
+
 	// == Common generic methods ==============================================
 	// ========================================================================
 	
 	public <T extends DocumentedNode> Optional<Map<String, T>> getEntities(final String domainName, final String entityPluralType) {
-		Preconditions.checkNotNull(domainName);
-		Preconditions.checkNotNull(entityPluralType);
+		checkNotNull(domainName);
+		checkNotNull(entityPluralType);
 		
 		@SuppressWarnings("unchecked") // Safe
 		final Class<T> entityClass = (Class<T>) this.pluralTypes.get(entityPluralType);
@@ -489,7 +648,11 @@ public class KasperLibrary {
 		
 		if (entityClass.equals(DocumentedCommand.class)) {
 			ret = Optional.of((Map<String, T>) getCommands(domainName));
-		} else {
+		} else if(entityClass.equals(DocumentedQuery.class)){
+            ret = Optional.of((Map<String, T>) getQueries(domainName));
+        } else if (entityClass.equals(DocumentedQueryResult.class)){
+            ret = Optional.of((Map<String, T>) getQueryResults(domainName));
+        } else {
 			ret = getEntities(domainName, entityClass, true);
 		}
 		
@@ -500,8 +663,8 @@ public class KasperLibrary {
 	
 	@SuppressWarnings("unchecked") // Checked
 	public <T extends DocumentedNode> Optional<Map<String, T>> getEntities(final String domainName, final Class<T> entityClass, final boolean returnAbsent) {
-		Preconditions.checkNotNull(domainName);
-		Preconditions.checkNotNull(entityClass);
+		checkNotNull(domainName);
+		checkNotNull(entityClass);
 		
 		if (this.domainEntities.containsKey(entityClass)) {
 			final Map<String, ?> entityMap = this.domainEntities.get(entityClass);
@@ -522,9 +685,9 @@ public class KasperLibrary {
 	// ------------------------------------------------------------------------
 	
 	public <T extends DocumentedDomainNode> Optional<T> getEntity(final String domainName, final String entityType, final String entityName) {
-		Preconditions.checkNotNull(domainName);
-		Preconditions.checkNotNull(entityType);
-		Preconditions.checkNotNull(entityName);
+		checkNotNull(domainName);
+		checkNotNull(entityType);
+		checkNotNull(entityName);
 		
 		@SuppressWarnings("unchecked") // Safe
 		final Class<T> entityClass = (Class<T>) this.simpleTypes.get(entityType);
@@ -534,9 +697,9 @@ public class KasperLibrary {
 	// --
 	
 	public <T extends DocumentedNode> Optional<T> getEntity(final String domainName, final Class<T> entityClass, final String entityName) {
-		Preconditions.checkNotNull(domainName);
-		Preconditions.checkNotNull(entityClass);
-		Preconditions.checkNotNull(entityName);
+		checkNotNull(domainName);
+		checkNotNull(entityClass);
+		checkNotNull(entityName);
 		
 		final Optional<Map<String, T>> entities = getEntities(domainName, entityClass);
 		if (!entities.isPresent()) {
@@ -593,7 +756,7 @@ public class KasperLibrary {
 	// --
 	
 	public <T extends DocumentedDomainNode> Map<String, DocumentedNode> simpleNodesFrom(final Map<String, T> nodes) {
-		Preconditions.checkNotNull(nodes);
+		checkNotNull(nodes);
 		
 		final TreeMap<String, DocumentedNode> simpleNodes = Maps.newTreeMap();
 		
@@ -610,7 +773,7 @@ public class KasperLibrary {
 	// --
 	
 	public <T extends DocumentedDomainNode> Map<String, DocumentedNode> simpleNodesFrom(final List<T> nodes) {
-		Preconditions.checkNotNull(nodes);
+		checkNotNull(nodes);
 		
 		final Map<String, DocumentedNode> simpleNodes = Maps.newTreeMap();
 		
@@ -625,12 +788,28 @@ public class KasperLibrary {
 	}	
 	
 	// --
-	
+
 	public <T extends DocumentedNode> DocumentedNode getSimpleNodeFrom(T node) {
 		if (DocumentedRelation.class.isAssignableFrom(node.getClass())) {
-			return new DocumentedSimpleRelation((DocumentedRelation) node);
+			return new DocumentedSimpleRelation(DocumentedRelation.class.cast(node));
 		}
+        if (DocumentedQueryHandler.class.isAssignableFrom(node.getClass())) {
+            return new DocumentedSimpleQueryHandler(DocumentedQueryHandler.class.cast(node));
+        }
+        if (DocumentedHandler.class.isAssignableFrom(node.getClass())) {
+            return new DocumentedSimpleHandler(DocumentedHandler.class.cast(node));
+        }
 		return new DocumentedNode(node);
 	}
-	
+
+    // ------------------------------------------------------------------------
+
+    public void setResolverFactory(final ResolverFactory resolverFactory) {
+        this.resolverFactory = checkNotNull(resolverFactory);
+    }
+
+    public ResolverFactory getResolverFactory() {
+        return this.resolverFactory;
+    }
+
 }

@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperRepository
  */
-public class RepositoriesProcessor extends SingletonAnnotationProcessor<XKasperRepository, IRepository<?>> {
+public class RepositoriesProcessor extends SingletonAnnotationProcessor<XKasperRepository, IRepository> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RepositoriesProcessor.class);	
 	
@@ -45,13 +45,13 @@ public class RepositoriesProcessor extends SingletonAnnotationProcessor<XKasperR
 	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
-	public void process(final Class<?> repositoryClazz, final IRepository<?> repository) {
+	public void process(final Class repositoryClazz, final IRepository repository) {
 		LOGGER.info("Record on domain locator : " + repositoryClazz.getName());
 			
 		repository.init();
 		
 		if (Repository.class.isAssignableFrom(repositoryClazz)) {
-			((Repository<?>) repository).setEventBus(eventBus);
+			((Repository) repository).setEventBus(eventBus);
 		}
 			
 		//- Register the repository to the domain locator ---------------------

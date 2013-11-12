@@ -1,5 +1,6 @@
 package com.viadeo.kasper.test.timelines.repositories;
 
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.test.timelines.entities.Timeline;
@@ -30,6 +31,21 @@ public class TimelineRepository implements IRepository<Timeline> {
 		// TODO Auto-generated method stub
 		
 	}
+
+    @Override
+    public boolean has(KasperID id) {
+        return false;
+    }
+
+    @Override
+    public Timeline get(KasperID aggregateIdentifier, Long expectedVersion) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Timeline get(KasperID aggregateIdentifier) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
 
 }

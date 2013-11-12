@@ -30,22 +30,22 @@ KasperClient is thread safe and should be reused for optimal performances.
 .. code-block:: java
    :linenos:
 
+   final Context context = ...
    final KasperClient client = new KasperClient();
-   final QueryResult<SuperCoolResult> result = client.query(new SuperCoolQuery("what's up?"), SuperCoolResult.class);
-   if (result.isError()) {
-	KasperError error = result.getError();
-        // do something using the error code or the messages list
+   final QueryResponse<SuperCoolResponse> response =
+                client.query(context, new SuperCoolQuery("what's up?"), SuperCoolResponse.class);
+   if ( ! response.isOK()) {
+    KasperReason error = response.getReason();
+    // do something using the error code or the messages list
    } else {
-     // if no error occured you can access the payload
-     SuperCoolResult payload = result.get();
+    // if no error occured you can access the result
+     SuperCoolResponse result = response.get();
    }
 
-Hard to make it shorter! :)
+If an error occurred during query processing on client side a **KasperQueryException** will be raised, if something goes wrong on server side then a QueryResponse with an error is returned.
 
-If an error occurred during query processing on client side a **KasperQueryException** will be raised, if something goes wrong on server side then a QueryResult with an error is returned.
+.. note::
 
-.. note:: 
-   
    By default KasperClient is configured to hit queries at **http://localhost:8080/query** and commands at **http://localhost:8080/command**.
 
    This can be configured using **KasperClientBuilder**.
@@ -57,15 +57,15 @@ If an error occurred during query processing on client side a **KasperQueryExcep
                                         .queryBaseLocation("http://kasper-platform/query")
                                         .commandBaseLocation("http://kasper-platform/command")
                                         .create();
-                              
+
 **Sending a command** is also quite simple:
 
 .. code-block:: java
    :linenos:
 
-   final CommandResult result = client.send(new ICommandYouTo("Enjoy Coding!"));
-   if (result.isError()) {
-      // do something useful with result.getError()
+   final CommandResponse response = client.send(context, new ICommandYouTo("Enjoy Coding!"));
+   if ( ! response.isOK()) {
+      // do something useful with response.getReason()
    }
 
 |
@@ -93,21 +93,21 @@ Kasper client provides two ways of doing asynchronous operations, using Futures 
 .. code-block:: java
    :linenos:
 
-   client.sendAsync(someCommand, new ICallback<ICommandResult>() {
-       public void done(final ICommandResult result) {
-           // do something smart with my result
+   client.sendAsync(someCommand, new ICallback<ICommandResponse>() {
+       public void done(final ICommandResponse response) {
+           // do something smart with my response
        }
    });
    
    /* or using a future */
    
-   final Future<ICommandResult> futureCommandResult = client.sendAsync(someCommand);
+   final Future<ICommandResponse> futureCommandResponse = client.sendAsync(context, someCommand);
    
    // do some other work while the command is being processed
    ...
    
-   // block until the result is obtained
-   final ICommandResult commandResult = futureCommandResult.get();
+   // block until the response is obtained
+   final ICommandResponse commandResponse = futureCommandResponse.get();
       
 In most cases you will probably prefer using Futures.
 

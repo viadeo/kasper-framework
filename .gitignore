@@ -23,7 +23,6 @@ build/
 application.log
 sql.log
 *.swp
-
 # Idea files
 *.iml
 *.iws

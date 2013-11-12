@@ -12,7 +12,7 @@ import com.viadeo.kasper.cqrs.query.cache.impl.QueryAttributesKeyGenerator;
 import java.lang.annotation.*;
 
 /**
- * This annotation can be used in conjunction with @XKasperQueryService to enable a cache for the corresponding QueryService.
+ * This annotation can be used in conjunction with @XKasperQueryHandler to enable a cache for the corresponding QueryHandler.
  * By default the cache is disabled.
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -21,7 +21,7 @@ import java.lang.annotation.*;
 public @interface XKasperQueryCache {
 
     /**
-     * @return true if the cache should be enabled for this QueryService. True by default.
+     * @return true if the cache should be enabled for this QueryHandler. True by default.
      */
     boolean enabled() default true;
 

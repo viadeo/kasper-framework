@@ -1,5 +1,6 @@
 package com.viadeo.kasper.test.applications.repositories;
 
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.test.applications.entities.Application;
@@ -32,5 +33,20 @@ public class ApplicationRepository implements IRepository<Application> {
 		// TODO Auto-generated method stub
 		
 	}
+
+    @Override
+    public boolean has(KasperID id) {
+        return false;
+    }
+
+    @Override
+    public Application get(KasperID aggregateIdentifier, Long expectedVersion) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Application get(KasperID aggregateIdentifier) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
 }

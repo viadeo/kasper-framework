@@ -142,7 +142,7 @@ public final class ReflectionGenericsResolver {
 		if (classType instanceof ParameterizedType) {
 
 			final Type[] paramTypes = ((ParameterizedType) classType).getActualTypeArguments();
-			final Class<?> rawClass = (Class<?>) ((ParameterizedType) classType).getRawType();
+			final Class rawClass = (Class) ((ParameterizedType) classType).getRawType();
 			final Type[] rawTypes = rawClass.getTypeParameters();
 
 			int i = 0;

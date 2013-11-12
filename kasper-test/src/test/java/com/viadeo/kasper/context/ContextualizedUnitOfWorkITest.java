@@ -13,14 +13,14 @@ import com.viadeo.kasper.KasperTestId;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
-import com.viadeo.kasper.cqrs.command.CommandResult;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
+import com.viadeo.kasper.ddd.impl.ClientRepository;
 import com.viadeo.kasper.ddd.impl.Repository;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.er.impl.AbstractRootConcept;
@@ -74,11 +74,11 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 
     @XKasperCommandHandler(domain = ContextTestDomain.class)
     public static class ContextTestHandler extends AbstractEntityCommandHandler<ContextTestCommand, ContextTestAGR> {
-        public CommandResult handle(final ContextTestCommand command) throws Exception {
+        public CommandResponse handle(final ContextTestCommand command) throws Exception {
 
             StaticChecker.verify(CurrentContext.value().get());
 
-            final IRepository<ContextTestAGR> repo = this.getRepository();
+            final ClientRepository<ContextTestAGR> repo = this.getRepository();
 
             try {
                 repo.load(new KasperTestId("42"), 0L);
@@ -89,7 +89,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
             final ContextTestAGR agr = new ContextTestAGR(new KasperTestId("42"));
             repo.add(agr);
 
-            return CommandResult.ok();
+            return CommandResponse.ok();
         }
     }
 
@@ -98,7 +98,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
         private static final long serialVersionUID = 7017358308867238442L;
 
         public ContextTestEvent(final KasperID id) {
-            super(CurrentContext.value().get(), id, DateTime.now());
+            super(CurrentContext.value().get(), id, 1L, DateTime.now());
             StaticChecker.verify(CurrentContext.value().get());
         }
     }
@@ -148,7 +148,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
         StaticChecker.context(context);
 
         // When
-        final Future<CommandResult> future = gw.sendCommandForFuture(command, context);
+        final Future<CommandResponse> future = gw.sendCommandForFuture(command, context);
         future.get();
 
         // Then

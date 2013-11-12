@@ -9,8 +9,9 @@ package com.viadeo.kasper.cqrs.query;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
-import com.viadeo.kasper.core.locators.impl.DefaultQueryServicesLocator;
+import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
+import com.viadeo.kasper.core.resolvers.DomainResolver;
+import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
@@ -38,24 +39,24 @@ public class QueryFilterITest {
     }
 
     @XKasperUnregistered
-    private class TestPayload implements QueryPayload {
+    private class TestResult implements QueryResult {
         public int state = STATE_START;
     }
 
     @XKasperUnregistered
-    private class TestService implements QueryService<TestQuery, TestPayload> {
+    private class TestHandler implements QueryHandler<TestQuery, TestResult> {
         @Override
-        public QueryResult<TestPayload> retrieve(final QueryMessage message) throws Exception {
-            return new QueryResult<>(new TestPayload());
+        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception {
+            return new QueryResponse<>(new TestResult());
         }
     }
 
     @XKasperUnregistered
-    private class TestFilter implements QueryFilter<TestQuery>, ResultFilter<TestPayload> {
+    private class TestFilter implements QueryFilter<TestQuery>, ResponseFilter<TestResult> {
         @Override
-        public <R extends QueryResult<TestPayload>> R filter(Context context, R result) {
-            result.getPayload().state = STATE_MODIFIED;
-            return result;        }
+        public <R extends QueryResponse<TestResult>> R filter(Context context, R response) {
+            response.getResult().state = STATE_MODIFIED;
+            return response;        }
 
         @Override
         public TestQuery filter(Context context, TestQuery query) {
@@ -79,31 +80,35 @@ public class QueryFilterITest {
     public void queryFilterShouldBeCalled() throws Exception {
 
         // Given
-        final TestService service = spy(new TestService());
+        final TestHandler service = spy(new TestHandler());
         final TestFilter filter = spy(new TestFilter());
         final TestFilterGlobal filterGlobal = spy(new TestFilterGlobal());
-        final QueryServicesLocator locator = new DefaultQueryServicesLocator();
+        final DefaultQueryHandlersLocator locator = new DefaultQueryHandlersLocator();
+        final DomainResolver domainResolver = new DomainResolver();
+        final QueryHandlerResolver queryHandlerResolver = new QueryHandlerResolver();
+        queryHandlerResolver.setDomainResolver(domainResolver);
+        locator.setQueryHandlerResolver(queryHandlerResolver);
 
-        locator.registerService("testService", service, TestDomain.class);
+        locator.registerHandler("testService", service, TestDomain.class);
         locator.registerFilter("testFilter", filter);
         locator.registerFilter("testFilter2", filterGlobal, true);
-        locator.registerFilterForService(service.getClass(), filter.getClass());
+        locator.registerFilterForQueryHandler(service.getClass(), filter.getClass());
 
         final DefaultQueryGateway gateway = new DefaultQueryGateway();
-        gateway.setQueryServicesLocator(locator);
+        gateway.setQueryHandlersLocator(locator);
 
         final Context context = DefaultContextBuilder.get();
         final TestQuery query = new TestQuery();
 
         // When
-        final QueryResult<TestPayload> queryResult = gateway.retrieve(query, context);
+        final QueryResponse<TestResult> queryResponse = gateway.retrieve(query, context);
 
         // Then
         // verify(filter).filter(eq(context), any(TestQuery.class));
         assertEquals(STATE_MODIFIED, query.state);
 
-        // verify(filter).filter(eq(context), any(QueryResult.class));
-        assertEquals(STATE_MODIFIED, queryResult.getPayload().state);
+        // verify(filter).filter(eq(context), any(QueryResponse.class));
+        assertEquals(STATE_MODIFIED, queryResponse.getResult().state);
 
         verify(filterGlobal).filter(eq(context), any(Query.class));
     }

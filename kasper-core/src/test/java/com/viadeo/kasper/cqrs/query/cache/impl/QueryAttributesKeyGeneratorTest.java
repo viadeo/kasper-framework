@@ -62,9 +62,9 @@ public class QueryAttributesKeyGeneratorTest {
         assertIterableEquals(Lists.newArrayList("integer"), missingNames);
     }
 
-    private void assertIterableEquals(Iterable<?> expected, Iterable<?> actual) {
+    private void assertIterableEquals(Iterable expected, Iterable actual) {
         // Given
-        final Iterator<?> a = actual.iterator();
+        final Iterator a = actual.iterator();
 
         // When
         for (final Object e : expected) {
@@ -80,7 +80,7 @@ public class QueryAttributesKeyGeneratorTest {
 
     public static class SomeQuery implements Query {
         public String str = "someStr";
-        private int integer = 11;
+        public int integer = 11;
     }
 
 }

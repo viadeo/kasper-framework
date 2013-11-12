@@ -27,7 +27,7 @@ public class HiveRunner {
 
     // ------------------------------------------------------------------------
 
-    public static interface HiveClient {
+    public interface HiveClient {
 
         void clean() throws Exception;
 

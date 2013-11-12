@@ -10,7 +10,8 @@ import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.core.locators.QueryServicesLocator;
+import com.viadeo.kasper.core.locators.QueryHandlersLocator;
+import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import org.axonframework.commandhandling.CommandBus;
@@ -32,7 +33,7 @@ public interface PlatformConfiguration {
 
      /**
       * @return the manager responsible to keep a reference to all Kasper platform
-      * elements (domains, handlers, listeners, query services, repositories, service filters, ...)
+      * elements (domains, command handlers, listeners, query handlers, repositories, filters, ...)
      */
      ComponentsInstanceManager getComponentsInstanceManager();
 
@@ -78,10 +79,10 @@ public interface PlatformConfiguration {
     /**
      * Warning : override the two methods at once
      *
-     * @param locator the query services locator to be used
+     * @param locator the query handlers locator to be used
      * @return the query gateway
      */
-     QueryGateway queryGateway(QueryServicesLocator locator);
+     QueryGateway queryGateway(QueryHandlersLocator locator);
      QueryGateway queryGateway();
 
     /**
@@ -90,14 +91,25 @@ public interface PlatformConfiguration {
      CommandBus commandBus();
 
     /**
+     * Warning : override the two methods at once
+     *
+     * @param commandHandlerResolver the command handler resolver
+     * @param repositoryResolver the repository resolver
+     *
      * @return the domain locator
      */
-     DomainLocator domainLocator();
+    DomainLocator domainLocator(CommandHandlerResolver commandHandlerResolver, RepositoryResolver repositoryResolver);
+    DomainLocator domainLocator();
 
     /**
-     * @return the query services locator
+     * Warning : override the two methods at once
+     *
+     * @param queryHandlerResolver the resolver factory
+     *
+     * @return the query handlers locator
      */
-     QueryServicesLocator queryServicesLocator();
+    QueryHandlersLocator queryHandlersLocator(QueryHandlerResolver queryHandlerResolver);
+    QueryHandlersLocator queryHandlersLocator();
 
     /**
      * Warning : override the two methods at once
@@ -106,7 +118,7 @@ public interface PlatformConfiguration {
      * @param domainLocator the domain locator to be used
      * @return the processor
      */
-     CommandHandlersProcessor commandHandlersProcessor(CommandBus commandBus, DomainLocator domainLocator, KasperEventBus eventBus);
+     CommandHandlersProcessor commandHandlersProcessor(CommandBus commandBus, DomainLocator domainLocator, KasperEventBus eventBus, CommandHandlerResolver commandHandlerResolver);
      CommandHandlersProcessor commandHandlersProcessor();
 
     /**
@@ -130,11 +142,11 @@ public interface PlatformConfiguration {
     /**
      * Warning : override the two methods at once
      *
-     * @param locator the query services locator to be used
+     * @param locator the query handlers locator to be used
      * @return the processor
      */
-     QueryServicesProcessor queryServicesProcessor(QueryServicesLocator locator);
-     QueryServicesProcessor queryServicesProcessor();
+     QueryHandlersProcessor queryHandlersProcessor(QueryHandlersLocator locator);
+     QueryHandlersProcessor queryHandlersProcessor();
 
     /**
      * Warning : override the two methods at once
@@ -149,11 +161,11 @@ public interface PlatformConfiguration {
     /**
      * Warning : override the two methods at once
      *
-     * @param locator the query services locator to be used
+     * @param locator the query handlers locator to be used
      * @return the processor
      */
-     ServiceFiltersProcessor serviceFiltersProcessor(QueryServicesLocator locator);
-     ServiceFiltersProcessor serviceFiltersProcessor();
+     QueryHandlerFiltersProcessor queryHandlerFiltersProcessor(QueryHandlersLocator locator);
+     QueryHandlerFiltersProcessor queryHandlerFiltersProcessor();
 
     /**
      * Initialize one or several Yammer metrics reporters
@@ -165,5 +177,179 @@ public interface PlatformConfiguration {
      *
      */
     void initializeMetricsReporters();
+
+    /**
+     * @return the domain resolver
+     */
+    DomainResolver domainResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param domainResolver the domain resolver
+     *
+     * @return the command handler resolver
+     */
+    CommandHandlerResolver commandHandlerResolver(final DomainResolver domainResolver);
+    CommandHandlerResolver commandHandlerResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param domainLocator the domain locator
+     * @param domainResolver the domain resolver
+     * @param commandHandlerResolver the command handler resolver
+     *
+     * @return the command resolver
+     */
+    CommandResolver commandResolver(
+            DomainLocator domainLocator,
+            DomainResolver domainResolver,
+            CommandHandlerResolver commandHandlerResolver
+    );
+    CommandResolver commandResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param domainResolver the event resolver
+     *
+     * @return the event listener resolver
+     */
+    EventListenerResolver eventListenerResolver(DomainResolver domainResolver);
+    EventListenerResolver eventListenerResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param domainResolver the domain resolver
+     * @param queryHandlerResolver the query handler resolver
+     * @param queryHandlersLocator the query handlers locator
+     *
+     * @return the query resolver
+     */
+    QueryResolver queryResolver(
+            DomainResolver domainResolver,
+            QueryHandlerResolver queryHandlerResolver,
+            QueryHandlersLocator queryHandlersLocator
+    );
+    QueryResolver queryResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param domainResolver the domain resolver
+     * @param queryHandlerResolver the query service resolver
+     * @param queryHandlersLocator the query services locator
+     *
+     * @return the query resolver
+     */
+    QueryResultResolver queryResultResolver(
+            DomainResolver domainResolver,
+            QueryHandlerResolver queryHandlerResolver,
+            QueryHandlersLocator queryHandlersLocator
+    );
+    QueryResultResolver queryResultResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param domainResolver the domain resolver
+     *
+     * @return the query handlers resolver
+     */
+    QueryHandlerResolver queryHandlerResolver(final DomainResolver domainResolver);
+    QueryHandlerResolver queryHandlerResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param entityResolver the entity resolver
+     * @param domainResolver the domain resolver
+     *
+     * @return the entity resolver
+     */
+    RepositoryResolver repositoryResolver(EntityResolver entityResolver, DomainResolver domainResolver);
+    RepositoryResolver repositoryResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param conceptResolver the concept resolver
+     * @param relationResolver the relation resolver
+     * @param domainResolver the domain resolver
+     *
+     * @return the entity resolver
+     */
+    EntityResolver entityResolver(
+            ConceptResolver conceptResolver,
+            RelationResolver relationResolver,
+            DomainResolver domainResolver
+    );
+    EntityResolver entityResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param domainResolver the domain resolver
+     *
+     * @return the concept resolver
+     */
+    ConceptResolver conceptResolver(DomainResolver domainResolver);
+    ConceptResolver conceptResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param domainResolver the domain resolver
+     * @param conceptResolver the concept resolver
+     *
+     * @return the relation resolver
+     */
+    RelationResolver relationResolver(DomainResolver domainResolver, ConceptResolver conceptResolver);
+    RelationResolver relationResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param domainResolver the domain resolver
+     *
+     * @return the event resolver
+     */
+    EventResolver eventResolver(DomainResolver domainResolver);
+    EventResolver eventResolver();
+
+    /**
+     * Warning : override the two methods at once
+     *
+     * @param domainResolver the domain resolver
+     * @param commandResolver the command resolver
+     * @param commandHandlerResolver the command handler resolver
+     * @param eventListenerResolver the event listener resolver
+     * @param queryResolver the query resolver
+     * @param queryHandlerResolver the query handler resolver
+     * @param repositoryResolver the repository resolver
+     * @param entityResolver the entity resolver
+     * @param conceptResolver the concept resolver
+     * @param relationResolver the relation resolver
+     * @param eventResolver the event resolver
+     *
+     * @return the resolver factory
+     */
+    ResolverFactory resolverFactory(
+            DomainResolver domainResolver,
+            CommandResolver commandResolver,
+            CommandHandlerResolver commandHandlerResolver,
+            EventListenerResolver eventListenerResolver,
+            QueryResolver queryResolver,
+            QueryResultResolver queryResultResolver,
+            QueryHandlerResolver queryHandlerResolver,
+            RepositoryResolver repositoryResolver,
+            EntityResolver entityResolver,
+            ConceptResolver conceptResolver,
+            RelationResolver relationResolver,
+            EventResolver eventResolver
+    );
+    ResolverFactory resolverFactory();
 
 }

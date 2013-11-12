@@ -12,7 +12,7 @@ import com.viadeo.kasper.event.Event;
 
 /**
  *
- * Kasper domain event
+ * Kasper domain event marker
  * 
  * Mainly all events are domain events, but external systems could send
  * events to the bus, they will not be domain events..

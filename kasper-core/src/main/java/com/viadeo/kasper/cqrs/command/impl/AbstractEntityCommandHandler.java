@@ -8,12 +8,12 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.ddd.impl.ClientRepository;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 /**
@@ -30,27 +30,23 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 public abstract class AbstractEntityCommandHandler<C extends Command, AGR extends AggregateRoot>
         extends AbstractCommandHandler<C> implements EntityCommandHandler<C, AGR> {
 
-    private transient DomainLocator domainLocator;
-
-    // ------------------------------------------------------------------------
-
     // Consistent data container for entity class and repository
     private static final class ConsistentRepositoryEntity<E extends AggregateRoot> {
-        private IRepository<E> repository;
+        private ClientRepository<E> repository;
         private Class<E> entityClass;
 
         @SuppressWarnings("unchecked")
-        void setEntityClass(final Class<?> entityClass) {
+        void setEntityClass(final Class entityClass) {
             this.entityClass = (Class<E>) entityClass;
         }
 
         @SuppressWarnings("unchecked")
-        void setRepository(final IRepository<?> repository) {
-            this.repository = (IRepository<E>) repository;
+        void setRepository(final ClientRepository repository) {
+            this.repository = (ClientRepository<E>) repository;
         }
     }
 
-    @SuppressWarnings("rawtypes")
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private final transient ConsistentRepositoryEntity<AGR> consistentRepositoryEntity =
             new ConsistentRepositoryEntity();
 
@@ -78,20 +74,12 @@ public abstract class AbstractEntityCommandHandler<C extends Command, AGR extend
     // ------------------------------------------------------------------------
 
     /**
-     * @param domainLocator
-     */
-    public void setDomainLocator(final DomainLocator domainLocator) {
-        this.domainLocator = domainLocator;
-    }
-
-    // ========================================================================
-
-    /**
      * @see com.viadeo.kasper.cqrs.command.EntityCommandHandler#setRepository(com.viadeo.kasper.ddd.IRepository)
      */
     @Override
     public void setRepository(final IRepository<AGR> repository) {
-        this.consistentRepositoryEntity.setRepository(Preconditions.checkNotNull(repository));
+        this.consistentRepositoryEntity.setRepository(
+                new ClientRepository<AGR>(Preconditions.checkNotNull(repository)));
     }
 
     /**
@@ -99,15 +87,15 @@ public abstract class AbstractEntityCommandHandler<C extends Command, AGR extend
      */
     @Override
     @SuppressWarnings("unchecked")
-    public <R extends IRepository<AGR>> R getRepository() {
+    public ClientRepository<AGR> getRepository() {
         if (null == this.consistentRepositoryEntity.repository) {
 
-            if (null == this.domainLocator) {
+            if (null == this.getDomainLocator()) {
                 throw new KasperCommandException("Unable to resolve repository, no domain locator was provided");
             }
 
-            final Optional<IRepository<AGR>> optRepo =
-                    this.domainLocator.getEntityRepository(this.consistentRepositoryEntity.entityClass);
+            final Optional<ClientRepository<AGR>> optRepo =
+                    this.getDomainLocator().getEntityRepository(this.consistentRepositoryEntity.entityClass);
 
             if (!optRepo.isPresent()) {
                 throw new KasperCommandException(String.format("The entity %s has not been recorded on any domain",
@@ -116,7 +104,8 @@ public abstract class AbstractEntityCommandHandler<C extends Command, AGR extend
 
             this.consistentRepositoryEntity.setRepository(optRepo.get());
         }
-        return (R) this.consistentRepositoryEntity.repository;
+
+        return this.consistentRepositoryEntity.repository;
     }
 
 }

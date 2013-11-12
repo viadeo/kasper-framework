@@ -6,10 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.context.impl;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.impl.DefaultKasperId;
 
 import java.io.Serializable;
 import java.util.Collections;
@@ -17,7 +20,7 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
- * Default implementation of the Context
+ * Abstract implementation of the Context
  *
  * Provides the Kasper correlation id
  *
@@ -25,18 +28,15 @@ import java.util.UUID;
 public abstract class AbstractContext implements Context {
 	private static final long serialVersionUID = 1887660968377933167L;
 
-    public static final UUID DEFAULT_KASPER_UUID = UUID.fromString("00000000-0000-002a-0000-00000000002a");
-    public static final KasperID DEFAULT_KASPER_ID = new DefaultKasperId(DEFAULT_KASPER_UUID);
-
-    public static final String DEFAULT_USER_LANG = "us";
-    public static final KasperID DEFAULT_USER_ID = DEFAULT_KASPER_ID;
-    public static final KasperID DEFAULT_REQCORR_ID = DEFAULT_KASPER_ID;
-    public static final KasperID DEFAULT_SESSCORR_ID = DEFAULT_KASPER_ID;
-    public static final KasperID DEFAULT_KASPERCORR_ID = DEFAULT_KASPER_ID;
+    private static final String KASPER_CID_SHORTNAME = "kcid";
+    private static final String SEQ_INC_SHORTNAME = "seq";
 
 	private Map<String, Serializable> properties;
     private KasperID kasperCorrelationId = DEFAULT_KASPERCORR_ID;
-	
+
+    /* Used to check child contexts, NOT USED IN EQUALITY CHECKS */
+    private int sequenceIncrement = INITIAL_SEQUENCE_INCREMENT;
+
 	// ------------------------------------------------------------------------
 	
 	protected AbstractContext() { /* abstract */ }
@@ -82,11 +82,12 @@ public abstract class AbstractContext implements Context {
     // ------------------------------------------------------------------------
 
 	@Override
-	public void setProperty(final String key, final Serializable value) {
+	public Context setProperty(final String key, final Serializable value) {
 		if (null == this.properties) {
 			this.properties = Maps.newHashMap();
 		}
 		this.properties.put(key, value);
+        return this;
 	}
 
 	@Override
@@ -117,5 +118,128 @@ public abstract class AbstractContext implements Context {
 		
 		return retMap;
 	}
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public int getSequenceIncrement() {
+        return this.sequenceIncrement;
+    }
+
+    @Override
+    public void incSequence() {
+        this.sequenceIncrement++;
+    }
+
+    @SuppressWarnings("unchecked") // must be ensured by client
+    @Override
+    public <C extends Context> C child() {
+        final AbstractContext newContext;
+
+        try {
+            newContext = this.getClass().newInstance();
+        } catch (final InstantiationException e) {
+            throw new KasperException("Unable to clone context", e);
+        } catch (final IllegalAccessException e) {
+            throw new KasperException("Unable to clone context", e);
+        }
+
+        if (null != this.properties) {
+            newContext.properties = Maps.newHashMap(this.properties);
+        }
+
+        newContext.kasperCorrelationId = this.kasperCorrelationId;
+        newContext.sequenceIncrement = this.sequenceIncrement + 1;
+
+        return (C) newContext;
+    }
+
+    // ------------------------------------------------------------------------
+
+    protected String safeStringObject(final Serializable unsafeObject) {
+        if (null == unsafeObject) {
+            return "";
+        }
+        return unsafeObject.toString();
+    }
+
+    @Override
+    public Map<String, String> asMap() {
+        final Map<String, String> retMap = Maps.newHashMap();
+        return asMap(retMap);
+    }
+
+    @Override
+    public Map<String, String> asMap(final Map<String, String> retMap) {
+        retMap.put(KASPER_CID_SHORTNAME, safeStringObject(this.kasperCorrelationId));
+        retMap.put(SEQ_INC_SHORTNAME, safeStringObject(this.sequenceIncrement));
+
+        if ( null != this.properties ) {
+            for (final Map.Entry<String, Serializable> entry : this.properties.entrySet()) {
+                retMap.put("_" + entry.getKey(), safeStringObject(entry.getValue()));
+            }
+        }
+
+        return retMap;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(Object obj)
+    {
+        if (null == obj) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final AbstractContext other = (AbstractContext) obj;
+
+        final boolean equals = Objects.equal(this.kasperCorrelationId, other.getKasperCorrelationId());
+
+        if ( ! equals) {
+            return false;
+        }
+
+        if ((null == this.properties) && (null == other.properties)) {
+            return true;
+        }
+
+        if ((null == this.properties) || (null == other.properties)) {
+            return false;
+        }
+
+        if (this.properties.size() != other.properties.size()) {
+            return false;
+        }
+
+        for (final Map.Entry<String, Serializable> entry : this.properties.entrySet()) {
+            if ( ! other.hasProperty(entry.getKey())) {
+                return false;
+            }
+            if ( ! other.getProperty(entry.getKey()).equals(entry.getValue())) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode( this.kasperCorrelationId, this.properties);
+    }
+
+    @Override
+    public String toString()
+    {
+        return Objects.toStringHelper(this)
+                .addValue(this.kasperCorrelationId)
+                .addValue(this.sequenceIncrement)
+                .addValue(this.properties)
+                .toString();
+    }
 
 }

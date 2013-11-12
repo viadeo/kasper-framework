@@ -14,7 +14,7 @@ import java.io.Serializable;
  *
  * Message used by command bus to transfer commands to handlers
  *
- * @param <C> the type of command used as payload of this message
+ * @param <C> the type of command used as result of this message
  */
 public interface KasperCommandMessage<C extends Command> extends Serializable {
 

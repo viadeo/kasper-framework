@@ -6,11 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
-import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -23,6 +23,7 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
+import org.axonframework.repository.ConflictingAggregateVersionException;
 import org.axonframework.unitofwork.CurrentUnitOfWork;
 import org.axonframework.unitofwork.UnitOfWork;
 import org.slf4j.Logger;
@@ -42,12 +43,14 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
     private static final Meter METRICLASSREQUESTS = METRICS.meter(name(CommandGateway.class, "requests"));
     private static final Meter METRICLASSERRORS = METRICS.meter(name(CommandGateway.class, "errors"));
 
-    private final Timer metricTimer;
-    private final Meter metricRequests;
-    private final Meter metricErrors;
+    private Timer metricTimer;
+    private Meter metricRequests;
+    private Meter metricErrors;
 
     private transient DomainLocator domainLocator;
     private transient EventBus eventBus;
+
+    private transient Class<C> commandClass;
 
     // ------------------------------------------------------------------------
 
@@ -62,9 +65,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
                     + this.getClass().getSimpleName());
         }
 
-        metricTimer = METRICS.timer(name(commandClass.get(), "requests-time"));
-        metricRequests = METRICS.meter(name(commandClass.get(), "requests"));
-        metricErrors = METRICS.meter(name(commandClass.get(), "errors"));
+        this.commandClass = commandClass.get();
     }
 
     // ------------------------------------------------------------------------
@@ -80,7 +81,11 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         final KasperCommandMessage<C> kmessage = new DefaultKasperCommandMessage<>(message);
         CurrentContext.set(kmessage.getContext());
 
-        final Class<?> commandClass = message.getPayload().getClass();
+        if (null == metricTimer) {
+            metricTimer = METRICS.timer(name(commandClass, "requests-time"));
+            metricRequests = METRICS.meter(name(commandClass, "requests"));
+            metricErrors = METRICS.meter(name(commandClass, "errors"));
+        }
 
         AbstractCommandHandler.LOGGER.debug("Handle command " + commandClass.getSimpleName());
 
@@ -88,38 +93,50 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         final Timer.Context classTimer = METRICLASSTIMER.time();
         final Timer.Context timer = metricTimer.time();
 
-        CommandResult ret = null;
+        CommandResponse ret = null;
         Exception exception = null;
+        boolean isError = false;
         try {
 
             try {
                 ret = this.handle(kmessage);
             } catch (final UnsupportedOperationException e) {
                 try {
-                    ret = this.handle(kmessage, uow);
-                } catch (final UnsupportedOperationException e2) {
                     ret = this.handle(message.getPayload());
+                } catch (final UnsupportedOperationException e2) {
+                    ret = this.handle(kmessage, uow);
                 }
             }
 
+        } catch (final ConflictingAggregateVersionException e) {
+            LOGGER.error("Error command [{}]", commandClass, e);
+            isError = true;
+
+            /**
+             * Conflicting version encountered : generate a CONFLICT error
+             */
+            ret = CommandResponse.error(CoreReasonCode.CONFLICT, e.getMessage());
+
         } catch (final RuntimeException e) {
             LOGGER.error("Error command [{}]", commandClass, e);
-
             exception = e;
+            isError = true;
 
-            /* rollback uow on failure */
-            if (uow.isStarted()) {
-                uow.rollback(e);
-                uow.start();
-            }
-            /*
-             * FIXME should we transform to a command result or just rollback and propagate the exception as is
-             * let's propagate the error as is and keep CommandResult for business operation result (success and failure) ?
-             */
-
-            /* Stop timer on error and propage exception */
+        } finally {
             classTimer.close();
             timer.close();
+
+            if (isError) {
+                /* rollback uow on failure */
+                if (uow.isStarted()) {
+                    if (null != exception) {
+                        uow.rollback(exception);
+                    } else {
+                        uow.rollback();
+                    }
+                    uow.start();
+                }
+            }
         }
 
         if (null == exception) {
@@ -127,20 +144,19 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
         }
 
         /* Monitor the request calls */
-        timer.close();
-        final long time = classTimer.stop();
         METRICLASSREQUESTS.mark();
         metricRequests.mark();
-        if ((null != exception) || ret.isError()) {
+        if ((null != exception) || ! ret.isOK()) {
             METRICLASSERRORS.mark();
             metricErrors.mark();
         }
 
         if (null != exception) {
             throw exception;
+        } else {
+            return ret;
         }
 
-        return ret;
     }
 
     // ------------------------------------------------------------------------
@@ -148,19 +164,19 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
     /**
      * @param message the command handler encapsulating message
      * @param uow Axon unit of work
-     * @return the command result
+     * @return the command response
      * @throws Exception
      */
-    public CommandResult handle(final KasperCommandMessage<C> message, final UnitOfWork uow) throws Exception {
+    public CommandResponse handle(final KasperCommandMessage<C> message, final UnitOfWork uow) throws Exception {
         throw new UnsupportedOperationException();
     }
 
     /**
      * @param message the command handler encapsulating message
-     * @return the command result
+     * @return the command response
      * @throws Exception
      */
-    public CommandResult handle(final KasperCommandMessage<C> message) throws Exception {
+    public CommandResponse handle(final KasperCommandMessage<C> message) throws Exception {
         throw new UnsupportedOperationException();
     }
 
@@ -168,7 +184,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
      * @param command The command to handle
      * @throws Exception
      */
-    public CommandResult handle(final C command) throws Exception {
+    public CommandResponse handle(final C command) throws Exception {
         throw new UnsupportedOperationException();
     }
 
@@ -180,7 +196,7 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
      * @param event The event to be scheduled for publication to the unit of work
      */
     public void publish(final Event event) {
-        final GenericEventMessage<?> axonMessage = EventUtils.KasperEvent2AxonMessage(checkNotNull(event));
+        final GenericEventMessage axonMessage = EventUtils.KasperEvent2AxonMessage(checkNotNull(event));
         if (CurrentUnitOfWork.isStarted()) {
             CurrentUnitOfWork.get().publishEvent(axonMessage, eventBus);
         } else {

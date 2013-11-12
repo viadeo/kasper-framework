@@ -25,7 +25,7 @@ public abstract class HttpExposer extends HttpServlet {
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	protected final void putKey(final String key, final Class newValue, final Map mapping) {
-		final Class<?> value = (Class<?>) mapping.get(key);
+		final Class value = (Class) mapping.get(key);
 
 		if (null != value) {
 			throw new IllegalArgumentException("Duplicate entry for name="

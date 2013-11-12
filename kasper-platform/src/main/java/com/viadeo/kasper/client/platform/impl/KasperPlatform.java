@@ -9,6 +9,7 @@ package com.viadeo.kasper.client.platform.impl;
 
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
 import com.viadeo.kasper.core.boot.ComponentsInstanceManager;
@@ -16,7 +17,7 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
-import com.viadeo.kasper.cqrs.query.QueryPayload;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.event.Event;
 
@@ -26,6 +27,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * The default implementation for the Kasper platform
  */
 public class KasperPlatform implements Platform {
+
+    /** The platform configuration **/
+    protected PlatformConfiguration platformConfiguration;
 
     /** The platform components **/
     protected CommandGateway commandGateway;
@@ -102,7 +106,7 @@ public class KasperPlatform implements Platform {
     }
 
     @Override
-    public <PAYLOAD extends QueryPayload> QueryResult<PAYLOAD> retrieve(final Query query, final Context context) throws Exception {
+    public <RESULT extends QueryResult> QueryResponse<RESULT> retrieve(final Query query, final Context context) throws Exception {
         return this.queryGateway.retrieve(checkNotNull(query), checkNotNull(context));
     }
 

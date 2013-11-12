@@ -13,10 +13,14 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
-import com.viadeo.kasper.KasperError;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.command.CommandResult.Status;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.command.CommandResponse.Status;
+import junit.framework.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -27,6 +31,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
@@ -49,17 +54,17 @@ public class KasperClientCommandTest extends JerseyTest {
 
     // -------------------------------------------------------------------------
 
-    public static class MemberResult {
+    public static class MemberResponse {
 
         private String memberName;
         private List<Integer> ids;
 
         // --
 
-        public MemberResult() {
+        public MemberResponse() {
         }
 
-        public MemberResult(final String memberName, final List<Integer> ids) {
+        public MemberResponse(final String memberName, final List<Integer> ids) {
             this.memberName = memberName;
             this.ids = ids;
         }
@@ -120,9 +125,9 @@ public class KasperClientCommandTest extends JerseyTest {
         @PUT
         @Produces(MediaType.APPLICATION_JSON)
         @Consumes(MediaType.APPLICATION_JSON)
-        public CommandResult getMember(final CreateMemberCommand command) {
-            return new CommandResult(command.getStatus(),
-                    Status.OK != command.getStatus() ? new KasperError("", "") : null);
+        public CommandResponse getMember(final CreateMemberCommand command) {
+            return new CommandResponse(command.getStatus(),
+                    Status.OK != command.getStatus() ? new KasperReason("", "") : null);
         }
     }
 
@@ -167,10 +172,10 @@ public class KasperClientCommandTest extends JerseyTest {
         final CreateMemberCommand command = new CreateMemberCommand(Status.REFUSED);
 
         // When
-        final CommandResult result = client.send(command);
+        final CommandResponse response = client.send(DefaultContextBuilder.get(), command);
 
         // Then
-        assertEquals(Status.REFUSED, result.getStatus());
+        assertEquals(Status.REFUSED, response.getStatus());
     }
 
     // --
@@ -183,10 +188,10 @@ public class KasperClientCommandTest extends JerseyTest {
         final CreateMemberCommand command = new CreateMemberCommand(Status.ERROR);
 
         // When
-        final Future<? extends CommandResult> result = client.sendAsync(command);
+        final Future<? extends CommandResponse> response = client.sendAsync(DefaultContextBuilder.get(), command);
 
         // Then
-        assertEquals(Status.ERROR, result.get().getStatus());
+        assertEquals(Status.ERROR, response.get().getStatus());
     }
 
     @Test
@@ -196,21 +201,60 @@ public class KasperClientCommandTest extends JerseyTest {
         // Given
         final CountDownLatch latch = new CountDownLatch(1);
         final CreateMemberCommand command = new CreateMemberCommand(Status.OK);
-        final Callback<CommandResult> callback = spy(new Callback<CommandResult>() {
+        final Callback<CommandResponse> callback = spy(new Callback<CommandResponse>() {
             @Override
-            public void done(CommandResult object) {
+            public void done(CommandResponse object) {
                 latch.countDown();
             }
         });
-        final ArgumentCaptor<CommandResult> result = ArgumentCaptor.forClass(CommandResult.class);
+        final ArgumentCaptor<CommandResponse> response = ArgumentCaptor.forClass(CommandResponse.class);
 
         // When
-        client.sendAsync(command, callback);
+        client.sendAsync(DefaultContextBuilder.get(), command, callback);
 
         // Then
         latch.await(30, TimeUnit.SECONDS);
-        verify(callback).done(result.capture());
-        assertEquals(Status.OK, result.getValue().getStatus());
+        verify(callback).done(response.capture());
+        assertEquals(Status.OK, response.getValue().getStatus());
     }
 
+    @Test
+    public void send_withResultNot200_shouldFillErrorsInResponse() {
+        // Given
+        final CreateMemberCommand command = new CreateMemberCommand(Status.REFUSED);
+        try {
+            client = new KasperClientBuilder().commandBaseLocation(new URL("http://localhost:" + port + "/404/")).create();
+        } catch (MalformedURLException e) {
+            Assert.fail("Shouldn't fail here");
+        }
+
+        // When
+        final CommandResponse response = client.send(DefaultContextBuilder.get(), command);
+
+        // Then
+        Assert.assertNotNull(response);
+        Assert.assertNotNull(response.getReason());
+        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.toString(), response.getReason().getCode());
+        Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
+        Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
+    }
+
+    @Test
+    public void sendAsync_withResultNot200_shouldFillErrorsInResponse() throws MalformedURLException, InterruptedException,
+            ExecutionException {
+
+        // Given
+        client = new KasperClientBuilder().commandBaseLocation(new URL("http://localhost:" + port + "/404/")).create();
+        final CreateMemberCommand command = new CreateMemberCommand(Status.ERROR);
+
+        // When
+        final CommandResponse response = client.sendAsync(DefaultContextBuilder.get(), command).get();
+
+        // Then
+        Assert.assertNotNull(response);
+        Assert.assertNotNull(response.getReason());
+        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.toString(), response.getReason().getCode());
+        Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
+        Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
+    }
 }

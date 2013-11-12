@@ -1,5 +1,6 @@
 package com.viadeo.kasper.test.root.repositories;
 
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.test.root.entities.Member_connectedTo_Member;
@@ -30,5 +31,20 @@ public class MemberConnectionsRepository implements IRepository<Member_connected
 		// TODO Auto-generated method stub
 		
 	}
+
+    @Override
+    public boolean has(KasperID id) {
+        return false;
+    }
+
+    @Override
+    public Member_connectedTo_Member get(KasperID aggregateIdentifier, Long expectedVersion) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Member_connectedTo_Member get(KasperID aggregateIdentifier) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
 
 }
