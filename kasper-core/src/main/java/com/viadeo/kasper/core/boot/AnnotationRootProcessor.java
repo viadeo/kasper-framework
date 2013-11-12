@@ -305,7 +305,7 @@ public class AnnotationRootProcessor {
 
         // Call afterProcess()
         for (final AnnotationProcessor processor : this.processorsInterface.keySet()) {
-            processor.beforeProcess();
+            processor.afterProcess();
         }
 
     }
