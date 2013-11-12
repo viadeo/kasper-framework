@@ -5,3 +5,11 @@
 // ============================================================================
 
 description = 'KASPER SECURITY'
+
+dependencies {
+
+    // Projects
+    compile project(':kasper-platform')
+    compile project(':kasper-security:kasper-security-api')
+    compile project(':kasper-security:kasper-security-query')
+}
