@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import org.slf4j.Logger;
@@ -35,14 +36,24 @@ public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
 
         ObjectNode root = jp.readValueAs(ObjectNode.class);
 
-        if (root.has(ObjectMapperProvider.REASON)) {
+        if (root.has(ObjectMapperProvider.REASON) && root.get(ObjectMapperProvider.REASON).asBoolean()) {
+
+            QueryResponse.Status status = QueryResponse.Status.ERROR;
+            if (root.has(ObjectMapperProvider.STATUS)) {
+                try {
+                    status = QueryResponse.Status.valueOf(root.get(ObjectMapperProvider.STATUS).asText());
+                } catch (final IllegalArgumentException e) {
+                    LOGGER.error("Unable to determine status", e);
+                }
+            }
+
             String id = null;
             final String globalCode = root.get(ObjectMapperProvider.MESSAGE).asText();
             final List<String> messages = new ArrayList<String>();
-            for (JsonNode node : root.get(ObjectMapperProvider.REASONS)) {
+            for (final JsonNode node : root.get(ObjectMapperProvider.REASONS)) {
                 id = node.get(ObjectMapperProvider.ID).asText();
-                String code = node.get(ObjectMapperProvider.CODE).asText();
-                String message = node.get(ObjectMapperProvider.MESSAGE).asText();
+                final String code = node.get(ObjectMapperProvider.CODE).asText();
+                final String message = node.get(ObjectMapperProvider.MESSAGE).asText();
                 if (globalCode.equals(code)) {
                     messages.add(message);
                 } else {
@@ -50,16 +61,18 @@ public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
                             globalCode, code, message);
                 }
             }
+
             if (null != id) {
                 try {
-                    return QueryResponse.error(new KasperReason(UUID.fromString(id), globalCode, messages));
+                    return new QueryResponse(status, new KasperReason(UUID.fromString(id), globalCode, messages));
                 } catch (final IllegalArgumentException e) {
                     LOGGER.warn("Error when deserializing reason id", e);
                     return QueryResponse.error(new KasperReason(globalCode, messages));
                 }
             } else {
-                return QueryResponse.error(new KasperReason(globalCode, messages));
+                return new QueryResponse(status, new KasperReason(globalCode, messages));
             }
+
         } else {
             // not very efficient but will be fine for now
             return QueryResponse.of((QueryResult) ((ObjectMapper) jp.getCodec()).convertValue(root, responseType));

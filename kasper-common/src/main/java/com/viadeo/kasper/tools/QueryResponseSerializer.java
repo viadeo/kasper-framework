@@ -23,15 +23,16 @@ public class QueryResponseSerializer extends JsonSerializer<QueryResponse> {
         if (!value.isOK()) {
 
             jgen.writeStartObject();
+            jgen.writeStringField(ObjectMapperProvider.STATUS, value.getStatus().name());
 
              /* FIXME - retro-compatibility - TO BE REMOVED */
             jgen.writeFieldName(ObjectMapperProvider.ERROR);
-            jgen.writeBoolean(true);
+            jgen.writeBoolean( ! value.isOK());
 
             // lets write a boolean telling that this is an reason, can be useful
             // for js consumers
             jgen.writeFieldName(ObjectMapperProvider.REASON);
-            jgen.writeBoolean(true);
+            jgen.writeBoolean( ! value.isOK());
 
             KasperReason reason = value.getReason();
 
