@@ -63,9 +63,9 @@ public final class CommandResponseDeserializer extends JsonDeserializer<CommandR
         List<String> messages = new ArrayList<String>();
         
         while ((null != jp.nextToken()) && !jp.getCurrentToken().equals(JsonToken.END_ARRAY)) {
-            String name = jp.getCurrentName();
+            final String name = jp.getCurrentName();
             if (ObjectMapperProvider.CODE.equals(name)) {
-                String code = jp.nextTextValue();
+                final String code = jp.nextTextValue();
                 if (globalCode == null) {
                     globalCode = code;
                 } else if (!globalCode.equals(code)) {
