@@ -29,11 +29,16 @@ public class QueryResponse<RESULT extends QueryResult> implements Serializable, 
 
     /**
      * Accepted values for query response statuses
+     * 
+     * OK       All is ok
+     * REFUSED  Refused by some intermediate validation mechanisms
+     * ERROR    Just reason in command handling or domain business
+     * 
      */
     public static enum Status {
-        OK,         /** All is ok */
-        REFUSED,    /** Refused by some intermediate validation mechanisms */
-        ERROR       /** Just reason in command handling or domain business */
+        OK,
+        REFUSED,
+        ERROR
     }
 
     /**
