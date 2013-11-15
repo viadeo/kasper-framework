@@ -55,31 +55,40 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
     @Override
     @SuppressWarnings("unchecked")
     protected void publishEvents() {
-        super.publishEvents();
 
         for (final Map.Entry<EventBus, List<EventMessage<?>>> entry : eventsToBePublished.entrySet()) {
-            final List<Event> events = Lists.newArrayList();
+            if (entry.getValue().size() > 1) {
+                final List<Event> events = Lists.newArrayList();
 
-            Optional<Context> context = Optional.absent();
-            for (final EventMessage<?> message : entry.getValue()) {
-                final Event event = (Event) message.getPayload();
-                events.add(event);
+                Optional<Context> context = Optional.absent();
+                for (final EventMessage<?> message : entry.getValue()) {
+                    final Event event = (Event) message.getPayload();
+                    events.add(event);
 
-                /* Each event should have a context at this step, but ensure it */
-                if ( ! context.isPresent() && event.getContext().isPresent()) {
-                    context = Optional.of(event.getContext().get().child());
+                    /* Each event should have a context at this step, but ensure it */
+                    if ( ! context.isPresent() && event.getContext().isPresent()) {
+                        context = Optional.of(event.getContext().get().child());
+                    }
                 }
-            }
 
-            /* Should not occur.. */
-            if ( ! context.isPresent()) {
-                throw new KasperCommandException("Unable to determine a valid context for the UnitOfWorkEvent");
-            }
+                /* Should not occur.. */
+                if ( ! context.isPresent()) {
+                    throw new KasperCommandException("Unable to determine a valid context for the UnitOfWorkEvent");
+                }
 
-            final UnitOfWorkEvent uowEvent = new UnitOfWorkEvent(events);
-            uowEvent.setContext(context.get());
-            entry.getKey().publish(new GenericEventMessage(uowEvent));
+                final UnitOfWorkEvent uowEvent = new UnitOfWorkEvent(events);
+                uowEvent.setContext(context.get());
+                entry.getKey().publish(new GenericEventMessage(uowEvent));
+
+            } else {
+                final Event event = (Event) entry.getValue().get(0).getPayload();
+
+                /* this uniq event is itself the uowEvent */
+                event.setUOWEventId(event.getId());
+            }
         }
+
+        super.publishEvents();
     }
 
 }
