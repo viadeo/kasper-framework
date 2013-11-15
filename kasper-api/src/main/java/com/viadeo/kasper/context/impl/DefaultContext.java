@@ -8,7 +8,6 @@ package com.viadeo.kasper.context.impl;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 
 import java.util.Map;
@@ -35,15 +34,15 @@ public class DefaultContext extends AbstractContext {
     private static final String FUNNEL_NAME_SHORTNAME = "fname";
     private static final String FUNNEL_VERS_SHORTNAME = "fvers";
 
-    private KasperID userId;
+    private String userId;
     private String userLang;
     private String userCountry;
 
     private String applicationId;
 
-    private KasperID requestCorrelationId;
-    private KasperID funnelCorrelationId;
-    private KasperID sessionCorrelationId;
+    private String requestCorrelationId;
+    private String funnelCorrelationId;
+    private String sessionCorrelationId;
 
     private String securityToken;
 
@@ -81,12 +80,12 @@ public class DefaultContext extends AbstractContext {
     }
 
     @Override
-    public KasperID getUserId() {
+    public String getUserId() {
         return this.userId;
     }
 
     @Override
-    public DefaultContext setUserId(final KasperID userId) {
+    public DefaultContext setUserId(final String userId) {
         this.userId = checkNotNull(userId);
         return this;
     }
@@ -125,24 +124,24 @@ public class DefaultContext extends AbstractContext {
     }
 
     @Override
-    public Context setRequestCorrelationId(KasperID requestCorrelationId) {
+    public Context setRequestCorrelationId(String requestCorrelationId) {
         this.requestCorrelationId = checkNotNull(requestCorrelationId);
         return this;
     }
 
     @Override
-    public KasperID getRequestCorrelationId() {
+    public String getRequestCorrelationId() {
         return this.requestCorrelationId;
     }
 
     @Override
-    public Context setFunnelCorrelationId(final KasperID funnelCorrelationId) {
+    public Context setFunnelCorrelationId(final String funnelCorrelationId) {
         this.funnelCorrelationId = checkNotNull(funnelCorrelationId);
         return this;
     }
 
     @Override
-    public KasperID getFunnelCorrelationId() {
+    public String getFunnelCorrelationId() {
         return this.funnelCorrelationId;
     }
 
@@ -169,13 +168,13 @@ public class DefaultContext extends AbstractContext {
     }
 
     @Override
-    public Context setSessionCorrelationId(KasperID sessionCorrelationId) {
+    public Context setSessionCorrelationId(String sessionCorrelationId) {
         this.sessionCorrelationId = checkNotNull(sessionCorrelationId);
         return this;
     }
 
     @Override
-    public KasperID getSessionCorrelationId() {
+    public String getSessionCorrelationId() {
         return this.sessionCorrelationId;
     }
 
