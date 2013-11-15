@@ -1,8 +1,6 @@
 package com.viadeo.kasper.test.timelines.entities;
 
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.RootConcept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.test.timelines.Timelines;
@@ -16,18 +14,6 @@ public class Status implements RootConcept {
 
 	public static final String NAME = "TimelineStatus";
 	
-	@Override
-	public Domain getDomain() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setDomainLocator(DomainLocator domainLocator) {
-		// TODO Auto-generated method stub
-
-	}
-
 	@Override
 	public <I extends KasperID> I getEntityId() {
 		// TODO Auto-generated method stub

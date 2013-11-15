@@ -7,13 +7,10 @@
 package com.viadeo.kasper.ddd.impl;
 
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.ddd.Domain;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
 import org.joda.time.DateTime;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -32,43 +29,19 @@ public abstract class AbstractAggregateRoot
 
     private Long version;
 
-	@Autowired // FIXME: remove autowiring ??
-	private transient DomainLocator domainLocator;
-	
 	@AggregateIdentifier
-	private KasperID id;
+	protected KasperID id;
 	
 	private DateTime creationDate;
 	
 	private DateTime modificationDate;	
 	
 	// ========================================================================
-	
-	protected void setId(final KasperID id) {
-		this.id = id;
-	}
-	
-	// ========================================================================
 
-	public <E extends AggregateRoot> ClientRepository<E> getRepository() {
-        @SuppressWarnings("unchecked")
-        final ClientRepository<E> repo = (ClientRepository<E>)
-            this.getDomainLocator().getEntityRepository(this.getClass()).get();
-
-        return repo;
-	}
-	
-	// ========================================================================	
-	
 	@SuppressWarnings("unchecked")
 	@Override
 	public <I extends KasperID> I  getEntityId() {
 		return (I) this.id;
-	}
-	
-	@Override
-	public Domain getDomain() {
-		return domainLocator.getEntityDomain(this).get();
 	}
 
     // ========================================================================
@@ -93,17 +66,6 @@ public abstract class AbstractAggregateRoot
         return superVersion;
     }
 
-	// ========================================================================
-	
-	@Override
-	public void setDomainLocator(final DomainLocator domainLocator) {
-		this.domainLocator = checkNotNull(domainLocator);
-	}
-	
-	public DomainLocator getDomainLocator() {
-		return this.domainLocator;
-	}
-	
 	// ========================================================================
 	
 	public DateTime getCreationDate() {

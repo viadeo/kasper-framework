@@ -7,8 +7,6 @@
 package com.viadeo.kasper.exposition;
 
 import com.viadeo.kasper.context.impl.DefaultContext;
-import com.viadeo.kasper.impl.DefaultKasperId;
-import com.viadeo.kasper.impl.StringKasperId;
 
 import java.util.UUID;
 

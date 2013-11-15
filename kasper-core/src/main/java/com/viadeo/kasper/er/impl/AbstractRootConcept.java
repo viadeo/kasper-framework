@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.er.impl;
 
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.impl.AbstractAggregateRoot;
 import com.viadeo.kasper.er.RootConcept;
 
@@ -21,5 +22,9 @@ public abstract class AbstractRootConcept
 		implements RootConcept {
 
 	private static final long serialVersionUID = -1431592970440969164L;
+
+    protected void setId(final KasperID id) {
+        this.id = id;
+    }
 
 }
