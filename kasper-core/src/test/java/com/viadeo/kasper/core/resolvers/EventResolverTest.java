@@ -7,6 +7,7 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.Domain;
@@ -25,6 +26,12 @@ public class EventResolverTest {
     @XKasperUnregistered
     private static class TestEvent implements Event {
         @Override
+        public Optional<KasperID> getUOWEventId() { return null; }
+        @Override
+        public void setUOWEventId(KasperID uowEventId) { }
+        @Override
+        public KasperID getId() { return null; }
+        @Override
         public Optional<Context> getContext() { return null; }
         @Override
         public <E extends Event> E setContext(Context context) { return null; }
@@ -33,6 +40,12 @@ public class EventResolverTest {
     @XKasperUnregistered
     private static class TestDomainEvent implements DomainEvent<TestDomain> {
         @Override
+        public Optional<KasperID> getUOWEventId() { return null; }
+        @Override
+        public void setUOWEventId(KasperID uowEventId) { }
+        @Override
+        public KasperID getId() { return null; }
+        @Override
         public Optional<Context> getContext() { return null; }
         @Override
         public <E extends Event> E setContext(Context context) { return null; }
@@ -40,6 +53,12 @@ public class EventResolverTest {
 
     @XKasperUnregistered
     private static class TestGenericDomainEvent implements DomainEvent {
+        @Override
+        public Optional<KasperID> getUOWEventId() { return null; }
+        @Override
+        public void setUOWEventId(KasperID uowEventId) { }
+        @Override
+        public KasperID getId() { return null; }
         @Override
         public Optional<Context> getContext() { return null; }
         @Override

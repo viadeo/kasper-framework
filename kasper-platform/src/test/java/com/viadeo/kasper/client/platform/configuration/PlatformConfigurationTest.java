@@ -16,6 +16,7 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.unitofwork.UnitOfWorkFactory;
 import org.junit.Test;
 
 import java.lang.reflect.InvocationTargetException;
@@ -102,8 +103,11 @@ public class PlatformConfigurationTest {
                         relationResolver,
                         eventResolver);
 
+        final UnitOfWorkFactory uowFactory =
+                this.testCachedComponent(pf, "uowFactory");
+
         final CommandBus commandBus =
-                this.testCachedComponent(pf, "commandBus");
+                this.testCachedComponent(pf, "commandBus", uowFactory);
 
         final CommandGateway commandGateway =
                 this.testCachedComponent(pf, "commandGateway", commandBus);

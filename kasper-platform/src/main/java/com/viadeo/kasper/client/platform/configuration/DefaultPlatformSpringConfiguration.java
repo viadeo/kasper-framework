@@ -16,6 +16,7 @@ import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.unitofwork.UnitOfWorkFactory;
 import org.springframework.context.annotation.Bean;
 
 public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfiguration {
@@ -66,8 +67,14 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
-    public CommandBus commandBus(){
-        return super.commandBus();
+    public CommandBus commandBus(final UnitOfWorkFactory uowFactory){
+        return super.commandBus(uowFactory);
+    }
+
+    @Bean
+    @Override
+    public UnitOfWorkFactory uowFactory() {
+        return super.uowFactory();
     }
 
     @Bean

@@ -7,6 +7,7 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.Domain;
@@ -35,6 +36,12 @@ public class EventListenerResolverTest {
 
     @XKasperUnregistered
     private static class TestEvent implements Event {
+        @Override
+        public Optional<KasperID> getUOWEventId() { return null; }
+        @Override
+        public void setUOWEventId(KasperID uowEventId) { }
+        @Override
+        public KasperID getId() { return null; }
         @Override
         public Optional<Context> getContext() { return null; }
         @Override

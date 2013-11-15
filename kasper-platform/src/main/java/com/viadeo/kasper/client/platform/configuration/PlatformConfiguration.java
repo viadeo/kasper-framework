@@ -15,6 +15,7 @@ import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.unitofwork.UnitOfWorkFactory;
 
 /**
  * Kasper platform components configuration
@@ -88,7 +89,13 @@ public interface PlatformConfiguration {
     /**
      * @return the command bus
      */
+     CommandBus commandBus(UnitOfWorkFactory uowFactory);
      CommandBus commandBus();
+
+    /**
+     * @return the unit of work factory
+     */
+     UnitOfWorkFactory uowFactory();
 
     /**
      * Warning : override the two methods at once
