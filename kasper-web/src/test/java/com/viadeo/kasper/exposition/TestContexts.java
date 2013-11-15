@@ -17,10 +17,10 @@ public class TestContexts {
     public static final String CONTEXT_FULL = "full";
     public static final DefaultContext context_full = new DefaultContext();
     {
-        context_full.setSessionCorrelationId(new DefaultKasperId(UUID.randomUUID()));
-        context_full.setFunnelCorrelationId(new DefaultKasperId(UUID.randomUUID()));
-        context_full.setRequestCorrelationId(new DefaultKasperId(UUID.randomUUID()));
-        context_full.setUserId(new StringKasperId("42"));
+        context_full.setSessionCorrelationId(UUID.randomUUID().toString());
+        context_full.setFunnelCorrelationId(UUID.randomUUID().toString());
+        context_full.setRequestCorrelationId(UUID.randomUUID().toString());
+        context_full.setUserId("42");
         context_full.setUserLang("us");
         context_full.setUserCountry("US");
         context_full.setApplicationId("TEST");

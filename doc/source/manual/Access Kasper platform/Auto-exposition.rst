@@ -252,9 +252,9 @@ Context headers
 
 The following HTTP headers can be set to set the queries and commands context :
 
-* X-KASPER-SESSION-CID (UUID) : the client SESSION correlation id used for logging and events
-* X-KASPER-FUNNEL-CID (UUID) : the client FUNNEL (functional tunnel) correlation id used for logging and events
-* X-KASPER-REQUEST-CID (UUID) : the client REQUEST correlation id used for logging and events
+* X-KASPER-SESSION-CID (String) : the client SESSION correlation id used for logging and events
+* X-KASPER-FUNNEL-CID (String) : the client FUNNEL (functional tunnel) correlation id used for logging and events
+* X-KASPER-REQUEST-CID (String) : the client REQUEST correlation id used for logging and events
 * X-KASPER-UID (String) : the USER id concerned by this request if any, used for authorization behaviour
 * X-KASPER-CLIENT-APPID (String) : the CLIENT APPLICATION ID used for logging and authorization behaviour
 * X-KASPER-LANG (String - ISO 639) : the user language used for strings internationalization (will be removed when Kasper security will be made available)
