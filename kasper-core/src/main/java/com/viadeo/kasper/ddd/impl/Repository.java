@@ -6,15 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.impl;
 
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
-import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-import com.google.common.collect.Maps;
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
@@ -23,270 +16,38 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventsourcing.AggregateDeletedException;
 import org.axonframework.repository.AggregateNotFoundException;
-import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ConcurrentMap;
-
-import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * 
- * Base Kasper repository implementation
- * 
- * Axon repository decorator
- * 
- * Axon Repository needs entity class type at construction time
- * So we store an implementation of Axon Repository, binding its abstract methods to ours
- * and sending Repository interface calls to it
+ * Base Kasper repository implementation for an entity storage repository
+ *
+ * Decorates an Axon repository :
+ * - load() and add() are redirected to the decorated repository
+ * - the decorated repository will use an ActionRepositoryFacade
+ *   in order to call doSave(), doDelete() and doLoad() before finally
+ *   calling (this), in order to let doXXX() methods abstract for final
+ *   implementation
+ *
+ * Add special methods :
+ * - get()
+ * - has() + abstract doHas()
+ * - optional doUpdate()
  *
  * @param <AGR> Aggregate Root
+ *
  */
 public abstract class Repository<AGR extends AggregateRoot> implements IRepository<AGR> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(Repository.class);
-    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
-	
-	/**
-	 * Decored axon repository
-	 * 
-	 * 1- Manages with Axon.Repository interface calls
-	 * 2- Delegates to (this) the Axon.AbstractRepository abstract methods execution
-	 * 
-	 */
-	private class AxonRepository extends org.axonframework.repository.AbstractRepository<AGR> {
+    private DecoratedAxonRepository<AGR> axonRepository;
 
-		private final Repository<AGR> kasperRepository;
-
-        private final Class kasperRepositoryClass;
-
-        private final Histogram metricClassSaveTimes = METRICS.histogram(name(IRepository.class, "save-times"));
-        private final Meter metricClassSaves = METRICS.meter(name(IRepository.class, "saves"));
-        private final Meter metricClassSaveErrors = METRICS.meter(name(IRepository.class, "save-errors"));
-
-        private final Histogram metricClassLoadTimes = METRICS.histogram(name(IRepository.class, "load-times"));
-        private final Meter metricClassLoads = METRICS.meter(name(IRepository.class, "loads"));
-        private final Meter metricClassLoadErrors = METRICS.meter(name(IRepository.class, "load-errors"));
-
-        private final Histogram metricClassDeleteTimes = METRICS.histogram(name(IRepository.class, "delete-times"));
-        private final Meter metricClassDeletes= METRICS.meter(name(IRepository.class, "deletes"));
-        private final Meter metricClassDeleteErrors = METRICS.meter(name(IRepository.class, "delete-errors"));
-
-        private Timer metricTimerSave;
-        private Histogram metricSaveTimes;
-        private Meter metricSaves;
-        private Meter metricSaveErrors;
-
-        private Timer metricTimerLoad;
-        private Histogram metricLoadTimes;
-        private Meter metricLoads;
-        private Meter metricLoadErrors;
-
-        private Timer metricTimerDelete;
-        private Histogram metricDeleteTimes;
-        private Meter metricDeletes;
-        private Meter metricDeleteErrors;
-
-        private final ConcurrentMap<AggregateRoot, DateTime> loadedModificationTimes; /* Used to track to loaded modification date */
-
-        // --------------------------------------------------------------------
-		
-		protected AxonRepository(final Repository<AGR> kasperRepository, final Class<AGR> aggregateType) {
-			super(aggregateType);
-
-            this.kasperRepositoryClass = kasperRepository.getClass();
-			this.kasperRepository = kasperRepository;
-
-            loadedModificationTimes = Maps.newConcurrentMap();
-		}
-
-        private final void initMetrics() {
-            if (null == metricTimerSave) {
-                metricTimerSave = METRICS.timer(name(kasperRepositoryClass, "save-time"));
-                metricSaveTimes = METRICS.histogram(name(kasperRepositoryClass, "save-times"));
-                metricSaves = METRICS.meter(name(kasperRepositoryClass, "saves"));
-                metricSaveErrors = METRICS.meter(name(kasperRepositoryClass, "save-errors"));
-
-                metricTimerLoad = METRICS.timer(name(kasperRepositoryClass, "load-time"));
-                metricLoadTimes = METRICS.histogram(name(kasperRepositoryClass, "load-times"));
-                metricLoads = METRICS.meter(name(kasperRepositoryClass, "loads"));
-                metricLoadErrors = METRICS.meter(name(kasperRepositoryClass, "load-errors"));
-
-                metricTimerDelete = METRICS.timer(name(kasperRepositoryClass, "delete-time"));
-                metricDeleteTimes = METRICS.histogram(name(kasperRepositoryClass, "delete-times"));
-                metricDeletes = METRICS.meter(name(kasperRepositoryClass, "deletes"));
-                metricDeleteErrors = METRICS.meter(name(kasperRepositoryClass, "delete-errors"));
-            }
-        }
-
-        // --------------------------------------------------------------------
-
-		@Override
-		protected void doSave(final AGR aggregate) {
-            initMetrics();;
-
-            final Timer.Context timer = metricTimerSave.time();
-
-            /* Ensure dates are correctly set */
-            this.ensureDates(aggregate);
-
-            try {
-
-                /**
-                 * Increment non-null version
-                 */
-                if (null != aggregate.getVersion()) {
-                    aggregate.setVersion(aggregate.getVersion() + 1L);
-                }
-
-                if (null == aggregate.getVersion()) {
-			        this.kasperRepository.doSave(aggregate);
-                } else {
-                    this.kasperRepository.doUpdate(aggregate);
-                }
-
-            } catch (final RuntimeException e) {
-                metricClassSaveErrors.mark();
-                metricSaveErrors.mark();
-                throw e;
-            } finally {
-                final long time = timer.stop();
-                metricSaveTimes.update(time);
-                metricClassSaveTimes.update(time);
-                metricSaves.mark();
-                metricClassSaves.mark();
-            }
-
-		}
-
-		@Override
-		protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
-            initMetrics();;
-
-            final Timer.Context timer = metricTimerLoad.time();
-
-            final AGR agr;
-            try {
-                agr = this.kasperRepository.doLoad(aggregateIdentifier, expectedVersion);
-
-                /**
-                 * Set null version to 0L
-                 */
-                if (null == agr.getVersion()) {
-                    agr.setVersion(0L);
-                }
-
-                /* manages with deleted aggregates */
-                if (agr.isDeleted()) {
-                    throw new AggregateDeletedException(agr.getEntityId(), "Not found");
-                }
-
-             } catch (final RuntimeException e) {
-                metricClassLoadErrors.mark();
-                metricLoadErrors.mark();
-                throw e;
-            } finally {
-                final long time = timer.stop();
-                metricLoadTimes.update(time);
-                metricClassLoadTimes.update(time);
-                metricLoads.mark();
-                metricClassLoads.mark();
-            }
-
-            /* Record the modification date during load */
-            if (null != agr.getModificationDate()) {
-                this.loadedModificationTimes.put(agr, agr.getModificationDate());
-            }
-
-            return agr;
-		}
-
-		@Override
-		protected void doDelete(final AGR aggregate) {
-            initMetrics();;
-
-            final Timer.Context timer = metricTimerDelete.time();
-
-            /* Ensure dates are correctly set */
-            this.ensureDates(aggregate);
-
-            try {
-
-                /**
-                 * Set null version to 0L
-                 */
-                if (null == aggregate.getVersion()) {
-                    aggregate.setVersion(0L);
-                }
-
- 			    this.kasperRepository.doDelete(aggregate);
-
-             } catch (final RuntimeException e) {
-                metricClassDeleteErrors.mark();
-                metricDeleteErrors.mark();
-                throw e;
-            } finally {
-                final long time = timer.stop();
-                metricDeleteTimes.update(time);
-                metricClassDeleteTimes.update(time);
-                metricDeletes.mark();
-                metricClassDeletes.mark();
-            }
-
-		}
-
-        // --------------------------------------------------------------------
-
-        /**
-         * Ensure aggregate dates are correctly set before saving / deleting
-         *
-         * @param aggregate the aggregate to check for correct dates
-         */
-        private void ensureDates(final AGR aggregate) {
-             if (AbstractAggregateRoot.class.isAssignableFrom(aggregate.getClass())) {
-                final AbstractAggregateRoot agr = (AbstractAggregateRoot) aggregate;
-                final DateTime now = DateTime.now();
-
-                if (null == agr.getCreationDate()) { /* aggregate seems to be under creation */
-                    if (null != agr.getVersion()) {
-                        LOGGER.warn(
-                                "The aggregate {} with id {} had not a creation date while it's not a new aggregate",
-                                agr.getClass().getSimpleName(),
-                                agr.getEntityId()
-                        );
-                    }
-                    agr.setCreationDate(now);
-                    agr.setModificationDate(now);
-                } else if (null == agr.getModificationDate()) { /* aggregate seems to be under modification */
-                    if (null == agr.getVersion()) { /* it's a new aggregate */
-                        agr.setModificationDate(agr.getCreationDate());
-                    } else {
-                        agr.setModificationDate(now);
-                    }
-                }
-
-                /* The modification date has not been changed since loading */
-                if (this.loadedModificationTimes.containsKey(agr)) {
-                    final DateTime loadedModificationTime = this.loadedModificationTimes.get(agr);
-                    if (agr.getModificationDate().equals(loadedModificationTime)) {
-                        agr.setModificationDate(now);
-                    }
-                    this.loadedModificationTimes.remove(agr, loadedModificationTime);
-                }
-            }
-        }
-		
-	}
-	
-	private AxonRepository axonRepository; 
+    private EventBus eventBus;
 	
 	// ========================================================================
 	
-	public Repository() { }
-
 	@Override
-	public void init() {
+	public final void init() {
 		
 		@SuppressWarnings("unchecked") // Safe
 		final Optional<Class<AGR>> entityType =
@@ -297,13 +58,31 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 			throw new KasperException("Cannot determine entity type for " + this.getClass().getName());
 		}
 		
-		axonRepository = new AxonRepository(this, entityType.get());
+        this.axonRepository = checkNotNull(this.getDecoratedRepository(entityType.get()));
+
+        if (null != eventBus) {
+            this.axonRepository.setEventBus(eventBus);
+        }
 	}
+
+    /**
+     * @return the default instance of the decorated repository
+     */
+    protected DecoratedAxonRepository<AGR> getDecoratedRepository(final Class<AGR> entityType) {
+ 		return new AxonRepository<>(
+                new ActionRepositoryVersionFacade<>(this),
+                entityType
+        );
+    }
 	
 	// ------------------------------------------------------------------------
 	
 	public void setEventBus(final EventBus eventBus) {
-		this.axonRepository.setEventBus(Preconditions.checkNotNull(eventBus));
+        if (null != this.axonRepository) {
+		    this.axonRepository.setEventBus(checkNotNull(eventBus));
+        } else {
+            this.eventBus = checkNotNull(eventBus);
+        }
 	}
 	
 	// ========================================================================	
@@ -314,7 +93,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * @see org.axonframework.repository.Repository#load(java.lang.Object, java.lang.Long)
 	 */
 	@Override
-	public AGR load(final Object aggregateIdentifier, final Long expectedVersion) {
+	public final AGR load(final Object aggregateIdentifier, final Long expectedVersion) {
 		return this.axonRepository.load(aggregateIdentifier, expectedVersion);
 	}
 
@@ -322,9 +101,27 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * @see org.axonframework.repository.Repository#load(java.lang.Object)
 	 */
 	@Override
-	public AGR load(final Object aggregateIdentifier) {
+	public final AGR load(final Object aggregateIdentifier) {
 		return this.axonRepository.load(aggregateIdentifier);
 	}
+
+ 	/**
+	 * @see org.axonframework.repository.Repository#add(Object)
+	 */
+	@Override
+	public final void add(final AGR aggregate) {
+
+        /* All aggregates must have an ID */
+        if (null == aggregate.getIdentifier()) {
+            throw new KasperCommandException("Aggregates must have an ID (use setID()) before saves");
+        }
+
+		this.axonRepository.add(aggregate);
+	}
+
+    // ------------------------------------------------------------------------
+    // Defines new additional public handlers for Kasper repositories
+    // ------------------------------------------------------------------------
 
     /**
      * Get an aggregate without planning further save on UOW commit
@@ -334,7 +131,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return the fetched aggregate if any
      */
     @Override
-    public AGR get(final KasperID aggregateIdentifier, final Long expectedVersion) {
+    public final AGR get(final KasperID aggregateIdentifier, final Long expectedVersion) {
         return this.doLoad((Object) aggregateIdentifier, expectedVersion);
     }
 
@@ -345,22 +142,9 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return the fetched aggregate if any
      */
     @Override
-    public AGR get(final KasperID aggregateIdentifier) {
+    public final AGR get(final KasperID aggregateIdentifier) {
         return this.get(aggregateIdentifier, null);
     }
-
-	/**
-	 * @see org.axonframework.repository.Repository#add(Object)
-	 */
-	@Override
-	public void add(final AGR aggregate) {
-        /* All aggregates must have an ID */
-        if (null == aggregate.getIdentifier()) {
-            throw new KasperCommandException("Aggregates must have an ID (use setID()) before saves");
-        }
-
-		this.axonRepository.add(aggregate);
-	}
 
     /**
      * (Optional) indicates existence of an aggregate in the repository
@@ -369,46 +153,62 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return true if this aggregate exists
      */
     @Override
-    public boolean has(final KasperID id) {
+    public final boolean has(final KasperID id) {
         return this.doHas(id);
     }
 
 	// ========================================================================
+    // Decored Axon repository will finally call our methods for action
+    // through its ActionRepositoryFacade indirection
+    // ========================================================================
 	
 	/**
 	 * Load an aggregate from the repository
 	 * 
-	 * Convenient Axon wrapper for proper Kasper typing and ID type conformance checking
+	 * Convenient Axon wrapper for proper Kasper typing, ID type conformance checking
+     * and Optional management
 	 * 
 	 * @param aggregateIdentifier the aggregate identifier
 	 * @param expectedVersion the version of the aggregate to load
 	 * 
 	 * @return the aggregate
 	 */
-	protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
-		Preconditions.checkNotNull(aggregateIdentifier);
+	protected final AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
+		checkNotNull(aggregateIdentifier);
 		
 		if (KasperID.class.isAssignableFrom(aggregateIdentifier.getClass())) {
 			
 			final Optional<AGR> agr = this.doLoad((KasperID) aggregateIdentifier, expectedVersion);
+
 			if (agr.isPresent()) {
+
+                /* manages with deleted aggregates */
+                if (agr.get().isDeleted()) {
+                    throw new AggregateDeletedException(agr.get().getEntityId(), "Not found");
+                }
+
 				return agr.get();
 			}
-			
+
 			throw new AggregateNotFoundException(aggregateIdentifier, "Not found aggregate"); // Axon
 			
 		} else {
-			throw new KasperException("Unable to manage with identifier of this kind : " + aggregateIdentifier.getClass());
+			throw new KasperException(String.format(
+                        "Unable to manage with identifier of this kind : %s - should be KasperID",
+                        aggregateIdentifier.getClass()
+            ));
 		}
 	}
 	
 	// ------------------------------------------------------------------------
+    // Abstract handlers to be implemented by child classes
+    // ------------------------------------------------------------------------
 	
 	/**
 	 * loads an aggregate from the repository
 	 * 
 	 * @param aggregateIdentifier the aggregate identifier
-	 * @param expectedVersion the version of the aggregate to load
+	 * @param expectedVersion the version of the aggregate to load or null
 	 * 
 	 * @return the (optional) aggregate
 	 */

@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.ddd.impl;
 
 import com.google.common.base.Optional;
@@ -5,15 +11,9 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
 import org.axonframework.repository.AggregateNotFoundException;
-// ============================================================================
-//                 KASPER - Kasper is the treasure keeper
-//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
-//
-//           Viadeo Framework for effective CQRS/DDD architecture
-// ============================================================================
 
 /**
- * Wrapping class for Kasper repositories only exposing client methods
+ * Wrapping class for Kasper repositories, only exposing client methods
  *
  * @param <AGR> the enclosed aggregate type
  */
@@ -29,9 +29,10 @@ public final class ClientRepository<AGR extends AggregateRoot> {
 
     /**
      * Return the original (unwrapped) aggregate
+     * to be used for business indexes methods access
      */
     @SuppressWarnings("unchecked")
-    public <I extends IRepository<AGR>> I original() {
+    public <I extends IRepository<AGR>> I business() {
         return (I) this.repository;
     }
 
@@ -46,7 +47,11 @@ public final class ClientRepository<AGR extends AggregateRoot> {
      */
     public Optional<AGR> load(final KasperID id, final Long expectedVersion) {
         try {
-            return Optional.of(this.repository.load(id, expectedVersion));
+            if (null == expectedVersion) {
+                return Optional.of(this.repository.load(id));
+            } else {
+                return Optional.of(this.repository.load(id, expectedVersion));
+            }
         } catch (final AggregateNotFoundException e) {
             return Optional.absent();
         }
@@ -60,15 +65,12 @@ public final class ClientRepository<AGR extends AggregateRoot> {
      * @return the (optional) aggregate
      */
     public Optional<AGR> load(final KasperID id, final Optional<Long> expectedVersion) {
-        try {
-            Long version = null;
-            if (expectedVersion.isPresent()) {
-                version = expectedVersion.get();
-            }
-            return Optional.of(this.repository.load(id, version));
-        } catch (final AggregateNotFoundException e) {
-            return Optional.absent();
+        Long version = null;
+        if (expectedVersion.isPresent()) {
+            version = expectedVersion.get();
         }
+
+        return load(id, version);
     }
 
     /**
@@ -85,22 +87,48 @@ public final class ClientRepository<AGR extends AggregateRoot> {
         }
     }
 
+    // ------------------------------------------------------------------------
+
     /**
      * Try to load an aggregate, no save will be planned on UOW commit
-     * Deprecated design : aggregates should only be loaded, with idea of change, other data must be obtained from a query ad apssed to the command
+     *
+     * Deprecated design : aggregates should only be loaded, with idea of change,
+     * other data must be obtained from a query ad apssed to the command
      *
      * @param id the aggregate id
      * @param expectedVersion the aggregate expected version
      * @return the (optional) aggregate
      */
-    @Deprecated
     @SuppressWarnings("deprecated")
     public Optional<AGR> get(final KasperID id, final Long expectedVersion) {
         try {
-            return Optional.of(this.repository.get(id, expectedVersion));
+            if (null == expectedVersion) {
+                return Optional.of(this.repository.get(id));
+            } else {
+                return Optional.of(this.repository.get(id, expectedVersion));
+            }
         } catch (final AggregateNotFoundException e) {
             return Optional.absent();
         }
+    }
+
+    /**
+     * Try to load an aggregate, no save will be planned on UOW commit
+     *
+     * Deprecated design : aggregates should only be loaded, with idea of change,
+     * other data must be obtained from a query ad apssed to the command
+     *
+     * @param id the aggregate id
+     * @param expectedVersion the (optional) aggregate expected version
+     * @return the (optional) aggregate
+     */
+    public Optional<AGR> get(final KasperID id, final Optional<Long> expectedVersion) {
+        Long version = null;
+        if (expectedVersion.isPresent()) {
+            version = expectedVersion.get();
+        }
+
+        return get(id, version);
     }
 
     /**
@@ -119,6 +147,8 @@ public final class ClientRepository<AGR extends AggregateRoot> {
             return Optional.absent();
         }
     }
+
+    // ------------------------------------------------------------------------
 
     /**
      * Add a new aggregate to the repository

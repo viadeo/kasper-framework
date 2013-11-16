@@ -7,7 +7,6 @@
 package com.viadeo.kasper.ddd.impl;
 
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.KasperRelationID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
