@@ -17,11 +17,11 @@ public interface KasperRelationID extends KasperID {
 	/**
 	 * @return the enclosing source id
 	 */
-	Object getSourceId();
+	KasperID getSourceId();
 
  	/**
 	 * @return the enclosing target id
 	 */
-	Object getTargetId();
+	KasperID getTargetId();
 
 }

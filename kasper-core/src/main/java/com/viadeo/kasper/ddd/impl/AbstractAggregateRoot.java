@@ -7,6 +7,7 @@
 package com.viadeo.kasper.ddd.impl;
 
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.KasperRelationID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
@@ -21,16 +22,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see com.viadeo.kasper.ddd.AggregateRoot
  * @see com.viadeo.kasper.ddd.Domain
  */
-public abstract class AbstractAggregateRoot 
+public abstract class AbstractAggregateRoot<I extends KasperID>
 		extends AbstractAnnotatedAggregateRoot<KasperID>
-		implements AggregateRoot {
+		implements AggregateRoot<I> {
 	
 	private static final long serialVersionUID = 8352516744342839116L;
 
     private Long version;
 
 	@AggregateIdentifier
-	protected KasperID id;
+	protected I id;
 	
 	private DateTime creationDate;
 	
@@ -40,9 +41,13 @@ public abstract class AbstractAggregateRoot
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <I extends KasperID> I  getEntityId() {
-		return (I) this.id;
+	public I  getEntityId() {
+		return this.id;
 	}
+
+    protected void setId(final I id) {
+        this.id = id;
+    }
 
     // ========================================================================
 

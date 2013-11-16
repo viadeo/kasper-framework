@@ -15,12 +15,6 @@ public class Timeline implements RootConcept {
 	public static final String NAME = "MemberTimeline";
 	
 	@Override
-	public <I extends KasperID> I getEntityId() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public DateTime getCreationDate() {
 		// TODO Auto-generated method stub
 		return null;
@@ -83,5 +77,10 @@ public class Timeline implements RootConcept {
     @Override
     public void setVersion(Long version) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public KasperID getEntityId() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

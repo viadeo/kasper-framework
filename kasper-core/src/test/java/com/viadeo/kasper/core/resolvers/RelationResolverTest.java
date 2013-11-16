@@ -56,13 +56,13 @@ public class RelationResolverTest {
         @Override
         public void addEventRegistrationCallback(EventRegistrationCallback eventRegistrationCallback) { }
         @Override
-        public <I extends KasperID> I getEntityId() { return null; }
-        @Override
         public DateTime getCreationDate() { return null; }
         @Override
         public DateTime getModificationDate() { return null; }
         @Override
         public void setVersion(Long version) { }
+        @Override
+        public KasperID getEntityId() { return null; }
     }
 
     @XKasperUnregistered

@@ -30,7 +30,7 @@ import org.joda.time.DateTime;
  * 
  * @see Entity
  */
-public interface AggregateRoot extends EventSourcedAggregateRoot<KasperID>, Entity {
+public interface AggregateRoot<I extends KasperID> extends EventSourcedAggregateRoot<KasperID>, Entity {
 
     /**
      * Used by the repository to set the aggregate version
@@ -40,7 +40,7 @@ public interface AggregateRoot extends EventSourcedAggregateRoot<KasperID>, Enti
     /**
      * @return the entity id
      */
-    <I extends KasperID> I getEntityId();
+    I getEntityId();
 
     /**
      * @return the entity's creation date
