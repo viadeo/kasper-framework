@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.er;
 
+import com.viadeo.kasper.KasperRelationID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 
 /**
@@ -19,6 +20,6 @@ import com.viadeo.kasper.ddd.AggregateRoot;
  * @see com.viadeo.kasper.ddd.AggregateRoot
  */
 public interface RootRelation<S extends RootConcept, T extends RootConcept>
-		extends Relation<S, T>, AggregateRoot {
+		extends Relation<S, T>, AggregateRoot<KasperRelationID> {
 
 }

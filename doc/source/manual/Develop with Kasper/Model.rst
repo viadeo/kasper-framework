@@ -109,10 +109,10 @@ A Kasper entity is then :
 And implements one of the four interfaces **RootConcept**, **RootRelation**, **ComponentConcept** or **ComponentRelation**, declaring the owning domain
 using the **@XKasperConcept** or **@XKasperRelation** annotations.
 
-Four abstract classes are also provided, as a default implementation of some methods of these interfaces : **AbstractRootConcept**, **AbstractRootRelation**,
-**AbstractComponentConcept** and **AbstractComponentRelation**.
+Three abstract classes are also provided, as a default implementation of some methods of these interfaces :
+**AbstractRootConcept**, **AbstractRootRelation** and **AbstractComponentRelation**.
 
-Kasper proposes you two strategies for writing your aggregates :
+There is no *AbstractComponentConcept* since there is nothing specific to implement for this marker interface.
 
 .. toctree::
     :maxdepth: 2
@@ -184,7 +184,7 @@ a car wheel will be an aggregate component for a car rental company, but will be
     public static enum WheelPosition { FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT }
 
     @XKasperConcept( domain = Vehicles.class, label = "A wheel, component of a car" )
-    class Wheel extends AbstractComponentConcept {
+    class Wheel implements ComponentConcept {
 
         private WheelPosition position;
         private long totalDistance;

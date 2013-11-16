@@ -1,8 +1,7 @@
 package com.viadeo.kasper.test.root.entities;
 
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.KasperRelationID;
 import com.viadeo.kasper.er.RootRelation;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
 import com.viadeo.kasper.test.root.Facebook;
@@ -33,24 +32,6 @@ public class Member_connectedTo_Member implements RootRelation<Member, Member> {
 	public boolean isBidirectional() {
 		// TODO Auto-generated method stub
 		return false;
-	}
-
-	@Override
-	public Domain getDomain() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setDomainLocator(final DomainLocator domainLocator) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public <I extends KasperID> I getEntityId() {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
@@ -117,5 +98,10 @@ public class Member_connectedTo_Member implements RootRelation<Member, Member> {
     @Override
     public void setVersion(Long version) {
         //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public KasperRelationID getEntityId() {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
     }
 }

@@ -4,20 +4,24 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.er;
-
-import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.ddd.AggregateRoot;
+package com.viadeo.kasper;
 
 /**
  *
- * An aggregate root for Kasper Concept
+ * Identify uniquely a Kasper Entity (Concept or Relation)
+ * IKasperID is a value object
  *
- * 
- * @see Concept
- * @see com.viadeo.kasper.ddd.Entity
- * @see com.viadeo.kasper.ddd.AggregateRoot
  */
-public interface RootConcept extends Concept, AggregateRoot<KasperID> {
+public interface KasperRelationID extends KasperID {
+
+	/**
+	 * @return the enclosing source id
+	 */
+	KasperID getSourceId();
+
+ 	/**
+	 * @return the enclosing target id
+	 */
+	KasperID getTargetId();
 
 }

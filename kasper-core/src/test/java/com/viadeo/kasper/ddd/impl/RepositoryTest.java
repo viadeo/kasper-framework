@@ -10,6 +10,7 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
+import com.viadeo.kasper.er.impl.AbstractRootConcept;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.impl.StringKasperId;
 import org.axonframework.unitofwork.CurrentUnitOfWork;
@@ -27,7 +28,7 @@ import static org.mockito.Mockito.spy;
 public class RepositoryTest {
 
     @XKasperUnregistered
-    private static class TestAggregate extends AbstractAggregateRoot { }
+    private static class TestAggregate extends AbstractRootConcept { }
 
     @XKasperUnregistered
     private static class UnidentifiedAggregate extends TestAggregate { }

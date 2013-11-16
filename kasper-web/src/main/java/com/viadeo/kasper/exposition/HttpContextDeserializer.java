@@ -10,7 +10,6 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.impl.DefaultKasperId;
-import com.viadeo.kasper.impl.StringKasperId;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;

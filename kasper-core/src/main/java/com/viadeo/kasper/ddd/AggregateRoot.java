@@ -8,6 +8,7 @@ package com.viadeo.kasper.ddd;
 
 import com.viadeo.kasper.KasperID;
 import org.axonframework.eventsourcing.EventSourcedAggregateRoot;
+import org.joda.time.DateTime;
 
 /**
  *
@@ -29,11 +30,26 @@ import org.axonframework.eventsourcing.EventSourcedAggregateRoot;
  * 
  * @see Entity
  */
-public interface AggregateRoot extends EventSourcedAggregateRoot<KasperID>, Entity {
+public interface AggregateRoot<I extends KasperID> extends EventSourcedAggregateRoot<KasperID>, Entity {
 
     /**
      * Used by the repository to set the aggregate version
      */
     void setVersion(Long version);
+
+    /**
+     * @return the entity id
+     */
+    I getEntityId();
+
+    /**
+     * @return the entity's creation date
+     */
+    DateTime getCreationDate();
+
+    /**
+     * @return the entity's last modification date
+     */
+    DateTime getModificationDate();
 
 }

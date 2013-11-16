@@ -8,7 +8,9 @@ package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.KasperRelationID;
 import com.viadeo.kasper.impl.DefaultKasperId;
+import com.viadeo.kasper.impl.DefaultKasperRelationId;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -40,16 +42,16 @@ public class SerDeserTests {
     }
 
     public static class ImmutableBean {
-        private final String field;
+        private final KasperRelationID field;
 
         /* Private constructor for ser/deser */
         private ImmutableBean() { field = null; }
 
-        public ImmutableBean(final String field) {
+        public ImmutableBean(final KasperRelationID field) {
             this.field = field;
         }
 
-        public String getField(){
+        public KasperRelationID getField(){
             return this.field;
         }
     }
@@ -87,7 +89,7 @@ public class SerDeserTests {
     @Test
     public void test_ImmutableBean() throws IOException {
         // Given
-        final ImmutableBean bean = new ImmutableBean("test");
+        final ImmutableBean bean = new ImmutableBean(DefaultKasperRelationId.random());
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(bean);

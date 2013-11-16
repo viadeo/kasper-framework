@@ -15,6 +15,7 @@ import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.KasperRelationID;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import org.slf4j.Logger;
@@ -66,6 +67,8 @@ public final class ObjectMapperProvider {
         final SimpleModule kasperClientModule = new SimpleModule()
                 .addSerializer(KasperID.class, new KasperIdSerializer())
                 .addDeserializer(KasperID.class, new KasperIdDeserializer())
+                .addSerializer(KasperRelationID.class, new KasperRelationIdSerializer())
+                .addDeserializer(KasperRelationID.class, new KasperRelationIdDeserializer())
                 .addSerializer(CommandResponse.class, new CommandResponseSerializer())
                 .addSerializer(QueryResponse.class, new QueryResponseSerializer())
                 .addDeserializer(CommandResponse.class, new CommandResponseDeserializer());
