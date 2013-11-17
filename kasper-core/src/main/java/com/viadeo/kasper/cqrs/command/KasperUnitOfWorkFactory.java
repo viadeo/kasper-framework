@@ -21,14 +21,9 @@ public class KasperUnitOfWorkFactory implements UnitOfWorkFactory {
         this(null);
     }
 
-    /**
-     * Initializes the factory to create Unit of Work bound to transactions managed by the given
-     * <code>transactionManager</code>
-     *
-     * @param transactionManager The transaction manager to manage the transactions for Unit Of Work created by this
-     *                           factory
-     */
-    public KasperUnitOfWorkFactory(TransactionManager transactionManager) {
+    // ------------------------------------------------------------------------
+
+    public KasperUnitOfWorkFactory(final TransactionManager transactionManager) {
         this.transactionManager = transactionManager;
     }
 

@@ -16,6 +16,8 @@ import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.unitofwork.DefaultUnitOfWork;
+import org.axonframework.unitofwork.TransactionManager;
+import org.axonframework.unitofwork.UnitOfWork;
 
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +31,28 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class KasperUnitOfWork extends DefaultUnitOfWork {
 
     private final Map<EventBus, List<EventMessage<?>>> eventsToBePublished = new HashMap<EventBus, List<EventMessage<?>>>();
+
+    // ------------------------------------------------------------------------
+
+    public KasperUnitOfWork() {
+        super();
+    }
+
+    public KasperUnitOfWork(final TransactionManager<?> transactionManager) {
+        super(transactionManager);
+    }
+
+    public static KasperUnitOfWork startAndGet() {
+        final KasperUnitOfWork uow = new KasperUnitOfWork();
+        uow.start();
+        return uow;
+    }
+
+    public static KasperUnitOfWork startAndGet(TransactionManager<?> transactionManager) {
+        final KasperUnitOfWork uow = new KasperUnitOfWork(transactionManager);
+        uow.start();
+        return uow;
+    }
 
     // ------------------------------------------------------------------------
 
@@ -78,7 +102,7 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
 
                 final UnitOfWorkEvent uowEvent = new UnitOfWorkEvent(events);
                 uowEvent.setContext(context.get());
-                entry.getKey().publish(new GenericEventMessage(uowEvent));
+                super.registerForPublication(new GenericEventMessage(uowEvent), entry.getKey());
 
             } else {
                 final Event event = (Event) entry.getValue().get(0).getPayload();
