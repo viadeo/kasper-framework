@@ -40,28 +40,45 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public abstract class Repository<AGR extends AggregateRoot> implements IRepository<AGR> {
 
+    /**
+     * The Axon repository
+     */
     private DecoratedAxonRepository<AGR> axonRepository;
 
+    /**
+     * Temporary storage of event bus for lazy assignation
+     */
     private EventBus eventBus;
+
+    /**
+     * Store initilization state
+     */
+    private boolean initialized = false;
 	
 	// ========================================================================
-	
+
+    /**
+     * Initialize the repository
+     */
 	@Override
 	public final void init() {
-		
-		@SuppressWarnings("unchecked") // Safe
-		final Optional<Class<AGR>> entityType =
-				(Optional<Class<AGR>>) (ReflectionGenericsResolver.getParameterTypeFromClass(
-                        this.getClass(), IRepository.class, IRepository.ENTITY_PARAMETER_POSITION));
-		
-		if (!entityType.isPresent()) {
-			throw new KasperException("Cannot determine entity type for " + this.getClass().getName());
-		}
-		
-        this.axonRepository = checkNotNull(this.getDecoratedRepository(entityType.get()));
+		if ( ! initialized) {
+            @SuppressWarnings("unchecked") // Safe
+            final Optional<Class<AGR>> entityType =
+                    (Optional<Class<AGR>>) (ReflectionGenericsResolver.getParameterTypeFromClass(
+                            this.getClass(), IRepository.class, IRepository.ENTITY_PARAMETER_POSITION));
 
-        if (null != eventBus) {
-            this.axonRepository.setEventBus(eventBus);
+            if (!entityType.isPresent()) {
+                throw new KasperException("Cannot determine entity type for " + this.getClass().getName());
+            }
+
+            this.axonRepository = checkNotNull(this.getDecoratedRepository(entityType.get()));
+
+            if (null != eventBus) {
+                this.axonRepository.setEventBus(eventBus);
+            }
+
+            initialized = true;
         }
 	}
 
@@ -76,7 +93,10 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
     }
 	
 	// ------------------------------------------------------------------------
-	
+
+    /**
+     * Lazy set the Axon repository
+     */
 	public void setEventBus(final EventBus eventBus) {
         if (null != this.axonRepository) {
 		    this.axonRepository.setEventBus(checkNotNull(eventBus));
@@ -94,6 +114,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 */
 	@Override
 	public final AGR load(final Object aggregateIdentifier, final Long expectedVersion) {
+        init();
 		return this.axonRepository.load(aggregateIdentifier, expectedVersion);
 	}
 
@@ -102,6 +123,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 */
 	@Override
 	public final AGR load(final Object aggregateIdentifier) {
+        init();
 		return this.axonRepository.load(aggregateIdentifier);
 	}
 
@@ -110,6 +132,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 */
 	@Override
 	public final void add(final AGR aggregate) {
+        init();
 
         /* All aggregates must have an ID */
         if (null == aggregate.getIdentifier()) {
