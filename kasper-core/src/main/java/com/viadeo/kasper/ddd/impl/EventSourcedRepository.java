@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.impl;
 
+import com.google.common.base.Optional;
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import org.axonframework.eventstore.EventStore;
 
@@ -34,5 +36,24 @@ public abstract class EventSourcedRepository<AGR extends AggregateRoot> extends 
                 eventStore
         );
     }
+
+    @Override
+    protected Optional<AGR> doLoad(KasperID aggregateIdentifier, Long expectedVersion) {
+        /* unused - axon repository will manage with this */
+        return null;
+    }
+
+    @Override
+    protected void doSave(AGR aggregate) {
+        /* unused - axon repository will manage with this */
+    }
+
+    @Override
+    protected void doDelete(AGR aggregate) {
+        /* unused - axon repository will manage with this */
+    }
+
+    // ------------------------------------------------------------------------
+
 
 }

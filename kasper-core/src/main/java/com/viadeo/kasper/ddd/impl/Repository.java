@@ -52,7 +52,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 		@SuppressWarnings("unchecked") // Safe
 		final Optional<Class<AGR>> entityType =
 				(Optional<Class<AGR>>) (ReflectionGenericsResolver.getParameterTypeFromClass(
-						this.getClass(), IRepository.class, IRepository.ENTITY_PARAMETER_POSITION));
+                        this.getClass(), IRepository.class, IRepository.ENTITY_PARAMETER_POSITION));
 		
 		if (!entityType.isPresent()) {
 			throw new KasperException("Cannot determine entity type for " + this.getClass().getName());

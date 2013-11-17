@@ -7,7 +7,6 @@
 package com.viadeo.kasper.event.impl;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
 

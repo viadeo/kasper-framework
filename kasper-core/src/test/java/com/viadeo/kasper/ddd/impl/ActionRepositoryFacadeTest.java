@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.impl;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.impl.DefaultKasperId;

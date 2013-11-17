@@ -118,7 +118,7 @@ class ActionRepositoryFacade<AGR extends AggregateRoot> {
                 final DomainEventStream eventStream = aggregate.getUncommittedEvents();
                 while (eventStream.hasNext()) {
                     final DomainEventMessage message = eventStream.next();
-                    if (Event.class.equals(message.getPayloadType())) {
+                    if (Event.class.isAssignableFrom(message.getPayloadType())) {
                         final Event event = (Event) message.getPayload();
 
                         if (EventSourcedRepository.class.isAssignableFrom(this.kasperRepository.getClass())) {
