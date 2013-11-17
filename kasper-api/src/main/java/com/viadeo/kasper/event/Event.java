@@ -37,6 +37,12 @@ public interface Event extends Serializable, Immutable {
      */
     KasperID getId();
 
+    enum PersistencyType {
+        UNKNOWN,       /* not yet assigned */
+        EVENT_SOURCE,  /* event is used by event sourcing strategy repository */
+        EVENT_INFO     /* event is used by entity store strategy repository */
+    }
+
 	/**
 	 * @return the event's context
 	 */
@@ -46,5 +52,15 @@ public interface Event extends Serializable, Immutable {
 	 * @param context the event's context
 	 */
 	<E extends Event> E setContext(Context context);
+
+    /**
+     * @return the persistency type used during event publication
+     */
+    PersistencyType getPersistencyType();
+
+    /**
+     * @param persistencyType the persistency type used during publication
+     */
+    void setPersistencyType(PersistencyType persistencyType);
 
 }

@@ -15,12 +15,17 @@ import com.viadeo.kasper.impl.DefaultKasperId;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.event.Event.PersistencyType.UNKNOWN;
+
 public abstract class AbstractEvent implements Event {
 	private static final long serialVersionUID = 7345041953962326298L;
 
     private KasperID uowEventId;
     private KasperID id;
 	private Context context;
+
+    private PersistencyType persistencyType = UNKNOWN;
 
 	// ------------------------------------------------------------------------
 
@@ -32,6 +37,18 @@ public abstract class AbstractEvent implements Event {
         this();
         this.context = checkNotNull(context);
 	}
+
+    // -----------------------------------------------------------------------
+
+    @Override
+    public PersistencyType getPersistencyType() {
+        return this.persistencyType;
+    }
+
+    @Override
+    public void setPersistencyType(final PersistencyType persistencyType) {
+        this.persistencyType = checkNotNull(persistencyType);
+    }
 
 	// ------------------------------------------------------------------------
 

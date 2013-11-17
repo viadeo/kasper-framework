@@ -109,10 +109,10 @@ A Kasper entity is then :
 And implements one of the four interfaces **RootConcept**, **RootRelation**, **ComponentConcept** or **ComponentRelation**, declaring the owning domain
 using the **@XKasperConcept** or **@XKasperRelation** annotations.
 
-Four abstract classes are also provided, as a default implementation of some methods of these interfaces : **AbstractRootConcept**, **AbstractRootRelation**,
-**AbstractComponentConcept** and **AbstractComponentRelation**.
+Three abstract classes are also provided, as a default implementation of some methods of these interfaces :
+**AbstractRootConcept**, **AbstractRootRelation** and **AbstractComponentRelation**.
 
-Kasper proposes you two strategies for writing your aggregates :
+There is no *AbstractComponentConcept* since there is nothing specific to implement for this marker interface.
 
 .. toctree::
     :maxdepth: 2
@@ -184,7 +184,7 @@ a car wheel will be an aggregate component for a car rental company, but will be
     public static enum WheelPosition { FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT }
 
     @XKasperConcept( domain = Vehicles.class, label = "A wheel, component of a car" )
-    class Wheel extends AbstractComponentConcept {
+    class Wheel implements ComponentConcept {
 
         private WheelPosition position;
         private long totalDistance;
@@ -498,6 +498,10 @@ If you want to delete an aggregate, use the markDeleted() method in your aggrega
 end of the unit of work calling doDelete(). You are heavily encouraged to never delete date in your domains by just marking them
 as deleted. So in major cases doDelete() can just call doSave(), the loading of entities in Kasper repositories will take
 care of not loading deleted aggregates.
+
+The **Repository** abstract class mut be considered as an **entity store** : the current state of entities is
+stored, then events will be sent by the unit of work once entity is persisted. If you want to apply a real
+event sourcing strategy, use instead the **EventSourcedRepository** supplying an Axon **EventStore**.
 
 Value objects
 -------------

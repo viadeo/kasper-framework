@@ -9,9 +9,9 @@ package com.viadeo.kasper.er.impl;
 import com.google.common.base.Objects;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.ddd.impl.AbstractComponentEntity;
 import com.viadeo.kasper.er.ComponentRelation;
 import com.viadeo.kasper.er.RootConcept;
+import com.viadeo.kasper.er.annotation.XBidirectional;
 
 /**
  * A base implementation for a component relation
@@ -23,7 +23,6 @@ import com.viadeo.kasper.er.RootConcept;
  * @see com.viadeo.kasper.er.ComponentRelation
  */
 public abstract class AbstractComponentRelation<S extends RootConcept, T extends RootConcept>
-					extends AbstractComponentEntity<S> 
 					implements ComponentRelation<S, T> {
 
 	private static final long serialVersionUID = -5237849165883458840L;
@@ -61,8 +60,7 @@ public abstract class AbstractComponentRelation<S extends RootConcept, T extends
 	 */
 	@Override
 	public boolean isBidirectional() {
-		// TODO
-		return false;
+        return (null != this.getClass().getAnnotation(XBidirectional.class));
 	}
 
 	// ------------------------------------------------------------------------

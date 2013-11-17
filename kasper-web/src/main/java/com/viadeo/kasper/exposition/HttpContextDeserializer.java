@@ -6,12 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.impl.DefaultKasperId;
-import com.viadeo.kasper.impl.StringKasperId;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.UUID;
@@ -28,68 +26,18 @@ public class HttpContextDeserializer {
         checkNotNull(req);
         checkNotNull(kasperCorrelationId);
 
-        UUID sessionCorrelationId = null;
-        UUID funnelCorrelationId = null;
-        UUID requestCorrelationId = null;
-        KasperID userId = null;
-        String userLang = null;
-        String userCountry = null;
-        String securityToken = null;
-        String applicationId = null;
-        String funnelName = null;
-        String funnelVersion = null;
-
         // --------------------------------------------------------------------
 
         final String headerSessionCorrelationId = req.getHeader(HEADER_SESSION_CORRELATION_ID);
-        if (null != headerSessionCorrelationId) {
-            sessionCorrelationId = UUID.fromString(headerSessionCorrelationId);
-        }
-
         final String headerFunnelCorrelationId = req.getHeader(HEADER_FUNNEL_CORRELATION_ID);
-        if (null != headerFunnelCorrelationId) {
-            funnelCorrelationId = UUID.fromString(headerFunnelCorrelationId);
-        }
-
         final String headerRequestCorrelationId = req.getHeader(HEADER_REQUEST_CORRELATION_ID);
-        if (null != headerRequestCorrelationId) {
-            requestCorrelationId = UUID.fromString(headerRequestCorrelationId);
-        }
-
         final String headerUserId = req.getHeader(HEADER_USER_ID);
-        if (null != headerUserId) {
-            userId = new StringKasperId(headerUserId);
-        }
-
         final String headerUserLang = req.getHeader(HEADER_USER_LANG);
-        if (null != headerUserLang) {
-            userLang = headerUserLang;
-        }
-
         final String headerUserCountry = req.getHeader(HEADER_USER_COUNTRY);
-        if (null != headerUserCountry) {
-            userCountry = headerUserCountry;
-        }
-
         final String headerApplicationId = req.getHeader(HEADER_APPLICATION_ID);
-        if (null != headerApplicationId) {
-            applicationId = headerApplicationId;
-        }
-
         final String headerSecurityToken = req.getHeader(HEADER_SECURITY_TOKEN);
-        if (null != headerSecurityToken) {
-            securityToken = headerSecurityToken;
-        }
-
         final String headerFunnelName = req.getHeader(HEADER_FUNNEL_NAME);
-        if (null != headerFunnelName) {
-            funnelName = headerFunnelName;
-        }
-
         final String headerFunnelVersion = req.getHeader(HEADER_FUNNEL_VERSION);
-        if (null != headerFunnelVersion) {
-            funnelVersion = headerFunnelVersion;
-        }
 
         // --------------------------------------------------------------------
 
@@ -99,44 +47,44 @@ public class HttpContextDeserializer {
             ((AbstractContext) context).setKasperCorrelationId(new DefaultKasperId(kasperCorrelationId));
         }
 
-        if (null != sessionCorrelationId) {
-            context.setSessionCorrelationId(new DefaultKasperId(sessionCorrelationId));
+        if (null != headerSessionCorrelationId) {
+            context.setSessionCorrelationId(headerSessionCorrelationId);
         }
 
-        if (null != funnelCorrelationId) {
-            context.setFunnelCorrelationId(new DefaultKasperId(funnelCorrelationId));
+        if (null != headerFunnelCorrelationId) {
+            context.setFunnelCorrelationId(headerFunnelCorrelationId);
         }
 
-        if (null != requestCorrelationId) {
-            context.setRequestCorrelationId(new DefaultKasperId(requestCorrelationId));
+        if (null != headerRequestCorrelationId) {
+            context.setRequestCorrelationId(headerRequestCorrelationId);
         }
 
-        if (null != userId) {
-            context.setUserId(userId);
+        if (null != headerUserId) {
+            context.setUserId(headerUserId);
         }
 
-        if (null != userLang) {
-            context.setUserLang(userLang);
+        if (null != headerUserLang) {
+            context.setUserLang(headerUserLang);
         }
 
-        if (null != userCountry) {
-            context.setUserCountry(userCountry);
+        if (null != headerUserCountry) {
+            context.setUserCountry(headerUserCountry);
         }
 
-        if (null != applicationId) {
-            context.setApplicationId(applicationId);
+        if (null != headerApplicationId) {
+            context.setApplicationId(headerApplicationId);
         }
 
-        if (null != securityToken) {
-            context.setSecurityToken(securityToken);
+        if (null != headerSecurityToken) {
+            context.setSecurityToken(headerSecurityToken);
         }
 
-        if (null != funnelName) {
-            context.setFunnelName(funnelName);
+        if (null != headerFunnelName) {
+            context.setFunnelName(headerFunnelName);
         }
 
-        if (null != funnelVersion) {
-            context.setFunnelVersion(funnelVersion);
+        if (null != headerFunnelVersion) {
+            context.setFunnelVersion(headerFunnelVersion);
         }
 
         return context;

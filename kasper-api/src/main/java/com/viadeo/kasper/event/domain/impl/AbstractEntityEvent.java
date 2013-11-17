@@ -37,7 +37,7 @@ public abstract class AbstractEntityEvent<D extends Domain>
         super();
 
         this.entityId = checkNotNull(id);
-        this.version = checkNotNull(version);
+        this.version = (null == version) ? 0L : version;
         this.lastEntityModificationDate = checkNotNull(lastModificationDate);
     }
 
@@ -48,7 +48,7 @@ public abstract class AbstractEntityEvent<D extends Domain>
         super(context);
 
 		this.entityId = checkNotNull(id);
-        this.version = checkNotNull(version);
+        this.version = (null == version) ? 0L : version;
 		this.lastEntityModificationDate = checkNotNull(lastModificationDate);
 	}
 

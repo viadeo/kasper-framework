@@ -9,7 +9,6 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.er.RootConcept;
@@ -36,16 +35,6 @@ public class RelationResolverTest {
         public KasperID getTargetIdentifier() { return null; }
         @Override
         public boolean isBidirectional() { return false; }
-        @Override
-        public Domain getDomain() { return null; }
-        @Override
-        public void setDomainLocator(DomainLocator domainLocator) { }
-        @Override
-        public DateTime getCreationDate() { return null; }
-        @Override
-        public DateTime getModificationDate() { return null; }
-        @Override
-        public <I extends KasperID> I getEntityId() { return null; }
     }
 
     @XKasperUnregistered
@@ -67,17 +56,13 @@ public class RelationResolverTest {
         @Override
         public void addEventRegistrationCallback(EventRegistrationCallback eventRegistrationCallback) { }
         @Override
-        public Domain getDomain() { return null; }
-        @Override
-        public void setDomainLocator(DomainLocator domainLocator) { }
-        @Override
-        public <I extends KasperID> I getEntityId() { return null; }
-        @Override
         public DateTime getCreationDate() { return null; }
         @Override
         public DateTime getModificationDate() { return null; }
         @Override
         public void setVersion(Long version) { }
+        @Override
+        public KasperID getEntityId() { return null; }
     }
 
     @XKasperUnregistered
@@ -91,16 +76,6 @@ public class RelationResolverTest {
         public KasperID getTargetIdentifier() { return null; }
         @Override
         public boolean isBidirectional() { return false; }
-        @Override
-        public Domain getDomain() { return null; }
-        @Override
-        public void setDomainLocator(DomainLocator domainLocator) { }
-        @Override
-        public DateTime getCreationDate() { return null; }
-        @Override
-        public DateTime getModificationDate() { return null; }
-        @Override
-        public <I extends KasperID> I  getEntityId() { return null; }
     }
 
     // ------------------------------------------------------------------------
