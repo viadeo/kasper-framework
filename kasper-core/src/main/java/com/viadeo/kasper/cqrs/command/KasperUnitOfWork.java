@@ -60,17 +60,19 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
      * Intercept and record events
      */
     @Override
-    public void registerForPublication(final EventMessage<?> event, final EventBus eventBus) {
-        super.registerForPublication(checkNotNull(event), checkNotNull(eventBus));
+    public void registerForPublication(final EventMessage<?> message, final EventBus eventBus) {
+        super.registerForPublication(checkNotNull(message), checkNotNull(eventBus));
 
-        final List<EventMessage<?>> events;
-        if (eventsToBePublished.containsKey(eventBus)) {
-            events = eventsToBePublished.get(eventBus);
-        } else {
-            events = Lists.newArrayList();
-            eventsToBePublished.put(eventBus, events);
+        if ( ! UnitOfWorkEvent.class.isAssignableFrom(message.getPayloadType())) {
+            final List<EventMessage<?>> events;
+            if (eventsToBePublished.containsKey(eventBus)) {
+                events = eventsToBePublished.get(eventBus);
+            } else {
+                events = Lists.newArrayList();
+                eventsToBePublished.put(eventBus, events);
+            }
+            events.add(message);
         }
-        events.add(event);
     }
 
     /**
@@ -102,7 +104,7 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
 
                 final UnitOfWorkEvent uowEvent = new UnitOfWorkEvent(events);
                 uowEvent.setContext(context.get());
-                super.registerForPublication(new GenericEventMessage(uowEvent), entry.getKey());
+                this.registerForPublication(new GenericEventMessage(uowEvent), entry.getKey());
 
             } else {
                 final Event event = (Event) entry.getValue().get(0).getPayload();

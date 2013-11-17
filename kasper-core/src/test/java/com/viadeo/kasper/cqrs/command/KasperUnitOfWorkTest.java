@@ -16,15 +16,17 @@ import org.axonframework.domain.EventMessage;
 import org.axonframework.eventhandling.EventBus;
 import org.hamcrest.Description;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.internal.matchers.VarargMatcher;
 
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class KasperUnitOfWorkTest {
 
@@ -140,7 +142,7 @@ public class KasperUnitOfWorkTest {
     @Test
     public void testMacroEvent_MultipleEventsNormalCase() {
         // Given
-        final KasperUnitOfWork uow = KasperUnitOfWork.startAndGet();
+        final KasperUnitOfWork uow = spy(KasperUnitOfWork.startAndGet());
 
         final Event event1 = mock(Event.class);
         final EventMessage message1 = mock(EventMessage.class);
@@ -172,15 +174,30 @@ public class KasperUnitOfWorkTest {
         uow.registerForPublication(message2, eventBus);
         uow.publishEvents();
 
-        // Then
+        // Then UOW event is set to previous events
         verify(event1).setUOWEventId(any(KasperID.class));
         verify(event2).setUOWEventId(any(KasperID.class));
+
+        // Then UOW event is registered to publication
+        final ArgumentCaptor<EventMessage> argMessage = ArgumentCaptor.forClass(EventMessage.class);
+        verify(uow, times(3)).registerForPublication(argMessage.capture(), eq(eventBus));
+
+        // Then UOW event contains all previously sent events
+        final EventMessage uowEventMessage = argMessage.getAllValues().get(2);
+        assertEquals(UnitOfWorkEvent.class, uowEventMessage.getPayloadType());
+        final UnitOfWorkEvent uowEvent = (UnitOfWorkEvent) uowEventMessage.getPayload();
+        final List<KasperID> eventIds = uowEvent.getEvents();
+        assertEquals(2, eventIds.size());
+        assertEquals(event1.getId(), eventIds.get(0));
+        assertEquals(event2.getId(), eventIds.get(1));
+
+        // Then all events are published to the bus
         verify(eventBus).publish(argThat(new ArrayOfMessagesMatcher(
-            new ArgumentMatcher[] {
-                    new ContainsEventMatcher(event1),
-                    new ContainsEventMatcher(event2),
-                    new ContainsEventTypeMatcher(UnitOfWorkEvent.class)
-            }
+                new ArgumentMatcher[]{
+                        new ContainsEventMatcher(event1),
+                        new ContainsEventMatcher(event2),
+                        new ContainsEventTypeMatcher(UnitOfWorkEvent.class)
+                }
         )));
     }
 
