@@ -28,6 +28,10 @@ public class EventResolverTest {
         public Optional<Context> getContext() { return null; }
         @Override
         public <E extends Event> E setContext(Context context) { return null; }
+        @Override
+        public PersistencyType getPersistencyType() { return null; }
+        @Override
+        public void setPersistencyType(PersistencyType persistencyType) { }
     }
 
     @XKasperUnregistered
@@ -36,6 +40,10 @@ public class EventResolverTest {
         public Optional<Context> getContext() { return null; }
         @Override
         public <E extends Event> E setContext(Context context) { return null; }
+        @Override
+        public PersistencyType getPersistencyType() { return null; }
+        @Override
+        public void setPersistencyType(PersistencyType persistencyType) { }
     }
 
     @XKasperUnregistered
@@ -44,6 +52,10 @@ public class EventResolverTest {
         public Optional<Context> getContext() { return null; }
         @Override
         public <E extends Event> E setContext(Context context) { return null; }
+        @Override
+        public PersistencyType getPersistencyType() { return null; }
+        @Override
+        public void setPersistencyType(PersistencyType persistencyType) { }
     }
 
     // ------------------------------------------------------------------------

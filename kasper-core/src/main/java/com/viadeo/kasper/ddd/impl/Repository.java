@@ -173,7 +173,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * 
 	 * @return the aggregate
 	 */
-	protected final AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
+	protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
 		checkNotNull(aggregateIdentifier);
 		
 		if (KasperID.class.isAssignableFrom(aggregateIdentifier.getClass())) {

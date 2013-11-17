@@ -46,7 +46,7 @@ public class ActionRepositoryVersionFacadeTest {
         final AbstractAggregateRoot agr = mock(AbstractAggregateRoot.class);
         final Repository krepo = mock(Repository.class);
         final ActionRepositoryVersionFacade repo = new ActionRepositoryVersionFacade(krepo);
-        doReturn(agr).when(krepo).doLoad(any(Object.class), any(Long.class));
+        doReturn(agr).when(krepo).doLoad(anyObject(), any(Long.class));
         doReturn(DefaultKasperId.random()).when(agr).getEntityId();
         doReturn(null).when(agr).getVersion();
 

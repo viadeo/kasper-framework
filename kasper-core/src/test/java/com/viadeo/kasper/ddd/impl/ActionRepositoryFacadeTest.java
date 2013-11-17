@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.impl;
 
+import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.impl.DefaultKasperId;
@@ -192,7 +193,7 @@ public class ActionRepositoryFacadeTest {
         doReturn(agrId).when(agr).getEntityId();
         doReturn(t).when(agr).getCreationDate();
         doReturn(t).when(agr).getModificationDate();
-        doReturn(agr).when(krepo).doLoad(any(Object.class), any(Long.class));
+        doReturn(agr).when(krepo).doLoad(anyObject(), any(Long.class));
 
         // When
         repo.doLoad(agrId, 0L);
@@ -214,7 +215,7 @@ public class ActionRepositoryFacadeTest {
         doReturn(t).when(agr).getCreationDate();
         doReturn(t).when(agr).getModificationDate();
         doReturn(agrId).when(agr).getEntityId();
-        doReturn(agr).when(krepo).doLoad(any(Object.class), any(Long.class));
+        doReturn(agr).when(krepo).doLoad(anyObject(), any(Long.class));
 
         // When
         repo.doLoad(agrId, 0L);

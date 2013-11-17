@@ -15,6 +15,9 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.event.Event;
+import org.axonframework.domain.DomainEventMessage;
+import org.axonframework.domain.DomainEventStream;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,6 +111,28 @@ class ActionRepositoryFacade<AGR extends AggregateRoot> {
 
         try {
 
+            /**
+             * Mark events persistency type
+             */
+            if (aggregate.getUncommittedEventCount() > 0) {
+                final DomainEventStream eventStream = aggregate.getUncommittedEvents();
+                while (eventStream.hasNext()) {
+                    final DomainEventMessage message = eventStream.next();
+                    if (Event.class.equals(message.getPayloadType())) {
+                        final Event event = (Event) message.getPayload();
+
+                        if (EventSourcedRepository.class.isAssignableFrom(this.kasperRepository.getClass())) {
+                            event.setPersistencyType(Event.PersistencyType.EVENT_SOURCE);
+                        } else {
+                            event.setPersistencyType(Event.PersistencyType.EVENT_INFO);
+                        }
+                    }
+                }
+            }
+
+            /**
+             * Manage with save/update differentiation for Kasper repositories
+             */
             if (null == aggregate.getVersion()) {
                 this.kasperRepository.doSave(aggregate);
             } else {

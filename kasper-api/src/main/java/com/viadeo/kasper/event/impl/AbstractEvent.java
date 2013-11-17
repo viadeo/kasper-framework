@@ -11,18 +11,35 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.event.Event.PersistencyType.UNKNOWN;
+
 public abstract class AbstractEvent implements Event {
 	private static final long serialVersionUID = 7345041953962326298L;
 
 	private Context context;
+
+    private PersistencyType persistencyType = UNKNOWN;
 
 	// ------------------------------------------------------------------------
 
     protected AbstractEvent() { }
 
 	protected AbstractEvent(final Context context) {
-        this.context = Preconditions.checkNotNull(context);
+        this.context = checkNotNull(context);
 	}
+
+    // -----------------------------------------------------------------------
+
+    @Override
+    public PersistencyType getPersistencyType() {
+        return this.persistencyType;
+    }
+
+    @Override
+    public void setPersistencyType(final PersistencyType persistencyType) {
+        this.persistencyType = checkNotNull(persistencyType);
+    }
 
 	// ------------------------------------------------------------------------
 
