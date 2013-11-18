@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.ddd.impl;
+package com.viadeo.kasper.ddd.repository;
 
 import com.viadeo.kasper.ddd.AggregateRoot;
 import org.axonframework.eventhandling.EventBus;
@@ -17,6 +17,6 @@ interface DecoratedAxonRepository<AGR extends AggregateRoot>  extends org.axonfr
 
     void setEventBus(EventBus eventBus);
 
-    ActionRepositoryFacade<AGR> getActionRepositoryFacade();
+    RepositoryFacade<AGR> getRepositoryFacade();
 
 }

@@ -4,25 +4,17 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.ddd.impl;
+package com.viadeo.kasper.ddd.repository;
 
 import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.google.common.collect.Maps;
-import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.event.Event;
-import org.axonframework.domain.DomainEventMessage;
-import org.axonframework.domain.DomainEventStream;
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
@@ -34,11 +26,9 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  * - make some coherency validation on aggregates before and after each action
  *
  */
-class ActionRepositoryFacade<AGR extends AggregateRoot> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(ActionRepositoryFacade.class);
+class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacade<AGR> {
+    private static final Logger LOGGER = LoggerFactory.getLogger(MetricsRepositoryFacade.class);
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
-
-    private final Repository<AGR> kasperRepository; /* The repository to proxy actions on */
 
     private final Class kasperRepositoryClass;
 
@@ -69,15 +59,11 @@ class ActionRepositoryFacade<AGR extends AggregateRoot> {
     private Meter metricDeletes;
     private Meter metricDeleteErrors;
 
-    private final ConcurrentMap<KasperID, DateTime> loadedModificationTimes; /* Used to track to loaded modification date */
-
     // ------------------------------------------------------------------------
 
-    ActionRepositoryFacade(final Repository<AGR> kasperRepository) {
+    MetricsRepositoryFacade(final Repository<AGR> kasperRepository) {
+        super(kasperRepository);
         this.kasperRepositoryClass = checkNotNull(kasperRepository).getClass();
-        this.kasperRepository = kasperRepository;
-
-        loadedModificationTimes = Maps.newConcurrentMap();
     }
 
     private final void initMetrics() {
@@ -106,38 +92,9 @@ class ActionRepositoryFacade<AGR extends AggregateRoot> {
 
         final Timer.Context timer = metricTimerSave.time();
 
-        /* Ensure dates are correctly set */
-        this.ensureDates(aggregate);
-
         try {
 
-            /**
-             * Mark events persistency type
-             */
-            if (aggregate.getUncommittedEventCount() > 0) {
-                final DomainEventStream eventStream = aggregate.getUncommittedEvents();
-                while (eventStream.hasNext()) {
-                    final DomainEventMessage message = eventStream.next();
-                    if (Event.class.isAssignableFrom(message.getPayloadType())) {
-                        final Event event = (Event) message.getPayload();
-
-                        if (EventSourcedRepository.class.isAssignableFrom(this.kasperRepository.getClass())) {
-                            event.setPersistencyType(Event.PersistencyType.EVENT_SOURCE);
-                        } else {
-                            event.setPersistencyType(Event.PersistencyType.EVENT_INFO);
-                        }
-                    }
-                }
-            }
-
-            /**
-             * Manage with save/update differentiation for Kasper repositories
-             */
-            if (null == aggregate.getVersion()) {
-                this.kasperRepository.doSave(aggregate);
-            } else {
-                this.kasperRepository.doUpdate(aggregate);
-            }
+            super.doSave(aggregate);
 
         } catch (final RuntimeException e) {
             metricClassSaveErrors.mark();
@@ -164,7 +121,7 @@ class ActionRepositoryFacade<AGR extends AggregateRoot> {
         final AGR agr;
         try {
 
-            agr = this.kasperRepository.doLoad(aggregateIdentifier, expectedVersion);
+            agr = super.doLoad(aggregateIdentifier, expectedVersion);
 
         } catch (final RuntimeException e) {
             metricClassLoadErrors.mark();
@@ -179,11 +136,6 @@ class ActionRepositoryFacade<AGR extends AggregateRoot> {
             metricClassLoads.mark();
         }
 
-        /* Record the modification date during load */
-        if (null != agr.getModificationDate()) {
-            this.loadedModificationTimes.put(agr.getEntityId(), agr.getModificationDate());
-        }
-
         return agr;
     }
 
@@ -194,12 +146,9 @@ class ActionRepositoryFacade<AGR extends AggregateRoot> {
 
         final Timer.Context timer = metricTimerDelete.time();
 
-        /* Ensure dates are correctly set */
-        this.ensureDates(aggregate);
-
         try {
 
-            this.kasperRepository.doDelete(aggregate);
+            super.doDelete(aggregate);
 
         } catch (final RuntimeException e) {
             metricClassDeleteErrors.mark();
@@ -214,50 +163,6 @@ class ActionRepositoryFacade<AGR extends AggregateRoot> {
             metricClassDeletes.mark();
         }
 
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Ensure aggregate dates are correctly set before saving / deleting
-     *
-     * @param aggregate the aggregate to check for correct dates
-     */
-    private void ensureDates(final AGR aggregate) {
-        if (AbstractAggregateRoot.class.isAssignableFrom(aggregate.getClass())) {
-            final AbstractAggregateRoot agr = (AbstractAggregateRoot) aggregate;
-            final DateTime now = DateTime.now();
-
-            if (null == agr.getCreationDate()) { /* aggregate seems to be under creation */
-
-                if (null != agr.getVersion()) {
-                    LOGGER.warn(
-                            "The aggregate {} with id {} had not a creation date while it's not a new aggregate",
-                            agr.getClass().getSimpleName(),
-                            agr.getEntityId()
-                    );
-                }
-                agr.setCreationDate(now);
-                agr.setModificationDate(now);
-
-            } else if (null == agr.getModificationDate()) { /* aggregate seems to be under modification */
-
-                if (null == agr.getVersion()) { /* it's a new aggregate */
-                    agr.setModificationDate(agr.getCreationDate());
-                } else {
-                    agr.setModificationDate(now);
-                }
-            }
-
-            /* The modification date has not been changed since loading */
-            if (this.loadedModificationTimes.containsKey(agr.getEntityId())) {
-                final DateTime loadedModificationTime = this.loadedModificationTimes.get(agr.getEntityId());
-                if (agr.getModificationDate().equals(loadedModificationTime)) {
-                    agr.setModificationDate(now);
-                }
-                this.loadedModificationTimes.remove(agr.getEntityId(), loadedModificationTime);
-            }
-        }
     }
 
 }

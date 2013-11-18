@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.event.impl;
+package com.viadeo.kasper.event;
 
 /**
  * Base proposed ontology for events

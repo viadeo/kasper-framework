@@ -9,8 +9,8 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
-import com.viadeo.kasper.er.RootConcept;
 import com.viadeo.kasper.er.annotation.XBidirectional;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
 import com.viadeo.kasper.exception.KasperException;
@@ -90,14 +90,14 @@ public class RelationResolver extends AbstractResolver<Relation> {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    public Class<? extends RootConcept> getSourceEntityClass(final Class<? extends Relation> clazz) {
+    public Class<? extends Concept> getSourceEntityClass(final Class<? extends Relation> clazz) {
         if (SOURCES_CACHE.containsKey(clazz)) {
-            return (Class<? extends RootConcept>) SOURCES_CACHE.get(clazz);
+            return (Class<? extends Concept>) SOURCES_CACHE.get(clazz);
         }
 
         @SuppressWarnings("unchecked") // Safe
-        final Optional<Class<? extends RootConcept>> sourceClazz =
-                (Optional<Class<? extends RootConcept>>)
+        final Optional<Class<? extends Concept>> sourceClazz =
+                (Optional<Class<? extends Concept>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
                                 clazz, Relation.class, Relation.SOURCE_PARAMETER_POSITION);
 
@@ -110,14 +110,14 @@ public class RelationResolver extends AbstractResolver<Relation> {
     }
 
     @SuppressWarnings("unchecked")
-    public Class<? extends RootConcept> getTargetEntityClass(final Class<? extends Relation> clazz) {
+    public Class<? extends Concept> getTargetEntityClass(final Class<? extends Relation> clazz) {
         if (TARGETS_CACHE.containsKey(clazz)) {
-            return (Class<? extends RootConcept>) TARGETS_CACHE.get(clazz);
+            return (Class<? extends Concept>) TARGETS_CACHE.get(clazz);
         }
 
         @SuppressWarnings("unchecked") // Safe
-        final Optional<Class<? extends RootConcept>> targetClazz =
-                (Optional<Class<? extends RootConcept>>)
+        final Optional<Class<? extends Concept>> targetClazz =
+                (Optional<Class<? extends Concept>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
                                 clazz, Relation.class, Relation.TARGET_PARAMETER_POSITION);
 

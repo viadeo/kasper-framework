@@ -11,7 +11,7 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
-import com.viadeo.kasper.ddd.impl.Repository;
+import com.viadeo.kasper.ddd.repository.Repository;
 import org.axonframework.eventhandling.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

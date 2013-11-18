@@ -22,12 +22,10 @@ public class ConceptResolverTest {
 
     @XKasperUnregistered
     @XKasperConcept(domain = TestDomain.class, label = "TestConcept")
-    private static class TestConcept implements Concept {
-    }
+    private static class TestConcept extends Concept { }
 
     @XKasperUnregistered
-    private static class TestConcept2 implements Concept {
-    }
+    private static class TestConcept2 extends Concept { }
 
     // ------------------------------------------------------------------------
 

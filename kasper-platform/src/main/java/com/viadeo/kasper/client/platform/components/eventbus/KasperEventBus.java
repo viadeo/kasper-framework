@@ -9,12 +9,15 @@ package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.EventUtils;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.domain.EventMessage;
+import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.*;
 import org.axonframework.eventhandling.async.*;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
@@ -22,6 +25,7 @@ import org.axonframework.unitofwork.NoTransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -168,26 +172,38 @@ public class KasperEventBus extends ClusteringEventBus {
     // ------------------------------------------------------------------------
 
     @Override
-    public void publish(final EventMessage... events) {
+    public void publish(final EventMessage... messages) {
         METRICLASSREQUESTS.mark();
-        super.publish(events);
+
+        final EventMessage[] newMessages;
+
+        /* Add the context to messages if required */
+        if (CurrentContext.value().isPresent()) {
+            newMessages = new EventMessage[messages.length];
+            for (int i = 0 ; i < messages.length ; i++) {
+                final EventMessage message = messages[i];
+                if ( ! message.getMetaData().containsKey(Context.METANAME)) {
+                    final Map<String, Object> metaData = Maps.newHashMap();
+                    metaData.put(Context.METANAME, CurrentContext.value().get());
+                    newMessages[i] = message.andMetaData(metaData);
+                } else {
+                    newMessages[i] = message;
+                }
+            }
+        } else {
+            newMessages = messages;
+        }
+
+        this.publishToSuper(newMessages);
     }
 
-    /*
-     * Publish a contextualized Kasper event
-     */
+    @VisibleForTesting
+    void publishToSuper(final EventMessage... messages) {
+        super.publish(messages);
+    }
+
     public void publish(final Event event) {
-        checkNotNull(event);
-        publish(EventUtils.KasperEvent2AxonMessage(event));
-    }
-
-    /*
-     * Publish a Kasper event using the specified context
-     * Warning : The provided context will override eventually set one of the provided event
-     */
-    public void publish(final Event event, final Context context) {
-        checkNotNull(event).setContext(checkNotNull(context));
-        this.publish(event);
+        this.publish(GenericEventMessage.asEventMessage(event));
     }
 
 }

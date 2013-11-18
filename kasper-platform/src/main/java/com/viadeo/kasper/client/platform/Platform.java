@@ -145,13 +145,4 @@ public interface Platform {
      */
     void publishEvent(Event event);
 
-    /**
-     * Send an event to the platform, with a specified context
-     * If the event already contains a context, it will be overriden
-     *
-     * @param event the event to be sent
-     * @param context the event context
-     */
-    void publishEvent(Event event, Context context);
-
 }

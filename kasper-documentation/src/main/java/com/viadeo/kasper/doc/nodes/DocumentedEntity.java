@@ -6,10 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
-import com.google.common.base.Optional;
-import com.viadeo.kasper.core.resolvers.EntityResolver;
-import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.ddd.ComponentEntity;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.doc.KasperLibrary;
 
@@ -21,7 +17,6 @@ public class DocumentedEntity extends DocumentedDomainNode {
 	public static final String TYPE_NAME = "entity";
 	public static final String PLURAL_TYPE_NAME = "entities";
 	
-	private String parent = null;
 	private Boolean isAggregate = false;
 	
 	private DocumentedBean properties = null;
@@ -38,46 +33,8 @@ public class DocumentedEntity extends DocumentedDomainNode {
 	
 	// ------------------------------------------------------------------------
 	
-	public void setIsAggregate(final Boolean isAggregate) {
-		this.isAggregate = isAggregate;
-	}
-	
-	public Boolean isAggregate() {
-		return isAggregate;
-	}
-	
-	// ------------------------------------------------------------------------
-	
 	protected void fillProperties(final Class<? extends Entity> entityClazz) {
 		this.properties = new DocumentedBean(entityClazz);
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	protected void fillParent(final Class<? extends Entity> entityClazz) {
-		if (ComponentEntity.class.isAssignableFrom(entityClazz)) {
-
-            final EntityResolver resolver =
-                    this.getKasperLibrary().getResolverFactory().getEntityResolver();
-
-			@SuppressWarnings("unchecked") // Safe
-			Class<? extends AggregateRoot> agr =
-                    resolver.getComponentParent((Class<? extends ComponentEntity>) entityClazz);
-
-            this.parent = agr.getSimpleName();
-            this.getKasperLibrary().registerAggregateComponent(this.parent, this.getName());
-		}
-	}
-	
-	public DocumentedNode getParent() {
-		final KasperLibrary kl = this.getKasperLibrary();
-		if (null != this.parent) {
-			final Optional<DocumentedConcept> conceptParent = kl.getConcept(getDomainName(), this.parent);
-			if (conceptParent.isPresent()) {
-				return kl.getSimpleNodeFrom(conceptParent.get());
-			}
-		}
-		return null;
 	}
 	
 	// ------------------------------------------------------------------------

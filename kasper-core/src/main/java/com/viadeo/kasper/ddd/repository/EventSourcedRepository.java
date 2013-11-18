@@ -4,13 +4,12 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.ddd.impl;
+package com.viadeo.kasper.ddd.repository;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.exception.KasperException;
-import org.axonframework.eventsourcing.AggregateDeletedException;
 import org.axonframework.eventstore.EventStore;
 import org.axonframework.repository.AggregateNotFoundException;
 
@@ -52,8 +51,8 @@ public abstract class EventSourcedRepository<AGR extends AggregateRoot> extends 
             throw new KasperException("EventSourcedRepository needs an EventStore before initialization");
         }
 
-        AxonEventSourcedRepository<AGR> axonRepository = new AxonEventSourcedRepository<>(
-                new ActionRepositoryFacade<>(this),
+        final AxonEventSourcedRepository<AGR> axonRepository = new AxonEventSourcedRepository<>(
+                new MetricsRepositoryFacade<>(this),
                 entityType,
                 this.getEventStore().get()
         );

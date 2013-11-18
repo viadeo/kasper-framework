@@ -9,12 +9,13 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.domain.DomainEvent;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
-public class EventResolver extends AbstractResolver<Event> {
+public class EventResolver extends AbstractResolver<IEvent> {
 
     @Override
     public String getTypeName() {
@@ -25,7 +26,7 @@ public class EventResolver extends AbstractResolver<Event> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Event> clazz) {
+    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends IEvent> clazz) {
 
         /* Force events to be DomainEvents for domain resolution */
         if ( ! DomainEvent.class.isAssignableFrom(clazz)) {
@@ -55,14 +56,14 @@ public class EventResolver extends AbstractResolver<Event> {
     }
 
     @Override
-    public String getLabel(Class<? extends Event> clazz) {
+    public String getLabel(Class<? extends IEvent> clazz) {
         return clazz.getSimpleName().replace("Event", "");
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public String getDescription(Class<? extends Event> eventClazz) {
+    public String getDescription(Class<? extends IEvent> eventClazz) {
         final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
 
         String description = "";
@@ -78,7 +79,7 @@ public class EventResolver extends AbstractResolver<Event> {
 
     // ------------------------------------------------------------------------
 
-    public String getAction(Class<? extends Event> eventClazz) {
+    public String getAction(Class<? extends IEvent> eventClazz) {
         final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
 
         String action = "";

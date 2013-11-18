@@ -18,19 +18,16 @@ import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.AbstractUpdateCommand;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.ddd.impl.EventSourcedRepository;
-import com.viadeo.kasper.ddd.impl.Repository;
-import com.viadeo.kasper.er.impl.AbstractRootConcept;
-import com.viadeo.kasper.event.domain.impl.AbstractEntityCreatedEvent;
-import com.viadeo.kasper.event.domain.impl.AbstractEntityUpdatedEvent;
+import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
+import com.viadeo.kasper.ddd.repository.Repository;
+import com.viadeo.kasper.er.Concept;
+import com.viadeo.kasper.event.domain.EntityCreatedEvent;
+import com.viadeo.kasper.event.domain.EntityUpdatedEvent;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.test.ddd.KasperRepositoryTest;
 import org.axonframework.eventhandling.annotation.EventHandler;
-import org.axonframework.eventsourcing.AggregateDeletedException;
-import org.axonframework.eventstore.EventStore;
 import org.axonframework.test.FixtureConfiguration;
 import org.axonframework.test.Fixtures;
-import org.joda.time.DateTime;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -41,7 +38,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.viadeo.kasper.test.event.EventMatcher.anyDate;
 import static com.viadeo.kasper.test.event.EventMatcher.equalToEvent;
 import static org.axonframework.test.matchers.Matchers.*;
 
@@ -82,19 +78,16 @@ public class CommandAxonScenarioEntityStore {
     }
 
     @XKasperUnregistered
-    public static class TestCreatedEvent extends AbstractEntityCreatedEvent<TestDomain> {
-        protected TestCreatedEvent(Context context, KasperID id, DateTime lastModificationDate) {
-            super(context, id, lastModificationDate);
+    public static class TestCreatedEvent extends EntityCreatedEvent<TestDomain> {
+        protected TestCreatedEvent(KasperID id) {
+            super(id);
         }
     }
 
     @XKasperUnregistered
-    public static class TestFirstNameChangedEvent extends AbstractEntityUpdatedEvent<TestDomain> {
+    public static class TestFirstNameChangedEvent extends EntityUpdatedEvent<TestDomain> {
         private final String firstName;
-        protected TestFirstNameChangedEvent(
-                Context context, KasperID id, Long version,
-                DateTime lastModificationDate, String firstName) {
-            super(context, id, version, lastModificationDate);
+        protected TestFirstNameChangedEvent(String firstName) {
             this.firstName = firstName;
         }
         public String getFirstName() {
@@ -103,12 +96,9 @@ public class CommandAxonScenarioEntityStore {
     }
 
     @XKasperUnregistered
-    public static class TestLastNameChangedEvent extends AbstractEntityUpdatedEvent<TestDomain> {
+    public static class TestLastNameChangedEvent extends EntityUpdatedEvent<TestDomain> {
         private final String lastName;
-        protected TestLastNameChangedEvent(
-                Context context, KasperID id, Long version,
-                DateTime lastModificationDate, String lastName) {
-            super(context, id, version, lastModificationDate);
+        protected TestLastNameChangedEvent(String lastName) {
             this.lastName = lastName;
         }
         public String getLastName() {
@@ -117,45 +107,38 @@ public class CommandAxonScenarioEntityStore {
     }
 
     @XKasperUnregistered
-    public static class TestAggregate extends AbstractRootConcept {
+    public static class TestAggregate extends Concept {
 
         private String firstName = "unknown";
         private String lastName = "unknown";
 
         TestAggregate() { }
 
-        TestAggregate(final Context context, final KasperID id) {
-            apply(new TestCreatedEvent(context, id, DateTime.now()));
+        TestAggregate(final KasperID id) {
+            apply(new TestCreatedEvent(id));
         }
 
         @EventHandler
         protected void onCreated(final TestCreatedEvent event) {
             setId(event.getEntityId());
-            setCreationDate(event.getEntityLastModificationDate());
         }
 
         public void changeFirstName(final Context context, final String firstName) {
-            apply(new TestFirstNameChangedEvent(
-                    context, this.getEntityId(), this.getVersion(), DateTime.now(), firstName
-            ));
+            apply(new TestFirstNameChangedEvent(firstName));
         }
 
         @EventHandler
         protected void onFirstNameChanged(final TestFirstNameChangedEvent event) {
             this.firstName = event.getFirstName();
-            setModificationDate(event.getEntityLastModificationDate());
         }
 
         public void changeLastName(final Context context, final String lastName) {
-            apply(new TestLastNameChangedEvent(
-                    context, this.getEntityId(), this.getVersion(), DateTime.now(), lastName
-            ));
+            apply(new TestLastNameChangedEvent(lastName));
         }
 
         @EventHandler
         protected void onLastNameChanged(final TestLastNameChangedEvent event) {
             this.lastName = event.getLastName();
-            setModificationDate(event.getEntityLastModificationDate());
         }
 
     }
@@ -204,8 +187,7 @@ public class CommandAxonScenarioEntityStore {
 
         public CommandResponse handle(final KasperCommandMessage<TestCreateCommand> message) throws Exception {
 
-            final TestAggregate agr =
-                    new TestAggregate(message.getContext(), message.getCommand().getIdToUse());
+            final TestAggregate agr = new TestAggregate(message.getCommand().getIdToUse());
 
             agr.changeFirstName(message.getContext(), message.getCommand().getFirstName());
 
@@ -302,12 +284,8 @@ public class CommandAxonScenarioEntityStore {
                 .when(createCommand, metaContext)
                 .expectReturnValue(CommandResponse.ok())
                 .expectEventsMatching(payloadsMatching(exactSequenceOf(
-                        equalToEvent(new TestCreatedEvent(
-                                context, createId, anyDate()
-                        )),
-                        equalToEvent(new TestFirstNameChangedEvent(
-                                context, createId, 0L, anyDate(), firstName
-                        )),
+                        equalToEvent(new TestCreatedEvent(createId)),
+                        equalToEvent(new TestFirstNameChangedEvent(firstName)),
                         andNoMore()
                 )));
 
@@ -356,9 +334,7 @@ public class CommandAxonScenarioEntityStore {
                 .when(updateCommand, metaContext)
                 .expectReturnValue(CommandResponse.ok())
                 .expectEventsMatching(payloadsMatching(exactSequenceOf(
-                        equalToEvent(new TestLastNameChangedEvent(
-                                context, aggregateId, 0L, anyDate(), lastName
-                        )),
+                        equalToEvent(new TestLastNameChangedEvent(lastName)),
                         andNoMore()
                 )));
 
@@ -401,19 +377,13 @@ public class CommandAxonScenarioEntityStore {
         // When command is made, Then we expect creation and first name changing events
         fixture
                 .given(
-                        new TestCreatedEvent(
-                                context, aggregateId, anyDate()
-                        ),
-                        new TestFirstNameChangedEvent(
-                            context, aggregateId, 0L, anyDate(), firstName
-                        )
+                        new TestCreatedEvent(aggregateId),
+                        new TestFirstNameChangedEvent(firstName)
                 )
                 .when(updateCommand, metaContext)
                 .expectReturnValue(CommandResponse.ok())
                 .expectEventsMatching(payloadsMatching(exactSequenceOf(
-                        equalToEvent(new TestLastNameChangedEvent(
-                                context, aggregateId, 0L, anyDate(), lastName
-                        )),
+                        equalToEvent(new TestLastNameChangedEvent(lastName)),
                         andNoMore()
                 )));
 

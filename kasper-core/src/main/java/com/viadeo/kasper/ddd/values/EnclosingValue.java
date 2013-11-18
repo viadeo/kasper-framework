@@ -4,10 +4,9 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.ddd.values.impl;
+package com.viadeo.kasper.ddd.values;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.ddd.values.Value;
 
 import java.io.Serializable;
 
@@ -17,7 +16,7 @@ import java.io.Serializable;
  *
  * @param <RESULT> The enclosed type
  */
-public abstract class AbstractEnclosingValue<RESULT extends Serializable> 
+public abstract class EnclosingValue<RESULT extends Serializable>
 		implements Value {
 
 	private static final long serialVersionUID = -2912518894544854252L;
@@ -26,7 +25,7 @@ public abstract class AbstractEnclosingValue<RESULT extends Serializable>
 	
 	// ------------------------------------------------------------------------
 	
-	public AbstractEnclosingValue(final RESULT value) {
+	public EnclosingValue(final RESULT value) {
 		super();
 		
 		this.value = Preconditions.checkNotNull(value);
@@ -48,7 +47,7 @@ public abstract class AbstractEnclosingValue<RESULT extends Serializable>
 		}
 		if (this.getClass().isInstance(otherValue)) {
 			@SuppressWarnings("unchecked")
-			final AbstractEnclosingValue<RESULT> other = (AbstractEnclosingValue<RESULT>) otherValue;
+			final EnclosingValue<RESULT> other = (EnclosingValue<RESULT>) otherValue;
 			return value.equals(other.value);
 		}
 		return false;

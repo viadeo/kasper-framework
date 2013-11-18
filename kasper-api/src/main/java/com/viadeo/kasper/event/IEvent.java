@@ -4,19 +4,10 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.er;
+package com.viadeo.kasper.event;
 
-import com.viadeo.kasper.ddd.ComponentEntity;
+import java.io.Serializable;
 
-/**
- *
- * A Kasper Concept which is owned by an upper Concept or an aggregate root
- *
- * @param <R> The parent root concept
- * 
- * @see Concept
- */
-public interface ComponentConcept<R extends RootConcept>
-	extends ComponentEntity<R>, Concept {
-	
+public interface IEvent extends Serializable {
+
 }

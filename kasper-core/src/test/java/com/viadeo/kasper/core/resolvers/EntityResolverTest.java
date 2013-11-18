@@ -7,7 +7,6 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.Concept;
@@ -24,17 +23,10 @@ public class EntityResolverTest {
     private static class TestDomain implements Domain { }
 
     @XKasperUnregistered
-    private static class TestConcept implements Concept { }
+    private static class TestConcept extends Concept { }
 
     @XKasperUnregistered
-    private static class TestRelation implements Relation {
-        @Override
-        public KasperID getSourceIdentifier() { return null; }
-        @Override
-        public KasperID getTargetIdentifier() { return null; }
-        @Override
-        public boolean isBidirectional() { return false; }
-    }
+    private static class TestRelation extends Relation { }
 
     // ------------------------------------------------------------------------
 

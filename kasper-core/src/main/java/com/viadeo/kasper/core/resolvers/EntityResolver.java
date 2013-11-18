@@ -8,16 +8,11 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.ddd.ComponentEntity;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
-import com.viadeo.kasper.er.RootConcept;
 import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.annotation.EventHandler;
 
 import java.lang.reflect.Method;
@@ -106,24 +101,6 @@ public class EntityResolver extends AbstractResolver<Entity> {
         }
 
         return Collections.unmodifiableCollection(listenedSourceEvents);
-    }
-
-    // ------------------------------------------------------------------------
-
-    @SuppressWarnings("unchecked")
-    public Class<? extends AggregateRoot> getComponentParent(final Class<? extends ComponentEntity> clazz) {
-
-        final Optional<Class<? extends RootConcept>> agr =
-                (Optional<Class<? extends RootConcept>>)
-                        ReflectionGenericsResolver.getParameterTypeFromClass(
-                                clazz, ComponentEntity.class, ComponentEntity.PARENT_ARGUMENT_POSITION);
-
-        if (!agr.isPresent()) {
-            throw new KasperException("Unable to find parent for component entity"
-                            + clazz.getClass());
-        }
-
-        return agr.get();
     }
 
 }

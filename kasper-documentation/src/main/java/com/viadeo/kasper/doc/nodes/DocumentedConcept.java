@@ -9,7 +9,6 @@ package com.viadeo.kasper.doc.nodes;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.core.resolvers.ConceptResolver;
-import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.doc.KasperLibrary;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.event.Event;
@@ -35,8 +34,6 @@ public final class DocumentedConcept extends DocumentedEntity {
 	public DocumentedConcept(final KasperLibrary kl, final Class<? extends Concept> conceptClazz) {
 		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
 		
-		final boolean isAggregate = AggregateRoot.class.isAssignableFrom(conceptClazz);
-		
 		// Find associated domain ---------------------------------------------
         final ConceptResolver resolver = this.getKasperLibrary().getResolverFactory().getConceptResolver();
  		final String domainName = resolver.getDomainClass(conceptClazz).get().getSimpleName();
@@ -44,18 +41,12 @@ public final class DocumentedConcept extends DocumentedEntity {
         final String label = resolver.getLabel(conceptClazz);
 
 		// Set properties -----------------------------------------------------
-		this.setIsAggregate(isAggregate);
 		this.setLabel(label);
 		this.setName(conceptClazz.getSimpleName());
 		this.setDomainName(domainName);
 		this.setDescription(description);
 		
-		if (isAggregate) {
-			fillSourceEvents(conceptClazz);
-		} else {
-			fillParent(conceptClazz);
-		}
-		
+		fillSourceEvents(conceptClazz);
 		fillProperties(conceptClazz);
 	}	
 	

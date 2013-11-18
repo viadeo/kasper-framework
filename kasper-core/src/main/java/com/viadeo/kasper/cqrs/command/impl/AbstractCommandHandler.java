@@ -11,16 +11,15 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.*;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.EventUtils;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.commandhandling.CommandMessage;
+import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.repository.ConflictingAggregateVersionException;
@@ -196,17 +195,12 @@ public abstract class AbstractCommandHandler<C extends Command> implements Comma
      * @param event The event to be scheduled for publication to the unit of work
      */
     public void publish(final Event event) {
-        final GenericEventMessage axonMessage = EventUtils.KasperEvent2AxonMessage(checkNotNull(event));
+        final EventMessage axonMessage = GenericEventMessage.asEventMessage(event);
         if (CurrentUnitOfWork.isStarted()) {
             CurrentUnitOfWork.get().publishEvent(axonMessage, eventBus);
         } else {
             throw new KasperCommandException("UnitOfWork is not started when trying to publish event");
         }
-    }
-
-    public void publish(final Event event, final Context context) {
-        checkNotNull(event).setContext(checkNotNull(context));
-        this.publish(event);
     }
 
     // ------------------------------------------------------------------------

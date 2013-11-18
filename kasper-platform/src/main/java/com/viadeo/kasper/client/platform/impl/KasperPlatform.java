@@ -20,6 +20,7 @@ import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.event.Event;
+import org.axonframework.domain.GenericEventMessage;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -124,13 +125,7 @@ public class KasperPlatform implements Platform {
 
     @Override
     public void publishEvent(final Event event) {
-        this.eventBus.publish(checkNotNull(event));
-    }
-
-    @Override
-    public void publishEvent(final Event event, final Context context) {
-        checkNotNull(event).setContext(context);
-        this.publishEvent(event);
+        this.eventBus.publish(GenericEventMessage.asEventMessage(checkNotNull(event)));
     }
 
 }

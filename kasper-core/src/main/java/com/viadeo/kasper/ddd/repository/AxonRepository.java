@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.ddd.impl;
+package com.viadeo.kasper.ddd.repository;
 
 import com.viadeo.kasper.ddd.AggregateRoot;
 import org.axonframework.repository.AbstractRepository;
@@ -18,35 +18,35 @@ class AxonRepository<AGR extends AggregateRoot>
         extends AbstractRepository<AGR>
         implements DecoratedAxonRepository<AGR> {
 
-    private final ActionRepositoryFacade<AGR> actionRepositoryFacade;
+    private final RepositoryFacade<AGR> repositoryFacade;
 
     // --------------------------------------------------------------------
 
-    AxonRepository(final ActionRepositoryFacade<AGR> actionRepositoryFacade, final Class<AGR> aggregateType) {
+    AxonRepository(final RepositoryFacade<AGR> repositoryFacade, final Class<AGR> aggregateType) {
         super(aggregateType);
-        this.actionRepositoryFacade = actionRepositoryFacade;
+        this.repositoryFacade = repositoryFacade;
     }
 
     @Override
-    public ActionRepositoryFacade<AGR> getActionRepositoryFacade() {
-        return this.actionRepositoryFacade;
+    public RepositoryFacade<AGR> getRepositoryFacade() {
+        return this.repositoryFacade;
     }
 
     // --------------------------------------------------------------------
 
     @Override
     protected void doSave(final AGR aggregate) {
-        this.actionRepositoryFacade.doSave(aggregate);
+        this.repositoryFacade.doSave(aggregate);
     }
 
     @Override
     protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
-        return this.actionRepositoryFacade.doLoad(aggregateIdentifier, expectedVersion);
+        return this.repositoryFacade.doLoad(aggregateIdentifier, expectedVersion);
     }
 
     @Override
     protected void doDelete(final AGR aggregate) {
-        this.actionRepositoryFacade.doDelete(aggregate);
+        this.repositoryFacade.doDelete(aggregate);
     }
 
 }

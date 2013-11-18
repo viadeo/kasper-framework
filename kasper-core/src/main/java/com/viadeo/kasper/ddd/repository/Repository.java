@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.ddd.impl;
+package com.viadeo.kasper.ddd.repository;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
@@ -96,8 +96,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return the default instance of the decorated repository
      */
     protected DecoratedAxonRepository<AGR> getDecoratedRepository(final Class<AGR> entityType) {
-        final ActionRepositoryEntityStoreFacade<AGR> facade =
-                new ActionRepositoryEntityStoreFacade<AGR>(this);
+        final EntityStoreFacade<AGR> facade = new EntityStoreFacade<AGR>(this);
 
         if (null != this.eventStore) {
             facade.setEventStore(this.eventStore);
@@ -123,11 +122,11 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
         this.eventStore = checkNotNull(eventStore);
 
         if (null != this.axonRepository) {
-            final ActionRepositoryFacade<AGR> facade =
-                    this.axonRepository.getActionRepositoryFacade();
+            final RepositoryFacade<AGR> facade =
+                    this.axonRepository.getRepositoryFacade();
 
-            if (ActionRepositoryEntityStoreFacade.class.isAssignableFrom(facade.getClass())) {
-                ((ActionRepositoryEntityStoreFacade) facade).setEventStore(eventStore);
+            if (EntityStoreFacade.class.isAssignableFrom(facade.getClass())) {
+                ((EntityStoreFacade) facade).setEventStore(eventStore);
             }
         }
 
