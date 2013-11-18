@@ -7,7 +7,7 @@
 package com.viadeo.kasper.doc.nodes;
 
 public class DocumentedSimpleRelation extends DocumentedNode {
-	private static final long serialVersionUID = 280370243066985843L;
+	private static final long serialVersionUID = 420370243066985843L;
 	
 	private String sourceConceptName = "unknown";
 	private String targetConceptName = "unknown";

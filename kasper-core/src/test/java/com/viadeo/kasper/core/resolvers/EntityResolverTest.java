@@ -10,8 +10,11 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.Concept;
+import com.viadeo.kasper.er.LinkedConcept;
 import com.viadeo.kasper.er.Relation;
 import org.junit.Test;
+
+import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -23,7 +26,12 @@ public class EntityResolverTest {
     private static class TestDomain implements Domain { }
 
     @XKasperUnregistered
-    private static class TestConcept extends Concept { }
+    private static class TestConcept extends Concept {
+        LinkedConcept<TestConcept2> linkedTo;
+    }
+
+    @XKasperUnregistered
+    private static class TestConcept2 extends Concept { }
 
     @XKasperUnregistered
     private static class TestRelation extends Relation { }
@@ -72,6 +80,20 @@ public class EntityResolverTest {
 
         verify(relationResolver, times(1)).getDomainClass(TestRelation.class);
         verifyNoMoreInteractions(relationResolver);
+    }
+
+    @Test
+    public void testGetComponentConcepts() {
+        // Given
+        final EntityResolver resolver = new EntityResolver();
+
+        // When
+        final List<Class<? extends Concept>> links =
+                resolver.getComponentConcepts(TestConcept.class);
+
+        // Then
+        assertEquals(1, links.size());
+        assertEquals(TestConcept2.class, links.get(0));
     }
 
 }

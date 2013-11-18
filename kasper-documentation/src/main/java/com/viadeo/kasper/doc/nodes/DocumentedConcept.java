@@ -28,11 +28,11 @@ public final class DocumentedConcept extends DocumentedEntity {
 	// ------------------------------------------------------------------------
 	
 	DocumentedConcept(final KasperLibrary kl) { // Used as empty concept to populate
-		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
+		super(kl, null, TYPE_NAME, PLURAL_TYPE_NAME);
 	}
 	
 	public DocumentedConcept(final KasperLibrary kl, final Class<? extends Concept> conceptClazz) {
-		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
+		super(kl, conceptClazz, TYPE_NAME, PLURAL_TYPE_NAME);
 		
 		// Find associated domain ---------------------------------------------
         final ConceptResolver resolver = this.getKasperLibrary().getResolverFactory().getConceptResolver();

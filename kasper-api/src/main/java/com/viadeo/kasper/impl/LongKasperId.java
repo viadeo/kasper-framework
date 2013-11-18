@@ -8,18 +8,18 @@ package com.viadeo.kasper.impl;
 
 /**
  *
- * A default {@link com.viadeo.kasper.KasperID} String implementation
+ * A default {@link com.viadeo.kasper.KasperID} Long implementation
  * @see com.viadeo.kasper.KasperID
  *
  */
-public class StringKasperId extends AbstractKasperID<String> {
-    private static final long serialVersionUID = 2557421277131061279L;
+public class LongKasperId extends AbstractKasperID<Long> {
+    private static final long serialVersionUID = 2557842274331061279L;
 
-    StringKasperId() {
-        super("0");
+    LongKasperId() {
+        super(0L);
     }
 
-    public StringKasperId(final String id) {
+    public LongKasperId(final Long id) {
         super(id);
     }
 

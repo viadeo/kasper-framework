@@ -10,6 +10,7 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.Concept;
+import com.viadeo.kasper.er.LinkedConcept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import org.junit.Test;
 
@@ -22,7 +23,9 @@ public class ConceptResolverTest {
 
     @XKasperUnregistered
     @XKasperConcept(domain = TestDomain.class, label = "TestConcept")
-    private static class TestConcept extends Concept { }
+    private static class TestConcept extends Concept {
+        LinkedConcept<TestConcept2> linkedTo;
+    }
 
     @XKasperUnregistered
     private static class TestConcept2 extends Concept { }

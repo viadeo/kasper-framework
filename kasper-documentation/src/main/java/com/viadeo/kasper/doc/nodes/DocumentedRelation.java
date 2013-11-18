@@ -29,7 +29,7 @@ public final class DocumentedRelation extends DocumentedEntity {
 	// ------------------------------------------------------------------------
 	
 	public DocumentedRelation(final KasperLibrary kl, final Class<? extends Relation> relationClazz) {
-		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
+		super(kl, relationClazz, TYPE_NAME, PLURAL_TYPE_NAME);
 		
 		// Find if it's an aggregate ------------------------------------------
 		final boolean isAggregate = AggregateRoot.class.isAssignableFrom(relationClazz);

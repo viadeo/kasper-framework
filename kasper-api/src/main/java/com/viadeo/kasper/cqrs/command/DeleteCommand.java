@@ -18,7 +18,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * 
  */
 public abstract class DeleteCommand implements Command {
-    private static final long serialVersionUID = -432287057423281452L;
+    private static final long serialVersionUID = -432287427423281452L;
 
     @NotNull
 	private final KasperID id;
