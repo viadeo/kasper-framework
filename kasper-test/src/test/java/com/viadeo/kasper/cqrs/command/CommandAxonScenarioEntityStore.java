@@ -13,9 +13,7 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.cqrs.command.impl.AbstractCreateCommand;
 import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
-import com.viadeo.kasper.cqrs.command.impl.AbstractUpdateCommand;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
@@ -54,7 +52,7 @@ public class CommandAxonScenarioEntityStore {
     public static class TestDomain implements Domain { }
 
     @XKasperUnregistered
-    public static class TestCreateCommand extends AbstractCreateCommand {
+    public static class TestCreateCommand extends CreateCommand {
         private final String firstName;
         public TestCreateCommand(KasperID providedId, String firstName) {
             super(providedId);
@@ -66,7 +64,7 @@ public class CommandAxonScenarioEntityStore {
     }
 
     @XKasperUnregistered
-    public static class TestChangeLastNameCommand extends AbstractUpdateCommand {
+    public static class TestChangeLastNameCommand extends UpdateCommand {
         private final String lastName;
         public TestChangeLastNameCommand(KasperID providedId, String lastName) {
             super(providedId);

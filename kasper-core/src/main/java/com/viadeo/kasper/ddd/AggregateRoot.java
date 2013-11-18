@@ -11,7 +11,6 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
-import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
 import com.viadeo.kasper.event.Event;
 import org.axonframework.domain.MetaData;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;

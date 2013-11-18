@@ -7,9 +7,6 @@
 package com.viadeo.kasper.event;
 
 import com.google.common.base.Objects;
-import com.viadeo.kasper.annotation.Immutable;
-
-import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -18,7 +15,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * The Kasper event
  *
  */
-public class Event implements IEvent {
+public abstract class Event implements IEvent {
 
     /**
      * Event type, can be set by the repository before persisting

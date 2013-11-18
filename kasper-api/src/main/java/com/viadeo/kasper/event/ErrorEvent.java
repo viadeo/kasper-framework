@@ -9,11 +9,10 @@ package com.viadeo.kasper.event;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.event.Event;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class ErrorEvent extends Event {
+public class ErrorEvent extends Event {
 
     private final String code;
     private final Exception exception;
