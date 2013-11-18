@@ -17,6 +17,9 @@ import org.axonframework.test.FixtureConfiguration;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
+
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
@@ -89,33 +92,36 @@ public class KasperRepositoryTest<ENTITY extends AggregateRoot> implements IRepo
 	// ------------------------------------------------------------------------
 	
 	/**
-	 * @param repositoryClass the repository to mock as
+	 * @param repository the repository to mock as
 	 * @return a mocked repository which uses (this) as implementation
 	 */
 	@SuppressWarnings("unchecked")
-	public <R extends IRepository<ENTITY>> R asMockOf(final Class<R> repositoryClass) {
-		final R mocked = mock(repositoryClass);
+	public <R extends IRepository<ENTITY>> R asMockOf(final R repository) {
+
+        final R mocked = spy(repository);
+
+        /*
+        doAnswer(
+            new Answer<ENTITY>() {
+                public ENTITY answer(InvocationOnMock invocation) {
+                    final Object aggregateIdentifier = invocation.getArguments()[0];
+                    final Long expectedVersion = (Long) invocation.getArguments()[1];
+                    return that.load(aggregateIdentifier, expectedVersion);
+                 }
+            }
+        ).when(mocked).load(anyObject(), anyLong());
+		*/
+
+        doAnswer(
+            new Answer<ENTITY>() {
+                public ENTITY answer(InvocationOnMock invocation) {
+                    final Object aggregateIdentifier = invocation.getArguments()[0];
+                    return that.load(aggregateIdentifier);
+                 }
+            }
+        ).when(mocked).load(anyObject());
 		
-		when(mocked.load(any(), any(Long.class))).then(
-				new Answer<ENTITY>() {
-					public ENTITY answer(InvocationOnMock invocation) {
-						final Object aggregateIdentifier = invocation.getArguments()[0];
-						final Long expectedVersion = (Long) invocation.getArguments()[1];
-			            return that.load(aggregateIdentifier, expectedVersion);
-			         }				
-				}
-			);
-		
-		when(mocked.load(any())).then(
-				new Answer<ENTITY>() {
-					public ENTITY answer(InvocationOnMock invocation) {
-						final Object aggregateIdentifier = invocation.getArguments()[0];
-			            return that.load(aggregateIdentifier);
-			         }				
-				}
-			);		
-		
-		if (Repository.class.isAssignableFrom(repositoryClass)) {
+		if (Repository.class.isAssignableFrom(repository.getClass())) {
 			doAnswer(new Answer<Object>() {
 				public Object answer(InvocationOnMock invocation) {
 					final EventBus eventBus = (EventBus) invocation.getArguments()[0];
@@ -142,13 +148,13 @@ public class KasperRepositoryTest<ENTITY extends AggregateRoot> implements IRepo
 	 * Static repository mock
 	 * 
 	 * @param fixture the Axon fixture to be used by the repository
-	 * @param repositoryClass the repository class to mock as
+	 * @param repository the repository class to mock as
 	 * @return a mocked repository
 	 */
 	public static <E extends AggregateRoot, R extends IRepository<E>> R mockAs(
-			final FixtureConfiguration<E> fixture, final Class<R> repositoryClass) {
-		final KasperRepositoryTest<E> repository = new KasperRepositoryTest<>(fixture);
-		return repository.asMockOf(repositoryClass);
+			final FixtureConfiguration<E> fixture, final R repository) {
+		final KasperRepositoryTest<E> mocked = new KasperRepositoryTest<>(fixture);
+		return mocked.asMockOf(repository);
 	}
 	
 }

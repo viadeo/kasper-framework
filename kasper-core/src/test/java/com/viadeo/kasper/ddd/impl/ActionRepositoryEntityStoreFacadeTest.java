@@ -12,7 +12,7 @@ import org.junit.Test;
 import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
-public class ActionRepositoryVersionFacadeTest {
+public class ActionRepositoryEntityStoreFacadeTest {
 
     // ------------------------------------------------------------------------
     // doSave()
@@ -24,7 +24,7 @@ public class ActionRepositoryVersionFacadeTest {
         // Given
         final AbstractAggregateRoot agr = mock(AbstractAggregateRoot.class);
         final Repository krepo = mock(Repository.class);
-        final ActionRepositoryVersionFacade repo = new ActionRepositoryVersionFacade(krepo);
+        final ActionRepositoryEntityStoreFacade repo = new ActionRepositoryEntityStoreFacade(krepo);
         doReturn(DefaultKasperId.random()).when(agr).getEntityId();
         doReturn(0L).when(agr).getVersion();
 
@@ -45,7 +45,7 @@ public class ActionRepositoryVersionFacadeTest {
         // Given
         final AbstractAggregateRoot agr = mock(AbstractAggregateRoot.class);
         final Repository krepo = mock(Repository.class);
-        final ActionRepositoryVersionFacade repo = new ActionRepositoryVersionFacade(krepo);
+        final ActionRepositoryEntityStoreFacade repo = new ActionRepositoryEntityStoreFacade(krepo);
         doReturn(agr).when(krepo).doLoad(anyObject(), any(Long.class));
         doReturn(DefaultKasperId.random()).when(agr).getEntityId();
         doReturn(null).when(agr).getVersion();
@@ -67,7 +67,7 @@ public class ActionRepositoryVersionFacadeTest {
         // Given
         final AbstractAggregateRoot agr = mock(AbstractAggregateRoot.class);
         final Repository krepo = mock(Repository.class);
-        final ActionRepositoryVersionFacade repo = new ActionRepositoryVersionFacade(krepo);
+        final ActionRepositoryEntityStoreFacade repo = new ActionRepositoryEntityStoreFacade(krepo);
         doReturn(DefaultKasperId.random()).when(agr).getEntityId();
         doReturn(0L).when(agr).getVersion();
 

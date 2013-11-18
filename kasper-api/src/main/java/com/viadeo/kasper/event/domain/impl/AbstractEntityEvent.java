@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event.domain.impl;
 
+import com.google.common.base.Objects;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.ddd.Domain;
@@ -67,6 +68,43 @@ public abstract class AbstractEntityEvent<D extends Domain>
     @Override
     public Long getVersion() {
         return this.version;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(
+                super.hashCode(), this.entityId,
+                this.version, this.lastEntityModificationDate
+        );
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == checkNotNull(obj)) {
+            return true;
+        }
+        if (!getClass().equals(obj.getClass())) {
+            return false;
+        }
+
+        final AbstractEntityEvent other = (AbstractEntityEvent) obj;
+
+        return super.equals(obj) &&
+                Objects.equal(this.entityId, other.entityId) &&
+                Objects.equal(this.version, other.version);
+                /* do not compare the date */
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .addValue(super.toString())
+                .addValue(this.entityId)
+                .addValue(this.version)
+                .addValue(this.lastEntityModificationDate)
+                .toString();
     }
 
 }

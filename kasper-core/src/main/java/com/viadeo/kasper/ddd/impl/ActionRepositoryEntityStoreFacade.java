@@ -7,18 +7,29 @@
 package com.viadeo.kasper.ddd.impl;
 
 import com.viadeo.kasper.ddd.AggregateRoot;
+import org.axonframework.eventstore.EventStore;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * Facade repository used to :
+ * Facade repository used for non event-sourced repositories
  *
- * - add metrics before and after each action
- * - make some coherency validation on aggregates before and after each action
+ * - manage with version
+ * - can warn an optional event store about saved aggregates events
  *
  */
-class ActionRepositoryVersionFacade<AGR extends AggregateRoot> extends ActionRepositoryFacade<AGR> {
+class ActionRepositoryEntityStoreFacade<AGR extends AggregateRoot> extends ActionRepositoryFacade<AGR> {
 
-    ActionRepositoryVersionFacade(final Repository<AGR> kasperRepository) {
+    private EventStore eventStore;
+
+    // ------------------------------------------------------------------------
+
+    ActionRepositoryEntityStoreFacade(final Repository<AGR> kasperRepository) {
         super(kasperRepository);
+    }
+
+    public void setEventStore(final EventStore eventStore) {
+        this.eventStore = checkNotNull(eventStore);
     }
 
     // ------------------------------------------------------------------------
@@ -30,6 +41,13 @@ class ActionRepositoryVersionFacade<AGR extends AggregateRoot> extends ActionRep
          */
         if (null != aggregate.getVersion()) {
             aggregate.setVersion(aggregate.getVersion() + 1L);
+        }
+
+        if (null != eventStore) {
+            eventStore.appendEvents(
+                    aggregate.getClass().getSimpleName(),
+                    aggregate.getUncommittedEvents()
+            );
         }
 
         super.doSave(aggregate);

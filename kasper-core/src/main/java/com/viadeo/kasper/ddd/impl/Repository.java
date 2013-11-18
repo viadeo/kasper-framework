@@ -15,6 +15,7 @@ import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventsourcing.AggregateDeletedException;
+import org.axonframework.eventstore.EventStore;
 import org.axonframework.repository.AggregateNotFoundException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -54,21 +55,25 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * Store initilization state
      */
     private boolean initialized = false;
+
+    /**
+     * The event store (optional)
+     */
+    private EventStore eventStore;
 	
 	// ========================================================================
 
     /**
      * Initialize the repository
      */
-	@Override
-	public final void init() {
-		if ( ! initialized) {
+	public final void init(final boolean force) {
+		if ( ! initialized || force) {
             @SuppressWarnings("unchecked") // Safe
             final Optional<Class<AGR>> entityType =
                     (Optional<Class<AGR>>) (ReflectionGenericsResolver.getParameterTypeFromClass(
                             this.getClass(), IRepository.class, IRepository.ENTITY_PARAMETER_POSITION));
 
-            if (!entityType.isPresent()) {
+            if ( ! entityType.isPresent()) {
                 throw new KasperException("Cannot determine entity type for " + this.getClass().getName());
             }
 
@@ -82,14 +87,23 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
         }
 	}
 
+    @Override
+    public final void init() {
+        this.init(false);
+    }
+
     /**
      * @return the default instance of the decorated repository
      */
     protected DecoratedAxonRepository<AGR> getDecoratedRepository(final Class<AGR> entityType) {
- 		return new AxonRepository<>(
-                new ActionRepositoryVersionFacade<>(this),
-                entityType
-        );
+        final ActionRepositoryEntityStoreFacade<AGR> facade =
+                new ActionRepositoryEntityStoreFacade<AGR>(this);
+
+        if (null != this.eventStore) {
+            facade.setEventStore(this.eventStore);
+        }
+
+ 		return new AxonRepository<>(facade, entityType);
     }
 	
 	// ------------------------------------------------------------------------
@@ -104,8 +118,26 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
             this.eventBus = checkNotNull(eventBus);
         }
 	}
-	
-	// ========================================================================	
+
+    public void setEventStore(final EventStore eventStore) {
+        this.eventStore = checkNotNull(eventStore);
+
+        if (null != this.axonRepository) {
+            final ActionRepositoryFacade<AGR> facade =
+                    this.axonRepository.getActionRepositoryFacade();
+
+            if (ActionRepositoryEntityStoreFacade.class.isAssignableFrom(facade.getClass())) {
+                ((ActionRepositoryEntityStoreFacade) facade).setEventStore(eventStore);
+            }
+        }
+
+    }
+
+    public Optional<EventStore> getEventStore() {
+        return Optional.fromNullable(this.eventStore);
+    }
+
+	// ========================================================================
 	// Redirect Axon.Repository calls to decored instance
 	// ========================================================================
 	
@@ -113,7 +145,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * @see org.axonframework.repository.Repository#load(java.lang.Object, java.lang.Long)
 	 */
 	@Override
-	public final AGR load(final Object aggregateIdentifier, final Long expectedVersion) {
+	public AGR load(final Object aggregateIdentifier, final Long expectedVersion) {
         init();
 		return this.axonRepository.load(aggregateIdentifier, expectedVersion);
 	}
@@ -122,7 +154,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * @see org.axonframework.repository.Repository#load(java.lang.Object)
 	 */
 	@Override
-	public final AGR load(final Object aggregateIdentifier) {
+	public AGR load(final Object aggregateIdentifier) {
         init();
 		return this.axonRepository.load(aggregateIdentifier);
 	}
@@ -131,7 +163,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * @see org.axonframework.repository.Repository#add(Object)
 	 */
 	@Override
-	public final void add(final AGR aggregate) {
+	public void add(final AGR aggregate) {
         init();
 
         /* All aggregates must have an ID */
@@ -154,7 +186,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return the fetched aggregate if any
      */
     @Override
-    public final AGR get(final KasperID aggregateIdentifier, final Long expectedVersion) {
+    public AGR get(final KasperID aggregateIdentifier, final Long expectedVersion) {
         return this.doLoad((Object) aggregateIdentifier, expectedVersion);
     }
 
@@ -165,7 +197,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return the fetched aggregate if any
      */
     @Override
-    public final AGR get(final KasperID aggregateIdentifier) {
+    public AGR get(final KasperID aggregateIdentifier) {
         return this.get(aggregateIdentifier, null);
     }
 
@@ -176,7 +208,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return true if this aggregate exists
      */
     @Override
-    public final boolean has(final KasperID id) {
+    public boolean has(final KasperID id) {
         return this.doHas(id);
     }
 

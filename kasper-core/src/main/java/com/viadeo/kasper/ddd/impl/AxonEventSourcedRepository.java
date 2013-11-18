@@ -52,4 +52,18 @@ class AxonEventSourcedRepository<AGR extends AggregateRoot>
         this.actionRepositoryFacade.doDelete(aggregate);
     }
 
+    // ------------------------------------------------------------------------
+
+    public void doRealSaveWithLock(final AGR aggregate) {
+        super.doSaveWithLock(aggregate);
+    }
+
+    public AGR doRealLoad(final Object aggregateIdentifier, final Long expectedVersion) {
+        return super.doLoad(aggregateIdentifier, expectedVersion);
+    }
+
+    public void doRealDeleteWithLock(final AGR aggregate) {
+        super.doDeleteWithLock(aggregate);
+    }
+
 }
