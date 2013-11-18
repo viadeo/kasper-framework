@@ -499,6 +499,10 @@ end of the unit of work calling doDelete(). You are heavily encouraged to never 
 as deleted. So in major cases doDelete() can just call doSave(), the loading of entities in Kasper repositories will take
 care of not loading deleted aggregates.
 
+The **Repository** abstract class mut be considered as an **entity store** : the current state of entities is
+stored, then events will be sent by the unit of work once entity is persisted. If you want to apply a real
+event sourcing strategy, use instead the **EventSourcedRepository** supplying an Axon **EventStore**.
+
 Value objects
 -------------
 

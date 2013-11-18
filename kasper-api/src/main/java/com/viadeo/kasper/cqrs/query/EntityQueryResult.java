@@ -9,14 +9,44 @@ package com.viadeo.kasper.cqrs.query;
 import com.viadeo.kasper.KasperID;
 import org.joda.time.DateTime;
 
-public interface EntityQueryResult extends QueryResult {
+import static com.google.common.base.Preconditions.checkNotNull;
 
-    KasperID getId();
+public abstract class EntityQueryResult implements QueryResult {
 
-    String getType();
+    private final KasperID id;
+    private final String type;
+    private final Long version;
+    private final DateTime lastModificationDate;
 
-    Long getVersion();
+    // ------------------------------------------------------------------------
 
-    DateTime getLastModificationDate();
+    public EntityQueryResult(final KasperID id, final String type, final Long version) {
+        this(id, type, version, new DateTime(0L));
+    }
+
+    public EntityQueryResult(final KasperID id, final String type, final Long version, final DateTime time) {
+        this.id = checkNotNull(id);
+        this.type = checkNotNull(type);
+        this.version = checkNotNull(version);
+        this.lastModificationDate = checkNotNull(time);
+    }
+
+    // ------------------------------------------------------------------------
+
+    public KasperID getId() {
+        return this.id;
+    }
+
+    public String getType() {
+        return this.type;
+    }
+
+    public Long getVersion() {
+        return this.version;
+    }
+
+    public DateTime getLastModificationDate() {
+        return this.lastModificationDate;
+    }
 
 }

@@ -20,6 +20,9 @@ import java.util.Arrays;
  * Matcher that will match an Object if all the fields on that Object contain values equal to the same field in the
  * expected instance.
  *
+ * - added anyDate
+ * - ignored PersistencyType as it is an event quality marker for Kasper events
+ *
  * @param <E> The type of object
  * @author Allard Buijze
  * @since 1.1
@@ -59,6 +62,12 @@ public class EventMatcher<E extends Event> extends BaseMatcher<E> {
             try {
                 final Object expectedFieldValue = field.get(expectedValue);
                 final Object actualFieldValue = field.get(actual);
+
+                /* do not take into account the persistency type */
+                if (Event.PersistencyType.class.equals(field.getType())) {
+                    continue;
+                }
+
                 if (expectedFieldValue != null && actualFieldValue != null && expectedFieldValue.getClass().isArray()) {
                     if (!Arrays.deepEquals(new Object[]{expectedFieldValue}, new Object[]{actualFieldValue})) {
                         failedField = field;

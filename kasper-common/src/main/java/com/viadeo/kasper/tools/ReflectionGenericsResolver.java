@@ -51,6 +51,17 @@ public final class ReflectionGenericsResolver {
 
 	}
 
+    /*
+    public static Optional<? extends Class> getParameterTypeFromClass(final Object runtimeObject,
+                                                                      final Type targetType,
+                                                                      final Integer nbParameter) {
+        // Boot recursive process with an empty bindings maps
+        return getParameterTypeFromClass(
+                runtimeObject.getClass(), targetType, nbParameter, new HashMap<Type, Type>());
+
+    }
+    */
+
     /**
      * Can be used to analyze a field, taking into account the generic parameters of its declaring class
      *
