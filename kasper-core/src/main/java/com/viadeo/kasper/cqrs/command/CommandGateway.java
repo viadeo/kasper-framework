@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
  */
 public interface CommandGateway {
 
-    int DEFAULT_TIMEOUT_SEC = 20;
+    int DEFAULT_TIMEOUT_SEC = 60;
 
     /**
      * Fire an forget
@@ -49,6 +49,16 @@ public interface CommandGateway {
      * Wait for command execution
      */
     void sendCommandAndWait(Command command, @MetaData(Context.METANAME) Context context, long timeout, TimeUnit unit)
+            throws Exception;
+
+    /**
+     * Wait until command answers
+     *
+     * @param command
+     * @param context
+     * @throws Exception
+     */
+     void sendCommandAndWaitForever(Command command, @MetaData(Context.METANAME) Context context)
             throws Exception;
 
 }

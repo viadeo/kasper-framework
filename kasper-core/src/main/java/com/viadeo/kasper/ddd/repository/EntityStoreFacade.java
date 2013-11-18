@@ -6,8 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.repository;
 
+import com.google.common.base.Optional;
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import org.axonframework.eventstore.EventStore;
+import org.axonframework.repository.AggregateNotFoundException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -42,7 +45,40 @@ class EntityStoreFacade<AGR extends AggregateRoot> extends MetricsRepositoryFaca
             );
         }
 
+        /**
+         * Increment non-null version
+         */
+        if (null != aggregate.getVersion()) {
+            aggregate.setVersion(aggregate.getVersion() + 1L);
+        }
+
         super.doSave(aggregate);
+    }
+
+    @Override
+    protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
+        final AGR agr = super.doLoad(aggregateIdentifier, expectedVersion);
+
+        /**
+         * Set null version to 0L
+         */
+        if (null == agr.getVersion()) {
+            agr.setVersion(0L);
+        }
+
+        return agr;
+    }
+
+    @Override
+    protected void doDelete(final AGR aggregate) {
+        /**
+         * Increment non-null version
+         */
+        if (null != aggregate.getVersion()) {
+            aggregate.setVersion(aggregate.getVersion() + 1L);
+        }
+
+        super.doDelete(aggregate);
     }
 
 }

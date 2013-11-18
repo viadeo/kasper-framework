@@ -87,6 +87,7 @@ class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacad
 
     // ------------------------------------------------------------------------
 
+    @Override
     protected void doSave(final AGR aggregate) {
         initMetrics();
 
@@ -113,6 +114,7 @@ class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacad
 
     // ------------------------------------------------------------------------
 
+    @Override
     protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
         initMetrics();
 
@@ -141,6 +143,7 @@ class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacad
 
     // ------------------------------------------------------------------------
 
+    @Override
     protected void doDelete(final AGR aggregate) {
         initMetrics();
 
