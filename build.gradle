@@ -177,6 +177,7 @@ subprojects {
       JCACHE_EHCACHE        : 'net.sf.ehcache:ehcache-jcache:1.5.0-0.5',
 
       VALIDATION_API        : 'javax.validation:validation-api:1.1.0.Final',
+      JAVAX_EL              : 'javax.el:javax.el-api:3.0.0',
 
       SLF4J                 : 'org.slf4j:slf4j-api:1.7.5',
       LOG4J_OVER_SLF4J      : 'org.slf4j:log4j-over-slf4j:1.7.5',
@@ -193,7 +194,10 @@ subprojects {
                               ],
 
       LOMBOK                : "org.projectlombok:lombok:0.12.0",
-      HIBERNATE_VALIDATOR   : 'org.hibernate:hibernate-validator:5.0.1.Final',
+      HIBERNATE_VALIDATOR   : [
+                                'org.hibernate:hibernate-validator:5.0.1.Final',
+                                'org.glassfish.web:el-impl:2.2'
+                              ],
       GLASSFISH_EXPR_LANG   : 'org.glassfish.web:javax.el:2.2.3'
 
   ] // see http://stackoverflow.com/questions/9547170/in-gradle-how-do-i-declare-common-dependencies-in-a-single-place
