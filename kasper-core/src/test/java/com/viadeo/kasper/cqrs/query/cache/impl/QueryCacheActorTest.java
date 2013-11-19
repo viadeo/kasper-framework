@@ -10,11 +10,11 @@ import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.cqrs.query.impl.AbstractQueryHandler;
 import com.viadeo.kasper.cqrs.query.impl.QueryHandlerActor;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Before;
@@ -115,7 +115,7 @@ public class QueryCacheActorTest {
 
     @XKasperUnregistered
     @XKasperQueryHandler(domain = DummyDomain.class, cache = @XKasperQueryCache(keys = "someField"))
-    public static class WithFilteredFieldsCacheQueryHandler extends AbstractQueryHandler<DummyQuery, DummyResult> {
+    public static class WithFilteredFieldsCacheQueryHandler extends QueryHandler<DummyQuery, DummyResult> {
         @Override
         public QueryResponse<DummyResult> retrieve(DummyQuery query) throws Exception {
             return QueryResponse.of(new DummyResult());
@@ -124,7 +124,7 @@ public class QueryCacheActorTest {
 
     @XKasperUnregistered
     @XKasperQueryHandler(domain = DummyDomain.class, cache = @XKasperQueryCache(ttl = TTL))
-    public static class WithCacheQueryHandler extends AbstractQueryHandler<DummyQuery, DummyResult> {
+    public static class WithCacheQueryHandler extends QueryHandler<DummyQuery, DummyResult> {
         @Override
         public QueryResponse<DummyResult> retrieve(DummyQuery query) throws Exception {
             return QueryResponse.of(new DummyResult());
@@ -133,7 +133,7 @@ public class QueryCacheActorTest {
 
     @XKasperUnregistered
     @XKasperQueryHandler(domain = DummyDomain.class)
-    public static class WithoutCacheQueryHandler extends AbstractQueryHandler<DummyQuery, DummyResult> {
+    public static class WithoutCacheQueryHandler extends QueryHandler<DummyQuery, DummyResult> {
         @Override
         public QueryResponse<DummyResult> retrieve(DummyQuery query) throws Exception {
             return QueryResponse.of(new DummyResult());

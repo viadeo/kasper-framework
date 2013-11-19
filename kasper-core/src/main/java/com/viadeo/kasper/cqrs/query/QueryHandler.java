@@ -7,37 +7,41 @@
 package com.viadeo.kasper.cqrs.query;
 
 /**
- * A Kasper query handler
  *
- * @param <Q> the associated Query
- * @param <RESULT> the associated Data Transfer Object
+ * This is a convenient class
  *
- * @see QueryResponse
- * @see Query
+ * Extend it instead of implementing IQueryHandler will allow you to
+ * override at your convenience retrieve(message) or simply retrieve(query)
+ * if you are not interested by the message
+ *
+ * The query gateway is aware of this internal convenience and will deal with it
+ *
+ * @param <Q> the query
+ * @param <RESULT> the Response
  */
-public interface QueryHandler<Q extends Query, RESULT extends QueryResult> {
+public abstract class QueryHandler<Q extends Query, RESULT extends QueryResult> {
 
-	/**
-	 * Generic parameter position for Data Query Object
-	 */
-	int PARAMETER_QUERY_POSITION = 0;
+    /**
+     * Generic parameter position for Data Query Object
+     */
+    public static int PARAMETER_QUERY_POSITION = 0;
 
-	/**
-	 * Generic parameter position for Data Transfer Object
-	 */
-	int PARAMETER_RESULT_POSITION = 1;
+    /**
+     * Generic parameter position for Data Transfer Object
+     */
+    public static int PARAMETER_RESULT_POSITION = 1;
 
-	/**
-	 * Operates the handler, retrieve an handler Response satisfying the submitted
-	 * filter
-     *
-     * You have to implement at least one retrieve() method
-	 *
-	 * @param message a message encapsulating the query to result
-	 * @return a filled Response
-	 */
-	QueryResponse<RESULT> retrieve(QueryMessage<Q> message) throws Exception;
+    protected QueryHandler() { }
+
+    // ------------------------------------------------------------------------
+
+    public QueryResponse<RESULT> retrieve(final QueryMessage<Q> message) throws Exception {
+        return retrieve(message.getQuery());
+    }
+
+    public QueryResponse<RESULT> retrieve(final Q query) throws Exception {
+        throw new UnsupportedOperationException();
+    }
 
 }
-
 

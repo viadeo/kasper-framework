@@ -6,11 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.repository;
 
-import com.google.common.base.Optional;
-import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import org.axonframework.eventstore.EventStore;
-import org.axonframework.repository.AggregateNotFoundException;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

@@ -57,31 +57,19 @@ public class QueryHandlersProcessorTest {
 
     @XKasperUnregistered
     @XKasperQueryHandler( name = HANDLER_NAME, domain = TestDomain.class )
-    public static class TestHandler implements QueryHandler<TestQuery, TestResult> {
-        @Override
-        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception { return null; }
-    }
+    public static class TestHandler extends QueryHandler<TestQuery, TestResult> { }
 
     @XKasperUnregistered
     @XKasperQueryHandler( domain = TestDomain.class )
-    public static class TestHandlerNoName implements QueryHandler<TestQuery, TestResult> {
-        @Override
-        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception { return null; }
-    }
+    public static class TestHandlerNoName extends QueryHandler<TestQuery, TestResult> { }
 
     @XKasperUnregistered
     @XKasperQueryHandler( domain = TestDomain.class, filters = TestFilter.class )
-    public static class TestHandlerOneFilter implements QueryHandler<TestQuery, TestResult> {
-        @Override
-        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception { return null; }
-    }
+    public static class TestHandlerOneFilter extends QueryHandler<TestQuery, TestResult> { }
 
     @XKasperUnregistered
     @XKasperQueryHandler( domain = TestDomain.class, filters = { TestFilter.class, TestFilter2.class } )
-    public static class TestHandlerMultipleFilters implements QueryHandler<TestQuery, TestResult> {
-        @Override
-        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception { return null; }
-    }
+    public static class TestHandlerMultipleFilters extends QueryHandler<TestQuery, TestResult> { }
 
     // ------------------------------------------------------------------------
 

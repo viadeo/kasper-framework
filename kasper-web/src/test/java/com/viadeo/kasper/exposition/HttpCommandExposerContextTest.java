@@ -8,13 +8,9 @@ package com.viadeo.kasper.exposition;
 
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandGateway;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.command.*;
 import com.viadeo.kasper.cqrs.command.CommandResponse.Status;
-import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
@@ -73,7 +69,7 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest<HttpComma
     }
 
     @XKasperCommandHandler(domain = TestDomain.class)
-    public static class ContextCheckCommandHandler extends AbstractCommandHandler<ContextCheckCommand> {
+    public static class ContextCheckCommandHandler extends CommandHandler<ContextCheckCommand> {
         @Override
         public CommandResponse handle(final KasperCommandMessage<ContextCheckCommand> message) throws Exception {
             if (message.getCommand().getContextName().contentEquals(CONTEXT_FULL)) {

@@ -13,7 +13,6 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
@@ -181,7 +180,7 @@ public class CommandAxonScenarioEntityStore {
 
     @XKasperUnregistered
     public static class TestCreateCommandHandler
-            extends AbstractEntityCommandHandler<TestCreateCommand, TestAggregate> {
+            extends EntityCommandHandler<TestCreateCommand, TestAggregate> {
 
         public CommandResponse handle(final KasperCommandMessage<TestCreateCommand> message) throws Exception {
 
@@ -197,7 +196,7 @@ public class CommandAxonScenarioEntityStore {
 
     @XKasperUnregistered
     public static class TestChangeLastNameCommandHandler
-            extends AbstractEntityCommandHandler<TestChangeLastNameCommand, TestAggregate> {
+            extends EntityCommandHandler<TestChangeLastNameCommand, TestAggregate> {
 
          public CommandResponse handle(final KasperCommandMessage<TestChangeLastNameCommand> message) throws Exception {
 

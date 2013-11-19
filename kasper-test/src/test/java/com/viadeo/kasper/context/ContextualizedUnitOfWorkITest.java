@@ -14,9 +14,9 @@ import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
@@ -72,7 +72,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     public static class ContextTestCommand implements Command { }
 
     @XKasperCommandHandler(domain = ContextTestDomain.class)
-    public static class ContextTestHandler extends AbstractEntityCommandHandler<ContextTestCommand, ContextTestAGR> {
+    public static class ContextTestHandler extends EntityCommandHandler<ContextTestCommand, ContextTestAGR> {
         public CommandResponse handle(final ContextTestCommand command) throws Exception {
 
             StaticChecker.verify(CurrentContext.value().get());

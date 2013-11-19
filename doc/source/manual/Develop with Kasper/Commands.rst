@@ -32,8 +32,11 @@ A command can optionally declares some metadata using the **@XKasperCommand** an
 
 **A Command is part of a domain API**.
 
-The abstract class **AbstractCreateCommand** can be used to define an entity creation command, which contains an id to be used as
+The abstract class **CreateCommand** can be used to define an entity creation command, which contains an id to be used as
 identifier for the entity to be created.
+
+Two other abstract classes can be used for entity updates and deletion : **UpdateCommand** and **DeleteCommand**
+
 
 **usage**
 
@@ -41,11 +44,11 @@ identifier for the entity to be created.
     :linenos:
 
     @XKasperCommand( description = "An awesome command used to create a User" )
-    public class CreateAUserCommand extends AbstractCreateCommand {
+    public class CreateAUserCommand extends CreateCommand {
 
         private final String username;
 
-        public CreateAUserCommand(final String username, final KasperID idToBeUsed) {
+        public CreateAUserCommand(final KasperID idToBeUsed, final String username) {
             super(idToBeUSed);
 
             this.username = checkNotNull(username);
@@ -61,17 +64,13 @@ identifier for the entity to be created.
 Command handlers
 ----------------
 
-A command handler is an object implementing the interface **CommandHandler<Command>**, whose class name ends with '*CommandHandler*'.
+A command handler is an object extending **CommandHandler<Command>**, whose class name ends with '*CommandHandler*'.
 
 A command handler **have to** declares its owning domain into the annotation **@XKasperCommandHandler**.
 
 **A command handler is part of the COMMAND architectural area**.
 
-The abstract class **AbstractCommandHandler<Command>** can be used in order to allow a finer grained handling declaration (ability to access to the command
-message and the unit of work, the message alone, or the command only depending on your needs)i and giving access to the domain locator which can then be used
-to retrieve domain objects.
-
-The abstract class **AbstractEntityCommandHandler<Command, Entity>** can be used to stick a command handler to a specific entity, it defines a method
+The abstract class **EntityCommandHandler<Command, Entity>** can be used to stick a command handler to a specific entity, it defines a method
 *getRepository()* used to retrieve easily the repository corresponding to this entity. This abstract class must generally be used when
 defining a command mainly dedicated to create, modify and delete a domain entity.
 
@@ -81,7 +80,7 @@ defining a command mainly dedicated to create, modify and delete a domain entity
     :linenos:
 
     @XKasperCommandHandler( domain = UserDomain.class, description = "Creates a user known to the application" )
-    public class CreateAUserCommandHandler extends AbstractEntityCommandHandler<User, CreateAUserCommand> {
+    public class CreateAUserCommandHandler extends EntityCommandHandler<User, CreateAUserCommand> {
         
         public CommandResponse handle(final CreateAUserCommand command) {
             final UserRepository repository = this.getRepository();
@@ -100,7 +99,7 @@ If you need to retrieve a different repository, use the platform domain locator 
     :linenos:
 
     @XKasperCommandHandler( domain = UserDomain.class, description = "Creates a user known to the application" )
-    public class CreateAUserCommandHandler extends AbstractEntityCommandHandler<User, CreateAUserCommand> {
+    public class CreateAUserCommandHandler extends EntityCommandHandler<User, CreateAUserCommand> {
         
         public Thing getThing() {
             Thing thing = null;
@@ -129,4 +128,4 @@ If you need to retrieve a different repository, use the platform domain locator 
     }   
 
 
-TODO: send events
+If you need to send non-domain events from the handler, use **this.publish(event)**, do not try to inject the event bus unless your event will not be sent during unit of work commit process.

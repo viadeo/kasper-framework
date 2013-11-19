@@ -44,10 +44,10 @@ public class QueryFilterITest {
     }
 
     @XKasperUnregistered
-    private class TestHandler implements QueryHandler<TestQuery, TestResult> {
+    private class TestHandler extends QueryHandler<TestQuery, TestResult> {
         @Override
-        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception {
-            return new QueryResponse<>(new TestResult());
+        public QueryResponse<TestResult> retrieve(final TestQuery query) throws Exception {
+            return QueryResponse.of(new TestResult());
         }
     }
 
