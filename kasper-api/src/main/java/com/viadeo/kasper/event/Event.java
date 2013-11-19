@@ -7,6 +7,7 @@
 package com.viadeo.kasper.event;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -16,6 +17,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  */
 public abstract class Event implements IEvent {
+
+    /**
+     * Optional Unit Of Work macro event parent id
+     * ( set during uow commit() )
+     */
+    private String uowEventId;
 
     /**
      * Event type, can be set by the repository before persisting
@@ -38,6 +45,16 @@ public abstract class Event implements IEvent {
 
     public PersistencyType getPersistencyType() {
         return this.type;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public Optional<String> getUOWEventId() {
+        return Optional.fromNullable(this.uowEventId);
+    }
+
+    public void setUOWEventId(final String uowEventId) {
+        this.uowEventId = checkNotNull(uowEventId);
     }
 
     // ------------------------------------------------------------------------

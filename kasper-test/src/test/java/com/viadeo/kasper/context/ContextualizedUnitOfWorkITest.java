@@ -132,6 +132,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
         @Override
         protected void doDelete(final ContextTestAGR aggregate) {
         }
+
     }
 
     // ------------------------------------------------------------------------
