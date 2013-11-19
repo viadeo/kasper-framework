@@ -54,7 +54,7 @@ construct aggregates, they can have different strategies for that :
 2. Call a direct constructor of the aggregate which is reserved for this usage
 3. Provide an internal static builder within the aggregate (**preferred way**)
 
-In case you have to choose the second strategy, annotate your constructor with **@XKasperEntityStoreCreator**.
+In case you have to choose the second or third strategy, annotate your constructor with **@XKasperEntityStoreCreator**.
 
 
 
