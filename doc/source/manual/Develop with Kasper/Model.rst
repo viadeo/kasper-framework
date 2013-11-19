@@ -85,42 +85,25 @@ Kasper re-inforce some of these aspects, it :
 - generalize the **aggregate** as being **the only persistable entity** type (only aggregates can be persisted, no standalone entities)
 - splits the entity component as besoin either a **Concept** or a **Relation**, defining an entity-relationship (E-R) model.
 
-Kasper then provides four kind of entities :
-
-+----------------------------------+---------------+-------------------+
-|  Kasper entities interface name  |    **Root**   +   **Component**   |
-+==================================+===============+===================+
-|  **Concept**                     +  RootConcept  + ComponentConcept  |
-+----------------------------------+---------------+-------------------+
-|  **Relation**                    +  RootRelation + ComponentRelation +
-+----------------------------------+---------------+-------------------+
 
 A **Concept** is any entity which does not represent a relation between two other entities.
 
-A **Relation** is an entity which links, with meaning, two other RootConcept entities.
+A **Relation** is an entity which links, with meaning, two other Concept entities.
 
 A component entity is an entity which is part of an aggregate but do not represent its root entity, it's an **aggregate component**.
 
-A Kasper entity is then :
-
-- An aggregate **component** or an aggregate **root**
-- A **Concept** or a **Relation** between concepts.
-
-And implements one of the four interfaces **RootConcept**, **RootRelation**, **ComponentConcept** or **ComponentRelation**, declaring the owning domain
+And implements one of the two classes **Concept**, **Relation** declaring the owning domain
 using the **@XKasperConcept** or **@XKasperRelation** annotations.
 
-Three abstract classes are also provided, as a default implementation of some methods of these interfaces :
-**AbstractRootConcept**, **AbstractRootRelation** and **AbstractComponentRelation**.
-
-There is no *AbstractComponentConcept* since there is nothing specific to implement for this marker interface.
+About writing aggregates :
 
 .. toctree::
     :maxdepth: 2
 
     Aggregates
 
-RootConcept
-"""""""""""
+Concept
+"""""""
 
 A concept aggregate root is the base entity of a model. It is a persistable business entity as you can understand it in
 many other object models.
@@ -138,22 +121,43 @@ contain any direct reference to other aggregate roots without a intermediate rel
     :linenos:
 
     @XKasperConcept( domain = Vehicles.class, label = "A simple car" )
-    public class Car extends AbstractRootConcept {
+    public class Car extends Concept {
 
         private boolean started = true;
 
+        // --
+
         public Car(final KasperId id) {
-            setId(id);
+            apply(new ANewCarHasBeenCreatedEvent(id));
         }
 
+        @EventHandler
+        private void onCreated(final ANewCarHasBEenCreatedEvent event) {
+            setId(event.getId());
+        }
+
+        // --
+
         public void startEngine() {
+            apply(new EngineHasBeenStartedOnCarEvent());
+        }
+
+        @EventHandler
+        private void onEngineStarted(final EngineHasBeenStartedOnCarEvent event) {
             if (this.started) {
                 throw new CarIsAlwaysStarted();
             }
             this.started = true;
         }
 
+        // --
+
         public void stopEngine() {
+            apply(new EngineHasBeenStoppedOnCarEvent());
+        }
+
+        @EventHandler
+        public void onEngineStopped(final EngineHasBeenStoppedOnCarEvent event) {
             if (!this.started) {
                 throw new CarIsNotStarted();
             }
@@ -162,107 +166,8 @@ contain any direct reference to other aggregate roots without a intermediate rel
 
     }
 
-ComponentConcept
-""""""""""""""""
-
-A concept aggregate component is a part of an aggregate. This kind of entity will not be persisted alone.
-
-*ex: a Car wheel*
-
-The fact that a concept is an aggregate component or an aggregate root depends on your domain business. For instance
-a car wheel will be an aggregate component for a car rental company, but will be an aggregate root for a spare part vendor..
-
-.. image:: ../img/ddd-kasper-component-concept.png
-    :scale: 80%
-    :align: center
-
-**usage**
-
-.. code-block:: java
-    :linenos:
-
-    public static enum WheelPosition { FRONT_LEFT, FRONT_RIGHT, BACK_LEFT, BACK_RIGHT }
-
-    @XKasperConcept( domain = Vehicles.class, label = "A wheel, component of a car" )
-    class Wheel implements ComponentConcept {
-
-        private WheelPosition position;
-        private long totalDistance;
-
-        Wheel(final WheelPosition position) {
-            this.position = position;
-            this.totalDistance = 0;
-        }
-
-        WheelPosition getPosition()
-            { return this.position; }
-
-        void goForward(final long distance)
-            { this.totalDistance += distance; }
-
-        void goBackward(final long distance)
-            { this.totalDistance -= distance; }
-
-    }
-
-    @XKasperConcept( domain = Vehicles.class, label = "A car with 4 wheels" )
-    public class Car extends AbstractRootConcept {
-
-        private boolean started = true;
-        private long totalDistance;
-        private Set<Wheel> wheels;
-
-        public Car(final KasperId id) {
-            setId(id);
-            this.totalDistance = 0;
-
-            this.wheels = Sets.newHashSet();
-            for (final WheelPosition position : WheelPosition.values()) {
-                this.wheels.add(new Wheel(position));
-            }
-        }
-
-        public void startEngine() {
-            if (this.started) {
-                throw new CarIsAlreadyStarted();
-            }
-            this.started = true;
-        }
-
-        public void stopEngine() {
-            if (this.started) {
-                throw new CarIsNotStarted();
-            }
-            this.started = false;
-        }
-
-        public goForward(final long distance) {
-            assert(distance > 0);
-
-            if (!this.started) {
-                throw new CarIsNotStarted();
-            }
-            for (final Wheel wheel : this.wheels) {
-                wheel.goForward(distance);
-            }
-        }
-
-        public goBackward(final long distance) {
-            assert(distance > 0);
-
-            if (!this.started) {
-                throw new CarIsNotStarted();
-            }
-            for (final Wheel wheel : this.wheels) {
-                wheel.goBackward(distance);
-            }
-        }
-
-    }
-
-
-RootRelation
-""""""""""""
+Relation
+""""""""
 
 A relation aggregate root is used to connect two concept aggregate roots with some optional metadata.
 
@@ -289,99 +194,34 @@ Kasper encourage to use a specific class names nomenclature for relations :
 
     @XBidirectional( verb = "likedBy" )
     @XKasperRelation( domain = MemberWall.class, verb = "likes", label = "A member liked an article" )
-    public class Member_likes_Article extends AbstractRootRelation<Member, Article> {
+    public class Member_likes_Article extends Relation<Member, Article> {
 
         Member_likes_Article(final KasperId memberId, final KasperId articleId) {
-            setId(memberId, articleId);
+            apply(new MemberLikedAnArticleEvent(memberId, articleId));
+        }
+
+        @EventHandler
+        private void onCreated(final MemberLikedAnArticleEvent event) {
+            setId(event.getMemberId(), event.getArticleId());
         }
 
     }
 
     @XKasperRelation( domain = MemberWall.class, label = "A member shares an article" )
-    public class Member_shares_Article extends AbstractRootRelation<Member, Article> {
+    public class Member_shares_Article extends Relation<Member, Article> {
 
         Member_shares_Article(final KasperId memberId, final KasperId articleId) {
-            setId(memberId, articleId);
+            apply(new MemberSharedAnArticle(memberId, articleId));
+        }
+
+        @EventHandler
+        private void onCreated(final MemberSharedAnArticleEvent event {
+            setId(event.getMemberId(), event.getArticleId());
         }
 
     }
 
 TODO: add some stuff about verbs and ontologies, what will be took into account if empty, ...
-
-ComponentRelation
-"""""""""""""""""
-
-A component relation is used within an aggregate in order to link this aggregate with another, external.
-
-Used by one aggregate **A** when a link to another aggregate **B** it depends on cannot exists without him.
-
-For instance a *BlogPost* is linked to a *Member* root concept.
-The BlogPost cannot exists without the user who posted it, it has a deep link with it. The relation does not exists independently within the model.
-
-The *BlogPost* root concept contains a unidirectional (default) component relation called *BlogPost_postedBy_Member* used to points out its creator.
-
-.. image:: ../img/ddd-kasper-component-relation.png
-    :scale: 80%
-    :align: center
-
-**usage** (*warning: non event-sourced aggregate code*)
-
-.. code-block:: java
-    :linenos:
-
-    @XKasperConcept( domain = Blogs.class, label = "A Member" )
-    public class Member extends AbstractRootConcept {
-
-        public Member(final KasperId id) {
-            setId(id);
-        }
-
-    }
-
-    @XKasperConcept( domain = Blogs.class, label = "A blog post, created by a member" )
-    public class BlogPost extends AbstractRootConcept {
-
-        private final String content;
-        private final BlogPost_postedBy_Member memberRelation;
-
-        public BlogPost(final KasperId id, final String message, final Member member) {
-            setId(id);
-
-            this.content = message;
-            this.memberRelation = new BlogPost_postedBy_Member(getEntityId(), member.getEntityId());
-        }
-
-    }
-
-    @XKasperRelation( domain = Blogs.class, label = "The relation between a blog post and its creator" )
-    class BlogPost_postedBy_Member extends AbstractComponentRelation<BlogPost, Member> {
-
-        BlogPost_postedBy_Member(final KasperId blogPostId, final KasperId memberId) {
-            setId(blogPostId, memberId);
-        }
-
-    }
-
-
-Entities composition rules
-^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-Basically concepts can contain other component concepts and relations, relations can contain component concepts.
-
-Another way to say the same thing is to state that a component concept can be contained in any other entity, a component
-relation can only be contained in concept entities while aggregate roots can never be used as component entities (sic !).
-
-+------------------------------+--------------+---------------+-------------------+--------------------+
-| Can hold direct reference to | root concept | root relation | component concept | component relation |
-+==============================+==============+===============+===================+====================+
-|     root concept             |              |               |                   |                    |
-+------------------------------+--------------+---------------+-------------------+--------------------+
-|     root relation            |              |               |                   |                    |
-+------------------------------+--------------+---------------+-------------------+--------------------+
-|     component concept        |      -       |       -       |         -         |          -         |
-+------------------------------+--------------+---------------+-------------------+--------------------+
-|     component relation       |      -       |               |         -         |                    |
-+------------------------------+--------------+---------------+-------------------+--------------------+
 
 Factories
 ---------
@@ -455,7 +295,7 @@ In order to create a Kasper repository you have to extend **Repository<Aggregate
         private static final String REQ_DELETE = "DELETE FROM Member WHERE memberId = %d AND version = '%s'";
 
         @Override
-        protected abstract Optional<Member> doLoad(final KasperID memberId, final Long expectedVersion) {
+        protected Optional<Member> doLoad(final KasperID memberId, final Long expectedVersion) {
             final response = sql.selectFirst(String.format(REQ_SELECT, memberId, expectedVersion));
             if (null != response) {
                 return Optional.of(new Member(memberId,
@@ -466,42 +306,39 @@ In order to create a Kasper repository you have to extend **Repository<Aggregate
         }
 
         @Override
-        protected abstract void doSave(final Member member) {
+        protected void doSave(final Member member) {
             sql.exec(String.format(REQ_INSERT, member.getIdentifier(),
                                                member.getVersion(),
                                                member.getName()));
         }
 
         @Override
-        protected abstract void doDelete(final Member member) {
+        protected void doDelete(final Member member) {
             sql.exec(String.format(REQ_DELETE, member.getIdentifier(), member.getVersion()));
         }
 
     }
 
-You can also add new public methods to this repository in order to access to your business indexes (logically hosted in your
-COMMAND architectural area).
+You can also add new public methods to this repository in order to access to your business indexes (logically hosted in your COMMAND architectural area). These methods can later be accessed from command handlers using (ClientRepository).business()
 
-Repositories are then accessed using the methods load() or add(), generally in command handlers only.
+Repositories are then accessed using the methods **load()**, **get()**, **has()** or **add()**, generally in command handlers only.
 
-Once loaded by a command handler, an entity will then ba automatically saved on unit of work completion. If you
-just need to retrieve an entity without planning to save it on handling completion you can use the get() method
-facility.
+The **load()** method loads an entity from the repository and marks it so it will be automatically saved (doSave() will be called on your aggregate) on unit of work commit, while the **get()** method only load the aggregate without marking it to be automatically saved. 
+
+The **has()** method is not implemented by default, you'll have to override the **doHas()** method on your repository if you want this feature.
+
+There is no **delete()** method on the repository. To delete an aggregate you have to create a specific method/handler on your loaded aggregate which calls the **markDeleted()** protected method internally. The aggregate is then marked as deleted, the **doDelete()** repository method will then be called once the unit of work is commited.
+You are heavily encouraged to never delete data in your domains by just marking them as deleted. So in major cases doDelete() can just call doSave(), the loading of entities in Kasper repositories will take care of not loading deleted aggregates.
 
 The doSave() method is use for entity creation AND update. If your backend needs to make the difference between
 a creation or an update, you can :
 
-- test aggregate.getVersion() for nullity in the doSave() method (newly created entities does not have a version)
-- implement the doUpdate() method, so entity creation will be automatically made calling doSave() and updates through doUpdate()
-
-If you want to delete an aggregate, use the markDeleted() method in your aggregates, this last will then be deleted at the
-end of the unit of work calling doDelete(). You are heavily encouraged to never delete date in your domains by just marking them
-as deleted. So in major cases doDelete() can just call doSave(), the loading of entities in Kasper repositories will take
-care of not loading deleted aggregates.
+- test **aggregate.getVersion()** for nullity in the **doSave()** method (newly created entities does not have a version)
+- or implement the **doUpdate()** method, so entity creation will be automatically made calling **doSave()** and updates through **doUpdate()**
 
 The **Repository** abstract class mut be considered as an **entity store** : the current state of entities is
 stored, then events will be sent by the unit of work once entity is persisted. If you want to apply a real
-event sourcing strategy, use instead the **EventSourcedRepository** supplying an Axon **EventStore**.
+event sourcing strategy, use instead the **EventSourcedRepository** supplying it an Axon **EventStore**.
 
 Value objects
 -------------
@@ -594,14 +431,14 @@ of the methods *toString()*, *hashCode()* and *equals()*.
     }
 
 Sometimes you just want to create a value object around one unique other type (primitive or not) and add management
-methods to this enclosing value. Kasper framework propose you the **AbstractEnclosingValue** abstract class.
+methods to this enclosing value. Kasper framework propose you the **EnclosingValue** abstract class.
 
 **usage**
 
 .. code-block:: java
     :linenos:
 
-    public class FirstName extends AbstractEnclosingValue<String> {
+    public class FirstName extends EnclosingValue<String> {
 
         public FirstName(final String firstName) {
             super(firstName);
