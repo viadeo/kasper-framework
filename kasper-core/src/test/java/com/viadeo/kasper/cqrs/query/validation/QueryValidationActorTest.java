@@ -38,7 +38,7 @@ public class QueryValidationActorTest {
 
         // Then
         assertFalse(response.isOK());
-        assertEquals("notNullField : may not be null", response.getReason().getMessages().toArray()[0]);
+        assertEquals("field : may not be null", response.getReason().getMessages().toArray()[0]);
     }
 
     @Test
