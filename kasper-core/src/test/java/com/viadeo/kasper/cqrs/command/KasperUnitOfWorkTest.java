@@ -127,6 +127,7 @@ public class KasperUnitOfWorkTest {
         final EventMessage message = mock(EventMessage.class);
         final EventBus eventBus = mock(EventBus.class);
         final String eventId = UUID.randomUUID().toString();
+        
         final MetaData metadata = MetaData.from(new HashMap<String, Object>() {{
             this.put(Context.METANAME, mock(Context.class));
         }});

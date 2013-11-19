@@ -18,8 +18,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public abstract class Event implements IEvent {
 
+    /**
+     * Optional Unit Of Work macro event parent id
+     * ( set during uow commit() )
+     */
     private String uowEventId;
 
+    /**
+     * Event type, can be set by the repository before persisting
+     */
     private PersistencyType type = PersistencyType.UNKNOWN;
 
     // ------------------------------------------------------------------------

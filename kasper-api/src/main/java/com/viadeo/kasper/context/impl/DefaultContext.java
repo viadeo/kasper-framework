@@ -230,11 +230,9 @@ public class DefaultContext extends AbstractContext {
 
     @Override
     public Map<String, ?> asMetaDataMap() {
-        return new HashMap<String, Object>() {
-            {
+        return new HashMap<String, Object>() {{
                 this.put(METANAME, this);
-            }
-        };
+        }};
     }
 
     // ------------------------------------------------------------------------
