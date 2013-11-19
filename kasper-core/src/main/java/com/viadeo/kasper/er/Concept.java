@@ -6,14 +6,19 @@
 // ============================================================================
 package com.viadeo.kasper.er;
 
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Entity;
 
 /**
  *
- * The Concept entity marker
+ * An aggregate root for Kasper Concept
  *
  * @see com.viadeo.kasper.ddd.Entity
+ * @see com.viadeo.kasper.ddd.AggregateRoot
  */
-public interface Concept extends Entity {
+public class Concept
+        extends AggregateRoot<KasperID>
+        implements Entity {
 
 }

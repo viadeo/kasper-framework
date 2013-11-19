@@ -7,12 +7,10 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.EventMessage;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.exception.KasperException;
 import org.junit.Test;
@@ -26,32 +24,13 @@ public class EventListenerResolverTest {
 
     @XKasperUnregistered
     @XKasperEventListener( domain = TestDomain.class )
-    private static class TestEventListener implements EventListener {
-        @Override
-        public void handle(EventMessage eventMessage) { }
-        @Override
-        public void handle(org.axonframework.domain.EventMessage event) { }
-    }
+    private static class TestEventListener extends EventListener { }
 
     @XKasperUnregistered
-    private static class TestEvent implements Event {
-        @Override
-        public Optional<Context> getContext() { return null; }
-        @Override
-        public <E extends Event> E setContext(Context context) { return null; }
-        @Override
-        public PersistencyType getPersistencyType() { return null; }
-        @Override
-        public void setPersistencyType(PersistencyType persistencyType) { }
-    }
+    private static class TestEvent extends Event { }
 
     @XKasperUnregistered
-    private static class TestEventListener2 implements EventListener<TestEvent> {
-        @Override
-        public void handle(EventMessage<TestEvent> eventMessage) { }
-        @Override
-        public void handle(org.axonframework.domain.EventMessage event) { }
-    }
+    private static class TestEventListener2 extends EventListener<TestEvent> { }
 
     // ------------------------------------------------------------------------
 

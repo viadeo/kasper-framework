@@ -8,10 +8,9 @@ package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
+import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
-import com.viadeo.kasper.event.impl.AbstractEventListener;
 import org.axonframework.eventhandling.EventBus;
-import org.axonframework.eventhandling.EventListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +20,7 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperEventListener
  */
-public class EventListenersProcessor extends SingletonAnnotationProcessor<XKasperEventListener, EventListener> {
+public class EventListenersProcessor extends SingletonAnnotationProcessor<XKasperEventListener, org.axonframework.eventhandling.EventListener> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(EventListenersProcessor.class);
 	
 	/**
@@ -35,15 +34,15 @@ public class EventListenersProcessor extends SingletonAnnotationProcessor<XKaspe
 	/**
 	 * Process Kasper event listener
 	 * 
-	 * @see EventListener
+	 * @see org.axonframework.eventhandling.EventListener
 	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
-	public void process(final Class eventListenerClazz, final EventListener eventListener) {
+	public void process(final Class eventListenerClazz, final org.axonframework.eventhandling.EventListener eventListener) {
 		LOGGER.info("Subscribe to event bus : " + eventListenerClazz.getName());
 
-        if (AbstractEventListener.class.isAssignableFrom(eventListener.getClass())) {
-            ((AbstractEventListener) eventListener).setCommandGateway(this.commandGateway);
+        if (EventListener.class.isAssignableFrom(eventListener.getClass())) {
+            ((EventListener) eventListener).setCommandGateway(this.commandGateway);
         }
 
 		//- Subscribe the listener to the event bus (Axon) --------------------
