@@ -13,10 +13,10 @@ import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.CommandResponse.Status;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
 import com.viadeo.kasper.exception.KasperException;
 import lombok.Data;
 import org.junit.Test;
@@ -193,7 +193,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
     // ------------------------------------------------------------------------
 
     @XKasperCommandHandler(domain = AccountDomain.class)
-    public static class CreateAccountCommandHandler extends AbstractCommandHandler<CreateAccountCommand> {
+    public static class CreateAccountCommandHandler extends CommandHandler<CreateAccountCommand> {
         static String createAccountCommandName = null;
 
         @Override
@@ -219,7 +219,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
     }
 
     @XKasperCommandHandler(domain = AccountDomain.class)
-    public static class NeedValidationCommandHandler extends AbstractCommandHandler<NeedValidationCommand> { }
+    public static class NeedValidationCommandHandler extends CommandHandler<NeedValidationCommand> { }
 
 }
 

@@ -23,16 +23,10 @@ public class QueryHandlerResolverTest {
 
     @XKasperUnregistered
     @XKasperQueryHandler(domain = TestDomain.class)
-    private static final class TestQueryHandler implements QueryHandler {
-        @Override
-        public QueryResponse retrieve(QueryMessage message) throws Exception { return null; }
-    }
+    private static final class TestQueryHandler extends QueryHandler { }
 
     @XKasperUnregistered
-    private static final class TestQueryHandler2 implements QueryHandler {
-        @Override
-        public QueryResponse retrieve(QueryMessage message) throws Exception { return null; }
-    }
+    private static final class TestQueryHandler2 extends QueryHandler { }
 
     @XKasperUnregistered
     private static final class TestQuery implements Query { }
@@ -41,12 +35,7 @@ public class QueryHandlerResolverTest {
     private static final class TestQueryResult implements QueryResult { }
 
     @XKasperUnregistered
-    private static final class TestQueryHandler3 implements  QueryHandler<TestQuery, TestQueryResult> {
-        @Override
-        public QueryResponse<TestQueryResult> retrieve(QueryMessage<TestQuery> message) throws Exception {
-            return null;
-        }
-    }
+    private static final class TestQueryHandler3 extends QueryHandler<TestQuery, TestQueryResult> { }
 
     // ------------------------------------------------------------------------
 

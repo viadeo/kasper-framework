@@ -26,23 +26,13 @@ public class CommandHandlerResolverTest {
 
     @XKasperUnregistered
     @XKasperCommandHandler( domain = TestDomain.class )
-    private static class TestCommandHandler implements CommandHandler {
-        @Override
-        public Object handle(CommandMessage commandMessage, UnitOfWork unitOfWork) throws Throwable {
-            return null;
-        }
-    }
+    private static class TestCommandHandler extends CommandHandler { }
 
     @XKasperUnregistered
     private static class TestCommand implements Command { }
 
     @XKasperUnregistered
-    private static class TestCommandHandler2 implements CommandHandler<TestCommand> {
-        @Override
-        public Object handle(CommandMessage commandMessage, UnitOfWork unitOfWork) throws Throwable {
-            return null;
-        }
-    }
+    private static class TestCommandHandler2 extends CommandHandler<TestCommand> { }
 
     // ------------------------------------------------------------------------
 

@@ -73,7 +73,7 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest<HttpQueryEx
     }
 
     @XKasperQueryHandler(domain = AccountDomain.class)
-    public static class ContextCheckQueryHandler implements QueryHandler<ContextCheckQuery, ContextCheckResult> {
+    public static class ContextCheckQueryHandler extends QueryHandler<ContextCheckQuery, ContextCheckResult> {
         @Override
         public QueryResponse<ContextCheckResult> retrieve(final QueryMessage<ContextCheckQuery> message) throws Exception {
             if (message.getQuery().getContextName().contentEquals(CONTEXT_FULL)) {
