@@ -21,7 +21,6 @@ import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.event.domain.EntityCreatedEvent;
 import com.viadeo.kasper.event.domain.EntityUpdatedEvent;
 import com.viadeo.kasper.impl.DefaultKasperId;
-import com.viadeo.kasper.test.ddd.KasperRepositoryTest;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.test.FixtureConfiguration;
 import org.axonframework.test.Fixtures;
@@ -223,8 +222,7 @@ public class CommandAxonScenarioEntityStore {
     public static Collection repositories() {
         return Arrays.asList(new Object[][] {
                 { new TestRepository() },
-                { new TestEventRepository() },
-                { null /* will use an axon-mocked repository*/ }
+                { new TestEventRepository() }
         });
     }
 
@@ -238,12 +236,6 @@ public class CommandAxonScenarioEntityStore {
     public void resetFixture() {
         this.fixture = Fixtures.newGivenWhenThenFixture(TestAggregate.class);
         fixture.setReportIllegalStateChange(true);
-
-        if ((null == this.testRepository) || (repositoryIsMocked)) {
-            /* use the Axon-mocked repository */
-            this.testRepository = KasperRepositoryTest.mockAs(fixture, new TestRepository());
-            repositoryIsMocked = true;
-        }
 
         if (Repository.class.isAssignableFrom(this.testRepository.getClass())) {
             ((Repository) this.testRepository).setEventStore(fixture.getEventStore());

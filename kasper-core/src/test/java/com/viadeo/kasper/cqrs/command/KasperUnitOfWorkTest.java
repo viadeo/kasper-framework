@@ -6,12 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import com.google.common.base.Optional;
-import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.impl.UnitOfWorkEvent;
-import com.viadeo.kasper.impl.DefaultKasperId;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.MetaData;
 import org.axonframework.eventhandling.EventBus;
@@ -23,11 +20,9 @@ import org.mockito.internal.matchers.VarargMatcher;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
