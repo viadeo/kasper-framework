@@ -8,7 +8,7 @@
 package com.viadeo.kasper.event.domain;
 
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.IEvent;
 
 /**
  *
@@ -19,8 +19,8 @@ import com.viadeo.kasper.event.Event;
  *
  * @see com.viadeo.kasper.event.Event
  */
-public interface DomainEvent<D extends Domain> extends Event {
+public interface DomainEvent<D extends Domain> extends IEvent {
 
-    int DOMAIN_PARAMETER_POSITION = 0;
+    public static int DOMAIN_PARAMETER_POSITION = 0;
 
 }

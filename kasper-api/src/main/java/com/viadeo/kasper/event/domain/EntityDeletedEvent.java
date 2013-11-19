@@ -7,13 +7,14 @@
 package com.viadeo.kasper.event.domain;
 
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.event.Event;
 
 /**
  *
  * A Kasper event related to an entity deletion
  *
  */
-public interface EntityDeletedEvent<D extends Domain> extends EntityEvent<D> {
+public class EntityDeletedEvent<D extends Domain> extends Event implements EntityEvent<D> {
 
 }
 

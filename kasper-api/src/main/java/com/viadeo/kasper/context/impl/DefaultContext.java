@@ -10,6 +10,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -225,6 +226,15 @@ public class DefaultContext extends AbstractContext {
         retMap.put(FUNNEL_VERS_SHORTNAME, safeStringObject(this.funnelVersion));
 
         return retMap;
+    }
+
+    @Override
+    public Map<String, ?> asMetaDataMap() {
+        return new HashMap<String, Object>() {
+            {
+                this.put(METANAME, this);
+            }
+        };
     }
 
     // ------------------------------------------------------------------------

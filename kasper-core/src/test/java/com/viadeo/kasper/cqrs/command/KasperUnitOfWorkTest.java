@@ -13,6 +13,7 @@ import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.impl.UnitOfWorkEvent;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import org.axonframework.domain.EventMessage;
+import org.axonframework.domain.MetaData;
 import org.axonframework.eventhandling.EventBus;
 import org.hamcrest.Description;
 import org.junit.Test;
@@ -20,7 +21,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
 import org.mockito.internal.matchers.VarargMatcher;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
@@ -122,13 +126,15 @@ public class KasperUnitOfWorkTest {
         final Event event = mock(Event.class);
         final EventMessage message = mock(EventMessage.class);
         final EventBus eventBus = mock(EventBus.class);
-        final Context context = mock(Context.class);
-        final KasperID eventId = DefaultKasperId.random();
+        final String eventId = UUID.randomUUID().toString();
+        final MetaData metadata = MetaData.from(new HashMap<String, Object>() {{
+            this.put(Context.METANAME, mock(Context.class));
+        }});
 
-        doReturn(eventId).when(event).getId();
+        doReturn(eventId).when(message).getIdentifier();
         doReturn(event).when(message).getPayload();
         doReturn(event.getClass()).when(message).getPayloadType();
-        doReturn(Optional.of(context)).when(event).getContext();
+        doReturn(metadata).when(message).getMetaData();
 
         // When
         uow.registerForPublication(message, eventBus);
@@ -146,28 +152,32 @@ public class KasperUnitOfWorkTest {
 
         final Event event1 = mock(Event.class);
         final EventMessage message1 = mock(EventMessage.class);
+
         final Event event2 = mock(Event.class);
         final EventMessage message2 = mock(EventMessage.class);
 
         final EventBus eventBus = mock(EventBus.class);
-        final Context context = mock(Context.class);
 
-        final KasperID eventId1 = DefaultKasperId.random();
-        final KasperID eventId2 = DefaultKasperId.random();
+        final String eventId1 = UUID.randomUUID().toString();
+        final String eventId2 = UUID.randomUUID().toString();
 
-        doReturn(eventId1).when(event1).getId();
+        final MetaData metadata = MetaData.from(new HashMap<String, Object>() {{
+            this.put(Context.METANAME, mock(Context.class));
+        }});
+
+        doReturn(eventId1).when(message1).getIdentifier();
         doReturn(event1).when(message1).getPayload();
         doReturn(event1.getClass()).when(message1).getPayloadType();
-        doReturn(Optional.of(context)).when(event1).getContext();
+        doReturn(metadata).when(message1).getMetaData();
         doReturn("eventmessage["+event1.toString()+"]").when(message1).toString();
 
-        doReturn(eventId2).when(event2).getId();
+        doReturn(eventId2).when(message2).getIdentifier();
         doReturn(event2).when(message2).getPayload();
         doReturn(event2.getClass()).when(message2).getPayloadType();
-        doReturn(Optional.of(context)).when(event2).getContext();
+        doReturn(metadata).when(message2).getMetaData();
         doReturn("eventmessage["+event2.toString()+"]").when(message2).toString();
 
-        doReturn(context).when(context).child();
+        // doReturn(context).when(context).child();
 
         // When
         uow.registerForPublication(message1, eventBus);
@@ -175,8 +185,8 @@ public class KasperUnitOfWorkTest {
         uow.publishEvents();
 
         // Then UOW event is set to previous events
-        verify(event1).setUOWEventId(any(KasperID.class));
-        verify(event2).setUOWEventId(any(KasperID.class));
+        verify(event1).setUOWEventId(anyString());
+        verify(event2).setUOWEventId(anyString());
 
         // Then UOW event is registered to publication
         final ArgumentCaptor<EventMessage> argMessage = ArgumentCaptor.forClass(EventMessage.class);
@@ -186,10 +196,10 @@ public class KasperUnitOfWorkTest {
         final EventMessage uowEventMessage = argMessage.getAllValues().get(2);
         assertEquals(UnitOfWorkEvent.class, uowEventMessage.getPayloadType());
         final UnitOfWorkEvent uowEvent = (UnitOfWorkEvent) uowEventMessage.getPayload();
-        final List<KasperID> eventIds = uowEvent.getEvents();
+        final List<String> eventIds = uowEvent.getEventIds();
         assertEquals(2, eventIds.size());
-        assertEquals(event1.getId(), eventIds.get(0));
-        assertEquals(event2.getId(), eventIds.get(1));
+        assertEquals(message1.getIdentifier(), eventIds.get(0));
+        assertEquals(message2.getIdentifier(), eventIds.get(1));
 
         // Then all events are published to the bus
         verify(eventBus).publish(argThat(new ArrayOfMessagesMatcher(

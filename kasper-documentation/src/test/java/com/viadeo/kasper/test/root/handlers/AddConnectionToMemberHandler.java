@@ -8,13 +8,6 @@ import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.unitofwork.UnitOfWork;
 
 @XKasperCommandHandler(domain=Facebook.class)
-public class AddConnectionToMemberHandler implements CommandHandler<AddConnectionToMemberCommand> {
+public class AddConnectionToMemberHandler extends CommandHandler<AddConnectionToMemberCommand> {
 
-	@Override
-	public Object handle(CommandMessage<AddConnectionToMemberCommand> arg0,
-			UnitOfWork arg1) throws Throwable {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	}
+}

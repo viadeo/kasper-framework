@@ -17,11 +17,12 @@ import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.unitofwork.DefaultUnitOfWork;
 import org.axonframework.unitofwork.TransactionManager;
-import org.axonframework.unitofwork.UnitOfWork;
+import org.joda.time.DateTime;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -84,17 +85,20 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
 
         for (final Map.Entry<EventBus, List<EventMessage<?>>> entry : eventsToBePublished.entrySet()) {
             if (entry.getValue().size() > 1) {
-                final List<Event> events = Lists.newArrayList();
+                final List<String> events = Lists.newArrayList();
 
+                final String uowEventId = UUID.randomUUID().toString();
                 Optional<Context> context = Optional.absent();
                 for (final EventMessage<?> message : entry.getValue()) {
                     final Event event = (Event) message.getPayload();
-                    events.add(event);
+                    events.add(message.getIdentifier());
 
                     /* Each event should have a context at this step, but ensure it */
-                    if ( ! context.isPresent() && event.getContext().isPresent()) {
-                        context = Optional.of(event.getContext().get().child());
+                    if ( ! context.isPresent() && message.getMetaData().containsKey(Context.METANAME)) {
+                        context = Optional.of((Context) message.getMetaData().get(Context.METANAME));
                     }
+
+                    event.setUOWEventId(uowEventId);
                 }
 
                 /* Should not occur.. */
@@ -103,14 +107,22 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
                 }
 
                 final UnitOfWorkEvent uowEvent = new UnitOfWorkEvent(events);
-                uowEvent.setContext(context.get());
-                this.registerForPublication(new GenericEventMessage(uowEvent), entry.getKey());
+                final GenericEventMessage uowMessage = new GenericEventMessage(
+                        uowEventId,
+                        DateTime.now(),
+                        uowEvent,
+                        context.get().asMetaDataMap()
+                );
+
+                this.registerForPublication(uowMessage, entry.getKey());
 
             } else {
+
+                final EventMessage message = (EventMessage) entry.getValue().get(0);
                 final Event event = (Event) entry.getValue().get(0).getPayload();
 
                 /* this uniq event is itself the uowEvent */
-                event.setUOWEventId(event.getId());
+                event.setUOWEventId(message.getIdentifier());
             }
         }
 

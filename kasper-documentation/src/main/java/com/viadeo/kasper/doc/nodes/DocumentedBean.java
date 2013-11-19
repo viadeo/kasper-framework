@@ -8,10 +8,12 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.er.LinkedConcept;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.persistence.Transient;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -38,6 +40,14 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
 			if (!Modifier.isTransient(property.getModifiers()) && !Modifier.isStatic(property.getModifiers())) {
 				final String name = property.getName();
+
+                if (null != property.getAnnotation(Transient.class)) {
+                    continue;
+                }
+
+                if (LinkedConcept.class.isAssignableFrom(property.getType())) {
+                    continue;
+                }
 				
 				if (name.contentEquals("serialVersionUID")) {
 					continue;

@@ -13,4 +13,6 @@ public interface OrderedQuery extends Query {
         ASC, DESC, NONE
     }
 
+    ORDER getOrder();
+
 }

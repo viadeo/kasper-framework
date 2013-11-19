@@ -41,7 +41,7 @@ public interface IRepository<AGR extends AggregateRoot> extends org.axonframewor
      * Checks if an aggregate if exists
      *
      * @param id
-     * @return
+     * @return true if an aggregate exists with this id
      */
     boolean has(KasperID id);
 

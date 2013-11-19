@@ -7,16 +7,12 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
-import com.viadeo.kasper.er.RootConcept;
 import com.viadeo.kasper.er.annotation.XKasperRelation;
 import com.viadeo.kasper.exception.KasperException;
-import org.axonframework.domain.DomainEventStream;
-import org.axonframework.domain.EventRegistrationCallback;
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -27,56 +23,17 @@ public class RelationResolverTest {
     private static class TestDomain implements Domain { }
 
     @XKasperUnregistered
-    @XKasperRelation(domain = TestDomain.class, label = "TestRelation")
-    private static class TestRelation implements Relation {
-        @Override
-        public KasperID getSourceIdentifier() { return null; }
-        @Override
-        public KasperID getTargetIdentifier() { return null; }
-        @Override
-        public boolean isBidirectional() { return false; }
-    }
+    @XKasperRelation( domain = TestDomain.class )
+    private static class TestRelation extends Relation { }
 
     @XKasperUnregistered
-    private static class TestRootConceptSource implements RootConcept {
-        @Override
-        public void initializeState(DomainEventStream domainEventStream) { }
-        @Override
-        public KasperID getIdentifier() { return null; }
-        @Override
-        public void commitEvents() { }
-        @Override
-        public int getUncommittedEventCount() { return 0; }
-        @Override
-        public DomainEventStream getUncommittedEvents() { return null; }
-        @Override
-        public Long getVersion() { return null; }
-        @Override
-        public boolean isDeleted() { return false; }
-        @Override
-        public void addEventRegistrationCallback(EventRegistrationCallback eventRegistrationCallback) { }
-        @Override
-        public DateTime getCreationDate() { return null; }
-        @Override
-        public DateTime getModificationDate() { return null; }
-        @Override
-        public void setVersion(Long version) { }
-        @Override
-        public KasperID getEntityId() { return null; }
-    }
+    private static class TestRootConceptSource extends Concept { }
 
     @XKasperUnregistered
     private static class TestRootConceptTarget extends TestRootConceptSource { }
 
     @XKasperUnregistered
-    private static class TestRelation2 implements Relation<TestRootConceptSource, TestRootConceptTarget> {
-        @Override
-        public KasperID getSourceIdentifier() { return null; }
-        @Override
-        public KasperID getTargetIdentifier() { return null; }
-        @Override
-        public boolean isBidirectional() { return false; }
-    }
+    private static class TestRelation2 extends Relation<TestRootConceptSource, TestRootConceptTarget> { }
 
     // ------------------------------------------------------------------------
 
@@ -115,7 +72,7 @@ public class RelationResolverTest {
         final RelationResolver resolver = new RelationResolver();
 
         // When
-        final Class<? extends RootConcept> conceptClass =
+        final Class<? extends Concept> conceptClass =
                 resolver.getSourceEntityClass(TestRelation2.class);
 
         // Then
@@ -129,7 +86,7 @@ public class RelationResolverTest {
 
         // When
         try {
-            final Class<? extends RootConcept> conceptClass =
+            final Class<? extends Concept> conceptClass =
                     resolver.getSourceEntityClass(TestRelation.class);
             fail();
         } catch (final KasperException e) {
@@ -145,7 +102,7 @@ public class RelationResolverTest {
         final RelationResolver resolver = new RelationResolver();
 
         // When
-        final Class<? extends RootConcept> conceptClass =
+        final Class<? extends Concept> conceptClass =
                 resolver.getTargetEntityClass(TestRelation2.class);
 
         // Then
@@ -159,7 +116,7 @@ public class RelationResolverTest {
 
         // When
         try {
-            final Class<? extends RootConcept> conceptClass =
+            final Class<? extends Concept> conceptClass =
                     resolver.getTargetEntityClass(TestRelation.class);
             fail();
         } catch (final KasperException e) {

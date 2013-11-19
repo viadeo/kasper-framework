@@ -15,7 +15,7 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
-import com.viadeo.kasper.ddd.impl.Repository;
+import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.event.Event;

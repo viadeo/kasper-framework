@@ -255,5 +255,12 @@ public interface Context extends Serializable  {
     Map<String, String> asMap();
     Map<String, String> asMap(Map<String, String> map);
 
+    // ------------------------------------------------------------------------
+
+    /**
+     * return as a metadata map
+     */
+    Map<String, ?> asMetaDataMap();
+
 
 }

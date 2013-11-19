@@ -25,7 +25,7 @@ public @interface XKasperRelation {
 	/**
 	 * @return the relation's label
 	 */
-	String label();
+	String label() default "";
 	
 	/**
 	 * @return the relation's description

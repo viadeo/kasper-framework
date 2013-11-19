@@ -16,7 +16,6 @@ import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.cqrs.query.impl.AbstractCollectionQueryResult;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -37,11 +36,10 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
         private static final long serialVersionUID = 104409802777527460L;
     }
 
-    public static class SomeCollectionResponse extends AbstractCollectionQueryResult<SomeResponse> {
-    }
+    public static class SomeCollectionResponse extends CollectionQueryResult<SomeResponse> { }
 
     @XKasperQueryHandler(domain = AccountDomain.class)
-    public static class SomeCollectionQueryHandler implements QueryHandler<SomeCollectionQuery, SomeCollectionResponse> {
+    public static class SomeCollectionQueryHandler extends QueryHandler<SomeCollectionQuery, SomeCollectionResponse> {
         @Override
         public QueryResponse<SomeCollectionResponse> retrieve(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
@@ -115,7 +113,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
 
     @XKasperQueryHandler(domain = AccountDomain.class)
     @SuppressWarnings("unchecked")
-    public static class SomeQueryHandler implements QueryHandler<SomeQuery, SomeResponse> {
+    public static class SomeQueryHandler extends QueryHandler<SomeQuery, SomeResponse> {
         @Override
         public QueryResponse<SomeResponse> retrieve(final QueryMessage<SomeQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();

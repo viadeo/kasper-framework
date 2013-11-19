@@ -13,7 +13,7 @@ import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.ddd.impl.ClientRepository;
+import com.viadeo.kasper.ddd.repository.ClientRepository;
 
 import java.util.Collection;
 import java.util.Set;

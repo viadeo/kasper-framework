@@ -11,9 +11,9 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.impl.AbstractCollectionQueryResult;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
@@ -46,7 +46,7 @@ public class ObjectMapperProviderTest {
         }
     }
 
-    static class SomeCollectionResponse extends AbstractCollectionQueryResult<SomeResult> {
+    static class SomeCollectionResponse extends CollectionQueryResult<SomeResult> {
     }
 
     // ------------------------------------------------------------------------

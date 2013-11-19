@@ -139,4 +139,35 @@ public class CommandResponse implements Serializable, Immutable {
         throw new KasperException("Not an HTTP command response");
     }
 
+    // ------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final CommandResponse other = (CommandResponse) obj;
+
+        return com.google.common.base.Objects.equal(this.status, other.status)
+               && com.google.common.base.Objects.equal(this.reason, other.reason);
+    }
+
+    @Override
+    public int hashCode() {
+        return com.google.common.base.Objects.hashCode(status, reason);
+    }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(this)
+                .addValue(this.status)
+                .addValue(this.reason)
+                .toString();
+    }
+
 }

@@ -12,23 +12,22 @@ import com.viadeo.kasper.event.Event;
 
 import java.util.List;
 
-public class UnitOfWorkEvent extends AbstractEvent {
+public class UnitOfWorkEvent extends Event {
 
-    final List<KasperID> events = Lists.newArrayList();
+    final List<String> events = Lists.newArrayList();
 
     // ------------------------------------------------------------------------
 
-    public UnitOfWorkEvent(final List<Event> events) {
+    public UnitOfWorkEvent(final List<String> eventIds) {
         super();
-        for (final Event event : events) {
-            this.events.add(event.getId());
-            event.setUOWEventId(this.getId());
+        for (final String eventId : eventIds) {
+            this.events.add(eventId);
         }
     }
 
     // ------------------------------------------------------------------------
 
-    public List<KasperID> getEvents() {
+    public List<String> getEventIds() {
         return this.events;
     }
 
