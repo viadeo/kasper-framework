@@ -8,7 +8,7 @@ package com.viadeo.kasper.cqrs.command;
 
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.ddd.impl.ClientRepository;
+import com.viadeo.kasper.ddd.repository.ClientRepository;
 
 /**
  *

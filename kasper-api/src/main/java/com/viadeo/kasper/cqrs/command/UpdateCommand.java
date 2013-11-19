@@ -9,22 +9,72 @@ package com.viadeo.kasper.cqrs.command;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 
+import javax.validation.constraints.NotNull;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  *
- * Can be used for Kasper commands which will create entities
- * The submitted id can then be used by handlers as the created element's id
- *
+ * Convenient base implementation for id and version management
+ * 
  */
-public interface UpdateCommand extends Command {
+public abstract class UpdateCommand implements Command {
+    private static final long serialVersionUID = -432287057423281452L;
 
-    /**
-     * @return the entity id to updated
-     */
-    KasperID getId();
+    @NotNull
+	private final KasperID id;
 
-    /**
-     * @return the (optional) entity version to be updated
-     */
-    Optional<Long> getVersion();
+    private final Long version;
+
+	// ------------------------------------------------------------------------
+
+	public UpdateCommand(final KasperID id) {
+		this.id = checkNotNull(id);
+        this.version = null;
+	}
+
+ 	public UpdateCommand(final KasperID id, final Long version) {
+		this.id = checkNotNull(id);
+        this.version = version; /* can be null */
+	}
+
+	// ------------------------------------------------------------------------
+
+	public KasperID getId() {
+		return this.id;
+	}
+
+    public Optional<Long> getVersion() {
+        return Optional.fromNullable(this.version);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final UpdateCommand other = (UpdateCommand) obj;
+
+        return com.google.common.base.Objects.equal(this.id, other.id)
+                && com.google.common.base.Objects.equal(this.version, other.version);
+    }
+
+    @Override
+    public int hashCode() {
+        return com.google.common.base.Objects.hashCode(this.id, this.version);
+    }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(this)
+                .addValue(this.id)
+                .addValue(this.version)
+                .toString();
+    }
 
 }

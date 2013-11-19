@@ -7,10 +7,9 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.domain.DomainEvent;
 import com.viadeo.kasper.exception.KasperException;
 import org.junit.Test;
@@ -23,28 +22,13 @@ public class EventResolverTest {
     private static class TestDomain implements Domain {}
 
     @XKasperUnregistered
-    private static class TestEvent implements Event {
-        @Override
-        public Optional<Context> getContext() { return null; }
-        @Override
-        public <E extends Event> E setContext(Context context) { return null; }
-    }
+    private static class TestEvent implements IEvent { }
 
     @XKasperUnregistered
-    private static class TestDomainEvent implements DomainEvent<TestDomain> {
-        @Override
-        public Optional<Context> getContext() { return null; }
-        @Override
-        public <E extends Event> E setContext(Context context) { return null; }
-    }
+    private static class TestDomainEvent implements DomainEvent<TestDomain> { }
 
     @XKasperUnregistered
-    private static class TestGenericDomainEvent implements DomainEvent {
-        @Override
-        public Optional<Context> getContext() { return null; }
-        @Override
-        public <E extends Event> E setContext(Context context) { return null; }
-    }
+    private static class TestGenericDomainEvent implements DomainEvent { }
 
     // ------------------------------------------------------------------------
 

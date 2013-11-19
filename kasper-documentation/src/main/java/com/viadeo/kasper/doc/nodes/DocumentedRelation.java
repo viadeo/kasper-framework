@@ -11,8 +11,8 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.core.resolvers.RelationResolver;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.doc.KasperLibrary;
+import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
-import com.viadeo.kasper.er.RootConcept;
 
 import java.util.StringTokenizer;
 
@@ -29,7 +29,7 @@ public final class DocumentedRelation extends DocumentedEntity {
 	// ------------------------------------------------------------------------
 	
 	public DocumentedRelation(final KasperLibrary kl, final Class<? extends Relation> relationClazz) {
-		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
+		super(kl, relationClazz, TYPE_NAME, PLURAL_TYPE_NAME);
 		
 		// Find if it's an aggregate ------------------------------------------
 		final boolean isAggregate = AggregateRoot.class.isAssignableFrom(relationClazz);
@@ -43,11 +43,11 @@ public final class DocumentedRelation extends DocumentedEntity {
 
 		// Find source and target root concepts -------------------------------
 		@SuppressWarnings("unchecked") // Safe
-		final Class<? extends RootConcept> sourceClass =
+		final Class<? extends Concept> sourceClass =
                 resolver.getSourceEntityClass(relationClazz);
 
 		@SuppressWarnings("unchecked") // Safe
-		final Class<? extends RootConcept> targetClass =
+		final Class<? extends Concept> targetClass =
                 resolver.getTargetEntityClass(relationClazz);
 
         final String source = sourceClass.getSimpleName();
@@ -58,14 +58,9 @@ public final class DocumentedRelation extends DocumentedEntity {
 		this.setLabel(label);
 		this.setDescription(description);
 		this.setDomainName(domainName);
-		this.setIsAggregate(isAggregate);
 		this.setIsBidirectional(annotatedBidirectional);
 		this.setSourceRootConcept(source);
 		this.setTargetRootConcept(target);
-		
-		if (!isAggregate) {
-			fillParent(relationClazz);
-		}
 		
 		fillProperties(relationClazz);
 	}	

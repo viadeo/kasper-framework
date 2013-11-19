@@ -13,7 +13,7 @@ import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.ddd.impl.ClientRepository;
+import com.viadeo.kasper.ddd.repository.ClientRepository;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 /**

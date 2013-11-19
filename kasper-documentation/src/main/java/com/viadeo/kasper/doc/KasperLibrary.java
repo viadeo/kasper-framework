@@ -691,6 +691,9 @@ public class KasperLibrary {
 		
 		@SuppressWarnings("unchecked") // Safe
 		final Class<T> entityClass = (Class<T>) this.simpleTypes.get(entityType);
+        if (null == entityClass) {
+            return Optional.absent();
+        }
 		return getEntity(domainName, entityClass, entityName);
 	}
 	

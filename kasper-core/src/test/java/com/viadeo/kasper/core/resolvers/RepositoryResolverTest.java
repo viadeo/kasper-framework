@@ -15,7 +15,6 @@ import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.domain.DomainEventStream;
 import org.axonframework.domain.EventRegistrationCallback;
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -26,7 +25,7 @@ public class RepositoryResolverTest {
     @XKasperUnregistered
     private static final class TestDomain implements Domain {}
 
-    private static final class TestAggregateRoot implements AggregateRoot {
+    private static final class TestAggregateRoot extends AggregateRoot {
         @Override
         public KasperID getIdentifier() { return null; }
         @Override
@@ -42,13 +41,7 @@ public class RepositoryResolverTest {
         @Override
         public void addEventRegistrationCallback(EventRegistrationCallback eventRegistrationCallback) { }
         @Override
-        public DateTime getCreationDate() { return null; }
-        @Override
-        public DateTime getModificationDate() { return null; }
-        @Override
         public void initializeState(DomainEventStream domainEventStream) { }
-        @Override
-        public void setVersion(Long version) { }
         @Override
         public KasperID getEntityId() { return null; }
     }

@@ -55,6 +55,13 @@ public class DefaultKasperRelationId extends AbstractKasperID<String> implements
         super.setId(id);
     }
 
+    public void setId(final KasperID sourceId, final KasperID targetId) {
+        this.sourceId = checkNotNull(sourceId);
+        this.targetId = checkNotNull(targetId);
+        super.setId(relationIdsToString(this.sourceId, this.targetId));
+    }
+
+    @Override
     public void setId(final String id) {
         final KasperID[] ids = stringToKasperIDs(id);
 
@@ -93,7 +100,7 @@ public class DefaultKasperRelationId extends AbstractKasperID<String> implements
             throw new KasperException("Unable to determine the two parts of a Kasper relation id from : " + id);
         }
 
-        KasperID[] ids = new KasperID[2];
+        final KasperID[] ids = new KasperID[2];
         ids[0] = stringToKasperId(parts[0]);
         ids[1] = stringToKasperId(parts[1]);
 
@@ -110,7 +117,14 @@ public class DefaultKasperRelationId extends AbstractKasperID<String> implements
             return new DefaultKasperId(uuid);
 
         } catch (final IllegalArgumentException e) {
-            return new StringKasperId(id);
+            try {
+                final int intId = Integer.parseInt(id);
+                return new IntegerKasperId(intId);
+
+            } catch (final NumberFormatException e2) {
+                return new StringKasperId(id);
+
+            }
         }
     }
 

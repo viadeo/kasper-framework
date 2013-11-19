@@ -6,14 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.core.resolvers.EntityResolver;
 import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.ddd.ComponentEntity;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.doc.KasperLibrary;
+import com.viadeo.kasper.er.Concept;
 
 import java.util.Collection;
+import java.util.List;
 
 public class DocumentedEntity extends DocumentedDomainNode {
 	private static final long serialVersionUID = -3336007269246172693L;
@@ -21,29 +21,27 @@ public class DocumentedEntity extends DocumentedDomainNode {
 	public static final String TYPE_NAME = "entity";
 	public static final String PLURAL_TYPE_NAME = "entities";
 	
-	private String parent = null;
-	private Boolean isAggregate = false;
-	
 	private DocumentedBean properties = null;
 	
 	// ------------------------------------------------------------------------
 	
 	DocumentedEntity(final KasperLibrary kl) { // Used as empty entity to populate
-		super(kl, TYPE_NAME, PLURAL_TYPE_NAME);
+		this(kl, null, TYPE_NAME, PLURAL_TYPE_NAME);
 	}
 	
-	public DocumentedEntity(final KasperLibrary kl, final String type, final String pluralType) {
+	public DocumentedEntity(final KasperLibrary kl, final Class<? extends Entity> entityClazz, final String type, final String pluralType) {
 		super(kl, type, pluralType);
-	}
-	
-	// ------------------------------------------------------------------------
-	
-	public void setIsAggregate(final Boolean isAggregate) {
-		this.isAggregate = isAggregate;
-	}
-	
-	public Boolean isAggregate() {
-		return isAggregate;
+
+        if (null != entityClazz) {
+            final EntityResolver resolver = this.getKasperLibrary().getResolverFactory().getEntityResolver();
+            if (AggregateRoot.class.isAssignableFrom(entityClazz)) {
+                @SuppressWarnings("unchecked") // Safe
+                final List<Class<? extends Concept>> links = resolver.getComponentConcepts((Class<? extends AggregateRoot>) entityClazz);
+                for (final Class<? extends Concept> link : links) {
+                    kl.registerAggregateComponent(entityClazz.getSimpleName(), link.getSimpleName());
+                }
+            }
+        }
 	}
 	
 	// ------------------------------------------------------------------------
@@ -54,49 +52,15 @@ public class DocumentedEntity extends DocumentedDomainNode {
 	
 	// ------------------------------------------------------------------------
 	
-	protected void fillParent(final Class<? extends Entity> entityClazz) {
-		if (ComponentEntity.class.isAssignableFrom(entityClazz)) {
-
-            final EntityResolver resolver =
-                    this.getKasperLibrary().getResolverFactory().getEntityResolver();
-
-			@SuppressWarnings("unchecked") // Safe
-			Class<? extends AggregateRoot> agr =
-                    resolver.getComponentParent((Class<? extends ComponentEntity>) entityClazz);
-
-            this.parent = agr.getSimpleName();
-            this.getKasperLibrary().registerAggregateComponent(this.parent, this.getName());
-		}
-	}
-	
-	public DocumentedNode getParent() {
-		final KasperLibrary kl = this.getKasperLibrary();
-		if (null != this.parent) {
-			final Optional<DocumentedConcept> conceptParent = kl.getConcept(getDomainName(), this.parent);
-			if (conceptParent.isPresent()) {
-				return kl.getSimpleNodeFrom(conceptParent.get());
-			}
-		}
-		return null;
-	}
-	
-	// ------------------------------------------------------------------------
-	
 	public Collection<DocumentedNode> getComponentConcepts() {
-		if (isAggregate) {
-			final KasperLibrary kl = this.getKasperLibrary();
-			return kl.simpleNodesFrom(kl.getConceptComponents(getDomainName(), getName())).values();
-		}
-		return null;
+        final KasperLibrary kl = this.getKasperLibrary();
+        return kl.simpleNodesFrom(kl.getConceptComponents(getDomainName(), getName())).values();
 	}
 	
 	public Collection<DocumentedNode> getComponentRelations() {
-		if (isAggregate) {
-			final KasperLibrary kl = this.getKasperLibrary();
-			return kl.simpleNodesFrom(kl.getRelationComponents(getDomainName(), getName())).values();
-		}
-		return null;
-	}	
+        final KasperLibrary kl = this.getKasperLibrary();
+        return kl.simpleNodesFrom(kl.getRelationComponents(getDomainName(), getName())).values();
+	}
 	
 	// ------------------------------------------------------------------------
 	
