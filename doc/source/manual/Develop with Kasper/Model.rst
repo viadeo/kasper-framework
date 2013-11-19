@@ -223,6 +223,38 @@ Kasper encourage to use a specific class names nomenclature for relations :
 
 TODO: add some stuff about verbs and ontologies, what will be took into account if empty, ...
 
+Linked concepts
+---------------
+
+Never enclose a concept instance within another one :
+
+.. code-block:: java
+    :linenos:
+
+    /* NEVER DO THIS */
+    public class Member extends Concept {
+
+        Member friendOf;
+
+        ...
+
+    }
+
+Use instead a **LinkedConcept** which is a typed KasperId :
+
+.. code-block:: java
+    :linenos:
+
+    /* NEVER DO THIS */
+    public class Member extends Concept {
+
+        LinkedConcept<Member> friendOf;
+
+        ...
+
+    }
+
+
 Factories
 ---------
 
