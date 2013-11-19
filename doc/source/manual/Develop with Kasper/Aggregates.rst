@@ -47,10 +47,12 @@ generate an associated event :
 * once applied the event will be generalized (recorded to the unit of work for further publication)
 
 Entity-store repositories (which directly extends **Repository** instead of **EventSourcedRepository**) will need to
-construct aggregates, they can have two different strategies for that :
+construct aggregates, they can have different strategies for that :
 
-1. Generate event(s) from the entity store, build an empty aggregate and call their event handlers (*preferred way*)
+1. Generate event(s) from the entity store, build an empty aggregate and call their event handlers but the handlers have then
+   to be public (**deprecated**)
 2. Call a direct constructor of the aggregate which is reserved for this usage
+3. Provide an internal static builder within the aggregate (**preferred way**)
 
 In case you have to choose the second strategy, annotate your constructor with **@XKasperEntityStoreCreator**.
 
