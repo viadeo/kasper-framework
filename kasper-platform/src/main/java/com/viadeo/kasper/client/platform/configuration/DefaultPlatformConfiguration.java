@@ -28,6 +28,8 @@ import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.axonframework.commandhandling.interceptors.BeanValidationInterceptor;
+import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
+import org.axonframework.unitofwork.UnitOfWorkFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MarkerFactory;
@@ -175,17 +177,20 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
+    public CommandBus commandBus(final UnitOfWorkFactory uowFactory) {
+        this.ensureNotPresent(CommandBus.class);
+
+        final KasperCommandBus commandBus = new KasperCommandBus();
+        commandBus.setHandlerInterceptors(commandHandlerInterceptors());
+        commandBus.setUnitOfWorkFactory(uowFactory);
+
+        registerInstance(CommandBus.class, commandBus);
+        return commandBus;
+    }
+
+    @Override
     public CommandBus commandBus() {
-        if (containsInstance(CommandBus.class)) {
-            return getInstance(CommandBus.class);
-        } else {
-
-            final KasperCommandBus commandBus = new KasperCommandBus();
-            commandBus.setHandlerInterceptors(commandHandlerInterceptors());
-
-            registerInstance(CommandBus.class, commandBus);
-            return commandBus;
-        }
+        return this.getAvailableInstance(CommandBus.class);
     }
 
     protected List<CommandHandlerInterceptor> commandHandlerInterceptors() {
@@ -195,7 +200,19 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         } catch (final ValidationException ve) {
             LOGGER.warn("No implementation found for BEAN VALIDATION - JSR 303", ve);
         }
+
         return interceptors;
+    }
+
+    @Override
+    public UnitOfWorkFactory uowFactory() {
+        if (containsInstance(UnitOfWorkFactory.class)) {
+            return getInstance(UnitOfWorkFactory.class);
+        } else {
+            final UnitOfWorkFactory uowFactory = new DefaultUnitOfWorkFactory();
+            registerInstance(UnitOfWorkFactory.class, uowFactory);
+            return uowFactory;
+        }
     }
 
     // ------------------------------------------------------------------------

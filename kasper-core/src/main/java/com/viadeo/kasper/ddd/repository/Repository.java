@@ -144,7 +144,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * @see org.axonframework.repository.Repository#load(java.lang.Object, java.lang.Long)
 	 */
 	@Override
-	public AGR load(final Object aggregateIdentifier, final Long expectedVersion) {
+	public final AGR load(final Object aggregateIdentifier, final Long expectedVersion) {
         init();
 		return this.axonRepository.load(aggregateIdentifier, expectedVersion);
 	}
@@ -153,7 +153,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * @see org.axonframework.repository.Repository#load(java.lang.Object)
 	 */
 	@Override
-	public AGR load(final Object aggregateIdentifier) {
+	public final AGR load(final Object aggregateIdentifier) {
         init();
 		return this.axonRepository.load(aggregateIdentifier);
 	}
@@ -162,7 +162,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * @see org.axonframework.repository.Repository#add(Object)
 	 */
 	@Override
-	public void add(final AGR aggregate) {
+	public final void add(final AGR aggregate) {
         init();
 
         /* All aggregates must have an ID */
@@ -185,7 +185,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return the fetched aggregate if any
      */
     @Override
-    public AGR get(final KasperID aggregateIdentifier, final Long expectedVersion) {
+    public final AGR get(final KasperID aggregateIdentifier, final Long expectedVersion) {
         return this.doLoad((Object) aggregateIdentifier, expectedVersion);
     }
 
@@ -196,7 +196,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return the fetched aggregate if any
      */
     @Override
-    public AGR get(final KasperID aggregateIdentifier) {
+    public final AGR get(final KasperID aggregateIdentifier) {
         return this.get(aggregateIdentifier, null);
     }
 
@@ -207,7 +207,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return true if this aggregate exists
      */
     @Override
-    public boolean has(final KasperID id) {
+    public final boolean has(final KasperID id) {
         return this.doHas(id);
     }
 
@@ -227,7 +227,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * 
 	 * @return the aggregate
 	 */
-	protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
+	protected final AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
 		checkNotNull(aggregateIdentifier);
 		
 		if (KasperID.class.isAssignableFrom(aggregateIdentifier.getClass())) {

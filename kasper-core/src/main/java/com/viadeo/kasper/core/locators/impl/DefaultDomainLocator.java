@@ -70,6 +70,12 @@ public class DefaultDomainLocator implements DomainLocator {
         this.domainPrefixes = new DomainByPropertyCache();
     }
 
+    public DefaultDomainLocator(final RepositoryResolver repositoryResolver, final CommandHandlerResolver commandHandlerResolver) {
+        this();
+        this.repositoryResolver = repositoryResolver;
+        this.commandHandlerResolver = commandHandlerResolver;
+    }
+
     // ------------------------------------------------------------------------
 
     @Override
