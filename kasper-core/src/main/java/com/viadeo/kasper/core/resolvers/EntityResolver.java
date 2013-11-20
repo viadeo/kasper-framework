@@ -34,6 +34,15 @@ public class EntityResolver extends AbstractResolver<Entity> {
 
     // ------------------------------------------------------------------------
 
+    public EntityResolver() { }
+
+    public EntityResolver(final ConceptResolver conceptResolver, final RelationResolver relationResolver) {
+        this.conceptResolver = conceptResolver;
+        this.relationResolver = relationResolver;
+    }
+
+    // ------------------------------------------------------------------------
+
     @Override
     public String getTypeName() {
         return "Entity";
