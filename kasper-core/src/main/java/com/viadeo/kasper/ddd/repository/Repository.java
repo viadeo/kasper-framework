@@ -77,7 +77,11 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
                 throw new KasperException("Cannot determine entity type for " + this.getClass().getName());
             }
 
-            this.axonRepository = checkNotNull(this.getDecoratedRepository(entityType.get()));
+            this.axonRepository = this.getDecoratedRepository(entityType.get());
+
+            if (null == this.axonRepository) {
+                axonRepository = getDefaultRepository(entityType.get());
+            }
 
             if (null != eventBus) {
                 this.axonRepository.setEventBus(eventBus);
@@ -90,6 +94,11 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
     @Override
     public final void init() {
         this.init(false);
+    }
+
+    private final DecoratedAxonRepository<AGR> getDefaultRepository(final Class<AGR> entityType) {
+        final EntityStoreFacade<AGR> facade = new EntityStoreFacade<AGR>(this);
+        return new AxonRepository<>(facade, entityType);
     }
 
     /**
