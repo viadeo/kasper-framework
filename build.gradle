@@ -8,7 +8,7 @@ apply plugin: 'sonar-runner'
 apply plugin: 'idea'
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.8'
+    gradleVersion = '1.9'
 }
 
 // Apply annotation processing on idea for lombok
@@ -40,7 +40,7 @@ allprojects  {
   apply plugin: 'findbugs'
 
   group = 'com.viadeo.kasper'
-  version = '0.1.1.5'
+  version = '0.1.2'
 
   idea {
     module {

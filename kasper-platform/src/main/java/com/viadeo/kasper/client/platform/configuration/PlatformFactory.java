@@ -17,6 +17,7 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.unitofwork.UnitOfWorkFactory;
 
 public class PlatformFactory {
 
@@ -71,9 +72,10 @@ public class PlatformFactory {
         }
 
         // -- COMMAND
-        final CommandBus commandBus = platformConfiguration.commandBus();
-        final CommandGateway commandGateway = platformConfiguration.commandGateway(commandBus);
 
+        final UnitOfWorkFactory uowFactory = platformConfiguration.uowFactory();
+        final CommandBus commandBus = platformConfiguration.commandBus(uowFactory);
+        final CommandGateway commandGateway = platformConfiguration.commandGateway(commandBus);
 
         // -- MAIN RESOLVERS
 

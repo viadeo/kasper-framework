@@ -37,6 +37,11 @@ public class RepositoriesProcessor extends SingletonAnnotationProcessor<XKasperR
 	private transient EventBus eventBus;
 	
 	// ------------------------------------------------------------------------
+
+    @Override
+    public boolean isAnnotationMandatory() {
+        return false;
+    }
 	
 	/**
 	 * Process Kasper repository
