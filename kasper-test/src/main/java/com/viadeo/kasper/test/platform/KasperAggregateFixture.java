@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
 import com.viadeo.kasper.core.resolvers.*;
@@ -33,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @param <AGR> the aggregate type
  */
 public class KasperAggregateFixture<AGR extends AggregateRoot>
-        implements KasperFixture<
+        implements KasperCommandFixture<
              KasperAggregateExecutor,
              KasperAggregateResultValidator
         > {
@@ -104,7 +105,7 @@ public class KasperAggregateFixture<AGR extends AggregateRoot>
         return new KasperAggregateExecutor(fixture.given());
     }
 
-    public KasperAggregateExecutor given(final DomainEvent... events) {
+    public KasperAggregateExecutor givenEvents(final DomainEvent... events) {
         if (events.length > 0) {
             if ( ! EventSourcedRepository.class.isAssignableFrom(this.repository.getClass())) {
                 throw new KasperException(
@@ -112,10 +113,10 @@ public class KasperAggregateFixture<AGR extends AggregateRoot>
                 );
             }
         }
-        return new KasperAggregateExecutor(fixture.given(events));
+        return new KasperAggregateExecutor(fixture.given((Object[]) events));
     }
 
-    public KasperAggregateExecutor given(final List<DomainEvent> events) {
+    public KasperAggregateExecutor givenEvents(final List<DomainEvent> events) {
         if ( ! EventSourcedRepository.class.isAssignableFrom(this.repository.getClass())) {
             throw new KasperException(
                     "Your repository is not event-sourced, you cannot use given(events)"
@@ -126,12 +127,26 @@ public class KasperAggregateFixture<AGR extends AggregateRoot>
 
     @Override
     public KasperAggregateExecutor givenCommands(final Command... commands) {
-        return new KasperAggregateExecutor(fixture.givenCommands(commands));
+        return new KasperAggregateExecutor(fixture.givenCommands((Object[]) commands));
     }
 
     @Override
     public KasperAggregateExecutor givenCommands(final List<Command> commands) {
         return new KasperAggregateExecutor(fixture.givenCommands(commands));
+    }
+
+    @Override
+    public KasperAggregateExecutor givenCommands(Context context, Command... commands) {
+        throw new UnsupportedOperationException(
+                "Context in given commands not supported in aggregate test fixture"
+        );
+    }
+
+    @Override
+    public KasperAggregateExecutor givenCommands(Context context, List<Command> commands) {
+        throw new UnsupportedOperationException(
+                "Context in given commands not supported in aggregate test fixture"
+        );
     }
 
     // ------------------------------------------------------------------------

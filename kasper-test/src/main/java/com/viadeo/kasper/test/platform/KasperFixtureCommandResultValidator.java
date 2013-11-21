@@ -11,12 +11,12 @@ import com.viadeo.kasper.event.IEvent;
 
 public interface KasperFixtureCommandResultValidator extends KasperFixtureResultValidator {
 
+    KasperFixtureCommandResultValidator expectReturnOK();
+
     KasperFixtureCommandResultValidator expectSequenceOfEvents(IEvent... events);
 
     KasperFixtureCommandResultValidator expectExactSequenceOfEvents(IEvent... events);
 
-    KasperFixtureCommandResultValidator expectReturnResponse(CommandResponse commandResponse);
-
-    KasperFixtureCommandResultValidator expectReturnOK();
+    KasperFixtureCommandResultValidator expectReturnResponse(CommandResponse queryResponse);
 
 }

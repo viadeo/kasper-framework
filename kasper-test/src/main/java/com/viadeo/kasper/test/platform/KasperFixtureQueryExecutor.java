@@ -6,17 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
-import org.axonframework.commandhandling.CommandBus;
-import org.axonframework.eventhandling.EventBus;
+import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.cqrs.query.Query;
 
-public interface KasperFixture<EXECUTOR extends KasperFixtureExecutor> {
+public interface KasperFixtureQueryExecutor<VALIDATOR extends KasperFixtureQueryResultValidator> extends KasperFixtureExecutor {
 
-    EXECUTOR given();
+    VALIDATOR when(Query query);
 
-    // ------------------------------------------------------------------------
-
-    public CommandBus commandBus();
-
-    public EventBus eventBus();
+    VALIDATOR when(Query query, Context context);
 
 }

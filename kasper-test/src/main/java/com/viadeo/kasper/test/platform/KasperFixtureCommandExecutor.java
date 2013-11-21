@@ -9,7 +9,7 @@ package com.viadeo.kasper.test.platform;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.command.Command;
 
-public interface KasperFixtureCommandExecutor<VALIDATOR> extends KasperFixtureExecutor<VALIDATOR> {
+public interface KasperFixtureCommandExecutor<VALIDATOR extends KasperFixtureCommandResultValidator> extends KasperFixtureExecutor {
 
     VALIDATOR when(Command command);
 

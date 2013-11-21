@@ -16,6 +16,7 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.exception.KasperException;
@@ -29,10 +30,15 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class KasperPlatformFixture
-        implements KasperFixture<
+        implements KasperCommandFixture<
             KasperPlatformExecutor,
-            KasperPlatformResultValidator
-        > {
+            KasperPlatformCommandResultValidator
+        >,
+        KasperQueryFixture<
+            KasperPlatformExecutor,
+            KasperPlatformQueryResultValidator
+        >
+{
 
     private String[] prefixes;
 
@@ -132,6 +138,47 @@ public class KasperPlatformFixture
         return this;
     }
 
+    @Override
+    public KasperQueryFixture<KasperPlatformExecutor, KasperPlatformQueryResultValidator> registerQueryHandler(QueryHandler queryHandler) {
+        checkNotNull(queryHandler);
+        conf().getComponentsInstanceManager().recordInstance(
+                (Class) queryHandler.getClass(),
+                queryHandler
+        );
+        return this;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public KasperPlatformExecutor givenEvents(final IEvent... events) {
+        return this.givenEvents(DefaultContextBuilder.get(), events);
+    }
+
+    @Override
+    public KasperPlatformExecutor givenEvents(final List<IEvent> events) {
+        return this.givenEvents(DefaultContextBuilder.get(), events);
+    }
+
+    @Override
+    public KasperPlatformExecutor givenEvents(final Context context, IEvent... events) {
+        return this.givenEvents(context, Arrays.asList(events));
+    }
+
+    @Override
+    public KasperPlatformExecutor givenEvents(final Context context, List<IEvent> events) {
+        for (final IEvent event : events) {
+            try {
+                platform().publishEvent(context, event);
+            } catch (final Exception e) {
+                throw new KasperException(e);
+            }
+        }
+
+        return given();
+    }
+
+
     // ------------------------------------------------------------------------
 
     @Override
@@ -151,10 +198,12 @@ public class KasperPlatformFixture
         return this.givenCommands(DefaultContextBuilder.get(), commands);
     }
 
+    @Override
     public KasperPlatformExecutor givenCommands(final Context context, final Command... commands) {
         return this.givenCommands(context, Arrays.asList(commands));
     }
 
+    @Override
     public KasperPlatformExecutor givenCommands(final Context context, final List<Command> commands) {
         for (final Command command : commands) {
             try {

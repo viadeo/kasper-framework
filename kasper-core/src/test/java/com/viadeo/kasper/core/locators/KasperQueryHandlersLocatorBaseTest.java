@@ -36,8 +36,10 @@ public class KasperQueryHandlersLocatorBaseTest {
     @XKasperUnregistered
 	private static final class TestQuery implements Query {}
 
+    @XKasperUnregistered
     private static final class TestResult implements QueryResult {}
 
+    @XKasperUnregistered
     @XKasperQueryHandler( domain = TestDomain.class )
 	private static class TestHandler extends QueryHandler<TestQuery, TestResult> {
 		@Override
@@ -102,10 +104,10 @@ public class KasperQueryHandlersLocatorBaseTest {
 
     // ------------------------------------------------------------------------
 
-    @XKasperQueryHandlerFilter
+    @XKasperUnregistered
     private static class TestFilter implements QueryHandlerFilter { }
 
-    @XKasperQueryHandlerFilter
+    @XKasperUnregistered
     private static class TestFilter2 implements QueryHandlerFilter { }
 
     @Test
@@ -159,6 +161,7 @@ public class KasperQueryHandlersLocatorBaseTest {
     @XKasperUnregistered
     private static final class TestQuery2 implements Query {}
 
+    @XKasperUnregistered
     @XKasperQueryHandler( domain = TestDomain2.class )
     private static class TestHandler2 extends QueryHandler<TestQuery2, TestResult> {
         @Override
@@ -167,7 +170,7 @@ public class KasperQueryHandlersLocatorBaseTest {
         }
     }
 
-    @XKasperQueryHandlerFilter
+    @XKasperUnregistered
     private static class TestFilterDomain implements QueryHandlerFilter { }
 
     @Test

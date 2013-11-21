@@ -6,6 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
-public interface KasperFixtureExecutor<VALIDATOR> {
+public interface KasperFixtureExecutor {
 
 }

@@ -72,5 +72,32 @@ You instantiate it giving a java package name to scan and you're done :
         );
 
 
-Many new features to be added like a better platform configuration and the testing of the query area which
-is not available currently.
+        fixture
+            .given()
+            .when(
+                new TestQuery("OK")
+            )
+            .expectReturnResponse(
+                new TestResult("42")
+            );
+
+
+        fixture
+            .given()
+            .when(
+                new TestQuery("ERROR")
+            )
+            .expectReturnError(
+                new KasperReason("ERROR", "I'm bad")
+            );
+
+
+        fixture
+            .given()
+            .when(
+                new TestQuery("REFUSED")
+            )
+            .expectReturnRefused(
+                new KasperReason("REFUSED", "Go To Hell")
+            );
+

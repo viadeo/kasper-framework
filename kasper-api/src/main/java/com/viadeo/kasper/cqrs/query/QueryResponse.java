@@ -6,9 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
+import com.google.common.base.Objects;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.annotation.Immutable;
 import com.viadeo.kasper.cqrs.TransportMode;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.http.HTTPQueryResponse;
 import com.viadeo.kasper.exception.KasperException;
 
@@ -53,8 +55,8 @@ public class QueryResponse<RESULT extends QueryResult> implements Serializable, 
         return new QueryResponse<R>(Status.REFUSED, checkNotNull(reason));
     }
 
-    public static <R extends QueryResult> QueryResponse<R> of(final R response) {
-        return new QueryResponse<R>(checkNotNull(response));
+    public static <R extends QueryResult> QueryResponse<R> of(final R result) {
+        return new QueryResponse<R>(checkNotNull(result));
     }
 
     // ------------------------------------------------------------------------
@@ -115,6 +117,37 @@ public class QueryResponse<RESULT extends QueryResult> implements Serializable, 
             return (HTTPQueryResponse) this;
         }
         throw new KasperException("Not an HTTP query response");
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(status) + Objects.hashCode(result) + Objects.hashCode(reason);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == checkNotNull(obj)) {
+            return true;
+        }
+        if ( ! getClass().equals(obj.getClass())) {
+            return false;
+        }
+
+        final QueryResponse other = (QueryResponse) obj;
+        return Objects.equal(other.status, this.status)
+                && Objects.equal(other.result, this.result)
+                && Objects.equal(other.reason, this.reason);
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("status", this.status)
+                .add("result", this.result)
+                .add("reason", this.reason)
+                .toString();
     }
 
 }

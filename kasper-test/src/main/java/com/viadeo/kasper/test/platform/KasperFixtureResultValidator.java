@@ -10,8 +10,8 @@ import org.hamcrest.Matcher;
 
 public interface KasperFixtureResultValidator {
 
-    KasperFixtureCommandResultValidator expectException(Class<? extends Throwable> expectedException);
+    KasperFixtureResultValidator expectException(Class<? extends Throwable> expectedException);
 
-    KasperFixtureCommandResultValidator expectException(Matcher<?> matcher);
+    KasperFixtureResultValidator expectException(Matcher<?> matcher);
 
 }
