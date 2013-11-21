@@ -6,9 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
+import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
+import org.axonframework.test.AxonAssertionError;
 import org.axonframework.test.Reporter;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
+
+import javax.validation.ConstraintViolation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.axonframework.test.matchers.Matchers.equalTo;
@@ -78,6 +82,36 @@ public abstract class KasperPlatformResultValidator
             reporter.reportWrongResult(this.response, description);
         }
 
+    }
+
+    @Override
+    public KasperFixtureResultValidator expectValidationErrorOnField(final String field) {
+
+        if ((null == exception) || ( ! JSR303ViolationException.class.equals(exception.getClass()))) {
+            throw new AxonAssertionError(String.format(
+                    "The expected validation error on field %s not occured",
+                    field
+            ));
+        }
+
+        boolean found = false;
+
+        final JSR303ViolationException jsrException = (JSR303ViolationException) exception;
+
+        for (final ConstraintViolation violation : jsrException.getViolations()) {
+            if (violation.getPropertyPath().toString().contentEquals(field)) {
+                found = true;
+            }
+        }
+
+        if ( ! found) {
+            throw new AxonAssertionError(String.format(
+                    "The expected validation error on field %s not occured",
+                    field
+            ));
+        }
+
+        return this;
     }
 
 }

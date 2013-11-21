@@ -14,4 +14,6 @@ public interface KasperFixtureResultValidator {
 
     KasperFixtureResultValidator expectException(Matcher<?> matcher);
 
+    KasperFixtureResultValidator expectValidationErrorOnField(String field);
+
 }

@@ -36,6 +36,7 @@ public class FixtureUseCase {
     public static class TestDomain implements Domain { }
 
     public static class TestCreateCommand extends CreateCommand {
+        @NotNull
         private final String firstName;
         public TestCreateCommand(KasperID providedId, String firstName) {
             super(providedId);

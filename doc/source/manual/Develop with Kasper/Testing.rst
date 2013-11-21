@@ -101,3 +101,13 @@ You instantiate it giving a java package name to scan and you're done :
                 new KasperReason("REFUSED", "Go To Hell")
             );
 
+        fixture
+            .given()
+            .when(
+                new TestCreateCommand(
+                    createId,
+                    null
+                )
+            )
+            .expectValidationErrorOnField("firstName");
+
