@@ -10,10 +10,12 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.test.platform.KasperPlatformFixture;
+import org.axonframework.test.AxonAssertionError;
 import org.junit.Before;
 import org.junit.Test;
 
 import static com.viadeo.kasper.cqrs.command.FixtureUseCase.*;
+import static org.junit.Assert.fail;
 
 public class TestFixturePlatformTest {
 
@@ -52,6 +54,79 @@ public class TestFixturePlatformTest {
                     new TestCreatedEvent(createId),
                     new TestFirstNameChangedEvent(firstName)
                 );
+
+    }
+
+    @Test
+    public void testSimpleUnexpectedValidation() {
+
+        // Given
+        final KasperID createId = DefaultKasperId.random();
+
+        // When command is supplied
+        // Then we expect creation and first name changing events
+        try {
+            fixture
+                    .given()
+                    .when(
+                            new TestCreateCommand(
+                                    createId,
+                                    null
+                            )
+                    )
+                    .expectReturnOK();
+            fail();
+        } catch (final AxonAssertionError e) {
+            // expected
+        }
+
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void testSimpleExpectedValidation() {
+
+        // Given
+        final KasperID createId = DefaultKasperId.random();
+
+        // When command is supplied
+        // Then we expect creation and first name changing events
+        fixture
+                .given()
+                .when(
+                        new TestCreateCommand(
+                                createId,
+                                null
+                        )
+                )
+                .expectValidationErrorOnField("firstName");
+
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void testSimpleExpectedValidationOnBadField() {
+
+        // Given
+        final KasperID createId = DefaultKasperId.random();
+
+        // When command is supplied
+        // Then we expect creation and first name changing events
+        try {
+            fixture
+                    .given()
+                    .when(
+                            new TestCreateCommand(
+                                    createId,
+                                    null
+                            )
+                    )
+                    .expectValidationErrorOnField("foo");
+        } catch (final AxonAssertionError e) {
+            // expected
+        }
 
     }
 
@@ -102,10 +177,10 @@ public class TestFixturePlatformTest {
         fixture
                 .given()
                 .when(
-                        new TestQuery("ERROR")
+                    new TestQuery("ERROR")
                 )
                 .expectReturnError(
-                        new KasperReason("ERROR", "I'm bad")
+                    new KasperReason("ERROR", "I'm bad")
                 );
     }
 
@@ -114,10 +189,10 @@ public class TestFixturePlatformTest {
         fixture
                 .given()
                 .when(
-                        new TestQuery("REFUSED")
+                    new TestQuery("REFUSED")
                 )
                 .expectReturnRefused(
-                        new KasperReason("REFUSED", "Go To Hell")
+                    new KasperReason("REFUSED", "Go To Hell")
                 );
     }
 
