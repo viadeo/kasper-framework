@@ -7,17 +7,15 @@
 package com.viadeo.kasper.cqrs.query;
 
 import com.google.common.base.Objects;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.lang.String;
 import java.util.Iterator;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class MapQueryResult<String,T> implements Iterable<Map.Entry<String,T>>, QueryResult  {
+public abstract class MapQueryResult<T extends QueryResult> implements Iterable<Map.Entry<String,T>>, QueryResult  {
 
 	private Map<String,T> map;
 
@@ -43,8 +41,8 @@ public abstract class MapQueryResult<String,T> implements Iterable<Map.Entry<Str
         put(entry.getKey(), entry.getValue());
     }
 
-	@Override
-	public Iterator<Map.Entry<String,T>> iterator() {
+    @Override
+    public Iterator<Map.Entry<String, T>> iterator() {
 		return this.map.entrySet().iterator();
 	}
 
@@ -84,7 +82,7 @@ public abstract class MapQueryResult<String,T> implements Iterable<Map.Entry<Str
     }
 
     @Override
-    public java.lang.String toString() {
+    public String toString() {
         return Objects.toStringHelper(this)
                 .add("map", map)
                 .toString();
