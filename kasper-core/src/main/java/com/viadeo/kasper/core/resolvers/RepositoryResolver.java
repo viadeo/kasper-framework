@@ -22,6 +22,14 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
 
     // ------------------------------------------------------------------------
 
+    public RepositoryResolver() { }
+
+    public RepositoryResolver(final EntityResolver entityResolver) {
+        this.entityResolver = entityResolver;
+    }
+
+    // ------------------------------------------------------------------------
+
     @Override
     public String getTypeName() {
         return "Repository";

@@ -27,6 +27,14 @@ public class RelationResolver extends AbstractResolver<Relation> {
 
     // ------------------------------------------------------------------------
 
+    public RelationResolver() { }
+
+    public RelationResolver(final ConceptResolver conceptResolver) {
+        this.conceptResolver= conceptResolver;
+    }
+
+    // ------------------------------------------------------------------------
+
     @Override
     public String getTypeName() {
         return "Relation";
