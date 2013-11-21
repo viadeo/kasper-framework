@@ -43,8 +43,8 @@ public class TestFixtureAxonTest {
     @Parameterized.Parameters
     public static Collection repositories() {
         return Arrays.asList(new Object[][] {
-                { new TestRepository() },
-                { new TestEventRepository() }
+            { new TestRepository() },
+            { new TestEventRepository() }
         });
     }
 
@@ -88,27 +88,23 @@ public class TestFixtureAxonTest {
     @Test
     public void testSimpleCreation() {
 
-        // Given
         final KasperID createId = DefaultKasperId.random();
 
-        // When command is made
-        // Then we expect creation and first name changing events
         fixture
-                .given()
-                .when(
-                    new TestCreateCommand(
-                        createId,
-                        firstName
-                    ),
-                    newContext()
-                )
-                .expectReturnValue(CommandResponse.ok())
-                .expectEventsMatching(payloadsMatching(exactSequenceOf(
-                    equalToEvent(new TestCreatedEvent(createId)),
-                    equalToEvent(new TestFirstNameChangedEvent(firstName)),
-                    andNoMore()
-                )));
-
+            .given()
+            .when(
+                new TestCreateCommand(
+                    createId,
+                    firstName
+                ),
+                newContext()
+            )
+            .expectReturnValue(CommandResponse.ok())
+            .expectEventsMatching(payloadsMatching(exactSequenceOf(
+                equalToEvent(new TestCreatedEvent(createId)),
+                equalToEvent(new TestFirstNameChangedEvent(firstName)),
+                andNoMore()
+            )));
     }
 
     // ------------------------------------------------------------------------
@@ -121,25 +117,24 @@ public class TestFixtureAxonTest {
 
         // When command is made, Then we expect creation and first name changing events
         fixture
-                .givenCommands(
-                    new TestCreateCommand(
-                        aggregateId,
-                        firstName
-                    )
+            .givenCommands(
+                new TestCreateCommand(
+                    aggregateId,
+                    firstName
                 )
-                .when(
-                    new TestChangeLastNameCommand(
-                        aggregateId,
-                        lastName
-                    ),
-                    newContext()
-                )
-                .expectReturnValue(CommandResponse.ok())
-                .expectEventsMatching(payloadsMatching(exactSequenceOf(
-                    equalToEvent(new TestLastNameChangedEvent(lastName)),
-                    andNoMore()
-                )));
-
+            )
+            .when(
+                new TestChangeLastNameCommand(
+                    aggregateId,
+                    lastName
+                ),
+                newContext()
+            )
+            .expectReturnValue(CommandResponse.ok())
+            .expectEventsMatching(payloadsMatching(exactSequenceOf(
+                equalToEvent(new TestLastNameChangedEvent(lastName)),
+                andNoMore()
+            )));
     }
 
     // ------------------------------------------------------------------------
@@ -154,28 +149,25 @@ public class TestFixtureAxonTest {
             return;
         }
 
-        // Given
         final KasperID aggregateId = DefaultKasperId.random();
 
-        // When command is made, Then we expect creation and first name changing events
         fixture
-                .given(
-                    new TestCreatedEvent(aggregateId),
-                    new TestFirstNameChangedEvent(firstName)
-                )
-                .when(
-                    new TestChangeLastNameCommand(
-                        aggregateId,
-                        lastName
-                    ),
-                    newContext()
-                )
-                .expectReturnValue(CommandResponse.ok())
-                .expectEventsMatching(payloadsMatching(exactSequenceOf(
-                    equalToEvent(new TestLastNameChangedEvent(lastName)),
-                    andNoMore()
-                )));
-
+            .given(
+                new TestCreatedEvent(aggregateId),
+                new TestFirstNameChangedEvent(firstName)
+            )
+            .when(
+                new TestChangeLastNameCommand(
+                    aggregateId,
+                    lastName
+                ),
+                newContext()
+            )
+            .expectReturnValue(CommandResponse.ok())
+            .expectEventsMatching(payloadsMatching(exactSequenceOf(
+                equalToEvent(new TestLastNameChangedEvent(lastName)),
+                andNoMore()
+            )));
     }
 
 }

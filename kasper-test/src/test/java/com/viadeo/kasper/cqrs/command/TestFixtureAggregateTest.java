@@ -49,8 +49,8 @@ public class TestFixtureAggregateTest {
     @Before
     public void resetFixture() {
         this.fixture = KasperAggregateFixture.forRepository(
-                this.testRepository,
-                TestAggregate.class
+            this.testRepository,
+            TestAggregate.class
         );
 
         fixture.registerCommandHandler(new TestCreateCommandHandler());
@@ -62,24 +62,21 @@ public class TestFixtureAggregateTest {
     @Test
     public void testSimpleCreation() {
 
-        // Given
         final KasperID createId = DefaultKasperId.random();
 
-        // When command is supplied
-        // Then we expect creation and first name changing events
         fixture
-                .given()
-                .when(
-                    new TestCreateCommand(
-                        createId,
-                        firstName
-                    )
+            .given()
+            .when(
+                new TestCreateCommand(
+                    createId,
+                    firstName
                 )
-                .expectReturnOK()
-                .expectExactSequenceOfEvents(
-                    new TestCreatedEvent(createId),
-                    new TestFirstNameChangedEvent(firstName)
-                );
+            )
+            .expectReturnOK()
+            .expectExactSequenceOfEvents(
+                new TestCreatedEvent(createId),
+                new TestFirstNameChangedEvent(firstName)
+            );
 
     }
 
@@ -88,21 +85,18 @@ public class TestFixtureAggregateTest {
     @Test
     public void testSimpleUnexpectedValidation() {
 
-        // Given
         final KasperID createId = DefaultKasperId.random();
 
-        // When command is supplied
-        // Then we expect creation and first name changing events
         try {
             fixture
-                    .given()
-                    .when(
-                            new TestCreateCommand(
-                                    createId,
-                                    null
-                            )
+                .given()
+                .when(
+                    new TestCreateCommand(
+                        createId,
+                        null
                     )
-                    .expectReturnOK();
+                )
+                .expectReturnOK();
             fail();
         } catch (final AxonAssertionError e) {
             // expected
@@ -115,21 +109,17 @@ public class TestFixtureAggregateTest {
     @Test
     public void testSimpleExpectedValidation() {
 
-        // Given
         final KasperID createId = DefaultKasperId.random();
 
-        // When command is supplied
-        // Then we expect creation and first name changing events
         fixture
-                .given()
-                .when(
-                        new TestCreateCommand(
-                                createId,
-                                null
-                        )
+            .given()
+            .when(
+                new TestCreateCommand(
+                    createId,
+                    null
                 )
-                .expectValidationErrorOnField("firstName");
-
+            )
+            .expectValidationErrorOnField("firstName");
     }
 
     // ------------------------------------------------------------------------
@@ -137,21 +127,18 @@ public class TestFixtureAggregateTest {
     @Test
     public void testSimpleExpectedValidationOnBadField() {
 
-        // Given
         final KasperID createId = DefaultKasperId.random();
 
-        // When command is supplied
-        // Then we expect creation and first name changing events
         try {
             fixture
-                    .given()
-                    .when(
-                            new TestCreateCommand(
-                                    createId,
-                                    null
-                            )
+                .given()
+                .when(
+                    new TestCreateCommand(
+                        createId,
+                        null
                     )
-                    .expectValidationErrorOnField("foo");
+                )
+                .expectValidationErrorOnField("foo");
         } catch (final AxonAssertionError e) {
             // expected
         }
@@ -163,29 +150,25 @@ public class TestFixtureAggregateTest {
     @Test
     public void testSimpleUpdateAfterCreateCommand() {
 
-        // Given
         final KasperID aggregateId = DefaultKasperId.random();
 
-        // When command is supplied
-        // Then we expect creation and first name changing events
         fixture
-                .givenCommands(
-                    new TestCreateCommand(
-                        aggregateId,
-                        firstName
-                    )
+            .givenCommands(
+                new TestCreateCommand(
+                    aggregateId,
+                    firstName
                 )
-                .when(
-                    new TestChangeLastNameCommand(
-                        aggregateId,
-                        lastName
-                    )
+            )
+            .when(
+                new TestChangeLastNameCommand(
+                    aggregateId,
+                    lastName
                 )
-                .expectReturnOK()
-                .expectExactSequenceOfEvents(
-                    new TestLastNameChangedEvent(lastName)
-                );
-
+            )
+            .expectReturnOK()
+            .expectExactSequenceOfEvents(
+                new TestLastNameChangedEvent(lastName)
+            );
     }
 
     // ------------------------------------------------------------------------
@@ -200,26 +183,23 @@ public class TestFixtureAggregateTest {
             return;
         }
 
-        // Given
         final KasperID aggregateId = DefaultKasperId.random();
 
-        // When command is supplied
-        // Then we expect creation and first name changing events
         fixture
-                .givenEvents(
-                    new TestCreatedEvent(aggregateId),
-                    new TestFirstNameChangedEvent(firstName)
+            .givenEvents(
+                new TestCreatedEvent(aggregateId),
+                new TestFirstNameChangedEvent(firstName)
+            )
+            .when(
+                new TestChangeLastNameCommand(
+                    aggregateId,
+                    lastName
                 )
-                .when(
-                    new TestChangeLastNameCommand(
-                        aggregateId,
-                        lastName
-                    )
-                )
-                .expectReturnOK()
-                .expectExactSequenceOfEvents(
-                    new TestLastNameChangedEvent(lastName)
-                );
+            )
+            .expectReturnOK()
+            .expectExactSequenceOfEvents(
+                new TestLastNameChangedEvent(lastName)
+            );
     }
 
 }

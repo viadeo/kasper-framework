@@ -36,45 +36,39 @@ public class TestFixturePlatformTest {
     @Test
     public void testSimpleCreation() {
 
-        // Given
         final KasperID createId = DefaultKasperId.random();
 
-        // When command is supplied
-        // Then we expect creation and first name changing events
         fixture
-                .given()
-                .when(
-                    new TestCreateCommand(
-                        createId,
-                        firstName
-                    )
+            .given()
+            .when(
+                new TestCreateCommand(
+                    createId,
+                    firstName
                 )
-                .expectReturnOK()
-                .expectExactSequenceOfEvents(
-                    new TestCreatedEvent(createId),
-                    new TestFirstNameChangedEvent(firstName)
-                );
+            )
+            .expectReturnOK()
+            .expectExactSequenceOfEvents(
+                new TestCreatedEvent(createId),
+                new TestFirstNameChangedEvent(firstName)
+            );
 
     }
 
     @Test
     public void testSimpleUnexpectedValidation() {
 
-        // Given
         final KasperID createId = DefaultKasperId.random();
 
-        // When command is supplied
-        // Then we expect creation and first name changing events
         try {
             fixture
-                    .given()
-                    .when(
-                            new TestCreateCommand(
-                                    createId,
-                                    null
-                            )
+                .given()
+                .when(
+                    new TestCreateCommand(
+                        createId,
+                        null
                     )
-                    .expectReturnOK();
+                )
+                .expectReturnOK();
             fail();
         } catch (final AxonAssertionError e) {
             // expected
@@ -87,21 +81,17 @@ public class TestFixturePlatformTest {
     @Test
     public void testSimpleExpectedValidation() {
 
-        // Given
         final KasperID createId = DefaultKasperId.random();
 
-        // When command is supplied
-        // Then we expect creation and first name changing events
         fixture
-                .given()
-                .when(
-                        new TestCreateCommand(
-                                createId,
-                                null
-                        )
+            .given()
+            .when(
+                new TestCreateCommand(
+                    createId,
+                    null
                 )
-                .expectValidationErrorOnField("firstName");
-
+            )
+            .expectValidationErrorOnField("firstName");
     }
 
     // ------------------------------------------------------------------------
@@ -109,21 +99,18 @@ public class TestFixturePlatformTest {
     @Test
     public void testSimpleExpectedValidationOnBadField() {
 
-        // Given
         final KasperID createId = DefaultKasperId.random();
 
-        // When command is supplied
-        // Then we expect creation and first name changing events
         try {
             fixture
-                    .given()
-                    .when(
-                            new TestCreateCommand(
-                                    createId,
-                                    null
-                            )
+                .given()
+                .when(
+                    new TestCreateCommand(
+                        createId,
+                        null
                     )
-                    .expectValidationErrorOnField("foo");
+                )
+                .expectValidationErrorOnField("foo");
         } catch (final AxonAssertionError e) {
             // expected
         }
@@ -135,65 +122,61 @@ public class TestFixturePlatformTest {
     @Test
     public void testSimpleUpdateAfterCreateCommand() {
 
-        // Given
         final KasperID aggregateId = DefaultKasperId.random();
 
-        // When command is supplied
-        // Then we expect creation and first name changing events
         fixture
-                .givenCommands(
-                    new TestCreateCommand(
-                        aggregateId,
-                        firstName
-                    )
+            .givenCommands(
+                new TestCreateCommand(
+                    aggregateId,
+                    firstName
                 )
-                .when(
-                    new TestChangeLastNameCommand(
-                        aggregateId,
-                        lastName
-                    )
+            )
+            .when(
+                new TestChangeLastNameCommand(
+                    aggregateId,
+                    lastName
                 )
-                .expectReturnOK()
-                .expectExactSequenceOfEvents(
-                    new TestLastNameChangedEvent(lastName)
-                );
-
+            )
+            .expectReturnOK()
+            .expectExactSequenceOfEvents(
+                new TestLastNameChangedEvent(lastName)
+            );
     }
 
     @Test
     public void testSimpleQueryOK() {
         fixture
-                .given()
-                .when(
-                    new TestQuery("OK")
-                )
-                .expectReturnResponse(
-                    new TestResult("42")
-                );
+            .given()
+            .when(
+                new TestQuery("OK")
+            )
+            .expectReturnResponse(
+                new TestResult("42")
+            );
     }
 
     @Test
     public void testSimpleQueryError() {
         fixture
-                .given()
-                .when(
-                    new TestQuery("ERROR")
-                )
-                .expectReturnError(
-                    new KasperReason("ERROR", "I'm bad")
-                );
+            .given()
+            .when(
+                new TestQuery("ERROR")
+            )
+            .expectReturnError(
+                new KasperReason("ERROR", "I'm bad")
+            );
     }
 
     @Test
     public void testSimpleQueryRefused() {
         fixture
-                .given()
-                .when(
-                    new TestQuery("REFUSED")
-                )
-                .expectReturnRefused(
-                    new KasperReason("REFUSED", "Go To Hell")
-                );
+            .given()
+            .when(
+                new TestQuery("REFUSED")
+            )
+            .expectReturnRefused(
+                new KasperReason("REFUSED", "Go To Hell")
+            );
     }
 
 }
