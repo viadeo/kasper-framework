@@ -85,7 +85,7 @@ public class KasperPlatformFixture
 
     // ------------------------------------------------------------------------
 
-    public static KasperPlatformFixture forPrefix(final String... prefix) {
+    public static KasperPlatformFixture scanPrefix(final String... prefix) {
         return new KasperPlatformFixture(prefix);
     }
 

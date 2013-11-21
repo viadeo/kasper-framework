@@ -25,7 +25,7 @@ public class TestFixturePlatformTest {
 
     @Before
     public void resetFixture() {
-        this.fixture = KasperPlatformFixture.forPrefix(this.getClass().getPackage().getName());
+        this.fixture = KasperPlatformFixture.scanPrefix(this.getClass().getPackage().getName());
     }
 
     // ========================================================================
@@ -42,8 +42,8 @@ public class TestFixturePlatformTest {
                 .given()
                 .when(
                     new TestCreateCommand(
-                            createId,
-                            firstName
+                        createId,
+                        firstName
                     )
                 )
                 .expectReturnOK()
@@ -67,8 +67,8 @@ public class TestFixturePlatformTest {
         fixture
                 .givenCommands(
                     new TestCreateCommand(
-                            aggregateId,
-                            firstName
+                        aggregateId,
+                        firstName
                     )
                 )
                 .when(
@@ -79,7 +79,7 @@ public class TestFixturePlatformTest {
                 )
                 .expectReturnOK()
                 .expectExactSequenceOfEvents(
-                        new TestLastNameChangedEvent(lastName)
+                    new TestLastNameChangedEvent(lastName)
                 );
 
     }

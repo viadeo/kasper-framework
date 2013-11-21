@@ -69,8 +69,8 @@ public class TestFixtureAggregateTest {
                 .given()
                 .when(
                     new TestCreateCommand(
-                            createId,
-                            firstName
+                        createId,
+                        firstName
                     )
                 )
                 .expectReturnOK()
@@ -94,8 +94,8 @@ public class TestFixtureAggregateTest {
         fixture
                 .givenCommands(
                     new TestCreateCommand(
-                            aggregateId,
-                            firstName
+                        aggregateId,
+                        firstName
                     )
                 )
                 .when(
@@ -106,7 +106,7 @@ public class TestFixtureAggregateTest {
                 )
                 .expectReturnOK()
                 .expectExactSequenceOfEvents(
-                        new TestLastNameChangedEvent(lastName)
+                    new TestLastNameChangedEvent(lastName)
                 );
 
     }
