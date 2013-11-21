@@ -10,8 +10,14 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
+import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
@@ -20,7 +26,10 @@ import com.viadeo.kasper.event.domain.EntityCreatedEvent;
 import com.viadeo.kasper.event.domain.EntityUpdatedEvent;
 import org.axonframework.eventhandling.annotation.EventHandler;
 
+import javax.validation.constraints.NotNull;
 import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class FixtureUseCase {
 
@@ -141,7 +150,7 @@ public class FixtureUseCase {
 
     public static class TestEventRepository extends EventSourcedRepository<TestAggregate> {
         /* During tests, do not use constructor with event store */
-        protected TestEventRepository() {
+        public TestEventRepository() {
             super();
         }
     }
@@ -184,5 +193,46 @@ public class FixtureUseCase {
         }
 
     }
+
+    public static class TestQuery implements Query {
+        @NotNull
+        private final String type;
+        TestQuery(final String type) {
+            this.type = type;
+        }
+        String getType() {
+            return this.type;
+        }
+    }
+
+    public static class TestResult implements QueryResult {
+        private final String answer;
+        TestResult(final String answer) {
+            this.answer = answer;
+        }
+        String getAnswer() {
+            return this.answer;
+        }
+        public int hashCode() { return answer.hashCode(); }
+        public boolean equals(final Object obj) {
+            if (this == checkNotNull(obj)) { return true; }
+            if (!getClass().equals(obj.getClass())) { return false; }
+            return ((TestResult) obj).answer.equals(answer);
+        }
+        public String toString() { return this.answer; }
+    }
+
+    @XKasperQueryHandler( domain = TestDomain.class )
+    public static class TestGetSomeData extends QueryHandler<TestQuery, TestResult> {
+        public QueryResponse<TestResult> retrieve(final TestQuery query) throws Exception {
+            if (query.getType().contentEquals("REFUSED")) {
+                return QueryResponse.refused(new KasperReason("REFUSED", "Go To Hell"));
+            } else if (query.getType().contentEquals("ERROR")) {
+                return QueryResponse.error(new KasperReason("ERROR", "I'm bad"));
+            }
+            return QueryResponse.of(new TestResult("42"));
+        }
+    }
+
 
 }

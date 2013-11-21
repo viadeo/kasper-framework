@@ -7,6 +7,7 @@
 package com.viadeo.kasper.cqrs.command;
 
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.test.platform.KasperPlatformFixture;
 import org.junit.Before;
@@ -82,6 +83,42 @@ public class TestFixturePlatformTest {
                     new TestLastNameChangedEvent(lastName)
                 );
 
+    }
+
+    @Test
+    public void testSimpleQueryOK() {
+        fixture
+                .given()
+                .when(
+                    new TestQuery("OK")
+                )
+                .expectReturnResponse(
+                    new TestResult("42")
+                );
+    }
+
+    @Test
+    public void testSimpleQueryError() {
+        fixture
+                .given()
+                .when(
+                        new TestQuery("ERROR")
+                )
+                .expectReturnError(
+                        new KasperReason("ERROR", "I'm bad")
+                );
+    }
+
+    @Test
+    public void testSimpleQueryRefused() {
+        fixture
+                .given()
+                .when(
+                        new TestQuery("REFUSED")
+                )
+                .expectReturnRefused(
+                        new KasperReason("REFUSED", "Go To Hell")
+                );
     }
 
 }

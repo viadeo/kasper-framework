@@ -8,6 +8,7 @@ package com.viadeo.kasper.client.platform;
 
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
 import com.viadeo.kasper.core.boot.ComponentsInstanceManager;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -17,6 +18,9 @@ import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.IEvent;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The Kasper platform
@@ -139,10 +143,11 @@ public interface Platform {
     KasperEventBus getEventBus();
 
     /**
-     * Publish an event to the platform, the event must contains the context
+     * Publish an event to the platform
      *
      * @param event
      */
-    void publishEvent(Event event);
+    void publishEvent(IEvent event);
+    void publishEvent(Context context, IEvent event);
 
 }

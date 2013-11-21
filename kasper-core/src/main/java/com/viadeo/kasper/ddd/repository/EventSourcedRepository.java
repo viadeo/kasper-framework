@@ -47,8 +47,9 @@ public abstract class EventSourcedRepository<AGR extends AggregateRoot> extends 
 
     @Override
     protected DecoratedAxonRepository<AGR> getDecoratedRepository(final Class<AGR> entityType) {
+
         if ( ! this.getEventStore().isPresent()) {
-            throw new KasperException("EventSourcedRepository needs an EventStore before initialization");
+            throw new KasperException("EventSourcedRepository needs an EventStore before usage");
         }
 
         final AxonEventSourcedRepository<AGR> axonRepository = new AxonEventSourcedRepository<>(

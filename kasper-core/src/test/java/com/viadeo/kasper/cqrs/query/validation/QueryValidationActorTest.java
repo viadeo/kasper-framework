@@ -38,7 +38,7 @@ public class QueryValidationActorTest {
 
         // Then
         assertFalse(response.isOK());
-        assertEquals("field : may not be null", response.getReason().getMessages().toArray()[0]);
+        assertEquals("VALIDATION:field:may not be null", response.getReason().getMessages().toArray()[0]);
     }
 
     @Test
@@ -55,7 +55,7 @@ public class QueryValidationActorTest {
 
         // Then
         assertFalse(response.isOK());
-        assertEquals("field : size must be between 36 and 36", response.getReason().getMessages().toArray()[0]);
+        assertEquals("VALIDATION:field:size must be between 36 and 36", response.getReason().getMessages().toArray()[0]);
     }
 
     @Data

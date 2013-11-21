@@ -4,11 +4,12 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 
-import java.util.HashMap;
-import java.util.Map;
-
-public class KasperPlatformExecutor implements KasperFixtureCommandExecutor<KasperPlatformResultValidator> {
+public class KasperPlatformExecutor implements
+        KasperFixtureCommandExecutor<KasperPlatformCommandResultValidator>,
+        KasperFixtureQueryExecutor<KasperPlatformQueryResultValidator> {
 
     private final KasperPlatformFixture.RecordingPlatform platform;
 
@@ -21,16 +22,12 @@ public class KasperPlatformExecutor implements KasperFixtureCommandExecutor<Kasp
     // ------------------------------------------------------------------------
 
     @Override
-    public KasperPlatformResultValidator when(final Command command) {
+    public KasperPlatformCommandResultValidator when(final Command command) {
         return this.when(command, DefaultContextBuilder.get());
     }
 
     @Override
-    public KasperPlatformResultValidator when(final Command command, final Context context) {
-        final Map<String, Object> metaContext = new HashMap<String, Object>() {{
-            this.put(Context.METANAME, context);
-        }};
-
+    public KasperPlatformCommandResultValidator when(final Command command, final Context context) {
         CommandResponse response = null;
         Exception exception = null;
         try {
@@ -39,7 +36,25 @@ public class KasperPlatformExecutor implements KasperFixtureCommandExecutor<Kasp
             exception = e;
         }
 
-        return new KasperPlatformResultValidator(platform, response, exception);
+        return new KasperPlatformCommandResultValidator(platform, response, exception);
+    }
+
+    @Override
+    public KasperPlatformQueryResultValidator when(final Query query) {
+        return this.when(query, DefaultContextBuilder.get());
+    }
+
+    @Override
+    public KasperPlatformQueryResultValidator when(final Query query, Context context) {
+        QueryResponse response = null;
+        Exception exception = null;
+        try {
+            response = platform.get().retrieve(query, context);
+        } catch (final Exception e) {
+            exception = e;
+        }
+
+        return new KasperPlatformQueryResultValidator(platform, response, exception);
     }
 
 }

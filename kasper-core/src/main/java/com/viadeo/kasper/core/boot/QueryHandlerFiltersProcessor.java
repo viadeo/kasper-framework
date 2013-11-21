@@ -30,6 +30,11 @@ public class QueryHandlerFiltersProcessor extends SingletonAnnotationProcessor<X
 
 	// ------------------------------------------------------------------------
 
+    @Override
+    public boolean isAnnotationMandatory() {
+        return false;
+    }
+
 	/**
 	 * Process Kasper query handler
 	 *

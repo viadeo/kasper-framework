@@ -129,7 +129,7 @@ public class TestFixtureAggregateTest {
         // When command is supplied
         // Then we expect creation and first name changing events
         fixture
-                .given(
+                .givenEvents(
                     new TestCreatedEvent(aggregateId),
                     new TestFirstNameChangedEvent(firstName)
                 )
