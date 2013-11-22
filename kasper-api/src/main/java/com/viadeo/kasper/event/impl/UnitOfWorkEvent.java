@@ -7,7 +7,6 @@
 package com.viadeo.kasper.event.impl;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.event.Event;
 
 import java.util.List;

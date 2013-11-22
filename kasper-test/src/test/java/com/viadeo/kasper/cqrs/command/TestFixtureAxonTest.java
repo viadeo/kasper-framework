@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.viadeo.kasper.cqrs.command.FixtureUseCase.*;
-import static com.viadeo.kasper.test.event.EventMatcher.equalToEvent;
+import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
 import static org.axonframework.test.matchers.Matchers.*;
 
 @RunWith(Parameterized.class)
@@ -101,8 +101,8 @@ public class TestFixtureAxonTest {
             )
             .expectReturnValue(CommandResponse.ok())
             .expectEventsMatching(payloadsMatching(exactSequenceOf(
-                equalToEvent(new TestCreatedEvent(createId)),
-                equalToEvent(new TestFirstNameChangedEvent(firstName)),
+                equalTo(new TestCreatedEvent(createId)),
+                equalTo(new TestFirstNameChangedEvent(firstName)),
                 andNoMore()
             )));
     }
@@ -132,7 +132,7 @@ public class TestFixtureAxonTest {
             )
             .expectReturnValue(CommandResponse.ok())
             .expectEventsMatching(payloadsMatching(exactSequenceOf(
-                equalToEvent(new TestLastNameChangedEvent(lastName)),
+                equalTo(new TestLastNameChangedEvent(lastName)),
                 andNoMore()
             )));
     }
@@ -165,7 +165,7 @@ public class TestFixtureAxonTest {
             )
             .expectReturnValue(CommandResponse.ok())
             .expectEventsMatching(payloadsMatching(exactSequenceOf(
-                equalToEvent(new TestLastNameChangedEvent(lastName)),
+                equalTo(new TestLastNameChangedEvent(lastName)),
                 andNoMore()
             )));
     }

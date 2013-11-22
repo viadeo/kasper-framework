@@ -16,7 +16,7 @@ import org.hamcrest.Matcher;
 import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.test.event.EventMatcher.equalToEvent;
+import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
 import static org.axonframework.test.matchers.Matchers.*;
 
 public class KasperAggregateResultValidator
@@ -46,7 +46,7 @@ public class KasperAggregateResultValidator
         final Matcher[] matchers = new Matcher[events.length];
 
         for (int i = 0 ; i < events.length ; i++) {
-            matchers[i] = equalToEvent(events[i]);
+            matchers[i] = equalTo(events[i]);
         }
 
         validator.expectEventsMatching(payloadsMatching(exactSequenceOf(matchers)));
@@ -62,7 +62,7 @@ public class KasperAggregateResultValidator
 
         int i;
         for (i = 0 ; i < events.length ; i++) {
-            matchers[i] = equalToEvent(events[i]);
+            matchers[i] = equalTo(events[i]);
         }
 
         matchers[i] = andNoMore();

@@ -12,8 +12,7 @@ import com.viadeo.kasper.event.IEvent;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import static com.viadeo.kasper.test.event.EventMatcher.equalToEvent;
-import static org.axonframework.test.matchers.Matchers.equalTo;
+import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
 
 public class KasperPlatformCommandResultValidator
         extends KasperPlatformResultValidator
@@ -42,7 +41,7 @@ public class KasperPlatformCommandResultValidator
         final Iterator<IEvent> iterator = platform().recordedEvents.iterator();
         for (final IEvent expectedEvent : expectedEvents) {
             final IEvent actualEvent = iterator.next();
-            if ( ! equalToEvent(expectedEvent).matches(actualEvent)) {
+            if ( ! equalTo(expectedEvent).matches(actualEvent)) {
                 reporter().reportWrongEvent(
                         platform().recordedEvents,
                         Arrays.asList(expectedEvents),

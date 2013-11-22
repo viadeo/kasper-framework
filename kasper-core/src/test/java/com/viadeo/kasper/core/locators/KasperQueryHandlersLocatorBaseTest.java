@@ -13,7 +13,6 @@ import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandlerFilter;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Before;
 import org.junit.Rule;

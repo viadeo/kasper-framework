@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
+import com.google.common.base.Objects;
 import com.viadeo.kasper.KasperID;
 import org.joda.time.DateTime;
 
@@ -47,6 +48,40 @@ public abstract class EntityQueryResult implements QueryResult {
 
     public DateTime getLastModificationDate() {
         return this.lastModificationDate;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(this.id, this.type, this.version, this.lastModificationDate);
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == checkNotNull(obj)) {
+            return true;
+        }
+        if (!getClass().equals(obj.getClass())) {
+            return false;
+        }
+
+        final EntityQueryResult other = (EntityQueryResult) obj;
+
+        return Objects.equal(this.id, other.id) &&
+                Objects.equal(this.type, other.type) &&
+                Objects.equal(this.version, other.version) &&
+                Objects.equal(this.lastModificationDate, other.lastModificationDate);
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .addValue(this.id)
+                .addValue(this.type)
+                .addValue(this.version)
+                .addValue(this.lastModificationDate)
+                .toString();
     }
 
 }
