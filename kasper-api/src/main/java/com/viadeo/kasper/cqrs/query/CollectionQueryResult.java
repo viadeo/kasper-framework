@@ -34,13 +34,6 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
 
     // ------------------------------------------------------------------------
 
-    public void add(final RES element) {
-        if (null == list) {
-            list = Lists.newArrayList();
-        }
-        list.add(element);
-    }
-
 	@Override
 	public Iterator<RES> iterator() {
 		return this.list.iterator();
@@ -52,19 +45,31 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
 		return this.list.size();
 	}
 
+    public boolean isEmpty() {
+        return this.list.isEmpty();
+    }
+
 	public Collection<RES> getList() {
 		return this.list;
 	}
 
     public void setList(final Collection<RES> list) {
-        this.list = checkNotNull(list);
+        if (null == this.list) {
+            this.list = checkNotNull(list);
+        } else {
+            throw new UnsupportedOperationException("CollectionQueryResult is immutable");
+        }
     }
 
     public void setListAsIterator(final Iterator<RES> iterator) {
         checkNotNull(iterator);
-        this.list = new ArrayList<RES>();
-        while (iterator.hasNext()) {
-            this.list.add(iterator.next());
+        if (null == this.list) {
+            this.list = new ArrayList<RES>();
+            while (iterator.hasNext()) {
+                this.list.add(iterator.next());
+            }
+        } else {
+            throw new UnsupportedOperationException("CollectionQueryResult is immutable");
         }
     }
 
