@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
+import com.viadeo.kasper.CoreReasonCode;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.AxonAssertionError;
 import org.axonframework.test.Reporter;
@@ -48,6 +49,10 @@ public abstract class KasperPlatformResultValidator
 
     protected Exception exception() {
         return this.exception;
+    }
+
+    protected Object response() {
+        return this.response;
     }
 
     // ------------------------------------------------------------------------

@@ -184,4 +184,20 @@ public class KasperMatcherTest {
         }
     }
 
+    @Test
+    public void testEmptyList() {
+
+        // Given,
+        final Matcher matcher = equalTo(new HelloMessagesResult());
+        final StringDescription description = new StringDescription();
+        matcher.describeTo(description);
+
+        // When
+        if (! matcher.matches(new HelloMessagesResult())) {
+            // Then
+            System.out.println(description);
+            fail();
+        }
+    }
+
 }

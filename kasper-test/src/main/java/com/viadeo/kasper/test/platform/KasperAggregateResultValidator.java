@@ -89,6 +89,20 @@ public class KasperAggregateResultValidator
     }
 
     @Override
+    public KasperFixtureResultValidator expectReturnError(final KasperReason reason) {
+        checkValidation();
+        validator.expectReturnValue(CommandResponse.error(reason));
+        return this;
+    }
+
+    @Override
+    public KasperFixtureResultValidator expectReturnRefused(final KasperReason reason) {
+        checkValidation();
+        validator.expectReturnValue(CommandResponse.refused(reason));
+        return this;
+    }
+
+    @Override
     public KasperAggregateResultValidator expectException(final Class<? extends Throwable> expectedException) {
         checkValidation();
         validator.expectException(expectedException);

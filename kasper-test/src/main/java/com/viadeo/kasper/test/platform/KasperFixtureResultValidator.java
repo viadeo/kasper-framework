@@ -6,9 +6,17 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
 import org.hamcrest.Matcher;
 
 public interface KasperFixtureResultValidator {
+
+    KasperFixtureResultValidator expectReturnOK();
+
+    KasperFixtureResultValidator expectReturnError(KasperReason reason);
+
+    KasperFixtureResultValidator expectReturnRefused(KasperReason reason);
 
     KasperFixtureResultValidator expectException(Class<? extends Throwable> expectedException);
 
