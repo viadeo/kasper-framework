@@ -6,12 +6,18 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
+import org.axonframework.test.AxonAssertionError;
 
+import static com.viadeo.kasper.cqrs.query.QueryResponse.Status.*;
 import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
 
+/**
+ * FIXME: add better debugging information
+ */
 public class KasperPlatformQueryResultValidator
         extends KasperPlatformResultValidator
         implements KasperFixtureQueryResultValidator {
@@ -34,6 +40,28 @@ public class KasperPlatformQueryResultValidator
     }
 
     @Override
+    public KasperFixtureQueryResultValidator expectReturnOK() {
+        if ((null == response()) ||  ! OK.equals(((QueryResponse) response()).getStatus())) {
+            throw new AxonAssertionError("Query did not answered OK");
+        }
+        return this;
+    }
+
+    public KasperFixtureQueryResultValidator expectReturnError() {
+        if ((null == response()) ||  ! ERROR.equals(((QueryResponse) response()).getStatus())) {
+            throw new AxonAssertionError("Query did not answered an ERROR");
+        }
+        return this;
+    }
+
+    public KasperFixtureQueryResultValidator expectReturnRefused() {
+        if ((null == response()) ||  ! REFUSED.equals(((QueryResponse) response()).getStatus())) {
+            throw new AxonAssertionError("Query did not answered an ERROR");
+        }
+        return this;
+    }
+
+    @Override
     public KasperPlatformQueryResultValidator expectReturnError(final KasperReason reason) {
         expectReturnValue(equalTo(QueryResponse.error(reason)));
         return this;
@@ -48,6 +76,54 @@ public class KasperPlatformQueryResultValidator
     @Override
     public KasperPlatformQueryResultValidator expectReturnResponse(final QueryResult result) {
         expectReturnValue(equalTo(QueryResponse.of(result)));
+        return this;
+    }
+
+    public KasperFixtureQueryResultValidator expectReturnError(final String code) {
+        if ((null == response())
+                || (null == ((QueryResponse) response()).getReason())
+                || ! ERROR.equals(((QueryResponse) response()).getStatus())
+                || ! ((QueryResponse) response()).getReason().getCode().contentEquals(code)) {
+            throw new AxonAssertionError(
+                    "Query did not answered the expected error code"
+            );
+        }
+        return this;
+    }
+
+    public KasperFixtureQueryResultValidator expectReturnRefused(final String code) {
+        if ((null == response())
+                || (null == ((QueryResponse) response()).getReason())
+                || ! REFUSED.equals(((QueryResponse) response()).getStatus())
+                || ! ((QueryResponse) response()).getReason().getCode().contentEquals(code)) {
+            throw new AxonAssertionError(
+                    "Query did not answered the expected error code"
+            );
+        }
+        return this;
+    }
+
+    public KasperFixtureQueryResultValidator expectReturnError(final CoreReasonCode code) {
+         if ((null == response())
+                || (null == ((QueryResponse) response()).getReason())
+                || ! ERROR.equals(((QueryResponse) response()).getStatus())
+                || ! ((QueryResponse) response()).getReason().getCode().contentEquals(code.toString())) {
+            throw new AxonAssertionError(
+                    "Query did not answered the expected error code"
+            );
+        }
+        return this;
+    }
+
+    public KasperFixtureQueryResultValidator expectReturnRefused(final CoreReasonCode code) {
+        if ((null == response())
+                || (null == ((QueryResponse) response()).getReason())
+                || ! REFUSED.equals(((QueryResponse) response()).getStatus())
+                || ! ((QueryResponse) response()).getReason().getCode().contentEquals(code.toString())) {
+            throw new AxonAssertionError(
+                    "Query did not answered the expected error code"
+            );
+        }
         return this;
     }
 
