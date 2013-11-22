@@ -120,11 +120,10 @@ public class TestFixtureAxonTest {
 
         // When command is made, Then we expect creation and first name changing events
         fixture
-                .givenCommands(
-                    new TestCreateCommand(
-                        aggregateId,
-                        firstName
-                    )
+            .givenCommands(
+                new TestCreateCommand(
+                    aggregateId,
+                    firstName
                 )
             )
             .when(
