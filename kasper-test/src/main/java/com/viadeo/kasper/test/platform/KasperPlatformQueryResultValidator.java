@@ -10,7 +10,7 @@ import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 
-import static org.axonframework.test.matchers.Matchers.equalTo;
+import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
 
 public class KasperPlatformQueryResultValidator
         extends KasperPlatformResultValidator

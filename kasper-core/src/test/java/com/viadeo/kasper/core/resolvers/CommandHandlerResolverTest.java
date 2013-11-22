@@ -13,8 +13,6 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.exception.KasperException;
-import org.axonframework.commandhandling.CommandMessage;
-import org.axonframework.unitofwork.UnitOfWork;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

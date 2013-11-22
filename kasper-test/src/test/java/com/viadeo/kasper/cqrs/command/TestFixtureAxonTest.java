@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.viadeo.kasper.cqrs.command.FixtureUseCase.*;
-import static com.viadeo.kasper.test.event.EventMatcher.equalToEvent;
+import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
 import static org.axonframework.test.matchers.Matchers.*;
 
 @RunWith(Parameterized.class)
@@ -94,21 +94,20 @@ public class TestFixtureAxonTest {
         // When command is made
         // Then we expect creation and first name changing events
         fixture
-                .given()
-                .when(
-                    new TestCreateCommand(
-                        createId,
-                        firstName
-                    ),
-                    newContext()
-                )
-                .expectReturnValue(CommandResponse.ok())
-                .expectEventsMatching(payloadsMatching(exactSequenceOf(
-                    equalToEvent(new TestCreatedEvent(createId)),
-                    equalToEvent(new TestFirstNameChangedEvent(firstName)),
-                    andNoMore()
-                )));
-
+            .given()
+            .when(
+                new TestCreateCommand(
+                    createId,
+                    firstName
+                ),
+                newContext()
+            )
+            .expectReturnValue(CommandResponse.ok())
+            .expectEventsMatching(payloadsMatching(exactSequenceOf(
+                equalTo(new TestCreatedEvent(createId)),
+                equalTo(new TestFirstNameChangedEvent(firstName)),
+                andNoMore()
+            )));
     }
 
     // ------------------------------------------------------------------------
@@ -127,19 +126,19 @@ public class TestFixtureAxonTest {
                         firstName
                     )
                 )
-                .when(
-                    new TestChangeLastNameCommand(
-                        aggregateId,
-                        lastName
-                    ),
-                    newContext()
-                )
-                .expectReturnValue(CommandResponse.ok())
-                .expectEventsMatching(payloadsMatching(exactSequenceOf(
-                    equalToEvent(new TestLastNameChangedEvent(lastName)),
-                    andNoMore()
-                )));
-
+            )
+            .when(
+                new TestChangeLastNameCommand(
+                    aggregateId,
+                    lastName
+                ),
+                newContext()
+            )
+            .expectReturnValue(CommandResponse.ok())
+            .expectEventsMatching(payloadsMatching(exactSequenceOf(
+                equalTo(new TestLastNameChangedEvent(lastName)),
+                andNoMore()
+            )));
     }
 
     // ------------------------------------------------------------------------
@@ -159,23 +158,22 @@ public class TestFixtureAxonTest {
 
         // When command is made, Then we expect creation and first name changing events
         fixture
-                .given(
-                    new TestCreatedEvent(aggregateId),
-                    new TestFirstNameChangedEvent(firstName)
-                )
-                .when(
-                    new TestChangeLastNameCommand(
-                        aggregateId,
-                        lastName
-                    ),
-                    newContext()
-                )
-                .expectReturnValue(CommandResponse.ok())
-                .expectEventsMatching(payloadsMatching(exactSequenceOf(
-                    equalToEvent(new TestLastNameChangedEvent(lastName)),
-                    andNoMore()
-                )));
-
+            .given(
+                new TestCreatedEvent(aggregateId),
+                new TestFirstNameChangedEvent(firstName)
+            )
+            .when(
+                new TestChangeLastNameCommand(
+                    aggregateId,
+                    lastName
+                ),
+                newContext()
+            )
+            .expectReturnValue(CommandResponse.ok())
+            .expectEventsMatching(payloadsMatching(exactSequenceOf(
+                equalTo(new TestLastNameChangedEvent(lastName)),
+                andNoMore()
+            )));
     }
 
 }

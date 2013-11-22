@@ -111,7 +111,7 @@ public class KasperPlatformFixture
 
     public Platform platform() {
         if (null == platform.get()) {
-            platform.set(new PlatformFactory(testConfiguration).getPlatform(true));
+            platform.set(new PlatformFactory(testConfiguration).getPlatform());
             conf();
         }
         return platform.get();
@@ -167,6 +167,8 @@ public class KasperPlatformFixture
 
     @Override
     public KasperPlatformExecutor givenEvents(final Context context, List<IEvent> events) {
+        platform().boot();
+
         for (final IEvent event : events) {
             try {
                 platform().publishEvent(context, event);
@@ -183,7 +185,7 @@ public class KasperPlatformFixture
 
     @Override
     public KasperPlatformExecutor given() {
-        platform();
+        platform().boot();
         platform.recordedEvents.clear();
         return new KasperPlatformExecutor(platform);
     }
@@ -205,6 +207,8 @@ public class KasperPlatformFixture
 
     @Override
     public KasperPlatformExecutor givenCommands(final Context context, final List<Command> commands) {
+        platform().boot();
+
         for (final Command command : commands) {
             try {
                 platform().getCommandGateway().sendCommandAndWaitForAResponse(

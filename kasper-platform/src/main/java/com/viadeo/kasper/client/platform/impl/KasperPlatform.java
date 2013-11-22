@@ -20,7 +20,6 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.IEvent;
 import org.axonframework.domain.GenericEventMessage;
 
