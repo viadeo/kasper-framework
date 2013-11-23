@@ -6,14 +6,19 @@
 // ============================================================================
 package com.viadeo.kasper.tools;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperRelationID;
+import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.impl.DefaultKasperRelationId;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import static org.junit.Assert.assertEquals;
 
@@ -70,6 +75,22 @@ public class SerDeserTests {
         }
     }
 
+    // -- test results --------------------------------------------------------
+
+    public static class TestResult implements QueryResult {
+        private String field;
+        @JsonCreator
+        TestResult(@JsonProperty("field") final String field) { this.field = field; }
+        public String getField() { return this.field; }
+        public boolean equals(final Object obj) {
+            return (null != obj)
+                    && obj.getClass().equals(this.getClass())
+                    && ((TestResult) obj).field.equals(field);
+        }
+    }
+
+    public static class TestCollectionResult extends CollectionQueryResult<TestResult> {}
+
     // ------------------------------------------------------------------------
 
     @Test
@@ -112,6 +133,67 @@ public class SerDeserTests {
 
         // Then
         assertEquals(actualResponse.field, bean.field);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void test_CollectionResultSingle() throws IOException {
+        // Given
+        final TestResult result = new TestResult("42");
+        final TestCollectionResult collect = new TestCollectionResult().withList(
+            new ArrayList<TestResult>() {{
+                this.add(result);
+            }}
+        );
+
+        // When
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(collect);
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
+        final TestCollectionResult actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), TestCollectionResult.class);
+
+        // Then
+        assertEquals(actualResponse, collect);
+
+    }
+
+    @Test
+    public void test_CollectionResultMultiple() throws IOException {
+        // Given
+        final TestResult result = new TestResult("42");
+        final TestResult result2 = new TestResult("24");
+        final TestCollectionResult collect = new TestCollectionResult().withList(
+                new ArrayList<TestResult>() {{
+                    this.add(result);
+                    this.add(result2);
+                }}
+        );
+
+        // When
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(collect);
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
+        final TestCollectionResult actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), TestCollectionResult.class);
+
+        // Then
+        assertEquals(actualResponse, collect);
+
+    }
+
+    @Test
+    public void test_CollectionResultEmpty_1() throws IOException {
+        // Given
+        final TestCollectionResult collect = new TestCollectionResult().withList(
+                new ArrayList<TestResult>()
+        );
+
+        // When
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(collect);
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
+        final TestCollectionResult actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), TestCollectionResult.class);
+
+        // Then
+        assertEquals(actualResponse, collect);
+
     }
 
 }

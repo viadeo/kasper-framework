@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
-import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import org.hamcrest.Matcher;
 

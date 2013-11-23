@@ -7,6 +7,7 @@
 package com.viadeo.kasper.cqrs.query;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
 import java.util.ArrayList;
@@ -20,7 +21,7 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
     /** Generic parameter position for Data Transfer Object */
     int PARAMETER_RESULT_POSITION = 0;
 
-	private Collection<RES> list;
+	private ArrayList<RES> list;
 
     // ------------------------------------------------------------------------
 
@@ -29,7 +30,7 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
     }
 
 	protected CollectionQueryResult(final Collection<RES> list) {
-		this.list = checkNotNull(list);
+		this.list = Lists.newArrayList(checkNotNull(list));
 	}
 
     // ------------------------------------------------------------------------
@@ -42,20 +43,30 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
     // ------------------------------------------------------------------------
 
 	public int getCount() {
+        if (null == list) {
+            return 0;
+        }
 		return this.list.size();
 	}
 
     public boolean isEmpty() {
+        if (null == list) {
+            return true;
+        }
         return this.list.isEmpty();
     }
 
 	public Collection<RES> getList() {
-		return this.list;
+		final ImmutableList.Builder<RES> builder = new ImmutableList.Builder<RES>();
+        if (null != list) {
+            builder.addAll(this.list);
+        }
+        return builder.build();
 	}
 
     public void setList(final Collection<RES> list) {
         if (null == this.list) {
-            this.list = checkNotNull(list);
+            this.list = Lists.newArrayList(checkNotNull(list));
         } else {
             throw new UnsupportedOperationException("CollectionQueryResult is immutable");
         }
@@ -75,13 +86,13 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
 
     @SuppressWarnings("unchecked")
     public <P extends CollectionQueryResult> P withList(final Collection<RES> list) {
-        this.setList(list);
+        this.setList(checkNotNull(list));
         return (P) this;
     }
 
     @SuppressWarnings("unchecked")
     public <P extends CollectionQueryResult> P withListAsIterator(final Iterator<RES> iterator) {
-        this.setListAsIterator(iterator);
+        this.setListAsIterator(checkNotNull(iterator));
         return (P) this;
     }
 
@@ -97,7 +108,33 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
         }
 
         final CollectionQueryResult that = (CollectionQueryResult) o;
-        return Objects.equal(this.list, that.list);
+
+        if ((null == this.list) && (null != that.list)) {
+            return false;
+        }
+
+        if ((null == that.list) && (null != this.list)) {
+            return false;
+        }
+
+        if (null == that.list) {
+            return true;
+        }
+
+        if (this.list.size() != that.list.size()) {
+            return false;
+        }
+
+        final Iterator it1 = this.list.iterator();
+        final Iterator it2 = that.list.iterator();
+
+        while (it1.hasNext()) {
+            if ( ! it1.next().equals(it2.next())) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     @Override
