@@ -8,10 +8,13 @@ package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperRelationID;
 import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
+import com.viadeo.kasper.cqrs.query.MapQueryResult;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.impl.DefaultKasperRelationId;
@@ -19,6 +22,8 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -75,12 +80,20 @@ public class SerDeserTests {
         }
     }
 
+    // ------------------------------------------------------------------------
+
+    private <T> T serDeserTest(final T object, Class<T> clazz) throws IOException {
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(object);
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
+        final T actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), clazz);
+        return actualResponse;
+    }
+
     // -- test results --------------------------------------------------------
 
     public static class TestResult implements QueryResult {
         private String field;
-        @JsonCreator
-        TestResult(@JsonProperty("field") final String field) { this.field = field; }
+        @JsonCreator TestResult(@JsonProperty("field") final String field) { this.field = field; }
         public String getField() { return this.field; }
         public boolean equals(final Object obj) {
             return (null != obj)
@@ -91,6 +104,8 @@ public class SerDeserTests {
 
     public static class TestCollectionResult extends CollectionQueryResult<TestResult> {}
 
+    public static class TestMapResult extends MapQueryResult<TestResult> {}
+
     // ------------------------------------------------------------------------
 
     @Test
@@ -99,9 +114,7 @@ public class SerDeserTests {
         final SimpleBean bean = new SimpleBean(DefaultKasperId.random());
 
         // When
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(bean);
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final SimpleBean actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), SimpleBean.class);
+        final SimpleBean actualResponse = serDeserTest(bean, SimpleBean.class);
 
         // Then
         assertEquals(actualResponse.field, bean.field);
@@ -113,9 +126,7 @@ public class SerDeserTests {
         final ImmutableBean bean = new ImmutableBean(DefaultKasperRelationId.random());
 
         // When
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(bean);
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final ImmutableBean actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), ImmutableBean.class);
+        final ImmutableBean actualResponse = serDeserTest(bean, ImmutableBean.class);
 
         // Then
         assertEquals(actualResponse.field, bean.field);
@@ -127,9 +138,7 @@ public class SerDeserTests {
         final NoSettersBean bean = new NoSettersBean("test");
 
         // When
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(bean);
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final NoSettersBean actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), NoSettersBean.class);
+        final NoSettersBean actualResponse = serDeserTest(bean, NoSettersBean.class);
 
         // Then
         assertEquals(actualResponse.field, bean.field);
@@ -142,19 +151,16 @@ public class SerDeserTests {
         // Given
         final TestResult result = new TestResult("42");
         final TestCollectionResult collect = new TestCollectionResult().withList(
-            new ArrayList<TestResult>() {{
-                this.add(result);
-            }}
+                new ArrayList<TestResult>() {{
+                    this.add(result);
+                }}
         );
 
         // When
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(collect);
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final TestCollectionResult actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), TestCollectionResult.class);
+        final TestCollectionResult actualResponse = serDeserTest(collect, TestCollectionResult.class);
 
         // Then
         assertEquals(actualResponse, collect);
-
     }
 
     @Test
@@ -170,13 +176,10 @@ public class SerDeserTests {
         );
 
         // When
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(collect);
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final TestCollectionResult actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), TestCollectionResult.class);
+        final TestCollectionResult actualResponse = serDeserTest(collect, TestCollectionResult.class);
 
         // Then
         assertEquals(actualResponse, collect);
-
     }
 
     @Test
@@ -187,13 +190,57 @@ public class SerDeserTests {
         );
 
         // When
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(collect);
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final TestCollectionResult actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), TestCollectionResult.class);
+        final TestCollectionResult actualResponse = serDeserTest(collect, TestCollectionResult.class);
 
         // Then
         assertEquals(actualResponse, collect);
+    }
 
+    @Test
+    public void test_MapResultSingle() throws IOException {
+        // Given
+        final TestMapResult map = new TestMapResult().withMap(
+            new HashMap<String, TestResult>() {{
+                this.put("r1", new TestResult("42"));
+            }}
+        );
+
+        // When
+        final TestMapResult actualResponse = serDeserTest(map, TestMapResult.class);
+
+        // Then
+        assertEquals(actualResponse, map);
+    }
+
+    @Test
+    public void test_MapResultMultiple() throws IOException {
+        // Given
+        final TestMapResult map = new TestMapResult().withMap(
+            new HashMap<String, TestResult>() {{
+                this.put("r1", new TestResult("42"));
+                this.put("r2", new TestResult("43"));
+            }}
+        );
+
+        // When
+        final TestMapResult actualResponse = serDeserTest(map, TestMapResult.class);
+
+        // Then
+        assertEquals(actualResponse, map);
+    }
+
+    @Test
+    public void test_MapResultEmpty() throws IOException {
+        // Given
+        final TestMapResult map = new TestMapResult().withMap(
+                new HashMap<String, TestResult>()
+        );
+
+        // When
+        final TestMapResult actualResponse = serDeserTest(map, TestMapResult.class);
+
+        // Then
+        assertEquals(actualResponse, map);
     }
 
 }
