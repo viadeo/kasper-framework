@@ -262,3 +262,7 @@ The following HTTP headers can be set to set the queries and commands context :
 * X-KASPER-SECURITY-TOKEN (String) : the security token used for authentication
 * X-KASPER-FUNNEL-NAME (String) : the funnel name declared by the application during this request
 * X-KASPER-FUNNEL-VERSION (String) : the funnel version (declination) declared by the application during this request
+
+
+**Note:** the security token header can be sent back at any time by the platform in the HTTP response, the client has to detect this header in order to
+set back this information in its context/session.
