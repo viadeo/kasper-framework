@@ -9,12 +9,14 @@ package com.viadeo.kasper.client;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.collect.ImmutableSet;
 import com.sun.jersey.api.core.DefaultResourceConfig;
+import com.sun.jersey.core.spi.factory.ResponseBuilderImpl;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -44,6 +46,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -51,6 +54,8 @@ public class KasperClientCommandTest extends JerseyTest {
 
     private static int port;
     private KasperClient client;
+
+    private static final String SECURITY_TOKEN = "42-4242-24-2424";
 
     // -------------------------------------------------------------------------
 
@@ -125,9 +130,17 @@ public class KasperClientCommandTest extends JerseyTest {
         @PUT
         @Produces(MediaType.APPLICATION_JSON)
         @Consumes(MediaType.APPLICATION_JSON)
-        public CommandResponse getMember(final CreateMemberCommand command) {
-            return new CommandResponse(command.getStatus(),
-                    Status.OK != command.getStatus() ? new KasperReason("", "") : null);
+        public Response getMember(final CreateMemberCommand command) {
+            return new ResponseBuilderImpl()
+                    .entity(
+                            new CommandResponse(
+                                    command.getStatus(),
+                                    Status.OK != command.getStatus() ? new KasperReason("", "") : null
+                            )
+                    )
+                    .status(200)
+                    .header(HttpContextHeaders.HEADER_SECURITY_TOKEN, SECURITY_TOKEN)
+                    .build();
         }
     }
 
@@ -176,6 +189,8 @@ public class KasperClientCommandTest extends JerseyTest {
 
         // Then
         assertEquals(Status.REFUSED, response.getStatus());
+        assertTrue(response.getSecurityToken().isPresent());
+        assertEquals(SECURITY_TOKEN, response.getSecurityToken().get());
     }
 
     // --

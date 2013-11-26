@@ -20,6 +20,7 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -190,6 +191,10 @@ public class HttpCommandExposer extends HttpExposer {
 
             response = commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
             checkNotNull(response);
+
+            if (response.isOK() && response.getSecurityToken().isPresent()) {
+                resp.addHeader(HttpContextHeaders.HEADER_SECURITY_TOKEN, response.getSecurityToken().get());
+            }
 
             commandHandleTime.stop();
             classHandleTime.stop();
