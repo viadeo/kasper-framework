@@ -45,6 +45,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_SECURITY_TOKEN;
 
 /**
  * <p>
@@ -321,6 +322,13 @@ public class KasperClient {
         if (clientResponse.getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
 
             final CommandResponse response = clientResponse.getEntity(CommandResponse.class);
+
+            /* Extract security token if it has been set */
+            final MultivaluedMap<String, String> headers = clientResponse.getHeaders();
+            if (headers.containsKey(HEADER_SECURITY_TOKEN)) {
+                response.withSecurityToken(headers.getFirst(HEADER_SECURITY_TOKEN));
+            }
+
             return new HTTPCommandResponse(Response.Status.fromStatusCode(clientResponse.getStatus()), response);
 
         } else {
