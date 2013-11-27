@@ -9,13 +9,37 @@ package com.viadeo.kasper.test.doc.web;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
-import com.viadeo.kasper.doc.web.KasperDocResource;
+import com.viadeo.kasper.client.platform.domain.descriptor.*;
+import com.viadeo.kasper.doc.element.DocumentedPlatform;
+import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
+import com.viadeo.kasper.doc.web.KasperDocResource2;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
+import com.viadeo.kasper.test.applications.Applications;
+import com.viadeo.kasper.test.applications.entities.Application;
+import com.viadeo.kasper.test.applications.entities.Member_fanOf_Application;
+import com.viadeo.kasper.test.applications.repositories.ApplicationMemberFansRepository;
+import com.viadeo.kasper.test.applications.repositories.ApplicationRepository;
+import com.viadeo.kasper.test.root.Facebook;
+import com.viadeo.kasper.test.root.commands.AddConnectionToMemberCommand;
+import com.viadeo.kasper.test.root.entities.Member;
+import com.viadeo.kasper.test.root.entities.Member_connectedTo_Member;
+import com.viadeo.kasper.test.root.events.MemberCreatedEvent;
+import com.viadeo.kasper.test.root.handlers.AddConnectionToMemberHandler;
+import com.viadeo.kasper.test.root.listeners.MemberCreatedEventListener;
+import com.viadeo.kasper.test.root.queries.GetMembersQueryHandler;
+import com.viadeo.kasper.test.root.repositories.MemberConnectionsRepository;
+import com.viadeo.kasper.test.root.repositories.MemberRepository;
+import com.viadeo.kasper.test.timelines.Timelines;
+import com.viadeo.kasper.test.timelines.entities.Status;
+import com.viadeo.kasper.test.timelines.entities.Timeline;
+import com.viadeo.kasper.test.timelines.repositories.StatusRepository;
+import com.viadeo.kasper.test.timelines.repositories.TimelineRepository;
 import difflib.Delta;
 import difflib.DiffUtils;
 import difflib.Patch;
@@ -85,10 +109,51 @@ public class KasperDocResourceTest extends JerseyTest {
         public WrappedDocResource() { }
 
         @Path("/")
-        public KasperDocResource delegate() {
-            final KasperDocResource res = new KasperDocResource();
-            res.setKasperLibrary(kasperConfigurator.getKasperLibrary());
-            return res;
+        public KasperDocResource2 delegate() {
+//            final KasperDocResource res = new KasperDocResource();
+//            res.setKasperLibrary(kasperConfigurator.getKasperLibrary());
+//            return res;
+
+            DomainDescriptor facebookDomainDescriptor = new DomainDescriptor(
+                    Facebook.class
+                    , ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(GetMembersQueryHandler.class, GetMembersQueryHandler.GetMembersQuery.class, GetMembersQueryHandler.MembersResult.class))
+                    , ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(AddConnectionToMemberHandler.class, AddConnectionToMemberCommand.class))
+                    , ImmutableList.<RepositoryDescriptor>of(
+                        new RepositoryDescriptor(MemberRepository.class, DomainDescriptorFactory.retrieveAggregateDescriptor(Member.class)),
+                        new RepositoryDescriptor(MemberConnectionsRepository.class, DomainDescriptorFactory.retrieveAggregateDescriptor(Member_connectedTo_Member.class))
+                    )
+                    , ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(MemberCreatedEventListener.class, MemberCreatedEvent.class))
+            );
+
+            DomainDescriptor applicationDomainDescriptor = new DomainDescriptor(
+                    Applications.class
+                    , ImmutableList.<QueryHandlerDescriptor>of()
+                    , ImmutableList.<CommandHandlerDescriptor>of()
+                    , ImmutableList.<RepositoryDescriptor>of(
+                        new RepositoryDescriptor(ApplicationRepository.class, DomainDescriptorFactory.retrieveAggregateDescriptor(Application.class)),
+                        new RepositoryDescriptor(ApplicationMemberFansRepository.class, DomainDescriptorFactory.retrieveAggregateDescriptor(Member_fanOf_Application.class))
+                    )
+                    , ImmutableList.<EventListenerDescriptor>of()
+            );
+
+            DomainDescriptor timelinesDomainDescriptor = new DomainDescriptor(
+                    Timelines.class
+                    , ImmutableList.<QueryHandlerDescriptor>of()
+                    , ImmutableList.<CommandHandlerDescriptor>of()
+                    , ImmutableList.<RepositoryDescriptor>of(
+                        new RepositoryDescriptor(StatusRepository.class, DomainDescriptorFactory.retrieveAggregateDescriptor(Status.class)),
+                        new RepositoryDescriptor(TimelineRepository.class, DomainDescriptorFactory.retrieveAggregateDescriptor(Timeline.class))
+                    )
+                    , ImmutableList.<EventListenerDescriptor>of()
+            );
+
+            DocumentedPlatform documentedPlatform = new DocumentedPlatform();
+            documentedPlatform.registerDomain(Facebook.NAME, facebookDomainDescriptor);
+            documentedPlatform.registerDomain(Applications.NAME, applicationDomainDescriptor);
+            documentedPlatform.registerDomain(Timelines.NAME, timelinesDomainDescriptor);
+            documentedPlatform.accept(new DefaultDocumentedElementInitializer());
+
+            return new KasperDocResource2(documentedPlatform);
         }
 
     }
@@ -108,7 +173,7 @@ public class KasperDocResourceTest extends JerseyTest {
     }
 
     // ------------------------------------------------------------------------
-	
+
 	/**
 	 * Main run test method
 	 * 

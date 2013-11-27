@@ -9,10 +9,11 @@ package com.viadeo.kasper.doc.nodes;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.doc.KasperLibrary;
+import com.viadeo.kasper.doc.element.WithType;
 
 import javax.xml.bind.annotation.XmlTransient;
 
-public class DocumentedNode extends RetBase {
+public class DocumentedNode extends RetBase implements WithType {
 	private static final long serialVersionUID = -2064570621327638305L;
 
 	private final transient KasperLibrary kasperLibrary;

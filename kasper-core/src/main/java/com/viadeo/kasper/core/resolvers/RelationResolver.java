@@ -63,6 +63,15 @@ public class RelationResolver extends AbstractResolver<Relation> {
 
     // ------------------------------------------------------------------------
 
+    public String getVerb(Class<? extends Relation> clazz) {
+        final XKasperRelation relationAnnotation = clazz.getAnnotation(XKasperRelation.class);
+        String verb = "";
+        if ((null != relationAnnotation) && ! relationAnnotation.verb().isEmpty()) {
+            verb = relationAnnotation.verb();
+        }
+        return verb;
+    }
+
     @Override
     public String getLabel(Class<? extends Relation> clazz) {
         final XKasperRelation relationAnnotation = clazz.getAnnotation(XKasperRelation.class);

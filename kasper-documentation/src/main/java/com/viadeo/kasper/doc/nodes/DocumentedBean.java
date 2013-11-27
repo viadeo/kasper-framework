@@ -31,7 +31,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
     // ------------------------------------------------------------------------
 
-	DocumentedBean(final Class componentClazz) {
+	public DocumentedBean(final Class componentClazz) {
 		final List<Field> properties = Lists.newArrayList();
 		getAllFields(properties, componentClazz);
 		
