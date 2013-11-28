@@ -7,7 +7,9 @@
 package com.viadeo.kasper.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.query.exposition.FeatureConfiguration;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
@@ -34,15 +36,18 @@ public class KasperClientBuilder {
     private ObjectMapper mapper;
     private URL commandBaseLocation;
     private URL queryBaseLocation;
+    private URL eventBaseLocation;
     private QueryFactory queryFactory;
     private HttpContextSerializer contextSerializer;
     private final QueryFactoryBuilder qFactoryBuilder = new QueryFactoryBuilder();
     private KasperClient.Flags flags = KasperClient.Flags.defaults();
+    private int numberOfRetries = 3;
 
     // ------------------------------------------------------------------------
 
     public static final String DEFAULT_COMMAND_URL = "http://localhost:8080/command";
     public static final String DEFAULT_QUERY_URL = "http://localhost:8080/query";
+    public static final String DEFAULT_EVENT_URL = "http://localhost:8080/event";
 
     // ------------------------------------------------------------------------
 
@@ -87,6 +92,18 @@ public class KasperClientBuilder {
         return this;
     }
 
+    /**
+     * The client will retry to submit something if some exception
+     * occurs
+     *
+     * @param numberOfRetries number of times to retry
+     * @return
+     */
+    public KasperClientBuilder numberOfRetries(int numberOfRetries) {
+        this.numberOfRetries = numberOfRetries;
+        return this;
+    }
+
     // ------------------------------------------------------------------------
     /**
      * @param url of the base path to use for query submission.
@@ -104,6 +121,15 @@ public class KasperClientBuilder {
      */
     public KasperClientBuilder commandBaseLocation(final String url) {
         return commandBaseLocation(createURL(getCanonicalUrl(url)));
+    }
+
+    /**
+     * @param url of the base path to use for event submission.
+     * @return a reference to this builder.
+     * @throws KasperException
+     */
+    public KasperClientBuilder eventBaseLocation(final String url) {
+        return eventBaseLocation(createURL(getCanonicalUrl(url)));
     }
 
     /**
@@ -132,6 +158,15 @@ public class KasperClientBuilder {
      */
     public KasperClientBuilder commandBaseLocation(final URL url) {
         commandBaseLocation = checkNotNull(url);
+        return this;
+    }
+
+    /**
+     * @param url of the base path to use for event submission.
+     * @return a reference to this builder.
+     */
+    public KasperClientBuilder eventBaseLocation(final URL url) {
+        eventBaseLocation = checkNotNull(url);
         return this;
     }
 
@@ -174,6 +209,10 @@ public class KasperClientBuilder {
             queryBaseLocation = createURL(DEFAULT_QUERY_URL);
         }
 
+        if (null == queryBaseLocation) {
+            eventBaseLocation = createURL(DEFAULT_EVENT_URL);
+        }
+
         if (null == queryFactory) {
             queryFactory = qFactoryBuilder.create();
         }
@@ -183,10 +222,16 @@ public class KasperClientBuilder {
         }
 
         if (null == client) {
-            return new KasperClient(queryFactory, mapper, commandBaseLocation, queryBaseLocation, contextSerializer, flags);
-        } else {
-            return new KasperClient(queryFactory, client, commandBaseLocation, queryBaseLocation, contextSerializer, flags);
+            final DefaultClientConfig cfg = new DefaultClientConfig();
+            cfg.getSingletons().add(new JacksonJsonProvider(mapper));
+            client = Client.create(cfg);
         }
+
+        if (numberOfRetries > 0) {
+            client.addFilter(new RetryFilter(numberOfRetries));
+        }
+
+        return new KasperClient(queryFactory, client, commandBaseLocation, queryBaseLocation, eventBaseLocation, contextSerializer, flags);
     }
 
     // ------------------------------------------------------------------------

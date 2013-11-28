@@ -15,6 +15,7 @@ import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.async.TypeListener;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
+import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
@@ -26,11 +27,14 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.http.HTTPQueryResponse;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.exception.KasperQueryAdapterException;
 import com.viadeo.kasper.query.exposition.query.QueryBuilder;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -121,6 +125,7 @@ public class KasperClient {
     protected final Client client;
     protected final URL commandBaseLocation;
     protected final URL queryBaseLocation;
+    protected final URL eventBaseLocation;
 
     private final Flags flags;
 
@@ -170,39 +175,15 @@ public class KasperClient {
         this.client = DEFAULT_KASPER_CLIENT.client;
         this.commandBaseLocation = DEFAULT_KASPER_CLIENT.commandBaseLocation;
         this.queryBaseLocation = DEFAULT_KASPER_CLIENT.queryBaseLocation;
+        this.eventBaseLocation = DEFAULT_KASPER_CLIENT.eventBaseLocation;
         this.queryFactory = DEFAULT_KASPER_CLIENT.queryFactory;
         this.contextSerializer = DEFAULT_KASPER_CLIENT.contextSerializer;
         this.flags = Flags.defaults();
     }
 
-    // --
-
-    KasperClient(final QueryFactory queryFactory, final ObjectMapper mapper,
-                 final URL commandBaseUrl, final URL queryBaseUrl,
-                 final HttpContextSerializer contextSerializer,
-                 final Flags flags) {
-
-        final DefaultClientConfig cfg = new DefaultClientConfig();
-        cfg.getSingletons().add(new JacksonJsonProvider(mapper));
-
-        this.client = Client.create(cfg);
-        this.commandBaseLocation = commandBaseUrl;
-        this.queryBaseLocation = queryBaseUrl;
-        this.queryFactory = queryFactory;
-        this.contextSerializer = contextSerializer;
-        this.flags = flags;
-    }
-
-    KasperClient(final QueryFactory queryFactory, final ObjectMapper mapper,
-                 final URL commandBaseUrl, final URL queryBaseUrl,
-                 final HttpContextSerializer contextSerializer) {
-        this(queryFactory, mapper, commandBaseUrl, queryBaseUrl, contextSerializer, Flags.defaults());
-    }
-
-    // --
 
     KasperClient(final QueryFactory queryFactory, final Client client,
-                 final URL commandBaseUrl, final URL queryBaseUrl,
+                 final URL commandBaseUrl, final URL queryBaseUrl, final URL eventBaseLocation,
                  final HttpContextSerializer contextSerializer,
                  final Flags flags) {
 
@@ -210,14 +191,15 @@ public class KasperClient {
         this.commandBaseLocation = commandBaseUrl;
         this.queryBaseLocation = queryBaseUrl;
         this.queryFactory = queryFactory;
+        this.eventBaseLocation = eventBaseLocation;
         this.contextSerializer = contextSerializer;
         this.flags = flags;
     }
 
      KasperClient(final QueryFactory queryFactory, final Client client,
-                  final URL commandBaseUrl, final URL queryBaseUrl,
+                  final URL commandBaseUrl, final URL queryBaseUrl, final URL eventBaseLocation,
                   final HttpContextSerializer contextSerializer) {
-        this(queryFactory, client, commandBaseUrl, queryBaseUrl, contextSerializer, Flags.defaults());
+        this(queryFactory, client, commandBaseUrl, queryBaseUrl, eventBaseLocation, contextSerializer, Flags.defaults());
      }
 
     // ------------------------------------------------------------------------
@@ -342,6 +324,34 @@ public class KasperClient {
             );
         }
     }
+
+    // ------------------------------------------------------------------------
+    // EVENTS
+    // ------------------------------------------------------------------------
+
+    /**
+     * Sends an event and waits until a response is returned.
+     *
+     * @param event to submit
+     * @throws KasperException|KasperClientException if something went wrong.
+     */
+    public void send(final Context context, final Event event) {
+        checkNotNull(event);
+
+        final WebResource.Builder builder = client
+                .resource(resolveEventPath(event.getClass()))
+                .accept(MediaType.APPLICATION_JSON)
+                .type(MediaType.APPLICATION_JSON);
+
+        contextSerializer.serialize(context, builder);
+
+        try {
+            builder.put(ClientResponse.class, event);
+        } catch (Exception e) {
+            throw new KasperException("Unable to send events", e);
+        }
+    }
+
 
     // ------------------------------------------------------------------------
     // QUERIES
@@ -577,6 +587,11 @@ public class KasperClient {
     protected URI resolveQueryPath(final Class<? extends Query> queryClass) {
         final String className = queryClass.getSimpleName().replace("Query", "");
         return resolvePath(queryBaseLocation, Introspector.decapitalize(className), queryClass);
+    }
+
+    protected URI resolveEventPath(final Class<? extends Event> eventClass) {
+        final String className = eventClass.getSimpleName().replace("Event", "");
+        return resolvePath(eventBaseLocation, Introspector.decapitalize(className), eventClass);
     }
 
     private URI resolvePath(final URL basePath, final String path, final Class clazz) {
