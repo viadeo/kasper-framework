@@ -35,8 +35,17 @@ import java.util.UUID;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
+/**
+ * WARNING:
+ *
+ * Domain events exposing is an anti-pattern of the platform's spirit in itself
+ * this endpoint is provided as a migration helper when dealing with a
+ * legacy platform allowing a smooth decoupling : the legacy platform can
+ * then send domain events in place of the not-yet-implemented platform's
+ * domain to come
+ *
+ */
 public class HttpEventExposer extends HttpExposer {
-    private static final long serialVersionUID = 8444284922303895624L;
     protected static final transient Logger REQUEST_LOGGER = LoggerFactory.getLogger(HttpEventExposer.class);
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
@@ -57,10 +66,10 @@ public class HttpEventExposer extends HttpExposer {
                             final List<Class<? extends Event>> events,
                             final HttpContextDeserializer contextDeserializer,
                             final ObjectMapper mapper) {
-        this.eventBus = eventBus;
-        this.events = events;
-        this.contextDeserializer = contextDeserializer;
-        this.mapper = mapper;
+        this.eventBus = checkNotNull(eventBus);
+        this.events = checkNotNull(events);
+        this.contextDeserializer = checkNotNull(contextDeserializer);
+        this.mapper = checkNotNull(mapper);
     }
 
     // ------------------------------------------------------------------------
@@ -143,7 +152,7 @@ public class HttpEventExposer extends HttpExposer {
         JsonParser parser = null;
         try {
 
-            if (!req.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)) {
+            if ( ! req.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)) {
                 resp.setStatus(Response.Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode());
                 return;
             }
@@ -175,11 +184,13 @@ public class HttpEventExposer extends HttpExposer {
             resp.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
 
         } catch (final Throwable th) {
+
             // we catch any other exception in order to still respond with json
             LOGGER.error("Error in event [" + eventClass.getName() + "]", th);
             resp.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
 
         } finally {
+
             if (null != parser) {
                 parser.close();
             }

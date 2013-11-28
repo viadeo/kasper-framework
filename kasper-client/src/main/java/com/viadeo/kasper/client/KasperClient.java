@@ -279,10 +279,14 @@ public class KasperClient {
             public void onComplete(final Future<ClientResponse> f)
                     throws InterruptedException {
                 try {
+
                     callback.done(handleResponse(f.get()));
+
                 } catch (final ExecutionException e) {
-                    throw new KasperException(String.format("ERROR handling command [%s]",
-                            command.getClass()), e);
+                    throw new KasperException(String.format(
+                                "ERROR handling command [%s]",
+                                command.getClass()), e
+                    );
                 }
             }
         }, command);
@@ -324,22 +328,23 @@ public class KasperClient {
      * @throws KasperException|KasperClientException
      *          if something went wrong.
      */
-    public void send(final Context context, final Event event) {
+    public void emit(final Context context, final Event event) {
         checkNotNull(event);
 
         final WebResource.Builder builder = client
                 .resource(resolveEventPath(event.getClass()))
-                .type(MediaType.APPLICATION_JSON);
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE);
 
         contextSerializer.serialize(context, builder);
 
         try {
-            ClientResponse response = builder.put(ClientResponse.class, event);
-            ClientResponse.Status status = response.getClientResponseStatus();
-            if (ACCEPTED != status) {
+            final ClientResponse response = builder.put(ClientResponse.class, event);
+            final ClientResponse.Status status = response.getClientResponseStatus();
+            if ( ! ACCEPTED.equals(status)) {
                 throw new KasperException("event submission failed with status <" + status.getReasonPhrase() + ">");
             }
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new KasperException("Unable to send event : " + event.getClass().getName(), e);
         }
 
@@ -505,10 +510,11 @@ public class KasperClient {
 
         if (clientResponse.getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
 
-            final TypeToken mappedType = new TypeToken<QueryResponse<P>>() {
-                private static final long serialVersionUID = -6868146773459098496L;
-            }.where(new TypeParameter<P>() {
-            }, mapTo);
+            final TypeToken mappedType = new TypeToken<QueryResponse<P>>() { }
+                                            .where(
+                                                    new TypeParameter<P>() { },
+                                                    mapTo
+                                            );
 
             final QueryResponse<P> response = clientResponse.getEntity(new GenericType<QueryResponse<P>>(mappedType.getType()));
             return new HTTPQueryResponse<P>(Response.Status.fromStatusCode(clientResponse.getStatus()), response);
@@ -529,7 +535,7 @@ public class KasperClient {
     MultivaluedMap<String, String> prepareQueryParams(final Query query) {
         final MultivaluedMap<String, String> map = new MultivaluedMapImpl();
 
-        if (!flags.usePostForQueries()) {
+        if ( ! flags.usePostForQueries()) {
             for (final Map.Entry<String, String> entry : queryToSetMap(query).entries()) {
                 map.add(entry.getKey(), entry.getValue());
             }
@@ -599,4 +605,5 @@ public class KasperClient {
     private KasperException cannotConstructURI(final Class clazz, final Exception e) {
         return new KasperException("Could not construct resource url for " + clazz, e);
     }
+
 }

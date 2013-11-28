@@ -23,6 +23,9 @@ import java.net.URL;
 
 public abstract class BaseHttpExposerTest<T extends HttpExposer> {
 
+    private static final String HTTP_ENDPOINT = "http://127.0.0.1";
+    private static final String ROOTPATH = "/rootpath/";
+
 	private Server server;
 	private int port;
 	private KasperClient cli;
@@ -57,20 +60,24 @@ public abstract class BaseHttpExposerTest<T extends HttpExposer> {
 
 		server.start();
 		port = server.getConnectors()[0].getLocalPort();
+
+        final URL fullPath = new URL(HTTP_ENDPOINT + ":" + port + ROOTPATH);
+
         KasperClientBuilder clientBuilder = new KasperClientBuilder();
 		clientBuilder
-				.commandBaseLocation(new URL("http://127.0.0.1:" + port + "/rootpath/"))
-                .eventBaseLocation(new URL("http://127.0.0.1:" + port + "/rootpath/"))
-				.queryBaseLocation(new URL("http://127.0.0.1:" + port + "/rootpath/"));
+				.commandBaseLocation(fullPath)
+                .eventBaseLocation(fullPath)
+				.queryBaseLocation(fullPath);
         customize(clientBuilder);
+
         cli = clientBuilder.create();
 	}
 
-    protected void customize(KasperClientBuilder clientBuilder) {
-
+    protected void customize(final KasperClientBuilder clientBuilder) {
+        /* FIXME: wtf ? */
     }
 
-	protected abstract T createExposer(ApplicationContext ctx);
+	protected abstract T createExposer(final ApplicationContext ctx);
 	
 	@After
 	public void cleanUp() throws Exception {

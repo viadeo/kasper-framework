@@ -8,6 +8,7 @@ package com.viadeo.kasper.exposition;
 
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
@@ -25,15 +26,16 @@ import static org.mockito.Mockito.verify;
 public class HttpEventExposerTest extends BaseHttpExposerTest<HttpEventExposer> {
 
     @Rule
-    public ExpectedException exception = ExpectedException.none();
+    public final ExpectedException exception = ExpectedException.none();
 
     private KasperEventBus eventBus;
 
-
+    @XKasperUnregistered
     public static class UnknownEvent extends Event {
         public String name;
     }
 
+    @XKasperUnregistered
     public static class AccountCreatedEvent extends Event {
         public String name;
     }
@@ -42,11 +44,20 @@ public class HttpEventExposerTest extends BaseHttpExposerTest<HttpEventExposer> 
         Locale.setDefault(Locale.US);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
     protected HttpEventExposer createExposer(final ApplicationContext ctx) {
         eventBus = spy(ctx.getBean(KasperEventBus.class));
-        return new HttpEventExposer(eventBus, Arrays.<Class<? extends Event>>asList(AccountCreatedEvent.class), new HttpContextDeserializer(), ObjectMapperProvider.INSTANCE.mapper());
+        return new HttpEventExposer(
+                eventBus,
+                Arrays.<Class<? extends Event>>asList(AccountCreatedEvent.class),
+                new HttpContextDeserializer(),
+                ObjectMapperProvider.INSTANCE.mapper()
+        );
     }
+
+    // ------------------------------------------------------------------------
 
     @Test
     public void testPublish() throws Exception {
@@ -55,7 +66,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest<HttpEventExposer> 
         event.name = "tutu";
 
         // When
-        client().send(DefaultContextBuilder.get(), event);
+        client().emit(DefaultContextBuilder.get(), event);
 
         // Then
         verify(eventBus).publish(event);
@@ -72,7 +83,8 @@ public class HttpEventExposerTest extends BaseHttpExposerTest<HttpEventExposer> 
         exception.expectMessage("Unable to send event");
 
         // When
-        client().send(DefaultContextBuilder.get(), event);
+        client().emit(DefaultContextBuilder.get(), event);
 
     }
+
 }

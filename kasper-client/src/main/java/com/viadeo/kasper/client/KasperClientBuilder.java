@@ -22,6 +22,7 @@ import com.viadeo.kasper.tools.ObjectMapperProvider;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -32,6 +33,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class KasperClientBuilder {
 
+    private final QueryFactoryBuilder qFactoryBuilder = new QueryFactoryBuilder();
+
+    private int numberOfRetries = 3;
     private Client client;
     private ObjectMapper mapper;
     private URL commandBaseLocation;
@@ -39,9 +43,7 @@ public class KasperClientBuilder {
     private URL eventBaseLocation;
     private QueryFactory queryFactory;
     private HttpContextSerializer contextSerializer;
-    private final QueryFactoryBuilder qFactoryBuilder = new QueryFactoryBuilder();
     private KasperClient.Flags flags = KasperClient.Flags.defaults();
-    private int numberOfRetries = 3;
 
     // ------------------------------------------------------------------------
 
@@ -63,24 +65,22 @@ public class KasperClientBuilder {
      * @see com.viadeo.kasper.query.exposition.TypeAdapter
      */
     public KasperClientBuilder use(final ObjectMapper mapper) {
-        checkNotNull(mapper);
-        this.mapper = mapper;
+        this.mapper = checkNotNull(mapper);
         return this;
     }
 
     public KasperClientBuilder use(final QueryFactory queryFactory) {
-        checkNotNull(queryFactory);
-        this.queryFactory = queryFactory;
+        this.queryFactory = checkNotNull(queryFactory);
         return this;
     }
 
     public KasperClientBuilder features(final FeatureConfiguration features) {
-        this.qFactoryBuilder.use(features);
+        this.qFactoryBuilder.use(checkNotNull(features));
         return this;
     }
 
     public KasperClientBuilder use(final TypeAdapter adapter) {
-        qFactoryBuilder.use(adapter);
+        qFactoryBuilder.use(checkNotNull(adapter));
         return this;
     }
 
@@ -88,7 +88,7 @@ public class KasperClientBuilder {
      * @see #use(com.viadeo.kasper.query.exposition.TypeAdapter)
      */
     public KasperClientBuilder use(final TypeAdapterFactory factory) {
-        qFactoryBuilder.use(factory);
+        qFactoryBuilder.use(checkNotNull(factory));
         return this;
     }
 
@@ -97,9 +97,10 @@ public class KasperClientBuilder {
      * occurs
      *
      * @param numberOfRetries number of times to retry
-     * @return
+     * @return a reference to this builder
      */
-    public KasperClientBuilder numberOfRetries(int numberOfRetries) {
+    public KasperClientBuilder numberOfRetries(final int numberOfRetries) {
+        checkArgument(numberOfRetries > 0);
         this.numberOfRetries = numberOfRetries;
         return this;
     }
@@ -111,7 +112,7 @@ public class KasperClientBuilder {
      * @throws KasperException
      */
     public KasperClientBuilder queryBaseLocation(final String url) {
-        return queryBaseLocation(createURL(getCanonicalUrl(url)));
+        return queryBaseLocation(createURL(getCanonicalUrl(checkNotNull(url))));
     }
 
     /**
@@ -120,7 +121,7 @@ public class KasperClientBuilder {
      * @throws KasperException
      */
     public KasperClientBuilder commandBaseLocation(final String url) {
-        return commandBaseLocation(createURL(getCanonicalUrl(url)));
+        return commandBaseLocation(createURL(getCanonicalUrl(checkNotNull(url))));
     }
 
     /**
@@ -129,7 +130,7 @@ public class KasperClientBuilder {
      * @throws KasperException
      */
     public KasperClientBuilder eventBaseLocation(final String url) {
-        return eventBaseLocation(createURL(getCanonicalUrl(url)));
+        return eventBaseLocation(createURL(getCanonicalUrl(checkNotNull(url))));
     }
 
     /**
@@ -139,7 +140,8 @@ public class KasperClientBuilder {
      * @param url
      * @return url plus trailing "/"
      */
-    private String getCanonicalUrl(String url) {
+    private String getCanonicalUrl(final String url) {
+        checkNotNull(url);
         return checkNotNull(url).endsWith("/") ? url : url + "/";
     }
 

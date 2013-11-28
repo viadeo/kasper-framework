@@ -27,73 +27,90 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sun.jersey.api.client.ClientResponse.Status;
 import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_USER_ID;
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class KasperClientEventTest {
 
-    private KasperClient client;
+    private static final String HTTP_ENDPOINT = "http://localhost:8080/kasper/event/";
 
+    private KasperClient client;
     private Client jerseyClient;
 
     @Captor
     @SuppressWarnings("unused")
     private ArgumentCaptor<ClientRequest> requestArgumentCaptor;
 
+    // ------------------------------------------------------------------------
+
     public static class MemberCreatedEvent extends Event {
-        private static final long serialVersionUID = -2618953642539379331L;
         private String name;
 
-        public MemberCreatedEvent(String name) {
-            this.name = name;
+        public MemberCreatedEvent(final String name) {
+            this.name = checkNotNull(name);
         }
+
     }
 
+    // ------------------------------------------------------------------------
 
     @Before
     public void setup() throws IOException {
 
-        Client object = new Client();
+        final Client object = new Client();
         jerseyClient = spy(object);
 
         client = new KasperClientBuilder()
-                .client(jerseyClient)
-                .eventBaseLocation(new URL("http://localhost:8080/kasper/event/"))
-                .create();
+                    .client(jerseyClient)
+                    .eventBaseLocation(new URL(HTTP_ENDPOINT))
+                    .create();
     }
 
+    // ------------------------------------------------------------------------
 
     @Test
     public void testSendEvent() {
 
         // Given
         final MemberCreatedEvent event = new MemberCreatedEvent("toto");
-        doReturn(mock(ClientResponse.class)).when(jerseyClient).handle(requestArgumentCaptor.capture());
+        final ClientResponse response = mock(ClientResponse.class);
+        doReturn(Status.ACCEPTED).when(response).getClientResponseStatus();
+        doReturn(response).when(jerseyClient).handle(requestArgumentCaptor.capture());
 
         // When
-        client.send(DefaultContextBuilder.get().setUserId("boo"), event);
+        client.emit(DefaultContextBuilder.get().setUserId("boo"), event);
 
         // Then
-        ClientRequest value = requestArgumentCaptor.getValue();
-        Assert.assertEquals(URI.create("http://localhost:8080/kasper/event/memberCreated"), value.getURI());
-        MultivaluedMap<String, Object> headers = value.getHeaders();
-        Assert.assertEquals(MediaType.APPLICATION_JSON, headers.getFirst(HttpHeaders.CONTENT_TYPE).toString());
-        Assert.assertEquals(MediaType.APPLICATION_JSON, headers.getFirst(HttpHeaders.ACCEPT).toString());
-        Assert.assertEquals("boo", headers.getFirst(HEADER_USER_ID).toString());
-        Assert.assertEquals(event, value.getEntity());
+        final ClientRequest value = requestArgumentCaptor.getValue();
+        assertEquals(URI.create(HTTP_ENDPOINT + "memberCreated"), value.getURI());
+
+        final MultivaluedMap<String, Object> headers = value.getHeaders();
+        assertEquals(MediaType.APPLICATION_JSON, headers.getFirst(HttpHeaders.CONTENT_TYPE).toString());
+        assertEquals(MediaType.APPLICATION_JSON, headers.getFirst(HttpHeaders.ACCEPT).toString());
+        assertEquals("boo", headers.getFirst(HEADER_USER_ID).toString());
+        assertEquals(event, value.getEntity());
     }
 
     @Test
     public void testSendEventWithFailureWillRetry3Times() {
+        // Given
 
         try {
-            client.send(DefaultContextBuilder.get(), new MemberCreatedEvent("toto"));
+            // When
+            client.emit(DefaultContextBuilder.get(), new MemberCreatedEvent("toto"));
             Assert.fail("exception not raised");
-        } catch (KasperException e) {
-            Assert.assertEquals("Unable to send event : com.viadeo.kasper.client.KasperClientEventTest$MemberCreatedEvent", e.getMessage());
-            Assert.assertEquals("Connection retries limit exceeded.", e.getCause().getMessage());
+
+        } catch (final KasperException e) {
+
+            // Then
+            assertEquals("Unable to send event : com.viadeo.kasper.client.KasperClientEventTest$MemberCreatedEvent", e.getMessage());
+            assertEquals("Connection retries limit exceeded.", e.getCause().getMessage());
         }
     }
 
@@ -101,23 +118,29 @@ public class KasperClientEventTest {
     @Test
     public void testSendEventWithError() {
 
-        for (ClientResponse.Status status : Arrays.asList(
-                ClientResponse.Status.NOT_FOUND,
-                ClientResponse.Status.BAD_REQUEST,
-                ClientResponse.Status.INTERNAL_SERVER_ERROR
+        final List<Status> statuses = Arrays.asList(
+                Status.NOT_FOUND,
+                Status.BAD_REQUEST,
+                Status.INTERNAL_SERVER_ERROR
+        );
 
-        )) {
-            ClientResponse response = mock(ClientResponse.class);
+        for (final Status status : statuses) {
+            // Given
+            final ClientResponse response = mock(ClientResponse.class);
             when(response.getClientResponseStatus()).thenReturn(status);
             doReturn(response).when(jerseyClient).handle(any(ClientRequest.class));
+
             try {
-                client.send(DefaultContextBuilder.get(), new MemberCreatedEvent("toto"));
+                // When
+                client.emit(DefaultContextBuilder.get(), new MemberCreatedEvent("toto"));
                 Assert.fail("exception not raised");
-            } catch (KasperException e) {
-                Assert.assertEquals("event submission failed with status <" + status.getReasonPhrase() + ">", e.getCause().getMessage());
+
+            } catch (final KasperException e) {
+
+                // Then
+                assertEquals("event submission failed with status <" + status.getReasonPhrase() + ">", e.getCause().getMessage());
             }
         }
-
-
     }
+
 }
