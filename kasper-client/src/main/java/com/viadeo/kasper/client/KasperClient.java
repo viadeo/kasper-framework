@@ -6,16 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.client;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.SetMultimap;
 import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.async.TypeListener;
-import com.sun.jersey.api.client.config.DefaultClientConfig;
-import com.sun.jersey.api.client.filter.ClientFilter;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
@@ -33,8 +29,6 @@ import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.exception.KasperQueryAdapterException;
 import com.viadeo.kasper.query.exposition.query.QueryBuilder;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -50,7 +44,6 @@ import java.util.concurrent.Future;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sun.jersey.api.client.ClientResponse.Status.ACCEPTED;
-import static com.sun.jersey.api.client.ClientResponse.Status.NOT_FOUND;
 import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_SECURITY_TOKEN;
 
 /**
@@ -66,7 +59,7 @@ import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_SECURITY_TOKEN
  * </p>
  * <p>
  * <strong>Usage</strong><br />
- * 
+ * <p/>
  * KasperClient supports synchronous and asynchronous requests. Sending
  * asynchronous requests can be done by asking for a java Future or by passing a
  * {@link Callback callback} argument. For example
@@ -74,39 +67,39 @@ import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_SECURITY_TOKEN
  * client with its default configuration). <br/>
  * Command and query methods can throw KasperClientException, which are
  * unchecked exceptions in order to avoid boilerplate code.
- * 
+ * <p/>
  * <pre>
  *      KasperClient client = new KasperClient();
- *      
+ *
  *      client.sendAsync(someCommand, new ICallback&lt;ICommandResponse&gt;() {
  *          public void done(final ICommandResponse response) {
  *              // do something smart with my response
  *          }
  *      });
- *      
+ *
  *      // or using a future
- *      
+ *
  *      Future&lt;ICommandResponse&gt; futureCommandResponse = client.sendAsync(someCommand);
- *      
+ *
  *      // do some other work while the command is being processed
  *      ...
- *      
+ *
  *      // block until the response is obtained
  *      ICommandResponse commandResponse = futureCommandResponse.get();
  * </pre>
- * 
+ * <p/>
  * Using a similar pattern you can submit a query.
  * </p>
  * <p>
  * <strong>Customization</strong><br />
- * 
+ * <p/>
  * To customize a KasperClient instance you can use the
  * {@link KasperClientBuilder}, implementing the builder pattern in order to
  * allow a fluent and intuitive construction of KasperClient instances.
  * </p>
  * <p>
  * <strong>Important notes</strong><br />
- * 
+ * <p/>
  * <ul>
  * <li>Query implementations must be composed only of simple types (serialized
  * to litterals), if you need a complex query or some type used in your query is
@@ -198,11 +191,11 @@ public class KasperClient {
         this.flags = flags;
     }
 
-     KasperClient(final QueryFactory queryFactory, final Client client,
-                  final URL commandBaseUrl, final URL queryBaseUrl, final URL eventBaseLocation,
-                  final HttpContextSerializer contextSerializer) {
+    KasperClient(final QueryFactory queryFactory, final Client client,
+                 final URL commandBaseUrl, final URL queryBaseUrl, final URL eventBaseLocation,
+                 final HttpContextSerializer contextSerializer) {
         this(queryFactory, client, commandBaseUrl, queryBaseUrl, eventBaseLocation, contextSerializer, Flags.defaults());
-     }
+    }
 
     // ------------------------------------------------------------------------
     // COMMANDS
@@ -210,14 +203,12 @@ public class KasperClient {
 
     /**
      * Sends a command and waits until a response is returned.
-     * 
-     * @param command
-     *            to submit
+     *
+     * @param command to submit
      * @return the command response, indicating if the command has been processed
      *         successfully or not (in that case you can get the error message
      *         from the command).
-     * @throws KasperException
-     *             KasperClientException if something went wrong.
+     * @throws KasperException KasperClientException if something went wrong.
      * @see CommandResponse
      */
     public CommandResponse send(final Context context, final Command command) {
@@ -240,12 +231,10 @@ public class KasperClient {
     /**
      * Sends a command and returns immediately a future allowing to retrieve the
      * response later.
-     * 
-     * @param command
-     *            to submit
+     *
+     * @param command to submit
      * @return a Future allowing to retrieve the response later.
-     * @throws KasperException
-     *             if something went wrong.
+     * @throws KasperException if something went wrong.
      * @see CommandResponse
      */
     public Future<? extends CommandResponse> sendAsync(final Context context, final Command command) {
@@ -270,13 +259,10 @@ public class KasperClient {
     /**
      * Sends a command and returns immediately, when the response is ready the
      * callback will be called with the obtained ICommandResponse as parameter.
-     * 
-     * @param command
-     *            to submit
-     * @param callback
-     *            to call when the response is ready.
-     * @throws KasperException
-     *             if something went wrong.
+     *
+     * @param command  to submit
+     * @param callback to call when the response is ready.
+     * @throws KasperException if something went wrong.
      * @see CommandResponse
      */
     public void sendAsync(final Context context, final Command command, final Callback<CommandResponse> callback) {
@@ -289,17 +275,17 @@ public class KasperClient {
         contextSerializer.serialize(context, builder);
 
         builder.put(new TypeListener<ClientResponse>(ClientResponse.class) {
-                    @Override
-                    public void onComplete(final Future<ClientResponse> f)
-                            throws InterruptedException {
-                        try {
-                            callback.done(handleResponse(f.get()));
-                        } catch (final ExecutionException e) {
-                            throw new KasperException(String.format("ERROR handling command [%s]",
-                                    command.getClass()), e);
-                        }
-                    }
-                }, command);
+            @Override
+            public void onComplete(final Future<ClientResponse> f)
+                    throws InterruptedException {
+                try {
+                    callback.done(handleResponse(f.get()));
+                } catch (final ExecutionException e) {
+                    throw new KasperException(String.format("ERROR handling command [%s]",
+                            command.getClass()), e);
+                }
+            }
+        }, command);
     }
 
     CommandResponse handleResponse(final ClientResponse clientResponse) {
@@ -335,7 +321,8 @@ public class KasperClient {
      * Sends an event and waits until a response is returned.
      *
      * @param event to submit
-     * @throws KasperException|KasperClientException if something went wrong.
+     * @throws KasperException|KasperClientException
+     *          if something went wrong.
      */
     public void send(final Context context, final Event event) {
         checkNotNull(event);
@@ -365,14 +352,11 @@ public class KasperClient {
 
     /**
      * Send a query and maps the result to a Response.
-     * 
-     * @param query
-     *            to submit.
-     * @param mapTo
-     *            Response class to which we want to map the response.
+     *
+     * @param query to submit.
+     * @param mapTo Response class to which we want to map the response.
      * @return an instance of the Response for this query.
-     * @throws KasperException
-     *             if something went wrong.
+     * @throws KasperException if something went wrong.
      */
     public <P extends QueryResult> QueryResponse<P> query(final Context context, final Query query, final Class<P> mapTo) {
         return query(context, query, TypeToken.of(mapTo));
@@ -384,24 +368,21 @@ public class KasperClient {
      * to map the response to a IQueryCollectionResponse. <br/>
      * <p>
      * Type tokens are used like that:
-     * 
+     * <p/>
      * <pre>
      * SomeCollectionResponse&lt;SomeResponse&gt; someResponseCollection = client.query(someQuery,
      *         new TypeToken&lt;SomeCollectionResponse&lt;SomeResponse&gt;&gt;());
      * </pre>
-     * 
+     * <p/>
      * If you are not familiar with the concept of TypeTokens you can read <a
      * href="http://gafter.blogspot.fr/2006/12/super-type-tokens.html">this blog
      * post</a> who explains a bit more in details what it is about.
      * </p>
-     * 
-     * @param query
-     *            to submit.
-     * @param mapTo
-     *            Response class to which we want to map the response.
+     *
+     * @param query to submit.
+     * @param mapTo Response class to which we want to map the response.
      * @return an instance of the Response for this query.
-     * @throws KasperException
-     *             if something went wrong.
+     * @throws KasperException if something went wrong.
      */
     public <P extends QueryResult> QueryResponse<P> query(final Context context, final Query query, final TypeToken<P> mapTo) {
         checkNotNull(query);
@@ -435,7 +416,7 @@ public class KasperClient {
     /**
      * FIXME should we also handle async in the platform side ?? Is it really
      * useful?
-     * 
+     *
      * @see KasperClient#query(Context, com.viadeo.kasper.cqrs.query.Query, Class)
      * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command)
      */
@@ -520,13 +501,14 @@ public class KasperClient {
     }
 
     <P extends QueryResult> QueryResponse<P> handleQueryResponse(final ClientResponse clientResponse,
-                                                                final TypeToken<P> mapTo) {
+                                                                 final TypeToken<P> mapTo) {
 
         if (clientResponse.getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
 
             final TypeToken mappedType = new TypeToken<QueryResponse<P>>() {
-                    private static final long serialVersionUID = -6868146773459098496L;
-                }.where(new TypeParameter<P>() { }, mapTo);
+                private static final long serialVersionUID = -6868146773459098496L;
+            }.where(new TypeParameter<P>() {
+            }, mapTo);
 
             final QueryResponse<P> response = clientResponse.getEntity(new GenericType<QueryResponse<P>>(mappedType.getType()));
             return new HTTPQueryResponse<P>(Response.Status.fromStatusCode(clientResponse.getStatus()), response);
@@ -545,15 +527,15 @@ public class KasperClient {
     // --
 
     MultivaluedMap<String, String> prepareQueryParams(final Query query) {
-            final MultivaluedMap<String, String> map = new MultivaluedMapImpl();
+        final MultivaluedMap<String, String> map = new MultivaluedMapImpl();
 
-            if ( ! flags.usePostForQueries()) {
-                for (final Map.Entry<String, String> entry : queryToSetMap(query).entries()) {
-                    map.add(entry.getKey(), entry.getValue());
-                }
+        if (!flags.usePostForQueries()) {
+            for (final Map.Entry<String, String> entry : queryToSetMap(query).entries()) {
+                map.add(entry.getKey(), entry.getValue());
             }
+        }
 
-            return map;
+        return map;
     }
 
     private SetMultimap<String, String> queryToSetMap(final Query query) {

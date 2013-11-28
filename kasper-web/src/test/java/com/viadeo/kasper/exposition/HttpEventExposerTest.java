@@ -31,9 +31,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest<HttpEventExposer> 
 
 
     public static class UnknownEvent extends Event {
-
         public String name;
-
     }
 
     public static class AccountCreatedEvent extends Event {
@@ -78,18 +76,3 @@ public class HttpEventExposerTest extends BaseHttpExposerTest<HttpEventExposer> 
 
     }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
