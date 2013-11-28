@@ -49,6 +49,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.sun.jersey.api.client.ClientResponse.Status.ACCEPTED;
+import static com.sun.jersey.api.client.ClientResponse.Status.NOT_FOUND;
 import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_SECURITY_TOKEN;
 
 /**
@@ -340,16 +342,20 @@ public class KasperClient {
 
         final WebResource.Builder builder = client
                 .resource(resolveEventPath(event.getClass()))
-                .accept(MediaType.APPLICATION_JSON)
                 .type(MediaType.APPLICATION_JSON);
 
         contextSerializer.serialize(context, builder);
 
         try {
-            builder.put(ClientResponse.class, event);
+            ClientResponse response = builder.put(ClientResponse.class, event);
+            ClientResponse.Status status = response.getClientResponseStatus();
+            if (ACCEPTED != status) {
+                throw new KasperException("event submission failed with status <" + status.getReasonPhrase() + ">");
+            }
         } catch (Exception e) {
-            throw new KasperException("Unable to send events", e);
+            throw new KasperException("Unable to send event : " + event.getClass().getName(), e);
         }
+
     }
 
 

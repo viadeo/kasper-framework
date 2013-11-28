@@ -29,7 +29,7 @@ public class RetryFilter extends ClientFilter {
             } catch (ClientHandlerException e) {
                 Throwable cause = e.getCause();
                 if(cause instanceof ConnectException) {
-                    LOGGER.info("Connection Timeout ({}), will try {}  more time(s).", cr.getURI(), numberOfRetries - i, e);
+                    LOGGER.info("exception <{}> ({}), retry {}  more time(s)", e.getMessage(), cr.getURI(), numberOfRetries - i);
                 } else {
                     throw Throwables.propagate(e);
                 }

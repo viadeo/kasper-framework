@@ -60,6 +60,7 @@ public abstract class BaseHttpExposerTest<T extends HttpExposer> {
         KasperClientBuilder clientBuilder = new KasperClientBuilder();
 		clientBuilder
 				.commandBaseLocation(new URL("http://127.0.0.1:" + port + "/rootpath/"))
+                .eventBaseLocation(new URL("http://127.0.0.1:" + port + "/rootpath/"))
 				.queryBaseLocation(new URL("http://127.0.0.1:" + port + "/rootpath/"));
         customize(clientBuilder);
         cli = clientBuilder.create();
