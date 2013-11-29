@@ -185,6 +185,7 @@ subprojects {
       JUNIT                 : 'junit:junit:4.10',
       MOCKITO               : 'org.mockito:mockito-all:1.9.5-rc1',
       JODA_TIME             : 'joda-time:joda-time:2.1',
+      JODA_MONEY            : 'org.joda:joda-money:0.9',
       GUAVA                 : 'com.google.guava:guava:13.0.1',
 
       LOGBACK               : [

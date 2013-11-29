@@ -35,7 +35,7 @@ public final class ObjectMapperProvider {
     static final String CODE = "code";
     static final String USERMESSAGE = "userMessage";
     static final String STATUS = "status";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class); 
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class);
 
     public static final ObjectMapperProvider INSTANCE = new ObjectMapperProvider();
 
@@ -80,6 +80,9 @@ public final class ObjectMapperProvider {
         /* Third-party modules */
         mapper.registerModule(new GuavaModule());
         mapper.registerModule(new JodaModule());
+
+        /* Kasper extra modules */
+        mapper.registerModule(new JodaMoneyModule());
     }
 
     // ------------------------------------------------------------------------
@@ -99,9 +102,10 @@ public final class ObjectMapperProvider {
                             globalCode, code, message);
             }
         }
+
         return new KasperReason(globalCode, messages);
     }
-    
+
     /**
      * @return the configured instance of ObjectWriter to use.
      */
