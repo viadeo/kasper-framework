@@ -7,6 +7,7 @@
 package com.viadeo.kasper.cqrs.query;
 
 import com.google.common.base.Objects;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
 import java.lang.String;
@@ -26,7 +27,7 @@ public abstract class MapQueryResult<T extends QueryResult> implements Iterable<
     }
 
 	protected MapQueryResult(final Map<String,T> map) {
-		this.map = checkNotNull(map);
+		this.map = Maps.newHashMap(checkNotNull(map));
 	}
 
     // ------------------------------------------------------------------------
@@ -49,18 +50,40 @@ public abstract class MapQueryResult<T extends QueryResult> implements Iterable<
     // ------------------------------------------------------------------------
 
 	public int getCount() {
-		return this.map.size();
+        if (null == map) {
+            return 0;
+        }
+        return this.map.size();
 	}
+    public boolean isEmpty() {
+        if (null == map) {
+            return true;
+        }
+        return this.map.isEmpty();
+    }
 
 	public Map<String,T> getMap() {
-		return this.map;
+        final ImmutableMap.Builder<String,T> builder = new ImmutableMap.Builder<String,T>();
+        if (null != map) {
+            builder.putAll(this.map);
+        }
+        return builder.build();
 	}
 
     public void setMap(final Map<String,T> map) {
+        if (null == this.map) {
+            this.map = Maps.newHashMap(checkNotNull(map));
+        } else {
+            throw new UnsupportedOperationException("MapQueryResult is immutable");
+        }
         this.map= checkNotNull(map);
     }
 
-
+    @SuppressWarnings("unchecked")
+    public <P extends MapQueryResult> P withMap(final Map<String,T> map) {
+        this.setMap(map);
+        return (P) this;
+    }
 
     // ------------------------------------------------------------------------
 
