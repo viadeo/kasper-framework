@@ -14,6 +14,7 @@ import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.exception.KasperException;
 import junit.framework.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
@@ -24,6 +25,7 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import java.io.IOException;
+import java.net.ServerSocket;
 import java.net.URI;
 import java.net.URL;
 import java.util.Arrays;
@@ -38,7 +40,10 @@ import static org.mockito.Mockito.*;
 @RunWith(MockitoJUnitRunner.class)
 public class KasperClientEventTest {
 
-    private static final String HTTP_ENDPOINT = "http://localhost:8080/kasper/event/";
+    private static final String HTTP_HOST = "http://localhost";
+    private static final String HTTP_PATH = "/kasper/event/";
+
+    private static int port;
 
     private KasperClient client;
     private Client jerseyClient;
@@ -60,6 +65,13 @@ public class KasperClientEventTest {
 
     // ------------------------------------------------------------------------
 
+    @BeforeClass
+    public static void init() throws IOException {
+        final ServerSocket socket = new ServerSocket(0);
+        port = socket.getLocalPort();
+        socket.close();
+    }
+
     @Before
     public void setup() throws IOException {
 
@@ -68,7 +80,7 @@ public class KasperClientEventTest {
 
         client = new KasperClientBuilder()
                     .client(jerseyClient)
-                    .eventBaseLocation(new URL(HTTP_ENDPOINT))
+                    .eventBaseLocation(new URL(HTTP_HOST + ":" + port + HTTP_PATH))
                     .create();
     }
 
@@ -88,7 +100,7 @@ public class KasperClientEventTest {
 
         // Then
         final ClientRequest value = requestArgumentCaptor.getValue();
-        assertEquals(URI.create(HTTP_ENDPOINT + "memberCreated"), value.getURI());
+        assertEquals(URI.create(HTTP_HOST + ":" + port + HTTP_PATH + "memberCreated"), value.getURI());
 
         final MultivaluedMap<String, Object> headers = value.getHeaders();
         assertEquals(MediaType.APPLICATION_JSON, headers.getFirst(HttpHeaders.CONTENT_TYPE).toString());
