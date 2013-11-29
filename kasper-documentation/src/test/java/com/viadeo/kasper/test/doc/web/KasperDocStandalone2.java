@@ -33,8 +33,8 @@ public class KasperDocStandalone2 {
                 , ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(GetMembersQueryHandler.class, GetMembersQueryHandler.GetMembersQuery.class, GetMembersQueryHandler.MembersResult.class))
                 , ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(AddConnectionToMemberHandler.class, AddConnectionToMemberCommand.class))
                 , ImmutableList.<RepositoryDescriptor>of(
-                      new RepositoryDescriptor(MemberRepository.class, DomainDescriptorFactory.retrieveAggregateDescriptor(Member.class))
-                    , new RepositoryDescriptor(MemberConnectionsRepository.class, DomainDescriptorFactory.retrieveAggregateDescriptor(Member_connectedTo_Member.class))
+                      new RepositoryDescriptor(MemberRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Member.class))
+                    , new RepositoryDescriptor(MemberConnectionsRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class))
                 )
                 , ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(MemberCreatedEventListener.class, MemberCreatedEvent.class))
         );

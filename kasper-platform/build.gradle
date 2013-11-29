@@ -13,4 +13,5 @@ dependencies {
 
     // Third perty dependencies
     compile libraries.AXON_MONGO
+    compile libraries.TYPESAFE_CONFIG
 }

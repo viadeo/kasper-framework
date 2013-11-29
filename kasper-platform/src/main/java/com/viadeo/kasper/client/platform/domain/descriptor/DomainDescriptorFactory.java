@@ -1,7 +1,8 @@
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
+import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -21,16 +22,44 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DomainDescriptorFactory {
 
-    public static DomainDescriptor createFrom(DomainBundle domainBundle) {
+    private static final Function<CommandHandler, CommandHandlerDescriptor> toCommandHandlerDescriptor = new Function<CommandHandler, CommandHandlerDescriptor>() {
+        @Override
+        public CommandHandlerDescriptor apply(CommandHandler commandHandler) {
+            return toCommandHandlerDescriptor(commandHandler);
+        }
+    };
+
+    private static final Function<QueryHandler, QueryHandlerDescriptor> toQueryHandlerDescriptor = new Function<QueryHandler, QueryHandlerDescriptor>() {
+        @Override
+        public QueryHandlerDescriptor apply(QueryHandler queryHandler) {
+            return toQueryHandlerDescriptor(queryHandler);
+        }
+    };
+
+    private static final Function<EventListener, EventListenerDescriptor> toEventListenerDescriptor = new Function<EventListener, EventListenerDescriptor>() {
+        @Override
+        public EventListenerDescriptor apply(EventListener eventListener) {
+            return toEventListenerDescriptor(eventListener);
+        }
+    };
+
+    private static final Function<IRepository, RepositoryDescriptor> toRepositoryDescriptor = new Function<IRepository, RepositoryDescriptor>() {
+        @Override
+        public RepositoryDescriptor apply(IRepository repository) {
+            return toRepositoryDescriptor(repository);
+        }
+    };
+
+    public DomainDescriptor createFrom(DomainBundle domainBundle) {
         return new DomainDescriptor(domainBundle.getDomain().getClass()
-                , ImmutableList.<QueryHandlerDescriptor>builder().addAll(retrieveQueryHandlerDescriptors(domainBundle.getQueryHandlers())).build()
-                , ImmutableList.<CommandHandlerDescriptor>builder().addAll(retrieveCommandHandlerDescriptors(domainBundle.getCommandHandlers())).build()
-                , ImmutableList.<RepositoryDescriptor>builder().addAll(retrieveRepositoryDescriptors(domainBundle.getRepositories())).build()
-                , ImmutableList.<EventListenerDescriptor>builder().addAll(retrieveEventListenerDescriptors(domainBundle.getEventListeners())).build()
+                , Collections2.transform(domainBundle.getQueryHandlers(), toQueryHandlerDescriptor)
+                , Collections2.transform(domainBundle.getCommandHandlers(), toCommandHandlerDescriptor)
+                , Collections2.transform(domainBundle.getRepositories(), toRepositoryDescriptor)
+                , Collections2.transform(domainBundle.getEventListeners(), toEventListenerDescriptor)
         );
     }
 
-    public static DomainDescriptor createFrom(
+    public DomainDescriptor createFrom(
               Class domainClass
             , Collection<QueryHandler> queryHandlers
             , Collection<CommandHandler> commandHandlers
@@ -39,81 +68,56 @@ public class DomainDescriptorFactory {
     ) {
         return new DomainDescriptor(
                   domainClass
-                , ImmutableList.<QueryHandlerDescriptor>builder().addAll(retrieveQueryHandlerDescriptors(queryHandlers)).build()
-                , ImmutableList.<CommandHandlerDescriptor>builder().addAll(retrieveCommandHandlerDescriptors(commandHandlers)).build()
-                , ImmutableList.<RepositoryDescriptor>builder().addAll(retrieveRepositoryDescriptors(repositories)).build()
-                , ImmutableList.<EventListenerDescriptor>builder().addAll(retrieveEventListenerDescriptors(eventListeners)).build()
+                , Collections2.transform(queryHandlers, toQueryHandlerDescriptor)
+                , Collections2.transform(commandHandlers, toCommandHandlerDescriptor)
+                , Collections2.transform(repositories, toRepositoryDescriptor)
+                , Collections2.transform(eventListeners, toEventListenerDescriptor)
         );
     }
 
 
-    public static Collection<CommandHandlerDescriptor> retrieveCommandHandlerDescriptors(Collection<CommandHandler> commandHandlers) {
-        List<CommandHandlerDescriptor> descriptors = Lists.newArrayList();
-
-        for (CommandHandler commandHandler : commandHandlers) {
-            Class<? extends CommandHandler> commandHandlerClass = commandHandler.getClass();
-            Optional<? extends Class> commandClass = ReflectionGenericsResolver.getParameterTypeFromClass(commandHandlerClass, CommandHandler.class, CommandHandler.COMMAND_PARAMETER_POSITION);
-            descriptors.add(new CommandHandlerDescriptor(commandHandlerClass, commandClass.get()));
-        }
-        return descriptors;
+    public static CommandHandlerDescriptor toCommandHandlerDescriptor(CommandHandler commandHandler) {
+        Class<? extends CommandHandler> commandHandlerClass = commandHandler.getClass();
+        Optional<? extends Class> commandClass = ReflectionGenericsResolver.getParameterTypeFromClass(commandHandlerClass, CommandHandler.class, CommandHandler.COMMAND_PARAMETER_POSITION);
+        return new CommandHandlerDescriptor(commandHandlerClass, commandClass.get());
     }
 
-    public static Collection<QueryHandlerDescriptor> retrieveQueryHandlerDescriptors(Collection<QueryHandler> queryHandlers) {
-        List<QueryHandlerDescriptor> descriptors = Lists.newArrayList();
-
-        for (QueryHandler queryHandler : queryHandlers) {
-            Class<? extends QueryHandler> queryHandlerClass = queryHandler.getClass();
-            Optional<? extends Class> queryClass = ReflectionGenericsResolver.getParameterTypeFromClass(queryHandlerClass, QueryHandler.class, QueryHandler.PARAMETER_QUERY_POSITION);
-            Optional<? extends Class> queryResultClass = ReflectionGenericsResolver.getParameterTypeFromClass(queryHandlerClass, QueryHandler.class, QueryHandler.PARAMETER_RESULT_POSITION);
-            descriptors.add(new QueryHandlerDescriptor(queryHandlerClass, queryResultClass.get(), queryClass.get()));
-        }
-
-        return descriptors;
+    public static QueryHandlerDescriptor toQueryHandlerDescriptor(QueryHandler queryHandler) {
+        Class<? extends QueryHandler> queryHandlerClass = queryHandler.getClass();
+        Optional<? extends Class> queryClass = ReflectionGenericsResolver.getParameterTypeFromClass(queryHandlerClass, QueryHandler.class, QueryHandler.PARAMETER_QUERY_POSITION);
+        Optional<? extends Class> queryResultClass = ReflectionGenericsResolver.getParameterTypeFromClass(queryHandlerClass, QueryHandler.class, QueryHandler.PARAMETER_RESULT_POSITION);
+        return new QueryHandlerDescriptor(queryHandlerClass, queryClass.get(), queryResultClass.get());
     }
 
-    public static Collection<EventListenerDescriptor> retrieveEventListenerDescriptors(Collection<EventListener> eventListeners) {
-        List<EventListenerDescriptor> descriptors = Lists.newArrayList();
-
-        for (EventListener eventListener : eventListeners) {
-            Class<? extends EventListener> eventListenerClass = eventListener.getClass();
-            Optional<? extends Class> eventClass = ReflectionGenericsResolver.getParameterTypeFromClass(eventListenerClass, EventListener.class, EventListener.EVENT_PARAMETER_POSITION);
-            descriptors.add(new EventListenerDescriptor(eventListenerClass, eventClass.get()));
-        }
-
-        return descriptors;
+    public static EventListenerDescriptor toEventListenerDescriptor(EventListener eventListener) {
+        Class<? extends EventListener> eventListenerClass = eventListener.getClass();
+        Optional<? extends Class> eventClass = ReflectionGenericsResolver.getParameterTypeFromClass(eventListenerClass, EventListener.class, EventListener.EVENT_PARAMETER_POSITION);
+        return new EventListenerDescriptor(eventListenerClass, eventClass.get());
     }
 
-    public static Collection<RepositoryDescriptor> retrieveRepositoryDescriptors(Collection<IRepository> repositories) {
-        List<RepositoryDescriptor> descriptors = Lists.newArrayList();
-
-        for (IRepository repository : repositories) {
-            Class<? extends IRepository> repositoryClass = repository.getClass();
-            Optional<? extends Class> optEntityClass = ReflectionGenericsResolver.getParameterTypeFromClass(repositoryClass, IRepository.class, IRepository.ENTITY_PARAMETER_POSITION);
-
-            Class entityClass = optEntityClass.get();
-            descriptors.add(new RepositoryDescriptor(repositoryClass, retrieveAggregateDescriptor(entityClass)));
-        }
-
-        return descriptors;
+    public static RepositoryDescriptor toRepositoryDescriptor(IRepository repository) {
+        Class<? extends IRepository> repositoryClass = repository.getClass();
+        Optional<? extends Class> optEntityClass = ReflectionGenericsResolver.getParameterTypeFromClass(repositoryClass, IRepository.class, IRepository.ENTITY_PARAMETER_POSITION);
+        return new RepositoryDescriptor(repositoryClass, toAggregateDescriptor(optEntityClass.get()));
     }
 
-    public static AggregateDescriptor retrieveAggregateDescriptor(Class entityClass){
+    public static AggregateDescriptor toAggregateDescriptor(Class entityClass){
         AggregateDescriptor aggregateDescriptor;
 
         if (Relation.class.isAssignableFrom(entityClass)) {
             Optional<? extends Class> sourceClass = ReflectionGenericsResolver.getParameterTypeFromClass(entityClass, Relation.class, 0);
             Optional<? extends Class> targetClass = ReflectionGenericsResolver.getParameterTypeFromClass(entityClass, Relation.class, 1);
 
-            List<Class> listenedSourceEvents = getEventUsedByEventHandler(entityClass);
+            List<Class> listenedSourceEvents = listEventUsedByEventHandler(entityClass);
             aggregateDescriptor = new AggregateDescriptor(entityClass, sourceClass.get(), targetClass.get(), listenedSourceEvents.toArray(new Class[listenedSourceEvents.size()]));
         } else {
-            List<Class> listenedSourceEvents = getEventUsedByEventHandler(entityClass);
+            List<Class> listenedSourceEvents = listEventUsedByEventHandler(entityClass);
             aggregateDescriptor = new AggregateDescriptor(entityClass, listenedSourceEvents.toArray(new Class[listenedSourceEvents.size()]));
         }
         return aggregateDescriptor;
     }
 
-    private static List<Class> getEventUsedByEventHandler(Class clazz){
+    private static List<Class> listEventUsedByEventHandler(Class clazz){
         List<Class> listenedSourceEvents = Lists.newArrayList();
         Method[] methods = checkNotNull(clazz).getDeclaredMethods();
         for (Method method : methods) {

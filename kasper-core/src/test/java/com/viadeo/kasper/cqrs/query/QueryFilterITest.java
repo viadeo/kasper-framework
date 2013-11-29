@@ -94,8 +94,7 @@ public class QueryFilterITest {
         locator.registerFilter("testFilter2", filterGlobal, true);
         locator.registerFilterForQueryHandler(service.getClass(), filter.getClass());
 
-        final DefaultQueryGateway gateway = new DefaultQueryGateway();
-        gateway.setQueryHandlersLocator(locator);
+        final DefaultQueryGateway gateway = new DefaultQueryGateway(locator);
 
         final Context context = DefaultContextBuilder.get();
         final TestQuery query = new TestQuery();

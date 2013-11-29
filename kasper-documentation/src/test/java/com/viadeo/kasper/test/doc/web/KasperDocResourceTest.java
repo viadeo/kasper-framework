@@ -119,8 +119,8 @@ public class KasperDocResourceTest extends JerseyTest {
                     , ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(GetMembersQueryHandler.class, GetMembersQueryHandler.GetMembersQuery.class, GetMembersQueryHandler.MembersResult.class))
                     , ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(AddConnectionToMemberHandler.class, AddConnectionToMemberCommand.class))
                     , ImmutableList.<RepositoryDescriptor>of(
-                        new RepositoryDescriptor(MemberRepository.class, DomainDescriptorFactory.retrieveAggregateDescriptor(Member.class)),
-                        new RepositoryDescriptor(MemberConnectionsRepository.class, DomainDescriptorFactory.retrieveAggregateDescriptor(Member_connectedTo_Member.class))
+                        new RepositoryDescriptor(MemberRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Member.class)),
+                        new RepositoryDescriptor(MemberConnectionsRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class))
                     )
                     , ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(MemberCreatedEventListener.class, MemberCreatedEvent.class))
             );
@@ -130,8 +130,8 @@ public class KasperDocResourceTest extends JerseyTest {
                     , ImmutableList.<QueryHandlerDescriptor>of()
                     , ImmutableList.<CommandHandlerDescriptor>of()
                     , ImmutableList.<RepositoryDescriptor>of(
-                        new RepositoryDescriptor(ApplicationRepository.class, DomainDescriptorFactory.retrieveAggregateDescriptor(Application.class)),
-                        new RepositoryDescriptor(ApplicationMemberFansRepository.class, DomainDescriptorFactory.retrieveAggregateDescriptor(Member_fanOf_Application.class))
+                        new RepositoryDescriptor(ApplicationRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Application.class)),
+                        new RepositoryDescriptor(ApplicationMemberFansRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Member_fanOf_Application.class))
                     )
                     , ImmutableList.<EventListenerDescriptor>of()
             );
@@ -141,8 +141,8 @@ public class KasperDocResourceTest extends JerseyTest {
                     , ImmutableList.<QueryHandlerDescriptor>of()
                     , ImmutableList.<CommandHandlerDescriptor>of()
                     , ImmutableList.<RepositoryDescriptor>of(
-                        new RepositoryDescriptor(StatusRepository.class, DomainDescriptorFactory.retrieveAggregateDescriptor(Status.class)),
-                        new RepositoryDescriptor(TimelineRepository.class, DomainDescriptorFactory.retrieveAggregateDescriptor(Timeline.class))
+                        new RepositoryDescriptor(StatusRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Status.class)),
+                        new RepositoryDescriptor(TimelineRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Timeline.class))
                     )
                     , ImmutableList.<EventListenerDescriptor>of()
             );

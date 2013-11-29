@@ -14,12 +14,11 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
+import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryGateway;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,9 +36,17 @@ public class DefaultQueryGateway implements QueryGateway {
     private static final Meter METRICLASSREQUESTS = METRICS.meter(name(QueryGateway.class, "requests"));
     private static final Meter METRICLASSERRORS = METRICS.meter(name(QueryGateway.class, "errors"));
 
-    private QueryHandlersLocator queryHandlersLocator;
+    private final QueryHandlersLocator queryHandlersLocator;
 
     // -----------------------------------------------------------------------
+
+    public DefaultQueryGateway() {
+        this(new DefaultQueryHandlersLocator());
+    }
+
+    public DefaultQueryGateway(QueryHandlersLocator queryHandlersLocator) {
+        this.queryHandlersLocator = queryHandlersLocator;
+    }
 
     @Override
     @SuppressWarnings("unchecked")
@@ -100,10 +107,28 @@ public class DefaultQueryGateway implements QueryGateway {
         return ret;
     }
 
-    // -----------------------------------------------------------------------
+    public void register(QueryHandler queryHandler) {
+        Class<? extends QueryHandler> queryHandlerClass = queryHandler.getClass();
 
-    public void setQueryHandlersLocator(final QueryHandlersLocator queryHandlersLocator) {
-        this.queryHandlersLocator = queryHandlersLocator;
+        LOGGER.info("Registering the query handler : " + queryHandlerClass.getName());
+
+        XKasperQueryHandler annotation = queryHandlerClass.getAnnotation(XKasperQueryHandler.class);
+        String handlerName;
+
+        if (annotation.name().isEmpty()) {
+            handlerName = queryHandlerClass.getSimpleName();
+        } else {
+            handlerName = annotation.name();
+        }
+
+        Class<? extends QueryHandlerFilter>[] filters = annotation.filters();
+        if (null != filters) {
+            for (final Class<? extends QueryHandlerFilter> filterClass : filters) {
+                LOGGER.info(String.format("  --> w/ filter %s", filterClass.getSimpleName()));
+                this.queryHandlersLocator.registerFilterForQueryHandler(queryHandlerClass, filterClass);
+            }
+        }
+
+        queryHandlersLocator.registerHandler(handlerName, queryHandler, annotation.domain());
     }
-
 }

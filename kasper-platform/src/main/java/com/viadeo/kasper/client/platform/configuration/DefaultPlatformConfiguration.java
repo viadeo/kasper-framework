@@ -396,8 +396,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     public QueryGateway queryGateway(final QueryHandlersLocator locator){
         this.ensureNotPresent(QueryGateway.class);
 
-        final DefaultQueryGateway queryGateway = new DefaultQueryGateway();
-        queryGateway.setQueryHandlersLocator(locator);
+        final DefaultQueryGateway queryGateway = new DefaultQueryGateway(locator);
 
         registerInstance(QueryGateway.class, queryGateway);
         return queryGateway;
