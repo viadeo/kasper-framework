@@ -109,7 +109,7 @@ public class KasperClientEventTest {
         } catch (final KasperException e) {
 
             // Then
-            assertEquals("Unable to send event : com.viadeo.kasper.client.KasperClientEventTest$MemberCreatedEvent", e.getMessage());
+            assertEquals("Unable to send event : " + MemberCreatedEvent.class.getName(), e.getMessage());
             assertEquals("Connection retries limit exceeded.", e.getCause().getMessage());
         }
     }
