@@ -81,6 +81,7 @@ public final class ObjectMapperProvider {
         mapper.registerModule(new GuavaModule());
         mapper.registerModule(new JodaModule());
 
+        /* Kasper extra modules */
         mapper.registerModule(new JodaMoneyModule());
     }
 
@@ -101,6 +102,7 @@ public final class ObjectMapperProvider {
                             globalCode, code, message);
             }
         }
+
         return new KasperReason(globalCode, messages);
     }
 
