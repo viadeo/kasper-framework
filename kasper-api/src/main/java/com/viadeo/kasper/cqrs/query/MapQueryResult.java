@@ -17,9 +17,9 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class MapQueryResult<String,Object> implements Iterable<Map.Entry<String,Object>>, QueryResult  {
+public abstract class MapQueryResult<String,T> implements Iterable<Map.Entry<String,T>>, QueryResult  {
 
-	private Map<String,Object> map;
+	private Map<String,T> map;
 
     // ------------------------------------------------------------------------
 
@@ -27,24 +27,24 @@ public abstract class MapQueryResult<String,Object> implements Iterable<Map.Entr
         /* Jackson */
     }
 
-	protected MapQueryResult(final Map<String,Object> map) {
+	protected MapQueryResult(final Map<String,T> map) {
 		this.map = checkNotNull(map);
 	}
 
     // ------------------------------------------------------------------------
 
-    public void put(final String key, Object value) {
+    public void put(final String key, T value) {
         if (null == map) {
             map = Maps.newHashMap();
         }
         map.put(key,value);
     }
-    public void put(Map.Entry<String,Object> entry) {
+    public void put(Map.Entry<String,T> entry) {
         put(entry.getKey(), entry.getValue());
     }
 
 	@Override
-	public Iterator<Map.Entry<String,Object>> iterator() {
+	public Iterator<Map.Entry<String,T>> iterator() {
 		return this.map.entrySet().iterator();
 	}
 
@@ -54,11 +54,11 @@ public abstract class MapQueryResult<String,Object> implements Iterable<Map.Entr
 		return this.map.size();
 	}
 
-	public Map<String,Object> getMap() {
+	public Map<String,T> getMap() {
 		return this.map;
 	}
 
-    public void setMap(final Map<String,Object> map) {
+    public void setMap(final Map<String,T> map) {
         this.map= checkNotNull(map);
     }
 
