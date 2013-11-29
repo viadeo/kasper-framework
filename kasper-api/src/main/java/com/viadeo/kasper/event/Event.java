@@ -54,7 +54,7 @@ public abstract class Event implements IEvent {
     }
 
     public void setUOWEventId(final String uowEventId) {
-        this.uowEventId = checkNotNull(uowEventId);
+        this.uowEventId = uowEventId;
     }
 
     // ------------------------------------------------------------------------

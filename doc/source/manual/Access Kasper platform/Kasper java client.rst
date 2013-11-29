@@ -68,6 +68,19 @@ If an error occurred during query processing on client side a **KasperQueryExcep
       // do something useful with response.getReason()
    }
 
+
+**Emitting an event** is the same stuff :
+
+.. code-block:: java
+   :linenos:
+
+   client.emit(context, new MyEvent("Enjoyed Coding!"));
+
+A **KasperException** will be thrown on error.
+
+
+|
+
 |
 
 You like it ? Then **Get it!**
