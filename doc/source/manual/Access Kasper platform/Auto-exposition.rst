@@ -104,11 +104,7 @@ Ex: suppose we have the following query, it will be **available at http://host:p
 
 Query objects will be flattened by the framework to a query string, you should **avoid having complex structures**.
 
-The framework will use the getters and setters during serialization/deserialization.
-
-The framework also **supports deserialization to objects that don't have a default no arg constructor** (yay!) another handy feature :)
-
-We might also add later support of ser/deser based on fields (being able to mix methods and fields or juste use one or another).
+The framework also **supports deserialization to objects that don't have a default no arg constructor**
 
 In case of an error a standard HTTP error code will be set with the reason for this error in the headers and the body will contain (optionally) more
 information on what happened, see :ref:`Error_codes`.
@@ -130,6 +126,18 @@ information on what happened, see :ref:`Error_codes`.
 
 In case of a success a query Response will be returned serialized to json, this is done with Jackson. That allows you to use standard Jackson
 annotations on your query Response (if you want to use constructors with args for example).
+
+Use events to decouple your legacy
+----------------------------------
+
+Events can be emitted to the platform using **POST** or **PUT** requests, there are no query parameters, everything is in the body.
+Actually only json content is supported as input and output.
+
+To enable Command exposition register **HttpEventExposer** servlet, it will then use **DomainLocator** to locate each command handler.
+
+Warning: Domain events exposing is an anti-pattern of the platform's spirit in itself, this endpoint is provided as a migration helper when dealing with a
+legacy platform allowing a smooth decoupling : the legacy platform can then send domain events in place of the not-yet-implemented platform's
+domain to come.
 
 ..  _TypeAdapters:
 
