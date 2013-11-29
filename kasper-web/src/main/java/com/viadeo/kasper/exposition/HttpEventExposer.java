@@ -118,7 +118,7 @@ public class HttpEventExposer extends HttpExposer {
 
         /*
          * must be last call to ensure that everything is sent to the client
-         *(even if an error occurred)
+         * (even if an error occurred)
          */
         try {
             resp.flushBuffer();
@@ -181,12 +181,14 @@ public class HttpEventExposer extends HttpExposer {
         } catch (final IOException e) {
 
             LOGGER.error("Error in event [" + eventClass.getName() + "]", e);
+            METRICLASSERRORS.mark();
             resp.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
 
         } catch (final Throwable th) {
 
             // we catch any other exception in order to still respond with json
             LOGGER.error("Error in event [" + eventClass.getName() + "]", th);
+            METRICLASSERRORS.mark();
             resp.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
 
         } finally {
@@ -207,13 +209,11 @@ public class HttpEventExposer extends HttpExposer {
 
     @SuppressWarnings({"rawtypes", "unchecked"})
     HttpExposer expose(final Class<? extends Event> eventClass) {
-        checkNotNull(eventClass);
-
-        final String eventPath = eventToPath(eventClass);
+        final String eventPath = eventToPath(checkNotNull(eventClass));
 
         LOGGER.info("-> Exposing event[{}] at path[/{}]",
-                eventClass.getSimpleName(),
-                getServletContext().getContextPath() + eventPath);
+                    eventClass.getSimpleName(),
+                    getServletContext().getContextPath() + eventPath);
 
         putKey(eventPath, eventClass, exposedEvents);
 

@@ -213,11 +213,12 @@ public class KasperClient {
      */
     public CommandResponse send(final Context context, final Command command) {
         checkNotNull(command);
+        checkNotNull(context);
 
         final WebResource.Builder builder = client
                 .resource(resolveCommandPath(command.getClass()))
-                .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON);
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE);
 
         contextSerializer.serialize(context, builder);
 
@@ -239,11 +240,12 @@ public class KasperClient {
      */
     public Future<? extends CommandResponse> sendAsync(final Context context, final Command command) {
         checkNotNull(command);
+        checkNotNull(context);
 
         final AsyncWebResource.Builder builder = client
                 .asyncResource(resolveCommandPath(command.getClass()))
-                .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON);
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE);
 
         contextSerializer.serialize(context, builder);
 
@@ -267,10 +269,11 @@ public class KasperClient {
      */
     public void sendAsync(final Context context, final Command command, final Callback<CommandResponse> callback) {
         checkNotNull(command);
+        checkNotNull(context);
 
         final AsyncWebResource.Builder builder = client.asyncResource(resolveCommandPath(command.getClass()))
-                .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON);
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE);
 
         contextSerializer.serialize(context, builder);
 
@@ -293,7 +296,7 @@ public class KasperClient {
     }
 
     CommandResponse handleResponse(final ClientResponse clientResponse) {
-        if (clientResponse.getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
+        if (checkNotNull(clientResponse).getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
 
             final CommandResponse response = clientResponse.getEntity(CommandResponse.class);
 
@@ -330,6 +333,7 @@ public class KasperClient {
      */
     public void emit(final Context context, final Event event) {
         checkNotNull(event);
+        checkNotNull(context);
 
         final WebResource.Builder builder = client
                 .resource(resolveEventPath(event.getClass()))
@@ -349,7 +353,6 @@ public class KasperClient {
         }
 
     }
-
 
     // ------------------------------------------------------------------------
     // QUERIES
@@ -392,12 +395,13 @@ public class KasperClient {
     public <P extends QueryResult> QueryResponse<P> query(final Context context, final Query query, final TypeToken<P> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
+        checkNotNull(context);
 
         final WebResource.Builder builder = client
                 .resource(resolveQueryPath(query.getClass()))
                 .queryParams(prepareQueryParams(query))
-                .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON);
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE);
 
         contextSerializer.serialize(context, builder);
 
@@ -429,12 +433,13 @@ public class KasperClient {
             final Context context, final Query query, final TypeToken<P> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
+        checkNotNull(context);
 
         final AsyncWebResource.Builder builder = client
                 .asyncResource(resolveQueryPath(query.getClass()))
                 .queryParams(prepareQueryParams(query))
-                .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON);
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE);
 
         contextSerializer.serialize(context, builder);
 
@@ -469,11 +474,13 @@ public class KasperClient {
                                                    final Callback<QueryResponse<P>> callback) {
         checkNotNull(query);
         checkNotNull(mapTo);
+        checkNotNull(context);
+        checkNotNull(callback);
 
         final AsyncWebResource.Builder builder = client.asyncResource(resolveQueryPath(query.getClass()))
                 .queryParams(prepareQueryParams(query))
-                .accept(MediaType.APPLICATION_JSON)
-                .type(MediaType.APPLICATION_JSON);
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE);
 
         contextSerializer.serialize(context, builder);
 
@@ -508,12 +515,12 @@ public class KasperClient {
     <P extends QueryResult> QueryResponse<P> handleQueryResponse(final ClientResponse clientResponse,
                                                                  final TypeToken<P> mapTo) {
 
-        if (clientResponse.getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
+        if (checkNotNull(clientResponse).getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
 
             final TypeToken mappedType = new TypeToken<QueryResponse<P>>() { }
                                             .where(
                                                     new TypeParameter<P>() { },
-                                                    mapTo
+                                                    checkNotNull(mapTo)
                                             );
 
             final QueryResponse<P> response = clientResponse.getEntity(new GenericType<QueryResponse<P>>(mappedType.getType()));
@@ -533,6 +540,8 @@ public class KasperClient {
     // --
 
     MultivaluedMap<String, String> prepareQueryParams(final Query query) {
+        checkNotNull(query);
+
         final MultivaluedMap<String, String> map = new MultivaluedMapImpl();
 
         if ( ! flags.usePostForQueries()) {
@@ -545,6 +554,8 @@ public class KasperClient {
     }
 
     private SetMultimap<String, String> queryToSetMap(final Query query) {
+        checkNotNull(query);
+
         @SuppressWarnings("unchecked")
         final TypeAdapter<Query> adapter = (TypeAdapter<Query>)
                 queryFactory.create(TypeToken.of(query.getClass()));

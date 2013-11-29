@@ -141,7 +141,6 @@ public class KasperClientBuilder {
      * @return url plus trailing "/"
      */
     private String getCanonicalUrl(final String url) {
-        checkNotNull(url);
         return checkNotNull(url).endsWith("/") ? url : url + "/";
     }
 
