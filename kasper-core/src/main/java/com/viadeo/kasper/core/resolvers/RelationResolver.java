@@ -146,8 +146,8 @@ public class RelationResolver extends AbstractResolver<Relation> {
 
     public Optional<String> biDirectionalVerb(final Class<? extends Relation> clazz) {
         final XBidirectional biDirAnno = clazz.getAnnotation(XBidirectional.class);
-        if ((null != biDirAnno) &&  ! biDirAnno.verb().isEmpty()) {
-            return Optional.of(biDirAnno.verb());
+        if ((null != biDirAnno) &&  ! biDirAnno.inverse_verb().isEmpty()) {
+            return Optional.of(biDirAnno.inverse_verb());
         }
         return Optional.absent();
     }
