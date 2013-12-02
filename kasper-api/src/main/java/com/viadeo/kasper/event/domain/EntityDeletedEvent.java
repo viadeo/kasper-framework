@@ -14,7 +14,7 @@ import com.viadeo.kasper.event.Event;
  * A Kasper event related to an entity deletion
  *
  */
-public class EntityDeletedEvent<D extends Domain> extends Event implements EntityEvent<D> {
+public abstract class EntityDeletedEvent<D extends Domain> extends Event implements EntityEvent<D> {
 
 }
 

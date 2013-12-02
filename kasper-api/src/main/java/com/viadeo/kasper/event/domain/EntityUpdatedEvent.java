@@ -14,7 +14,7 @@ import com.viadeo.kasper.event.Event;
  * A Kasper event related to an entity update
  *
  */
-public class EntityUpdatedEvent<D extends Domain> extends Event implements EntityEvent<D> {
+public abstract class EntityUpdatedEvent<D extends Domain> extends Event implements EntityEvent<D> {
 
 }
 
