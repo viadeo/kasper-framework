@@ -1,19 +1,23 @@
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
-public class CommandHandlerDescriptor {
-    private final Class commandHandlerClass;
-    private final Class commandClass;
+import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
 
-    public CommandHandlerDescriptor(Class commandHandlerClass, Class commandClass) {
+public class CommandHandlerDescriptor implements Descriptor {
+    private final Class<? extends CommandHandler> commandHandlerClass;
+    private final Class<? extends Command> commandClass;
+
+    public CommandHandlerDescriptor(Class<? extends CommandHandler> commandHandlerClass, Class<? extends Command> commandClass) {
         this.commandHandlerClass = commandHandlerClass;
         this.commandClass = commandClass;
     }
 
-    public Class getReferenceClass() {
+    @Override
+    public Class<? extends CommandHandler> getReferenceClass() {
         return commandHandlerClass;
     }
 
-    public Class getCommandClass() {
+    public Class<? extends Command> getCommandClass() {
         return commandClass;
     }
 }

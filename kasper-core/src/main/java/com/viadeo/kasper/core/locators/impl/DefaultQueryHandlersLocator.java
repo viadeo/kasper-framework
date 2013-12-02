@@ -9,6 +9,7 @@ package com.viadeo.kasper.core.locators.impl;
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
+import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
 import com.viadeo.kasper.cqrs.RequestActor;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
@@ -82,19 +83,21 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
      */
     private final AnnotationQueryCacheActorFactory queryCacheFactory;
     private final Map<Class<? extends Query>, RequestActorsChain<? extends Query, ? extends QueryResponse>> requestActorChainCache = newHashMap();
-
-    // ------------------------------------------------------------------------
-
-    private QueryHandlerResolver queryHandlerResolver;
+    private final QueryHandlerResolver queryHandlerResolver;
 
     // ------------------------------------------------------------------------
 
     public DefaultQueryHandlersLocator() {
-        queryCacheFactory = new AnnotationQueryCacheActorFactory();
+        this(new QueryHandlerResolver(new DomainResolver()), new AnnotationQueryCacheActorFactory());
     }
 
-    public DefaultQueryHandlersLocator(final AnnotationQueryCacheActorFactory queryCacheFactory) {
+    public DefaultQueryHandlersLocator(QueryHandlerResolver queryHandlerResolver) {
+        this(queryHandlerResolver, new AnnotationQueryCacheActorFactory());
+    }
+
+    public DefaultQueryHandlersLocator(QueryHandlerResolver queryHandlerResolver, final AnnotationQueryCacheActorFactory queryCacheFactory) {
         this.queryCacheFactory = queryCacheFactory;
+        this.queryHandlerResolver = queryHandlerResolver;
     }
 
     // ------------------------------------------------------------------------
@@ -338,12 +341,6 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
         // Return the filter instances
         return unmodifiableCollection(this.instanceFilters.get(handlerClass));
-    }
-
-    // ------------------------------------------------------------------------
-
-    public void setQueryHandlerResolver(final QueryHandlerResolver queryHandlerResolver) {
-        this.queryHandlerResolver = checkNotNull(queryHandlerResolver);
     }
 
 }

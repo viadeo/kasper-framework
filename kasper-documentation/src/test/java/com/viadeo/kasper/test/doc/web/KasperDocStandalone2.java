@@ -5,8 +5,8 @@ import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
-import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.element.DocumentedPlatform;
+import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.KasperDocResource2;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
 import com.viadeo.kasper.test.root.Facebook;
@@ -29,7 +29,8 @@ public class KasperDocStandalone2 {
         final String baseUri = "http://localhost:9988/";
 
         DomainDescriptor domainDescriptor = new DomainDescriptor(
-                Facebook.class
+                  Facebook.NAME
+                , Facebook.class
                 , ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(GetMembersQueryHandler.class, GetMembersQueryHandler.GetMembersQuery.class, GetMembersQueryHandler.MembersResult.class))
                 , ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(AddConnectionToMemberHandler.class, AddConnectionToMemberCommand.class))
                 , ImmutableList.<RepositoryDescriptor>of(

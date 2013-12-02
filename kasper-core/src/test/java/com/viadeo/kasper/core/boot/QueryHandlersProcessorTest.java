@@ -8,8 +8,6 @@ package com.viadeo.kasper.core.boot;
 
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
-import com.viadeo.kasper.core.resolvers.DomainResolver;
-import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandlerFilter;
@@ -30,13 +28,9 @@ public class QueryHandlersProcessorTest {
     // ------------------------------------------------------------------------
 
     final DefaultQueryHandlersLocator locator = spy(new DefaultQueryHandlersLocator());
-    final DomainResolver domainResolver = new DomainResolver();
-    final QueryHandlerResolver queryHandlerResolver = new QueryHandlerResolver();
     final QueryHandlersProcessor processor = new QueryHandlersProcessor();
 
     {
-        queryHandlerResolver.setDomainResolver(domainResolver);
-        locator.setQueryHandlerResolver(queryHandlerResolver);
         processor.setQueryHandlersLocator(locator);
     }
 

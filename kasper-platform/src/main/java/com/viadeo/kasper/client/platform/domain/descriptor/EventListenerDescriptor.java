@@ -1,20 +1,24 @@
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
 
-public class EventListenerDescriptor {
-    private final Class eventListenerClass;
-    private final Class eventClass;
+import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.EventListener;
 
-    public EventListenerDescriptor(Class eventListenerClass, Class eventClass) {
+public class EventListenerDescriptor implements Descriptor {
+    private final Class<? extends EventListener> eventListenerClass;
+    private final Class<? extends Event> eventClass;
+
+    public EventListenerDescriptor(Class<? extends EventListener> eventListenerClass, Class<? extends Event> eventClass) {
         this.eventListenerClass = eventListenerClass;
         this.eventClass = eventClass;
     }
 
-    public Class getReferenceClass() {
+    @Override
+    public Class<? extends EventListener> getReferenceClass() {
         return eventListenerClass;
     }
 
-    public Class getEventClass() {
+    public Class<? extends Event> getEventClass() {
         return eventClass;
     }
 }

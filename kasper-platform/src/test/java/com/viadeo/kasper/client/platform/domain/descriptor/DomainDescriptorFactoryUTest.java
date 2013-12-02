@@ -4,14 +4,18 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
+import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.junit.Assert;
 import org.junit.Test;
@@ -105,16 +109,19 @@ public class DomainDescriptorFactoryUTest {
 
     public static class TestCommand implements Command { }
 
+    @XKasperCommandHandler(domain = TestDomain.class)
     public static class TestCommandHandler extends CommandHandler<TestCommand> { }
 
     public static class TestQuery implements Query { }
 
     public static class TestQueryResult implements QueryResult { }
 
+    @XKasperQueryHandler(domain = TestDomain.class)
     public static class TestQueryHandler extends QueryHandler<TestQuery, TestQueryResult> { }
 
     public static class TestEvent extends Event { }
 
+    @XKasperEventListener(domain = TestDomain.class)
     public static class TestEventListener extends EventListener<TestEvent> { }
 
     public static class TestConcept extends Concept {
@@ -144,5 +151,6 @@ public class DomainDescriptorFactoryUTest {
         }
     }
 
+    private static class TestDomain implements Domain {}
 
 }

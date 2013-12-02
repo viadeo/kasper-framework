@@ -2,13 +2,11 @@ package com.viadeo.kasper.client.platform;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptorFactory;
-import com.viadeo.kasper.client.platform.domain.descriptor.PlatformDescriptor;
 import com.viadeo.kasper.client.platform.impl.DefaultNewPlatform;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -16,12 +14,11 @@ import com.viadeo.kasper.cqrs.command.impl.DefaultCommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
-import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
 
 import java.util.Collection;
-import java.util.Map;
+import java.util.List;
 
 public interface NewPlatform {
 
@@ -40,36 +37,6 @@ public interface NewPlatform {
      */
     KasperEventBus getEventBus();
 
-    public static class BuilderContext {
-
-        private final Config configuration;
-        private final KasperEventBus eventBus;
-        private final CommandGateway commandGateway;
-        private final QueryGateway queryGateway;
-
-        public BuilderContext(Config configuration, KasperEventBus eventBus, CommandGateway commandGateway, QueryGateway queryGateway) {
-            this.configuration = configuration;
-            this.eventBus = eventBus;
-            this.commandGateway = commandGateway;
-            this.queryGateway = queryGateway;
-        }
-
-        public Config getConfiguration() {
-            return configuration;
-        }
-
-        public KasperEventBus getEventBus() {
-            return eventBus;
-        }
-
-        public CommandGateway getCommandGateway() {
-            return commandGateway;
-        }
-
-        public QueryGateway getQueryGateway() {
-            return queryGateway;
-        }
-    }
 
     public static class Builder{
 
@@ -130,14 +97,14 @@ public interface NewPlatform {
 
             BuilderContext context = new BuilderContext(configuration, eventBus, commandGateway, queryGateway);
 
-            Map<String, DomainDescriptor> domainDescriptors = Maps.newHashMap();
+            List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
 
             for (DomainBundle bundle : domainBundles) {
                 bundle.configure(context);
 
                 for(CommandHandler commandHandler : bundle.getCommandHandlers()){
-                    commandHandler.setEventBus(eventBus);
                     commandGateway.register(commandHandler);
+                    commandHandler.setEventBus(eventBus);
                 }
 
                 for(QueryHandler queryHandler: bundle.getQueryHandlers()){
@@ -145,28 +112,58 @@ public interface NewPlatform {
                 }
 
                 for(EventListener eventListener : bundle.getEventListeners()){
-                    eventListener.setCommandGateway(commandGateway);
                     eventBus.subscribe(eventListener);
+                    eventListener.setCommandGateway(commandGateway);
                 }
 
-                for(IRepository repository : bundle.getRepositories()){
+                for(Repository repository : bundle.getRepositories()){
+                    commandGateway.register(repository);
+                    repository.setEventBus(eventBus);
                     repository.init();
-                    if (Repository.class.isAssignableFrom(repository.getClass())) {
-                        ((Repository) repository).setEventBus(eventBus);
-                        commandGateway.register((Repository) repository);
-                    }
                 }
 
-                domainDescriptors.put(bundle.getName(), domainDescriptorFactory.createFrom(bundle));
+                domainDescriptors.add(domainDescriptorFactory.createFrom(bundle));
             }
 
-            PlatformDescriptor platformDescriptor = new PlatformDescriptor(domainDescriptors);
+            DefaultNewPlatform platform = new DefaultNewPlatform(commandGateway, queryGateway, eventBus);
 
+            DomainDescriptor[] domainDescriptorArray = domainDescriptors.toArray(new DomainDescriptor[domainDescriptors.size()]);
             for(Plugin plugin : kasperPlugins){
-                plugin.initialize(platformDescriptor);
+                plugin.initialize(platform, domainDescriptorArray);
             }
 
-            return new DefaultNewPlatform(commandGateway, queryGateway, eventBus);
+            return platform;
+        }
+    }
+
+    public static class BuilderContext {
+
+        private final Config configuration;
+        private final KasperEventBus eventBus;
+        private final CommandGateway commandGateway;
+        private final QueryGateway queryGateway;
+
+        public BuilderContext(Config configuration, KasperEventBus eventBus, CommandGateway commandGateway, QueryGateway queryGateway) {
+            this.configuration = configuration;
+            this.eventBus = eventBus;
+            this.commandGateway = commandGateway;
+            this.queryGateway = queryGateway;
+        }
+
+        public Config getConfiguration() {
+            return configuration;
+        }
+
+        public KasperEventBus getEventBus() {
+            return eventBus;
+        }
+
+        public CommandGateway getCommandGateway() {
+            return commandGateway;
+        }
+
+        public QueryGateway getQueryGateway() {
+            return queryGateway;
         }
     }
 }

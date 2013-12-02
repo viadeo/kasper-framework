@@ -1,25 +1,30 @@
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
-public class QueryHandlerDescriptor {
-    private final Class queryHandlerClass;
-    private final Class queryResultClass;
-    private final Class queryClass;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 
-    public QueryHandlerDescriptor(Class queryHandlerClass, Class queryClass, Class queryResultClass) {
+public class QueryHandlerDescriptor implements Descriptor {
+    private final Class<? extends QueryHandler> queryHandlerClass;
+    private final Class<? extends QueryResult> queryResultClass;
+    private final Class<? extends Query> queryClass;
+
+    public QueryHandlerDescriptor(Class<? extends QueryHandler> queryHandlerClass, Class<? extends Query> queryClass, Class<? extends QueryResult> queryResultClass) {
         this.queryHandlerClass = queryHandlerClass;
         this.queryClass = queryClass;
         this.queryResultClass = queryResultClass;
     }
 
-    public Class getReferenceClass() {
+    @Override
+    public Class<? extends QueryHandler> getReferenceClass() {
         return queryHandlerClass;
     }
 
-    public Class getQueryResultClass() {
+    public Class<? extends QueryResult> getQueryResultClass() {
         return queryResultClass;
     }
 
-    public Class getQueryClass() {
+    public Class<? extends Query> getQueryClass() {
         return queryClass;
     }
 }

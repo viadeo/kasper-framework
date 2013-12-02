@@ -5,7 +5,7 @@ import com.viadeo.kasper.client.platform.NewPlatform;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
 
 import java.util.List;
@@ -14,12 +14,12 @@ public class DefaultDomainBundle implements DomainBundle {
 
     private final List<CommandHandler> commandHandlers;
     private final List<QueryHandler> queryHandlers;
-    private final List<IRepository> repositories;
+    private final List<Repository> repositories;
     private final List<EventListener> eventListeners;
     private final Domain domain;
     private final String name;
 
-    public DefaultDomainBundle(List<CommandHandler> commandHandlers, List<QueryHandler> queryHandlers, List<IRepository> repositories, List<EventListener> eventListeners, Domain domain, String name) {
+    public DefaultDomainBundle(List<CommandHandler> commandHandlers, List<QueryHandler> queryHandlers, List<Repository> repositories, List<EventListener> eventListeners, Domain domain, String name) {
         this.commandHandlers = commandHandlers;
         this.queryHandlers = queryHandlers;
         this.repositories = repositories;
@@ -31,7 +31,7 @@ public class DefaultDomainBundle implements DomainBundle {
     public DefaultDomainBundle(Domain domain, String name) {
         this(Lists.<CommandHandler>newArrayList()
                 , Lists.<QueryHandler>newArrayList()
-                , Lists.<IRepository>newArrayList()
+                , Lists.<Repository>newArrayList()
                 , Lists.<EventListener>newArrayList()
                 , domain
                 , name
@@ -69,7 +69,7 @@ public class DefaultDomainBundle implements DomainBundle {
     }
 
     @Override
-    public List<IRepository> getRepositories() {
+    public List<Repository> getRepositories() {
         return repositories;
     }
 }

@@ -115,7 +115,8 @@ public class KasperDocResourceTest extends JerseyTest {
 //            return res;
 
             DomainDescriptor facebookDomainDescriptor = new DomainDescriptor(
-                    Facebook.class
+                    Facebook.NAME
+                    , Facebook.class
                     , ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(GetMembersQueryHandler.class, GetMembersQueryHandler.GetMembersQuery.class, GetMembersQueryHandler.MembersResult.class))
                     , ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(AddConnectionToMemberHandler.class, AddConnectionToMemberCommand.class))
                     , ImmutableList.<RepositoryDescriptor>of(
@@ -126,7 +127,8 @@ public class KasperDocResourceTest extends JerseyTest {
             );
 
             DomainDescriptor applicationDomainDescriptor = new DomainDescriptor(
-                    Applications.class
+                      Applications.NAME
+                    , Applications.class
                     , ImmutableList.<QueryHandlerDescriptor>of()
                     , ImmutableList.<CommandHandlerDescriptor>of()
                     , ImmutableList.<RepositoryDescriptor>of(
@@ -137,7 +139,8 @@ public class KasperDocResourceTest extends JerseyTest {
             );
 
             DomainDescriptor timelinesDomainDescriptor = new DomainDescriptor(
-                    Timelines.class
+                      Timeline.NAME
+                    , Timelines.class
                     , ImmutableList.<QueryHandlerDescriptor>of()
                     , ImmutableList.<CommandHandlerDescriptor>of()
                     , ImmutableList.<RepositoryDescriptor>of(

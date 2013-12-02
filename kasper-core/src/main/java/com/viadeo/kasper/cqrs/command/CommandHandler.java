@@ -55,7 +55,7 @@ public abstract class CommandHandler<C extends Command>
     private transient DomainLocator domainLocator;
     private transient EventBus eventBus;
 
-    private transient Class<C> commandClass;
+    private transient final Class<C> commandClass;
 
     // ------------------------------------------------------------------------
 
@@ -232,4 +232,10 @@ public abstract class CommandHandler<C extends Command>
         return this.eventBus;
     }
 
+    // ------------------------------------------------------------------------
+
+
+    public Class<C> getCommandClass() {
+        return commandClass;
+    }
 }

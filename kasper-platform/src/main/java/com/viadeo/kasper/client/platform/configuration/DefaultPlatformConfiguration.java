@@ -260,8 +260,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     public QueryHandlersLocator queryHandlersLocator(final QueryHandlerResolver queryHandlerResolver) {
         this.ensureNotPresent(QueryHandlersLocator.class);
 
-        final DefaultQueryHandlersLocator queryHandlersLocator = new DefaultQueryHandlersLocator();
-        queryHandlersLocator.setQueryHandlerResolver(queryHandlerResolver);
+        final DefaultQueryHandlersLocator queryHandlersLocator = new DefaultQueryHandlersLocator(queryHandlerResolver);
 
         registerInstance(QueryHandlersLocator.class, queryHandlersLocator);
         return queryHandlersLocator;

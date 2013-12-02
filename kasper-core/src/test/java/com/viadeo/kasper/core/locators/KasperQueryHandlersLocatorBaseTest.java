@@ -19,8 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.Collection;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
@@ -56,8 +54,7 @@ public class KasperQueryHandlersLocatorBaseTest {
         final QueryHandlerResolver queryHandlerResolver = new QueryHandlerResolver();
         queryHandlerResolver.setDomainResolver(domainResolver);
 
-		locator = new DefaultQueryHandlersLocator();
-        locator.setQueryHandlerResolver(queryHandlerResolver);
+		locator = new DefaultQueryHandlersLocator(queryHandlerResolver);
 	}
 
 	@Test
@@ -111,8 +108,6 @@ public class KasperQueryHandlersLocatorBaseTest {
 
     @Test
     public void registerQueryHandlerFilter() {
-
-        final Collection<QueryHandlerFilter> filters;
 
         // Given
         final TestFilter filter = mock(TestFilter.class);

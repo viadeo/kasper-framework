@@ -1,9 +1,9 @@
 package com.viadeo.kasper.client.platform;
 
-import com.viadeo.kasper.client.platform.domain.descriptor.PlatformDescriptor;
+import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 
 public interface Plugin {
 
-    void initialize(PlatformDescriptor platformDescriptor);
+    void initialize(NewPlatform platform, DomainDescriptor... domainDescriptors);
 
 }

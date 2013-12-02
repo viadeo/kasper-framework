@@ -12,7 +12,6 @@ import com.viadeo.kasper.cqrs.command.impl.DefaultCommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.event.EventListener;
@@ -163,7 +162,7 @@ public class PlatformBuilderUTest {
         DomainBundle domainBundle = createMockedDomainBundle(
                 Lists.<CommandHandler>newArrayList(),
                 Lists.<QueryHandler>newArrayList(),
-                Lists.<IRepository>newArrayList(),
+                Lists.<Repository>newArrayList(),
                 Lists.<EventListener>newArrayList()
         );
 
@@ -208,7 +207,7 @@ public class PlatformBuilderUTest {
 
         // Then
         assertNotNull(platform);
-        verify(plugin).initialize(any(PlatformDescriptor.class));
+        verify(plugin).initialize(refEq(platform), (DomainDescriptor[]) anyVararg());
     }
 
     @Test
@@ -219,7 +218,7 @@ public class PlatformBuilderUTest {
         DomainBundle domainBundle = createMockedDomainBundle(
                 Lists.<CommandHandler>newArrayList(commandHandler),
                 Lists.<QueryHandler>newArrayList(),
-                Lists.<IRepository>newArrayList(),
+                Lists.<Repository>newArrayList(),
                 Lists.<EventListener>newArrayList()
         );
 
@@ -251,7 +250,7 @@ public class PlatformBuilderUTest {
         DomainBundle domainBundle = createMockedDomainBundle(
                 Lists.<CommandHandler>newArrayList(),
                 Lists.<QueryHandler>newArrayList(queryHandler),
-                Lists.<IRepository>newArrayList(),
+                Lists.<Repository>newArrayList(),
                 Lists.<EventListener>newArrayList()
         );
 
@@ -282,7 +281,7 @@ public class PlatformBuilderUTest {
         DomainBundle domainBundle = createMockedDomainBundle(
                 Lists.<CommandHandler>newArrayList(),
                 Lists.<QueryHandler>newArrayList(),
-                Lists.<IRepository>newArrayList(),
+                Lists.<Repository>newArrayList(),
                 Lists.<EventListener>newArrayList(eventListener)
         );
 
@@ -314,7 +313,7 @@ public class PlatformBuilderUTest {
         DomainBundle domainBundle = createMockedDomainBundle(
                 Lists.<CommandHandler>newArrayList(),
                 Lists.<QueryHandler>newArrayList(),
-                Lists.<IRepository>newArrayList(repository),
+                Lists.<Repository>newArrayList(repository),
                 Lists.<EventListener>newArrayList()
         );
 
@@ -342,7 +341,9 @@ public class PlatformBuilderUTest {
     private DomainDescriptorFactory createMockedDomainDescriptorFactory(){
         DomainDescriptorFactory domainDescriptorFactory = mock(DomainDescriptorFactory.class);
         when(domainDescriptorFactory.createFrom(any(DomainBundle.class))).thenReturn(
-                new DomainDescriptor(Domain.class
+                new DomainDescriptor(
+                          "FakeDomain"
+                        , Domain.class
                         , Lists.<QueryHandlerDescriptor>newArrayList()
                         , Lists.<CommandHandlerDescriptor>newArrayList()
                         , Lists.<RepositoryDescriptor>newArrayList()
@@ -355,7 +356,7 @@ public class PlatformBuilderUTest {
     private DomainBundle createMockedDomainBundle(
             List<CommandHandler> commandHandlers
             , List<QueryHandler> queryHandlers
-            , List<IRepository> repositories
+            , List<Repository> repositories
             , List<EventListener> eventListeners
     ) {
         DomainBundle domainBundle = mock(DomainBundle.class);

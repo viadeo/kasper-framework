@@ -83,12 +83,11 @@ public class QueryFilterITest {
         final TestHandler service = spy(new TestHandler());
         final TestFilter filter = spy(new TestFilter());
         final TestFilterGlobal filterGlobal = spy(new TestFilterGlobal());
-        final DefaultQueryHandlersLocator locator = new DefaultQueryHandlersLocator();
         final DomainResolver domainResolver = new DomainResolver();
         final QueryHandlerResolver queryHandlerResolver = new QueryHandlerResolver();
         queryHandlerResolver.setDomainResolver(domainResolver);
-        locator.setQueryHandlerResolver(queryHandlerResolver);
 
+        final DefaultQueryHandlersLocator locator = new DefaultQueryHandlersLocator(queryHandlerResolver);
         locator.registerHandler("testService", service, TestDomain.class);
         locator.registerFilter("testFilter", filter);
         locator.registerFilter("testFilter2", filterGlobal, true);

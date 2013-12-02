@@ -1,6 +1,7 @@
 package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
@@ -10,14 +11,23 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.ddd.repository.Repository;
+import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.commandhandling.CommandDispatchInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
+import org.axonframework.commandhandling.interceptors.BeanValidationInterceptor;
 import org.axonframework.common.annotation.MetaData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.validation.Validation;
+import javax.validation.ValidationException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 public class DefaultCommandGateway implements CommandGateway {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultCommandGateway.class);
 
     private final CommandGateway commandGateway;
     private final CommandBus commandBus;
@@ -41,7 +51,24 @@ public class DefaultCommandGateway implements CommandGateway {
 
         commandGatewayFactoryBean.setCommandBus(commandBus);
         commandGatewayFactoryBean.setGatewayInterface(CommandGateway.class);
-        this.commandGateway = commandGatewayFactoryBean.getObject();
+
+        try {
+            commandGatewayFactoryBean.setCommandDispatchInterceptors(
+                    Lists.<CommandDispatchInterceptor>newArrayList(
+                            new BeanValidationInterceptor(Validation.buildDefaultValidatorFactory())
+                    )
+            );
+        } catch (final ValidationException ve) {
+            LOGGER.warn("No implementation found for BEAN VALIDATION - JSR 303" , ve);
+        }
+
+        try {
+            commandGatewayFactoryBean.afterPropertiesSet();
+        } catch (final Exception e) {
+            throw new KasperException("Unable to bind Axon Command Gateway", e);
+        }
+
+        this.commandGateway = Preconditions.checkNotNull(commandGatewayFactoryBean.getObject());
     }
 
     @Override
@@ -77,15 +104,16 @@ public class DefaultCommandGateway implements CommandGateway {
     public void register(CommandHandler commandHandler) {
         Preconditions.checkNotNull(commandHandler);
 
-        Class<? extends CommandHandler> commandClass = commandHandler.getClass();
-
-        domainLocator.registerHandler(commandHandler);
-
         // TODO the domain locator shouldn't be used outside of this implementation
         commandHandler.setDomainLocator(domainLocator);
 
+        domainLocator.registerHandler(commandHandler);
+
         //- Dynamic type command class and command handler for Axon -------
-        final AxonCommandCastor<Command> castor = new AxonCommandCastor<>(commandClass, commandHandler);
+        final AxonCommandCastor<Command> castor = new AxonCommandCastor<>(
+                  commandHandler.getCommandClass()
+                , commandHandler
+        );
         commandBus.subscribe(castor.getBeanClass().getName(), castor.getContainerClass());
     }
 
@@ -102,17 +130,17 @@ public class DefaultCommandGateway implements CommandGateway {
      */
     private static class AxonCommandCastor<C extends Command> {
 
-        private final transient Class<? extends C> result;
+        private final transient Class<? extends C> commandClass;
         private final transient org.axonframework.commandhandling.CommandHandler handler;
 
         @SuppressWarnings("unchecked") // Safe by previous parent class typing
-        AxonCommandCastor(final Class bean, final org.axonframework.commandhandling.CommandHandler container) {
-            this.result = (Class<? extends C>) bean;
+        AxonCommandCastor(final Class commandClass, final org.axonframework.commandhandling.CommandHandler container) {
+            this.commandClass = (Class<? extends C>) commandClass;
             this.handler = container;
         }
 
         public Class<? extends C> getBeanClass() {
-            return this.result;
+            return this.commandClass;
         }
 
         public org.axonframework.commandhandling.CommandHandler getContainerClass() {

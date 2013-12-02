@@ -1,15 +1,18 @@
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
-public class RepositoryDescriptor {
-    private final Class repositoryClass;
+import com.viadeo.kasper.ddd.repository.Repository;
+
+public class RepositoryDescriptor implements Descriptor {
+    private final Class<? extends Repository> repositoryClass;
     private final AggregateDescriptor aggregateDescriptor;
 
-    public RepositoryDescriptor(Class repositoryClass, AggregateDescriptor aggregateDescriptor) {
+    public RepositoryDescriptor(Class<? extends Repository> repositoryClass, AggregateDescriptor aggregateDescriptor) {
         this.repositoryClass = repositoryClass;
         this.aggregateDescriptor = aggregateDescriptor;
     }
 
-    public Class getReferenceClass() {
+    @Override
+    public Class<? extends Repository> getReferenceClass() {
         return repositoryClass;
     }
 
