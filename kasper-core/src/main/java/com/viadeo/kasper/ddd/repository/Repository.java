@@ -66,7 +66,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
     /**
      * Initialize the repository
      */
-	public final void init(final boolean force) {
+	public void init(final boolean force) {
 		if ( ! initialized || force) {
             @SuppressWarnings("unchecked") // Safe
             final Optional<Class<AGR>> entityType =

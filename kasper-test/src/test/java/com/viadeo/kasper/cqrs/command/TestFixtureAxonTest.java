@@ -43,8 +43,8 @@ public class TestFixtureAxonTest {
     @Parameterized.Parameters
     public static Collection repositories() {
         return Arrays.asList(new Object[][] {
-                { new TestRepository() },
-                { new TestEventRepository() }
+            { new TestRepository() },
+            { new TestEventRepository() }
         });
     }
 
@@ -88,11 +88,8 @@ public class TestFixtureAxonTest {
     @Test
     public void testSimpleCreation() {
 
-        // Given
         final KasperID createId = DefaultKasperId.random();
 
-        // When command is made
-        // Then we expect creation and first name changing events
         fixture
             .given()
             .when(
@@ -152,10 +149,8 @@ public class TestFixtureAxonTest {
             return;
         }
 
-        // Given
         final KasperID aggregateId = DefaultKasperId.random();
 
-        // When command is made, Then we expect creation and first name changing events
         fixture
             .given(
                 new TestCreatedEvent(aggregateId),

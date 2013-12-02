@@ -9,7 +9,6 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.google.common.collect.Maps;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperRelationID;
 import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
@@ -20,8 +19,8 @@ import com.viadeo.kasper.impl.DefaultKasperRelationId;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -78,12 +77,20 @@ public class SerDeserTests {
         }
     }
 
+    // ------------------------------------------------------------------------
+
+    private <T> T serDeserTest(final T object, Class<T> clazz) throws IOException {
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(object);
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
+        final T actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), clazz);
+        return actualResponse;
+    }
+
     // -- test results --------------------------------------------------------
 
     public static class TestResult implements QueryResult {
         private String field;
-        @JsonCreator
-        TestResult(@JsonProperty("field") final String field) { this.field = field; }
+        @JsonCreator TestResult(@JsonProperty("field") final String field) { this.field = field; }
         public String getField() { return this.field; }
         public boolean equals(final Object obj) {
             return (null != obj)
@@ -91,6 +98,8 @@ public class SerDeserTests {
                     && ((TestResult) obj).field.equals(field);
         }
     }
+
+    public static class TestCollectionResult extends CollectionQueryResult<TestResult> {}
 
     public static class TestMapResult extends MapQueryResult<TestResult> {}
 
@@ -102,9 +111,7 @@ public class SerDeserTests {
         final SimpleBean bean = new SimpleBean(DefaultKasperId.random());
 
         // When
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(bean);
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final SimpleBean actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), SimpleBean.class);
+        final SimpleBean actualResponse = serDeserTest(bean, SimpleBean.class);
 
         // Then
         assertEquals(actualResponse.field, bean.field);
@@ -116,9 +123,7 @@ public class SerDeserTests {
         final ImmutableBean bean = new ImmutableBean(DefaultKasperRelationId.random());
 
         // When
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(bean);
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final ImmutableBean actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), ImmutableBean.class);
+        final ImmutableBean actualResponse = serDeserTest(bean, ImmutableBean.class);
 
         // Then
         assertEquals(actualResponse.field, bean.field);
@@ -130,64 +135,109 @@ public class SerDeserTests {
         final NoSettersBean bean = new NoSettersBean("test");
 
         // When
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(bean);
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final NoSettersBean actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), NoSettersBean.class);
+        final NoSettersBean actualResponse = serDeserTest(bean, NoSettersBean.class);
 
         // Then
         assertEquals(actualResponse.field, bean.field);
     }
 
-    @Test
-    public void test_MapResultSingle() throws IOException {
-        // Given
-        Map<String,TestResult> mapResult = new HashMap<String,TestResult>();
-        mapResult.put("r1",new TestResult("42"));
+    // ------------------------------------------------------------------------
 
-        final TestMapResult collect = new TestMapResult().withMap(mapResult);
+    @Test
+    public void test_CollectionResultSingle() throws IOException {
+        // Given
+        final TestResult result = new TestResult("42");
+        final TestCollectionResult collect = new TestCollectionResult().withList(
+                new ArrayList<TestResult>() {{
+                    this.add(result);
+                }}
+        );
 
         // When
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(collect);
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final TestMapResult actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), TestMapResult.class);
+        final TestCollectionResult actualResponse = serDeserTest(collect, TestCollectionResult.class);
 
         // Then
         assertEquals(actualResponse, collect);
+    }
 
+    @Test
+    public void test_CollectionResultMultiple() throws IOException {
+        // Given
+        final TestResult result = new TestResult("42");
+        final TestResult result2 = new TestResult("24");
+        final TestCollectionResult collect = new TestCollectionResult().withList(
+                new ArrayList<TestResult>() {{
+                    this.add(result);
+                    this.add(result2);
+                }}
+        );
+
+        // When
+        final TestCollectionResult actualResponse = serDeserTest(collect, TestCollectionResult.class);
+
+        // Then
+        assertEquals(actualResponse, collect);
+    }
+
+    @Test
+    public void test_CollectionResultEmpty_1() throws IOException {
+        // Given
+        final TestCollectionResult collect = new TestCollectionResult().withList(
+                new ArrayList<TestResult>()
+        );
+
+        // When
+        final TestCollectionResult actualResponse = serDeserTest(collect, TestCollectionResult.class);
+
+        // Then
+        assertEquals(actualResponse, collect);
+    }
+
+    @Test
+    public void test_MapResultSingle() throws IOException {
+        // Given
+        final TestMapResult map = new TestMapResult().withMap(
+            new HashMap<String, TestResult>() {{
+                this.put("r1", new TestResult("42"));
+            }}
+        );
+
+        // When
+        final TestMapResult actualResponse = serDeserTest(map, TestMapResult.class);
+
+        // Then
+        assertEquals(actualResponse, map);
     }
 
     @Test
     public void test_MapResultMultiple() throws IOException {
         // Given
-        Map<String,TestResult> mapResult = new HashMap<String,TestResult>();
-        mapResult.put("r1",new TestResult("42"));
-        mapResult.put("r2",new TestResult("43"));
-
-        final TestMapResult collect = new TestMapResult().withMap(mapResult);
+        final TestMapResult map = new TestMapResult().withMap(
+            new HashMap<String, TestResult>() {{
+                this.put("r1", new TestResult("42"));
+                this.put("r2", new TestResult("43"));
+            }}
+        );
 
         // When
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(collect);
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final TestMapResult actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), TestMapResult.class);
+        final TestMapResult actualResponse = serDeserTest(map, TestMapResult.class);
 
         // Then
-        assertEquals(actualResponse, collect);
-
+        assertEquals(actualResponse, map);
     }
+
     @Test
     public void test_MapResultEmpty() throws IOException {
         // Given
-        Map<String,TestResult> mapResult = new HashMap<String,TestResult>();
-
-        final TestMapResult collect = new TestMapResult().withMap(mapResult);
+        final TestMapResult map = new TestMapResult().withMap(
+                new HashMap<String, TestResult>()
+        );
 
         // When
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(collect);
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final TestMapResult actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), TestMapResult.class);
+        final TestMapResult actualResponse = serDeserTest(map, TestMapResult.class);
 
         // Then
-        assertEquals(actualResponse, collect);
-
+        assertEquals(actualResponse, map);
     }
+
 }

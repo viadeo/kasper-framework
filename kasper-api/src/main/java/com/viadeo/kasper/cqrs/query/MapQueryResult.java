@@ -10,7 +10,6 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
-import java.lang.String;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -31,16 +30,6 @@ public abstract class MapQueryResult<T extends QueryResult> implements Iterable<
 	}
 
     // ------------------------------------------------------------------------
-
-    public void put(final String key, T value) {
-        if (null == map) {
-            map = Maps.newHashMap();
-        }
-        map.put(key,value);
-    }
-    public void put(Map.Entry<String,T> entry) {
-        put(entry.getKey(), entry.getValue());
-    }
 
     @Override
     public Iterator<Map.Entry<String, T>> iterator() {
@@ -81,7 +70,7 @@ public abstract class MapQueryResult<T extends QueryResult> implements Iterable<
 
     @SuppressWarnings("unchecked")
     public <P extends MapQueryResult> P withMap(final Map<String,T> map) {
-        this.setMap(map);
+        this.setMap(checkNotNull(map));
         return (P) this;
     }
 
@@ -92,7 +81,7 @@ public abstract class MapQueryResult<T extends QueryResult> implements Iterable<
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        MapQueryResult that = (MapQueryResult) o;
+        final MapQueryResult that = (MapQueryResult) o;
 
         if (!map.equals(that.map)) return false;
 
