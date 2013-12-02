@@ -15,7 +15,7 @@ Components which manipulates I/O between layers :
 
 - **CH** - Command handlers
 - **EL** - Event listeners
-- **QS** - Query services
+- **QH** - Query handlers
 - **SF** - Service filters
 
 Components of the model :
@@ -64,5 +64,6 @@ And encourages you to use some software patterns in your developments :
     HadoopIndex
     Context
     Helpers
+    Testing
 
 

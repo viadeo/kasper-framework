@@ -8,7 +8,6 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;

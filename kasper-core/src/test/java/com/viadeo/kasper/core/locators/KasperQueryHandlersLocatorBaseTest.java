@@ -13,7 +13,6 @@ import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandlerFilter;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,10 +35,12 @@ public class KasperQueryHandlersLocatorBaseTest {
     @XKasperUnregistered
 	private static final class TestQuery implements Query {}
 
+    @XKasperUnregistered
     private static final class TestResult implements QueryResult {}
 
+    @XKasperUnregistered
     @XKasperQueryHandler( domain = TestDomain.class )
-	private static class TestHandler implements QueryHandler<TestQuery, TestResult> {
+	private static class TestHandler extends QueryHandler<TestQuery, TestResult> {
 		@Override
 		public QueryResponse<TestResult> retrieve(final QueryMessage<TestQuery> message) {
 			throw new UnsupportedOperationException();
@@ -102,10 +103,10 @@ public class KasperQueryHandlersLocatorBaseTest {
 
     // ------------------------------------------------------------------------
 
-    @XKasperQueryHandlerFilter
+    @XKasperUnregistered
     private static class TestFilter implements QueryHandlerFilter { }
 
-    @XKasperQueryHandlerFilter
+    @XKasperUnregistered
     private static class TestFilter2 implements QueryHandlerFilter { }
 
     @Test
@@ -159,15 +160,16 @@ public class KasperQueryHandlersLocatorBaseTest {
     @XKasperUnregistered
     private static final class TestQuery2 implements Query {}
 
+    @XKasperUnregistered
     @XKasperQueryHandler( domain = TestDomain2.class )
-    private static class TestHandler2 implements QueryHandler<TestQuery2, TestResult> {
+    private static class TestHandler2 extends QueryHandler<TestQuery2, TestResult> {
         @Override
         public QueryResponse<TestResult> retrieve(final QueryMessage<TestQuery2> message) {
             throw new UnsupportedOperationException();
         }
     }
 
-    @XKasperQueryHandlerFilter
+    @XKasperUnregistered
     private static class TestFilterDomain implements QueryHandlerFilter { }
 
     @Test

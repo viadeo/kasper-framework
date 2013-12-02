@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.validation;
 
+import com.google.common.base.Optional;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
@@ -35,20 +36,30 @@ public class QueryValidationActor<Q extends Query, P extends QueryResult> implem
 
     @Override
     public QueryResponse<P> process(final Q q, final Context context, final RequestActorsChain<Q, QueryResponse<P>> chain) throws Exception {
-        final QueryResponse<P> queryResponse;
+        final Optional<KasperReason> reason = validate(validatorFactory, q);
 
-        final Set<ConstraintViolation<Q>> validations = validatorFactory.getValidator().validate(q);
+        if ( ! reason.isPresent()) {
+            return chain.next(q, context);
+        } else {
+            return QueryResponse.error(reason.get());
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static final Optional<KasperReason> validate(final ValidatorFactory validatorFactory, final Object q) {
+
+        final Set<ConstraintViolation<Object>> validations = validatorFactory.getValidator().validate(q);
+
         if (validations.isEmpty()) {
-            queryResponse = chain.next(q, context);
+            return Optional.absent();
         } else {
             final List<String> errors = new ArrayList<>();
-            for (final ConstraintViolation<Q> violation : validations) {
-                errors.add(violation.getPropertyPath() + " : " + violation.getMessage());
+            for (final ConstraintViolation<Object> violation : validations) {
+                errors.add("VALIDATION:" + violation.getPropertyPath() + ":" + violation.getMessage());
             }
-            queryResponse = QueryResponse.error(new KasperReason(CoreReasonCode.INVALID_INPUT.name(), errors));
+            return Optional.of(new KasperReason(CoreReasonCode.INVALID_INPUT.name(), errors));
         }
-
-        return queryResponse;
     }
 
 }

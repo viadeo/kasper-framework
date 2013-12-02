@@ -6,25 +6,60 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
+
+import javax.validation.constraints.NotNull;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  *
- * Can be used for Kasper commands which will create entities
- * The submitted id can then be used by handlers as the created element's id
- *
+ * Convenient base implementation for idToUse simple management
+ * 
  */
-public interface CreateCommand extends Command {
+public abstract class CreateCommand implements Command {
+    private static final long serialVersionUID = -432287057793281452L;
 
-	/**
-	 * @param providedId for the command handler to use this id for aggregate root creation
-	 */
-	<C extends CreateCommand> C setIdToUse(KasperID providedId);
+    @NotNull
+	private final KasperID idToUse;
 
-	/**
-	 * @return the (optional) user requested id to be used
-	 */
-	Optional<KasperID> getIdToUse();
+	// ------------------------------------------------------------------------
+
+	public CreateCommand(final KasperID providedId) {
+		this.idToUse = checkNotNull(providedId);
+	}
+
+	// ------------------------------------------------------------------------
+
+	public KasperID getIdToUse() {
+		return this.idToUse;
+	}
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+        final CreateCommand other = (CreateCommand) obj;
+
+        return com.google.common.base.Objects.equal(this.idToUse, other.idToUse);
+    }
+
+    @Override
+    public int hashCode() {
+        return com.google.common.base.Objects.hashCode(this.idToUse);
+    }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(this)
+                .addValue(this.idToUse)
+                .toString();
+    }
 
 }

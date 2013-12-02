@@ -7,27 +7,86 @@
 package com.viadeo.kasper.cqrs.command;
 
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.ContextBuilder;
+import org.axonframework.commandhandling.CommandMessage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 
 /**
  *
- * Message used by command bus to transfer commands to handlers
+ * Decorator for Axon command message, holds an ICommand for bus traversal
  *
- * @param <C> the type of command used as result of this message
+ * @param <C> Command
  */
-public interface KasperCommandMessage<C extends Command> extends Serializable {
+public class KasperCommandMessage<C extends Command> implements Serializable {
+	private static final Logger LOGGER = LoggerFactory.getLogger(KasperCommandMessage.class);
+
+	private static final long serialVersionUID = 5946300419038957372L;
 
 	/**
-	 * @return the command message execution context
-	 * @see com.viadeo.kasper.context.Context
+	 * Decored Axon command message
 	 */
-	Context getContext();
+	private final CommandMessage<C> decoredMessage;
 
 	/**
-	 * @return the enclosed command
-	 * @see Command
+	 * (Optional) default context builder, only used if required (no context available)
+	 * If absent a default implementation will be used
 	 */
-	C getCommand();
+	@Autowired // FIXME: remove this Autowired !! (??)
+	private transient ContextBuilder defaultContextBuilder;
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * @param decoredMessage the Axon decored command to wrap
+	 */
+	public KasperCommandMessage(final CommandMessage<C> decoredMessage) {
+		this.decoredMessage = decoredMessage;
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * Extract context from Axon command message metadata
+	 * If no context has been provided during command sending, the provided
+	 * default context builder will then be used, failing back to a default
+	 * implementation
+	 * 
+	 * @see com.viadeo.kasper.context.ContextBuilder
+	 * @see com.viadeo.kasper.cqrs.command.KasperCommandMessage#getContext()
+	 */
+	public Context getContext() {
+		Context context = (Context) this.decoredMessage.getMetaData().get(Context.METANAME);
+
+		if (null == context) {
+			if (null != this.defaultContextBuilder) {
+				context = this.defaultContextBuilder.build();
+			} else {
+				LOGGER.warn("Defauting to base Kasper default context, no context has been provided and no Spring contextBuilder can be found ");
+				context = new com.viadeo.kasper.context.impl.DefaultContextBuilder().build();
+			}
+		}
+
+		return context;
+	}
+	
+	// ------------------------------------------------------------------------
+
+	public C getCommand() {
+		return this.decoredMessage.getPayload();
+	}
+
+	// ------------------------------------------------------------------------
+
+	/**
+	 * @param defaultContextBuilder the default context builder to be used if no
+	 *         context has been provided during command processing on bus
+	 */
+	public void setDefaultContextBuilder(final ContextBuilder defaultContextBuilder) {
+		this.defaultContextBuilder = defaultContextBuilder;
+	}
 
 }

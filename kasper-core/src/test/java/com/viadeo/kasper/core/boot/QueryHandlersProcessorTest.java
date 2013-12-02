@@ -10,7 +10,10 @@ import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
-import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryHandlerFilter;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
@@ -57,31 +60,19 @@ public class QueryHandlersProcessorTest {
 
     @XKasperUnregistered
     @XKasperQueryHandler( name = HANDLER_NAME, domain = TestDomain.class )
-    public static class TestHandler implements QueryHandler<TestQuery, TestResult> {
-        @Override
-        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception { return null; }
-    }
+    public static class TestHandler extends QueryHandler<TestQuery, TestResult> { }
 
     @XKasperUnregistered
     @XKasperQueryHandler( domain = TestDomain.class )
-    public static class TestHandlerNoName implements QueryHandler<TestQuery, TestResult> {
-        @Override
-        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception { return null; }
-    }
+    public static class TestHandlerNoName extends QueryHandler<TestQuery, TestResult> { }
 
     @XKasperUnregistered
     @XKasperQueryHandler( domain = TestDomain.class, filters = TestFilter.class )
-    public static class TestHandlerOneFilter implements QueryHandler<TestQuery, TestResult> {
-        @Override
-        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception { return null; }
-    }
+    public static class TestHandlerOneFilter extends QueryHandler<TestQuery, TestResult> { }
 
     @XKasperUnregistered
     @XKasperQueryHandler( domain = TestDomain.class, filters = { TestFilter.class, TestFilter2.class } )
-    public static class TestHandlerMultipleFilters implements QueryHandler<TestQuery, TestResult> {
-        @Override
-        public QueryResponse<TestResult> retrieve(final QueryMessage message) throws Exception { return null; }
-    }
+    public static class TestHandlerMultipleFilters extends QueryHandler<TestQuery, TestResult> { }
 
     // ------------------------------------------------------------------------
 

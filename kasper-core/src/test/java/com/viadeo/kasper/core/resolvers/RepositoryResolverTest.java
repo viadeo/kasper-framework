@@ -9,14 +9,12 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.domain.DomainEventStream;
 import org.axonframework.domain.EventRegistrationCallback;
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -27,7 +25,7 @@ public class RepositoryResolverTest {
     @XKasperUnregistered
     private static final class TestDomain implements Domain {}
 
-    private static final class TestAggregateRoot implements AggregateRoot {
+    private static final class TestAggregateRoot extends AggregateRoot {
         @Override
         public KasperID getIdentifier() { return null; }
         @Override
@@ -43,17 +41,9 @@ public class RepositoryResolverTest {
         @Override
         public void addEventRegistrationCallback(EventRegistrationCallback eventRegistrationCallback) { }
         @Override
-        public Domain getDomain() { return null; }
-        @Override
-        public void setDomainLocator(DomainLocator domainLocator) { }
-        @Override
-        public <I extends KasperID> I getEntityId() { return null; }
-        @Override
-        public DateTime getCreationDate() { return null; }
-        @Override
-        public DateTime getModificationDate() { return null; }
-        @Override
         public void initializeState(DomainEventStream domainEventStream) { }
+        @Override
+        public KasperID getEntityId() { return null; }
     }
 
     @XKasperUnregistered
@@ -62,6 +52,10 @@ public class RepositoryResolverTest {
         public void init() { }
         @Override
         public boolean has(KasperID id) { return false; }
+        @Override
+        public TestAggregateRoot get(KasperID aggregateIdentifier, Long expectedVersion) { return null; }
+        @Override
+        public TestAggregateRoot get(KasperID aggregateIdentifier) { return null; }
         @Override
         public TestAggregateRoot load(Object aggregateIdentifier, Long expectedVersion) { return null; }
         @Override
@@ -76,6 +70,10 @@ public class RepositoryResolverTest {
         public void init() { }
         @Override
         public boolean has(KasperID id) { return false; }
+        @Override
+        public TestAggregateRoot get(KasperID aggregateIdentifier, Long expectedVersion) { return null; }
+        @Override
+        public TestAggregateRoot get(KasperID aggregateIdentifier) { return null; }
         @Override
         public Object load(Object aggregateIdentifier, Long expectedVersion) { return null; }
         @Override

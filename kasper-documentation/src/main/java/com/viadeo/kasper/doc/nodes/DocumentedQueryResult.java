@@ -60,19 +60,19 @@ public class DocumentedQueryResult extends DocumentedDomainNode{
     // -------------------------------------------------------------------------------
 
     public DocumentedNode getDomain(){
-        final List<DocumentedQueryHandler> queryServices=
+        final List<DocumentedQueryHandler> queryHandlers =
                 this.getKasperLibrary().getQueryHandlersForQueryResult(this.getName());
 
         final Set<DocumentedNode> domains = new HashSet<>();
-        for (final DocumentedQueryHandler queryService : queryServices){
+        for (final DocumentedQueryHandler queryHandler : queryHandlers){
             boolean addInList = true;
             for (final DocumentedNode domain : domains) {
-                if (domain.getName().contentEquals(queryService.getDomain().getName())) {
+                if (domain.getName().contentEquals(queryHandler.getDomain().getName())) {
                     addInList = false;
                 }
             }
             if (addInList) {
-                domains.add(queryService.getDomain());
+                domains.add(queryHandler.getDomain());
             }
         }
         if (!domains.isEmpty()){

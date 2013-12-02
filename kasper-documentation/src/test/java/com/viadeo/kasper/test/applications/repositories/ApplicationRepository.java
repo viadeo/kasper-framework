@@ -39,4 +39,14 @@ public class ApplicationRepository implements IRepository<Application> {
         return false;
     }
 
+    @Override
+    public Application get(KasperID aggregateIdentifier, Long expectedVersion) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Application get(KasperID aggregateIdentifier) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 }

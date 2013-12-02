@@ -11,7 +11,7 @@ Kasper generally asks you to implements its building blocks :
 
 **and**
 
-- annotating your classes with an **@XKasperXXXX** java annotation
+- optionally annotating your classes with an **@XKasperXXXX** java annotation
 
 Like one command handler :
 
@@ -19,8 +19,8 @@ Like one command handler :
     :linenos:
 
     @XKasperCommandHandler( domain = MyDomain.class )
-    public class DoSomethingCommandHandler implements CommandHandler<DoSomethingCommand> {
-        public Object handle(final CommandMessage<DoSomethingCommand> message, UnitOfWork uow) {
+    public class DoSomethingCommandHandler extends CommandHandler<DoSomethingCommand> {
+        public Object handle(final DoSomethingCommand command) {
             ...
         }
     }
@@ -31,7 +31,7 @@ Kasper generally also provides you some abstract classes in order to ease your d
     :linenos:
 
     @XKasperCommandHandler( domain = MyDomain.class )
-    public class DoSomethingCommandHandler extends AbstractCommandHandler<DoSomethingCommand> {
+    public class DoSomethingCommandHandler extends CommandHandler<DoSomethingCommand> {
         public CommandResponse handle(final DoSomethingCommand command) {
             ...
         }
@@ -78,7 +78,7 @@ Except for domain elements like **concepts** where it is more readable to direct
 names *(eg. User, Member, Group, ...)* or **relations** where the Kasper convention *<Concept>_<verb>_<Concept>*
 is encouraged *(eg. Member_isConnectedTo_Member, ..)*.
 
-Concerning Commands/Handlers, Queries/Services, Responses and Events/Listeners the rule is **Intention Revealing Interfaces**,
+Concerning Commands/Handlers, Queries/Handlers, Responses and Events/Listeners the rule is **Intention Revealing Interfaces**,
 reflecting directly your ubiquitous language elements, eg:
 
 - SetMemberAsPremiumForOneYear*Command* / SetMemberAsPremiumForOneYear*CommandHandler*

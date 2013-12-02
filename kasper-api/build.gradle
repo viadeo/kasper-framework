@@ -11,5 +11,7 @@ targetCompatibility = 1.6
 
 dependencies {
     compile libraries.VALIDATION_API
+    compile libraries.JAVAX_EL
     compile libraries.JERSEY_CORE
+    compile libraries.JACKSON_ANNOTATIONS
 }

@@ -13,8 +13,6 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.exception.KasperException;
-import org.axonframework.commandhandling.CommandMessage;
-import org.axonframework.unitofwork.UnitOfWork;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -26,23 +24,13 @@ public class CommandHandlerResolverTest {
 
     @XKasperUnregistered
     @XKasperCommandHandler( domain = TestDomain.class )
-    private static class TestCommandHandler implements CommandHandler {
-        @Override
-        public Object handle(CommandMessage commandMessage, UnitOfWork unitOfWork) throws Throwable {
-            return null;
-        }
-    }
+    private static class TestCommandHandler extends CommandHandler { }
 
     @XKasperUnregistered
     private static class TestCommand implements Command { }
 
     @XKasperUnregistered
-    private static class TestCommandHandler2 implements CommandHandler<TestCommand> {
-        @Override
-        public Object handle(CommandMessage commandMessage, UnitOfWork unitOfWork) throws Throwable {
-            return null;
-        }
-    }
+    private static class TestCommandHandler2 extends CommandHandler<TestCommand> { }
 
     // ------------------------------------------------------------------------
 

@@ -13,7 +13,7 @@ package com.viadeo.kasper.impl;
  *
  */
 public class StringKasperId extends AbstractKasperID<String> {
-    private static final long serialVersionUID = 2557821277131061279L;
+    private static final long serialVersionUID = 2557421277131061279L;
 
     StringKasperId() {
         super("0");

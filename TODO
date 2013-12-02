@@ -1,4 +1,7 @@
 
+
+urgent: full refactoring of the test domains of kasper-documentation
+
 Query :
 =======
 
@@ -9,7 +12,6 @@ Query :
  ========
  
  - business rules : http://openrules.com/?
- - la gateway est responsable de retourner l'erreur en mode synchrone ou de g�n�rer un event error, intercept� par le eventhandler commandErrorsHandler
  - feature toggles, sous forme de specification ? Quel param�tres ?
     --> Feature flags : http://www.togglz.org/  ?
  

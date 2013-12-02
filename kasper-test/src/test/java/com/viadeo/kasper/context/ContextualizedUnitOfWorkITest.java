@@ -14,21 +14,20 @@ import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.cqrs.command.impl.AbstractEntityCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
-import com.viadeo.kasper.ddd.impl.ClientRepository;
-import com.viadeo.kasper.ddd.impl.Repository;
+import com.viadeo.kasper.ddd.repository.ClientRepository;
+import com.viadeo.kasper.ddd.repository.Repository;
+import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
-import com.viadeo.kasper.er.impl.AbstractRootConcept;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
-import com.viadeo.kasper.event.domain.impl.AbstractEntityEvent;
+import com.viadeo.kasper.event.domain.EntityCreatedEvent;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.repository.AggregateNotFoundException;
-import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.util.concurrent.Future;
@@ -39,7 +38,7 @@ import static org.junit.Assert.fail;
 @SuppressWarnings("serial")
 public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 
-    private static final Integer TOTAL_VERIFY_CALLS = 7;
+    private static final Integer TOTAL_VERIFY_CALLS = 6;
 
     // -- Static verificator --------------------------------------------------
 
@@ -73,7 +72,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     public static class ContextTestCommand implements Command { }
 
     @XKasperCommandHandler(domain = ContextTestDomain.class)
-    public static class ContextTestHandler extends AbstractEntityCommandHandler<ContextTestCommand, ContextTestAGR> {
+    public static class ContextTestHandler extends EntityCommandHandler<ContextTestCommand, ContextTestAGR> {
         public CommandResponse handle(final ContextTestCommand command) throws Exception {
 
             StaticChecker.verify(CurrentContext.value().get());
@@ -94,17 +93,17 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
     }
 
     @XKasperEvent(action = "test")
-    public static class ContextTestEvent extends AbstractEntityEvent<ContextTestDomain> {
+    public static class ContextTestEvent extends EntityCreatedEvent<ContextTestDomain> {
         private static final long serialVersionUID = 7017358308867238442L;
 
         public ContextTestEvent(final KasperID id) {
-            super(CurrentContext.value().get(), id, DateTime.now());
+            super(id);
             StaticChecker.verify(CurrentContext.value().get());
         }
     }
 
     @XKasperConcept(domain = ContextTestDomain.class, label = "test agr")
-    public static class ContextTestAGR extends AbstractRootConcept {
+    public static class ContextTestAGR extends Concept {
         public ContextTestAGR(final KasperID id) {
             StaticChecker.verify(CurrentContext.value().get());
             apply(new ContextTestEvent(id));
@@ -114,7 +113,6 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
         protected void handlerContextTestEvent(final ContextTestEvent event) {
             this.setId(event.getEntityId());
             StaticChecker.verify(CurrentContext.value().get());
-            StaticChecker.verify(event.getContext().get());
         }
     }
 
@@ -134,6 +132,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
         @Override
         protected void doDelete(final ContextTestAGR aggregate) {
         }
+
     }
 
     // ------------------------------------------------------------------------

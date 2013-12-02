@@ -16,6 +16,7 @@ dependencies {
     compile libraries.HAMCREST
     compile libraries.MOCKITO
     compile libraries.JUNIT
+    compile libraries.HIBERNATE_VALIDATOR
 
     // Test dependencies
     testCompile libraries.JACKSON_CORE

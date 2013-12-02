@@ -22,16 +22,19 @@ import java.util.UUID;
 public interface Context extends Serializable  {
 
     int INITIAL_SEQUENCE_INCREMENT = 1;
+
+    String DEFAULT_STRING_ID = "";
     UUID DEFAULT_KASPER_UUID = UUID.fromString("00000000-0000-002a-0000-00000000002a");
     KasperID DEFAULT_KASPER_ID = new DefaultKasperId(DEFAULT_KASPER_UUID);
 
     String DEFAULT_USER_LANG = "fr";
     String DEFAULT_USER_COUNTRY = "FR";
 
-    KasperID DEFAULT_USER_ID = DEFAULT_KASPER_ID;
-    KasperID DEFAULT_REQCORR_ID = DEFAULT_KASPER_ID;
-    KasperID DEFAULT_FUNCORR_ID = DEFAULT_KASPER_ID;
-    KasperID DEFAULT_SESSCORR_ID = DEFAULT_KASPER_ID;
+    String DEFAULT_USER_ID = DEFAULT_STRING_ID;
+    String DEFAULT_REQCORR_ID = DEFAULT_STRING_ID;
+    String DEFAULT_FUNCORR_ID = DEFAULT_STRING_ID;
+    String DEFAULT_SESSCORR_ID = DEFAULT_STRING_ID;
+
     KasperID DEFAULT_KASPERCORR_ID = DEFAULT_KASPER_ID;
 
     String DEFAULT_APPLICATION_ID = "";
@@ -64,15 +67,14 @@ public interface Context extends Serializable  {
 
 	/**
 	 * @return the associated ID of the current user
-	 * @see com.viadeo.kasper.KasperID
 	 */
-	KasperID getUserId();
+	String getUserId();
 	
 	/**
 	 * @param userId the associated ID of the current user
 	 * @return the current {@link Context} instance
 	 */
-	Context setUserId(KasperID userId);
+	Context setUserId(String userId);
 
     // ------------------------------------------------------------------------
 
@@ -122,12 +124,12 @@ public interface Context extends Serializable  {
      *
      * @param requestCorrelationId the correlation id
      */
-    Context setRequestCorrelationId(KasperID requestCorrelationId);
+    Context setRequestCorrelationId(String requestCorrelationId);
 
     /**
      * @return the application request correlation id
      */
-    KasperID getRequestCorrelationId();
+    String getRequestCorrelationId();
 
     // ------------------------------------------------------------------------
 
@@ -138,12 +140,12 @@ public interface Context extends Serializable  {
      *
      * @param funnelCorrelationId the correlation id
      */
-    Context setFunnelCorrelationId(KasperID funnelCorrelationId);
+    Context setFunnelCorrelationId(String funnelCorrelationId);
 
     /**
      * @return the application request correlation id
      */
-    KasperID getFunnelCorrelationId();
+    String getFunnelCorrelationId();
 
 
     // ------------------------------------------------------------------------
@@ -184,12 +186,12 @@ public interface Context extends Serializable  {
      *
      * @param sessionCorrelationId
      */
-    Context setSessionCorrelationId(KasperID sessionCorrelationId);
+    Context setSessionCorrelationId(String sessionCorrelationId);
 
     /**
      * @return the application session correlation id
      */
-    KasperID getSessionCorrelationId();
+    String getSessionCorrelationId();
 
     // ------------------------------------------------------------------------
 	
@@ -252,6 +254,13 @@ public interface Context extends Serializable  {
      */
     Map<String, String> asMap();
     Map<String, String> asMap(Map<String, String> map);
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * return as a metadata map
+     */
+    Map<String, ?> asMetaDataMap();
 
 
 }

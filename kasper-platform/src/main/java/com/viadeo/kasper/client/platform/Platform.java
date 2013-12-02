@@ -16,7 +16,7 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.IEvent;
 
 /**
  * The Kasper platform
@@ -139,19 +139,11 @@ public interface Platform {
     KasperEventBus getEventBus();
 
     /**
-     * Publish an event to the platform, the event must contains the context
+     * Publish an event to the platform
      *
      * @param event
      */
-    void publishEvent(Event event);
-
-    /**
-     * Send an event to the platform, with a specified context
-     * If the event already contains a context, it will be overriden
-     *
-     * @param event the event to be sent
-     * @param context the event context
-     */
-    void publishEvent(Event event, Context context);
+    void publishEvent(IEvent event);
+    void publishEvent(Context context, IEvent event);
 
 }

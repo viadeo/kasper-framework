@@ -2,8 +2,6 @@
 CQRS: Queries
 =============
 
-
-
 Implementing queries consists on implementing four Kasper components :
 
 - one **event listener** used to listen for accurate events and index data
@@ -14,7 +12,10 @@ Implementing queries consists on implementing four Kasper components :
 Kasper does not say anything about your indexation process, but you are heavily encouraged to :
 
 - always provide one full and one incremental strategy for all your indexes
-- prefer event listeners to implement your incremental strategy
+- prefer event listeners to implement your incremental strategy (you are encouraged to use the suffix *QueryListener*)
+- you can use *IndexedEntity* to store your entities in your indexes,
+  this interface is compatible with the *QueryResult* interface so you can just store your entities in order to allow a
+  direct restitution in your query handlers
 
 About implementing event listeners, see :ref:`events`.
 
@@ -96,13 +97,9 @@ using the **@XKasperQueryResult** annotation.
     }
 
 .. hint::
-    The interface **EntityQueryResult** and proposed default implementation **AbstractEntityQueryResult** should be used for each
-    result which is an entity (with an id, a type and optionally but preferably a last modification time)
+    The **EntityQueryResult** should be used for each result which is an entity (with an id, a type and optionally but preferably a last modification time)
 
-The interface **CollectionQueryResult** can be used to return a list of some other unit response results.
-
-The abstract class **AbstractCollectionQueryResult** is provided as a default implementation of the list methods
-required by the **CollectionQueryResult** interface.
+The **CollectionQueryResult** and the **MapQueryResult** can be used to return a list or a map of some other unit response results.
 
 **usage**
 
@@ -110,7 +107,7 @@ required by the **CollectionQueryResult** interface.
     :linenos:
 
     @XKasperQueryResult( description = "A List of things" )
-    public class ThingsListQueryResult extends AbstractCollectionQueryResult<ThingsQueryResult> {
+    public class ThingsListQueryResult extends CollectionQueryResult<ThingsQueryResult> {
         // Nothing more needs to be declared
     }
 
@@ -126,8 +123,7 @@ A Kasper query handler is I/O component using a **Query** as input and responsib
 
 **A Query service is part of the QUERY architectural area**.
 
-It has to implement the **QueryHandler<Query, QueryResult>** interface and specify its owning domain with the **@XKasperQueryHandler**
-annotation and ends with the '**QueryHandler**' suffix (recommended).
+It has to extend **QueryHandler<Query, QueryResult>** and specify its owning domain with the **@XKasperQueryHandler** annotation and ends with the '**QueryHandler**' suffix (recommended).
 
 **usage**
 
@@ -135,7 +131,7 @@ annotation and ends with the '**QueryHandler**' suffix (recommended).
     :linenos:
 
     @XKasperQueryHandler( domain = ThingsDomain.class )
-    public class GetThingsQueryHandler implements QueryHandler<GetThingsQuery, ThingsListQueryResult> {
+    public class GetThingsQueryHandler extends QueryHandler<GetThingsQuery, ThingsListQueryResult> {
 
         @Override
         public QueryResponse<ThingsListQueryResult> retrieve(final QueryMessage<GetThingsQuery> message) throws KasperQueryException {
@@ -144,8 +140,7 @@ annotation and ends with the '**QueryHandler**' suffix (recommended).
 
     }
 
-The **AbstractQueryHandler** abstract class is provided in order to ease the extraction of the query from the message
-when other message informations are not required :
+You have to implement at least one of the **retrieve()** methods, the second one only take the query without the message :
 
 **usage**
 
@@ -153,7 +148,7 @@ when other message informations are not required :
     :linenos:
 
     @XKasperQueryHandler( domain = ThingsDomain.class )
-    public class GetThingsQueryHandler extends AbstractQueryHandler<GetThingsQuery, ThingsListQueryResult> {
+    public class GetThingsQueryHandler extends QueryHandler<GetThingsQuery, ThingsListQueryResult> {
 
         @Override
         public QueryResponse<ThingsListQueryResult> retrieve(final GetThingsQuery query) throws KasperQueryException {
@@ -176,7 +171,7 @@ To enable the cache for a query handler with default configuration, just put **@
     :linenos:
 
     @XKasperQueryHandler( domain = AwesomeDomain.class, cache = @XKasperQueryCache )
-    public class GetNiceDataQueryHandler extends AbstractQueryHandler<GetNiceDataQuery, NiceDataQueryResult> {
+    public class GetNiceDataQueryHandler extends QueryHandler<GetNiceDataQuery, NiceDataQueryResult> {
         ...
     }
 
@@ -267,7 +262,7 @@ filling the 'filters' field.
     :linenos:
 
     @XKasperQueryHandler( ... , filters = ValidateIdQueryFilter.class )
-    public class GetThingsQueryHandler extends AbstractQueryHandler<GetThingsQuery, ThingsListQueryResult> {
+    public class GetThingsQueryHandler extends QueryHandler<GetThingsQuery, ThingsListQueryResult> {
 
         @Override
         public QueryResponse<ThingsListQueryResult> retrieve(final GetThingsQuery query) throws KasperQueryException {

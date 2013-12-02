@@ -11,6 +11,7 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
 import com.viadeo.kasper.core.boot.ComponentsInstanceManager;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -19,7 +20,10 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.IEvent;
+import org.axonframework.domain.GenericEventMessage;
+
+import java.util.HashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -123,14 +127,20 @@ public class KasperPlatform implements Platform {
     }
 
     @Override
-    public void publishEvent(final Event event) {
-        this.eventBus.publish(checkNotNull(event));
+    public void publishEvent(final IEvent event) {
+        this.publishEvent(DefaultContextBuilder.get(), checkNotNull(event));
     }
 
     @Override
-    public void publishEvent(final Event event, final Context context) {
-        checkNotNull(event).setContext(context);
-        this.publishEvent(event);
+    public void publishEvent(final Context context, final IEvent event) {
+        this.eventBus.publish(
+                new GenericEventMessage<>(
+                    checkNotNull(event),
+                    new HashMap<String, Object>() {{
+                        this.put(Context.METANAME, context);
+                    }}
+                )
+        );
     }
 
 }

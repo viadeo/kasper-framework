@@ -13,7 +13,9 @@ import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.KasperRelationID;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import org.slf4j.Logger;
@@ -23,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ObjectMapperProvider {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class);
 
     static final String ID = "id";
     static final String REASON = "reason";
@@ -33,7 +36,6 @@ public final class ObjectMapperProvider {
     static final String CODE = "code";
     static final String USERMESSAGE = "userMessage";
     static final String STATUS = "status";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class); 
 
     public static final ObjectMapperProvider INSTANCE = new ObjectMapperProvider();
 
@@ -63,9 +65,13 @@ public final class ObjectMapperProvider {
 
         /* Register a specific module for Kasper Ser/Deser */
         final SimpleModule kasperClientModule = new SimpleModule()
+                .addSerializer(KasperID.class, new KasperIdSerializer())
+                .addDeserializer(KasperID.class, new KasperIdDeserializer())
+                .addSerializer(KasperRelationID.class, new KasperRelationIdSerializer())
+                .addDeserializer(KasperRelationID.class, new KasperRelationIdDeserializer())
                 .addSerializer(CommandResponse.class, new CommandResponseSerializer())
-                .addDeserializer(CommandResponse.class, new CommandResponseDeserializer())
-                .addSerializer(QueryResponse.class, new QueryResponseSerializer());
+                .addSerializer(QueryResponse.class, new QueryResponseSerializer())
+                .addDeserializer(CommandResponse.class, new CommandResponseDeserializer());
 
         kasperClientModule.setDeserializers(new CommandQueryResponseDeserializerAdapter());
 
@@ -74,6 +80,9 @@ public final class ObjectMapperProvider {
         /* Third-party modules */
         mapper.registerModule(new GuavaModule());
         mapper.registerModule(new JodaModule());
+
+        /* Kasper extra modules */
+        mapper.registerModule(new JodaMoneyModule());
     }
 
     // ------------------------------------------------------------------------
@@ -93,9 +102,10 @@ public final class ObjectMapperProvider {
                             globalCode, code, message);
             }
         }
+
         return new KasperReason(globalCode, messages);
     }
-    
+
     /**
      * @return the configured instance of ObjectWriter to use.
      */

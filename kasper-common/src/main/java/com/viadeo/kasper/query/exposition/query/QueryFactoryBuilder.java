@@ -10,6 +10,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.query.exposition.Bundle;
 import com.viadeo.kasper.query.exposition.FeatureConfiguration;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
@@ -125,6 +126,8 @@ public class QueryFactoryBuilder {
 		adapters.putIfAbsent(boolean.class, nullSafe(DefaultTypeAdapters.BOOLEAN_ADAPTER));
 		adapters.putIfAbsent(Date.class, nullSafe(DefaultTypeAdapters.DATE_ADAPTER));
 		adapters.putIfAbsent(DateTime.class, nullSafe(DefaultTypeAdapters.DATETIME_ADAPTER));
+
+        adapters.putIfAbsent(KasperID.class, nullSafe(DefaultTypeAdapters.KASPERID_ADAPTER));
 
 		factories.add(DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY);
 		factories.add(DefaultTypeAdapters.ARRAY_ADAPTER_FACTORY);

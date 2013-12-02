@@ -11,7 +11,6 @@ import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.cqrs.command.impl.AbstractCommandHandler;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.eventhandling.EventBus;
 import org.slf4j.Logger;
@@ -88,9 +87,9 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 	public void process(final Class commandHandlerClazz, final CommandHandler commandHandler) {
 		LOGGER.info("Subscribe to command bus : " + commandHandlerClazz.getName());
 
-		if (AbstractCommandHandler.class.isAssignableFrom(commandHandler.getClass())) {
-			((AbstractCommandHandler) commandHandler).setDomainLocator(this.domainLocator);
- 			((AbstractCommandHandler) commandHandler).setEventBus(this.eventBus);
+		if (CommandHandler.class.isAssignableFrom(commandHandler.getClass())) {
+			((CommandHandler) commandHandler).setDomainLocator(this.domainLocator);
+ 			((CommandHandler) commandHandler).setEventBus(this.eventBus);
 		}
 		
 		//- Retrieve command type from command handler definition -------------

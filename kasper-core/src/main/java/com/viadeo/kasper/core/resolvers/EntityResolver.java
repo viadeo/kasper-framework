@@ -9,17 +9,17 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.ddd.ComponentEntity;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.er.Concept;
+import com.viadeo.kasper.er.LinkedConcept;
 import com.viadeo.kasper.er.Relation;
-import com.viadeo.kasper.er.RootConcept;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.annotation.EventHandler;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Collections;
@@ -31,6 +31,15 @@ public class EntityResolver extends AbstractResolver<Entity> {
 
     private ConceptResolver conceptResolver;
     private RelationResolver relationResolver;
+
+    // ------------------------------------------------------------------------
+
+    public EntityResolver() { }
+
+    public EntityResolver(final ConceptResolver conceptResolver, final RelationResolver relationResolver) {
+        this.conceptResolver = conceptResolver;
+        this.relationResolver = relationResolver;
+    }
 
     // ------------------------------------------------------------------------
 
@@ -110,20 +119,31 @@ public class EntityResolver extends AbstractResolver<Entity> {
 
     // ------------------------------------------------------------------------
 
-    @SuppressWarnings("unchecked")
-    public Class<? extends AggregateRoot> getComponentParent(final Class<? extends ComponentEntity> clazz) {
+    public List<Class<? extends Concept>> getComponentConcepts(Class<? extends AggregateRoot> conceptClazz) {
+        final List<Class<? extends Concept>> linkedConcepts = Lists.newArrayList();
 
-        final Optional<Class<? extends RootConcept>> agr =
-                (Optional<Class<? extends RootConcept>>)
-                        ReflectionGenericsResolver.getParameterTypeFromClass(
-                                clazz, ComponentEntity.class, ComponentEntity.PARENT_ARGUMENT_POSITION);
+        for (final Field field : conceptClazz.getDeclaredFields()) {
+            if (LinkedConcept.class.isAssignableFrom(field.getType())) {
 
-        if (!agr.isPresent()) {
-            throw new KasperException("Unable to find parent for component entity"
-                            + clazz.getClass());
+                @SuppressWarnings("unchecked") // Safe
+                final Optional<Class<? extends Concept>> linkedConceptClazz =
+                        (Optional<Class<? extends Concept>>)
+                                ReflectionGenericsResolver.getParameterTypeFromClass(
+                                        field, LinkedConcept.class, LinkedConcept.CONCEPT_PARAMETER_POSITION);
+
+                if ( ! linkedConceptClazz.isPresent()) {
+                    throw new KasperException(String.format(
+                            "Unable to find concept type for linked field %s in concept %s",
+                            field.getName(),
+                            conceptClazz.getClass().getSimpleName()
+                    ));
+                }
+
+                linkedConcepts.add(linkedConceptClazz.get());
+            }
         }
 
-        return agr.get();
+        return linkedConcepts;
     }
 
 }

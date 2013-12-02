@@ -15,11 +15,9 @@ architectural areas.
 Events
 ------
 
-Kasper events are defined as immutable, anemic objects, implementing the **Event**  interface and
+Kasper events are defined as immutable, anemic objects, extending the **Event**  interface and
 can optionally define metadata using the **@XKasperEvent** annotation, its class name ends with the
 '**Event**' prefix (recommended).
-
-A base implementation is provided by the **AbstractEvent** class (recommended).
 
 **usage**
 
@@ -27,13 +25,11 @@ A base implementation is provided by the **AbstractEvent** class (recommended).
     :linenos:
 
     @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
-    public class UsersAreNowConnectedEvent extends AbstractEvent {
+    public class UsersAreNowConnectedEvent extends Event {
         private final KasperId userSource;
         private final KasperId userTarget; 
 
-        public UsersAreNowConnected(final Context context, final KasperId userSource, final KasperId userTarget) {
-            super(context);
-
+        public UsersAreNowConnected(final KasperId userSource, final KasperId userTarget) {
             this.userSource = userSource;
             this.userTarget = userTarget;
         }
@@ -50,8 +46,7 @@ A base implementation is provided by the **AbstractEvent** class (recommended).
 Domain events
 ^^^^^^^^^^^^^
 
-If your event is originated from a domain (not a management event or other out-of-domain generated event), you have to
-use the **DomainEvent** interface instead, provided with the default implementation **AbstractDomainEvent**.
+If your event is originated from a domain (not a management event or other out-of-domain generated event), you have to preferably mark your events with the **DomainEvent** interface.
 
 **A major part of your events should be domain events**
 
@@ -60,14 +55,14 @@ use the **DomainEvent** interface instead, provided with the default implementat
 .. code-block:: java
     :linenos:
 
+    public interface UsersEvent extends DomainEvent<UserDomain> { }
+
     @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
-    public class UsersAreNowConnectedEvent extends AbstractDomainEvent<MyDomain> {
+    public class UsersAreNowConnectedEvent extends Event implements UsersEvent {
         private final KasperId userSource;
         private final KasperId userTarget; 
 
-        public UsersAreNowConnected(final Context context, final KasperId userSource, final KasperId userTarget) {
-            super(context);
-
+        public UsersAreNowConnected(final KasperId userSource, final KasperId userTarget) {
             this.userSource = userSource;
             this.userTarget = userTarget;
         }
@@ -85,8 +80,8 @@ use the **DomainEvent** interface instead, provided with the default implementat
 Domain entity events
 ^^^^^^^^^^^^^^^^^^^^
 
-As a vast majority of cases, events have as major concern a specific domain entity, the interface **EntityEvent<Domain, Entity>** is
-provided, with a default implementation **AbstractEntityEvent<Domain, Entity>**.
+As a vast majority of cases, events have as major concern a specific domain entity, the interface **EntityEvent<Domain>** is
+provided, with default implementations **EntityCreatedEvent**, **EntityUpdatedEvent** and **EntityDeletedEvent**.
 
 **usage**
 
@@ -94,12 +89,12 @@ provided, with a default implementation **AbstractEntityEvent<Domain, Entity>**.
     :linenos:
 
     @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
-    public class UsersAreNowConnectedEvent extends AbstractEntityEvent<MyDomain> {
+    public class UsersAreNowConnectedEvent extends EntityCreatedEvent<MyDomain> {
         private final KasperId userTarget; 
 
-        public UsersAreNowConnected(final Context context, final KasperId userSource,
-                                    final KasperId userTarget, final DateTime lastModificationDate) {
-            super(context, userSource, lastModificationDate);
+        public UsersAreNowConnected(final KasperId userSource,
+                                    final KasperId userTarget) {
+            super(userSource);
             this.userTarget = userTarget;
         }
 
@@ -112,13 +107,13 @@ provided, with a default implementation **AbstractEntityEvent<Domain, Entity>**.
         }
     }
 
+
 Event listeners
 ---------------
 
 An event listener "just" listens for events..
 
-A Kasper event listener have to extend the **AbstractEventListener<Event>**, declaring its owning domain using the **@XKasperEventListener** annotation,
-and have a name ending with '**EventListener**' (recommended).
+A Kasper event listener have to extend the **EventListener<Event>**, declaring its owning domain using the **@XKasperEventListener** annotation, and have a name ending with '**EventListener**' (recommended).
 
 **usage**
 
@@ -126,7 +121,7 @@ and have a name ending with '**EventListener**' (recommended).
     :linenos:
 
     @XKasperEventListener( domain = MyDomain.class, description = "Send a email when two users are connected" )
-    public class SendAnEmailWhenTwoUsersAreConnectedEventListener extends AbstractEventListener<UsersAreNowConnectedEvent> {
+    public class SendAnEmailWhenTwoUsersAreConnectedEventListener extends EventListener<UsersAreNowConnectedEvent> {
 
         @Override
         public void handle(final UsersAreNowConnectedEvent event) {
@@ -137,8 +132,7 @@ and have a name ending with '**EventListener**' (recommended).
     }
 
 A common job of event listeners is to send new commands to the command gateway concerning its domain or another.
-If you use the **AbstractEventListener**, you can access the **getCommandGateway()** getter in order to retrieve an (optional)
-reference to the command gateway.
+You can access the **getCommandGateway()** getter in order to retrieve an (optional) reference to the command gateway.
 
 Events hierarchies
 ------------------
@@ -152,18 +146,17 @@ Sub-hierarchies can then also be created for functional sub-areas, operations, e
 **ex** :
 
 - Event
-    - CarsOperationFinishedEvent
-    - CarsEvent
+    - CarsEvent (+ DomainEvent)
+        - CarsOperationFinishedEvent
         - CarLoansEvent
             - CarLoanCreatedEvent
             - CarLoanCancelledEvent
             - CarLoanUpdatedEvent
-            - CarLoanFinishedEvent (+CarsOperationFinishedEvent)
+            - CarLoanFinishedEvent (+ CarsOperationFinishedEvent)
         - CarWashEvent
             - CarWashOrderedEvent
             - CarWashCancelledEvent
-            - CarWashedEvent (+CasOperationFinishedEvent)
+            - CarWashedEvent (+ CasOperationFinishedEvent)
 
-A listener can then listen for all finished operations on cars, for all car loan events, all car wash events or even all
-events occured on the Cars domain.
+A listener can then listen for all finished operations on cars, for all car loan events, all car wash events or even all events occured on the Cars domain.
 

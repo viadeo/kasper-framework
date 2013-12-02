@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
+import com.google.common.base.Optional;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.annotation.Immutable;
@@ -37,6 +38,8 @@ public class CommandResponse implements Serializable, Immutable {
      */
     private final Status status;
     private final KasperReason reason;
+
+    private String securityToken;
 
     // ------------------------------------------------------------------------
 
@@ -74,9 +77,24 @@ public class CommandResponse implements Serializable, Immutable {
 
     // ------------------------------------------------------------------------
 
+    public CommandResponse withSecurityToken(final String securityToken) {
+        this.securityToken = checkNotNull(securityToken);
+        return this;
+    }
+
+    public Optional<String> getSecurityToken() {
+        return Optional.fromNullable(this.securityToken);
+    }
+
+    // ------------------------------------------------------------------------
+
     public CommandResponse(final CommandResponse response) {
         this.status = response.status;
         this.reason = response.reason;
+
+        if (response.getSecurityToken().isPresent()) {
+            this.securityToken = response.getSecurityToken().get();
+        }
     }
 
     public CommandResponse(final Status status, final KasperReason reason) {
@@ -137,6 +155,37 @@ public class CommandResponse implements Serializable, Immutable {
             return (HTTPCommandResponse) this;
         }
         throw new KasperException("Not an HTTP command response");
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (getClass() != obj.getClass()) {
+            return false;
+        }
+
+        final CommandResponse other = (CommandResponse) obj;
+
+        return com.google.common.base.Objects.equal(this.status, other.status)
+               && com.google.common.base.Objects.equal(this.reason, other.reason);
+    }
+
+    @Override
+    public int hashCode() {
+        return com.google.common.base.Objects.hashCode(status, reason);
+    }
+
+    @Override
+    public String toString() {
+        return com.google.common.base.Objects.toStringHelper(this)
+                .addValue(this.status)
+                .addValue(this.reason)
+                .toString();
     }
 
 }

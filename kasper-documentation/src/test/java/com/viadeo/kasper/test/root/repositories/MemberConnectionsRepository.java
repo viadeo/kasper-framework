@@ -37,4 +37,14 @@ public class MemberConnectionsRepository implements IRepository<Member_connected
         return false;
     }
 
+    @Override
+    public Member_connectedTo_Member get(KasperID aggregateIdentifier, Long expectedVersion) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Member_connectedTo_Member get(KasperID aggregateIdentifier) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 }

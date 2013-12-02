@@ -103,12 +103,12 @@ public class KasperLibrary {
 	private final Map<String, List<DocumentedListener>> eventListeners;
 
     /**
-     * Stores all query services by query name
+     * Stores all query handlers by query name
      */
     private final Map<String, DocumentedQueryHandler> queryHandlers;
 
     /**
-     *  Stores all query services by queryResult name
+     *  Stores all query handlers by queryResult name
      */
     private final Map<String, List<DocumentedQueryHandler>> queryResultHandlers;
 	
@@ -691,6 +691,9 @@ public class KasperLibrary {
 		
 		@SuppressWarnings("unchecked") // Safe
 		final Class<T> entityClass = (Class<T>) this.simpleTypes.get(entityType);
+        if (null == entityClass) {
+            return Optional.absent();
+        }
 		return getEntity(domainName, entityClass, entityName);
 	}
 	
@@ -793,6 +796,12 @@ public class KasperLibrary {
 		if (DocumentedRelation.class.isAssignableFrom(node.getClass())) {
 			return new DocumentedSimpleRelation(DocumentedRelation.class.cast(node));
 		}
+        if (DocumentedQueryHandler.class.isAssignableFrom(node.getClass())) {
+            return new DocumentedSimpleQueryHandler(DocumentedQueryHandler.class.cast(node));
+        }
+        if (DocumentedHandler.class.isAssignableFrom(node.getClass())) {
+            return new DocumentedSimpleHandler(DocumentedHandler.class.cast(node));
+        }
 		return new DocumentedNode(node);
 	}
 

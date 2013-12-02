@@ -8,6 +8,8 @@ package com.viadeo.kasper.query.exposition.adapters;
 
 import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.query.QueryBuilder;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
@@ -227,5 +229,17 @@ public final class DefaultTypeAdapters {
 			return Optional.fromNullable(adapter);
 		}
 	};
+
+	public static final TypeAdapter<KasperID> KASPERID_ADAPTER = new TypeAdapter<KasperID>() {
+        @Override
+        public void adapt(final KasperID value, final QueryBuilder builder) {
+            builder.add(value.toString());
+        }
+
+        @Override
+        public KasperID adapt(final QueryParser parser) {
+            return new DefaultKasperId(parser.value());
+        }
+    };
 
 }

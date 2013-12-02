@@ -1,13 +1,15 @@
 package com.viadeo.kasper.test.root.queries;
 
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryResult;
 import com.viadeo.kasper.test.root.Facebook;
 
 @XKasperQueryHandler(domain=Facebook.class)
-public class GetMembersQueryHandler implements QueryHandler<GetMembersQueryHandler.GetMembersQuery, GetMembersQueryHandler.MembersResult> {
+public class GetMembersQueryHandler extends QueryHandler<GetMembersQueryHandler.GetMembersQuery, GetMembersQueryHandler.MembersResult> {
 
 	public static class GetMembersQuery implements Query {
 		private static final long serialVersionUID = -6513893864054353478L;
@@ -22,9 +24,4 @@ public class GetMembersQueryHandler implements QueryHandler<GetMembersQueryHandl
 		public KasperID id;
 	}
 
-	@Override
-	public QueryResponse<MembersResult> retrieve(final QueryMessage<GetMembersQuery> message) throws Exception {
-		return null;
-	}
-	
 }

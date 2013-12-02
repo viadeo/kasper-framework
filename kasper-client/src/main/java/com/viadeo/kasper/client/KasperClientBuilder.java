@@ -7,7 +7,9 @@
 package com.viadeo.kasper.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.query.exposition.FeatureConfiguration;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
@@ -20,6 +22,7 @@ import com.viadeo.kasper.tools.ObjectMapperProvider;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
@@ -30,19 +33,23 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public class KasperClientBuilder {
 
+    private final QueryFactoryBuilder qFactoryBuilder = new QueryFactoryBuilder();
+
+    private int numberOfRetries = 3;
     private Client client;
     private ObjectMapper mapper;
     private URL commandBaseLocation;
     private URL queryBaseLocation;
+    private URL eventBaseLocation;
     private QueryFactory queryFactory;
     private HttpContextSerializer contextSerializer;
-    private final QueryFactoryBuilder qFactoryBuilder = new QueryFactoryBuilder();
     private KasperClient.Flags flags = KasperClient.Flags.defaults();
 
     // ------------------------------------------------------------------------
 
     public static final String DEFAULT_COMMAND_URL = "http://localhost:8080/command";
     public static final String DEFAULT_QUERY_URL = "http://localhost:8080/query";
+    public static final String DEFAULT_EVENT_URL = "http://localhost:8080/event";
 
     // ------------------------------------------------------------------------
 
@@ -58,24 +65,22 @@ public class KasperClientBuilder {
      * @see com.viadeo.kasper.query.exposition.TypeAdapter
      */
     public KasperClientBuilder use(final ObjectMapper mapper) {
-        checkNotNull(mapper);
-        this.mapper = mapper;
+        this.mapper = checkNotNull(mapper);
         return this;
     }
 
     public KasperClientBuilder use(final QueryFactory queryFactory) {
-        checkNotNull(queryFactory);
-        this.queryFactory = queryFactory;
+        this.queryFactory = checkNotNull(queryFactory);
         return this;
     }
 
     public KasperClientBuilder features(final FeatureConfiguration features) {
-        this.qFactoryBuilder.use(features);
+        this.qFactoryBuilder.use(checkNotNull(features));
         return this;
     }
 
     public KasperClientBuilder use(final TypeAdapter adapter) {
-        qFactoryBuilder.use(adapter);
+        qFactoryBuilder.use(checkNotNull(adapter));
         return this;
     }
 
@@ -83,7 +88,20 @@ public class KasperClientBuilder {
      * @see #use(com.viadeo.kasper.query.exposition.TypeAdapter)
      */
     public KasperClientBuilder use(final TypeAdapterFactory factory) {
-        qFactoryBuilder.use(factory);
+        qFactoryBuilder.use(checkNotNull(factory));
+        return this;
+    }
+
+    /**
+     * The client will retry to submit something if some exception
+     * occurs
+     *
+     * @param numberOfRetries number of times to retry
+     * @return a reference to this builder
+     */
+    public KasperClientBuilder numberOfRetries(final int numberOfRetries) {
+        checkArgument(numberOfRetries > 0);
+        this.numberOfRetries = numberOfRetries;
         return this;
     }
 
@@ -94,7 +112,7 @@ public class KasperClientBuilder {
      * @throws KasperException
      */
     public KasperClientBuilder queryBaseLocation(final String url) {
-        return queryBaseLocation(createURL(getCanonicalUrl(url)));
+        return queryBaseLocation(createURL(getCanonicalUrl(checkNotNull(url))));
     }
 
     /**
@@ -103,7 +121,16 @@ public class KasperClientBuilder {
      * @throws KasperException
      */
     public KasperClientBuilder commandBaseLocation(final String url) {
-        return commandBaseLocation(createURL(getCanonicalUrl(url)));
+        return commandBaseLocation(createURL(getCanonicalUrl(checkNotNull(url))));
+    }
+
+    /**
+     * @param url of the base path to use for event submission.
+     * @return a reference to this builder.
+     * @throws KasperException
+     */
+    public KasperClientBuilder eventBaseLocation(final String url) {
+        return eventBaseLocation(createURL(getCanonicalUrl(checkNotNull(url))));
     }
 
     /**
@@ -113,7 +140,7 @@ public class KasperClientBuilder {
      * @param url
      * @return url plus trailing "/"
      */
-    private String getCanonicalUrl(String url) {
+    private String getCanonicalUrl(final String url) {
         return checkNotNull(url).endsWith("/") ? url : url + "/";
     }
 
@@ -132,6 +159,15 @@ public class KasperClientBuilder {
      */
     public KasperClientBuilder commandBaseLocation(final URL url) {
         commandBaseLocation = checkNotNull(url);
+        return this;
+    }
+
+    /**
+     * @param url of the base path to use for event submission.
+     * @return a reference to this builder.
+     */
+    public KasperClientBuilder eventBaseLocation(final URL url) {
+        eventBaseLocation = checkNotNull(url);
         return this;
     }
 
@@ -174,6 +210,10 @@ public class KasperClientBuilder {
             queryBaseLocation = createURL(DEFAULT_QUERY_URL);
         }
 
+        if (null == queryBaseLocation) {
+            eventBaseLocation = createURL(DEFAULT_EVENT_URL);
+        }
+
         if (null == queryFactory) {
             queryFactory = qFactoryBuilder.create();
         }
@@ -183,10 +223,16 @@ public class KasperClientBuilder {
         }
 
         if (null == client) {
-            return new KasperClient(queryFactory, mapper, commandBaseLocation, queryBaseLocation, contextSerializer, flags);
-        } else {
-            return new KasperClient(queryFactory, client, commandBaseLocation, queryBaseLocation, contextSerializer, flags);
+            final DefaultClientConfig cfg = new DefaultClientConfig();
+            cfg.getSingletons().add(new JacksonJsonProvider(mapper));
+            client = Client.create(cfg);
         }
+
+        if (numberOfRetries > 0) {
+            client.addFilter(new RetryFilter(numberOfRetries));
+        }
+
+        return new KasperClient(queryFactory, client, commandBaseLocation, queryBaseLocation, eventBaseLocation, contextSerializer, flags);
     }
 
     // ------------------------------------------------------------------------

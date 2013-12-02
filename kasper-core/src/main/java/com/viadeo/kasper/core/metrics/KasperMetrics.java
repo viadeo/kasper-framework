@@ -79,7 +79,7 @@ public final class KasperMetrics {
             return pathCache.get(clazz);
         }
 
-        String componentPath = clazz.getName();
+        String componentPath = clazz.getName().toLowerCase();
 
         if (null != resolverFactory) {
             final String name = clazz.getSimpleName();
@@ -88,12 +88,11 @@ public final class KasperMetrics {
             if (resolver.isPresent()) {
                 final String domainName = resolver.get().getDomainLabel(clazz);
                 final String type = resolver.get().getTypeName();
-                componentPath = String.format("%s.%s.%s", domainName, type, name);
+                componentPath = String.format("%s.%s.%s", domainName, type, name).toLowerCase();
+                pathCache.put(clazz, componentPath);
             }
         }
 
-        componentPath = componentPath.toLowerCase();
-        pathCache.put(clazz, componentPath);
         return componentPath;
     }
 

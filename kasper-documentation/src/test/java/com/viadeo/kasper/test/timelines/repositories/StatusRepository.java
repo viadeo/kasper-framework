@@ -37,4 +37,14 @@ public class StatusRepository implements IRepository<Status> {
         return false;
     }
 
+    @Override
+    public Status get(KasperID aggregateIdentifier, Long expectedVersion) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
+    @Override
+    public Status get(KasperID aggregateIdentifier) {
+        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    }
+
 }

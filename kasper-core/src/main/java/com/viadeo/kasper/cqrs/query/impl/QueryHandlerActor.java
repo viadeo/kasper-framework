@@ -44,7 +44,7 @@ public class QueryHandlerActor<Q extends Query, RESULT extends QueryResult> impl
         final Timer.Context classTimer = METRICLASSTIMER.time();
         final Timer.Context timer = METRICS.timer(name(query.getClass(), "requests-time")).time();
 
-        final QueryMessage message = new DefaultQueryMessage(context, query);
+        final QueryMessage message = new QueryMessage(context, query);
 
         try {
             try {
@@ -53,8 +53,8 @@ public class QueryHandlerActor<Q extends Query, RESULT extends QueryResult> impl
                 ret = queryHandler.retrieve(message);
 
             } catch (final UnsupportedOperationException e) {
-                if (AbstractQueryHandler.class.isAssignableFrom(queryHandler.getClass())) {
-                    ret = (QueryResponse<RESULT>) ((AbstractQueryHandler) queryHandler).retrieve(message.getQuery());
+                if (QueryHandler.class.isAssignableFrom(queryHandler.getClass())) {
+                    ret = (QueryResponse<RESULT>) ((QueryHandler) queryHandler).retrieve(message.getQuery());
                 } else {
                     timer.close();
                     classTimer.close();

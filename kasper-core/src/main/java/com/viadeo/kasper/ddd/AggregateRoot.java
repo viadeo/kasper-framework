@@ -6,29 +6,108 @@
 // ============================================================================
 package com.viadeo.kasper.ddd;
 
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.KasperID;
-import org.axonframework.eventsourcing.EventSourcedAggregateRoot;
+import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.context.CurrentContext;
+import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
+import com.viadeo.kasper.event.IEvent;
+import org.axonframework.domain.MetaData;
+import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
+import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
+
+import java.util.Map;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  *
- * Aggregate Root : storable entity
+ * Base AGR implementation
  *
- ******
- * A collection of objects that are bound together by a root entity, otherwise known as an aggregate root.
- * The aggregate root guarantees the consistency of changes being made within the aggregate by forbidding external
- * objects from holding references to its members.
- * Example: When you drive a car, you do not have to worry about moving the wheels forward, making the engine combust
- * with spark and fuel, etc.; you are simply driving the car. In this context, the car is an aggregate of several
- * other objects and serves as the aggregate root to all of the other systems.
- * (source: Wikipedia)
- * *****
- * Effective Aggregate Design (DDD General) - Vaughn Vernon
- * http://dddcommunity.org/sites/default/files/pdf_articles/Vernon_2011_1.pdf
- * *****
- *
- * 
- * @see Entity
+ * @see com.viadeo.kasper.ddd.AggregateRoot
+ * @see com.viadeo.kasper.ddd.Domain
  */
-public interface AggregateRoot extends EventSourcedAggregateRoot<KasperID>, Entity {
+public abstract class AggregateRoot<I extends KasperID>
+		extends AbstractAnnotatedAggregateRoot<KasperID>
+        implements Entity {
+	private static final long serialVersionUID = 8352516744342839116L;
+
+    public static final String VERSION_METANAME = "VERSION";
+
+	@AggregateIdentifier
+	protected I id;
+
+    private Long version;
+
+	// ========================================================================
+
+	@SuppressWarnings("unchecked")
+	public I  getEntityId() {
+		return this.id;
+	}
+
+    protected void setId(final I id) {
+        this.id = id;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public void setVersion(final Long version) {
+        if (null == super.getVersion()) { /* if aggregate is not event-sourced */
+            this.version = checkNotNull(version);
+        }
+    }
+
+    /**
+     * A newly created aggregate will have version null
+     * A firstly loaded aggregate (new aggregate, first loaded) will have version 0L
+     */
+    @Override
+    public Long getVersion() {
+        final Long superVersion = super.getVersion();
+        if (null == superVersion) { /* if aggregate is not event-sourced */
+            return this.version;
+        }
+        return superVersion;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    protected void apply(final Object eventPayload) {
+        apply(eventPayload, enrichMetaData(null));
+    }
+
+    @Override
+    protected void apply(Object eventPayload, MetaData metaData) {
+        if ( ! IEvent.class.isAssignableFrom(eventPayload.getClass())) {
+            throw new KasperCommandException("Only apply implementations of 'IEvent'");
+        }
+
+        super.apply(eventPayload, enrichMetaData(metaData));
+    }
+
+    // ------------------------------------------------------------------------
+
+    protected MetaData enrichMetaData(final MetaData metaData) {
+
+        final Map<String, Object> newMetaData = Maps.newHashMap();
+
+        // Add context
+        if (CurrentContext.value().isPresent()) {
+            newMetaData.put(Context.METANAME, CurrentContext.value().get());
+        }
+
+        // Add version
+        final Long version = (null == this.getVersion()) ? 0L : this.getVersion();
+        newMetaData.put(AggregateRoot.VERSION_METANAME, version);
+
+        if (null == metaData) {
+            return MetaData.from(newMetaData);
+        } else {
+            return metaData.mergedWith(newMetaData);
+        }
+
+    }
 
 }

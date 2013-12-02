@@ -22,7 +22,11 @@ public abstract class AbstractKasperID<T extends Serializable> implements Kasper
 	private T id;
 	
 	// ------------------------------------------------------------------------
-	
+
+    protected AbstractKasperID() {
+
+    }
+
 	protected AbstractKasperID(final T id) {
 		this.id = id;
 	}	

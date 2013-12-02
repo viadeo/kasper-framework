@@ -6,26 +6,139 @@
 // ============================================================================
 package com.viadeo.kasper.event;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.MetricRegistry;
+import com.codahale.metrics.Timer;
+import com.google.common.base.Optional;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.cqrs.command.CommandGateway;
+import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
+
 /**
  *
- * Kasper event listener
+ * Base implementation for Kasper event listeners
  *
  * @param <E> Event
- * 
- * @see Event
  */
-public interface EventListener<E extends Event> extends org.axonframework.eventhandling.EventListener {
+public abstract class EventListener<E extends IEvent> implements org.axonframework.eventhandling.EventListener {
 
-	/**
-	 * Generic parameter position for the listened event
-	 */
-	int EVENT_PARAMETER_POSITION = 0;
+    /**
+     * Generic parameter position for the listened event
+     */
+    public static final int EVENT_PARAMETER_POSITION = 0;
+
+    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
+    private static final Histogram METRICLASSHANDLETIMES = METRICS.histogram(name(EventListener.class, "handle-times"));
+    private static final Meter METRICLASSHANDLES = METRICS.meter(name(EventListener.class, "handles"));
+    private static final Meter METRICLASSERRORS = METRICS.meter(name(EventListener.class, "errors"));
+
+    private Timer metricTimer;
+    private Histogram metricHandleTimes;
+    private Meter metricHandles;
+    private Meter metricErrors;
+
+	private final Class<? extends IEvent> eventClass;
+	private CommandGateway commandGateway;
+
+	// ------------------------------------------------------------------------
+	
+	public EventListener() {
+		@SuppressWarnings("unchecked")
+		final Optional<Class<? extends Event>> eventClassOpt =
+				(Optional<Class<? extends Event>>)
+				ReflectionGenericsResolver.getParameterTypeFromClass(
+						this.getClass(), EventListener.class, EventListener.EVENT_PARAMETER_POSITION);
+		
+		if (eventClassOpt.isPresent()) {
+			this.eventClass = eventClassOpt.get();
+		} else {
+			throw new KasperException("Unable to identify event class for " + this.getClass());
+		}
+
+	}
+	
+	// ------------------------------------------------------------------------
+	
+	public Class<? extends IEvent> getEventClass() {
+		return this.eventClass;
+	}
+
+    // ------------------------------------------------------------------------
+
+    public void setCommandGateway(final CommandGateway commandGateway) {
+        this.commandGateway = checkNotNull(commandGateway);
+    }
+
+    protected Optional<CommandGateway> getCommandGateway() {
+        return Optional.of(this.commandGateway);
+    }
+
+	// ------------------------------------------------------------------------
 	
 	/**
-	 * handle an event
+	 * Wrapper for Axon event messages
 	 * 
-	 * @param eventMessage
+	 * @see org.axonframework.eventhandling.EventListener#handle(org.axonframework.domain.EventMessage)
 	 */
-	void handle(EventMessage<E> eventMessage);
+	@SuppressWarnings({"unchecked", "rawtypes"}) // Safe
+	public void handle(final org.axonframework.domain.EventMessage eventMessage) {
+		
+		if (!this.getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
+			return;
+		}
+
+        if (null == metricTimer) {
+            metricTimer = METRICS.timer(name(this.getClass(), "handle-time"));
+            metricHandleTimes = METRICS.histogram(name(this.getClass(), "handle-times"));
+            metricHandles = METRICS.meter(name(this.getClass(), "handles"));
+            metricErrors = METRICS.meter(name(this.getClass(), "errors"));
+        }
+
+		final com.viadeo.kasper.event.EventMessage<E> message = new EventMessage(eventMessage);
+
+        /* Start timer */
+        final Timer.Context timer = metricTimer.time();
+
+        /* Handle event */
+        try {
+            try {
+                this.handle(message);
+            } catch (final UnsupportedOperationException e) {
+                this.handle((E) eventMessage.getPayload());
+            }
+        } catch (final RuntimeException e) {
+            METRICLASSERRORS.mark();
+            metricErrors.mark();
+            throw e;
+        } finally {
+            /* Stop timer and record a tick */
+            final long time = timer.stop();
+            METRICLASSHANDLETIMES.update(time);
+            metricHandleTimes.update(time);
+            METRICLASSHANDLES.mark();
+            metricHandles.mark();
+        }
+	}
+
+	// ------------------------------------------------------------------------
+	
+	/**
+	 * @param eventMessage the Kasper event message to handle
+	 */
+	public void handle(final com.viadeo.kasper.event.EventMessage<E> eventMessage){
+		throw new UnsupportedOperationException();
+	}
+
+	/**
+	 * @param event the Kasper event to handle
+	 */
+	public void handle(final E event){
+		throw new UnsupportedOperationException();
+	}
 	
 }

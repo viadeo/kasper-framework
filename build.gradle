@@ -1,5 +1,4 @@
-// ============================================================================
-//                 KASPER - Kasper is the treasure keeper
+// ============================================================================ //                 KASPER - Kasper is the treasure keeper
 //    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
 //            Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
@@ -8,7 +7,7 @@ apply plugin: 'sonar-runner'
 apply plugin: 'idea'
 
 task wrapper(type: Wrapper) {
-    gradleVersion = '1.8'
+    gradleVersion = '1.9'
 }
 
 // Apply annotation processing on idea for lombok
@@ -40,7 +39,7 @@ allprojects  {
   apply plugin: 'findbugs'
 
   group = 'com.viadeo.kasper'
-  version = '0.0.99-SNAPSHOT'
+  version = '0.1.3-SNAPSHOT'
 
   idea {
     module {
@@ -177,6 +176,7 @@ subprojects {
       JCACHE_EHCACHE        : 'net.sf.ehcache:ehcache-jcache:1.5.0-0.5',
 
       VALIDATION_API        : 'javax.validation:validation-api:1.1.0.Final',
+      JAVAX_EL              : 'javax.el:javax.el-api:3.0.0',
 
       SLF4J                 : 'org.slf4j:slf4j-api:1.7.5',
       LOG4J_OVER_SLF4J      : 'org.slf4j:log4j-over-slf4j:1.7.5',
@@ -184,6 +184,7 @@ subprojects {
       JUNIT                 : 'junit:junit:4.10',
       MOCKITO               : 'org.mockito:mockito-all:1.9.5-rc1',
       JODA_TIME             : 'joda-time:joda-time:2.1',
+      JODA_MONEY            : 'org.joda:joda-money:0.9',
       GUAVA                 : 'com.google.guava:guava:13.0.1',
 
       LOGBACK               : [
@@ -193,7 +194,10 @@ subprojects {
                               ],
 
       LOMBOK                : "org.projectlombok:lombok:0.12.0",
-      HIBERNATE_VALIDATOR   : 'org.hibernate:hibernate-validator:5.0.1.Final',
+      HIBERNATE_VALIDATOR   : [
+                                'org.hibernate:hibernate-validator:5.0.1.Final',
+                                'org.glassfish.web:el-impl:2.2'
+                              ],
       GLASSFISH_EXPR_LANG   : 'org.glassfish.web:javax.el:2.2.3'
 
   ] // see http://stackoverflow.com/questions/9547170/in-gradle-how-do-i-declare-common-dependencies-in-a-single-place
@@ -201,6 +205,7 @@ subprojects {
   dependencies {
     compile libraries.GUAVA
     compile libraries.JODA_TIME
+    compile libraries.JODA_MONEY
     compile libraries.SLF4J
     compile libraries.LOG4J_OVER_SLF4J
 
