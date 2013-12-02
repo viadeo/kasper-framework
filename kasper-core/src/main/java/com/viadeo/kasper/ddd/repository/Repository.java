@@ -66,7 +66,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
     /**
      * Initialize the repository
      */
-	public final void init(final boolean force) {
+	public void init(final boolean force) {
 		if ( ! initialized || force) {
             @SuppressWarnings("unchecked") // Safe
             final Optional<Class<AGR>> entityType =
@@ -144,7 +144,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * @see org.axonframework.repository.Repository#load(java.lang.Object, java.lang.Long)
 	 */
 	@Override
-	public final AGR load(final Object aggregateIdentifier, final Long expectedVersion) {
+	public AGR load(final Object aggregateIdentifier, final Long expectedVersion) {
         init();
 		return this.axonRepository.load(aggregateIdentifier, expectedVersion);
 	}
@@ -153,7 +153,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * @see org.axonframework.repository.Repository#load(java.lang.Object)
 	 */
 	@Override
-	public final AGR load(final Object aggregateIdentifier) {
+	public AGR load(final Object aggregateIdentifier) {
         init();
 		return this.axonRepository.load(aggregateIdentifier);
 	}
@@ -162,7 +162,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	 * @see org.axonframework.repository.Repository#add(Object)
 	 */
 	@Override
-	public final void add(final AGR aggregate) {
+	public void add(final AGR aggregate) {
         init();
 
         /* All aggregates must have an ID */
