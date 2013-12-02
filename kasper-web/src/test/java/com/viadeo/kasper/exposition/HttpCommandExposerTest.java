@@ -7,20 +7,23 @@
 package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
+import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
-import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.CommandResponse.Status;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.ddd.repository.Repository;
+import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
 import lombok.Data;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Max;
@@ -34,15 +37,27 @@ import java.util.Locale;
 
 import static org.junit.Assert.*;
 
-public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExposer> {
+public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
     public HttpCommandExposerTest() {
         Locale.setDefault(Locale.US);
     }
 
     @Override
-    protected HttpCommandExposer createExposer(final ApplicationContext ctx) {
-        return new HttpCommandExposer(ctx.getBean(CommandGateway.class), ctx.getBean(DomainLocator.class));
+    protected HttpCommandExposerPlugin createExposerPlugin() {
+        return new HttpCommandExposerPlugin();
+    }
+
+    @Override
+    protected DomainBundle getDomainBundle(){
+        return new DefaultDomainBundle(
+                  Lists.<CommandHandler>newArrayList(new NeedValidationCommandHandler(), new CreateAccountCommandHandler())
+                , Lists.<QueryHandler>newArrayList()
+                , Lists.<Repository>newArrayList()
+                , Lists.<EventListener>newArrayList()
+                , new AccountDomain()
+                , "AccountDomain"
+        );
     }
 
     // ------------------------------------------------------------------------
@@ -130,7 +145,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
         }
     }
 
-    @Test public void testJSR303Validation() {
+    @Test
+    public void testJSR303Validation() {
         // Given
         final NeedValidationCommand command = new NeedValidationCommand();
         command.str = "";
@@ -209,8 +225,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest<HttpCommandExpos
 
     @Data
     public static class NeedValidationCommand implements Command {
-        @NotNull @Size(min = 1) private String str;
-        @Valid @NotNull private InnerObject innerObject;
+        @NotNull @Size(min = 1) public String str;
+        @Valid @NotNull public InnerObject innerObject;
     }
 
     @Data

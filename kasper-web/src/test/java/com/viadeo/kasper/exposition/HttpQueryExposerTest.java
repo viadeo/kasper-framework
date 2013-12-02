@@ -11,15 +11,18 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.KasperClientBuilder;
+import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
+import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
-import com.viadeo.kasper.core.locators.QueryHandlersLocator;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
+import com.viadeo.kasper.ddd.repository.Repository;
+import com.viadeo.kasper.event.EventListener;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import org.springframework.context.ApplicationContext;
 
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
@@ -30,7 +33,7 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
-public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> {
+public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
     public static class SomeCollectionQuery extends SomeQuery {
         private static final long serialVersionUID = 104409802777527460L;
@@ -154,8 +157,20 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest<HttpQueryExposer> 
     // ------------------------------------------------------------------------
 
     @Override
-    protected HttpQueryExposer createExposer(final ApplicationContext ctx) {
-        return new HttpQueryExposer(ctx.getBean(QueryGateway.class), ctx.getBean(QueryHandlersLocator.class));
+    protected HttpQueryExposerPlugin createExposerPlugin() {
+        return new HttpQueryExposerPlugin();
+    }
+
+    @Override
+    protected DomainBundle getDomainBundle(){
+        return new DefaultDomainBundle(
+                Lists.<CommandHandler>newArrayList()
+                , Lists.<QueryHandler>newArrayList(new SomeQueryHandler(), new SomeCollectionQueryHandler())
+                , Lists.<Repository>newArrayList()
+                , Lists.<EventListener>newArrayList()
+                , new AccountDomain()
+                , "AccountDomain"
+        );
     }
 
     @Test

@@ -20,7 +20,6 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
@@ -56,25 +55,26 @@ public class HttpCommandExposer extends HttpExposer {
     private static final Meter METRICLASSERRORS = METRICS.meter(name(HttpCommandExposer.class, "errors"));
 
     private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
-    private final transient DomainLocator domainLocator;
+    private final transient List<Class<? extends CommandHandler>> commandHandlerClasses;
     private final ObjectMapper mapper;
     private final transient CommandGateway commandGateway;
     private final transient HttpContextDeserializer contextDeserializer;
 
     // ------------------------------------------------------------------------
 
-    public HttpCommandExposer(final CommandGateway commandGateway, final DomainLocator domainLocator) {
-        this(commandGateway, domainLocator,
-                new HttpContextDeserializer(),
-                ObjectMapperProvider.INSTANCE.mapper());
+    public HttpCommandExposer(final CommandGateway commandGateway, final List<Class<? extends CommandHandler>> commandHandlerClasses) {
+        this(commandGateway
+                , commandHandlerClasses
+                , new HttpContextDeserializer()
+                , ObjectMapperProvider.INSTANCE.mapper());
     }
     
     public HttpCommandExposer(final CommandGateway commandGateway,
-                              final DomainLocator domainLocator,
+                              final List<Class<? extends CommandHandler>> commandHandlerClasses,
                               final HttpContextDeserializer contextDeserializer,
                               final ObjectMapper mapper) {
         this.commandGateway = commandGateway;
-        this.domainLocator = checkNotNull(domainLocator);
+        this.commandHandlerClasses = checkNotNull(commandHandlerClasses);
         this.contextDeserializer = contextDeserializer;
         this.mapper = mapper;
     }
@@ -85,8 +85,8 @@ public class HttpCommandExposer extends HttpExposer {
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing commands ===============");
 
-        for (final CommandHandler handler : domainLocator.getHandlers()) {
-            expose(handler);
+        for (final Class<? extends CommandHandler> handlerClass : commandHandlerClasses) {
+            expose(handlerClass);
         }
 
         if (exposedCommands.isEmpty()) {
@@ -332,10 +332,10 @@ public class HttpCommandExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    HttpExposer expose(final CommandHandler commandHandler) {
-        checkNotNull(commandHandler);
+    HttpExposer expose(final Class<? extends CommandHandler> commandHandlerClass) {
+        checkNotNull(commandHandlerClass);
 
-        final TypeToken<? extends CommandHandler> typeToken = TypeToken.of(commandHandler.getClass());
+        final TypeToken<? extends CommandHandler> typeToken = TypeToken.of(commandHandlerClass);
 
         final Class<? super Command> commandClass = (Class<? super Command>) typeToken
                 .getSupertype(CommandHandler.class)

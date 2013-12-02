@@ -20,7 +20,6 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
@@ -42,10 +41,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.beans.Introspector;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
@@ -80,9 +76,7 @@ public class HttpQueryExposer extends HttpExposer {
             final ObjectMapper tmpMapper = ObjectMapperProvider.INSTANCE.mapper();
             final JsonParser parser = tmpMapper.reader().getFactory().createParser(req.getInputStream());
 
-            final SetMultimap<String, String> queryMap = tmpMapper.reader().readValue(parser, STRINGS_TYPE);
-
-            return queryMap;
+            return tmpMapper.reader().readValue(parser, STRINGS_TYPE);
         }
     };
 
@@ -108,7 +102,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
-    private final transient QueryHandlersLocator queryHandlersLocator;
+    private final transient List<Class<? extends QueryHandler>> queryHandlerClasses;
     private final transient QueryFactory queryAdapterFactory;
     private final ObjectMapper mapper;
     private final transient QueryGateway queryGateway;
@@ -117,22 +111,24 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     public HttpQueryExposer(final QueryGateway queryGateway,
-                            final QueryHandlersLocator queryHandlersLocator,
+                            final List<Class<? extends QueryHandler>> queryHandlerClasses,
                             final QueryFactory queryAdapterFactory,
                             final HttpContextDeserializer contextDeserializer,
                             final ObjectMapper mapper) {
 
         this.queryGateway = queryGateway;
-        this.queryHandlersLocator = queryHandlersLocator;
+        this.queryHandlerClasses = queryHandlerClasses;
         this.queryAdapterFactory = queryAdapterFactory;
         this.contextDeserializer = contextDeserializer;
         this.mapper = mapper;
     }
 
-    public HttpQueryExposer(final QueryGateway queryGateway, final QueryHandlersLocator queryLocator) {
-        this(queryGateway, queryLocator, new QueryFactoryBuilder().create(),
-                new HttpContextDeserializer(),
-                ObjectMapperProvider.INSTANCE.mapper());
+    public HttpQueryExposer(final QueryGateway queryGateway, final List<Class<? extends QueryHandler>> queryHandlerClasses) {
+        this(queryGateway
+                , checkNotNull(queryHandlerClasses)
+                , new QueryFactoryBuilder().create()
+                , new HttpContextDeserializer()
+                , ObjectMapperProvider.INSTANCE.mapper());
     }
 
     // ------------------------------------------------------------------------
@@ -142,8 +138,8 @@ public class HttpQueryExposer extends HttpExposer {
         LOGGER.info("=============== Exposing queries ===============");
 
         /* expose all registered queries and commands */
-        for (final QueryHandler queryHandler : queryHandlersLocator.getHandlers()) {
-            expose(queryHandler);
+        for (final Class<? extends QueryHandler> queryHandlerClass : queryHandlerClasses) {
+            expose(queryHandlerClass);
         }
 
         if (exposedQueries.isEmpty()) {
@@ -383,10 +379,10 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected HttpQueryExposer expose(final QueryHandler queryHandler) {
-        checkNotNull(queryHandler);
+    protected HttpQueryExposer expose(final Class<? extends QueryHandler> queryHandlerClass) {
+        checkNotNull(queryHandlerClass);
 
-        final TypeToken<? extends QueryHandler> typeToken = TypeToken.of(queryHandler.getClass());
+        final TypeToken<? extends QueryHandler> typeToken = TypeToken.of(queryHandlerClass);
         final Class<? super Query> queryClass = (Class<? super Query>) typeToken
                 .getSupertype(QueryHandler.class)
                 .resolveType(QueryHandler.class.getTypeParameters()[0])
