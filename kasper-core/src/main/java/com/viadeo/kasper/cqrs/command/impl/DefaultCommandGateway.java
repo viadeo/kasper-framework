@@ -32,7 +32,7 @@ public class DefaultCommandGateway implements CommandGateway {
     private final CommandBus commandBus;
     private final DomainLocator domainLocator;
 
-    public DefaultCommandGateway(CommandBus commandBus) throws Exception {
+    public DefaultCommandGateway(CommandBus commandBus) {
         this(
                 new CommandGatewayFactoryBean<CommandGateway>()
                 , commandBus
@@ -40,7 +40,7 @@ public class DefaultCommandGateway implements CommandGateway {
         );
     }
 
-    protected DefaultCommandGateway(CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean, CommandBus commandBus, DomainLocator domainLocator) throws Exception {
+    protected DefaultCommandGateway(CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean, CommandBus commandBus, DomainLocator domainLocator) {
         this.commandBus = Preconditions.checkNotNull(commandBus);
         this.domainLocator = Preconditions.checkNotNull(domainLocator);
         Preconditions.checkNotNull(commandGatewayFactoryBean);
@@ -64,7 +64,11 @@ public class DefaultCommandGateway implements CommandGateway {
             throw new KasperException("Unable to bind Axon Command Gateway", e);
         }
 
-        this.commandGateway = Preconditions.checkNotNull(commandGatewayFactoryBean.getObject());
+        try {
+            this.commandGateway = Preconditions.checkNotNull(commandGatewayFactoryBean.getObject());
+        } catch (Exception e) {
+            throw new KasperException("Unable to initialize the Command Gateway", e);
+        }
     }
 
     @Override

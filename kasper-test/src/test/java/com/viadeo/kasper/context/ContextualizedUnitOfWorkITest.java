@@ -7,16 +7,17 @@
 package com.viadeo.kasper.context;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.AbstractPlatformTests;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperTestId;
+import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
+import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandGateway;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
+import com.viadeo.kasper.cqrs.command.*;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
@@ -24,12 +25,14 @@ import com.viadeo.kasper.ddd.repository.ClientRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
+import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.domain.EntityCreatedEvent;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.repository.AggregateNotFoundException;
 import org.junit.Test;
 
+import java.util.List;
 import java.util.concurrent.Future;
 
 import static org.junit.Assert.assertEquals;
@@ -39,6 +42,37 @@ import static org.junit.Assert.fail;
 public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 
     private static final Integer TOTAL_VERIFY_CALLS = 6;
+
+    @Override
+    public List<DomainBundle> getBundles() {
+        return Lists.<DomainBundle>newArrayList(
+                new DefaultDomainBundle(
+                        Lists.<CommandHandler>newArrayList(new ContextTestHandler())
+                        , Lists.<QueryHandler>newArrayList()
+                        , Lists.<Repository>newArrayList(new ContextTestRepository())
+                        , Lists.<EventListener>newArrayList()
+                        , new ContextTestDomain()
+                        , "ContextTestDomain"
+                )
+        );
+    }
+
+    @Test
+    public void test() throws Exception {
+
+        // Given
+        final Context context = this.newContext();
+        final CommandGateway gw = this.getPlatform().getCommandGateway();
+        final ContextTestCommand command = new ContextTestCommand();
+        StaticChecker.context(context);
+
+        // When
+        final Future<CommandResponse> future = gw.sendCommandForFuture(command, context);
+        future.get();
+
+        // Then
+        assertEquals(TOTAL_VERIFY_CALLS, StaticChecker.getCounter());
+    }
 
     // -- Static verificator --------------------------------------------------
 
@@ -134,24 +168,4 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
         }
 
     }
-
-    // ------------------------------------------------------------------------
-
-    @Test
-    public void test() throws Exception {
-
-        // Given
-        final Context context = this.newContext();
-        final CommandGateway gw = this.getPlatform().getCommandGateway();
-        final ContextTestCommand command = new ContextTestCommand();
-        StaticChecker.context(context);
-
-        // When
-        final Future<CommandResponse> future = gw.sendCommandForFuture(command, context);
-        future.get();
-
-        // Then
-        assertEquals(TOTAL_VERIFY_CALLS, StaticChecker.getCounter());
-    }
-
 }

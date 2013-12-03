@@ -77,10 +77,9 @@ public class TestFixtureAxonTest {
 
     private Map<String, Object> newContext() {
         final Context context = DefaultContextBuilder.get();
-        final Map<String, Object> metaContext = new HashMap<String, Object>() {{
+        return new HashMap<String, Object>() {{
             this.put(Context.METANAME, context);
         }};
-        return metaContext;
     }
 
     // ========================================================================

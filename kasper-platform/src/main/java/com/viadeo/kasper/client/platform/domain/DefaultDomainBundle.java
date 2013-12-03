@@ -12,12 +12,12 @@ import java.util.List;
 
 public class DefaultDomainBundle implements DomainBundle {
 
-    private final List<CommandHandler> commandHandlers;
-    private final List<QueryHandler> queryHandlers;
-    private final List<Repository> repositories;
-    private final List<EventListener> eventListeners;
-    private final Domain domain;
-    private final String name;
+    protected final List<CommandHandler> commandHandlers;
+    protected final List<QueryHandler> queryHandlers;
+    protected final List<Repository> repositories;
+    protected final List<EventListener> eventListeners;
+    protected final Domain domain;
+    protected final String name;
 
     public DefaultDomainBundle(List<CommandHandler> commandHandlers, List<QueryHandler> queryHandlers, List<Repository> repositories, List<EventListener> eventListeners, Domain domain, String name) {
         this.commandHandlers = commandHandlers;

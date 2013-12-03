@@ -7,10 +7,13 @@
 package com.viadeo.kasper.cqrs.command;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
+import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.Query;
@@ -22,6 +25,7 @@ import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.er.Concept;
+import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.domain.EntityCreatedEvent;
 import com.viadeo.kasper.event.domain.EntityUpdatedEvent;
 import org.axonframework.eventhandling.annotation.EventHandler;
@@ -235,5 +239,14 @@ public class FixtureUseCase {
         }
     }
 
-
+    public static DomainBundle getDomainBundle() {
+        return new DefaultDomainBundle(
+                  Lists.<CommandHandler>newArrayList( new TestCreateCommandHandler(), new TestChangeLastNameCommandHandler())
+                , Lists.<QueryHandler>newArrayList( new TestGetSomeData())
+                , Lists.<Repository>newArrayList(new TestRepository())
+                , Lists.<EventListener>newArrayList()
+                , new TestDomain()
+                , "TestDomain"
+        );
+    }
 }

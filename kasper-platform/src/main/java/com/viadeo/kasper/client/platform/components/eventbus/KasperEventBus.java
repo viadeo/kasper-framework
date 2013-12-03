@@ -25,6 +25,7 @@ import org.axonframework.unitofwork.NoTransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -204,6 +205,17 @@ public class KasperEventBus extends ClusteringEventBus {
 
     public void publish(final IEvent event) {
         this.publish(GenericEventMessage.asEventMessage(event));
+    }
+
+    public void publishEvent(final Context context, final IEvent event) {
+        this.publish(
+                new GenericEventMessage<>(
+                        checkNotNull(event),
+                        new HashMap<String, Object>() {{
+                            this.put(Context.METANAME, context);
+                        }}
+                )
+        );
     }
 
 }

@@ -7,22 +7,25 @@
 package com.viadeo.kasper.test.platform;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.client.platform.Platform;
+import com.typesafe.config.ConfigFactory;
+import com.viadeo.kasper.client.platform.NewPlatform;
+import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
-import com.viadeo.kasper.client.platform.configuration.DefaultPlatformConfiguration;
-import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
-import com.viadeo.kasper.client.platform.configuration.PlatformFactory;
+import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
+import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.command.impl.DefaultCommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
+import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.exception.KasperException;
-import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.domain.EventMessage;
-import org.axonframework.eventhandling.EventBus;
 
 import java.util.Arrays;
 import java.util.List;
@@ -30,125 +33,45 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class KasperPlatformFixture
-        implements KasperCommandFixture<
-            KasperPlatformExecutor,
-            KasperPlatformCommandResultValidator
-        >,
-        KasperQueryFixture<
-            KasperPlatformExecutor,
-            KasperPlatformQueryResultValidator
-        >
+        implements
+          KasperCommandFixture<KasperPlatformExecutor, KasperPlatformCommandResultValidator>
+        , KasperQueryFixture<KasperPlatformExecutor, KasperPlatformQueryResultValidator>
 {
 
-    private String[] prefixes;
+    private final RecordingPlatform platform;
+    private final SpyEventBus eventBus;
 
-    /**
-     * A recording platform for fixture
-     */
-    class RecordingPlatform {
-        public final List<IEvent> recordedEvents = Lists.newLinkedList();
-        private Platform platform;
+    private DomainBundle domainBundle;
 
-        public Platform get() {
-            return this.platform;
-        }
-
-        public void set(final Platform platform) {
-            this.platform = platform;
-        }
-    }
-    private final RecordingPlatform platform = new RecordingPlatform();
-
-    /**
-     * A test configuration to record events
-     */
-    private PlatformConfiguration testConfiguration = new DefaultPlatformConfiguration() {
-
-        @Override
-        public KasperEventBus eventBus() {
-            if (containsInstance(KasperEventBus.class)) {
-                return getInstance(KasperEventBus.class);
-            } else {
-                final KasperEventBus eventBus = new KasperEventBus() {
-                    @Override
-                    public void publish(final EventMessage... messages) {
-                        super.publish(messages);
-
-                        for (final EventMessage message : messages) {
-                        if (IEvent.class.isAssignableFrom(message.getPayloadType())) {
-                                platform.recordedEvents.add((IEvent) message.getPayload());
-                            }
-                        }
-                    }
-                };
-
-                registerInstance(KasperEventBus.class, eventBus);
-                return eventBus;
-            }
-        }
-
-    };
-
-    // ------------------------------------------------------------------------
-
-    public static KasperPlatformFixture scanPrefix(final String... prefix) {
-        return new KasperPlatformFixture(prefix);
+    public KasperPlatformFixture() {
+        this.platform = new RecordingPlatform();
+        this.eventBus = new SpyEventBus(platform);
     }
 
-    private KasperPlatformFixture(final String... prefixes) {
-        this.prefixes = prefixes;
-    }
+    private void initialize() {
 
-    // ------------------------------------------------------------------------
-
-    public PlatformConfiguration conf() {
-        if (null == platform.get()) {
-            platform();
-            this.testConfiguration.annotationRootProcessor().setScanPrefixes(prefixes);
-        }
-        return this.testConfiguration;
-    }
-
-    public Platform platform() {
-        if (null == platform.get()) {
-            platform.set(new PlatformFactory(testConfiguration).getPlatform());
-            conf();
-        }
-        return platform.get();
-    }
-
-    // ========================================================================
-
-    @Override
-    public KasperPlatformFixture registerCommandHandler(CommandHandler commandHandler) {
-        checkNotNull(commandHandler).setEventBus(conf().eventBus());
-        conf().getComponentsInstanceManager().recordInstance(
-                (Class) commandHandler.getClass(),
-                commandHandler
+        platform.set(
+                new NewPlatform.Builder()
+                        .withConfiguration(ConfigFactory.empty())
+                        .withEventBus(eventBus)
+                        .withQueryGateway(new DefaultQueryGateway())
+                        .withCommandGateway(new DefaultCommandGateway(new KasperCommandBus()))
+                        .addDomainBundle(domainBundle)
+                        .build()
         );
-        return this;
     }
 
-    public KasperPlatformFixture registerEventListener(EventListener eventListener) {
-        checkNotNull(eventListener).setCommandGateway(conf().commandGateway());
-        conf().getComponentsInstanceManager().recordInstance(
-                (Class) eventListener.getClass(),
-                eventListener
-        );
+    public KasperPlatformFixture register(DomainBundle domainBundle){
+        this.domainBundle = domainBundle;
         return this;
     }
 
     @Override
-    public KasperQueryFixture<KasperPlatformExecutor, KasperPlatformQueryResultValidator> registerQueryHandler(QueryHandler queryHandler) {
-        checkNotNull(queryHandler);
-        conf().getComponentsInstanceManager().recordInstance(
-                (Class) queryHandler.getClass(),
-                queryHandler
-        );
-        return this;
+    public KasperPlatformExecutor given() {
+        initialize();
+        platform.recordedEvents.clear();
+        return new KasperPlatformExecutor(platform);
     }
-
-    // ------------------------------------------------------------------------
 
     @Override
     public KasperPlatformExecutor givenEvents(final IEvent... events) {
@@ -167,27 +90,17 @@ public class KasperPlatformFixture
 
     @Override
     public KasperPlatformExecutor givenEvents(final Context context, List<IEvent> events) {
-        platform().boot();
+        initialize();
 
         for (final IEvent event : events) {
             try {
-                platform().publishEvent(context, event);
+                platform.get().getEventBus().publishEvent(context, event);
             } catch (final Exception e) {
                 throw new KasperException(e);
             }
         }
 
         return given();
-    }
-
-
-    // ------------------------------------------------------------------------
-
-    @Override
-    public KasperPlatformExecutor given() {
-        platform().boot();
-        platform.recordedEvents.clear();
-        return new KasperPlatformExecutor(platform);
     }
 
     @Override
@@ -207,11 +120,11 @@ public class KasperPlatformFixture
 
     @Override
     public KasperPlatformExecutor givenCommands(final Context context, final List<Command> commands) {
-        platform().boot();
+        initialize();
 
         for (final Command command : commands) {
             try {
-                platform().getCommandGateway().sendCommandAndWaitForAResponse(
+                platform.get().getCommandGateway().sendCommandAndWaitForAResponse(
                         command, context
                 );
             } catch (final Exception e) {
@@ -224,14 +137,73 @@ public class KasperPlatformFixture
 
     // ------------------------------------------------------------------------
 
-    @Override
-    public CommandBus commandBus() {
-        return conf().commandBus();
+    public static class FixtureBundle extends DefaultDomainBundle {
+
+        @XKasperDomain(prefix = "fx")
+        private static class FixtureDomain implements Domain {}
+
+        public FixtureBundle() {
+            this(new FixtureDomain(), "Fixture");
+        }
+
+        public FixtureBundle(Domain domain, String name) {
+            super(domain, name);
+        }
+
+        @Override
+        public void configure(NewPlatform.BuilderContext context) { }
+
+        public FixtureBundle register(CommandHandler commandHandler) {
+            commandHandlers.add(checkNotNull(commandHandler));
+            return this;
+        }
+
+        public FixtureBundle register(EventListener eventListener) {
+            eventListeners.add(checkNotNull(eventListener));
+            return this;
+        }
+
+        public FixtureBundle register(QueryHandler queryHandler) {
+            queryHandlers.add(checkNotNull(queryHandler));
+            return this;
+        }
     }
 
-    @Override
-    public EventBus eventBus() {
-        return conf().eventBus();
+    /**
+     * A recording platform for fixture
+     */
+    public static class RecordingPlatform {
+        public final List<IEvent> recordedEvents = Lists.newLinkedList();
+        private NewPlatform platform;
+
+        public NewPlatform get() {
+            return this.platform;
+        }
+
+        public void set(final NewPlatform platform) {
+            this.platform = platform;
+        }
     }
 
+    /**
+     * Spy event bus
+     */
+    public static class SpyEventBus extends KasperEventBus {
+
+        private final RecordingPlatform recordingPlatform;
+
+        protected SpyEventBus(RecordingPlatform recordingPlatform){
+            this.recordingPlatform = recordingPlatform;
+        }
+
+        @Override
+        public void publish(final EventMessage... messages) {
+            super.publish(messages);
+            for (final EventMessage message : messages) {
+                if (IEvent.class.isAssignableFrom(message.getPayloadType())) {
+                    recordingPlatform.recordedEvents.add((IEvent) message.getPayload());
+                }
+            }
+        }
+    }
 }

@@ -6,58 +6,43 @@
 // ============================================================================
 package com.viadeo.kasper;
 
-import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.configuration.DefaultPlatformSpringConfiguration;
+import com.google.common.base.Preconditions;
+import com.typesafe.config.ConfigFactory;
+import com.viadeo.kasper.client.platform.NewPlatform;
+import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
+import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import com.viadeo.kasper.cqrs.command.impl.DefaultCommandGateway;
+import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
+
+import java.util.List;
 
 public abstract class AbstractPlatformTests {
 
-    private static ApplicationContext context = null;
+    private NewPlatform platform;
 
-    private static Platform staticPlatform = null;
-    private Platform platform = null;
+    protected NewPlatform getPlatform() {
+        if(platform == null){
+            NewPlatform.Builder platformBuilder = new NewPlatform.Builder()
+                    .withConfiguration(ConfigFactory.empty())
+                    .withEventBus(new KasperEventBus())
+                    .withCommandGateway(new DefaultCommandGateway(new KasperCommandBus()))
+                    .withQueryGateway(new DefaultQueryGateway());
 
-    // ------------------------------------------------------------------------
+            for(DomainBundle domainBundle: Preconditions.checkNotNull(getBundles())){
+                platformBuilder.addDomainBundle(domainBundle);
+            }
 
-    public AbstractPlatformTests() {
-        this(true);
-    }
-
-    // ------------------------------------------------------------------------
-
-    public AbstractPlatformTests(final boolean uniquePlatform) {
-
-        if (null == context) {
-            context = new AnnotationConfigApplicationContext(DefaultPlatformSpringConfiguration.class);
+            this.platform = platformBuilder.build();
         }
-
-        if (null == staticPlatform) {
-            staticPlatform = context.getBean(Platform.class);
-            staticPlatform.boot();
-        }
-
-        if (uniquePlatform) {
-            platform = staticPlatform;
-        } else {
-            platform = context.getBean(Platform.class);
-            platform.boot();
-        }
-
-    }
-
-    // ------------------------------------------------------------------------
-
-    protected Platform getPlatform() {
         return this.platform;
     }
-
-    // ------------------------------------------------------------------------
 
     protected Context newContext() {
         return new DefaultContextBuilder().build();
     }
 
+    public abstract List<DomainBundle> getBundles();
 }

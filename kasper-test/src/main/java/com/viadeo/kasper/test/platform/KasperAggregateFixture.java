@@ -7,11 +7,10 @@
 package com.viadeo.kasper.test.platform;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
-import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.command.RepositoryManager;
+import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
@@ -34,67 +33,49 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @param <AGR> the aggregate type
  */
 public class KasperAggregateFixture<AGR extends AggregateRoot>
-        implements KasperCommandFixture<
-             KasperAggregateExecutor,
-             KasperAggregateResultValidator
-        > {
+        implements KasperCommandFixture<KasperAggregateExecutor, KasperAggregateResultValidator>
+{
 
-    public static final int AGGREGATE_PARAMETER_POSITION = 0;
-
-    private GivenWhenThenTestFixture<AGR> fixture;
-    private final IRepository<AGR> repository;
-    private boolean checkIllegalState = true;
-
-    private final ConceptResolver conceptResolver = new ConceptResolver();
-    private final RelationResolver relationResolver = new RelationResolver(conceptResolver);
-    private final EntityResolver entityResolver = new EntityResolver(conceptResolver, relationResolver);
-    private final RepositoryResolver repositoryResolver = new RepositoryResolver(entityResolver);
-    private final CommandHandlerResolver commandHandlerResolver = new CommandHandlerResolver();
-
-    private final DomainLocator domainLocator = new DefaultDomainLocator(repositoryResolver, commandHandlerResolver);
-
-    // ------------------------------------------------------------------------
-
-    private KasperAggregateFixture(final IRepository<AGR> repository, final Class<AGR> aggregateClass) {
-        this.repository = repository;
-        domainLocator.registerRepository(repository);
-
-        fixture = new GivenWhenThenTestFixture<>(aggregateClass);
-        fixture.setReportIllegalStateChange(checkIllegalState);
-
-        if (Repository.class.isAssignableFrom(this.repository.getClass())) {
-            ((Repository) repository).setEventStore(fixture.getEventStore());
-            ((Repository) repository).setEventBus(fixture.getEventBus());
-        }
-
-        /* WARNING: fixture.registerRepository(repository); */
-    }
-
-    public static final <AGR extends AggregateRoot> KasperAggregateFixture<AGR> forRepository(
-            final IRepository<AGR> repository, final Class<AGR> aggregateClass) {
+    public static <AGR extends AggregateRoot> KasperAggregateFixture<AGR> forRepository(
+              final Repository<AGR> repository
+            , final Class<AGR> aggregateClass
+    ) {
         return new KasperAggregateFixture<>(checkNotNull(repository), checkNotNull(aggregateClass));
     }
 
     // ------------------------------------------------------------------------
+
+    private final GivenWhenThenTestFixture<AGR> fixture;
+    private final Repository<AGR> repository;
+    private final RepositoryManager repositoryManager;
+
+    private boolean checkIllegalState = true;
+
+    private KasperAggregateFixture(final Repository<AGR> repository, final Class<AGR> aggregateClass) {
+        this.fixture = new GivenWhenThenTestFixture<>(aggregateClass);
+        this.fixture.setReportIllegalStateChange(checkIllegalState);
+
+        this.repository = repository;
+        this.repository.setEventStore(fixture.getEventStore());
+        this.repository.setEventBus(fixture.getEventBus());
+        this.repository.init();
+
+        this.repositoryManager = new DefaultRepositoryManager();
+        this.repositoryManager.register(repository);
+
+        /* WARNING: fixture.registerRepository(repository); */
+    }
 
     public KasperAggregateFixture<AGR> withoutIllegalStateCheck() {
         this.checkIllegalState = false;
         return this;
     }
 
-    // ------------------------------------------------------------------------
-
-    @Override
     public KasperAggregateFixture<AGR> registerCommandHandler(final CommandHandler commandHandler) {
-        domainLocator.registerHandler(commandHandler);
-
-        final Class<? extends Command> commandClass = commandHandlerResolver.getCommandClass(commandHandler.getClass());
-
         commandHandler.setEventBus(fixture.getEventBus());
-        commandHandler.setDomainLocator(domainLocator);
+        commandHandler.setRepositoryManager(repositoryManager);
 
-        fixture.registerCommandHandler(commandClass, commandHandler);
-
+        fixture.registerCommandHandler(commandHandler.getCommandClass(), commandHandler);
         return this;
     }
 
@@ -151,12 +132,10 @@ public class KasperAggregateFixture<AGR extends AggregateRoot>
 
     // ------------------------------------------------------------------------
 
-    @Override
     public CommandBus commandBus() {
         return fixture.getCommandBus();
     }
 
-    @Override
     public EventBus eventBus() {
         return fixture.getEventBus();
     }

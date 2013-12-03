@@ -28,7 +28,7 @@ public class TestFixturePlatformTest {
 
     @Before
     public void resetFixture() {
-        this.fixture = KasperPlatformFixture.scanPrefix(this.getClass().getPackage().getName());
+        this.fixture = new KasperPlatformFixture().register(FixtureUseCase.getDomainBundle());
     }
 
     // ========================================================================

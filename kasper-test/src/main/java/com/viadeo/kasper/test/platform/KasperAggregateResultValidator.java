@@ -56,7 +56,7 @@ public class KasperAggregateResultValidator
 
     @Override
     public KasperAggregateResultValidator expectExactSequenceOfEvents(final IEvent... events) {
-        checkValidation();;
+        checkValidation();
 
         final Matcher[] matchers = new Matcher[events.length + 1];
 
@@ -120,7 +120,7 @@ public class KasperAggregateResultValidator
     public KasperFixtureResultValidator expectValidationErrorOnField(final String field) {
         if (null == validationReason) {
             throw new AxonAssertionError(String.format(
-                    "The expected validation error on field %s not occured",
+                    "The expected validation error on field %s not occurred",
                     field
             ));
         }
@@ -140,7 +140,7 @@ public class KasperAggregateResultValidator
 
         if ( ! found) {
             throw new AxonAssertionError(String.format(
-                    "The expected validation error on field %s not occured",
+                    "The expected validation error on field %s not occurred",
                     field
             ));
         }
