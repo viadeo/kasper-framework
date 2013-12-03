@@ -11,26 +11,18 @@ import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.NewPlatform;
 import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
-import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.impl.DefaultCommandGateway;
-import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.ddd.annotation.XKasperDomain;
-import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.domain.EventMessage;
 
 import java.util.Arrays;
 import java.util.List;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 public class KasperPlatformFixture
         implements
@@ -49,7 +41,6 @@ public class KasperPlatformFixture
     }
 
     private void initialize() {
-
         platform.set(
                 new NewPlatform.Builder()
                         .withConfiguration(ConfigFactory.empty())
@@ -136,38 +127,6 @@ public class KasperPlatformFixture
     }
 
     // ------------------------------------------------------------------------
-
-    public static class FixtureBundle extends DefaultDomainBundle {
-
-        @XKasperDomain(prefix = "fx")
-        private static class FixtureDomain implements Domain {}
-
-        public FixtureBundle() {
-            this(new FixtureDomain(), "Fixture");
-        }
-
-        public FixtureBundle(Domain domain, String name) {
-            super(domain, name);
-        }
-
-        @Override
-        public void configure(NewPlatform.BuilderContext context) { }
-
-        public FixtureBundle register(CommandHandler commandHandler) {
-            commandHandlers.add(checkNotNull(commandHandler));
-            return this;
-        }
-
-        public FixtureBundle register(EventListener eventListener) {
-            eventListeners.add(checkNotNull(eventListener));
-            return this;
-        }
-
-        public FixtureBundle register(QueryHandler queryHandler) {
-            queryHandlers.add(checkNotNull(queryHandler));
-            return this;
-        }
-    }
 
     /**
      * A recording platform for fixture
