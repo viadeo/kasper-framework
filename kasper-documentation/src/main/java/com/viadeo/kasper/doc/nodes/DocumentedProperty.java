@@ -11,14 +11,16 @@ public class DocumentedProperty {
 	private final String name;
 	private final String type;
 	private final Boolean isList;
+    private final Boolean mandatory;
 	
 	// ------------------------------------------------------------------------
 	
-	DocumentedProperty(final String name, final String type, final Boolean isList) {
+	DocumentedProperty(final String name, final String type, final Boolean isList, Boolean mandatory) {
 		this.name = name;
 		this.type = type;
 		this.isList = isList;
-	}
+        this.mandatory = mandatory;
+    }
 	
 	// ------------------------------------------------------------------------
 
@@ -33,5 +35,8 @@ public class DocumentedProperty {
 	public Boolean isList() {
 		return this.isList;
 	}
-	
+
+    public Boolean isMandatory() {
+        return mandatory;
+    }
 }
