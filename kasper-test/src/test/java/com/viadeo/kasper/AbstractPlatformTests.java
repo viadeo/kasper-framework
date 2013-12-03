@@ -8,7 +8,7 @@ package com.viadeo.kasper;
 
 import com.google.common.base.Preconditions;
 import com.typesafe.config.ConfigFactory;
-import com.viadeo.kasper.client.platform.NewPlatform;
+import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
@@ -21,11 +21,11 @@ import java.util.List;
 
 public abstract class AbstractPlatformTests {
 
-    private NewPlatform platform;
+    private Platform platform;
 
-    protected NewPlatform getPlatform() {
+    protected Platform getPlatform() {
         if(platform == null){
-            NewPlatform.Builder platformBuilder = new NewPlatform.Builder()
+            Platform.Builder platformBuilder = new Platform.Builder()
                     .withConfiguration(ConfigFactory.empty())
                     .withEventBus(new KasperEventBus())
                     .withCommandGateway(new DefaultCommandGateway(new KasperCommandBus()))

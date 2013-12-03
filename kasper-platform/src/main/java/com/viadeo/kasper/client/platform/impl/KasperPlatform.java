@@ -7,7 +7,7 @@
 
 package com.viadeo.kasper.client.platform.impl;
 
-import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.client.platform.OldPlatform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.context.Context;
@@ -29,8 +29,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * The default implementation for the Kasper platform
+ *
+ * @deprecated use {@link com.viadeo.kasper.client.platform.impl.DefaultPlatform} instead.
  */
-public class KasperPlatform implements Platform {
+@Deprecated
+public class KasperPlatform implements OldPlatform {
 
     /** The platform configuration **/
     protected PlatformConfiguration platformConfiguration;

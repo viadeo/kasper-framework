@@ -8,7 +8,7 @@ package com.viadeo.kasper.test.platform;
 
 import com.google.common.collect.Lists;
 import com.typesafe.config.ConfigFactory;
-import com.viadeo.kasper.client.platform.NewPlatform;
+import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
@@ -42,7 +42,7 @@ public class KasperPlatformFixture
 
     private void initialize() {
         platform.set(
-                new NewPlatform.Builder()
+                new Platform.Builder()
                         .withConfiguration(ConfigFactory.empty())
                         .withEventBus(eventBus)
                         .withQueryGateway(new DefaultQueryGateway())
@@ -133,13 +133,13 @@ public class KasperPlatformFixture
      */
     public static class RecordingPlatform {
         public final List<IEvent> recordedEvents = Lists.newLinkedList();
-        private NewPlatform platform;
+        private Platform platform;
 
-        public NewPlatform get() {
+        public Platform get() {
             return this.platform;
         }
 
-        public void set(final NewPlatform platform) {
+        public void set(final Platform platform) {
             this.platform = platform;
         }
     }

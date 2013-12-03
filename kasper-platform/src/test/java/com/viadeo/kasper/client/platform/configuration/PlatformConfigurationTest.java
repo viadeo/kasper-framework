@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform.configuration;
 
-import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.client.platform.OldPlatform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -142,7 +142,7 @@ public class PlatformConfigurationTest {
         final QueryHandlerFiltersProcessor queryHandlerFiltersProcessor =
                 this.testCachedComponent(pf, "queryHandlerFiltersProcessor", queryHandlersLocator);
 
-        final Platform platform =
+        final OldPlatform platform =
                 this.testCachedComponent(pf, "kasperPlatform",
                                   commandGateway, queryGateway,
                                   eventBus, annotationRootProcessor);

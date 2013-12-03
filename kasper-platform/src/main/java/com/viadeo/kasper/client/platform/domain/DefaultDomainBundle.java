@@ -1,7 +1,7 @@
 package com.viadeo.kasper.client.platform.domain;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.client.platform.NewPlatform;
+import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
@@ -39,9 +39,7 @@ public class DefaultDomainBundle implements DomainBundle {
     }
 
     @Override
-    public void configure(NewPlatform.BuilderContext context) {
-
-    }
+    public void configure(Platform.BuilderContext context) { }
 
     @Override
     public String getName() {

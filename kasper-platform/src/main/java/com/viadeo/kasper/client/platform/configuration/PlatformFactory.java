@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform.configuration;
 
-import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.client.platform.OldPlatform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -20,13 +20,13 @@ import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 
 /**
- * @deprecated use {@link com.viadeo.kasper.client.platform.NewPlatform.Builder} instead.
+ * @deprecated use {@link com.viadeo.kasper.client.platform.Platform.Builder} instead.
  */
 @Deprecated
 public class PlatformFactory {
 
     private final PlatformConfiguration platformConfiguration;
-    private Platform platform;
+    private OldPlatform platform;
 
     // ------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ public class PlatformFactory {
 
     public PlatformFactory configure() {
         if (null != platform) {
-            throw new KasperException("Platform factory as already been configured");
+            throw new KasperException("OldPlatform factory as already been configured");
         }
         platform = getPlatform();
         return this;
@@ -57,7 +57,7 @@ public class PlatformFactory {
             this.configure();
         }
         if (platform.isBooted()) {
-            throw new KasperException("Platform has already been booted");
+            throw new KasperException("OldPlatform has already been booted");
         }
         platform.boot();
         return this;
@@ -65,11 +65,11 @@ public class PlatformFactory {
 
     // ------------------------------------------------------------------------
 
-    public Platform getPlatform() {
+    public OldPlatform getPlatform() {
         return this.getPlatform(false);
     }
 
-    public Platform getPlatform(final boolean bootPlatform) {
+    public OldPlatform getPlatform(final boolean bootPlatform) {
 
         if (null != platform) {
             return platform;

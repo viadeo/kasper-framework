@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.web;
 
-import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.client.platform.OldPlatform;
 import com.viadeo.kasper.exception.KasperException;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.WebApplicationContextUtils;
@@ -34,7 +34,7 @@ public class KasperPlatformSpringBootListener implements ServletContextListener 
             throw new KasperException("Unable to find Spring context !");
         }
 
-        final Platform platform = springContext.getBean(Platform.class);
+        final OldPlatform platform = springContext.getBean(OldPlatform.class);
 
         if (null == platform) {
             throw new KasperException("No Kasper kasper bean found in current Spring context !");

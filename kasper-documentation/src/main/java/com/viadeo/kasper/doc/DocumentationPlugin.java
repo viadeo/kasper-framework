@@ -1,6 +1,6 @@
 package com.viadeo.kasper.doc;
 
-import com.viadeo.kasper.client.platform.NewPlatform;
+import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.Plugin;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.doc.element.DocumentedPlatform;
@@ -16,7 +16,7 @@ public class DocumentationPlugin implements Plugin {
     }
 
     @Override
-    public void initialize(NewPlatform platform, DomainDescriptor... domainDescriptors) {
+    public void initialize(Platform platform, DomainDescriptor... domainDescriptors) {
         for (DomainDescriptor domainDescriptor : domainDescriptors) {
             documentedPlatform.registerDomain(domainDescriptor.getName(), domainDescriptor);
         }

@@ -8,7 +8,7 @@ import com.viadeo.kasper.event.EventListener;
 
 import java.util.List;
 
-import static com.viadeo.kasper.client.platform.NewPlatform.BuilderContext;
+import static com.viadeo.kasper.client.platform.Platform.BuilderContext;
 
 public interface DomainBundle {
     void configure(BuilderContext context);

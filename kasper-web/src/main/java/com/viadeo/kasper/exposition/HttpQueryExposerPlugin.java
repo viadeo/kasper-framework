@@ -4,7 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.client.platform.NewPlatform;
+import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.domain.descriptor.Descriptor;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -24,7 +24,7 @@ public class HttpQueryExposerPlugin implements HttpExposerPlugin {
     private HttpQueryExposer httpQueryExposer;
 
     @Override
-    public void initialize(NewPlatform platform, DomainDescriptor... domainDescriptors) {
+    public void initialize(Platform platform, DomainDescriptor... domainDescriptors) {
         List<Class<? extends QueryHandler>> queryHandlerClasses = Lists.newArrayList();
 
         for(DomainDescriptor domainDescriptor:domainDescriptors){

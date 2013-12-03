@@ -4,6 +4,6 @@ import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 
 public interface Plugin {
 
-    void initialize(NewPlatform platform, DomainDescriptor... domainDescriptors);
+    void initialize(Platform platform, DomainDescriptor... domainDescriptors);
 
 }

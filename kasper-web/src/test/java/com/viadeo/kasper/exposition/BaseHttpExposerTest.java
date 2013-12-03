@@ -9,7 +9,7 @@ package com.viadeo.kasper.exposition;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.KasperClient;
 import com.viadeo.kasper.client.KasperClientBuilder;
-import com.viadeo.kasper.client.platform.NewPlatform;
+import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
@@ -44,7 +44,7 @@ public abstract class BaseHttpExposerTest {
 	public void setUp() throws Exception {
         HttpExposerPlugin exposerPlugin = createExposerPlugin();
 
-        new NewPlatform.Builder()
+        new Platform.Builder()
                 .withEventBus(new KasperEventBus())
                 .withCommandGateway(new DefaultCommandGateway(new KasperCommandBus()))
                 .withQueryGateway(new DefaultQueryGateway())

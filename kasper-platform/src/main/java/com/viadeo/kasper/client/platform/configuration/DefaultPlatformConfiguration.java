@@ -9,7 +9,7 @@ package com.viadeo.kasper.client.platform.configuration;
 import com.codahale.metrics.Slf4jReporter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.MutableClassToInstanceMap;
-import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.client.platform.OldPlatform;
 import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.impl.KasperPlatform;
@@ -699,7 +699,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     @Override
     public void initializeMetricsReporters() {
 
-        final Logger platformLogger = LoggerFactory.getLogger(Platform.class);
+        final Logger platformLogger = LoggerFactory.getLogger(OldPlatform.class);
 
         if (platformLogger.isTraceEnabled()) {
             final Slf4jReporter reporter = Slf4jReporter

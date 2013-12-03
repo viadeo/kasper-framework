@@ -1,149 +1,245 @@
-// ============================================================================
-//                 KASPER - Kasper is the treasure keeper
-//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
-//
-//           Viadeo Framework for effective CQRS/DDD architecture
-// ============================================================================
 package com.viadeo.kasper.client.platform;
 
+import com.google.common.base.Objects;
+import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.typesafe.config.Config;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.boot.AnnotationRootProcessor;
-import com.viadeo.kasper.core.boot.ComponentsInstanceManager;
-import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
+import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptorFactory;
+import com.viadeo.kasper.client.platform.impl.DefaultPlatform;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.command.RepositoryManager;
+import com.viadeo.kasper.cqrs.command.impl.DefaultCommandGateway;
+import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
+import com.viadeo.kasper.ddd.repository.Repository;
+import com.viadeo.kasper.event.EventListener;
 
-/**
- * The Kasper platform
- *
- * This interface represent the main entry point to your platform front components,
- * the Command and Query gateways from which your can then send commands and queries,
- * or even send Events.
- *
- * This platform has to be booted before usage.
- *
- * You can use the PlatformFactory in order to build a runnable platform, using
- * the default configuration or providing yours.
- *
- * If you are using Spring, you can also directly add the DefaultPlatformSpringConfiguration
- * bean to your running context, this will allow you to inject the Platform, CommandGateway,
- * EventBus or QueryGateway class beans in your project classes
- *
- * A root processor has to be supplied to the platform during its building, this root processor
- * will be called during the boot process in order to analyze, depending on its settings, parts
- * of your classpath searching for your Kasper components (aka. Handlers, Listeners,
- * Repositories, ...)
- *
- */
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 public interface Platform {
-
-	/** == Boot ============================================================ */
-
-    /**
-     * Boot a Kasper platform
-     */
-	void boot();
-
-    /**
-     * @return true of the platform is already booted
-     */
-    boolean isBooted();
-
-    /** == Root processor ================================================== */
-
-    /**
-     * Sets the root processor to be used during boot time
-     *
-     * @param rootProcessor the root processor to be used at boot time
-     */
-	void setRootProcessor(AnnotationRootProcessor rootProcessor);
-
-    /**
-     * @return the root processor used by the platform
-     */
-    AnnotationRootProcessor getRootProcessor();
-
-    /**
-     * @return the instances manager used to store all platform's components instance
-     */
-    ComponentsInstanceManager getComponentsInstanceManager();
-
-	/** == Commands ======================================================== */
-
-    /**
-     * Sets the Command gateway to be used by the platform
-     *
-     * @param commandGateway the command gateway to be used by the platform
-     */
-	void setCommandGateway(CommandGateway commandGateway);
 
     /**
      * @return the Command gateway to use in order to send commands to the platform
      */
-	CommandGateway getCommandGateway();
-
-    /**
-     * Send a command to the platform in a "fire and forget" mode
-     *
-     * For other ways to send a command to the platform, user preferably the command
-     * gateway directly
-     *
-     * @param command the command to be processed by the platform
-     * @param context the command context
-     * @throws Exception when something bad occurs
-     */
-    void sendCommand(Command command, Context context) throws Exception;
-
-	/** == Queries ========================================================= */
-
-    /**
-     * Sets the Query gatewayto be used by the platform
-     *
-     * @param queryGateway the query gateway to be used by the platform
-     */
-	void setQueryGateway(QueryGateway queryGateway);
+    CommandGateway getCommandGateway();
 
     /**
      * @return the query gateway to use in order to send queries to the platform
      */
-	QueryGateway getQueryGateway();
-
-    /**
-     * Sends a query to the platform, retrieving a response for this query
-     *
-     * @param query the query to be processed by the platform
-     * @param context the query context
-     *
-     * @return the response generated after processing of the query
-     * @throws Exception when something bad occurs
-     */
-    <RESULT extends QueryResult> QueryResponse<RESULT> retrieve(Query query, Context context) throws Exception;
-
- 	/** == Events ========================================================== */
-
-    /**
-     * Sets the event bus to be used by the platform
-     *
-     * @param eventBus the event bus to be used by the platform
-     */
-	void setEventBus(KasperEventBus eventBus);
+    QueryGateway getQueryGateway();
 
     /**
      * @return the event bus used by the platform
      */
     KasperEventBus getEventBus();
 
-    /**
-     * Publish an event to the platform
-     *
-     * @param event
-     */
-    void publishEvent(IEvent event);
-    void publishEvent(Context context, IEvent event);
 
+    public static class Builder{
+
+        private final Collection<DomainBundle> domainBundles;
+        private final Collection<Plugin> kasperPlugins;
+        private final Map<ExtraComponentKey, Object> extraComponents;
+        private final DomainDescriptorFactory domainDescriptorFactory;
+
+        private KasperEventBus eventBus;
+        private DefaultCommandGateway commandGateway;
+        private DefaultQueryGateway queryGateway;
+        private Config configuration;
+        private RepositoryManager repositoryManager;
+
+        public Builder() {
+            this(new DomainDescriptorFactory());
+        }
+
+        protected Builder(DomainDescriptorFactory domainDescriptorFactory) {
+            this(domainDescriptorFactory, new DefaultRepositoryManager());
+        }
+
+        protected Builder(DomainDescriptorFactory domainDescriptorFactory, RepositoryManager repositoryManager) {
+            this.domainDescriptorFactory = domainDescriptorFactory;
+            this.repositoryManager = repositoryManager;
+            this.domainBundles = Lists.newArrayList();
+            this.kasperPlugins = Lists.newArrayList();
+            this.extraComponents = Maps.newHashMap();
+        }
+
+        public Builder addDomainBundle(DomainBundle domainBundle) {
+            this.domainBundles.add(Preconditions.checkNotNull(domainBundle));
+            return this;
+        }
+
+        public Builder addPlugin(Plugin plugin) {
+            this.kasperPlugins.add(Preconditions.checkNotNull(plugin));
+            return this;
+        }
+
+        public <E> Builder addExtraComponent(String name, E component) {
+            Preconditions.checkNotNull(name);
+            Preconditions.checkNotNull(component);
+            this.extraComponents.put(new ExtraComponentKey(name, component.getClass()), component);
+            return this;
+        }
+
+        public Builder withConfiguration(Config configuration){
+            this.configuration = Preconditions.checkNotNull(configuration);
+            return this;
+        }
+
+        public Builder withEventBus(KasperEventBus eventBus) {
+            this.eventBus = Preconditions.checkNotNull(eventBus);
+            return this;
+        }
+
+        public Builder withCommandGateway(DefaultCommandGateway commandGateway) {
+            this.commandGateway = Preconditions.checkNotNull(commandGateway);
+            return this;
+        }
+
+        public Builder withQueryGateway(DefaultQueryGateway queryGateway) {
+            this.queryGateway = Preconditions.checkNotNull(queryGateway);
+            return this;
+        }
+
+        public Builder withRepositoryManager(RepositoryManager repositoryManager) {
+            this.repositoryManager = Preconditions.checkNotNull(repositoryManager);
+            return this;
+        }
+
+        public Platform build(){
+            Preconditions.checkState(eventBus != null, "the event bus cannot be null");
+            Preconditions.checkState(commandGateway != null, "the command gateway cannot be null");
+            Preconditions.checkState(queryGateway != null, "the query gateway cannot be null");
+            Preconditions.checkState(configuration != null, "the configuration cannot be null");
+            Preconditions.checkState(repositoryManager != null, "the repository manager cannot be null");
+
+            BuilderContext context = new BuilderContext(configuration, eventBus, commandGateway, queryGateway, extraComponents);
+
+            List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
+
+            for (DomainBundle bundle : domainBundles) {
+                bundle.configure(context);
+
+                for(Repository repository : bundle.getRepositories()){
+                    repository.init();
+                    repository.setEventBus(eventBus);
+                    repositoryManager.register(repository);
+                }
+
+                for(CommandHandler commandHandler : bundle.getCommandHandlers()){
+                    commandHandler.setEventBus(eventBus);
+                    commandHandler.setRepositoryManager(repositoryManager);
+                    commandGateway.register(commandHandler);
+                }
+
+                for(QueryHandler queryHandler: bundle.getQueryHandlers()){
+                    queryGateway.register(queryHandler);
+                }
+
+                for(EventListener eventListener : bundle.getEventListeners()){
+                    eventListener.setCommandGateway(commandGateway);
+                    eventBus.subscribe(eventListener);
+                }
+
+                domainDescriptors.add(domainDescriptorFactory.createFrom(bundle));
+            }
+
+            DefaultPlatform platform = new DefaultPlatform(commandGateway, queryGateway, eventBus);
+
+            DomainDescriptor[] domainDescriptorArray = domainDescriptors.toArray(new DomainDescriptor[domainDescriptors.size()]);
+            for(Plugin plugin : kasperPlugins){
+                plugin.initialize(platform, domainDescriptorArray);
+            }
+
+            return platform;
+        }
+    }
+
+    public static class BuilderContext {
+
+        private final Config configuration;
+        private final KasperEventBus eventBus;
+        private final CommandGateway commandGateway;
+        private final QueryGateway queryGateway;
+        private final Map<ExtraComponentKey, Object> extraComponent;
+
+        public BuilderContext(
+                  Config configuration
+                , KasperEventBus eventBus
+                , CommandGateway commandGateway
+                , QueryGateway queryGateway
+                , Map<ExtraComponentKey, Object> extraComponent
+        ) {
+            this.configuration = configuration;
+            this.eventBus = eventBus;
+            this.commandGateway = commandGateway;
+            this.queryGateway = queryGateway;
+            this.extraComponent = extraComponent;
+        }
+
+        public Config getConfiguration() {
+            return configuration;
+        }
+
+        public KasperEventBus getEventBus() {
+            return eventBus;
+        }
+
+        public CommandGateway getCommandGateway() {
+            return commandGateway;
+        }
+
+        public QueryGateway getQueryGateway() {
+            return queryGateway;
+        }
+
+        @SuppressWarnings("unchecked")
+        public <E> Optional<E> getExtraComponent(ExtraComponentKey key) {
+            return Optional.fromNullable((E) extraComponent.get(key));
+        }
+    }
+
+    public static class ExtraComponentKey {
+        private final String name;
+        private final Class clazz;
+
+        public ExtraComponentKey(String name, Class clazz) {
+            this.name = name;
+            this.clazz = clazz;
+        }
+
+        public Class getClazz() {
+            return clazz;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hashCode(name, clazz);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) {
+                return true;
+            }
+            if (obj == null || getClass() != obj.getClass()) {
+                return false;
+            }
+            final ExtraComponentKey other = (ExtraComponentKey) obj;
+            return Objects.equal(this.name, other.name) && Objects.equal(this.clazz, other.clazz);
+        }
+    }
 }
