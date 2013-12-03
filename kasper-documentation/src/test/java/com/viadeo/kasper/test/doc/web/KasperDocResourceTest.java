@@ -91,11 +91,6 @@ public class KasperDocResourceTest extends JerseyTest {
 	 */
 	private static final boolean UPDATE_TESTS = false;
 
-    /**
-     * Used to boot Kasper platform for documentation capabilities testing
-     */
-    private static final KasperConfigurator kasperConfigurator = new KasperConfigurator();
-
     // ------------------------------------------------------------------------
 
     /**
@@ -110,10 +105,6 @@ public class KasperDocResourceTest extends JerseyTest {
 
         @Path("/")
         public KasperDocResource2 delegate() {
-//            final KasperDocResource res = new KasperDocResource();
-//            res.setKasperLibrary(kasperConfigurator.getKasperLibrary());
-//            return res;
-
             DomainDescriptor facebookDomainDescriptor = new DomainDescriptor(
                     Facebook.NAME
                     , Facebook.class
