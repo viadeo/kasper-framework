@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.Transient;
+import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.lang.reflect.ParameterizedType;
@@ -56,8 +57,13 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 				final Boolean isList;
                 final Class propClass = property.getType();
 				final String type;
+                boolean mandatory = false;
 
-				if (Collection.class.isAssignableFrom(propClass)) {
+                if (null != property.getAnnotation(NotNull.class)) {
+                    mandatory = true;
+                }
+
+                if (Collection.class.isAssignableFrom(propClass)) {
 
 					@SuppressWarnings("unchecked")
 					final Optional<Class> optType = (Optional<Class>)
@@ -95,7 +101,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 				}
 
                 if (!name.startsWith("this$")) {
-				    this.add(new DocumentedProperty(name, type, isList));
+				    this.add(new DocumentedProperty(name, type, isList, mandatory));
                 }
 			}
 		}
