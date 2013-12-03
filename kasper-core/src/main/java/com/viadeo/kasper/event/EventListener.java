@@ -11,6 +11,9 @@ import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
+import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.exception.KasperException;
@@ -103,6 +106,16 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 
         /* Start timer */
         final Timer.Context timer = metricTimer.time();
+
+        /* Ensure a context is set */
+        if ( ! CurrentContext.value().isPresent()) {
+            final Context messageContext = message.getContext();
+            if (null != messageContext) {
+                CurrentContext.set(messageContext);
+            } else {
+                CurrentContext.set(DefaultContextBuilder.get());
+            }
+        }
 
         /* Handle event */
         try {
