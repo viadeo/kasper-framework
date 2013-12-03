@@ -19,6 +19,10 @@ import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 
+/**
+ * @deprecated use {@link com.viadeo.kasper.client.platform.NewPlatform.Builder} instead.
+ */
+@Deprecated
 public class PlatformFactory {
 
     private final PlatformConfiguration platformConfiguration;
