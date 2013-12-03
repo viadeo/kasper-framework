@@ -12,7 +12,6 @@ import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.event.IEvent;
@@ -52,10 +51,9 @@ public abstract class CommandHandler<C extends Command>
     private Meter metricRequests;
     private Meter metricErrors;
 
-    private transient DomainLocator domainLocator;
-    private transient EventBus eventBus;
-
     private transient final Class<C> commandClass;
+    private transient EventBus eventBus;
+    private transient RepositoryManager repositoryManager;
 
     // ------------------------------------------------------------------------
 
@@ -211,19 +209,6 @@ public abstract class CommandHandler<C extends Command>
 
     // ------------------------------------------------------------------------
 
-    /**
-     * @param domainLocator
-     */
-    public void setDomainLocator(final DomainLocator domainLocator) {
-        this.domainLocator = checkNotNull(domainLocator);
-    }
-
-    protected DomainLocator getDomainLocator() {
-        return this.domainLocator;
-    }
-
-    // ------------------------------------------------------------------------
-
     public void setEventBus(final EventBus eventBus) {
         this.eventBus = checkNotNull(eventBus);
     }
@@ -234,8 +219,17 @@ public abstract class CommandHandler<C extends Command>
 
     // ------------------------------------------------------------------------
 
-
     public Class<C> getCommandClass() {
         return commandClass;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public void setRepositoryManager(RepositoryManager repositoryManager) {
+        this.repositoryManager = repositoryManager;
+    }
+
+    protected RepositoryManager getRepositoryManager() {
+        return repositoryManager;
     }
 }

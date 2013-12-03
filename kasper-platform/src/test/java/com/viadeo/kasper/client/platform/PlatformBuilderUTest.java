@@ -8,7 +8,9 @@ import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.DefaultCommandGateway;
+import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
@@ -320,12 +322,14 @@ public class PlatformBuilderUTest {
         KasperEventBus eventBus = mock(KasperEventBus.class);
         DefaultCommandGateway commandGateway = mock(DefaultCommandGateway.class);
         DomainDescriptorFactory domainDescriptorFactory = createMockedDomainDescriptorFactory();
+        RepositoryManager repositoryManager = mock(DefaultRepositoryManager.class);
 
         NewPlatform.Builder builder = new NewPlatform.Builder(domainDescriptorFactory)
                 .withQueryGateway(mock(DefaultQueryGateway.class))
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
                 .withConfiguration(mock(Config.class))
+                .withRepositoryManager(repositoryManager)
                 .addDomainBundle(domainBundle);
 
         // When
@@ -333,9 +337,8 @@ public class PlatformBuilderUTest {
 
         // Then
         assertNotNull(platform);
-        verify(commandGateway).register(refEq(repository));
         verify(repository).setEventBus(refEq(eventBus));
-        verify(repository).init();
+        verify(repositoryManager).register(refEq(repository));
     }
 
     private DomainDescriptorFactory createMockedDomainDescriptorFactory(){

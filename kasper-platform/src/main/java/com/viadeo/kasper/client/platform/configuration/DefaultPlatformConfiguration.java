@@ -243,7 +243,6 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
 
         final DefaultDomainLocator domainLocator = new DefaultDomainLocator();
         domainLocator.setCommandHandlerResolver(commandHandlerResolver);
-        domainLocator.setRepositoryResolver(repositoryResolver);
 
         registerInstance(DomainLocator.class, domainLocator);
         return domainLocator;

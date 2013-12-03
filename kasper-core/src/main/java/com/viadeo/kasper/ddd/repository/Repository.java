@@ -60,6 +60,11 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * The event store (optional)
      */
     private EventStore eventStore;
+
+    /**
+     * The aggregate class
+     */
+    private Class<AGR> aggregateClass;
 	
 	// ========================================================================
 
@@ -77,7 +82,8 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
                 throw new KasperException("Cannot determine entity type for " + this.getClass().getName());
             }
 
-            this.axonRepository = checkNotNull(this.getDecoratedRepository(entityType.get()));
+            this.aggregateClass = entityType.get();
+            this.axonRepository = checkNotNull(this.getDecoratedRepository(aggregateClass));
 
             if (null != eventBus) {
                 this.axonRepository.setEventBus(eventBus);
@@ -96,7 +102,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return the default instance of the decorated repository
      */
     protected DecoratedAxonRepository<AGR> getDecoratedRepository(final Class<AGR> entityType) {
-        final EntityStoreFacade<AGR> facade = new EntityStoreFacade<AGR>(this);
+        final EntityStoreFacade<AGR> facade = new EntityStoreFacade<>(this);
 
         if (null != this.eventStore) {
             facade.setEventStore(this.eventStore);
@@ -307,4 +313,21 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
         throw new UnsupportedOperationException("has() operation not implemented");
     }
 
+    /**
+     * Indicates the aggregate class managed by this repository
+     *
+     * @return the aggregate class
+     */
+    public Class<AGR> getAggregateClass() {
+        return aggregateClass;
+    }
+
+    /**
+     * Indicates if the repository is initialized
+     *
+     * @return true if the repository is initialized, false otherwise
+     */
+    public boolean isInitialized() {
+        return initialized;
+    }
 }

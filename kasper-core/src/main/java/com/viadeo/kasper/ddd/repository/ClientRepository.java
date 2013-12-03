@@ -7,6 +7,7 @@
 package com.viadeo.kasper.ddd.repository;
 
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
@@ -22,7 +23,7 @@ public final class ClientRepository<AGR extends AggregateRoot> {
     private final IRepository<AGR> repository;
 
     public ClientRepository(final IRepository repository) {
-        this.repository = repository;
+        this.repository = Preconditions.checkNotNull(repository);
     }
 
     // -----

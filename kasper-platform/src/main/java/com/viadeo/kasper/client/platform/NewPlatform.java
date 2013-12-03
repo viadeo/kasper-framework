@@ -10,7 +10,9 @@ import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptorFacto
 import com.viadeo.kasper.client.platform.impl.DefaultNewPlatform;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.DefaultCommandGateway;
+import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
@@ -48,13 +50,19 @@ public interface NewPlatform {
         private DefaultCommandGateway commandGateway;
         private DefaultQueryGateway queryGateway;
         private Config configuration;
+        private RepositoryManager repositoryManager;
 
         public Builder() {
             this(new DomainDescriptorFactory());
         }
 
         protected Builder(DomainDescriptorFactory domainDescriptorFactory) {
+            this(domainDescriptorFactory, new DefaultRepositoryManager());
+        }
+
+        protected Builder(DomainDescriptorFactory domainDescriptorFactory, RepositoryManager repositoryManager) {
             this.domainDescriptorFactory = domainDescriptorFactory;
+            this.repositoryManager = repositoryManager;
             this.domainBundles = Lists.newArrayList();
             this.kasperPlugins = Lists.newArrayList();
         }
@@ -89,11 +97,17 @@ public interface NewPlatform {
             return this;
         }
 
+        public Builder withRepositoryManager(RepositoryManager repositoryManager) {
+            this.repositoryManager = Preconditions.checkNotNull(repositoryManager);
+            return this;
+        }
+
         public NewPlatform build(){
             Preconditions.checkState(eventBus != null, "the event bus cannot be null");
             Preconditions.checkState(commandGateway != null, "the command gateway cannot be null");
             Preconditions.checkState(queryGateway != null, "the query gateway cannot be null");
             Preconditions.checkState(configuration != null, "the configuration cannot be null");
+            Preconditions.checkState(repositoryManager != null, "the repository manager cannot be null");
 
             BuilderContext context = new BuilderContext(configuration, eventBus, commandGateway, queryGateway);
 
@@ -102,9 +116,16 @@ public interface NewPlatform {
             for (DomainBundle bundle : domainBundles) {
                 bundle.configure(context);
 
+                for(Repository repository : bundle.getRepositories()){
+                    repository.init();
+                    repository.setEventBus(eventBus);
+                    repositoryManager.register(repository);
+                }
+
                 for(CommandHandler commandHandler : bundle.getCommandHandlers()){
-                    commandGateway.register(commandHandler);
                     commandHandler.setEventBus(eventBus);
+                    commandHandler.setRepositoryManager(repositoryManager);
+                    commandGateway.register(commandHandler);
                 }
 
                 for(QueryHandler queryHandler: bundle.getQueryHandlers()){
@@ -112,14 +133,8 @@ public interface NewPlatform {
                 }
 
                 for(EventListener eventListener : bundle.getEventListeners()){
-                    eventBus.subscribe(eventListener);
                     eventListener.setCommandGateway(commandGateway);
-                }
-
-                for(Repository repository : bundle.getRepositories()){
-                    commandGateway.register(repository);
-                    repository.setEventBus(eventBus);
-                    repository.init();
+                    eventBus.subscribe(eventListener);
                 }
 
                 domainDescriptors.add(domainDescriptorFactory.createFrom(bundle));

@@ -60,7 +60,7 @@ public class RepositoriesProcessor extends SingletonAnnotationProcessor<XKasperR
 		}
 			
 		//- Register the repository to the domain locator ---------------------
-		domainLocator.registerRepository(repository);		
+//		domainLocator.registerRepository(repository);
 	}
 
 	// ------------------------------------------------------------------------

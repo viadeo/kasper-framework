@@ -31,12 +31,12 @@ public abstract class EntityCommandHandler<C extends Command, AGR extends Aggreg
     /**
      * Generic parameter position for the handled command
      */
-    public static int COMMAND_PARAMETER_POSITION = 0;
+    public static final int COMMAND_PARAMETER_POSITION = 0;
 
     /**
      * Generic parameter position for the handled entity
      */
-    public static int ENTITY_PARAMETER_POSITION = 1;
+    public static final int ENTITY_PARAMETER_POSITION = 1;
 
     // Consistent data container for entity class and repository
     private static final class ConsistentRepositoryEntity<E extends AggregateRoot> {
@@ -96,12 +96,12 @@ public abstract class EntityCommandHandler<C extends Command, AGR extends Aggreg
     public ClientRepository<AGR> getRepository() {
         if (null == this.consistentRepositoryEntity.repository) {
 
-            if (null == this.getDomainLocator()) {
-                throw new KasperCommandException("Unable to resolve repository, no domain locator was provided");
+            if (null == this.getRepositoryManager()) {
+                throw new KasperCommandException("Unable to resolve repository, no repository manager was provided");
             }
 
             final Optional<ClientRepository<AGR>> optRepo =
-                    this.getDomainLocator().getEntityRepository(this.consistentRepositoryEntity.entityClass);
+                    this.getRepositoryManager().getEntityRepository(this.consistentRepositoryEntity.entityClass);
 
             if (!optRepo.isPresent()) {
                 throw new KasperCommandException(String.format("The entity %s has not been recorded on any domain",

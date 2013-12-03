@@ -5,7 +5,6 @@ import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.ddd.repository.Repository;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.junit.Before;
@@ -140,30 +139,6 @@ public class DefaultCommandGatewayUTest {
 
         // Then
         verify(domainLocator).registerHandler(refEq(commandHandler));
-        verify(commandHandler).setDomainLocator(refEq(domainLocator));
         verify(commandBus).subscribe(refEq(commandHandler.getClass().getName()), any(org.axonframework.commandhandling.CommandHandler.class));
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void register_withNullAsRepository_shouldThrownException() {
-        // Given
-        Repository repository = null;
-
-        // When
-        commandGateway.register(repository);
-
-        // Then throws an exception
-    }
-
-    @Test()
-    public void register_withRepository_shouldBeRegistered() {
-        // Given
-        Repository repository = mock(Repository.class);
-
-        // When
-        commandGateway.register(repository);
-
-        // Then
-        verify(domainLocator).registerRepository(refEq(repository));
     }
 }

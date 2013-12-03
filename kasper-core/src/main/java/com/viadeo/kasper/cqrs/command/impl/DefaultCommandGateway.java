@@ -5,12 +5,11 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
-import com.viadeo.kasper.core.resolvers.*;
+import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.ddd.repository.Repository;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.CommandDispatchInterceptor;
@@ -37,10 +36,7 @@ public class DefaultCommandGateway implements CommandGateway {
         this(
                 new CommandGatewayFactoryBean<CommandGateway>()
                 , commandBus
-                , new DefaultDomainLocator(
-                    new RepositoryResolver(new EntityResolver(new ConceptResolver(), new RelationResolver(new ConceptResolver()))),
-                    new CommandHandlerResolver()
-                )
+                , new DefaultDomainLocator(new CommandHandlerResolver())
         );
     }
 
@@ -104,9 +100,6 @@ public class DefaultCommandGateway implements CommandGateway {
     public void register(CommandHandler commandHandler) {
         Preconditions.checkNotNull(commandHandler);
 
-        // TODO the domain locator shouldn't be used outside of this implementation
-        commandHandler.setDomainLocator(domainLocator);
-
         domainLocator.registerHandler(commandHandler);
 
         //- Dynamic type command class and command handler for Axon -------
@@ -115,11 +108,6 @@ public class DefaultCommandGateway implements CommandGateway {
                 , commandHandler
         );
         commandBus.subscribe(castor.getBeanClass().getName(), castor.getContainerClass());
-    }
-
-    //TODO remove the bellow register method
-    public void register(Repository repository) {
-        domainLocator.registerRepository(Preconditions.checkNotNull(repository));
     }
 
     /**

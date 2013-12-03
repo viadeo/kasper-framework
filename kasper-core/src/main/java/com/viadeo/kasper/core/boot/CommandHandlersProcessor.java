@@ -88,7 +88,7 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 		LOGGER.info("Subscribe to command bus : " + commandHandlerClazz.getName());
 
 		if (CommandHandler.class.isAssignableFrom(commandHandler.getClass())) {
-			((CommandHandler) commandHandler).setDomainLocator(this.domainLocator);
+//			((CommandHandler) commandHandler).setDomainLocator(this.domainLocator);
  			((CommandHandler) commandHandler).setEventBus(this.eventBus);
 		}
 		
