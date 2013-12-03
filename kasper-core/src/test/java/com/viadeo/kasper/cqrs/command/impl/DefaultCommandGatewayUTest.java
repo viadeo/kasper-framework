@@ -133,12 +133,13 @@ public class DefaultCommandGatewayUTest {
     public void register_withCommandHandler_shouldBeRegistered() {
         // Given
         CommandHandler commandHandler = mock(CommandHandler.class);
+        when(commandHandler.getCommandClass()).thenReturn(Command.class);
 
         // When
         commandGateway.register(commandHandler);
 
         // Then
         verify(domainLocator).registerHandler(refEq(commandHandler));
-        verify(commandBus).subscribe(refEq(commandHandler.getClass().getName()), any(org.axonframework.commandhandling.CommandHandler.class));
+        verify(commandBus).subscribe(refEq(Command.class.getName()), any(org.axonframework.commandhandling.CommandHandler.class));
     }
 }
