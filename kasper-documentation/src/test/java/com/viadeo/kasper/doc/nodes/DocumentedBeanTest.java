@@ -59,10 +59,11 @@ public class DocumentedBeanTest {
         assertTrue(prop.isList());
     }
 
+    // ------------------------------------------------------------------------
+
     public class ClassWithBeanValidation {
         @NotNull
         public String iCantBeNull;
-
         public String imNullable;
     }
 
@@ -83,4 +84,5 @@ public class DocumentedBeanTest {
         assertEquals("String", secondProperty.getType());
         assertFalse(secondProperty.isMandatory());
     }
+
 }
