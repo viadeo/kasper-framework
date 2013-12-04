@@ -51,6 +51,16 @@ public abstract class MapQueryResult<T extends QueryResult> implements Iterable<
         return this.map.isEmpty();
     }
 
+    public void put(final String key, T value) {
+        if (null == map) {
+            map = Maps.newHashMap();
+        }
+        map.put(key,value);
+    }
+    public void put(Map.Entry<String,T> entry) {
+        put(entry.getKey(), entry.getValue());
+    }
+
 	public Map<String,T> getMap() {
         final ImmutableMap.Builder<String,T> builder = new ImmutableMap.Builder<String,T>();
         if (null != map) {
