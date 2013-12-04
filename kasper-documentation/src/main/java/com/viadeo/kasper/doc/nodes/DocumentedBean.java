@@ -8,7 +8,7 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.doc.nodes.validation.ValidatedBeanPropertyProcessor;
+import com.viadeo.kasper.doc.nodes.validation.ValidatedBeanPropertyVisitor;
 import com.viadeo.kasper.er.LinkedConcept;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.slf4j.Logger;
@@ -36,7 +36,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 		final List<Field> properties = Lists.newArrayList();
 		getAllFields(properties, componentClazz);
 
-        final ValidatedBeanPropertyProcessor validationProcessor = new ValidatedBeanPropertyProcessor();
+        final ValidatedBeanPropertyVisitor validationProcessor = new ValidatedBeanPropertyVisitor();
 		
 		for (final Field field : properties) {
 			field.setAccessible(true);
