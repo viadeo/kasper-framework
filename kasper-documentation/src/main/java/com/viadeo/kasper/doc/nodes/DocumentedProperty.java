@@ -11,6 +11,8 @@ public class DocumentedProperty {
 	private final String name;
 	private final String type;
 	private final Boolean isList;
+
+    private Boolean mandatory = false; /** javax.validation.constraints.NotNull */
 	
 	// ------------------------------------------------------------------------
 	
@@ -18,7 +20,7 @@ public class DocumentedProperty {
 		this.name = name;
 		this.type = type;
 		this.isList = isList;
-	}
+    }
 	
 	// ------------------------------------------------------------------------
 
@@ -33,5 +35,15 @@ public class DocumentedProperty {
 	public Boolean isList() {
 		return this.isList;
 	}
-	
+
+    // ------------------------------------------------------------------------
+
+    public Boolean isMandatory() {
+        return mandatory;
+    }
+
+    public void setMandatory(final Boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+
 }
