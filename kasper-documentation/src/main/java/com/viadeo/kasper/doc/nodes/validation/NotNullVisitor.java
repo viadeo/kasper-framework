@@ -12,7 +12,7 @@ import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
-public class NotNullProcessor extends ValidatedBeanPropertyProcessor {
+public class NotNullVisitor extends ValidatedBeanPropertyVisitor {
 
     public void process(final Field field, final DocumentedProperty property) {
         final Annotation notNullAnnotation = field.getAnnotation(NotNull.class);
