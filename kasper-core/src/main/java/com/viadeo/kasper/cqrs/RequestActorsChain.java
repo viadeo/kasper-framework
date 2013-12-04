@@ -78,7 +78,6 @@ public class RequestActorsChain<INPUT, OUTPUT> {
 
     // ------------------------------------------------------------------------
 
-    @SuppressWarnings("unchecked") // TAIL is generic
     public RequestActorsChain() {
         this.actor = Optional.absent();
         this.next = Optional.absent();
