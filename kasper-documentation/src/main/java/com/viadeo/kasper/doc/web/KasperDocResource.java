@@ -22,7 +22,7 @@ import javax.ws.rs.core.MediaType;
 import java.util.List;
 
 @Path("/kasper/doc")
-public class KasperDocResource2 {
+public class KasperDocResource {
 
     private static final String DEFAULT_UNSPECIFIED = "unspecified";
 
@@ -35,7 +35,7 @@ public class KasperDocResource2 {
 
     private final DocumentedPlatform documentedPlatform;
 
-    public KasperDocResource2(DocumentedPlatform documentedPlatform) {
+    public KasperDocResource(DocumentedPlatform documentedPlatform) {
         this.documentedPlatform = documentedPlatform;
     }
 

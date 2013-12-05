@@ -18,7 +18,7 @@ import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
 import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
-import com.viadeo.kasper.doc.web.KasperDocResource2;
+import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
 import com.viadeo.kasper.test.applications.Applications;
 import com.viadeo.kasper.test.applications.entities.Application;
@@ -104,7 +104,7 @@ public class KasperDocResourceTest extends JerseyTest {
         public WrappedDocResource() { }
 
         @Path("/")
-        public KasperDocResource2 delegate() {
+        public KasperDocResource delegate() {
             DomainDescriptor facebookDomainDescriptor = new DomainDescriptor(
                     Facebook.NAME
                     , Facebook.class
@@ -147,7 +147,7 @@ public class KasperDocResourceTest extends JerseyTest {
             documentedPlatform.registerDomain(Timelines.NAME, timelinesDomainDescriptor);
             documentedPlatform.accept(new DefaultDocumentedElementInitializer());
 
-            return new KasperDocResource2(documentedPlatform);
+            return new KasperDocResource(documentedPlatform);
         }
 
     }

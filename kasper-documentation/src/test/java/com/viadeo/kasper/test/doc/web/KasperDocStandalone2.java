@@ -7,7 +7,7 @@ import com.sun.jersey.api.core.ResourceConfig;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
 import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
-import com.viadeo.kasper.doc.web.KasperDocResource2;
+import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
 import com.viadeo.kasper.test.root.Facebook;
 import com.viadeo.kasper.test.root.commands.AddConnectionToMemberCommand;
@@ -44,7 +44,7 @@ public class KasperDocStandalone2 {
         documentedPlatform.registerDomain(Facebook.NAME, domainDescriptor);
         documentedPlatform.accept(new DefaultDocumentedElementInitializer());
 
-        final KasperDocResource2 res = new KasperDocResource2(documentedPlatform);
+        final KasperDocResource res = new KasperDocResource(documentedPlatform);
 
         final ResourceConfig rc = new PackagesResourceConfig("com.viadeo.kasper.test.doc.web");
         rc.getSingletons().add(res);
