@@ -164,6 +164,10 @@ public class AnnotationRootProcessor {
                 continue;
             }
 
+            if (null != clazz.getAnnotation(XKasperUnregistered.class)) {
+                continue;
+            }
+
             try {
 
                 @SuppressWarnings("unchecked") // Safe

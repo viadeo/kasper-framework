@@ -224,7 +224,7 @@ public class FixtureUseCase {
     }
 
     @XKasperQueryHandler( domain = TestDomain.class )
-    public static class TestGetSomeData extends QueryHandler<TestQuery, TestResult> {
+    public static class TestGetSomeDataQueryHandler extends QueryHandler<TestQuery, TestResult> {
         public QueryResponse<TestResult> retrieve(final TestQuery query) throws Exception {
             if (query.getType().contentEquals("REFUSED")) {
                 return QueryResponse.refused(new KasperReason("REFUSED", "Go To Hell"));

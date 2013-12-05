@@ -10,16 +10,18 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.test.platform.KasperPlatformFixture;
+import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.AxonAssertionError;
 import org.junit.Before;
 import org.junit.Test;
 
 import static com.viadeo.kasper.cqrs.command.FixtureUseCase.*;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
 public class TestFixturePlatformTest {
 
-    private KasperPlatformFixture fixture;
+    protected KasperPlatformFixture fixture;
 
     private static final String firstName = "Richard";
     private static final String lastName = "Stallman";
@@ -70,8 +72,8 @@ public class TestFixturePlatformTest {
                 )
                 .expectReturnOK();
             fail();
-        } catch (final AxonAssertionError e) {
-            // expected
+        } catch (final RuntimeException e) {
+            assertEquals(JSR303ViolationException.class, e.getCause().getClass());
         }
 
     }

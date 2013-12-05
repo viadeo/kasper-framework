@@ -89,6 +89,9 @@ public class KasperPlatformCommandResultValidator
 
     @Override
     public KasperFixtureCommandResultValidator expectReturnOK() {
+        if (null != exception()) {
+            throw new RuntimeException("Unexpected exception", exception());
+        }
         if ((null == response()) ||  ! OK.equals(((CommandResponse) response()).getStatus())) {
             throw new AxonAssertionError("Command did not answered OK");
         }
@@ -96,6 +99,9 @@ public class KasperPlatformCommandResultValidator
     }
 
     public KasperFixtureCommandResultValidator expectReturnError() {
+        if (null != exception()) {
+            throw new RuntimeException("Unexpected exception", exception());
+        }
         if ((null == response()) ||  ! ERROR.equals(((CommandResponse) response()).getStatus())) {
             throw new AxonAssertionError("Command did not answered an ERROR");
         }
@@ -103,6 +109,9 @@ public class KasperPlatformCommandResultValidator
     }
 
     public KasperFixtureCommandResultValidator expectReturnRefused() {
+        if (null != exception()) {
+            throw new RuntimeException("Unexpected exception", exception());
+        }
         if ((null == response()) ||  ! REFUSED.equals(((CommandResponse) response()).getStatus())) {
             throw new AxonAssertionError("Command did not answered an ERROR");
         }
@@ -122,6 +131,9 @@ public class KasperPlatformCommandResultValidator
     }
 
     public KasperFixtureCommandResultValidator expectReturnError(final String code) {
+        if (null != exception()) {
+            throw new RuntimeException("Unexpected exception", exception());
+        }
         if ((null == response())
                 || (null == ((CommandResponse) response()).getReason())
                 || ! ERROR.equals(((CommandResponse) response()).getStatus())
@@ -134,6 +146,9 @@ public class KasperPlatformCommandResultValidator
     }
 
     public KasperFixtureCommandResultValidator expectReturnRefused(final String code) {
+        if (null != exception()) {
+            throw new RuntimeException("Unexpected exception", exception());
+        }
         if ((null == response())
                 || (null == ((CommandResponse) response()).getReason())
                 || ! REFUSED.equals(((CommandResponse) response()).getStatus())
@@ -146,6 +161,9 @@ public class KasperPlatformCommandResultValidator
     }
 
     public KasperFixtureCommandResultValidator expectReturnError(final CoreReasonCode code) {
+        if (null != exception()) {
+            throw new RuntimeException("Unexpected exception", exception());
+        }
         if ((null == response())
                 || (null == ((CommandResponse) response()).getReason())
                 || ! ERROR.equals(((CommandResponse) response()).getStatus())
@@ -158,6 +176,9 @@ public class KasperPlatformCommandResultValidator
     }
 
     public KasperFixtureCommandResultValidator expectReturnRefused(final CoreReasonCode code) {
+        if (null != exception()) {
+            throw new RuntimeException("Unexpected exception", exception());
+        }
         if ((null == response())
                 || (null == ((CommandResponse) response()).getReason())
                 || ! REFUSED.equals(((CommandResponse) response()).getStatus())
