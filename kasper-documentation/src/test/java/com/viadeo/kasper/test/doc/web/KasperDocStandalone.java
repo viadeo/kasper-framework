@@ -24,7 +24,7 @@ import org.glassfish.grizzly.http.server.StaticHttpHandler;
 
 import java.io.IOException;
 
-public class KasperDocStandalone2 {
+public class KasperDocStandalone {
     public static void main(String [] args) throws IOException, InterruptedException {
         final String baseUri = "http://localhost:9988/";
 

@@ -370,7 +370,7 @@ public class PlatformBuilderUTest {
         String component = String.valueOf("hiha!!!");
 
         // When
-        Platform platform = builder.addExtraComponent(name, component).build();
+        Platform platform = builder.addExtraComponent(name, String.class, component).build();
 
         // Then
         HashMap<ExtraComponentKey,Object> expectedExtraComponents = Maps.newHashMap();

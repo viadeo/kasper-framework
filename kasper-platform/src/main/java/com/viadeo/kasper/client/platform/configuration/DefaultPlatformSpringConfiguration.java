@@ -14,6 +14,7 @@ import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
+import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
@@ -79,6 +80,12 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean
     @Override
+    public RepositoryManager repositoryManager() {
+        return super.repositoryManager();
+    }
+
+    @Bean
+    @Override
     public DomainLocator domainLocator(final CommandHandlerResolver commandHandlerResolver, final RepositoryResolver repositoryResolver) {
         return super.domainLocator(commandHandlerResolver, repositoryResolver);
     }
@@ -92,14 +99,15 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
     @Bean
     @Override
     public CommandHandlersProcessor commandHandlersProcessor(final CommandBus commandBus, final DomainLocator domainLocator,
-                                                             final KasperEventBus eventBus, final CommandHandlerResolver commandHandlerResolver ){
-        return super.commandHandlersProcessor(commandBus, domainLocator, eventBus, commandHandlerResolver);
+                                                             final RepositoryManager repositoryManager, final KasperEventBus eventBus,
+                                                             final CommandHandlerResolver commandHandlerResolver ){
+        return super.commandHandlersProcessor(commandBus, domainLocator, repositoryManager, eventBus, commandHandlerResolver);
     }
 
     @Bean
     @Override
-    public RepositoriesProcessor repositoriesProcessor(final DomainLocator locator, final KasperEventBus eventBus){
-        return super.repositoriesProcessor(locator, eventBus);
+    public RepositoriesProcessor repositoriesProcessor(final RepositoryManager repositoryManager, final KasperEventBus eventBus){
+        return super.repositoriesProcessor(repositoryManager, eventBus);
     }
 
     @Bean

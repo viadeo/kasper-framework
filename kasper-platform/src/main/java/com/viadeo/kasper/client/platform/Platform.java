@@ -83,10 +83,11 @@ public interface Platform {
             return this;
         }
 
-        public <E> Builder addExtraComponent(String name, E component) {
+        public <E> Builder addExtraComponent(String name, Class<E> clazz, E component) {
             Preconditions.checkNotNull(name);
+            Preconditions.checkNotNull(clazz);
             Preconditions.checkNotNull(component);
-            this.extraComponents.put(new ExtraComponentKey(name, component.getClass()), component);
+            this.extraComponents.put(new ExtraComponentKey(name, clazz), component);
             return this;
         }
 
@@ -203,8 +204,8 @@ public interface Platform {
         }
 
         @SuppressWarnings("unchecked")
-        public <E> Optional<E> getExtraComponent(ExtraComponentKey key) {
-            return Optional.fromNullable((E) extraComponent.get(key));
+        public <E> Optional<E> getExtraComponent(String name, Class<E> clazz) {
+            return Optional.fromNullable((E) extraComponent.get(new ExtraComponentKey(name, clazz)));
         }
     }
 
@@ -240,6 +241,14 @@ public interface Platform {
             }
             final ExtraComponentKey other = (ExtraComponentKey) obj;
             return Objects.equal(this.name, other.name) && Objects.equal(this.clazz, other.clazz);
+        }
+
+        @Override
+        public String toString() {
+            return Objects.toStringHelper(this)
+                    .add("name", name)
+                    .add("clazz", clazz)
+                    .toString();
         }
     }
 }

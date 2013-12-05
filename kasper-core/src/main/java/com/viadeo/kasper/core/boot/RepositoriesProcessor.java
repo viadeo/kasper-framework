@@ -8,8 +8,7 @@
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
 import org.axonframework.eventhandling.EventBus;
@@ -22,14 +21,14 @@ import org.slf4j.LoggerFactory;
  *
  * @see XKasperRepository
  */
-public class RepositoriesProcessor extends SingletonAnnotationProcessor<XKasperRepository, IRepository> {
+public class RepositoriesProcessor extends SingletonAnnotationProcessor<XKasperRepository, Repository> {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RepositoriesProcessor.class);	
 	
 	/**
-	 * The domain locator to register repositories on
+	 * The repository manager to register repositories on
 	 */
-	private transient DomainLocator domainLocator;
+	private transient RepositoryManager repositoryManager;
 	
 	/**
 	 * The event bus to be injected on domain repositories (Axon dependency for event sourced aggregates)
@@ -50,26 +49,23 @@ public class RepositoriesProcessor extends SingletonAnnotationProcessor<XKasperR
 	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
-	public void process(final Class repositoryClazz, final IRepository repository) {
+	public void process(final Class repositoryClazz, final Repository repository) {
 		LOGGER.info("Record on domain locator : " + repositoryClazz.getName());
-			
-		repository.init();
-		
-		if (Repository.class.isAssignableFrom(repositoryClazz)) {
-			((Repository) repository).setEventBus(eventBus);
-		}
-			
-		//- Register the repository to the domain locator ---------------------
-//		domainLocator.registerRepository(repository);
-	}
+
+        repository.init();
+        repository.setEventBus(eventBus);
+
+        //- Register the repository to the domain locator ---------------------
+        repositoryManager.register(repository);
+    }
 
 	// ------------------------------------------------------------------------
 	
 	/**
-	 * @param domainLocator the domain locator to register repositories on
+	 * @param repositoryManager the repository manager to register repositories on
 	 */
-	public void setDomainLocator(final DomainLocator domainLocator) {
-		this.domainLocator = Preconditions.checkNotNull(domainLocator);
+	public void setRepositoryManager(final RepositoryManager repositoryManager) {
+		this.repositoryManager = Preconditions.checkNotNull(repositoryManager);
 	}
 	
 	/**

@@ -13,6 +13,7 @@ import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
+import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandBus;
@@ -85,6 +86,9 @@ public class PlatformConfigurationTest {
         final DomainLocator domainLocator =
                 this.testCachedComponent(pf, "domainLocator", commandHandlerResolver, repositoryResolver);
 
+        final RepositoryManager repositoryManager =
+                this.testCachedComponent(pf, "repositoryManager");
+
         final CommandResolver commandResolver =
                 this.testCachedComponent(pf, "commandResolver", domainLocator, domainResolver, commandHandlerResolver);
 
@@ -125,7 +129,7 @@ public class PlatformConfigurationTest {
                 this.testCachedComponent(pf, "annotationRootProcessor", componentsInstanceManager);
 
         final CommandHandlersProcessor commandHandlersProcessor =
-                this.testCachedComponent(pf, "commandHandlersProcessor", commandBus, domainLocator, eventBus, commandHandlerResolver);
+                this.testCachedComponent(pf, "commandHandlersProcessor", commandBus, domainLocator, repositoryManager, eventBus, commandHandlerResolver);
 
         final DomainsProcessor domainsProcessor =
                 this.testCachedComponent(pf, "domainsProcessor", domainLocator);
@@ -137,7 +141,7 @@ public class PlatformConfigurationTest {
                 this.testCachedComponent(pf, "queryHandlersProcessor", queryHandlersLocator);
 
         final RepositoriesProcessor repositoriesProcessor=
-                this.testCachedComponent(pf, "repositoriesProcessor", domainLocator, eventBus);
+                this.testCachedComponent(pf, "repositoriesProcessor", repositoryManager, eventBus);
 
         final QueryHandlerFiltersProcessor queryHandlerFiltersProcessor =
                 this.testCachedComponent(pf, "queryHandlerFiltersProcessor", queryHandlersLocator);

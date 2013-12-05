@@ -14,6 +14,7 @@ import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
+import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandBus;
@@ -99,6 +100,10 @@ public class PlatformFactory {
 
         final DomainLocator domainLocator = platformConfiguration.domainLocator(commandHandlerResolver, repositoryResolver);
 
+        // -- REPOSITORY MANAGER
+
+        final RepositoryManager repositoryManager = platformConfiguration.repositoryManager();
+
         // -- COMPONENTS RESOLVERS
 
         final CommandResolver commandResolver = platformConfiguration.commandResolver(domainLocator, domainResolver, commandHandlerResolver);
@@ -140,7 +145,7 @@ public class PlatformFactory {
         final ComponentsInstanceManager componentsInstanceManager = platformConfiguration.getComponentsInstanceManager();
         final AnnotationRootProcessor annotationRootProcessor = platformConfiguration.annotationRootProcessor(componentsInstanceManager);
 
-        final CommandHandlersProcessor commandHandlersProcessor = platformConfiguration.commandHandlersProcessor(commandBus, domainLocator, eventBus, commandHandlerResolver);
+        final CommandHandlersProcessor commandHandlersProcessor = platformConfiguration.commandHandlersProcessor(commandBus, domainLocator, repositoryManager, eventBus, commandHandlerResolver);
         annotationRootProcessor.registerProcessor(commandHandlersProcessor);
 
         final DomainsProcessor domainsProcessor = platformConfiguration.domainsProcessor(domainLocator);
@@ -152,7 +157,7 @@ public class PlatformFactory {
         final QueryHandlersProcessor queryHandlersProcessor = platformConfiguration.queryHandlersProcessor(queryHandlersLocator);
         annotationRootProcessor.registerProcessor(queryHandlersProcessor);
 
-        final RepositoriesProcessor repositoriesProcessor = platformConfiguration.repositoriesProcessor(domainLocator, eventBus);
+        final RepositoriesProcessor repositoriesProcessor = platformConfiguration.repositoriesProcessor(repositoryManager, eventBus);
         annotationRootProcessor.registerProcessor(repositoriesProcessor);
 
         final QueryHandlerFiltersProcessor queryHandlerFiltersProcessor = platformConfiguration.queryHandlerFiltersProcessor(queryHandlersLocator);

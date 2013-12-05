@@ -21,6 +21,8 @@ import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
+import com.viadeo.kasper.cqrs.command.RepositoryManager;
+import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import com.viadeo.kasper.exception.KasperException;
@@ -238,6 +240,17 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
+    public RepositoryManager repositoryManager() {
+        if (containsInstance(RepositoryManager.class)) {
+            return getInstance(RepositoryManager.class);
+        }
+
+        RepositoryManager repositoryManager = new DefaultRepositoryManager();
+        registerInstance(RepositoryManager.class, repositoryManager);
+        return repositoryManager;
+    }
+
+    @Override
     public DomainLocator domainLocator(final CommandHandlerResolver commandHandlerResolver, final RepositoryResolver repositoryResolver) {
         this.ensureNotPresent(DomainLocator.class);
 
@@ -276,6 +289,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     public CommandHandlersProcessor commandHandlersProcessor(
             final CommandBus commandBus,
             final DomainLocator domainLocator,
+            final RepositoryManager repositoryManager,
             final KasperEventBus eventBus,
             final CommandHandlerResolver commandHandlerResolver
     ) {
@@ -284,6 +298,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
         final CommandHandlersProcessor commandHandlersProcessor = new CommandHandlersProcessor();
         commandHandlersProcessor.setCommandBus(commandBus);
         commandHandlersProcessor.setDomainLocator(domainLocator);
+        commandHandlersProcessor.setRepositoryManager(repositoryManager);
         commandHandlersProcessor.setEventBus(eventBus);
         commandHandlersProcessor.setCommandHandlerResolver(commandHandlerResolver);
 
@@ -299,11 +314,11 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public RepositoriesProcessor repositoriesProcessor(final DomainLocator locator, final KasperEventBus eventBus){
+    public RepositoriesProcessor repositoriesProcessor(final RepositoryManager repositoryManager, final KasperEventBus eventBus){
         this.ensureNotPresent(RepositoriesProcessor.class);
 
         final RepositoriesProcessor repositoriesProcessor = new RepositoriesProcessor();
-        repositoriesProcessor.setDomainLocator(locator);
+        repositoriesProcessor.setRepositoryManager(repositoryManager);
         repositoriesProcessor.setEventBus(eventBus);
 
         registerInstance(RepositoriesProcessor.class, repositoriesProcessor);

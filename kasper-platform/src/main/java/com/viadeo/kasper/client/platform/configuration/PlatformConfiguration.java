@@ -13,6 +13,7 @@ import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
+import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
@@ -98,6 +99,11 @@ public interface PlatformConfiguration {
      UnitOfWorkFactory uowFactory();
 
     /**
+     * @return the repository manager
+     */
+    RepositoryManager repositoryManager();
+
+    /**
      * Warning : override the two methods at once
      *
      * @param commandHandlerResolver the command handler resolver
@@ -125,7 +131,7 @@ public interface PlatformConfiguration {
      * @param domainLocator the domain locator to be used
      * @return the processor
      */
-     CommandHandlersProcessor commandHandlersProcessor(CommandBus commandBus, DomainLocator domainLocator, KasperEventBus eventBus, CommandHandlerResolver commandHandlerResolver);
+     CommandHandlersProcessor commandHandlersProcessor(CommandBus commandBus, DomainLocator domainLocator, RepositoryManager repositoryManager, KasperEventBus eventBus, CommandHandlerResolver commandHandlerResolver);
      CommandHandlersProcessor commandHandlersProcessor();
 
     /**
@@ -158,11 +164,11 @@ public interface PlatformConfiguration {
     /**
      * Warning : override the two methods at once
      *
-     * @param locator the domain locator to be used
+     * @param repositoryManager the repository manager to be used
      * @param eventBus the event bus to be used
      * @return the processor
      */
-     RepositoriesProcessor repositoriesProcessor(DomainLocator locator, KasperEventBus eventBus);
+     RepositoriesProcessor repositoriesProcessor(RepositoryManager repositoryManager, KasperEventBus eventBus);
      RepositoriesProcessor repositoriesProcessor();
 
     /**

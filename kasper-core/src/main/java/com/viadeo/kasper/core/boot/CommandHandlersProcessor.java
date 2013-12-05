@@ -10,6 +10,7 @@ import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.eventhandling.EventBus;
@@ -47,7 +48,15 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
      */
     private transient CommandHandlerResolver commandHandlerResolver;
 
-	// ------------------------------------------------------------------------
+
+    /**
+     * The repo
+     */
+    private transient RepositoryManager repositoryManager;
+
+
+
+    // ------------------------------------------------------------------------
 
 	/**
 	 *
@@ -88,7 +97,7 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 		LOGGER.info("Subscribe to command bus : " + commandHandlerClazz.getName());
 
 		if (CommandHandler.class.isAssignableFrom(commandHandler.getClass())) {
-//			((CommandHandler) commandHandler).setDomainLocator(this.domainLocator);
+			((CommandHandler) commandHandler).setRepositoryManager(this.repositoryManager);
  			((CommandHandler) commandHandler).setEventBus(this.eventBus);
 		}
 		
@@ -133,6 +142,10 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 
     public void setCommandHandlerResolver(final CommandHandlerResolver commandHandlerResolver) {
         this.commandHandlerResolver = checkNotNull(commandHandlerResolver);
+    }
+
+    public void setRepositoryManager(RepositoryManager repositoryManager) {
+        this.repositoryManager = repositoryManager;
     }
 
 }
