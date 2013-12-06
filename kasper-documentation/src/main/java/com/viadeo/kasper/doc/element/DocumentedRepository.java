@@ -66,11 +66,13 @@ public class DocumentedRepository extends AbstractDomainElement {
 
         private final List<LightDocumentedElement<DocumentedRelation>> sourceRelations;
         private final List<LightDocumentedElement<DocumentedRelation>> targetRelations;
+        private final List<LightDocumentedElement<DocumentedConcept>> componentConcepts;
 
         public DocumentedConcept(DocumentedDomain documentedDomain, Class referenceClass, Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents) {
             super(documentedDomain, DocumentedElementType.CONCEPT, referenceClass, sourceEvents);
             this.sourceRelations = Lists.newArrayList();
             this.targetRelations = Lists.newArrayList();
+            this.componentConcepts = Lists.newArrayList();
         }
 
         public DocumentedConcept(DocumentedDomain documentedDomain, Class referenceClass) {
@@ -92,12 +94,20 @@ public class DocumentedRepository extends AbstractDomainElement {
             targetRelations.add(documentedRelation.getLightDocumentedElement());
         }
 
+        public void addComponentConcept(DocumentedConcept documentedConcept) {
+            componentConcepts.add(documentedConcept.getLightDocumentedElement());
+        }
+
         public List<LightDocumentedElement<DocumentedRelation>> getSourceRelations() {
             return sourceRelations;
         }
 
         public List<LightDocumentedElement<DocumentedRelation>> getTargetRelations() {
             return targetRelations;
+        }
+
+        public List<LightDocumentedElement<DocumentedConcept>> getComponentConcepts() {
+            return componentConcepts;
         }
 
         @Override

@@ -1,5 +1,7 @@
 package com.viadeo.kasper.doc.element;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
@@ -31,9 +33,11 @@ public class DocumentedDomain extends AbstractElement {
     private final List<DocumentedCommand> commands;
 
     private String prefix;
+    private Optional<DocumentedDomain> parent;
 
     public DocumentedDomain(DomainDescriptor domainDescriptor) {
         super(DocumentedElementType.DOMAIN, domainDescriptor.getDomainClass());
+        this.parent = Optional.absent();
 
         documentedQueryHandlers = Lists.newArrayList();
         documentedCommandHandlers = Lists.newArrayList();
@@ -152,6 +156,8 @@ public class DocumentedDomain extends AbstractElement {
 
     @Override
     public void accept(DocumentedElementVisitor visitor) {
+        visitor.visit(this);
+
         List<AbstractElement> documentedElements = Lists.newArrayList();
         documentedElements.addAll(documentedQueryHandlers);
         documentedElements.addAll(documentedCommandHandlers);
@@ -161,7 +167,14 @@ public class DocumentedDomain extends AbstractElement {
         for (AbstractElement documentedElement : documentedElements) {
             documentedElement.accept(visitor);
         }
+    }
 
-        visitor.visit(this);
+    @JsonIgnore
+    public Optional<DocumentedDomain> getParent(){
+       return parent;
+    }
+
+    public void setParent(Optional<DocumentedDomain> parent) {
+        this.parent = parent;
     }
 }

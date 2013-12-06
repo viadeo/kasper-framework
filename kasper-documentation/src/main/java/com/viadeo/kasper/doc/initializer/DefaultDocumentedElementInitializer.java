@@ -1,5 +1,7 @@
 package com.viadeo.kasper.doc.initializer;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -14,6 +16,8 @@ import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 
+import java.util.List;
+
 import static com.viadeo.kasper.doc.element.DocumentedCommandHandler.DocumentedCommand;
 import static com.viadeo.kasper.doc.element.DocumentedEventListener.DocumentedEvent;
 import static com.viadeo.kasper.doc.element.DocumentedQueryHandler.DocumentedQuery;
@@ -23,6 +27,12 @@ import static com.viadeo.kasper.doc.element.DocumentedRepository.DocumentedRelat
 
 public class DefaultDocumentedElementInitializer implements DocumentedElementVisitor {
 
+    private final DocumentedPlatform documentedPlatform;
+
+    public DefaultDocumentedElementInitializer(DocumentedPlatform documentedPlatform) {
+        this.documentedPlatform = documentedPlatform;
+    }
+
     @Override
     public void visit(DocumentedDomain domain) {
         DomainResolver resolver = new DomainResolver();
@@ -31,6 +41,13 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
         domain.setPrefix(resolver.getPrefix(referenceClass));
         domain.setLabel(resolver.getDomainLabel(referenceClass));
         domain.setDescription(resolver.getDescription(referenceClass));
+
+        Class parentClass = domain.getReferenceClass().getSuperclass();
+        Optional<DocumentedDomain> parentDomain = documentedPlatform.getDomain(parentClass);
+
+        if (parentDomain.isPresent()) {
+            domain.setParent(parentDomain);
+        }
     }
 
     @Override
@@ -116,11 +133,33 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
         concept.setDescription(resolver.getDescription(referenceClass));
 
         DocumentedDomain documentedDomain = concept.getDomain().getFullDocumentedElement();
-        for (DocumentedRelation relation : documentedDomain.getRelations()) {
-            if (concept.getName().equals(relation.getSourceConcept().getName())) {
+
+        List<DocumentedRelation> relations = Lists.newArrayList();
+        relations.addAll(documentedDomain.getRelations());
+
+        List<DocumentedConcept> concepts = Lists.newArrayList();
+        concepts.addAll(documentedDomain.getConcepts());
+
+        if(documentedDomain.getParent().isPresent()){
+            relations.addAll(documentedDomain.getParent().get().getRelations());
+            concepts.addAll(documentedDomain.getParent().get().getConcepts());
+        }
+
+        for (DocumentedRelation relation : relations) {
+            if (concept.getReferenceClass().equals(relation.getSourceConcept().getReferenceClass())) {
                 concept.addSourceRelation(relation);
-            } else if (concept.getName().equals(relation.getTargetConcept().getName())) {
+            }
+            if (concept.getReferenceClass().equals(relation.getTargetConcept().getReferenceClass())) {
                 concept.addTargetRelation(relation);
+            }
+        }
+
+        EntityResolver entityResolver = new EntityResolver(resolver, new RelationResolver());
+        List<Class<? extends Concept>> componentConceptClasses = entityResolver.getComponentConcepts(concept.getReferenceClass());
+
+        for(DocumentedConcept documentedConcept : concepts){
+            if(componentConceptClasses.contains(documentedConcept.getReferenceClass())){
+                concept.addComponentConcept(documentedConcept);
             }
         }
     }

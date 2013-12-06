@@ -31,7 +31,7 @@ public class DocumentationPlugin implements Plugin {
             documentedPlatform.registerDomain(domainDescriptor.getName(), domainDescriptor);
         }
 
-        documentedPlatform.accept(new DefaultDocumentedElementInitializer());
+        documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
         initialized = true;
     }
 

@@ -145,7 +145,7 @@ public class KasperDocResourceTest extends JerseyTest {
             documentedPlatform.registerDomain(Facebook.NAME, facebookDomainDescriptor);
             documentedPlatform.registerDomain(Applications.NAME, applicationDomainDescriptor);
             documentedPlatform.registerDomain(Timelines.NAME, timelinesDomainDescriptor);
-            documentedPlatform.accept(new DefaultDocumentedElementInitializer());
+            documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
 
             return new KasperDocResource(documentedPlatform);
         }

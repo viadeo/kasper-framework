@@ -58,7 +58,7 @@ public class KasperDocResource {
             return new RetUnexistent(DocumentedElementType.DOMAIN.getType(), DEFAULT_UNSPECIFIED);
         }
 
-        Optional<DocumentedDomain> domain = documentedPlatform.getDomainFromName(domainName);
+        Optional<DocumentedDomain> domain = documentedPlatform.getDomain(domainName);
 
         if (!domain.isPresent()) {
             return new RetUnexistent(DocumentedElementType.DOMAIN.getType(), domainName);
@@ -77,7 +77,7 @@ public class KasperDocResource {
             return new RetUnexistent(DocumentedElementType.DOMAIN.getType(), DEFAULT_UNSPECIFIED);
         }
 
-        Optional<DocumentedDomain> domain = documentedPlatform.getDomainFromName(domainName);
+        Optional<DocumentedDomain> domain = documentedPlatform.getDomain(domainName);
 
         if (!domain.isPresent()) {
             return new RetUnexistent(DocumentedElementType.DOMAIN.getType(), domainName);
@@ -104,7 +104,7 @@ public class KasperDocResource {
             return new RetUnexistent(DocumentedElementType.DOMAIN.getType(), DEFAULT_UNSPECIFIED);
         }
 
-        Optional<DocumentedDomain> domain = documentedPlatform.getDomainFromName(domainName);
+        Optional<DocumentedDomain> domain = documentedPlatform.getDomain(domainName);
 
         if (!domain.isPresent()) {
             return new RetUnexistent(DocumentedElementType.DOMAIN.getType(), DEFAULT_UNSPECIFIED);

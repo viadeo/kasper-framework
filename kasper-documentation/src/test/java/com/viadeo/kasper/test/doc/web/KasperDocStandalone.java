@@ -42,7 +42,7 @@ public class KasperDocStandalone {
 
         DocumentedPlatform documentedPlatform = new DocumentedPlatform();
         documentedPlatform.registerDomain(Facebook.NAME, domainDescriptor);
-        documentedPlatform.accept(new DefaultDocumentedElementInitializer());
+        documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
 
         final KasperDocResource res = new KasperDocResource(documentedPlatform);
 

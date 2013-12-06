@@ -38,4 +38,9 @@ public class LightDocumentedElement<E extends AbstractElement> implements WithTy
     public E getFullDocumentedElement() {
         return documentedElement;
     }
+
+    @JsonIgnore
+    public Class getReferenceClass() {
+        return documentedElement.getReferenceClass();
+    }
 }

@@ -12,14 +12,17 @@ import java.util.Map;
 public class DocumentedPlatform {
 
     private final Map<String, DocumentedDomain> documentedDomainByDomainName;
+    private final Map<Class, DocumentedDomain> documentedDomainByDomainClass;
 
     public DocumentedPlatform() {
         this.documentedDomainByDomainName = Maps.newHashMap();
+        this.documentedDomainByDomainClass = Maps.newHashMap();
     }
 
     public void registerDomain(final String domainName, final DomainDescriptor descriptor) {
         DocumentedDomain documentedDomain = new DocumentedDomain(descriptor);
         documentedDomainByDomainName.put(domainName, documentedDomain);
+        documentedDomainByDomainClass.put(documentedDomain.getReferenceClass(), documentedDomain);
     }
 
     public void accept(DocumentedElementVisitor visitor) {
@@ -32,7 +35,11 @@ public class DocumentedPlatform {
         return Lists.newArrayList(documentedDomainByDomainName.values());
     }
 
-    public Optional<DocumentedDomain> getDomainFromName(final String domainName) {
+    public Optional<DocumentedDomain> getDomain(final String domainName) {
         return Optional.fromNullable(documentedDomainByDomainName.get(domainName));
+    }
+
+    public Optional<DocumentedDomain> getDomain(final Class domainClass) {
+        return Optional.fromNullable(documentedDomainByDomainClass.get(domainClass));
     }
 }
