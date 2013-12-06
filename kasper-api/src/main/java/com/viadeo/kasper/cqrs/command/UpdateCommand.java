@@ -28,12 +28,12 @@ public abstract class UpdateCommand implements Command {
 
 	// ------------------------------------------------------------------------
 
-	public UpdateCommand(final KasperID id) {
+	protected UpdateCommand(final KasperID id) {
 		this.id = checkNotNull(id);
         this.version = null;
 	}
 
- 	public UpdateCommand(final KasperID id, final Long version) {
+ 	protected UpdateCommand(final KasperID id, final Long version) {
 		this.id = checkNotNull(id);
         this.version = version; /* can be null */
 	}

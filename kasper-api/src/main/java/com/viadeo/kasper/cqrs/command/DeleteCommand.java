@@ -25,7 +25,7 @@ public abstract class DeleteCommand implements Command {
 
 	// ------------------------------------------------------------------------
 
-	public DeleteCommand(final KasperID id) {
+	protected DeleteCommand(final KasperID id) {
 		this.id = checkNotNull(id);
 	}
 

@@ -169,7 +169,7 @@ public class HttpCommandExposer extends HttpExposer {
 
         try {
 
-            if (!req.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)) {
+            if ((null == req.getContentType()) || ( ! req.getContentType().contains(MediaType.APPLICATION_JSON_VALUE))) {
                 sendError(req, resp, Response.Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode(),
                           "Accepting and producing only " + MediaType.APPLICATION_JSON_VALUE);
                 return;

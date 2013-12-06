@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.boot;
 
-import com.viadeo.kasper.core.boot.test.TestProcessor;
+import com.viadeo.kasper.core.test.TestProcessor;
 import junit.framework.TestCase;
 import org.junit.Test;
 

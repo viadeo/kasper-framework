@@ -152,7 +152,7 @@ public class HttpEventExposer extends HttpExposer {
         JsonParser parser = null;
         try {
 
-            if ( ! req.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)) {
+            if ( (null == req.getContentType()) || ( ! req.getContentType().contains(MediaType.APPLICATION_JSON_VALUE))) {
                 resp.setStatus(Response.Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode());
                 return;
             }

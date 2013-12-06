@@ -159,7 +159,7 @@ public class HttpQueryExposer extends HttpExposer {
 
     @Override
     protected void doPost(final HttpServletRequest req, final HttpServletResponse resp) throws ServletException, IOException {
-        if ( ! req.getContentType().startsWith("application/json")) {
+        if ( (null == req.getContentType()) || ( ! req.getContentType().startsWith("application/json"))) {
             sendError(Response.Status.NOT_ACCEPTABLE.getStatusCode(), "Accepting only application/json; charset=utf-8", req, resp, null);
         } else {
             handleQuery(JSON_TO_QUERY_MAP, req, resp);

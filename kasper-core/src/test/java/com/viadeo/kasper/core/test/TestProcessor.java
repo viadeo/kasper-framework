@@ -4,13 +4,15 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.core.boot.test;
+package com.viadeo.kasper.core.test;
 
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.boot.AnnotationProcessor;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+@XKasperUnregistered
 public class TestProcessor implements AnnotationProcessor<TestProcessor.XTestAnnotation, TestProcessor.TestInterface> {
 
     @Override
