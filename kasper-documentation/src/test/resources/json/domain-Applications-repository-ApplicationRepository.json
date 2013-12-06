@@ -16,7 +16,7 @@
     "typePlural": "domains",
     "url": "/domain/Applications"
   },
-  "label": "ApplicationRepository",
+  "label": "Application",
   "name": "ApplicationRepository",
   "type": "repository",
   "typePlural": "repositories",

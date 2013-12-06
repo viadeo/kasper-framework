@@ -1,19 +1,5 @@
 {
-  "action": "now_connected_to",
-  "description": "The NewMemberConnection event",
-  "domain": {
-    "description": "Root Facebook domain",
-    "label": "Facebook",
-    "name": "Facebook",
-    "type": "domain",
-    "typePlural": "domains",
-    "url": "/domain/Facebook"
-  },
-  "label": "NewMemberConnection",
-  "listeners": [],
-  "name": "NewMemberConnectionEvent",
-  "properties": [],
-  "type": "event",
-  "typePlural": "events",
-  "url": "/domain/Facebook/event/NewMemberConnectionEvent"
+  "message": "Unexistent entity",
+  "name": "NewMemberConnectionEvent (event)",
+  "type": "error"
 }

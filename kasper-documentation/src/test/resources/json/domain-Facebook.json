@@ -1,4 +1,13 @@
 {
+  "commandHandlers": [{
+    "commandName": "AddConnectionToMemberCommand",
+    "description": "The AddConnectionToMember command handler",
+    "label": "AddConnectionToMember",
+    "name": "AddConnectionToMemberHandler",
+    "type": "commandHandler",
+    "typePlural": "commandHandlers",
+    "url": "/domain/Facebook/commandHandler/AddConnectionToMemberHandler"
+  }],
   "commands": [{
     "description": "The AddConnectionToMember command",
     "label": "AddConnectionToMember",
@@ -8,7 +17,7 @@
     "url": "/domain/Facebook/command/AddConnectionToMemberCommand"
   }],
   "concepts": [{
-    "description": "The Member concept",
+    "description": "The FacebookMember concept",
     "label": "FacebookMember",
     "name": "Member",
     "type": "concept",
@@ -16,54 +25,53 @@
     "url": "/domain/Facebook/concept/Member"
   }],
   "description": "Root Facebook domain",
-  "events": [
-    {
-      "description": "The MemberCreated event",
-      "label": "MemberCreated",
-      "name": "MemberCreatedEvent",
-      "type": "event",
-      "typePlural": "events",
-      "url": "/domain/Facebook/event/MemberCreatedEvent"
-    },
-    {
-      "description": "The NewMemberConnection event",
-      "label": "NewMemberConnection",
-      "name": "NewMemberConnectionEvent",
-      "type": "event",
-      "typePlural": "events",
-      "url": "/domain/Facebook/event/NewMemberConnectionEvent"
-    }
-  ],
-  "handlers": [{
-    "description": "The handler for AddConnectionToMember commands",
-    "label": "AddConnectionToMemberHandler",
-    "name": "AddConnectionToMemberHandler",
-    "type": "handler",
-    "typePlural": "handlers",
-    "url": "/domain/Facebook/handler/AddConnectionToMemberHandler"
+  "eventListeners": [{
+    "description": "The MemberCreated event listener",
+    "label": "MemberCreated",
+    "name": "MemberCreatedEventListener",
+    "type": "eventListener",
+    "typePlural": "eventListeners",
+    "url": "/domain/Facebook/eventListener/MemberCreatedEventListener"
+  }],
+  "events": [{
+    "description": "The MemberCreated event",
+    "label": "MemberCreated",
+    "name": "MemberCreatedEvent",
+    "type": "event",
+    "typePlural": "events",
+    "url": "/domain/Facebook/event/MemberCreatedEvent"
   }],
   "label": "Facebook",
-  "listeners": [{
-    "description": "The listener for MemberCreated events",
-    "label": "MemberCreatedEventListener",
-    "name": "MemberCreatedEventListener",
-    "type": "listener",
-    "typePlural": "listeners",
-    "url": "/domain/Facebook/listener/MemberCreatedEventListener"
-  }],
   "name": "Facebook",
-  "parent": null,
   "prefix": "fb",
+  "queries": [{
+    "description": "The GetMembers query",
+    "label": "GetMembers",
+    "name": "GetMembersQuery",
+    "type": "query",
+    "typePlural": "queries",
+    "url": "/domain/Facebook/query/GetMembersQuery"
+  }],
   "queryHandlers": [{
     "description": "The GetMembers query handler",
     "label": "GetMembers",
     "name": "GetMembersQueryHandler",
-    "type": "queryservice",
-    "typePlural": "queryservices",
-    "url": "/domain/Facebook/queryservice/GetMembersQueryHandler"
+    "queryName": "GetMembersQuery",
+    "queryResultName": "MembersResult",
+    "type": "queryHandler",
+    "typePlural": "queryHandlers",
+    "url": "/domain/Facebook/queryHandler/GetMembersQueryHandler"
+  }],
+  "queryResults": [{
+    "description": "The Members query answer",
+    "label": "Members",
+    "name": "MembersResult",
+    "type": "queryResult",
+    "typePlural": "queryResults",
+    "url": "/domain/Facebook/queryResult/MembersResult"
   }],
   "relations": [{
-    "description": "The connected_to relation between Member and Member",
+    "description": "The connected_to relation between FacebookMember and FacebookMember",
     "label": "connected_to",
     "name": "Member_connectedTo_Member",
     "sourceConceptName": "Member",
@@ -74,20 +82,20 @@
   }],
   "repositories": [
     {
-      "description": "The repository for Member_connectedTo_Member aggregates",
-      "label": "MemberConnectionsRepository",
-      "name": "MemberConnectionsRepository",
-      "type": "repository",
-      "typePlural": "repositories",
-      "url": "/domain/Facebook/repository/MemberConnectionsRepository"
-    },
-    {
-      "description": "The repository for Member aggregates",
-      "label": "MemberRepository",
+      "description": "The repository for FacebookMember aggregates",
+      "label": "Member",
       "name": "MemberRepository",
       "type": "repository",
       "typePlural": "repositories",
       "url": "/domain/Facebook/repository/MemberRepository"
+    },
+    {
+      "description": "The repository for connected_to aggregates",
+      "label": "MemberConnections",
+      "name": "MemberConnectionsRepository",
+      "type": "repository",
+      "typePlural": "repositories",
+      "url": "/domain/Facebook/repository/MemberConnectionsRepository"
     }
   ],
   "type": "domain",

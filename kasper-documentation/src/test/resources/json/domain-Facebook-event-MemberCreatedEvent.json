@@ -9,17 +9,33 @@
     "typePlural": "domains",
     "url": "/domain/Facebook"
   },
-  "label": "MemberCreated",
-  "listeners": [{
-    "description": "The listener for MemberCreated events",
-    "label": "MemberCreatedEventListener",
+  "eventListener": {
+    "description": "The MemberCreated event listener",
+    "label": "MemberCreated",
     "name": "MemberCreatedEventListener",
-    "type": "listener",
-    "typePlural": "listeners",
-    "url": "/domain/Facebook/listener/MemberCreatedEventListener"
-  }],
+    "type": "eventListener",
+    "typePlural": "eventListeners",
+    "url": "/domain/Facebook/eventListener/MemberCreatedEventListener"
+  },
+  "label": "MemberCreated",
   "name": "MemberCreatedEvent",
-  "properties": [],
+  "properties": [
+    {
+      "list": false,
+      "name": "entityId",
+      "type": "KasperID"
+    },
+    {
+      "list": false,
+      "name": "uowEventId",
+      "type": "String"
+    },
+    {
+      "list": false,
+      "name": "type",
+      "type": "PersistencyType"
+    }
+  ],
   "type": "event",
   "typePlural": "events",
   "url": "/domain/Facebook/event/MemberCreatedEvent"

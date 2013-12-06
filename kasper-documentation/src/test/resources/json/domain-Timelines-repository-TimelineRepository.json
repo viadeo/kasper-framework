@@ -1,22 +1,22 @@
 {
   "aggregate": {
-    "description": "The Timeline concept",
+    "description": "The MemberTimeline concept",
     "label": "MemberTimeline",
     "name": "Timeline",
     "type": "concept",
     "typePlural": "concepts",
     "url": "/domain/Timelines/concept/Timeline"
   },
-  "description": "The repository for Timeline aggregates",
+  "description": "The repository for MemberTimeline aggregates",
   "domain": {
-    "description": "",
+    "description": "The Timelines domain",
     "label": "Timelines",
     "name": "Timelines",
     "type": "domain",
     "typePlural": "domains",
     "url": "/domain/Timelines"
   },
-  "label": "TimelineRepository",
+  "label": "Timeline",
   "name": "TimelineRepository",
   "type": "repository",
   "typePlural": "repositories",

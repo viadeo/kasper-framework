@@ -1,52 +1,47 @@
 {
-  "count": 2,
+  "count": 1,
   "itemType": "event",
-  "list": [
-    {
-      "action": "created",
-      "description": "The MemberCreated event",
-      "domain": {
-        "description": "Root Facebook domain",
-        "label": "Facebook",
-        "name": "Facebook",
-        "type": "domain",
-        "typePlural": "domains",
-        "url": "/domain/Facebook"
-      },
-      "label": "MemberCreated",
-      "listeners": [{
-        "description": "The listener for MemberCreated events",
-        "label": "MemberCreatedEventListener",
-        "name": "MemberCreatedEventListener",
-        "type": "listener",
-        "typePlural": "listeners",
-        "url": "/domain/Facebook/listener/MemberCreatedEventListener"
-      }],
-      "name": "MemberCreatedEvent",
-      "properties": [],
-      "type": "event",
-      "typePlural": "events",
-      "url": "/domain/Facebook/event/MemberCreatedEvent"
+  "list": [{
+    "action": "created",
+    "description": "The MemberCreated event",
+    "domain": {
+      "description": "Root Facebook domain",
+      "label": "Facebook",
+      "name": "Facebook",
+      "type": "domain",
+      "typePlural": "domains",
+      "url": "/domain/Facebook"
     },
-    {
-      "action": "now_connected_to",
-      "description": "The NewMemberConnection event",
-      "domain": {
-        "description": "Root Facebook domain",
-        "label": "Facebook",
-        "name": "Facebook",
-        "type": "domain",
-        "typePlural": "domains",
-        "url": "/domain/Facebook"
+    "eventListener": {
+      "description": "The MemberCreated event listener",
+      "label": "MemberCreated",
+      "name": "MemberCreatedEventListener",
+      "type": "eventListener",
+      "typePlural": "eventListeners",
+      "url": "/domain/Facebook/eventListener/MemberCreatedEventListener"
+    },
+    "label": "MemberCreated",
+    "name": "MemberCreatedEvent",
+    "properties": [
+      {
+        "list": false,
+        "name": "entityId",
+        "type": "KasperID"
       },
-      "label": "NewMemberConnection",
-      "listeners": [],
-      "name": "NewMemberConnectionEvent",
-      "properties": [],
-      "type": "event",
-      "typePlural": "events",
-      "url": "/domain/Facebook/event/NewMemberConnectionEvent"
-    }
-  ],
+      {
+        "list": false,
+        "name": "uowEventId",
+        "type": "String"
+      },
+      {
+        "list": false,
+        "name": "type",
+        "type": "PersistencyType"
+      }
+    ],
+    "type": "event",
+    "typePlural": "events",
+    "url": "/domain/Facebook/event/MemberCreatedEvent"
+  }],
   "type": "list"
 }

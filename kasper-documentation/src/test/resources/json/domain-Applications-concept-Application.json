@@ -1,15 +1,11 @@
 {
-  "aggregate": true,
-  "componentConcepts": [],
-  "componentRelations": [{
-    "description": "The created_by relation between Application and Member",
-    "label": "created_by",
-    "name": "Application_createdBy_Member",
-    "sourceConceptName": "Application",
-    "targetConceptName": "Member",
-    "type": "relation",
-    "typePlural": "relations",
-    "url": "/domain/Applications/relation/Application_createdBy_Member"
+  "componentConcepts": [{
+    "description": "The FacebookMember concept",
+    "label": "FacebookMember",
+    "name": "Member",
+    "type": "concept",
+    "typePlural": "concepts",
+    "url": "/domain/Facebook/concept/Member"
   }],
   "description": "The Application concept",
   "domain": {
@@ -22,19 +18,30 @@
   },
   "label": "Application",
   "name": "Application",
-  "parent": null,
-  "properties": [],
+  "properties": [
+    {
+      "list": false,
+      "name": "id",
+      "type": "KasperID"
+    },
+    {
+      "list": false,
+      "name": "version",
+      "type": "Long"
+    },
+    {
+      "list": false,
+      "name": "lastEventSequenceNumber",
+      "type": "Long"
+    },
+    {
+      "list": false,
+      "name": "version",
+      "type": "Long"
+    }
+  ],
   "sourceEvents": [],
-  "sourceRelations": [{
-    "description": "The created_by relation between Application and Member",
-    "label": "created_by",
-    "name": "Application_createdBy_Member",
-    "sourceConceptName": "Application",
-    "targetConceptName": "Member",
-    "type": "relation",
-    "typePlural": "relations",
-    "url": "/domain/Applications/relation/Application_createdBy_Member"
-  }],
+  "sourceRelations": [],
   "targetRelations": [{
     "description": "Tha Member is a big fan of this application",
     "label": "fan_of",
