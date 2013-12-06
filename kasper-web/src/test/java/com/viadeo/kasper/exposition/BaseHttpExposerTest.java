@@ -13,7 +13,7 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
-import com.viadeo.kasper.cqrs.command.impl.DefaultCommandGateway;
+import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -46,7 +46,7 @@ public abstract class BaseHttpExposerTest {
 
         new Platform.Builder()
                 .withEventBus(new KasperEventBus())
-                .withCommandGateway(new DefaultCommandGateway(new KasperCommandBus()))
+                .withCommandGateway(new KasperCommandGateway(new KasperCommandBus()))
                 .withQueryGateway(new DefaultQueryGateway())
                 .withConfiguration(ConfigFactory.empty())
                 .addPlugin(exposerPlugin)

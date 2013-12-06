@@ -24,15 +24,15 @@ import javax.validation.ValidationException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-public class DefaultCommandGateway implements CommandGateway {
+public class KasperCommandGateway implements CommandGateway {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultCommandGateway.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KasperCommandGateway.class);
 
     private final CommandGateway commandGateway;
     private final CommandBus commandBus;
     private final DomainLocator domainLocator;
 
-    public DefaultCommandGateway(CommandBus commandBus) {
+    public KasperCommandGateway(CommandBus commandBus) {
         this(
                 new CommandGatewayFactoryBean<CommandGateway>()
                 , commandBus
@@ -40,7 +40,7 @@ public class DefaultCommandGateway implements CommandGateway {
         );
     }
 
-    protected DefaultCommandGateway(CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean, CommandBus commandBus, DomainLocator domainLocator) {
+    protected KasperCommandGateway(CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean, CommandBus commandBus, DomainLocator domainLocator) {
         this.commandBus = Preconditions.checkNotNull(commandBus);
         this.domainLocator = Preconditions.checkNotNull(domainLocator);
         Preconditions.checkNotNull(commandGatewayFactoryBean);

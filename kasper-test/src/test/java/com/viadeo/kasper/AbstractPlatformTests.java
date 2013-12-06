@@ -14,7 +14,7 @@ import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
-import com.viadeo.kasper.cqrs.command.impl.DefaultCommandGateway;
+import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
 
 import java.util.List;
@@ -28,7 +28,7 @@ public abstract class AbstractPlatformTests {
             Platform.Builder platformBuilder = new Platform.Builder()
                     .withConfiguration(ConfigFactory.empty())
                     .withEventBus(new KasperEventBus())
-                    .withCommandGateway(new DefaultCommandGateway(new KasperCommandBus()))
+                    .withCommandGateway(new KasperCommandGateway(new KasperCommandBus()))
                     .withQueryGateway(new DefaultQueryGateway());
 
             for(DomainBundle domainBundle: Preconditions.checkNotNull(getBundles())){

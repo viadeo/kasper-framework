@@ -14,7 +14,7 @@ import com.viadeo.kasper.client.platform.impl.DefaultPlatform;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
-import com.viadeo.kasper.cqrs.command.impl.DefaultCommandGateway;
+import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -26,6 +26,13 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * The Kasper platform
+ *
+ * This interface represent the main entry point to your platform front components,
+ * the Command and Query gateways from which your can then send commands and queries,
+ * or even send Events.
+ **/
 public interface Platform {
 
     /**
@@ -52,7 +59,7 @@ public interface Platform {
         private final DomainDescriptorFactory domainDescriptorFactory;
 
         private KasperEventBus eventBus;
-        private DefaultCommandGateway commandGateway;
+        private KasperCommandGateway commandGateway;
         private DefaultQueryGateway queryGateway;
         private Config configuration;
         private RepositoryManager repositoryManager;
@@ -101,7 +108,7 @@ public interface Platform {
             return this;
         }
 
-        public Builder withCommandGateway(DefaultCommandGateway commandGateway) {
+        public Builder withCommandGateway(KasperCommandGateway commandGateway) {
             this.commandGateway = Preconditions.checkNotNull(commandGateway);
             return this;
         }

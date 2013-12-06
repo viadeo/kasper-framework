@@ -17,21 +17,21 @@ import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.*;
 
-public class DefaultCommandGatewayUTest {
+public class KasperCommandGatewayUTest {
 
-    private final DefaultCommandGateway commandGateway;
+    private final KasperCommandGateway commandGateway;
     private final CommandBus commandBus;
     private final DomainLocator domainLocator;
     private final CommandGateway decoratedCommandGateway;
 
     @SuppressWarnings("unchecked")
-    public DefaultCommandGatewayUTest() throws Exception {
+    public KasperCommandGatewayUTest() throws Exception {
         CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean = mock(CommandGatewayFactoryBean.class);
         decoratedCommandGateway = mock(CommandGateway.class);
         when(commandGatewayFactoryBean.getObject()).thenReturn(decoratedCommandGateway);
         commandBus = mock(CommandBus.class);
         domainLocator = mock(DomainLocator.class);
-        commandGateway = new DefaultCommandGateway(commandGatewayFactoryBean, commandBus, domainLocator);
+        commandGateway = new KasperCommandGateway(commandGatewayFactoryBean, commandBus, domainLocator);
     }
 
     @Before

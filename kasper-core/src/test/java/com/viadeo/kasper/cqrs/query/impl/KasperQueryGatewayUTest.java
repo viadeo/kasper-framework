@@ -13,12 +13,12 @@ import org.junit.Test;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.*;
 
-public class DefaultQueryGatewayUTest {
+public class KasperQueryGatewayUTest {
 
     private final DefaultQueryGateway queryGateway;
     private final DefaultQueryHandlersLocator queryHandlersLocator;
 
-    public DefaultQueryGatewayUTest(){
+    public KasperQueryGatewayUTest(){
         queryHandlersLocator = mock(DefaultQueryHandlersLocator.class);
         queryGateway = new DefaultQueryGateway(queryHandlersLocator);
     }
