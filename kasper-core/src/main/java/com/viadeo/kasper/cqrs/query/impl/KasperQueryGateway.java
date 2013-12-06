@@ -27,8 +27,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /** The Kasper gateway base implementation */
-public class DefaultQueryGateway implements QueryGateway {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultQueryGateway.class);
+public class KasperQueryGateway implements QueryGateway {
+    private static final Logger LOGGER = LoggerFactory.getLogger(KasperQueryGateway.class);
     private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
     private static final Timer METRICLASSTIMER = METRICS.timer(name(QueryGateway.class, "requests-time"));
@@ -40,11 +40,11 @@ public class DefaultQueryGateway implements QueryGateway {
 
     // -----------------------------------------------------------------------
 
-    public DefaultQueryGateway() {
+    public KasperQueryGateway() {
         this(new DefaultQueryHandlersLocator());
     }
 
-    public DefaultQueryGateway(QueryHandlersLocator queryHandlersLocator) {
+    public KasperQueryGateway(QueryHandlersLocator queryHandlersLocator) {
         this.queryHandlersLocator = queryHandlersLocator;
     }
 

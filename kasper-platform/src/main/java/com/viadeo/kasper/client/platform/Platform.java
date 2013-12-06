@@ -18,7 +18,7 @@ import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
+import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
 
@@ -60,7 +60,7 @@ public interface Platform {
 
         private KasperEventBus eventBus;
         private KasperCommandGateway commandGateway;
-        private DefaultQueryGateway queryGateway;
+        private KasperQueryGateway queryGateway;
         private Config configuration;
         private RepositoryManager repositoryManager;
 
@@ -113,7 +113,7 @@ public interface Platform {
             return this;
         }
 
-        public Builder withQueryGateway(DefaultQueryGateway queryGateway) {
+        public Builder withQueryGateway(KasperQueryGateway queryGateway) {
             this.queryGateway = Preconditions.checkNotNull(queryGateway);
             return this;
         }

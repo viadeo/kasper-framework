@@ -16,7 +16,7 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
-import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
+import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.domain.EventMessage;
@@ -45,7 +45,7 @@ public class KasperPlatformFixture
                 new Platform.Builder()
                         .withConfiguration(ConfigFactory.empty())
                         .withEventBus(eventBus)
-                        .withQueryGateway(new DefaultQueryGateway())
+                        .withQueryGateway(new KasperQueryGateway())
                         .withCommandGateway(new KasperCommandGateway(new KasperCommandBus()))
                         .addDomainBundle(domainBundle)
                         .build()

@@ -24,7 +24,7 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
-import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
+import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
@@ -409,7 +409,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     public QueryGateway queryGateway(final QueryHandlersLocator locator){
         this.ensureNotPresent(QueryGateway.class);
 
-        final DefaultQueryGateway queryGateway = new DefaultQueryGateway(locator);
+        final KasperQueryGateway queryGateway = new KasperQueryGateway(locator);
 
         registerInstance(QueryGateway.class, queryGateway);
         return queryGateway;

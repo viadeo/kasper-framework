@@ -13,7 +13,7 @@ import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
+import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
 
@@ -93,7 +93,7 @@ public class QueryFilterITest {
         locator.registerFilter("testFilter2", filterGlobal, true);
         locator.registerFilterForQueryHandler(service.getClass(), filter.getClass());
 
-        final DefaultQueryGateway gateway = new DefaultQueryGateway(locator);
+        final KasperQueryGateway gateway = new KasperQueryGateway(locator);
 
         final Context context = DefaultContextBuilder.get();
         final TestQuery query = new TestQuery();

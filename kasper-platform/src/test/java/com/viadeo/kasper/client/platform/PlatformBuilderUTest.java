@@ -13,7 +13,7 @@ import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.impl.DefaultQueryGateway;
+import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.er.Concept;
@@ -85,7 +85,7 @@ public class PlatformBuilderUTest {
     public void build_withoutCommandGateway_shouldThrownException(){
         // Given
         Platform.Builder builder = new Platform.Builder()
-                .withQueryGateway(mock(DefaultQueryGateway.class))
+                .withQueryGateway(mock(KasperQueryGateway.class))
                 .withEventBus(mock(KasperEventBus.class))
                 .withConfiguration(mock(Config.class));
 
@@ -113,7 +113,7 @@ public class PlatformBuilderUTest {
     public void build_withoutEventBus_shouldThrownException(){
         // Given
         Platform.Builder builder = new Platform.Builder()
-                .withQueryGateway(mock(DefaultQueryGateway.class))
+                .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(mock(KasperCommandGateway.class))
                 .withConfiguration(mock(Config.class));
 
@@ -128,7 +128,7 @@ public class PlatformBuilderUTest {
     public void build_withoutConfiguration_shouldThrownException(){
         // Given
         Platform.Builder builder = new Platform.Builder()
-                .withQueryGateway(mock(DefaultQueryGateway.class))
+                .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(mock(KasperCommandGateway.class))
                 .withEventBus(mock(KasperEventBus.class));
 
@@ -143,7 +143,7 @@ public class PlatformBuilderUTest {
         // Given
         KasperEventBus eventBus = mock(KasperEventBus.class);
         KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
-        DefaultQueryGateway queryGateway = mock(DefaultQueryGateway.class);
+        KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
 
         Platform.Builder builder = new Platform.Builder()
                 .withQueryGateway(queryGateway)
@@ -173,7 +173,7 @@ public class PlatformBuilderUTest {
 
         KasperEventBus eventBus = mock(KasperEventBus.class);
         KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
-        DefaultQueryGateway queryGateway = mock(DefaultQueryGateway.class);
+        KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
         Config configuration = mock(Config.class);
 
         Platform.Builder builder = new Platform.Builder()
@@ -197,7 +197,7 @@ public class PlatformBuilderUTest {
         Plugin plugin = mock(Plugin.class);
         KasperEventBus eventBus = mock(KasperEventBus.class);
         KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
-        DefaultQueryGateway queryGateway = mock(DefaultQueryGateway.class);
+        KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
         Config configuration = mock(Config.class);
 
         Platform.Builder builder = new Platform.Builder()
@@ -232,7 +232,7 @@ public class PlatformBuilderUTest {
         DomainDescriptorFactory domainDescriptorFactory = createMockedDomainDescriptorFactory();
 
         Platform.Builder builder = new Platform.Builder(domainDescriptorFactory)
-                .withQueryGateway(mock(DefaultQueryGateway.class))
+                .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
                 .withConfiguration(mock(Config.class))
@@ -260,7 +260,7 @@ public class PlatformBuilderUTest {
         );
 
         KasperEventBus eventBus = mock(KasperEventBus.class);
-        DefaultQueryGateway queryGateway = mock(DefaultQueryGateway.class);
+        KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
         DomainDescriptorFactory domainDescriptorFactory = createMockedDomainDescriptorFactory();
 
         Platform.Builder builder = new Platform.Builder(domainDescriptorFactory)
@@ -295,7 +295,7 @@ public class PlatformBuilderUTest {
         DomainDescriptorFactory domainDescriptorFactory = createMockedDomainDescriptorFactory();
 
         Platform.Builder builder = new Platform.Builder(domainDescriptorFactory)
-                .withQueryGateway(mock(DefaultQueryGateway.class))
+                .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
                 .withConfiguration(mock(Config.class))
@@ -328,7 +328,7 @@ public class PlatformBuilderUTest {
         RepositoryManager repositoryManager = mock(DefaultRepositoryManager.class);
 
         Platform.Builder builder = new Platform.Builder(domainDescriptorFactory)
-                .withQueryGateway(mock(DefaultQueryGateway.class))
+                .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
                 .withConfiguration(mock(Config.class))
@@ -356,7 +356,7 @@ public class PlatformBuilderUTest {
 
         KasperEventBus eventBus = mock(KasperEventBus.class);
         KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
-        DefaultQueryGateway queryGateway = mock(DefaultQueryGateway.class);
+        KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
         Config configuration = mock(Config.class);
 
         Platform.Builder builder = new Platform.Builder()
