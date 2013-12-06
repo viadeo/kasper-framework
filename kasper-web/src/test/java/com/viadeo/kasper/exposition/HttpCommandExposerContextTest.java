@@ -6,16 +6,18 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.*;
-import com.viadeo.kasper.cqrs.command.CommandResponse.Status;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
 import org.springframework.context.ApplicationContext;
 
 import java.util.Locale;
+import java.util.UUID;
 
 import static com.viadeo.kasper.exposition.TestContexts.CONTEXT_FULL;
 import static com.viadeo.kasper.exposition.TestContexts.context_full;
@@ -23,6 +25,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class HttpCommandExposerContextTest extends BaseHttpExposerTest<HttpCommandExposer> {
+
+    public static final String RETURNED_SECURITY_TOKEN = UUID.randomUUID().toString();
 
     public HttpCommandExposerContextTest() {
         Locale.setDefault(Locale.US);
@@ -44,7 +48,9 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest<HttpComma
         final CommandResponse response = client().send(context_full, command);
 
         // Then
-        assertEquals(Status.OK, response.getStatus());
+        assertTrue(response.isOK());
+        assertTrue(response.getSecurityToken().isPresent());
+        assertEquals(RETURNED_SECURITY_TOKEN, response.getSecurityToken().get());
     }
 
     // ------------------------------------------------------------------------
@@ -56,9 +62,8 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest<HttpComma
 
         private String contextName;
 
-        ContextCheckCommand() { }
-
-        ContextCheckCommand(final String contextName) {
+        @JsonCreator
+        public ContextCheckCommand(@JsonProperty("contextName") final String contextName) {
             this.contextName = contextName;
         }
 
@@ -80,7 +85,7 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest<HttpComma
 
                 assertTrue(clonedContext.equals(context_full));
             }
-            return CommandResponse.ok();
+            return CommandResponse.ok().withSecurityToken(RETURNED_SECURITY_TOKEN);
         }
     }
 
