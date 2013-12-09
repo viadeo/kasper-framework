@@ -150,6 +150,7 @@ public interface Platform {
                 }
 
                 for(QueryHandler queryHandler: bundle.getQueryHandlers()){
+                    queryHandler.setEventBus(eventBus);
                     queryGateway.register(queryHandler);
                 }
 

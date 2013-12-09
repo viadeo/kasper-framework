@@ -10,6 +10,7 @@ import com.viadeo.kasper.ddd.Domain;
 import org.junit.After;
 import org.junit.Test;
 
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.*;
 
@@ -49,6 +50,9 @@ public class KasperQueryGatewayUTest {
 
         // Then
         verify(queryHandlersLocator).registerHandler(refEq("QueryHandlerForTest"), refEq(queryHandler), refEq(Domain.class));
+        verifyNoMoreInteractions(queryHandlersLocator);
+
+        assertEquals(queryGateway, queryHandler.getQueryGateway());
     }
 
     @Test
@@ -62,6 +66,9 @@ public class KasperQueryGatewayUTest {
         // Then
         verify(queryHandlersLocator).registerFilterForQueryHandler(refEq(QueryHandlerWithFiltersForTest.class), refEq(Filter1.class));
         verify(queryHandlersLocator).registerHandler(refEq("QueryHandlerWithFiltersForTest"), refEq(queryHandler), refEq(Domain.class));
+        verifyNoMoreInteractions(queryHandlersLocator);
+
+        assertEquals(queryGateway, queryHandler.getQueryGateway());
     }
 
     @XKasperQueryHandler(domain = Domain.class)

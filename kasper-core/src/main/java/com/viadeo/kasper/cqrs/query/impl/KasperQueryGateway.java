@@ -130,5 +130,7 @@ public class KasperQueryGateway implements QueryGateway {
         }
 
         queryHandlersLocator.registerHandler(handlerName, queryHandler, annotation.domain());
+
+        queryHandler.setQueryGateway(this);
     }
 }
