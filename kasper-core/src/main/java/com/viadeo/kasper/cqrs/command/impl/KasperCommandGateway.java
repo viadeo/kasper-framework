@@ -112,6 +112,8 @@ public class KasperCommandGateway implements CommandGateway {
                 , commandHandler
         );
         commandBus.subscribe(castor.getBeanClass().getName(), castor.getContainerClass());
+
+        commandHandler.setCommandGateway(this);
     }
 
     /**

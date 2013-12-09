@@ -50,6 +50,7 @@ public class KasperCommandGatewayUTest {
 
         // Then
         verify(decoratedCommandGateway).sendCommand(refEq(command), refEq(context));
+        verifyNoMoreInteractions(decoratedCommandGateway);
     }
 
     @Test
@@ -63,6 +64,7 @@ public class KasperCommandGatewayUTest {
 
         // Then
         verify(decoratedCommandGateway).sendCommandForFuture(refEq(command), refEq(context));
+        verifyNoMoreInteractions(decoratedCommandGateway);
     }
 
     @Test
@@ -76,6 +78,7 @@ public class KasperCommandGatewayUTest {
 
         // Then
         verify(decoratedCommandGateway).sendCommandAndWaitForAResponse(refEq(command), refEq(context));
+        verifyNoMoreInteractions(decoratedCommandGateway);
     }
 
     @Test
@@ -89,6 +92,7 @@ public class KasperCommandGatewayUTest {
 
         // Then
         verify(decoratedCommandGateway).sendCommandAndWaitForAResponseWithException(refEq(command), refEq(context));
+        verifyNoMoreInteractions(decoratedCommandGateway);
     }
 
     @Test
@@ -103,10 +107,11 @@ public class KasperCommandGatewayUTest {
 
         // Then
         verify(decoratedCommandGateway).sendCommandAndWait(refEq(command), refEq(context), anyLong(), refEq(unit));
+        verifyNoMoreInteractions(decoratedCommandGateway);
     }
 
     @Test
-    public void sendCommandAndWaitForever() throws Exception {
+    public void sendCommandAndWaitForever_shouldDelegateTheCall() throws Exception {
         // Given
         Command command = mock(Command.class);
         Context context = mock(Context.class);
@@ -116,6 +121,7 @@ public class KasperCommandGatewayUTest {
 
         // Then
         verify(decoratedCommandGateway).sendCommandAndWaitForever(refEq(command), refEq(context));
+        verifyNoMoreInteractions(decoratedCommandGateway);
     }
 
     @Test(expected = NullPointerException.class)
@@ -140,6 +146,13 @@ public class KasperCommandGatewayUTest {
 
         // Then
         verify(domainLocator).registerHandler(refEq(commandHandler));
+        verifyNoMoreInteractions(domainLocator);
+
         verify(commandBus).subscribe(refEq(Command.class.getName()), any(org.axonframework.commandhandling.CommandHandler.class));
+        verifyNoMoreInteractions(commandBus);
+
+        verify(commandHandler).setCommandGateway(refEq(commandGateway));
+        verify(commandHandler).getCommandClass();
+        verifyNoMoreInteractions(commandHandler);
     }
 }

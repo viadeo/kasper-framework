@@ -84,24 +84,25 @@ public abstract class EntityCommandHandler<C extends Command, AGR extends Aggreg
     /**
      * @see com.viadeo.kasper.cqrs.command.EntityCommandHandler#setRepository(com.viadeo.kasper.ddd.IRepository)
      */
-    public void setRepository(final IRepository<AGR> repository) {
+    protected void setRepository(final IRepository<AGR> repository) {
         this.consistentRepositoryEntity.setRepository(
                 new ClientRepository<AGR>(Preconditions.checkNotNull(repository)));
     }
 
     /**
-     * @see com.viadeo.kasper.cqrs.command.EntityCommandHandler#getRepository()
+     * Get the related repository of the entity handled by this command handler
+     * @return the repository
      */
     @SuppressWarnings("unchecked")
     public ClientRepository<AGR> getRepository() {
         if (null == this.consistentRepositoryEntity.repository) {
 
-            if (null == this.getRepositoryManager()) {
+            if (null == repositoryManager) {
                 throw new KasperCommandException("Unable to resolve repository, no repository manager was provided");
             }
 
             final Optional<ClientRepository<AGR>> optRepo =
-                    this.getRepositoryManager().getEntityRepository(this.consistentRepositoryEntity.entityClass);
+                    repositoryManager.getEntityRepository(this.consistentRepositoryEntity.entityClass);
 
             if (!optRepo.isPresent()) {
                 throw new KasperCommandException(String.format("The entity %s has not been recorded on any domain",
@@ -112,6 +113,17 @@ public abstract class EntityCommandHandler<C extends Command, AGR extends Aggreg
         }
 
         return this.consistentRepositoryEntity.repository;
+    }
+
+    /**
+     * Get the related repository of the specified entity class
+     * @return the entity repository
+     */
+    public <E extends AggregateRoot> Optional<ClientRepository<E>> getRepositoryOf(Class<E> entityClass){
+        if (null == repositoryManager) {
+            throw new KasperCommandException("Unable to resolve repository, no repository manager was provided");
+        }
+        return repositoryManager.getEntityRepository(entityClass);
     }
 
 }

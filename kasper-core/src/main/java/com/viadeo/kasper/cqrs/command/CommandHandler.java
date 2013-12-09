@@ -53,7 +53,8 @@ public abstract class CommandHandler<C extends Command>
 
     private transient final Class<C> commandClass;
     private transient EventBus eventBus;
-    private transient RepositoryManager repositoryManager;
+    private transient CommandGateway commandGateway;
+    protected transient RepositoryManager repositoryManager;
 
     // ------------------------------------------------------------------------
 
@@ -209,27 +210,25 @@ public abstract class CommandHandler<C extends Command>
 
     // ------------------------------------------------------------------------
 
-    public void setEventBus(final EventBus eventBus) {
-        this.eventBus = checkNotNull(eventBus);
-    }
-
-    protected EventBus getEventBus() {
-        return this.eventBus;
-    }
-
-    // ------------------------------------------------------------------------
-
     public Class<C> getCommandClass() {
         return commandClass;
     }
 
+    public CommandGateway getCommandGateway(){
+        return commandGateway;
+    }
+
     // ------------------------------------------------------------------------
+
+    public void setEventBus(final EventBus eventBus) {
+        this.eventBus = checkNotNull(eventBus);
+    }
 
     public void setRepositoryManager(RepositoryManager repositoryManager) {
         this.repositoryManager = repositoryManager;
     }
 
-    protected RepositoryManager getRepositoryManager() {
-        return repositoryManager;
+    public void setCommandGateway(CommandGateway commandGateway) {
+        this.commandGateway = commandGateway;
     }
 }
