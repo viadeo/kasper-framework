@@ -1,5 +1,6 @@
 package com.viadeo.kasper.doc;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.Plugin;
@@ -24,7 +25,7 @@ public class DocumentationPlugin implements Plugin {
     }
 
     @Override
-    public void initialize(Platform platform, DomainDescriptor... domainDescriptors) {
+    public void initialize(Platform platform, MetricRegistry metricRegistry, DomainDescriptor... domainDescriptors) {
         Preconditions.checkNotNull(domainDescriptors);
 
         for (DomainDescriptor domainDescriptor : domainDescriptors) {

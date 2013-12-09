@@ -1,5 +1,6 @@
 package com.viadeo.kasper.client.platform;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -138,8 +139,23 @@ public class PlatformBuilderUTest {
         // Then throws an exception
     }
 
+    @Test(expected = IllegalStateException.class)
+    public void build_withoutMetricRegistry_shouldThrownException(){
+        // Given
+        Platform.Builder builder = new Platform.Builder()
+                .withQueryGateway(mock(KasperQueryGateway.class))
+                .withCommandGateway(mock(KasperCommandGateway.class))
+                .withEventBus(mock(KasperEventBus.class))
+                .withConfiguration(mock(Config.class));
+
+        // When
+        builder.build();
+
+        // Then throws an exception
+    }
+
     @Test
-    public void build_withQueryGateway_withCommandGateway_withEventBus_withConfiguration_shouldBeOk(){
+    public void build_withQueryGateway_withCommandGateway_withEventBus_withConfiguration_withMetricRegistry_shouldBeOk(){
         // Given
         KasperEventBus eventBus = mock(KasperEventBus.class);
         KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
@@ -149,7 +165,9 @@ public class PlatformBuilderUTest {
                 .withQueryGateway(queryGateway)
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
-                .withConfiguration(mock(Config.class));
+                .withConfiguration(mock(Config.class))
+                .withMetricRegistry(mock(MetricRegistry.class))
+        ;
 
         // When
         Platform platform = builder.build();
@@ -175,12 +193,14 @@ public class PlatformBuilderUTest {
         KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
         KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
         Config configuration = mock(Config.class);
+        MetricRegistry metricRegistry = mock(MetricRegistry.class);
 
         Platform.Builder builder = new Platform.Builder()
                 .withQueryGateway(queryGateway)
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
                 .withConfiguration(configuration)
+                .withMetricRegistry(metricRegistry)
                 .addDomainBundle(domainBundle);
 
         // When
@@ -188,7 +208,7 @@ public class PlatformBuilderUTest {
 
         // Then
         assertNotNull(platform);
-        verify(domainBundle).configure(refEq(new Platform.BuilderContext(configuration, eventBus, commandGateway, queryGateway, Maps.<ExtraComponentKey, Object>newHashMap())));
+        verify(domainBundle).configure(refEq(new Platform.BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, Maps.<ExtraComponentKey, Object>newHashMap())));
     }
 
     @Test
@@ -199,12 +219,14 @@ public class PlatformBuilderUTest {
         KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
         KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
         Config configuration = mock(Config.class);
+        MetricRegistry metricRegistry = mock(MetricRegistry.class);
 
         Platform.Builder builder = new Platform.Builder()
                 .withQueryGateway(queryGateway)
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
                 .withConfiguration(configuration)
+                .withMetricRegistry(metricRegistry)
                 .addPlugin(plugin);
 
         // When
@@ -212,7 +234,7 @@ public class PlatformBuilderUTest {
 
         // Then
         assertNotNull(platform);
-        verify(plugin).initialize(refEq(platform), (DomainDescriptor[]) anyVararg());
+        verify(plugin).initialize(refEq(platform), refEq(metricRegistry), (DomainDescriptor[]) anyVararg());
     }
 
     @Test
@@ -236,6 +258,7 @@ public class PlatformBuilderUTest {
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
                 .withConfiguration(mock(Config.class))
+                .withMetricRegistry(mock(MetricRegistry.class))
                 .addDomainBundle(domainBundle);
 
         // When
@@ -268,6 +291,7 @@ public class PlatformBuilderUTest {
                 .withCommandGateway(mock(KasperCommandGateway.class))
                 .withEventBus(eventBus)
                 .withConfiguration(mock(Config.class))
+                .withMetricRegistry(mock(MetricRegistry.class))
                 .addDomainBundle(domainBundle);
 
         // When
@@ -299,6 +323,7 @@ public class PlatformBuilderUTest {
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
                 .withConfiguration(mock(Config.class))
+                .withMetricRegistry(mock(MetricRegistry.class))
                 .addDomainBundle(domainBundle);
 
         // When
@@ -333,6 +358,7 @@ public class PlatformBuilderUTest {
                 .withEventBus(eventBus)
                 .withConfiguration(mock(Config.class))
                 .withRepositoryManager(repositoryManager)
+                .withMetricRegistry(mock(MetricRegistry.class))
                 .addDomainBundle(domainBundle);
 
         // When
@@ -358,12 +384,14 @@ public class PlatformBuilderUTest {
         KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
         KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
         Config configuration = mock(Config.class);
+        MetricRegistry metricRegistry = mock(MetricRegistry.class);
 
         Platform.Builder builder = new Platform.Builder()
                 .withQueryGateway(queryGateway)
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
                 .withConfiguration(configuration)
+                .withMetricRegistry(metricRegistry)
                 .addDomainBundle(domainBundle);
 
         String name = "test";
@@ -377,7 +405,7 @@ public class PlatformBuilderUTest {
         expectedExtraComponents.put(new ExtraComponentKey(name, component.getClass()), component);
 
         assertNotNull(platform);
-        verify(domainBundle).configure(refEq(new Platform.BuilderContext(configuration, eventBus, commandGateway, queryGateway, expectedExtraComponents)));
+        verify(domainBundle).configure(refEq(new Platform.BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, expectedExtraComponents)));
     }
 
     private DomainDescriptorFactory createMockedDomainDescriptorFactory(){

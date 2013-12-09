@@ -1,5 +1,6 @@
 package com.viadeo.kasper.exposition;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Collections2;
@@ -24,7 +25,7 @@ public class HttpCommandExposerPlugin implements HttpExposerPlugin {
     private HttpCommandExposer httpCommandExposer;
 
     @Override
-    public void initialize(Platform platform, DomainDescriptor... domainDescriptors) {
+    public void initialize(Platform platform, MetricRegistry metricRegistry, DomainDescriptor... domainDescriptors) {
         List<Class<? extends CommandHandler>> commandHandlerClasses = Lists.newArrayList();
 
         for(DomainDescriptor domainDescriptor:domainDescriptors){

@@ -1,5 +1,6 @@
 package com.viadeo.kasper.client.platform;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
@@ -63,6 +64,7 @@ public interface Platform {
         private KasperQueryGateway queryGateway;
         private Config configuration;
         private RepositoryManager repositoryManager;
+        private MetricRegistry metricRegistry;
 
         public Builder() {
             this(new DomainDescriptorFactory());
@@ -123,14 +125,20 @@ public interface Platform {
             return this;
         }
 
+        public Builder withMetricRegistry(MetricRegistry metricRegistry) {
+            this.metricRegistry = Preconditions.checkNotNull(metricRegistry);
+            return this;
+        }
+
         public Platform build(){
             Preconditions.checkState(eventBus != null, "the event bus cannot be null");
             Preconditions.checkState(commandGateway != null, "the command gateway cannot be null");
             Preconditions.checkState(queryGateway != null, "the query gateway cannot be null");
             Preconditions.checkState(configuration != null, "the configuration cannot be null");
             Preconditions.checkState(repositoryManager != null, "the repository manager cannot be null");
+            Preconditions.checkState(metricRegistry != null, "the metric registry cannot be null");
 
-            BuilderContext context = new BuilderContext(configuration, eventBus, commandGateway, queryGateway, extraComponents);
+            BuilderContext context = new BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, extraComponents);
 
             List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
 
@@ -166,7 +174,7 @@ public interface Platform {
 
             DomainDescriptor[] domainDescriptorArray = domainDescriptors.toArray(new DomainDescriptor[domainDescriptors.size()]);
             for(Plugin plugin : kasperPlugins){
-                plugin.initialize(platform, domainDescriptorArray);
+                plugin.initialize(platform, metricRegistry, domainDescriptorArray);
             }
 
             return platform;
@@ -179,6 +187,7 @@ public interface Platform {
         private final KasperEventBus eventBus;
         private final CommandGateway commandGateway;
         private final QueryGateway queryGateway;
+        private final MetricRegistry metricRegistry;
         private final Map<ExtraComponentKey, Object> extraComponent;
 
         public BuilderContext(
@@ -186,12 +195,14 @@ public interface Platform {
                 , KasperEventBus eventBus
                 , CommandGateway commandGateway
                 , QueryGateway queryGateway
+                , MetricRegistry metricRegistry
                 , Map<ExtraComponentKey, Object> extraComponent
         ) {
             this.configuration = configuration;
             this.eventBus = eventBus;
             this.commandGateway = commandGateway;
             this.queryGateway = queryGateway;
+            this.metricRegistry = metricRegistry;
             this.extraComponent = extraComponent;
         }
 
@@ -209,6 +220,10 @@ public interface Platform {
 
         public QueryGateway getQueryGateway() {
             return queryGateway;
+        }
+
+        public MetricRegistry getMetricRegistry() {
+            return metricRegistry;
         }
 
         @SuppressWarnings("unchecked")

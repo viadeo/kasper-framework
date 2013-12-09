@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
+import com.codahale.metrics.MetricRegistry;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.KasperClient;
 import com.viadeo.kasper.client.KasperClientBuilder;
@@ -49,6 +50,7 @@ public abstract class BaseHttpExposerTest {
                 .withCommandGateway(new KasperCommandGateway(new KasperCommandBus()))
                 .withQueryGateway(new KasperQueryGateway())
                 .withConfiguration(ConfigFactory.empty())
+                .withMetricRegistry(new MetricRegistry())
                 .addPlugin(exposerPlugin)
                 .addDomainBundle(getDomainBundle())
                 .build();

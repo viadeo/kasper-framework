@@ -1,5 +1,6 @@
 package com.viadeo.kasper.doc;
 
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.doc.element.DocumentedPlatform;
@@ -39,7 +40,7 @@ public class DocumentationPluginUTest {
     public void getKasperDocResource_fromInitializedPlugin_shouldReturnDocumentation(){
         // Given
         DocumentationPlugin documentationPlugin = new DocumentationPlugin(documentedPlatform);
-        documentationPlugin.initialize(mock(Platform.class));
+        documentationPlugin.initialize(mock(Platform.class), mock(MetricRegistry.class));
 
         // When
         KasperDocResource kasperDocResource = documentationPlugin.getKasperDocResource();
@@ -56,7 +57,7 @@ public class DocumentationPluginUTest {
         DomainDescriptor[] descriptors = {};
 
         // When
-        documentationPlugin.initialize(mock(Platform.class), descriptors);
+        documentationPlugin.initialize(mock(Platform.class), mock(MetricRegistry.class), descriptors);
 
         // Then
         Assert.assertTrue(documentationPlugin.isInitialized());
@@ -76,7 +77,7 @@ public class DocumentationPluginUTest {
         DomainDescriptor[] descriptors = {descriptor};
 
         // When
-        documentationPlugin.initialize(mock(Platform.class), descriptors);
+        documentationPlugin.initialize(mock(Platform.class), mock(MetricRegistry.class), descriptors);
 
         // Then
         Assert.assertTrue(documentationPlugin.isInitialized());
@@ -91,7 +92,7 @@ public class DocumentationPluginUTest {
         DomainDescriptor[] descriptors = null;
 
         // When
-        documentationPlugin.initialize(mock(Platform.class), descriptors);
+        documentationPlugin.initialize(mock(Platform.class), mock(MetricRegistry.class), descriptors);
 
         // Then throws an exception
     }

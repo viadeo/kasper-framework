@@ -1,5 +1,6 @@
 package com.viadeo.kasper.client.platform.domain;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -30,6 +31,7 @@ public class SpringDomainBundleUTest {
                 , mock(KasperEventBus.class)
                 , mock(CommandGateway.class)
                 , mock(QueryGateway.class)
+                , mock(MetricRegistry.class)
                 , Maps.<Platform.ExtraComponentKey, Object>newHashMap()
         );
     }

@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Preconditions;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.Platform;
@@ -29,7 +30,8 @@ public abstract class AbstractPlatformTests {
                     .withConfiguration(ConfigFactory.empty())
                     .withEventBus(new KasperEventBus())
                     .withCommandGateway(new KasperCommandGateway(new KasperCommandBus()))
-                    .withQueryGateway(new KasperQueryGateway());
+                    .withQueryGateway(new KasperQueryGateway())
+                    .withMetricRegistry(new MetricRegistry());
 
             for(DomainBundle domainBundle: Preconditions.checkNotNull(getBundles())){
                 platformBuilder.addDomainBundle(domainBundle);
