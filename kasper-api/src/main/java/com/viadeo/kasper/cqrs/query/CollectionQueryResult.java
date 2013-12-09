@@ -146,6 +146,7 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
     public String toString() {
         return Objects.toStringHelper(this)
                 .add("list", list)
+                .add("count", getCount())
                 .toString();
     }
 
