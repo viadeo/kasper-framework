@@ -8,6 +8,7 @@ package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
+import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import org.axonframework.eventhandling.EventBus;
@@ -42,7 +43,12 @@ public class EventListenersProcessor extends SingletonAnnotationProcessor<XKaspe
 		LOGGER.info("Subscribe to event bus : " + eventListenerClazz.getName());
 
         if (EventListener.class.isAssignableFrom(eventListener.getClass())) {
-            ((EventListener) eventListener).setCommandGateway(this.commandGateway);
+            EventListener kasperEventListener = (EventListener) eventListener;
+            kasperEventListener.setEventBus(eventBus);
+
+            if(CommandEventListener.class.isAssignableFrom(eventListener.getClass())){
+                ((CommandEventListener) eventListener).setCommandGateway(this.commandGateway);
+            }
         }
 
 		//- Subscribe the listener to the event bus (Axon) --------------------

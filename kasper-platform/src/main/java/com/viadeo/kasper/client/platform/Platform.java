@@ -23,7 +23,9 @@ import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.ddd.repository.Repository;
+import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.QueryEventListener;
 
 import java.util.Collection;
 import java.util.List;
@@ -31,11 +33,11 @@ import java.util.Map;
 
 /**
  * The Kasper platform
- *
+ * <p/>
  * This interface represent the main entry point to your platform front components,
  * the Command and Query gateways from which your can then send commands and queries,
  * or even send Events.
- **/
+ */
 public interface Platform {
 
     /**
@@ -54,7 +56,7 @@ public interface Platform {
     KasperEventBus getEventBus();
 
 
-    public static class Builder{
+    public static class Builder {
 
         private final Collection<DomainBundle> domainBundles;
         private final Collection<Plugin> kasperPlugins;
@@ -88,7 +90,7 @@ public interface Platform {
             this();
             this.eventBus = Preconditions.checkNotNull(platformConfiguration.eventBus());
             this.commandGateway = Preconditions.checkNotNull(platformConfiguration.commandGateway());
-            this.queryGateway= Preconditions.checkNotNull(platformConfiguration.queryGateway());
+            this.queryGateway = Preconditions.checkNotNull(platformConfiguration.queryGateway());
             this.configuration = Preconditions.checkNotNull(platformConfiguration.configuration());
             this.metricRegistry = Preconditions.checkNotNull(platformConfiguration.metricRegistry());
         }
@@ -111,7 +113,7 @@ public interface Platform {
             return this;
         }
 
-        public Builder withConfiguration(Config configuration){
+        public Builder withConfiguration(Config configuration) {
             this.configuration = Preconditions.checkNotNull(configuration);
             return this;
         }
@@ -141,7 +143,7 @@ public interface Platform {
             return this;
         }
 
-        public Platform build(){
+        public Platform build() {
             Preconditions.checkState(eventBus != null, "the event bus cannot be null");
             Preconditions.checkState(commandGateway != null, "the command gateway cannot be null");
             Preconditions.checkState(queryGateway != null, "the query gateway cannot be null");
@@ -159,25 +161,34 @@ public interface Platform {
             for (DomainBundle bundle : domainBundles) {
                 bundle.configure(context);
 
-                for(Repository repository : bundle.getRepositories()){
+                for (Repository repository : bundle.getRepositories()) {
                     repository.init();
                     repository.setEventBus(eventBus);
                     repositoryManager.register(repository);
                 }
 
-                for(CommandHandler commandHandler : bundle.getCommandHandlers()){
+                for (CommandHandler commandHandler : bundle.getCommandHandlers()) {
                     commandHandler.setEventBus(eventBus);
                     commandHandler.setRepositoryManager(repositoryManager);
                     commandGateway.register(commandHandler);
                 }
 
-                for(QueryHandler queryHandler: bundle.getQueryHandlers()){
+                for (QueryHandler queryHandler : bundle.getQueryHandlers()) {
                     queryHandler.setEventBus(eventBus);
                     queryGateway.register(queryHandler);
                 }
 
-                for(EventListener eventListener : bundle.getEventListeners()){
-                    eventListener.setCommandGateway(commandGateway);
+                for (EventListener eventListener : bundle.getEventListeners()) {
+                    eventListener.setEventBus(eventBus);
+
+                    if (CommandEventListener.class.isAssignableFrom(eventListener.getClass())) {
+                        CommandEventListener commandEventListener = (CommandEventListener) eventListener;
+                        commandEventListener.setCommandGateway(commandGateway);
+                    } else if (QueryEventListener.class.isAssignableFrom(eventListener.getClass())) {
+                        QueryEventListener queryEventListener = (QueryEventListener) eventListener;
+                        queryEventListener.setQueryGateway(queryGateway);
+                    }
+
                     eventBus.subscribe(eventListener);
                 }
 
@@ -187,7 +198,7 @@ public interface Platform {
             KasperPlatform platform = new KasperPlatform(commandGateway, queryGateway, eventBus);
 
             DomainDescriptor[] domainDescriptorArray = domainDescriptors.toArray(new DomainDescriptor[domainDescriptors.size()]);
-            for(Plugin plugin : kasperPlugins){
+            for (Plugin plugin : kasperPlugins) {
                 plugin.initialize(platform, metricRegistry, domainDescriptorArray);
             }
 
@@ -205,7 +216,7 @@ public interface Platform {
         private final Map<ExtraComponentKey, Object> extraComponent;
 
         public BuilderContext(
-                  Config configuration
+                Config configuration
                 , KasperEventBus eventBus
                 , CommandGateway commandGateway
                 , QueryGateway queryGateway

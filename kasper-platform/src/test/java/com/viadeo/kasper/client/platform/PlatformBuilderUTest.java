@@ -12,14 +12,16 @@ import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
+import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.er.Concept;
+import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.QueryEventListener;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -349,7 +351,78 @@ public class PlatformBuilderUTest {
         // Then
         assertNotNull(platform);
         verify(eventBus).subscribe(refEq(eventListener));
+        verify(eventListener).setEventBus(refEq(eventBus));
+        verifyNoMoreInteractions(eventListener);
+    }
+
+    @Test
+    public void build_withDomainBundle_containingCommandEventListener_shouldWiredTheComponent(){
+        // Given
+        CommandEventListener eventListener = mock(CommandEventListener.class);
+
+        DomainBundle domainBundle = createMockedDomainBundle(
+                Lists.<CommandHandler>newArrayList(),
+                Lists.<QueryHandler>newArrayList(),
+                Lists.<Repository>newArrayList(),
+                Lists.<EventListener>newArrayList(eventListener)
+        );
+
+        KasperEventBus eventBus = mock(KasperEventBus.class);
+        KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
+        DomainDescriptorFactory domainDescriptorFactory = createMockedDomainDescriptorFactory();
+
+        Platform.Builder builder = new Platform.Builder(domainDescriptorFactory)
+                .withQueryGateway(mock(KasperQueryGateway.class))
+                .withCommandGateway(commandGateway)
+                .withEventBus(eventBus)
+                .withConfiguration(mock(Config.class))
+                .withMetricRegistry(mock(MetricRegistry.class))
+                .addDomainBundle(domainBundle);
+
+        // When
+        Platform platform = builder.build();
+
+        // Then
+        assertNotNull(platform);
+        verify(eventBus).subscribe(refEq(eventListener));
+        verify(eventListener).setEventBus(refEq(eventBus));
         verify(eventListener).setCommandGateway(refEq(commandGateway));
+        verifyNoMoreInteractions(eventListener);
+    }
+
+    @Test
+    public void build_withDomainBundle_containingQueryEventListener_shouldWiredTheComponent(){
+        // Given
+        QueryEventListener eventListener = mock(QueryEventListener.class);
+
+        DomainBundle domainBundle = createMockedDomainBundle(
+                Lists.<CommandHandler>newArrayList(),
+                Lists.<QueryHandler>newArrayList(),
+                Lists.<Repository>newArrayList(),
+                Lists.<EventListener>newArrayList(eventListener)
+        );
+
+        KasperEventBus eventBus = mock(KasperEventBus.class);
+        KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
+        DomainDescriptorFactory domainDescriptorFactory = createMockedDomainDescriptorFactory();
+
+        Platform.Builder builder = new Platform.Builder(domainDescriptorFactory)
+                .withQueryGateway(mock(KasperQueryGateway.class))
+                .withCommandGateway(mock(KasperCommandGateway.class))
+                .withEventBus(eventBus)
+                .withConfiguration(mock(Config.class))
+                .withMetricRegistry(mock(MetricRegistry.class))
+                .addDomainBundle(domainBundle);
+
+        // When
+        Platform platform = builder.build();
+
+        // Then
+        assertNotNull(platform);
+        verify(eventBus).subscribe(refEq(eventListener));
+        verify(eventListener).setEventBus(refEq(eventBus));
+        verify(eventListener).setQueryGateway(refEq(queryGateway));
+        verifyNoMoreInteractions(eventListener);
     }
 
     @Test

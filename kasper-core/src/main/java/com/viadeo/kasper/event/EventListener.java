@@ -8,11 +8,13 @@ package com.viadeo.kasper.event;
 
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import org.axonframework.domain.GenericEventMessage;
+import org.axonframework.eventhandling.EventBus;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
@@ -39,7 +41,7 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
     private final String meterHandlesName;
     private final String histoHandleTimesName;
 
-    private CommandGateway commandGateway;
+    private EventBus eventBus;
 
 	// ------------------------------------------------------------------------
 	
@@ -68,17 +70,21 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 		return this.eventClass;
 	}
 
-    // ------------------------------------------------------------------------
-
-    public void setCommandGateway(final CommandGateway commandGateway) {
-        this.commandGateway = checkNotNull(commandGateway);
-    }
-
-    protected Optional<CommandGateway> getCommandGateway() {
-        return Optional.of(this.commandGateway);
-    }
-
 	// ------------------------------------------------------------------------
+
+    /**
+     * Publish an event on the event bus
+     *
+     * @param event The event
+     */
+    public void publish(final IEvent event) {
+        checkNotNull(event, "The specified event must be non null");
+        checkState(eventBus != null, "Unable to publish the specified event : the event bus is null");
+        org.axonframework.domain.EventMessage eventMessage = GenericEventMessage.asEventMessage(event);
+        this.eventBus.publish(eventMessage);
+    }
+
+    // ------------------------------------------------------------------------
 	
 	/**
 	 * Wrapper for Axon event messages
@@ -119,8 +125,6 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
             getMetricRegistry().meter(meterHandlesName).mark();
         }
 	}
-
-	// ------------------------------------------------------------------------
 	
 	/**
 	 * @param eventMessage the Kasper event message to handle
@@ -135,5 +139,10 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 	public void handle(final E event){
 		throw new UnsupportedOperationException();
 	}
-	
+
+    // ------------------------------------------------------------------------
+
+    public void setEventBus(EventBus eventBus) {
+        this.eventBus = eventBus;
+    }
 }
