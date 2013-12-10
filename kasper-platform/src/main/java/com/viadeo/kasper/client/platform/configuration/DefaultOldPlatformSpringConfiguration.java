@@ -7,7 +7,7 @@
 package com.viadeo.kasper.client.platform.configuration;
 
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
-import com.viadeo.kasper.client.platform.impl.KasperPlatform;
+import com.viadeo.kasper.client.platform.impl.OldKasperPlatform;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
@@ -20,7 +20,8 @@ import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 import org.springframework.context.annotation.Bean;
 
-public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfiguration {
+@Deprecated
+public class DefaultOldPlatformSpringConfiguration extends DefaultOldPlatformConfiguration {
 
     private ComponentsInstanceManager instancesManager;
 
@@ -46,7 +47,7 @@ public class DefaultPlatformSpringConfiguration extends DefaultPlatformConfigura
 
     @Bean(initMethod = "boot")
     @Override
-    public KasperPlatform kasperPlatform(final CommandGateway commandGateway
+    public OldKasperPlatform kasperPlatform(final CommandGateway commandGateway
             , final QueryGateway queryGateway
             , final KasperEventBus eventBus
             , final AnnotationRootProcessor annotationRootProcessor

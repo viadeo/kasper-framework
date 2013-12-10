@@ -8,16 +8,17 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptorFactory;
-import com.viadeo.kasper.client.platform.impl.DefaultPlatform;
+import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
+import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
@@ -81,6 +82,15 @@ public interface Platform {
             this.domainBundles = Lists.newArrayList();
             this.kasperPlugins = Lists.newArrayList();
             this.extraComponents = Maps.newHashMap();
+        }
+
+        public Builder(PlatformConfiguration platformConfiguration) {
+            this();
+            this.eventBus = Preconditions.checkNotNull(platformConfiguration.eventBus());
+            this.commandGateway = Preconditions.checkNotNull(platformConfiguration.commandGateway());
+            this.queryGateway= Preconditions.checkNotNull(platformConfiguration.queryGateway());
+            this.configuration = Preconditions.checkNotNull(platformConfiguration.configuration());
+            this.metricRegistry = Preconditions.checkNotNull(platformConfiguration.metricRegistry());
         }
 
         public Builder addDomainBundle(DomainBundle domainBundle) {
@@ -174,7 +184,7 @@ public interface Platform {
                 domainDescriptors.add(domainDescriptorFactory.createFrom(bundle));
             }
 
-            DefaultPlatform platform = new DefaultPlatform(commandGateway, queryGateway, eventBus);
+            KasperPlatform platform = new KasperPlatform(commandGateway, queryGateway, eventBus);
 
             DomainDescriptor[] domainDescriptorArray = domainDescriptors.toArray(new DomainDescriptor[domainDescriptors.size()]);
             for(Plugin plugin : kasperPlugins){

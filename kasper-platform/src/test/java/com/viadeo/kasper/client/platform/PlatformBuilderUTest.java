@@ -7,6 +7,7 @@ import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -26,8 +27,8 @@ import java.util.HashMap;
 import java.util.List;
 
 import static com.viadeo.kasper.client.platform.Platform.ExtraComponentKey;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.*;
@@ -177,6 +178,22 @@ public class PlatformBuilderUTest {
         assertEquals(eventBus, platform.getEventBus());
         assertEquals(commandGateway, platform.getCommandGateway());
         assertEquals(queryGateway, platform.getQueryGateway());
+    }
+
+    @Test
+    public void build_fromPlatformConfiguration_shouldBeOk() {
+        // Given
+        KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
+        Platform.Builder builder = new Platform.Builder(platformConfiguration);
+
+        // When
+        Platform platform = builder.build();
+
+        // Then
+        assertNotNull(platform);
+        assertEquals(platformConfiguration.commandGateway(), platform.getCommandGateway());
+        assertEquals(platformConfiguration.queryGateway(), platform.getQueryGateway());
+        assertEquals(platformConfiguration.eventBus(), platform.getEventBus());
     }
 
     @Test

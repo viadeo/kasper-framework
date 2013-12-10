@@ -30,7 +30,7 @@ import com.viadeo.kasper.event.IEvent;
  * You can use the PlatformFactory in order to build a runnable platform, using
  * the default configuration or providing yours.
  *
- * If you are using Spring, you can also directly add the DefaultPlatformSpringConfiguration
+ * If you are using Spring, you can also directly add the DefaultOldPlatformSpringConfiguration
  * bean to your running context, this will allow you to inject the OldPlatform, CommandGateway,
  * EventBus or QueryGateway class beans in your project classes
  *

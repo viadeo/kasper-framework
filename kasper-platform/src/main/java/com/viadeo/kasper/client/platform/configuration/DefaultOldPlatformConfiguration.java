@@ -12,7 +12,7 @@ import com.google.common.collect.MutableClassToInstanceMap;
 import com.viadeo.kasper.client.platform.OldPlatform;
 import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
-import com.viadeo.kasper.client.platform.impl.KasperPlatform;
+import com.viadeo.kasper.client.platform.impl.OldKasperPlatform;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
@@ -42,8 +42,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-public class DefaultPlatformConfiguration implements PlatformConfiguration {
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultPlatformConfiguration.class);
+@Deprecated
+public class DefaultOldPlatformConfiguration implements OldPlatformConfiguration {
+    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultOldPlatformConfiguration.class);
 
     private static final String INSTANCE_NOT_YET_AVAILABLE = "Component %s cannot be retrieved : it has not yet been instanciated (platform not yet booted ?)";
     private static final String INSTANCE_ALREADY_CREATED = "Component %s has already been created !";
@@ -111,20 +112,20 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     @Override
-    public KasperPlatform kasperPlatform(final CommandGateway commandGateway
+    public OldKasperPlatform kasperPlatform(final CommandGateway commandGateway
             , final QueryGateway queryGateway
             , final KasperEventBus eventBus
             , final AnnotationRootProcessor annotationRootProcessor) {
 
-        this.ensureNotPresent(KasperPlatform.class);
+        this.ensureNotPresent(OldKasperPlatform.class);
 
-        final KasperPlatform kasperPlatform = new KasperPlatform();
+        final OldKasperPlatform kasperPlatform = new OldKasperPlatform();
         kasperPlatform.setCommandGateway(commandGateway);
         kasperPlatform.setQueryGateway(queryGateway);
         kasperPlatform.setRootProcessor(annotationRootProcessor);
         kasperPlatform.setEventBus(eventBus);
 
-        registerInstance(KasperPlatform.class, kasperPlatform);
+        registerInstance(OldKasperPlatform.class, kasperPlatform);
 
          /* Initialize metrics reporters */
         this.initializeMetricsReporters();
@@ -133,8 +134,8 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
     }
 
     @Override
-    public KasperPlatform kasperPlatform() {
-        return this.getAvailableInstance(KasperPlatform.class);
+    public OldKasperPlatform kasperPlatform() {
+        return this.getAvailableInstance(OldKasperPlatform.class);
     }
 
     // ------------------------------------------------------------------------

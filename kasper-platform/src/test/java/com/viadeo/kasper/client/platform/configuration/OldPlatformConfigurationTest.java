@@ -28,23 +28,23 @@ import static com.mongodb.util.MyAsserts.assertTrue;
 import static junit.framework.Assert.assertSame;
 import static junit.framework.Assert.fail;
 
-public class PlatformConfigurationTest {
+public class OldPlatformConfigurationTest {
 
     @Test
     public void testDefaultPlatformConfiguration() throws Exception {
-        this.testPlatformConfiguration(new DefaultPlatformConfiguration());
+        this.testPlatformConfiguration(new DefaultOldPlatformConfiguration());
     }
 
     @Test
     public void testDefaultSpringPlatformConfiguration() throws Exception {
-        this.testPlatformConfiguration(new DefaultPlatformSpringConfiguration());
+        this.testPlatformConfiguration(new DefaultOldPlatformSpringConfiguration());
     }
 
     // ------------------------------------------------------------------------
 
     /* FIXME: add tests for resolvers */
     @SuppressWarnings("unused")
-    private void testPlatformConfiguration(final PlatformConfiguration pf) throws Exception {
+    private void testPlatformConfiguration(final OldPlatformConfiguration pf) throws Exception {
 
 
         final DomainResolver domainResolver =
@@ -155,7 +155,7 @@ public class PlatformConfigurationTest {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
-    private <T> T testCachedComponent(final PlatformConfiguration pf,
+    private <T> T testCachedComponent(final OldPlatformConfiguration pf,
                                       final String confName,
                                       final Object... parameters) throws NoSuchMethodException, InvocationTargetException, IllegalAccessException {
 
