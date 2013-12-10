@@ -9,7 +9,19 @@ of your platform and exposes a JSON documentation webservice and a javascript-on
 1. Configuration
 ----------------
 
-You will first have to add a dependency to **com.viadeo.kasper:kasper-documentation**.
+**Get it**:
+
+::
+
+   Gradle :
+      'com.viadeo.kasper:kasper-documentation:KASPER_LATEST_VERSION'
+
+   Maven:
+      <dependency>
+         <groupId>com.viadeo.kasper</groupId>
+         <artifactId>kasper-documentation</artifactId>
+         <version>KASPER_LATEST_VERSION</version>
+      </dependency>
 
 Configuration without Spring
 ............................
@@ -193,8 +205,22 @@ Add the static files as an `assets bundle <http://dropwizard.codahale.com/manual
 
     }
 
-Access auto-doc
----------------
+3. Add the automated documentation to the platform
+--------------------------------------------------
+
+.. code-block:: java
+   :linenos:
+
+    DocumentationPlugin documentationPlugin = new DocumentationPlugin();
+
+    Platform platform = new platform.Builder(new KasperPlatformConfiguration())
+        .addPlugin(documentationPlugin)
+        .build();
+
+    KasperDocResource kasperDocResource = documentationPlugin.getKasperDocResource();
+
+4. Access to the automated documentation
+----------------------------------------
 
 * try now to access the json documentation at **/kasper/doc/domains**
 * or the UI at **/doc** *(or other path if you defined another)*

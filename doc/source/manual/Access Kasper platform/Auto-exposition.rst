@@ -262,3 +262,33 @@ The following HTTP headers can be set to set the queries and commands context :
 * X-KASPER-SECURITY-TOKEN (String) : the security token used for authentication
 * X-KASPER-FUNNEL-NAME (String) : the funnel name declared by the application during this request
 * X-KASPER-FUNNEL-VERSION (String) : the funnel version (declination) declared by the application during this request
+
+Add the HTTP exposition to the platform
+---------------------------------------
+
+The exposition is available as plugins :
+- The HttpQueryExposerPlugin plugin allowing to expose the command part of the platform
+- The HttpCommandExposerPlugin plugin allowing to expose the query part of the platform
+
+.. code-block:: java
+   :linenos:
+
+    // QUERY EXPOSITION =======================================================
+
+    HttpQueryExposerPlugin queryExposerPlugin = new HttpQueryExposerPlugin();
+
+    Platform platform = new platform.Builder(new KasperPlatformConfiguration())
+        .addPlugin(queryExposerPlugin)
+        .build();
+
+    HttpServlet queryExposer = queryExposerPlugin.getHttpExposer();
+
+    // COMMAND EXPOSITION =======================================================
+
+    HttpCommandExposerPlugin commandExposerPlugin = new HttpCommandExposerPlugin();
+
+    Platform platform = new platform.Builder(new KasperPlatformConfiguration())
+        .addPlugin(commandExposerPlugin)
+        .build();
+
+    HttpServlet commandExposer = commandExposerPlugin.getHttpExposer();

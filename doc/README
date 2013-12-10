@@ -1,6 +1,7 @@
 
 * Build documentation
 - install Sphinx-doc : sudo apt-get install python-sphinx
+- install npm : sudo apt-get install npm
 - install the less compiler (requires node NPM) : sudo npm install -g less
 - run 'make html' in doc/ directory
 
