@@ -718,7 +718,7 @@ public class DefaultPlatformConfiguration implements PlatformConfiguration {
 
         if (platformLogger.isTraceEnabled()) {
             final Slf4jReporter reporter = Slf4jReporter
-                    .forRegistry(KasperMetrics.getRegistry())
+                    .forRegistry(KasperMetrics.getMetricRegistry())
                     .outputTo(platformLogger)
                     .markWith(MarkerFactory.getMarker("TRACE"))
                     .convertDurationsTo(TimeUnit.MILLISECONDS)

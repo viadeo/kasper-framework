@@ -6,23 +6,21 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.impl;
 
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.RequestActor;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 public class QueryHandlerActor<Q extends Query, RESULT extends QueryResult> implements RequestActor<Q, QueryResponse<RESULT>> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandlerActor.class);
-    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
-    private static final Timer METRICLASSTIMER = METRICS.timer(name(QueryHandlerActor.class, "requests-time"));
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandlerActor.class);
+    private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryHandlerActor.class, "requests-time");
 
     private final QueryHandler<Q, RESULT> queryHandler;
 
@@ -41,10 +39,10 @@ public class QueryHandlerActor<Q extends Query, RESULT extends QueryResult> impl
         Exception exception = null;
         QueryResponse<RESULT> ret = null;
 
-        final Timer.Context classTimer = METRICLASSTIMER.time();
-        final Timer.Context timer = METRICS.timer(name(query.getClass(), "requests-time")).time();
+        final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
+        final Timer.Context timer = getMetricRegistry().timer(name(query.getClass(), "requests-time")).time();
 
-        final QueryMessage message = new QueryMessage(context, query);
+        final QueryMessage<Q> message = new QueryMessage<Q>(context, query);
 
         try {
             try {

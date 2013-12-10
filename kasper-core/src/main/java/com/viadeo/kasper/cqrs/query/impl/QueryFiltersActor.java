@@ -1,9 +1,7 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.*;
 import org.slf4j.Logger;
@@ -12,13 +10,13 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 public class QueryFiltersActor<Q extends Query, P extends QueryResult>
         implements QueryRequestActor<Q, P> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryFiltersActor.class);
-    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
     private final Collection<? extends QueryFilter<Q>> queryFilters;
     private final Collection<? extends ResponseFilter<P>> responseFilters;
@@ -44,7 +42,7 @@ public class QueryFiltersActor<Q extends Query, P extends QueryResult>
         Q newQuery = query;
 
         if (!queryFilters.isEmpty()) {
-            final Timer.Context timerFilters = METRICS.timer(name(query.getClass(), "requests-query-filters-time")).time();
+            final Timer.Context timerFilters = getMetricRegistry().timer(name(query.getClass(), "requests-query-filters-time")).time();
 
             for (final QueryFilter<Q> filter : queryFilters) {
                 LOGGER.info(String.format("Apply query filter %s", filter.getClass().getSimpleName()));
@@ -63,7 +61,7 @@ public class QueryFiltersActor<Q extends Query, P extends QueryResult>
         R newResponse = response;
 
         if ((null != response.getResult()) && !responseFilters.isEmpty()) {
-            final Timer.Context timerFilters = METRICS.timer(name(queryClass, "requests-response-filters-time")).time();
+            final Timer.Context timerFilters = getMetricRegistry().timer(name(queryClass, "requests-response-filters-time")).time();
             for (final ResponseFilter<P> filter : responseFilters) {
                 if (ResponseFilter.class.isAssignableFrom(filter.getClass())) {
                     LOGGER.info(String.format("Apply Response filter %s", filter.getClass().getSimpleName()));

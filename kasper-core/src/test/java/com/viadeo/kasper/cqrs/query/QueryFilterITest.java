@@ -6,10 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
@@ -80,6 +82,8 @@ public class QueryFilterITest {
     public void queryFilterShouldBeCalled() throws Exception {
 
         // Given
+        KasperMetrics.setMetricRegistry(new MetricRegistry());
+
         final TestHandler service = spy(new TestHandler());
         final TestFilter filter = spy(new TestFilter());
         final TestFilterGlobal filterGlobal = spy(new TestFilterGlobal());

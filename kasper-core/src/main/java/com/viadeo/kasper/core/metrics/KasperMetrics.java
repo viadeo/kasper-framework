@@ -18,23 +18,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class KasperMetrics {
 
-    private static final MetricRegistry REGISTRY = new MetricRegistry();
-
-    public static MetricRegistry getRegistry() {
-        return REGISTRY;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private String namePrefix = "";
-    private ConcurrentMap<Class, String> pathCache = Maps.newConcurrentMap();
-    private ResolverFactory resolverFactory;
-
-    // ------------------------------------------------------------------------
-
     private static KasperMetrics instance;
-
-    KasperMetrics() { /* Utility class */ }
 
     public static KasperMetrics instance() {
         if (null == instance) {
@@ -53,8 +37,29 @@ public final class KasperMetrics {
     public static void setResolverFactory(final ResolverFactory resolverFactory) { instance()._setResolverFactory(resolverFactory); }
     public static void unsetResolverFactory() { instance()._unsetResolverFactory(); }
     public static void clearCache() { instance()._clearCache(); }
+    public static MetricRegistry getMetricRegistry() { return instance().getRegistry(); }
+    public static void setMetricRegistry(MetricRegistry metricRegistry) { instance().setRegistry(metricRegistry); }
 
     // ------------------------------------------------------------------------
+
+    private String namePrefix = "";
+    private ConcurrentMap<Class, String> pathCache = Maps.newConcurrentMap();
+    private ResolverFactory resolverFactory;
+    private MetricRegistry metricRegistry;
+
+    KasperMetrics() { /* Utility class */ }
+
+
+    public MetricRegistry getRegistry(){
+        if(metricRegistry == null) {
+            throw new IllegalStateException("The metric registry is not initialized.");
+        }
+        return metricRegistry;
+    }
+
+    public void setRegistry(MetricRegistry metricRegistry){
+        this.metricRegistry = metricRegistry;
+    }
 
     public void _setNamePrefix(final String prefix) {
         namePrefix = prefix;
@@ -69,8 +74,6 @@ public final class KasperMetrics {
         final String prefix = namePrefix.isEmpty() ? "" : namePrefix + ".";
         return prefix + MetricRegistry.name(_pathForKasperComponent(clazz), names);
     }
-
-    // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
     public String _pathForKasperComponent(final Class clazz) {
@@ -95,8 +98,6 @@ public final class KasperMetrics {
 
         return componentPath;
     }
-
-    // ------------------------------------------------------------------------
 
     public void _setResolverFactory(final ResolverFactory resolverFactory) {
         this.resolverFactory = checkNotNull(resolverFactory);

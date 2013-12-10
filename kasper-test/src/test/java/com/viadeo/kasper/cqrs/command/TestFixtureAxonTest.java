@@ -6,9 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
@@ -52,6 +54,7 @@ public class TestFixtureAxonTest {
         if (null != testRepository) {
             this.testRepository = testRepository;
         }
+        KasperMetrics.setMetricRegistry(new MetricRegistry());
     }
 
     @Before

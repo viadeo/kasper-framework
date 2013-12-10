@@ -6,16 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.impl;
 
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
@@ -24,17 +20,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /** The Kasper gateway base implementation */
 public class KasperQueryGateway implements QueryGateway {
-    private static final Logger LOGGER = LoggerFactory.getLogger(KasperQueryGateway.class);
-    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
-    private static final Timer METRICLASSTIMER = METRICS.timer(name(QueryGateway.class, "requests-time"));
-    private static final Histogram METRICLASSREQUESTSTIME = METRICS.histogram(name(QueryGateway.class, "requests-times"));
-    private static final Meter METRICLASSREQUESTS = METRICS.meter(name(QueryGateway.class, "requests"));
-    private static final Meter METRICLASSERRORS = METRICS.meter(name(QueryGateway.class, "errors"));
+    private static final Logger LOGGER = LoggerFactory.getLogger(KasperQueryGateway.class);
+
+    private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryGateway.class, "requests-time");
+    private static final String GLOBAL_HISTO_REQUESTS_TIMES_NAME = name(QueryGateway.class, "requests-times");
+    private static final String GLOBAL_METER_REQUESTS_NAME = name(QueryGateway.class, "requests");
+    private static final String GLOBAL_METER_ERRORS_NAME = name(QueryGateway.class, "errors");
 
     private final QueryHandlersLocator queryHandlersLocator;
 
@@ -59,8 +56,8 @@ public class KasperQueryGateway implements QueryGateway {
         final Class<? extends Query> queryClass = query.getClass();
 
         /* Start request timer */
-        final Timer.Context classTimer = METRICLASSTIMER.time();
-        final Timer.Context timer = METRICS.timer(name(queryClass, "requests-time")).time();
+        final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
+        final Timer.Context timer = getMetricRegistry().timer(name(queryClass, "requests-time")).time();
 
         /* Sets current thread context */
         CurrentContext.set(context);
@@ -91,13 +88,15 @@ public class KasperQueryGateway implements QueryGateway {
         /* Monitor the request calls */
         timer.stop();
         final long time = classTimer.stop();
-        METRICLASSREQUESTSTIME.update(time);
-        METRICS.histogram(name(queryClass, "requests-times")).update(time);
-        METRICLASSREQUESTS.mark();
-        METRICS.meter(name(queryClass, "requests")).mark();
+        getMetricRegistry().histogram(GLOBAL_HISTO_REQUESTS_TIMES_NAME).update(time);
+        getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
+
+        getMetricRegistry().histogram(name(queryClass, "requests-times")).update(time);
+        getMetricRegistry().meter(name(queryClass, "requests")).mark();
+
         if ((null != exception) || ! ret.isOK()) {
-            METRICLASSERRORS.mark();
-            METRICS.meter(name(queryClass, "errors")).mark();
+            getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
+            getMetricRegistry().meter(name(queryClass, "errors")).mark();
         }
 
         if (null != exception) {

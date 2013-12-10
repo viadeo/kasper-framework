@@ -6,7 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.impl.DefaultKasperId;
@@ -44,6 +46,7 @@ public class TestFixtureAggregateTest {
 
     public TestFixtureAggregateTest(final Repository<TestAggregate> testRepository) {
         this.testRepository = testRepository;
+        KasperMetrics.setMetricRegistry(new MetricRegistry());
     }
 
     @Before

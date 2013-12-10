@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -20,7 +18,6 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -44,6 +41,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
@@ -51,12 +49,11 @@ public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
 
     protected static final transient Logger QUERY_LOGGER = LoggerFactory.getLogger(HttpQueryExposer.class);
-    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
-    private static final Timer METRICLASSTIMER = METRICS.timer(name(HttpQueryExposer.class, "requests-time"));
-    private static final Timer METRICLASSHANDLETIMER = METRICS.timer(name(HttpQueryExposer.class, "requests-handle-time"));
-    private static final Meter METRICLASSREQUESTS = METRICS.meter(name(HttpQueryExposer.class, "requests"));
-    private static final Meter METRICLASSERRORS = METRICS.meter(name(HttpQueryExposer.class, "errors"));
+    private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(HttpQueryExposer.class, "requests-time");
+    private static final String GLOBAL_TIMER_REQUESTS_HANDLE_TIME_NAME = name(HttpQueryExposer.class, "requests-handle-time");
+    private static final String GLOBAL_METER_REQUESTS_NAME = name(HttpQueryExposer.class, "requests");
+    private static final String GLOBAL_METER_ERRORS_NAME = name(HttpQueryExposer.class, "errors");
 
     // ------------------------------------------------------------------------
 
@@ -173,7 +170,7 @@ public class HttpQueryExposer extends HttpExposer {
 
     protected void handleQuery(final QueryToQueryMap queryMapper, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
          /* Start request timer */
-        final Timer.Context classTimer = METRICLASSTIMER.time();
+        final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
 
         /* Create a kasper correlation id */
         final UUID kasperCorrelationUUID = UUID.randomUUID();
@@ -196,8 +193,8 @@ public class HttpQueryExposer extends HttpExposer {
 
             QueryResponse response = null;
             if (!resp.isCommitted()) {
-                final Timer.Context queryHandleTimer = METRICS.timer(name(query.getClass(), "requests-handle-time")).time();
-                final Timer.Context classHandleTimer = METRICLASSHANDLETIMER.time();
+                final Timer.Context queryHandleTimer = getMetricRegistry().timer(name(query.getClass(), "requests-handle-time")).time();
+                final Timer.Context classHandleTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_HANDLE_TIME_NAME).time();
 
                 response = handleQuery(queryName, query, req, resp, kasperCorrelationUUID );
 
@@ -220,7 +217,7 @@ public class HttpQueryExposer extends HttpExposer {
             /* Log & metrics */
             final long time = classTimer.stop();
             QUERY_LOGGER.info("Execution Time '{}' ns",time);
-            METRICLASSREQUESTS.mark();
+            getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
         }
 
         if (!resp.isCommitted()) {
@@ -373,7 +370,7 @@ public class HttpQueryExposer extends HttpExposer {
         QUERY_LOGGER.info("HTTP Response {} '{}' : {} {}", req.getMethod(), req.getRequestURI(), status, message, exception);
 
         /* Log error metric */
-        METRICLASSERRORS.mark();
+        getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
     }
 
     // ------------------------------------------------------------------------

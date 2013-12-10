@@ -12,6 +12,7 @@ import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptorFactory;
 import com.viadeo.kasper.client.platform.impl.DefaultPlatform;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
@@ -139,6 +140,9 @@ public interface Platform {
             Preconditions.checkState(metricRegistry != null, "the metric registry cannot be null");
 
             BuilderContext context = new BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, extraComponents);
+
+            // FIXME in waiting to have a better solution
+            KasperMetrics.setMetricRegistry(metricRegistry);
 
             List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
 
