@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform.configuration;
 
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.impl.OldKasperPlatform;
 import com.viadeo.kasper.core.boot.*;
@@ -258,9 +259,16 @@ public class DefaultOldPlatformSpringConfiguration extends DefaultOldPlatformCon
     }
 
     @Bean
-    public KasperMetrics initKasperMetrics(final ResolverFactory resolverFactory) {
+    public KasperMetrics initKasperMetrics(final MetricRegistry metricRegistry, final ResolverFactory resolverFactory) {
         KasperMetrics.setResolverFactory(resolverFactory);
+        KasperMetrics.setMetricRegistry(metricRegistry);
         return KasperMetrics.instance();
+    }
+
+    @Bean
+    @Override
+    public MetricRegistry metricRegistry(){
+        return super.metricRegistry();
     }
 
 }

@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform.configuration;
 
+import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Slf4jReporter;
 import com.google.common.base.Throwables;
 import com.google.common.collect.MutableClassToInstanceMap;
@@ -728,6 +729,15 @@ public class DefaultOldPlatformConfiguration implements OldPlatformConfiguration
             reporter.start(DEFAULT_METRICS_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         }
 
+    }
+
+    public MetricRegistry metricRegistry() {
+        this.ensureNotPresent(MetricRegistry.class);
+
+        MetricRegistry metricRegistry = new MetricRegistry();
+
+        registerInstance(MetricRegistry.class, metricRegistry);
+        return metricRegistry;
     }
 
 }
