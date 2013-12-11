@@ -21,6 +21,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.Validation;
 import javax.validation.ValidationException;
+import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -34,29 +35,48 @@ public class KasperCommandGateway implements CommandGateway {
 
     public KasperCommandGateway(CommandBus commandBus) {
         this(
-                new CommandGatewayFactoryBean<CommandGateway>()
+                  new CommandGatewayFactoryBean<CommandGateway>()
                 , commandBus
                 , new DefaultDomainLocator(new CommandHandlerResolver())
         );
     }
 
-    protected KasperCommandGateway(CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean, CommandBus commandBus, DomainLocator domainLocator) {
+    public KasperCommandGateway(
+              CommandBus commandBus
+            , CommandDispatchInterceptor... commandDispatchInterceptors
+    ) {
+        this(
+                new CommandGatewayFactoryBean<CommandGateway>()
+                , commandBus
+                , new DefaultDomainLocator(new CommandHandlerResolver())
+                , commandDispatchInterceptors
+        );
+    }
+
+    protected KasperCommandGateway(
+              CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean
+            , CommandBus commandBus
+            , DomainLocator domainLocator
+            , CommandDispatchInterceptor... commandDispatchInterceptors
+    ) {
         this.commandBus = Preconditions.checkNotNull(commandBus);
         this.domainLocator = Preconditions.checkNotNull(domainLocator);
-        Preconditions.checkNotNull(commandGatewayFactoryBean);
 
-        commandGatewayFactoryBean.setCommandBus(commandBus);
-        commandGatewayFactoryBean.setGatewayInterface(CommandGateway.class);
+        Preconditions.checkNotNull(commandGatewayFactoryBean);
+        Preconditions.checkNotNull(commandDispatchInterceptors);
+
+        List<CommandDispatchInterceptor> interceptors = Lists.newArrayList(commandDispatchInterceptors);
 
         try {
-            commandGatewayFactoryBean.setCommandDispatchInterceptors(
-                    Lists.<CommandDispatchInterceptor>newArrayList(
-                            new BeanValidationInterceptor(Validation.buildDefaultValidatorFactory())
-                    )
-            );
+            BeanValidationInterceptor validationInterceptor = new BeanValidationInterceptor(Validation.buildDefaultValidatorFactory());
+            interceptors.add(validationInterceptor);
         } catch (final ValidationException ve) {
             LOGGER.warn("No implementation found for BEAN VALIDATION - JSR 303" , ve);
         }
+
+        commandGatewayFactoryBean.setCommandBus(commandBus);
+        commandGatewayFactoryBean.setGatewayInterface(CommandGateway.class);
+        commandGatewayFactoryBean.setCommandDispatchInterceptors(interceptors);
 
         try {
             commandGatewayFactoryBean.afterPropertiesSet();
