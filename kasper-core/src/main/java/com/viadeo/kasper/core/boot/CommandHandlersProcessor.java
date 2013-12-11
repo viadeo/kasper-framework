@@ -48,13 +48,10 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
      */
     private transient CommandHandlerResolver commandHandlerResolver;
 
-
     /**
      * The repo
      */
     private transient RepositoryManager repositoryManager;
-
-
 
     // ------------------------------------------------------------------------
 
@@ -140,11 +137,17 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 		this.eventBus = checkNotNull(eventBus);
 	}
 
+    /**
+     * @param commandHandlerResolver the command handlers resolver to be used
+     */
     public void setCommandHandlerResolver(final CommandHandlerResolver commandHandlerResolver) {
         this.commandHandlerResolver = checkNotNull(commandHandlerResolver);
     }
 
-    public void setRepositoryManager(RepositoryManager repositoryManager) {
+    /**
+     * @param repositoryManager the repository manager used to deal with registered repositories
+     */
+    public void setRepositoryManager(final RepositoryManager repositoryManager) {
         this.repositoryManager = repositoryManager;
     }
 

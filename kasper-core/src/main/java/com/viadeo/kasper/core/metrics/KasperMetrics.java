@@ -50,13 +50,13 @@ public final class KasperMetrics {
 
 
     public MetricRegistry getRegistry(){
-        if(metricRegistry == null) {
+        if(null == metricRegistry) {
             throw new IllegalStateException("The metric registry is not initialized.");
         }
         return metricRegistry;
     }
 
-    public void setRegistry(MetricRegistry metricRegistry){
+    public void setRegistry(final MetricRegistry metricRegistry){
         this.metricRegistry = metricRegistry;
     }
 

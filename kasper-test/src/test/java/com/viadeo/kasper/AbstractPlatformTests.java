@@ -26,14 +26,14 @@ public abstract class AbstractPlatformTests {
 
     protected Platform getPlatform() {
         if(platform == null){
-            Platform.Builder platformBuilder = new Platform.Builder()
+            final Platform.Builder platformBuilder = new Platform.Builder()
                     .withConfiguration(ConfigFactory.empty())
                     .withEventBus(new KasperEventBus())
                     .withCommandGateway(new KasperCommandGateway(new KasperCommandBus()))
                     .withQueryGateway(new KasperQueryGateway())
                     .withMetricRegistry(new MetricRegistry());
 
-            for(DomainBundle domainBundle: Preconditions.checkNotNull(getBundles())){
+            for (final DomainBundle domainBundle: Preconditions.checkNotNull(getBundles())) {
                 platformBuilder.addDomainBundle(domainBundle);
             }
 
@@ -47,4 +47,5 @@ public abstract class AbstractPlatformTests {
     }
 
     public abstract List<DomainBundle> getBundles();
+
 }

@@ -121,11 +121,13 @@ public class HttpQueryExposer extends HttpExposer {
     }
 
     public HttpQueryExposer(final QueryGateway queryGateway, final List<Class<? extends QueryHandler>> queryHandlerClasses) {
-        this(queryGateway
-                , checkNotNull(queryHandlerClasses)
-                , new QueryFactoryBuilder().create()
-                , new HttpContextDeserializer()
-                , ObjectMapperProvider.INSTANCE.mapper());
+        this(
+                queryGateway,
+                checkNotNull(queryHandlerClasses),
+                new QueryFactoryBuilder().create(),
+                new HttpContextDeserializer(),
+                ObjectMapperProvider.INSTANCE.mapper()
+        );
     }
 
     // ------------------------------------------------------------------------

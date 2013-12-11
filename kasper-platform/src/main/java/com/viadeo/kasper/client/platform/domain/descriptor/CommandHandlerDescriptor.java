@@ -1,16 +1,30 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 
-public class CommandHandlerDescriptor implements Descriptor {
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public class CommandHandlerDescriptor implements KasperComponentDescriptor {
+
     private final Class<? extends CommandHandler> commandHandlerClass;
     private final Class<? extends Command> commandClass;
 
-    public CommandHandlerDescriptor(Class<? extends CommandHandler> commandHandlerClass, Class<? extends Command> commandClass) {
-        this.commandHandlerClass = commandHandlerClass;
-        this.commandClass = commandClass;
+    // ------------------------------------------------------------------------
+
+    public CommandHandlerDescriptor(final Class<? extends CommandHandler> commandHandlerClass,
+                                    final Class<? extends Command> commandClass) {
+        this.commandHandlerClass = checkNotNull(commandHandlerClass);
+        this.commandClass = checkNotNull(commandClass);
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public Class<? extends CommandHandler> getReferenceClass() {
@@ -20,4 +34,5 @@ public class CommandHandlerDescriptor implements Descriptor {
     public Class<? extends Command> getCommandClass() {
         return commandClass;
     }
+
 }

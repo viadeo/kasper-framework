@@ -105,43 +105,72 @@ public class KasperDocResourceTest extends JerseyTest {
 
         @Path("/")
         public KasperDocResource delegate() {
-            DomainDescriptor facebookDomainDescriptor = new DomainDescriptor(
-                    Facebook.NAME
-                    , Facebook.class
-                    , ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(GetMembersQueryHandler.class, GetMembersQueryHandler.GetMembersQuery.class, GetMembersQueryHandler.MembersResult.class))
-                    , ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(AddConnectionToMemberHandler.class, AddConnectionToMemberCommand.class))
-                    , ImmutableList.<RepositoryDescriptor>of(
-                        new RepositoryDescriptor(MemberRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Member.class)),
-                        new RepositoryDescriptor(MemberConnectionsRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class))
-                    )
-                    , ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(MemberCreatedEventListener.class, MemberCreatedEvent.class))
+
+            final DomainDescriptor facebookDomainDescriptor = new DomainDescriptor(
+                    Facebook.NAME,
+                    Facebook.class,
+                    ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(
+                            GetMembersQueryHandler.class,
+                            GetMembersQueryHandler.GetMembersQuery.class,
+                            GetMembersQueryHandler.MembersResult.class
+                    )),
+                    ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(
+                            AddConnectionToMemberHandler.class,
+                            AddConnectionToMemberCommand.class)
+                    ),
+                    ImmutableList.<RepositoryDescriptor>of(
+                        new RepositoryDescriptor(
+                                MemberRepository.class,
+                                DomainDescriptorFactory.toAggregateDescriptor(Member.class)
+                        ),
+                        new RepositoryDescriptor(
+                                MemberConnectionsRepository.class,
+                                DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class)
+                        )
+                    ),
+                    ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(
+                            MemberCreatedEventListener.class,
+                            MemberCreatedEvent.class
+                    ))
             );
 
-            DomainDescriptor applicationDomainDescriptor = new DomainDescriptor(
-                      Applications.NAME
-                    , Applications.class
-                    , ImmutableList.<QueryHandlerDescriptor>of()
-                    , ImmutableList.<CommandHandlerDescriptor>of()
-                    , ImmutableList.<RepositoryDescriptor>of(
-                        new RepositoryDescriptor(ApplicationRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Application.class)),
-                        new RepositoryDescriptor(ApplicationMemberFansRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Member_fanOf_Application.class))
-                    )
-                    , ImmutableList.<EventListenerDescriptor>of()
+            final DomainDescriptor applicationDomainDescriptor = new DomainDescriptor(
+                    Applications.NAME,
+                    Applications.class,
+                    ImmutableList.<QueryHandlerDescriptor>of(),
+                    ImmutableList.<CommandHandlerDescriptor>of(),
+                    ImmutableList.<RepositoryDescriptor>of(
+                        new RepositoryDescriptor(
+                                ApplicationRepository.class,
+                                DomainDescriptorFactory.toAggregateDescriptor(Application.class)
+                        ),
+                        new RepositoryDescriptor(
+                                ApplicationMemberFansRepository.class,
+                                DomainDescriptorFactory.toAggregateDescriptor(Member_fanOf_Application.class)
+                        )
+                    ),
+                    ImmutableList.<EventListenerDescriptor>of()
             );
 
-            DomainDescriptor timelinesDomainDescriptor = new DomainDescriptor(
-                      Timeline.NAME
-                    , Timelines.class
-                    , ImmutableList.<QueryHandlerDescriptor>of()
-                    , ImmutableList.<CommandHandlerDescriptor>of()
-                    , ImmutableList.<RepositoryDescriptor>of(
-                        new RepositoryDescriptor(StatusRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Status.class)),
-                        new RepositoryDescriptor(TimelineRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Timeline.class))
-                    )
-                    , ImmutableList.<EventListenerDescriptor>of()
+            final DomainDescriptor timelinesDomainDescriptor = new DomainDescriptor(
+                    Timeline.NAME,
+                    Timelines.class,
+                    ImmutableList.<QueryHandlerDescriptor>of(),
+                    ImmutableList.<CommandHandlerDescriptor>of(),
+                    ImmutableList.<RepositoryDescriptor>of(
+                        new RepositoryDescriptor(
+                                StatusRepository.class,
+                                DomainDescriptorFactory.toAggregateDescriptor(Status.class)
+                        ),
+                        new RepositoryDescriptor(
+                                TimelineRepository.class,
+                                DomainDescriptorFactory.toAggregateDescriptor(Timeline.class)
+                        )
+                    ),
+                    ImmutableList.<EventListenerDescriptor>of()
             );
 
-            DocumentedPlatform documentedPlatform = new DocumentedPlatform();
+            final DocumentedPlatform documentedPlatform = new DocumentedPlatform();
             documentedPlatform.registerDomain(Facebook.NAME, facebookDomainDescriptor);
             documentedPlatform.registerDomain(Applications.NAME, applicationDomainDescriptor);
             documentedPlatform.registerDomain(Timelines.NAME, timelinesDomainDescriptor);
@@ -153,7 +182,6 @@ public class KasperDocResourceTest extends JerseyTest {
     }
 
     static class TestConfiguration extends DefaultResourceConfig {
-
         public TestConfiguration() {
             super(WrappedDocResource.class);
             getProviderSingletons().add(new JacksonJsonProvider(new ObjectMapperKasperResolver().getContext(null)));
@@ -182,10 +210,12 @@ public class KasperDocResourceTest extends JerseyTest {
     	
     	// Traverse available json responses ------------------------------------
         final Predicate<String> filter = new FilterBuilder().include(".*\\.json");
-        final Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .filterInputsBy(filter)
-                .setScanners(new ResourcesScanner())
-                .setUrls(Arrays.asList(ClasspathHelper.forClass(this.getClass()))));
+        final Reflections reflections = new Reflections(
+                new ConfigurationBuilder()
+                    .filterInputsBy(filter)
+                    .setScanners(new ResourcesScanner())
+                    .setUrls(Arrays.asList(ClasspathHelper.forClass(this.getClass())))
+        );
 
         final Set<String> resolved = reflections.getResources(Pattern.compile(".*"));
     	
@@ -197,9 +227,9 @@ public class KasperDocResourceTest extends JerseyTest {
     		final String json = getJson(jsonFilename);
     		
     		final String path = jsonFilename
-    				.replaceAll("json/", "")
-    				.replaceAll("-", "/")
-    				.replaceAll("\\.json", "");
+                                    .replaceAll("json/", "")
+                                    .replaceAll("-", "/")
+                                    .replaceAll("\\.json", "");
 	
 			final WebResource webResource = resource();
 	        final String responseMsg = webResource.path("/" + path).get(String.class);

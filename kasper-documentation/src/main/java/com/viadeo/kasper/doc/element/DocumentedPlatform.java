@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.doc.element;
 
 import com.google.common.base.Optional;
@@ -14,19 +20,23 @@ public class DocumentedPlatform {
     private final Map<String, DocumentedDomain> documentedDomainByDomainName;
     private final Map<Class, DocumentedDomain> documentedDomainByDomainClass;
 
+    // ------------------------------------------------------------------------
+
     public DocumentedPlatform() {
         this.documentedDomainByDomainName = Maps.newHashMap();
         this.documentedDomainByDomainClass = Maps.newHashMap();
     }
 
+    // ------------------------------------------------------------------------
+
     public void registerDomain(final String domainName, final DomainDescriptor descriptor) {
-        DocumentedDomain documentedDomain = new DocumentedDomain(descriptor);
+        final DocumentedDomain documentedDomain = new DocumentedDomain(descriptor);
         documentedDomainByDomainName.put(domainName, documentedDomain);
         documentedDomainByDomainClass.put(documentedDomain.getReferenceClass(), documentedDomain);
     }
 
-    public void accept(DocumentedElementVisitor visitor) {
-        for (DocumentedDomain documentedDomain : documentedDomainByDomainName.values()) {
+    public void accept(final DocumentedElementVisitor visitor) {
+        for (final DocumentedDomain documentedDomain : documentedDomainByDomainName.values()) {
             documentedDomain.accept(visitor);
         }
     }
@@ -42,4 +52,5 @@ public class DocumentedPlatform {
     public Optional<DocumentedDomain> getDomain(final Class domainClass) {
         return Optional.fromNullable(documentedDomainByDomainClass.get(domainClass));
     }
+
 }

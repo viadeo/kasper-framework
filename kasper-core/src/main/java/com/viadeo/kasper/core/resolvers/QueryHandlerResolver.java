@@ -29,7 +29,7 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
         super();
     }
 
-    public QueryHandlerResolver(DomainResolver domainResolver){
+    public QueryHandlerResolver(final DomainResolver domainResolver) {
         this();
         setDomainResolver(domainResolver);
     }

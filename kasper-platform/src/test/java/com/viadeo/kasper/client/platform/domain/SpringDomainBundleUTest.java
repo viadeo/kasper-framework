@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform.domain;
 
 import com.codahale.metrics.MetricRegistry;
@@ -24,22 +30,32 @@ public class SpringDomainBundleUTest {
 
     private static Platform.BuilderContext platformBuilderContext;
 
+    @Configuration
+    public static class FakeConfiguration {
+        @Bean
+        public MyCustomDomainBox.MyCustomCommandHandler myCustomCommandHandler(){
+            return new MyCustomDomainBox.MyCustomCommandHandler();
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
     @BeforeClass
-    public static void setup(){
+    public static void setup() {
         platformBuilderContext = new Platform.BuilderContext(
-                mock(Config.class)
-                , mock(KasperEventBus.class)
-                , mock(CommandGateway.class)
-                , mock(QueryGateway.class)
-                , mock(MetricRegistry.class)
-                , Maps.<Platform.ExtraComponentKey, Object>newHashMap()
+                mock(Config.class),
+                mock(KasperEventBus.class),
+                mock(CommandGateway.class),
+                mock(QueryGateway.class),
+                mock(MetricRegistry.class),
+                Maps.<Platform.ExtraComponentKey, Object>newHashMap()
         );
     }
 
     @Test
     public void configure_shouldBeOk() {
         // Given
-        SpringDomainBundle springDomainBundle = new SpringDomainBundle(
+        final SpringDomainBundle springDomainBundle = new SpringDomainBundle(
                 new MyCustomDomainBox.MyCustomDomain(),
                 Lists.<Class>newArrayList()
         );
@@ -53,7 +69,7 @@ public class SpringDomainBundleUTest {
     @Test
     public void configure_withConfiguration_shouldBeAccessibleThroughDomainContext() {
         // Given
-        SpringDomainBundle springDomainBundle = new SpringDomainBundle(
+        final SpringDomainBundle springDomainBundle = new SpringDomainBundle(
                 new MyCustomDomainBox.MyCustomDomain(),
                 Lists.<Class>newArrayList(FakeConfiguration.class)
         );
@@ -62,7 +78,8 @@ public class SpringDomainBundleUTest {
         springDomainBundle.configure(platformBuilderContext);
 
         // Then
-        Optional<MyCustomDomainBox.MyCustomCommandHandler> commandHandlerOptional = springDomainBundle.get(MyCustomDomainBox.MyCustomCommandHandler.class);
+        final Optional<MyCustomDomainBox.MyCustomCommandHandler> commandHandlerOptional =
+                springDomainBundle.get(MyCustomDomainBox.MyCustomCommandHandler.class);
         assertNotNull(commandHandlerOptional);
         assertTrue(commandHandlerOptional.isPresent());
     }
@@ -70,9 +87,9 @@ public class SpringDomainBundleUTest {
     @Test
     public void configure_withNamedBean_shouldBeAccessibleThroughDomainContext() {
         // Given
-        String beanName = "hihihi";
-        MyCustomDomainBox.MyCustomEventListener expectedEventListener = new MyCustomDomainBox.MyCustomEventListener();
-        SpringDomainBundle springDomainBundle = new SpringDomainBundle(
+        final String beanName = "hihihi";
+        final MyCustomDomainBox.MyCustomEventListener expectedEventListener = new MyCustomDomainBox.MyCustomEventListener();
+        final SpringDomainBundle springDomainBundle = new SpringDomainBundle(
                 new MyCustomDomainBox.MyCustomDomain(),
                 Lists.<Class>newArrayList(),
                 new SpringDomainBundle.BeanDescriptor(beanName, expectedEventListener)
@@ -83,7 +100,8 @@ public class SpringDomainBundleUTest {
 
         // Then
 
-        Optional<MyCustomDomainBox.MyCustomEventListener> eventListenerOptional = springDomainBundle.get(MyCustomDomainBox.MyCustomEventListener.class);
+        final Optional<MyCustomDomainBox.MyCustomEventListener> eventListenerOptional =
+                springDomainBundle.get(MyCustomDomainBox.MyCustomEventListener.class);
         assertNotNull(eventListenerOptional);
         assertTrue(eventListenerOptional.isPresent());
         assertEquals(expectedEventListener, eventListenerOptional.get());
@@ -92,8 +110,8 @@ public class SpringDomainBundleUTest {
     @Test
     public void configure_withBean_shouldBeAccessibleThroughDomainContext() {
         // Given
-        DateFormatter dateFormatter = new DateFormatter();
-        SpringDomainBundle springDomainBundle = new SpringDomainBundle(
+        final DateFormatter dateFormatter = new DateFormatter();
+        final SpringDomainBundle springDomainBundle = new SpringDomainBundle(
                 new MyCustomDomainBox.MyCustomDomain(),
                 Lists.<Class>newArrayList(),
                 new SpringDomainBundle.BeanDescriptor(DefaultFormatter.class, dateFormatter)
@@ -103,22 +121,15 @@ public class SpringDomainBundleUTest {
         springDomainBundle.configure(platformBuilderContext);
 
         // Then
-        Optional<DefaultFormatter> formatterOptional = springDomainBundle.get(DefaultFormatter.class);
+        final Optional<DefaultFormatter> formatterOptional = springDomainBundle.get(DefaultFormatter.class);
         assertNotNull(formatterOptional);
         assertTrue(formatterOptional.isPresent());
         assertEquals(dateFormatter, formatterOptional.get());
 
-        Optional<DateFormatter> formatterOptional2 = springDomainBundle.get(DateFormatter.class);
+        final Optional<DateFormatter> formatterOptional2 = springDomainBundle.get(DateFormatter.class);
         assertNotNull(formatterOptional2);
         assertTrue(formatterOptional2.isPresent());
         assertEquals(dateFormatter, formatterOptional2.get());
     }
 
-    @Configuration
-    public static class FakeConfiguration {
-        @Bean
-        public MyCustomDomainBox.MyCustomCommandHandler myCustomCommandHandler(){
-            return new MyCustomDomainBox.MyCustomCommandHandler();
-        }
-    }
 }

@@ -28,16 +28,20 @@ public class KasperDocResource {
 
     public static final Function<DocumentedDomain,LightDocumentedDomain> LIGHTER = new Function<DocumentedDomain, LightDocumentedDomain>() {
         @Override
-        public LightDocumentedDomain apply(DocumentedDomain documentedDomain) {
+        public LightDocumentedDomain apply(final DocumentedDomain documentedDomain) {
             return new LightDocumentedDomain(documentedDomain);
         }
     };
 
     private final DocumentedPlatform documentedPlatform;
 
-    public KasperDocResource(DocumentedPlatform documentedPlatform) {
+    // ------------------------------------------------------------------------
+
+    public KasperDocResource(final DocumentedPlatform documentedPlatform) {
         this.documentedPlatform = documentedPlatform;
     }
+
+    // ------------------------------------------------------------------------
 
     @GET
     @Path("domains")
@@ -58,9 +62,9 @@ public class KasperDocResource {
             return new RetUnexistent(DocumentedElementType.DOMAIN.getType(), DEFAULT_UNSPECIFIED);
         }
 
-        Optional<DocumentedDomain> domain = documentedPlatform.getDomain(domainName);
+        final Optional<DocumentedDomain> domain = documentedPlatform.getDomain(domainName);
 
-        if (!domain.isPresent()) {
+        if ( ! domain.isPresent()) {
             return new RetUnexistent(DocumentedElementType.DOMAIN.getType(), domainName);
         }
 
@@ -72,22 +76,23 @@ public class KasperDocResource {
     @GET
     @Path("domain/{domainName}/{type}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Object getEntities(@PathParam("domainName") final String domainName, @PathParam("type") final String type) {
+    public Object getEntities(@PathParam("domainName") final String domainName,
+                              @PathParam("type") final String type) {
         if (null == domainName) {
             return new RetUnexistent(DocumentedElementType.DOMAIN.getType(), DEFAULT_UNSPECIFIED);
         }
 
-        Optional<DocumentedDomain> domain = documentedPlatform.getDomain(domainName);
+        final Optional<DocumentedDomain> domain = documentedPlatform.getDomain(domainName);
 
-        if (!domain.isPresent()) {
+        if ( ! domain.isPresent()) {
             return new RetUnexistent(DocumentedElementType.DOMAIN.getType(), domainName);
         }
 
-        Optional<DocumentedElementType> documentedElementType = DocumentedElementType.of(type);
+        final Optional<DocumentedElementType> documentedElementType = DocumentedElementType.of(type);
 
         if (documentedElementType.isPresent() && documentedElementType.get().getPluralType().equals(type)) {
-            DocumentedElementType elementType = documentedElementType.get();
-            List<AbstractDomainElement> documentedElements = get(domain.get(), elementType);
+            final DocumentedElementType elementType = documentedElementType.get();
+            final List<AbstractDomainElement> documentedElements = get(domain.get(), elementType);
             return new RetMap(elementType.getType(), documentedElements);
         }
 
@@ -99,22 +104,24 @@ public class KasperDocResource {
     @GET
     @Path("domain/{domainName}/{type}/{entityName}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Object getEntity(@PathParam("domainName") final String domainName, @PathParam("type") final String type, @PathParam("entityName") final String entityName) {
+    public Object getEntity(@PathParam("domainName") final String domainName,
+                            @PathParam("type") final String type,
+                            @PathParam("entityName") final String entityName) {
         if (null == domainName) {
             return new RetUnexistent(DocumentedElementType.DOMAIN.getType(), DEFAULT_UNSPECIFIED);
         }
 
-        Optional<DocumentedDomain> domain = documentedPlatform.getDomain(domainName);
+        final Optional<DocumentedDomain> domain = documentedPlatform.getDomain(domainName);
 
-        if (!domain.isPresent()) {
+        if ( ! domain.isPresent()) {
             return new RetUnexistent(DocumentedElementType.DOMAIN.getType(), DEFAULT_UNSPECIFIED);
         }
 
-        Optional<DocumentedElementType> documentedElementType = DocumentedElementType.of(type);
+        final Optional<DocumentedElementType> documentedElementType = DocumentedElementType.of(type);
 
         if (documentedElementType.isPresent()) {
-            DocumentedElementType elementType = documentedElementType.get();
-            Optional<AbstractDomainElement> documentedElement = get(domain.get(), elementType, entityName);
+            final DocumentedElementType elementType = documentedElementType.get();
+            final Optional<AbstractDomainElement> documentedElement = get(domain.get(), elementType, entityName);
 
             if (documentedElement.isPresent()) {
                 return documentedElement.get();
@@ -126,9 +133,12 @@ public class KasperDocResource {
         return new RetUnexistent("type", type);
     }
 
+    // ------------------------------------------------------------------------
 
-    private static Optional<AbstractDomainElement> get(DocumentedDomain documentedDomain, DocumentedElementType type, String name) {
-        for (AbstractDomainElement documentedDomainElement : get(documentedDomain, type)) {
+    private static Optional<AbstractDomainElement> get(final DocumentedDomain documentedDomain,
+                                                       final DocumentedElementType type,
+                                                       final String name) {
+        for (final AbstractDomainElement documentedDomainElement : get(documentedDomain, type)) {
             if (documentedDomainElement.getName().equals(name)) {
                 return Optional.of(documentedDomainElement);
             }
@@ -136,7 +146,8 @@ public class KasperDocResource {
         return Optional.absent();
     }
 
-    private static List<AbstractDomainElement> get(DocumentedDomain documentedDomain, DocumentedElementType type) {
+    private static List<AbstractDomainElement> get(final DocumentedDomain documentedDomain,
+                                                   final DocumentedElementType type) {
         switch (type) {
             case COMMAND:
                 return Lists.<AbstractDomainElement>newArrayList(documentedDomain.getCommands());
@@ -158,7 +169,10 @@ public class KasperDocResource {
                 return Lists.<AbstractDomainElement>newArrayList(documentedDomain.getRelations());
             case REPOSITORY:
                 return Lists.<AbstractDomainElement>newArrayList(documentedDomain.getRepositories());
+            case DOMAIN:
+                break;
         }
+
         return Lists.newArrayList();
     }
 

@@ -12,8 +12,7 @@ import com.viadeo.kasper.cqrs.command.Command;
 import java.util.List;
 
 public interface KasperCommandFixture<EXECUTOR extends KasperFixtureCommandExecutor<VALIDATOR>, VALIDATOR extends KasperFixtureCommandResultValidator>
-        extends KasperFixture<EXECUTOR>
-{
+        extends KasperFixture<EXECUTOR> {
 
     EXECUTOR givenCommands(final Command... commands);
 

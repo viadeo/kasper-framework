@@ -241,12 +241,13 @@ public class FixtureUseCase {
 
     public static DomainBundle getDomainBundle() {
         return new DefaultDomainBundle(
-                  Lists.<CommandHandler>newArrayList( new TestCreateCommandHandler(), new TestChangeLastNameCommandHandler())
-                , Lists.<QueryHandler>newArrayList( new TestGetSomeData())
-                , Lists.<Repository>newArrayList(new TestRepository())
-                , Lists.<EventListener>newArrayList()
-                , new TestDomain()
-                , "TestDomain"
+                Lists.<CommandHandler>newArrayList( new TestCreateCommandHandler(), new TestChangeLastNameCommandHandler()),
+                Lists.<QueryHandler>newArrayList( new TestGetSomeData()),
+                Lists.<Repository>newArrayList(new TestRepository()),
+                Lists.<EventListener>newArrayList(),
+                new TestDomain(),
+                "TestDomain"
         );
     }
+
 }

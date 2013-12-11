@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform.configuration;
 
 import com.codahale.metrics.MetricRegistry;
@@ -36,4 +42,5 @@ public interface PlatformConfiguration {
      * @return the configuration
      */
     Config configuration();
+
 }

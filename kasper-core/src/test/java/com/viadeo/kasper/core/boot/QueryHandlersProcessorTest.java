@@ -30,7 +30,7 @@ public class QueryHandlersProcessorTest {
     final DefaultQueryHandlersLocator locator = spy(new DefaultQueryHandlersLocator());
     final QueryHandlersProcessor processor = new QueryHandlersProcessor();
 
-    {
+    /* init */ {
         processor.setQueryHandlersLocator(locator);
     }
 

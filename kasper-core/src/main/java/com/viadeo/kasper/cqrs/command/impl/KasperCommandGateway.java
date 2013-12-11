@@ -1,6 +1,11 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -25,6 +30,8 @@ import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class KasperCommandGateway implements CommandGateway {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperCommandGateway.class);
@@ -33,42 +40,42 @@ public class KasperCommandGateway implements CommandGateway {
     private final CommandBus commandBus;
     private final DomainLocator domainLocator;
 
-    public KasperCommandGateway(CommandBus commandBus) {
+    // ------------------------------------------------------------------------
+
+    public KasperCommandGateway(final CommandBus commandBus) {
         this(
-                  new CommandGatewayFactoryBean<CommandGateway>()
-                , commandBus
-                , new DefaultDomainLocator(new CommandHandlerResolver())
+                 new CommandGatewayFactoryBean<CommandGateway>(),
+                 commandBus,
+                 new DefaultDomainLocator(new CommandHandlerResolver())
         );
     }
 
-    public KasperCommandGateway(
-              CommandBus commandBus
-            , CommandDispatchInterceptor... commandDispatchInterceptors
-    ) {
+    public KasperCommandGateway(final CommandBus commandBus,
+                                final CommandDispatchInterceptor... commandDispatchInterceptors) {
         this(
-                new CommandGatewayFactoryBean<CommandGateway>()
-                , commandBus
-                , new DefaultDomainLocator(new CommandHandlerResolver())
-                , commandDispatchInterceptors
+                new CommandGatewayFactoryBean<CommandGateway>(),
+                commandBus,
+                new DefaultDomainLocator(new CommandHandlerResolver()),
+                commandDispatchInterceptors
         );
     }
 
-    protected KasperCommandGateway(
-              CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean
-            , CommandBus commandBus
-            , DomainLocator domainLocator
-            , CommandDispatchInterceptor... commandDispatchInterceptors
-    ) {
-        this.commandBus = Preconditions.checkNotNull(commandBus);
-        this.domainLocator = Preconditions.checkNotNull(domainLocator);
+    protected KasperCommandGateway(final CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean,
+                                   final CommandBus commandBus,
+                                   final DomainLocator domainLocator,
+                                   final CommandDispatchInterceptor... commandDispatchInterceptors) {
 
-        Preconditions.checkNotNull(commandGatewayFactoryBean);
-        Preconditions.checkNotNull(commandDispatchInterceptors);
+        this.commandBus = checkNotNull(commandBus);
+        this.domainLocator = checkNotNull(domainLocator);
 
-        List<CommandDispatchInterceptor> interceptors = Lists.newArrayList(commandDispatchInterceptors);
+        checkNotNull(commandGatewayFactoryBean);
+        checkNotNull(commandDispatchInterceptors);
+
+        final List<CommandDispatchInterceptor> interceptors = Lists.newArrayList(commandDispatchInterceptors);
 
         try {
-            BeanValidationInterceptor validationInterceptor = new BeanValidationInterceptor(Validation.buildDefaultValidatorFactory());
+            final BeanValidationInterceptor validationInterceptor =
+                    new BeanValidationInterceptor(Validation.buildDefaultValidatorFactory());
             interceptors.add(validationInterceptor);
         } catch (final ValidationException ve) {
             LOGGER.warn("No implementation found for BEAN VALIDATION - JSR 303" , ve);
@@ -85,51 +92,58 @@ public class KasperCommandGateway implements CommandGateway {
         }
 
         try {
-            this.commandGateway = Preconditions.checkNotNull(commandGatewayFactoryBean.getObject());
-        } catch (Exception e) {
+            this.commandGateway = checkNotNull(commandGatewayFactoryBean.getObject());
+        } catch (final Exception e) {
             throw new KasperException("Unable to initialize the Command Gateway", e);
         }
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public void sendCommand(Command command, @MetaData(Context.METANAME) Context context) throws Exception {
+    public void sendCommand(final Command command, @MetaData(Context.METANAME) final Context context) throws Exception {
         commandGateway.sendCommand(command, context);
     }
 
     @Override
-    public Future<CommandResponse> sendCommandForFuture(Command command, @MetaData(Context.METANAME) Context context) throws Exception {
+    public Future<CommandResponse> sendCommandForFuture(final Command command, @MetaData(Context.METANAME) final Context context) throws Exception {
         return commandGateway.sendCommandForFuture(command, context);
     }
 
     @Override
-    public CommandResponse sendCommandAndWaitForAResponse(Command command, @MetaData(Context.METANAME) Context context) throws Exception {
+    public CommandResponse sendCommandAndWaitForAResponse(final Command command, @MetaData(Context.METANAME) final Context context) throws Exception {
         return commandGateway.sendCommandAndWaitForAResponse(command, context);
     }
 
     @Override
-    public CommandResponse sendCommandAndWaitForAResponseWithException(Command command, @MetaData(Context.METANAME) Context context) throws Exception {
+    public CommandResponse sendCommandAndWaitForAResponseWithException(final Command command, @MetaData(Context.METANAME) final Context context) throws Exception {
         return commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
     }
 
     @Override
-    public void sendCommandAndWait(Command command, @MetaData(Context.METANAME) Context context, long timeout, TimeUnit unit) throws Exception {
+    public void sendCommandAndWait(final Command command, @MetaData(Context.METANAME) final Context context, final long timeout, final TimeUnit unit) throws Exception {
         commandGateway.sendCommandAndWait(command, context, timeout, unit);
     }
 
     @Override
-    public void sendCommandAndWaitForever(Command command, @MetaData(Context.METANAME) Context context) throws Exception {
+    public void sendCommandAndWaitForever(final Command command, @MetaData(Context.METANAME) final Context context) throws Exception {
         commandGateway.sendCommandAndWaitForever(command, context);
     }
 
-    public void register(CommandHandler commandHandler) {
-        Preconditions.checkNotNull(commandHandler);
+    // ------------------------------------------------------------------------
 
-        domainLocator.registerHandler(commandHandler);
+    /**
+     * Register a command handler to the gateway
+     *
+     * @param commandHandler the command handler to be registered
+     */
+    public void register(final CommandHandler commandHandler) {
+        domainLocator.registerHandler(checkNotNull(commandHandler));
 
         //- Dynamic type command class and command handler for Axon -------
         final AxonCommandCastor<Command> castor = new AxonCommandCastor<>(
-                  commandHandler.getCommandClass()
-                , commandHandler
+            commandHandler.getCommandClass(),
+            commandHandler
         );
         commandBus.subscribe(castor.getBeanClass().getName(), castor.getContainerClass());
 
@@ -161,4 +175,5 @@ public class KasperCommandGateway implements CommandGateway {
             return this.handler;
         }
     }
+
 }

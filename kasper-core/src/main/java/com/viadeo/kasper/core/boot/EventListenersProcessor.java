@@ -43,7 +43,7 @@ public class EventListenersProcessor extends SingletonAnnotationProcessor<XKaspe
 		LOGGER.info("Subscribe to event bus : " + eventListenerClazz.getName());
 
         if (EventListener.class.isAssignableFrom(eventListener.getClass())) {
-            EventListener kasperEventListener = (EventListener) eventListener;
+            final EventListener kasperEventListener = (EventListener) eventListener;
             kasperEventListener.setEventBus(eventBus);
 
             if(CommandEventListener.class.isAssignableFrom(eventListener.getClass())){

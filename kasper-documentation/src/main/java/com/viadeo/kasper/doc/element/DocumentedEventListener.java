@@ -1,35 +1,19 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.doc.element;
 
 import com.viadeo.kasper.client.platform.domain.descriptor.EventListenerDescriptor;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class DocumentedEventListener extends AbstractDomainElement {
 
     private final DocumentedEvent documentedEvent;
-
-    public DocumentedEventListener(DocumentedDomain documentedDomain, EventListenerDescriptor eventListenerDescriptor) {
-        super(documentedDomain, DocumentedElementType.EVENT_LISTENER, eventListenerDescriptor.getReferenceClass());
-        documentedEvent = new DocumentedEvent(documentedDomain, this, eventListenerDescriptor.getEventClass());
-    }
-
-    public LightDocumentedElement<DocumentedEvent> getEvent() {
-        return documentedEvent.getLightDocumentedElement();
-    }
-
-    public String getEventName() {
-        return documentedEvent.getName();
-    }
-
-    @Override
-    public LightDocumentedElement<DocumentedEventListener> getLightDocumentedElement() {
-        return new LightDocumentedElement<>(this);
-    }
-
-    @Override
-    public void accept(DocumentedElementVisitor visitor) {
-        documentedEvent.accept(visitor);
-        visitor.visit(this);
-    }
 
     public static class DocumentedEvent extends AbstractPropertyDomainElement {
 
@@ -37,7 +21,9 @@ public class DocumentedEventListener extends AbstractDomainElement {
 
         private String action;
 
-        public DocumentedEvent(DocumentedDomain documentedDomain, DocumentedEventListener documentedEventListener, Class eventClass) {
+        public DocumentedEvent(final DocumentedDomain documentedDomain,
+                               final DocumentedEventListener documentedEventListener,
+                               final Class eventClass) {
             super(documentedDomain, DocumentedElementType.EVENT, eventClass);
             this.documentedEventListener = documentedEventListener;
         }
@@ -46,7 +32,7 @@ public class DocumentedEventListener extends AbstractDomainElement {
             return action;
         }
 
-        public void setAction(String action) {
+        public void setAction(final String action) {
             this.action = action;
         }
 
@@ -60,8 +46,47 @@ public class DocumentedEventListener extends AbstractDomainElement {
         }
 
         @Override
-        public void accept(DocumentedElementVisitor visitor) {
+        public void accept(final DocumentedElementVisitor visitor) {
             visitor.visit(this);
         }
     }
+
+    // ------------------------------------------------------------------------
+
+    public DocumentedEventListener(final DocumentedDomain documentedDomain,
+                                   final EventListenerDescriptor eventListenerDescriptor) {
+        super(
+                checkNotNull(documentedDomain),
+                DocumentedElementType.EVENT_LISTENER,
+                checkNotNull(eventListenerDescriptor).getReferenceClass()
+        );
+        documentedEvent = new DocumentedEvent(
+                documentedDomain, this,
+                eventListenerDescriptor.getEventClass()
+        );
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public LightDocumentedElement<DocumentedEventListener> getLightDocumentedElement() {
+        return new LightDocumentedElement<>(this);
+    }
+
+    @Override
+    public void accept(final DocumentedElementVisitor visitor) {
+        documentedEvent.accept(visitor);
+        visitor.visit(this);
+    }
+
+    // ------------------------------------------------------------------------
+
+    public LightDocumentedElement<DocumentedEvent> getEvent() {
+        return documentedEvent.getLightDocumentedElement();
+    }
+
+    public String getEventName() {
+        return documentedEvent.getName();
+    }
+
 }

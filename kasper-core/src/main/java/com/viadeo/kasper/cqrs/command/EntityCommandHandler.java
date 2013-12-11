@@ -91,6 +91,7 @@ public abstract class EntityCommandHandler<C extends Command, AGR extends Aggreg
 
     /**
      * Get the related repository of the entity handled by this command handler
+     *
      * @return the repository
      */
     @SuppressWarnings("unchecked")
@@ -104,7 +105,7 @@ public abstract class EntityCommandHandler<C extends Command, AGR extends Aggreg
             final Optional<ClientRepository<AGR>> optRepo =
                     repositoryManager.getEntityRepository(this.consistentRepositoryEntity.entityClass);
 
-            if (!optRepo.isPresent()) {
+            if ( ! optRepo.isPresent()) {
                 throw new KasperCommandException(String.format("The entity %s has not been recorded on any domain",
                                                                this.consistentRepositoryEntity.entityClass.getSimpleName()));
             }
@@ -119,7 +120,7 @@ public abstract class EntityCommandHandler<C extends Command, AGR extends Aggreg
      * Get the related repository of the specified entity class
      * @return the entity repository
      */
-    public <E extends AggregateRoot> Optional<ClientRepository<E>> getRepositoryOf(Class<E> entityClass){
+    public <E extends AggregateRoot> Optional<ClientRepository<E>> getRepositoryOf(final Class<E> entityClass) {
         if (null == repositoryManager) {
             throw new KasperCommandException("Unable to resolve repository, no repository manager was provided");
         }

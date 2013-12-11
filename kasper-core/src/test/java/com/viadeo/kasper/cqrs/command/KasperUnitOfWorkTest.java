@@ -120,14 +120,16 @@ public class KasperUnitOfWorkTest {
     private KasperUnitOfWork uow;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         this.uow = KasperUnitOfWork.startAndGet();
     }
 
     @After
-    public void cleanUp(){
+    public void cleanUp() {
         CurrentUnitOfWork.clear(uow);
     }
+
+    // ------------------------------------------------------------------------
 
     @Test
     public void testMacroEvent_OneEventNormalCase() {

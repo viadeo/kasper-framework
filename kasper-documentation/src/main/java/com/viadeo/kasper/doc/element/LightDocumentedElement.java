@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.doc.element;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -6,7 +12,7 @@ public class LightDocumentedElement<E extends AbstractElement> implements WithTy
 
     protected final E documentedElement;
 
-    public LightDocumentedElement(E documentedElement) {
+    public LightDocumentedElement(final E documentedElement) {
         this.documentedElement = documentedElement;
     }
 
@@ -43,4 +49,5 @@ public class LightDocumentedElement<E extends AbstractElement> implements WithTy
     public Class getReferenceClass() {
         return documentedElement.getReferenceClass();
     }
+
 }

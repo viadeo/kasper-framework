@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
 import com.google.common.base.Optional;
@@ -5,6 +11,9 @@ import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.repository.ClientRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
 
+/**
+ * Repository holder used by command handler in order to easily access entities repository
+ */
 public interface RepositoryManager {
 
     /**
@@ -21,4 +30,5 @@ public interface RepositoryManager {
      * @return the repository responsible for storing this class of entities
      */
     <E extends AggregateRoot> Optional<ClientRepository<E>> getEntityRepository(Class<E> entityClass);
+
 }

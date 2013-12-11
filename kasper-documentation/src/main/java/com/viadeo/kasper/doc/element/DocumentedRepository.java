@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.doc.element;
 
 import com.google.common.collect.Lists;
@@ -9,43 +15,21 @@ import com.viadeo.kasper.event.Event;
 import java.util.Collection;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.doc.element.DocumentedEventListener.DocumentedEvent;
 
 public class DocumentedRepository extends AbstractDomainElement {
 
     private final DocumentedAggregate documentedAggregate;
 
-    public DocumentedRepository(DocumentedDomain documentedDomain, RepositoryDescriptor repositoryDescriptor) {
-        super(documentedDomain, DocumentedElementType.REPOSITORY, repositoryDescriptor.getReferenceClass());
-        AggregateDescriptor aggregateDescriptor = repositoryDescriptor.getAggregateDescriptor();
-
-        if (aggregateDescriptor.isRelation()) {
-            documentedAggregate = new DocumentedRelation(documentedDomain, aggregateDescriptor);
-        } else {
-            documentedAggregate = new DocumentedConcept(documentedDomain, aggregateDescriptor);
-        }
-    }
-
-    public LightDocumentedElement<DocumentedAggregate> getAggregate() {
-        return documentedAggregate.getLightDocumentedElement();
-    }
-
-    @Override
-    public LightDocumentedElement<DocumentedRepository> getLightDocumentedElement() {
-        return new LightDocumentedElement<>(this);
-    }
-
-    @Override
-    public void accept(DocumentedElementVisitor visitor) {
-        documentedAggregate.accept(visitor);
-        visitor.visit(this);
-    }
-
-    public static abstract class DocumentedAggregate extends AbstractPropertyDomainElement {
+     public static abstract class DocumentedAggregate extends AbstractPropertyDomainElement {
 
         private final Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents;
 
-        public DocumentedAggregate(DocumentedDomain domain, DocumentedElementType type, Class referenceClass, Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents) {
+        public DocumentedAggregate(final DocumentedDomain domain,
+                                   final DocumentedElementType type,
+                                   final Class referenceClass,
+                                   final Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents) {
             super(domain, type, referenceClass);
             this.sourceEvents = Lists.newArrayList(sourceEvents);
         }
@@ -55,8 +39,8 @@ public class DocumentedRepository extends AbstractDomainElement {
         }
 
         @Override
-        public void accept(DocumentedElementVisitor visitor) {
-            for (LightDocumentedElement<DocumentedEvent> lightDocumentedElement : sourceEvents) {
+        public void accept(final DocumentedElementVisitor visitor) {
+            for (final LightDocumentedElement<DocumentedEvent> lightDocumentedElement : sourceEvents) {
                 lightDocumentedElement.documentedElement.accept(visitor);
             }
         }
@@ -68,33 +52,35 @@ public class DocumentedRepository extends AbstractDomainElement {
         private final List<LightDocumentedElement<DocumentedRelation>> targetRelations;
         private final List<LightDocumentedElement<DocumentedConcept>> componentConcepts;
 
-        public DocumentedConcept(DocumentedDomain documentedDomain, Class referenceClass, Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents) {
+        public DocumentedConcept(final DocumentedDomain documentedDomain,
+                                 final Class referenceClass,
+                                 final Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents) {
             super(documentedDomain, DocumentedElementType.CONCEPT, referenceClass, sourceEvents);
             this.sourceRelations = Lists.newArrayList();
             this.targetRelations = Lists.newArrayList();
             this.componentConcepts = Lists.newArrayList();
         }
 
-        public DocumentedConcept(DocumentedDomain documentedDomain, Class referenceClass) {
+        public DocumentedConcept(final DocumentedDomain documentedDomain, final Class referenceClass) {
             this(documentedDomain, referenceClass, Lists.<LightDocumentedElement<DocumentedEvent>>newArrayList());
         }
 
-        public DocumentedConcept(DocumentedDomain documentedDomain, AggregateDescriptor aggregateDescriptor) {
-            this(documentedDomain
-                    , aggregateDescriptor.getReferenceClass()
-                    , toLightDocumentedEvents(documentedDomain, aggregateDescriptor.getSourceEventClasses())
+        public DocumentedConcept(final DocumentedDomain documentedDomain, final AggregateDescriptor aggregateDescriptor) {
+            this(documentedDomain,
+                 aggregateDescriptor.getReferenceClass(),
+                 toLightDocumentedEvents(documentedDomain, aggregateDescriptor.getSourceEventClasses())
             );
         }
 
-        public void addSourceRelation(DocumentedRelation documentedRelation) {
+        public void addSourceRelation(final DocumentedRelation documentedRelation) {
             sourceRelations.add(documentedRelation.getLightDocumentedElement());
         }
 
-        public void addTargetRelation(DocumentedRelation documentedRelation) {
+        public void addTargetRelation(final DocumentedRelation documentedRelation) {
             targetRelations.add(documentedRelation.getLightDocumentedElement());
         }
 
-        public void addComponentConcept(DocumentedConcept documentedConcept) {
+        public void addComponentConcept(final DocumentedConcept documentedConcept) {
             componentConcepts.add(documentedConcept.getLightDocumentedElement());
         }
 
@@ -116,7 +102,7 @@ public class DocumentedRepository extends AbstractDomainElement {
         }
 
         @Override
-        public void accept(DocumentedElementVisitor visitor) {
+        public void accept(final DocumentedElementVisitor visitor) {
             super.accept(visitor);
             visitor.visit(this);
         }
@@ -130,21 +116,21 @@ public class DocumentedRepository extends AbstractDomainElement {
         private String verb;
         private Boolean bidirectional;
 
-        public DocumentedRelation(DocumentedDomain documentedDomain, AggregateDescriptor aggregateDescriptor) {
-            this(documentedDomain
-                    , aggregateDescriptor.getReferenceClass()
-                    , new DocumentedConcept(documentedDomain, aggregateDescriptor.getSourceClass())
-                    , new DocumentedConcept(documentedDomain, aggregateDescriptor.getTargetClass())
-                    , toLightDocumentedEvents(documentedDomain, aggregateDescriptor.getSourceEventClasses())
+        public DocumentedRelation(final DocumentedDomain documentedDomain,
+                                  final AggregateDescriptor aggregateDescriptor) {
+            this(documentedDomain,
+                 aggregateDescriptor.getReferenceClass(),
+                 new DocumentedConcept(documentedDomain, aggregateDescriptor.getSourceClass()),
+                 new DocumentedConcept(documentedDomain, aggregateDescriptor.getTargetClass()),
+                 toLightDocumentedEvents(documentedDomain, aggregateDescriptor.getSourceEventClasses())
             );
         }
 
-        public DocumentedRelation(
-                DocumentedDomain documentedDomain
-                , Class referenceClass
-                , DocumentedConcept sourceConcept
-                , DocumentedConcept targetConcept
-                , Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents
+        public DocumentedRelation(final DocumentedDomain documentedDomain,
+                                  final Class referenceClass,
+                                  final DocumentedConcept sourceConcept,
+                                  final DocumentedConcept targetConcept,
+                                  final Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents
         ) {
             super(documentedDomain, DocumentedElementType.RELATION, referenceClass, sourceEvents);
             this.sourceConcept = sourceConcept;
@@ -155,11 +141,11 @@ public class DocumentedRepository extends AbstractDomainElement {
             return verb;
         }
 
-        public void setVerb(String verb) {
+        public void setVerb(final String verb) {
             this.verb = verb;
         }
 
-        public void setBidirectional(Boolean bidirectional) {
+        public void setBidirectional(final Boolean bidirectional) {
             this.bidirectional = bidirectional;
         }
 
@@ -186,7 +172,7 @@ public class DocumentedRepository extends AbstractDomainElement {
         }
 
         @Override
-        public void accept(DocumentedElementVisitor visitor) {
+        public void accept(final DocumentedElementVisitor visitor) {
             super.accept(visitor);
             sourceConcept.accept(visitor);
             targetConcept.accept(visitor);
@@ -194,16 +180,58 @@ public class DocumentedRepository extends AbstractDomainElement {
         }
     }
 
+    // ------------------------------------------------------------------------
 
-    private static Collection<LightDocumentedElement<DocumentedEvent>> toLightDocumentedEvents(DocumentedDomain documentedDomain, Collection<Class<? extends Event>> eventClasses) {
-        List<LightDocumentedElement<DocumentedEvent>> events = Lists.newArrayList();
-        for (Class eventClass : eventClasses) {
+    public DocumentedRepository(final DocumentedDomain documentedDomain, final RepositoryDescriptor repositoryDescriptor) {
+        super(
+                checkNotNull(documentedDomain),
+                DocumentedElementType.REPOSITORY,
+                checkNotNull(repositoryDescriptor).getReferenceClass()
+        );
+
+        final AggregateDescriptor aggregateDescriptor = repositoryDescriptor.getAggregateDescriptor();
+        if (aggregateDescriptor.isRelation()) {
+            documentedAggregate = new DocumentedRelation(documentedDomain, aggregateDescriptor);
+        } else {
+            documentedAggregate = new DocumentedConcept(documentedDomain, aggregateDescriptor);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public LightDocumentedElement<DocumentedRepository> getLightDocumentedElement() {
+        return new LightDocumentedElement<>(this);
+    }
+
+    @Override
+    public void accept(final DocumentedElementVisitor visitor) {
+        documentedAggregate.accept(visitor);
+        visitor.visit(this);
+    }
+
+    // ------------------------------------------------------------------------
+
+    public LightDocumentedElement<DocumentedAggregate> getAggregate() {
+        return documentedAggregate.getLightDocumentedElement();
+    }
+
+    // ------------------------------------------------------------------------
+
+    private static Collection<LightDocumentedElement<DocumentedEvent>> toLightDocumentedEvents(
+            final DocumentedDomain documentedDomain,
+            final Collection<Class<? extends Event>> eventClasses) {
+
+        final List<LightDocumentedElement<DocumentedEvent>> events = Lists.newArrayList();
+        for (final Class eventClass : eventClasses) {
             events.add(toDocumentedEvent(documentedDomain, eventClass).getLightDocumentedElement());
         }
         return events;
     }
 
-    private static DocumentedEvent toDocumentedEvent(DocumentedDomain documentedDomain, Class eventClass) {
+    private static DocumentedEvent toDocumentedEvent(final DocumentedDomain documentedDomain,
+                                                     final Class eventClass) {
         return new DocumentedEvent(documentedDomain, null, eventClass);
     }
+
 }

@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform.domain;
 
 import com.google.common.collect.Lists;
@@ -11,6 +17,8 @@ import com.viadeo.kasper.event.EventListener;
 
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class DefaultDomainBundle implements DomainBundle {
 
     protected final List<CommandHandler> commandHandlers;
@@ -20,31 +28,40 @@ public class DefaultDomainBundle implements DomainBundle {
     protected final Domain domain;
     protected final String name;
 
-    public DefaultDomainBundle(Domain domain) {
+    // ------------------------------------------------------------------------
+
+    public DefaultDomainBundle(final Domain domain) {
         this(domain, new DomainResolver().getLabel(domain.getClass()));
     }
 
-    public DefaultDomainBundle(Domain domain, String name) {
-        this(Lists.<CommandHandler>newArrayList()
-                , Lists.<QueryHandler>newArrayList()
-                , Lists.<Repository>newArrayList()
-                , Lists.<EventListener>newArrayList()
-                , domain
-                , name
+    public DefaultDomainBundle(final Domain domain, final String name) {
+        this(Lists.<CommandHandler>newArrayList(),
+             Lists.<QueryHandler>newArrayList(),
+             Lists.<Repository>newArrayList(),
+             Lists.<EventListener>newArrayList(),
+             domain,
+             name
         );
     }
 
-    public DefaultDomainBundle(List<CommandHandler> commandHandlers, List<QueryHandler> queryHandlers, List<Repository> repositories, List<EventListener> eventListeners, Domain domain, String name) {
-        this.commandHandlers = commandHandlers;
-        this.queryHandlers = queryHandlers;
-        this.repositories = repositories;
-        this.eventListeners = eventListeners;
-        this.domain = domain;
-        this.name = name;
+    public DefaultDomainBundle(final List<CommandHandler> commandHandlers,
+                               final List<QueryHandler> queryHandlers,
+                               final List<Repository> repositories,
+                               final List<EventListener> eventListeners,
+                               final Domain domain,
+                               final String name) {
+        this.commandHandlers = checkNotNull(commandHandlers);
+        this.queryHandlers = checkNotNull(queryHandlers);
+        this.repositories = checkNotNull(repositories);
+        this.eventListeners = checkNotNull(eventListeners);
+        this.domain = checkNotNull(domain);
+        this.name = checkNotNull(name);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public void configure(Platform.BuilderContext context) { }
+    public void configure(final Platform.BuilderContext context) { }
 
     @Override
     public String getName() {
@@ -75,4 +92,5 @@ public class DefaultDomainBundle implements DomainBundle {
     public List<Repository> getRepositories() {
         return repositories;
     }
+
 }

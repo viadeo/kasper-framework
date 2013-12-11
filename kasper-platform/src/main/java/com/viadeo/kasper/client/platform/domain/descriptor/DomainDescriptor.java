@@ -1,12 +1,19 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.ddd.Domain;
 
 import java.util.Collection;
 
-public class DomainDescriptor implements Descriptor {
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public class DomainDescriptor implements KasperComponentDescriptor {
 
     private final String domainName;
     private final Class<? extends Domain> domainClass;
@@ -15,20 +22,23 @@ public class DomainDescriptor implements Descriptor {
     private final ImmutableList<RepositoryDescriptor> repositoryDescriptor;
     private final ImmutableList<EventListenerDescriptor> eventListenerDescriptor;
 
-    public DomainDescriptor(
-              String domainName
-            , Class<? extends Domain> domainClass
-            , Collection<QueryHandlerDescriptor> queryHandlerDescriptors
-            , Collection<CommandHandlerDescriptor> commandHandlerDescriptors
-            , Collection<RepositoryDescriptor> repositoryDescriptor
-            , Collection<EventListenerDescriptor> eventListenerDescriptor) {
-        this.domainName = domainName;
-        this.domainClass = Preconditions.checkNotNull(domainClass);
-        this.queryHandlerDescriptors = ImmutableList.copyOf(Preconditions.checkNotNull(queryHandlerDescriptors));
-        this.commandHandlerDescriptors = ImmutableList.copyOf(Preconditions.checkNotNull(commandHandlerDescriptors));
-        this.repositoryDescriptor = ImmutableList.copyOf(Preconditions.checkNotNull(repositoryDescriptor));
-        this.eventListenerDescriptor = ImmutableList.copyOf(Preconditions.checkNotNull(eventListenerDescriptor));
+    // ------------------------------------------------------------------------
+
+    public DomainDescriptor(final String domainName,
+                            final Class<? extends Domain> domainClass,
+                            final Collection<QueryHandlerDescriptor> queryHandlerDescriptors,
+                            final Collection<CommandHandlerDescriptor> commandHandlerDescriptors,
+                            final Collection<RepositoryDescriptor> repositoryDescriptor,
+                            final Collection<EventListenerDescriptor> eventListenerDescriptor) {
+        this.domainName = checkNotNull(domainName);
+        this.domainClass = checkNotNull(domainClass);
+        this.queryHandlerDescriptors = ImmutableList.copyOf(checkNotNull(queryHandlerDescriptors));
+        this.commandHandlerDescriptors = ImmutableList.copyOf(checkNotNull(commandHandlerDescriptors));
+        this.repositoryDescriptor = ImmutableList.copyOf(checkNotNull(repositoryDescriptor));
+        this.eventListenerDescriptor = ImmutableList.copyOf(checkNotNull(eventListenerDescriptor));
     }
+
+    // ------------------------------------------------------------------------
 
     public Class getDomainClass() {
         return domainClass;
@@ -58,4 +68,5 @@ public class DomainDescriptor implements Descriptor {
     public String getName(){
         return domainName;
     }
+
 }

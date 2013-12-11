@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.core.metrics;
 
 import com.codahale.metrics.MetricRegistry;
@@ -12,14 +18,22 @@ import static org.junit.Assert.assertEquals;
 
 public class KasperMetricsITest {
 
+    private static void buildPlatformWith(final MetricRegistry metricRegistry) {
+        new Platform.Builder(new KasperPlatformConfiguration())
+                .withMetricRegistry(metricRegistry)
+                .build();
+    }
+
+    // ------------------------------------------------------------------------
+
     @Test
     public void getMetricRegistry_withBuiltPlatform_shouldBeOk() {
         // Given
-        MetricRegistry metricRegistry = new MetricRegistry();
+        final MetricRegistry metricRegistry = new MetricRegistry();
         buildPlatformWith(metricRegistry);
 
         // When
-        MetricRegistry actualMetricRegistry = KasperMetrics.getMetricRegistry();
+        final MetricRegistry actualMetricRegistry = KasperMetrics.getMetricRegistry();
 
         //Then
         assertEquals(metricRegistry, actualMetricRegistry);
@@ -31,7 +45,7 @@ public class KasperMetricsITest {
         buildPlatformWith(new MetricRegistry());
 
         // When
-        String name = KasperMetrics.name(ExecutorService.class, "bip");
+        final String name = KasperMetrics.name(ExecutorService.class, "bip");
 
         // Then
         assertEquals((ExecutorService.class.getName() + ".bip").toLowerCase(), name);
@@ -43,7 +57,7 @@ public class KasperMetricsITest {
         buildPlatformWith(new MetricRegistry());
 
         // When
-        String name = KasperMetrics.name(MyCustomDomainBox.MyCustomCommandHandler.class, "bip");
+        final String name = KasperMetrics.name(MyCustomDomainBox.MyCustomCommandHandler.class, "bip");
 
         // Then
         assertEquals("mycustomdomain.commandhandler.mycustomcommandhandler.bip", name);
@@ -55,7 +69,7 @@ public class KasperMetricsITest {
         buildPlatformWith(new MetricRegistry());
 
         // When
-        String name = KasperMetrics.name(MyCustomDomainBox.MyCustomQueryHandler.class, "bip");
+        final String name = KasperMetrics.name(MyCustomDomainBox.MyCustomQueryHandler.class, "bip");
 
         // Then
         assertEquals("mycustomdomain.queryhandler.mycustomqueryhandler.bip", name);
@@ -67,7 +81,7 @@ public class KasperMetricsITest {
         buildPlatformWith(new MetricRegistry());
 
         // When
-        String name = KasperMetrics.name(MyCustomDomainBox.MyCustomEventListener.class, "bip");
+        final String name = KasperMetrics.name(MyCustomDomainBox.MyCustomEventListener.class, "bip");
 
         // Then
         assertEquals("mycustomdomain.eventlistener.mycustomeventlistener.bip", name);
@@ -79,7 +93,7 @@ public class KasperMetricsITest {
         buildPlatformWith(new MetricRegistry());
 
         // When
-        String name = KasperMetrics.name(MyCustomDomainBox.MyCustomRepository.class, "bip");
+        final String name = KasperMetrics.name(MyCustomDomainBox.MyCustomRepository.class, "bip");
 
         // Then
         assertEquals("mycustomdomain.repository.mycustomrepository.bip", name);
@@ -91,7 +105,7 @@ public class KasperMetricsITest {
         buildPlatformWith(new MetricRegistry());
 
         // When
-        String name = KasperMetrics.name(MyCustomDomainBox.MyCustomCommand.class, "bip");
+        final String name = KasperMetrics.name(MyCustomDomainBox.MyCustomCommand.class, "bip");
 
         // Then
         assertEquals((MyCustomDomainBox.MyCustomCommand.class.getName() + ".bip").toLowerCase(), name);
@@ -103,7 +117,7 @@ public class KasperMetricsITest {
         buildPlatformWith(new MetricRegistry());
 
         // When
-        String name = KasperMetrics.name(MyCustomDomainBox.MyCustomQuery.class, "bip");
+        final String name = KasperMetrics.name(MyCustomDomainBox.MyCustomQuery.class, "bip");
 
         // Then
         assertEquals((MyCustomDomainBox.MyCustomQuery.class.getName() + ".bip").toLowerCase(), name);
@@ -115,15 +129,10 @@ public class KasperMetricsITest {
         buildPlatformWith(new MetricRegistry());
 
         // When
-        String name = KasperMetrics.name(MyCustomDomainBox.MyCustomQueryResult.class, "bip");
+        final String name = KasperMetrics.name(MyCustomDomainBox.MyCustomQueryResult.class, "bip");
 
         // Then
         assertEquals((MyCustomDomainBox.MyCustomQueryResult.class.getName() + ".bip").toLowerCase(), name);
     }
 
-    private static void buildPlatformWith(MetricRegistry metricRegistry) {
-        new Platform.Builder(new KasperPlatformConfiguration())
-                .withMetricRegistry(metricRegistry)
-                .build();
-    }
 }

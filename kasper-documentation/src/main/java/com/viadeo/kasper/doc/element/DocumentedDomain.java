@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.doc.element;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -15,9 +21,7 @@ import static com.viadeo.kasper.doc.element.DocumentedCommandHandler.DocumentedC
 import static com.viadeo.kasper.doc.element.DocumentedEventListener.DocumentedEvent;
 import static com.viadeo.kasper.doc.element.DocumentedQueryHandler.DocumentedQuery;
 import static com.viadeo.kasper.doc.element.DocumentedQueryHandler.DocumentedQueryResult;
-import static com.viadeo.kasper.doc.element.DocumentedRepository.DocumentedAggregate;
-import static com.viadeo.kasper.doc.element.DocumentedRepository.DocumentedConcept;
-import static com.viadeo.kasper.doc.element.DocumentedRepository.DocumentedRelation;
+import static com.viadeo.kasper.doc.element.DocumentedRepository.*;
 
 public class DocumentedDomain extends AbstractElement {
 
@@ -35,6 +39,8 @@ public class DocumentedDomain extends AbstractElement {
     private String prefix;
     private Optional<DocumentedDomain> parent;
 
+    // ------------------------------------------------------------------------
+
     public DocumentedDomain(DomainDescriptor domainDescriptor) {
         super(DocumentedElementType.DOMAIN, domainDescriptor.getDomainClass());
         this.parent = Optional.absent();
@@ -50,27 +56,27 @@ public class DocumentedDomain extends AbstractElement {
         relations = Lists.newArrayList();
         concepts = Lists.newArrayList();
 
-        for (QueryHandlerDescriptor descriptor : domainDescriptor.getQueryHandlerDescriptors()) {
-            DocumentedQueryHandler documentedQueryHandler = new DocumentedQueryHandler(this, descriptor);
+        for (final QueryHandlerDescriptor descriptor : domainDescriptor.getQueryHandlerDescriptors()) {
+            final DocumentedQueryHandler documentedQueryHandler = new DocumentedQueryHandler(this, descriptor);
             documentedQueryHandlers.add(documentedQueryHandler);
             queries.add(documentedQueryHandler.getQuery().getFullDocumentedElement());
             queryResults.add(documentedQueryHandler.getQueryResult().getFullDocumentedElement());
         }
 
-        for (CommandHandlerDescriptor descriptor : domainDescriptor.getCommandHandlerDescriptors()) {
-            DocumentedCommandHandler documentedCommandHandler = new DocumentedCommandHandler(this, descriptor);
+        for (final CommandHandlerDescriptor descriptor : domainDescriptor.getCommandHandlerDescriptors()) {
+            final DocumentedCommandHandler documentedCommandHandler = new DocumentedCommandHandler(this, descriptor);
             documentedCommandHandlers.add(documentedCommandHandler);
             commands.add(documentedCommandHandler.getCommand().getFullDocumentedElement());
         }
 
-        Map<Class, DocumentedEvent> events = Maps.newHashMap();
-        Map<Class, DocumentedConcept> concepts = Maps.newHashMap();
+        final Map<Class, DocumentedEvent> events = Maps.newHashMap();
+        final Map<Class, DocumentedConcept> concepts = Maps.newHashMap();
 
-        for (RepositoryDescriptor descriptor : domainDescriptor.getRepositoryDescriptors()) {
-            DocumentedRepository documentedRepository = new DocumentedRepository(this, descriptor);
+        for (final RepositoryDescriptor descriptor : domainDescriptor.getRepositoryDescriptors()) {
+            final DocumentedRepository documentedRepository = new DocumentedRepository(this, descriptor);
             documentedRepositories.add(documentedRepository);
 
-            DocumentedAggregate aggregate = documentedRepository.getAggregate().getFullDocumentedElement();
+            final DocumentedAggregate aggregate = documentedRepository.getAggregate().getFullDocumentedElement();
 
             if (aggregate instanceof DocumentedRelation) {
                 relations.add((DocumentedRelation) aggregate);
@@ -84,17 +90,48 @@ public class DocumentedDomain extends AbstractElement {
             }
 
         }
+
         this.concepts.addAll(concepts.values());
 
-        for (EventListenerDescriptor descriptor : domainDescriptor.getEventListenerDescriptors()) {
-            DocumentedEventListener documentedEventListener = new DocumentedEventListener(this, descriptor);
+        for (final EventListenerDescriptor descriptor : domainDescriptor.getEventListenerDescriptors()) {
+            final DocumentedEventListener documentedEventListener = new DocumentedEventListener(this, descriptor);
             documentedEventListeners.add(documentedEventListener);
 
-            DocumentedEvent documentedEvent = documentedEventListener.getEvent().getFullDocumentedElement();
+            final DocumentedEvent documentedEvent = documentedEventListener.getEvent().getFullDocumentedElement();
             events.put(documentedEvent.getReferenceClass(), documentedEvent);
         }
+
         this.events.addAll(events.values());
     }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public String getURL() {
+        return String.format("/%s/%s", getType(), getName());
+    }
+
+    @Override
+    public LightDocumentedElement<DocumentedDomain> getLightDocumentedElement() {
+        return new LightDocumentedElement<>(this);
+    }
+
+    @Override
+    public void accept(final DocumentedElementVisitor visitor) {
+        visitor.visit(this);
+
+        final List<AbstractElement> documentedElements = Lists.newArrayList();
+        documentedElements.addAll(documentedQueryHandlers);
+        documentedElements.addAll(documentedCommandHandlers);
+        documentedElements.addAll(documentedEventListeners);
+        documentedElements.addAll(documentedRepositories);
+
+        for (final AbstractElement documentedElement : documentedElements) {
+            documentedElement.accept(visitor);
+        }
+    }
+
+    // ------------------------------------------------------------------------
 
     public Collection<DocumentedQueryHandler> getQueryHandlers() {
         return documentedQueryHandlers;
@@ -140,41 +177,19 @@ public class DocumentedDomain extends AbstractElement {
         return prefix;
     }
 
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
-    }
-
-    @Override
-    public String getURL() {
-        return String.format("/%s/%s", getType(), getName());
-    }
-
-    @Override
-    public LightDocumentedElement<DocumentedDomain> getLightDocumentedElement() {
-        return new LightDocumentedElement<>(this);
-    }
-
-    @Override
-    public void accept(DocumentedElementVisitor visitor) {
-        visitor.visit(this);
-
-        List<AbstractElement> documentedElements = Lists.newArrayList();
-        documentedElements.addAll(documentedQueryHandlers);
-        documentedElements.addAll(documentedCommandHandlers);
-        documentedElements.addAll(documentedEventListeners);
-        documentedElements.addAll(documentedRepositories);
-
-        for (AbstractElement documentedElement : documentedElements) {
-            documentedElement.accept(visitor);
-        }
-    }
-
     @JsonIgnore
     public Optional<DocumentedDomain> getParent(){
        return parent;
     }
 
-    public void setParent(Optional<DocumentedDomain> parent) {
+    // ------------------------------------------------------------------------
+
+    public void setPrefix(final String prefix) {
+        this.prefix = prefix;
+    }
+
+    public void setParent(final Optional<DocumentedDomain> parent) {
         this.parent = parent;
     }
+
 }

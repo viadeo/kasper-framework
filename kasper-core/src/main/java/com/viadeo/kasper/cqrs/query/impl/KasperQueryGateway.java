@@ -41,9 +41,11 @@ public class KasperQueryGateway implements QueryGateway {
         this(new DefaultQueryHandlersLocator());
     }
 
-    public KasperQueryGateway(QueryHandlersLocator queryHandlersLocator) {
-        this.queryHandlersLocator = queryHandlersLocator;
+    public KasperQueryGateway(final QueryHandlersLocator queryHandlersLocator) {
+        this.queryHandlersLocator = checkNotNull(queryHandlersLocator);
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     @SuppressWarnings("unchecked")
@@ -106,21 +108,27 @@ public class KasperQueryGateway implements QueryGateway {
         return ret;
     }
 
-    public void register(QueryHandler queryHandler) {
-        Class<? extends QueryHandler> queryHandlerClass = queryHandler.getClass();
+    // ------------------------------------------------------------------------
 
+    /**
+     * Register a query handler to the gateway
+     *
+     * @param queryHandler
+     */
+    public void register(final QueryHandler queryHandler) {
+        final Class<? extends QueryHandler> queryHandlerClass = queryHandler.getClass();
         LOGGER.info("Registering the query handler : " + queryHandlerClass.getName());
 
-        XKasperQueryHandler annotation = queryHandlerClass.getAnnotation(XKasperQueryHandler.class);
-        String handlerName;
+        final XKasperQueryHandler annotation = queryHandlerClass.getAnnotation(XKasperQueryHandler.class);
 
+        final String handlerName;
         if (annotation.name().isEmpty()) {
             handlerName = queryHandlerClass.getSimpleName();
         } else {
             handlerName = annotation.name();
         }
 
-        Class<? extends QueryHandlerFilter>[] filters = annotation.filters();
+        final Class<? extends QueryHandlerFilter>[] filters = annotation.filters();
         if (null != filters) {
             for (final Class<? extends QueryHandlerFilter> filterClass : filters) {
                 LOGGER.info(String.format("  --> w/ filter %s", filterClass.getSimpleName()));
@@ -129,7 +137,7 @@ public class KasperQueryGateway implements QueryGateway {
         }
 
         queryHandlersLocator.registerHandler(handlerName, queryHandler, annotation.domain());
-
         queryHandler.setQueryGateway(this);
     }
+
 }

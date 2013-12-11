@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
 import com.viadeo.kasper.context.Context;
@@ -24,9 +30,11 @@ public class KasperCommandGatewayUTest {
     private final DomainLocator domainLocator;
     private final CommandGateway decoratedCommandGateway;
 
+    // ------------------------------------------------------------------------
+
     @SuppressWarnings("unchecked")
     public KasperCommandGatewayUTest() throws Exception {
-        CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean = mock(CommandGatewayFactoryBean.class);
+        final CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean = mock(CommandGatewayFactoryBean.class);
         decoratedCommandGateway = mock(CommandGateway.class);
         when(commandGatewayFactoryBean.getObject()).thenReturn(decoratedCommandGateway);
         commandBus = mock(CommandBus.class);
@@ -35,15 +43,17 @@ public class KasperCommandGatewayUTest {
     }
 
     @Before
-    public void setUp(){
+    public void setUp() {
         reset(domainLocator, decoratedCommandGateway);
     }
+
+    // ------------------------------------------------------------------------
 
     @Test
     public void sendCommand_shouldDelegateTheCall() throws Exception {
         // Given
-        Command command = mock(Command.class);
-        Context context = mock(Context.class);
+        final Command command = mock(Command.class);
+        final Context context = mock(Context.class);
 
         // When
         commandGateway.sendCommand(command, context);
@@ -56,8 +66,8 @@ public class KasperCommandGatewayUTest {
     @Test
     public void sendCommandForFuture_shouldDelegateTheCall() throws Exception {
         // Given
-        Command command = mock(Command.class);
-        Context context = mock(Context.class);
+        final Command command = mock(Command.class);
+        final Context context = mock(Context.class);
 
         // When
         commandGateway.sendCommandForFuture(command, context);
@@ -70,8 +80,8 @@ public class KasperCommandGatewayUTest {
     @Test
     public void sendCommandAndWaitForAResponse_shouldDelegateTheCall() throws Exception {
         // Given
-        Command command = mock(Command.class);
-        Context context = mock(Context.class);
+        final Command command = mock(Command.class);
+        final Context context = mock(Context.class);
 
         // When
         commandGateway.sendCommandAndWaitForAResponse(command, context);
@@ -84,8 +94,8 @@ public class KasperCommandGatewayUTest {
     @Test
     public void sendCommandAndWaitForAResponseWithException_shouldDelegateTheCall() throws Exception {
         // Given
-        Command command = mock(Command.class);
-        Context context = mock(Context.class);
+        final Command command = mock(Command.class);
+        final Context context = mock(Context.class);
 
         // When
         commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
@@ -98,9 +108,9 @@ public class KasperCommandGatewayUTest {
     @Test
     public void sendCommandAndWait_shouldDelegateTheCall() throws Exception {
         // Given
-        Command command = mock(Command.class);
-        Context context = mock(Context.class);
-        TimeUnit unit = mock(TimeUnit.class);
+        final Command command = mock(Command.class);
+        final Context context = mock(Context.class);
+        final TimeUnit unit = mock(TimeUnit.class);
 
         // When
         commandGateway.sendCommandAndWait(command, context, 1000, unit);
@@ -113,8 +123,8 @@ public class KasperCommandGatewayUTest {
     @Test
     public void sendCommandAndWaitForever_shouldDelegateTheCall() throws Exception {
         // Given
-        Command command = mock(Command.class);
-        Context context = mock(Context.class);
+        final  Command command = mock(Command.class);
+        final Context context = mock(Context.class);
 
         // When
         commandGateway.sendCommandAndWaitForever(command, context);
@@ -127,7 +137,7 @@ public class KasperCommandGatewayUTest {
     @Test(expected = NullPointerException.class)
     public void register_withNullAsCommandHandler_shouldThrownException() {
         // Given
-        CommandHandler commandHandler = null;
+        final CommandHandler commandHandler = null;
 
         // When
         commandGateway.register(commandHandler);
@@ -138,7 +148,7 @@ public class KasperCommandGatewayUTest {
     @Test
     public void register_withCommandHandler_shouldBeRegistered() {
         // Given
-        CommandHandler commandHandler = mock(CommandHandler.class);
+        final CommandHandler commandHandler = mock(CommandHandler.class);
         when(commandHandler.getCommandClass()).thenReturn(Command.class);
 
         // When
@@ -155,4 +165,5 @@ public class KasperCommandGatewayUTest {
         verify(commandHandler).getCommandClass();
         verifyNoMoreInteractions(commandHandler);
     }
+
 }

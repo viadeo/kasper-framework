@@ -10,7 +10,6 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 
-import java.lang.String;
 import java.util.Iterator;
 import java.util.Map;
 

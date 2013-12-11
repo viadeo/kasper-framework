@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.test.doc.web;
 
 import com.google.common.collect.ImmutableList;
@@ -25,22 +31,39 @@ import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import java.io.IOException;
 
 public class KasperDocStandalone {
-    public static void main(String [] args) throws IOException, InterruptedException {
+
+    public static void main(final String [] args) throws IOException, InterruptedException {
         final String baseUri = "http://localhost:9988/";
 
-        DomainDescriptor domainDescriptor = new DomainDescriptor(
-                  Facebook.NAME
-                , Facebook.class
-                , ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(GetMembersQueryHandler.class, GetMembersQueryHandler.GetMembersQuery.class, GetMembersQueryHandler.MembersResult.class))
-                , ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(AddConnectionToMemberHandler.class, AddConnectionToMemberCommand.class))
-                , ImmutableList.<RepositoryDescriptor>of(
-                      new RepositoryDescriptor(MemberRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Member.class))
-                    , new RepositoryDescriptor(MemberConnectionsRepository.class, DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class))
+        final DomainDescriptor domainDescriptor = new DomainDescriptor(
+                Facebook.NAME,
+                Facebook.class,
+                ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(
+                        GetMembersQueryHandler.class,
+                        GetMembersQueryHandler.GetMembersQuery.class,
+                        GetMembersQueryHandler.MembersResult.class)
+                ),
+                ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(
+                        AddConnectionToMemberHandler.class,
+                        AddConnectionToMemberCommand.class)
+                ),
+                ImmutableList.<RepositoryDescriptor>of(
+                    new RepositoryDescriptor(
+                            MemberRepository.class,
+                            DomainDescriptorFactory.toAggregateDescriptor(Member.class)
+                    ),
+                    new RepositoryDescriptor(
+                            MemberConnectionsRepository.class,
+                            DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class)
+                    )
+                ),
+                ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(
+                        MemberCreatedEventListener.class,
+                        MemberCreatedEvent.class)
                 )
-                , ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(MemberCreatedEventListener.class, MemberCreatedEvent.class))
         );
 
-        DocumentedPlatform documentedPlatform = new DocumentedPlatform();
+        final DocumentedPlatform documentedPlatform = new DocumentedPlatform();
         documentedPlatform.registerDomain(Facebook.NAME, domainDescriptor);
         documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
 
@@ -63,4 +86,5 @@ public class KasperDocStandalone {
         server.stop();
         System.exit(0);
     }
+
 }

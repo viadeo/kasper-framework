@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform.domain;
 
 import com.google.common.base.Optional;
@@ -37,8 +43,9 @@ public class MyCustomDomainBox {
 
     @XKasperRepository()
     public static class MyCustomRepository extends Repository<MyCustomEntity> {
+
         @Override
-        protected Optional<MyCustomEntity> doLoad(KasperID aggregateIdentifier, Long expectedVersion) {
+        protected Optional<MyCustomEntity> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {
             return null;
         }
 
@@ -61,4 +68,5 @@ public class MyCustomDomainBox {
     public static class MyCustomQuery implements Query { }
 
     public static class MyCustomQueryResult implements QueryResult { }
+
 }

@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.doc.element;
 
 import com.google.common.base.Function;
@@ -25,7 +31,9 @@ public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDoma
         }
     };
 
-    public LightDocumentedDomain(DocumentedDomain documentedDomain) {
+    // ------------------------------------------------------------------------
+
+    public LightDocumentedDomain(final DocumentedDomain documentedDomain) {
         super(documentedDomain);
         this.commands = Collections2.transform(documentedDomain.getCommands(), LIGHTER);
         this.commandHandlers = Collections2.transform(documentedDomain.getCommandHandlers(), LIGHTER);
@@ -38,6 +46,8 @@ public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDoma
         this.relations = Collections2.transform(documentedDomain.getRelations(), LIGHTER);
         this.repositories = Collections2.transform(documentedDomain.getRepositories(), LIGHTER);
     }
+
+    // ------------------------------------------------------------------------
 
     public Collection<LightDocumentedElement> getQueryHandlers() {
         return queryHandlers;

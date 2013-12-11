@@ -62,10 +62,12 @@ public class HttpCommandExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     public HttpCommandExposer(final CommandGateway commandGateway, final List<Class<? extends CommandHandler>> commandHandlerClasses) {
-        this(commandGateway
-                , commandHandlerClasses
-                , new HttpContextDeserializer()
-                , ObjectMapperProvider.INSTANCE.mapper());
+        this(
+                commandGateway,
+                commandHandlerClasses,
+                new HttpContextDeserializer(),
+                ObjectMapperProvider.INSTANCE.mapper()
+        );
     }
     
     public HttpCommandExposer(final CommandGateway commandGateway,

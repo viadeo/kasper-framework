@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
 import com.viadeo.kasper.event.Event;
@@ -13,8 +19,8 @@ public class QueryHandlerUTest {
     @Test(expected = NullPointerException.class)
     public void publish_withNullAsEvent_shouldThrowException() {
         // Given
-        QueryHandler<Query, QueryResult> handler = new QueryHandler<Query, QueryResult>() { };
-        Event event = null;
+        final QueryHandler<Query, QueryResult> handler = new QueryHandler<Query, QueryResult>() { };
+        final Event event = null;
 
         // When
         handler.publish(event);
@@ -25,12 +31,12 @@ public class QueryHandlerUTest {
     @Test
     public void publish_withEvent_shouldPublishAMessageOnTheEventBus() {
         // Given
-        EventBus eventBus = mock(EventBus.class);
+        final EventBus eventBus = mock(EventBus.class);
 
-        QueryHandler<Query, QueryResult> handler = new QueryHandler<Query, QueryResult>() { };
+        final QueryHandler<Query, QueryResult> handler = new QueryHandler<Query, QueryResult>() { };
         handler.setEventBus(eventBus);
 
-        Event event = new Event() { };
+        final Event event = new Event() { };
 
         // When
         handler.publish(event);
@@ -39,4 +45,5 @@ public class QueryHandlerUTest {
         verify(eventBus).publish(any(GenericEventMessage.class));
         verifyNoMoreInteractions(eventBus);
     }
+
 }

@@ -7,11 +7,12 @@
 package com.viadeo.kasper.ddd.repository;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
 import org.axonframework.repository.AggregateNotFoundException;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Wrapping class for Kasper repositories, only exposing client methods
@@ -22,8 +23,8 @@ public final class ClientRepository<AGR extends AggregateRoot> {
 
     private final IRepository<AGR> repository;
 
-    public ClientRepository(final IRepository repository) {
-        this.repository = Preconditions.checkNotNull(repository);
+    public ClientRepository(final IRepository<AGR> repository) {
+        this.repository = checkNotNull(repository);
     }
 
     // -----

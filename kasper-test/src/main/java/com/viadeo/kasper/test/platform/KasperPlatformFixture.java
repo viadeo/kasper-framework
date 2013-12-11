@@ -26,9 +26,8 @@ import java.util.Arrays;
 import java.util.List;
 
 public class KasperPlatformFixture
-        implements
-          KasperCommandFixture<KasperPlatformExecutor, KasperPlatformCommandResultValidator>
-        , KasperQueryFixture<KasperPlatformExecutor, KasperPlatformQueryResultValidator>
+        implements KasperCommandFixture<KasperPlatformExecutor, KasperPlatformCommandResultValidator>,
+                   KasperQueryFixture<KasperPlatformExecutor, KasperPlatformQueryResultValidator>
 {
 
     private final RecordingPlatform platform;
@@ -36,10 +35,52 @@ public class KasperPlatformFixture
 
     private DomainBundle domainBundle;
 
+    /**
+     * A recording platform for fixture
+     */
+    public static class RecordingPlatform {
+        public final List<IEvent> recordedEvents = Lists.newLinkedList();
+        private Platform platform;
+
+        public Platform get() {
+            return this.platform;
+        }
+
+        public void set(final Platform platform) {
+            this.platform = platform;
+        }
+    }
+
+    /**
+     * Spy event bus
+     */
+    public static class SpyEventBus extends KasperEventBus {
+
+        private final RecordingPlatform recordingPlatform;
+
+        protected SpyEventBus(RecordingPlatform recordingPlatform){
+            this.recordingPlatform = recordingPlatform;
+        }
+
+        @Override
+        public void publish(final EventMessage... messages) {
+            super.publish(messages);
+            for (final EventMessage message : messages) {
+                if (IEvent.class.isAssignableFrom(message.getPayloadType())) {
+                    recordingPlatform.recordedEvents.add((IEvent) message.getPayload());
+                }
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
     public KasperPlatformFixture() {
         this.platform = new RecordingPlatform();
         this.eventBus = new SpyEventBus(platform);
     }
+
+    // ------------------------------------------------------------------------
 
     private void initialize() {
         platform.set(
@@ -54,7 +95,7 @@ public class KasperPlatformFixture
         );
     }
 
-    public KasperPlatformFixture register(DomainBundle domainBundle){
+    public KasperPlatformFixture register(final DomainBundle domainBundle){
         this.domainBundle = domainBundle;
         return this;
     }
@@ -128,43 +169,4 @@ public class KasperPlatformFixture
         return given();
     }
 
-    // ------------------------------------------------------------------------
-
-    /**
-     * A recording platform for fixture
-     */
-    public static class RecordingPlatform {
-        public final List<IEvent> recordedEvents = Lists.newLinkedList();
-        private Platform platform;
-
-        public Platform get() {
-            return this.platform;
-        }
-
-        public void set(final Platform platform) {
-            this.platform = platform;
-        }
-    }
-
-    /**
-     * Spy event bus
-     */
-    public static class SpyEventBus extends KasperEventBus {
-
-        private final RecordingPlatform recordingPlatform;
-
-        protected SpyEventBus(RecordingPlatform recordingPlatform){
-            this.recordingPlatform = recordingPlatform;
-        }
-
-        @Override
-        public void publish(final EventMessage... messages) {
-            super.publish(messages);
-            for (final EventMessage message : messages) {
-                if (IEvent.class.isAssignableFrom(message.getPayloadType())) {
-                    recordingPlatform.recordedEvents.add((IEvent) message.getPayload());
-                }
-            }
-        }
-    }
 }

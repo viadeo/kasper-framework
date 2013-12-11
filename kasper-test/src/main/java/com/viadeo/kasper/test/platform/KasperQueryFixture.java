@@ -12,8 +12,7 @@ import com.viadeo.kasper.event.IEvent;
 import java.util.List;
 
 public interface KasperQueryFixture<EXECUTOR extends KasperFixtureQueryExecutor, VALIDATOR extends KasperFixtureQueryResultValidator>
-    extends KasperFixture<EXECUTOR>
-{
+    extends KasperFixture<EXECUTOR> {
 
     EXECUTOR givenEvents(final IEvent... events);
 

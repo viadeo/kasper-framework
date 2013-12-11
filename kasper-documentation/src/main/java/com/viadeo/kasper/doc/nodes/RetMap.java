@@ -15,16 +15,13 @@ public class RetMap extends RetBase {
 	private static final long serialVersionUID = -5808650563772119762L;
 
 	private static final String TYPE = "list";
-	
 	private final Collection<? extends WithType> list;
-	
 	private String itemType = null;
-	
 	private Integer count = 0;
 
 	// ------------------------------------------------------------------------
 
-    public RetMap(String itemType, Collection<? extends WithType> list) {
+    public RetMap(final String itemType, final Collection<? extends WithType> list) {
         super(TYPE);
         this.list = list;
         this.itemType = itemType;

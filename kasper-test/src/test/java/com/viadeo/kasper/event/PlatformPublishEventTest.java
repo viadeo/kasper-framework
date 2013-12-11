@@ -51,12 +51,12 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
     public List<DomainBundle> getBundles() {
         return Lists.<DomainBundle>newArrayList(
                 new DefaultDomainBundle(
-                        Lists.<CommandHandler>newArrayList()
-                        , Lists.<QueryHandler>newArrayList()
-                        , Lists.<Repository>newArrayList()
-                        , Lists.<EventListener>newArrayList(new TestListener())
-                        , new TestDomain()
-                        , "testDomain"
+                        Lists.<CommandHandler>newArrayList(),
+                        Lists.<QueryHandler>newArrayList(),
+                        Lists.<Repository>newArrayList(),
+                        Lists.<EventListener>newArrayList(new TestListener()),
+                        new TestDomain(),
+                        "testDomain"
                 )
         );
     }

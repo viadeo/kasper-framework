@@ -212,7 +212,7 @@ public abstract class CommandHandler<C extends Command>
         return commandClass;
     }
 
-    public CommandGateway getCommandGateway(){
+    public CommandGateway getCommandGateway() {
         return commandGateway;
     }
 
@@ -222,11 +222,12 @@ public abstract class CommandHandler<C extends Command>
         this.eventBus = checkNotNull(eventBus);
     }
 
-    public void setRepositoryManager(RepositoryManager repositoryManager) {
-        this.repositoryManager = repositoryManager;
+    public void setRepositoryManager(final RepositoryManager repositoryManager) {
+        this.repositoryManager = checkNotNull(repositoryManager);
     }
 
-    public void setCommandGateway(CommandGateway commandGateway) {
-        this.commandGateway = commandGateway;
+    public void setCommandGateway(final CommandGateway commandGateway) {
+        this.commandGateway = checkNotNull(commandGateway);
     }
+
 }

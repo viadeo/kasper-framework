@@ -1,6 +1,11 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform.domain;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -11,6 +16,7 @@ import com.viadeo.kasper.event.EventListener;
 
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.client.platform.Platform.BuilderContext;
 
 /**
@@ -60,54 +66,57 @@ public interface DomainBundle {
      */
     List<Repository> getRepositories();
 
+    // ========================================================================
 
     public static class Builder {
 
         private final Domain domain;
         private final String domainName;
-        private final List<CommandHandler> commandHandlers;
-        private final List<QueryHandler> queryHandlers;
-        private final List<EventListener> eventListeners;
-        private final List<Repository> repositories;
 
-        public Builder(Domain domain){
-            this.domain = Preconditions.checkNotNull(domain);
+        private final List<CommandHandler> commandHandlers = Lists.newArrayList();
+        private final List<QueryHandler> queryHandlers = Lists.newArrayList();
+        private final List<EventListener> eventListeners = Lists.newArrayList();
+        private final List<Repository> repositories = Lists.newArrayList();
+
+        // --------------------------------------------------------------------
+
+        public Builder(final Domain domain){
+            this.domain = checkNotNull(domain);
             this.domainName = new DomainResolver().getLabel(domain.getClass());
-            this.commandHandlers = Lists.newArrayList();
-            this.queryHandlers = Lists.newArrayList();
-            this.eventListeners = Lists.newArrayList();
-            this.repositories = Lists.newArrayList();
         }
 
-        public Builder with(CommandHandler commandHandler){
-            commandHandlers.add(Preconditions.checkNotNull(commandHandler));
+        // --------------------------------------------------------------------
+
+        public Builder with(final CommandHandler commandHandler){
+            commandHandlers.add(checkNotNull(commandHandler));
             return this;
         }
 
-        public Builder with(QueryHandler queryHandler){
-            queryHandlers.add(Preconditions.checkNotNull(queryHandler));
+        public Builder with(final QueryHandler queryHandler){
+            queryHandlers.add(checkNotNull(queryHandler));
             return this;
         }
 
-        public Builder with(EventListener eventListener){
-            eventListeners.add(Preconditions.checkNotNull(eventListener));
+        public Builder with(final EventListener eventListener){
+            eventListeners.add(checkNotNull(eventListener));
             return this;
         }
 
-        public Builder with(Repository repository){
-            repositories.add(Preconditions.checkNotNull(repository));
+        public Builder with(final Repository repository){
+            repositories.add(checkNotNull(repository));
             return this;
         }
 
         public DomainBundle build(){
             return new DefaultDomainBundle(
-                    commandHandlers
-                    , queryHandlers
-                    , repositories
-                    , eventListeners
-                    , domain
-                    , domainName
+                    commandHandlers,
+                    queryHandlers,
+                    repositories,
+                    eventListeners,
+                    domain,
+                    domainName
             );
         }
+
     }
 }

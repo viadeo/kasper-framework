@@ -43,60 +43,6 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 
     private static final Integer TOTAL_VERIFY_CALLS = 6;
 
-    @Override
-    public List<DomainBundle> getBundles() {
-        return Lists.<DomainBundle>newArrayList(
-                new DefaultDomainBundle(
-                        Lists.<CommandHandler>newArrayList(new ContextTestHandler())
-                        , Lists.<QueryHandler>newArrayList()
-                        , Lists.<Repository>newArrayList(new ContextTestRepository())
-                        , Lists.<EventListener>newArrayList()
-                        , new ContextTestDomain()
-                        , "ContextTestDomain"
-                )
-        );
-    }
-
-    @Test
-    public void test() throws Exception {
-
-        // Given
-        final Context context = this.newContext();
-        final CommandGateway gw = this.getPlatform().getCommandGateway();
-        final ContextTestCommand command = new ContextTestCommand();
-        StaticChecker.context(context);
-
-        // When
-        final Future<CommandResponse> future = gw.sendCommandForFuture(command, context);
-        future.get();
-
-        // Then
-        assertEquals(TOTAL_VERIFY_CALLS, StaticChecker.getCounter());
-    }
-
-    // -- Static verificator --------------------------------------------------
-
-    private static class StaticChecker {
-        private static Integer counter = 0;
-        private static Context context;
-
-        public static void context(final Context context) {
-            StaticChecker.context = context;
-        }
-
-        public static void verify(final Context context) {
-            counter++;
-            final boolean equals = context == StaticChecker.context;
-            if (!equals) {
-                fail(context + " != " + StaticChecker.context);
-            }
-        }
-
-        public static Integer getCounter() {
-            return counter;
-        }
-    }
-
     // -- Test components -----------------------------------------------------
 
     @XKasperDomain(label = "test domain", prefix = "ctx")
@@ -166,6 +112,62 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
         @Override
         protected void doDelete(final ContextTestAGR aggregate) {
         }
-
     }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public List<DomainBundle> getBundles() {
+        return Lists.<DomainBundle>newArrayList(
+                new DefaultDomainBundle(
+                        Lists.<CommandHandler>newArrayList(new ContextTestHandler()),
+                        Lists.<QueryHandler>newArrayList(),
+                        Lists.<Repository>newArrayList(new ContextTestRepository()),
+                        Lists.<EventListener>newArrayList(),
+                        new ContextTestDomain(),
+                        "ContextTestDomain"
+                )
+        );
+    }
+
+    @Test
+    public void test() throws Exception {
+
+        // Given
+        final Context context = this.newContext();
+        final CommandGateway gw = this.getPlatform().getCommandGateway();
+        final ContextTestCommand command = new ContextTestCommand();
+        StaticChecker.context(context);
+
+        // When
+        final Future<CommandResponse> future = gw.sendCommandForFuture(command, context);
+        future.get();
+
+        // Then
+        assertEquals(TOTAL_VERIFY_CALLS, StaticChecker.getCounter());
+    }
+
+    // -- Static verificator --------------------------------------------------
+
+    private static class StaticChecker {
+        private static Integer counter = 0;
+        private static Context context;
+
+        public static void context(final Context context) {
+            StaticChecker.context = context;
+        }
+
+        public static void verify(final Context context) {
+            counter++;
+            final boolean equals = context == StaticChecker.context;
+            if ( ! equals) {
+                fail(context + " != " + StaticChecker.context);
+            }
+        }
+
+        public static Integer getCounter() {
+            return counter;
+        }
+    }
+
 }

@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.doc.initializer;
 
 import com.google.common.base.Optional;
@@ -29,21 +35,25 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
 
     private final DocumentedPlatform documentedPlatform;
 
-    public DefaultDocumentedElementInitializer(DocumentedPlatform documentedPlatform) {
+    // ------------------------------------------------------------------------
+
+    public DefaultDocumentedElementInitializer(final DocumentedPlatform documentedPlatform) {
         this.documentedPlatform = documentedPlatform;
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public void visit(DocumentedDomain domain) {
-        DomainResolver resolver = new DomainResolver();
-        Class<? extends Domain> referenceClass = domain.getReferenceClass();
+    public void visit(final DocumentedDomain domain) {
+        final DomainResolver resolver = new DomainResolver();
+        final Class<? extends Domain> referenceClass = domain.getReferenceClass();
 
         domain.setPrefix(resolver.getPrefix(referenceClass));
         domain.setLabel(resolver.getDomainLabel(referenceClass));
         domain.setDescription(resolver.getDescription(referenceClass));
 
-        Class parentClass = domain.getReferenceClass().getSuperclass();
-        Optional<DocumentedDomain> parentDomain = documentedPlatform.getDomain(parentClass);
+        final Class parentClass = domain.getReferenceClass().getSuperclass();
+        final Optional<DocumentedDomain> parentDomain = documentedPlatform.getDomain(parentClass);
 
         if (parentDomain.isPresent()) {
             domain.setParent(parentDomain);
@@ -51,54 +61,54 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
     }
 
     @Override
-    public void visit(DocumentedCommand command) {
-        CommandResolver resolver = new CommandResolver();
-        Class<? extends Command> referenceClass = command.getReferenceClass();
+    public void visit(final DocumentedCommand command) {
+        final CommandResolver resolver = new CommandResolver();
+        final Class<? extends Command> referenceClass = command.getReferenceClass();
 
         command.setLabel(resolver.getLabel(referenceClass));
         command.setDescription(resolver.getDescription(referenceClass));
     }
 
     @Override
-    public void visit(DocumentedCommandHandler commandHandler) {
-        CommandHandlerResolver resolver = new CommandHandlerResolver();
-        Class<? extends CommandHandler> referenceClass = commandHandler.getReferenceClass();
+    public void visit(final DocumentedCommandHandler commandHandler) {
+        final CommandHandlerResolver resolver = new CommandHandlerResolver();
+        final Class<? extends CommandHandler> referenceClass = commandHandler.getReferenceClass();
 
         commandHandler.setLabel(resolver.getLabel(referenceClass));
         commandHandler.setDescription(resolver.getDescription(referenceClass));
     }
 
     @Override
-    public void visit(DocumentedQuery query) {
-        QueryResolver resolver = new QueryResolver();
-        Class<? extends Query> referenceClass = query.getReferenceClass();
+    public void visit(final DocumentedQuery query) {
+        final QueryResolver resolver = new QueryResolver();
+        final Class<? extends Query> referenceClass = query.getReferenceClass();
 
         query.setLabel(resolver.getLabel(referenceClass));
         query.setDescription(resolver.getDescription(referenceClass));
     }
 
     @Override
-    public void visit(DocumentedQueryResult queryResult) {
-        QueryResultResolver resolver = new QueryResultResolver();
-        Class<? extends QueryResult> referenceClass = queryResult.getReferenceClass();
+    public void visit(final DocumentedQueryResult queryResult) {
+        final QueryResultResolver resolver = new QueryResultResolver();
+        final Class<? extends QueryResult> referenceClass = queryResult.getReferenceClass();
 
         queryResult.setLabel(resolver.getLabel(referenceClass));
         queryResult.setDescription(resolver.getDescription(referenceClass));
     }
 
     @Override
-    public void visit(DocumentedQueryHandler queryHandler) {
-        QueryHandlerResolver resolver = new QueryHandlerResolver();
-        Class<? extends QueryHandler> referenceClass = queryHandler.getReferenceClass();
+    public void visit(final DocumentedQueryHandler queryHandler) {
+        final QueryHandlerResolver resolver = new QueryHandlerResolver();
+        final Class<? extends QueryHandler> referenceClass = queryHandler.getReferenceClass();
 
         queryHandler.setLabel(resolver.getLabel(referenceClass));
         queryHandler.setDescription(resolver.getDescription(referenceClass));
     }
 
     @Override
-    public void visit(DocumentedEvent event) {
-        EventResolver resolver = new EventResolver();
-        Class<? extends Event> referenceClass = event.getReferenceClass();
+    public void visit(final DocumentedEvent event) {
+        final EventResolver resolver = new EventResolver();
+        final Class<? extends Event> referenceClass = event.getReferenceClass();
 
         event.setLabel(resolver.getLabel(referenceClass));
         event.setDescription(resolver.getDescription(referenceClass));
@@ -115,9 +125,9 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
     }
 
     @Override
-    public void visit(DocumentedRepository repository) {
-        RepositoryResolver resolver = new RepositoryResolver(new EntityResolver(new ConceptResolver(), new RelationResolver()));
-        Class<? extends IRepository> referenceClass = repository.getReferenceClass();
+    public void visit(final DocumentedRepository repository) {
+        final RepositoryResolver resolver = new RepositoryResolver(new EntityResolver(new ConceptResolver(), new RelationResolver()));
+        final Class<? extends IRepository> referenceClass = repository.getReferenceClass();
 
         repository.setLabel(resolver.getLabel(referenceClass));
         repository.setDescription(resolver.getDescription(referenceClass));
@@ -125,27 +135,27 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
     }
 
     @Override
-    public void visit(DocumentedConcept concept) {
-        ConceptResolver resolver = new ConceptResolver();
-        Class<? extends Concept> referenceClass = concept.getReferenceClass();
+    public void visit(final DocumentedConcept concept) {
+        final ConceptResolver resolver = new ConceptResolver();
+        final Class<? extends Concept> referenceClass = concept.getReferenceClass();
 
         concept.setLabel(resolver.getLabel(referenceClass));
         concept.setDescription(resolver.getDescription(referenceClass));
 
-        DocumentedDomain documentedDomain = concept.getDomain().getFullDocumentedElement();
+        final DocumentedDomain documentedDomain = concept.getDomain().getFullDocumentedElement();
 
-        List<DocumentedRelation> relations = Lists.newArrayList();
+        final List<DocumentedRelation> relations = Lists.newArrayList();
         relations.addAll(documentedDomain.getRelations());
 
-        List<DocumentedConcept> concepts = Lists.newArrayList();
+        final List<DocumentedConcept> concepts = Lists.newArrayList();
         concepts.addAll(documentedDomain.getConcepts());
 
-        if(documentedDomain.getParent().isPresent()){
+        if (documentedDomain.getParent().isPresent()) {
             relations.addAll(documentedDomain.getParent().get().getRelations());
             concepts.addAll(documentedDomain.getParent().get().getConcepts());
         }
 
-        for (DocumentedRelation relation : relations) {
+        for (final DocumentedRelation relation : relations) {
             if (concept.getReferenceClass().equals(relation.getSourceConcept().getReferenceClass())) {
                 concept.addSourceRelation(relation);
             }
@@ -154,24 +164,25 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
             }
         }
 
-        EntityResolver entityResolver = new EntityResolver(resolver, new RelationResolver());
-        List<Class<? extends Concept>> componentConceptClasses = entityResolver.getComponentConcepts(concept.getReferenceClass());
+        final EntityResolver entityResolver = new EntityResolver(resolver, new RelationResolver());
+        final List<Class<? extends Concept>> componentConceptClasses = entityResolver.getComponentConcepts(concept.getReferenceClass());
 
-        for(DocumentedConcept documentedConcept : concepts){
-            if(componentConceptClasses.contains(documentedConcept.getReferenceClass())){
+        for(final DocumentedConcept documentedConcept : concepts){
+            if (componentConceptClasses.contains(documentedConcept.getReferenceClass())) {
                 concept.addComponentConcept(documentedConcept);
             }
         }
     }
 
     @Override
-    public void visit(DocumentedRelation relation) {
-        RelationResolver resolver = new RelationResolver(new ConceptResolver());
-        Class<? extends Relation> referenceClass = relation.getReferenceClass();
+    public void visit(final DocumentedRelation relation) {
+        final RelationResolver resolver = new RelationResolver(new ConceptResolver());
+        final Class<? extends Relation> referenceClass = relation.getReferenceClass();
 
         relation.setBidirectional(resolver.isBidirectional(referenceClass));
         relation.setLabel(resolver.getLabel(referenceClass));
         relation.setDescription(resolver.getDescription(referenceClass));
         relation.setVerb(resolver.getVerb(referenceClass));
     }
+
 }

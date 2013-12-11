@@ -63,8 +63,8 @@ public abstract class BaseHttpExposerTest {
         server.setHandler(servletContext);
         server.start();
 
-        int port = server.getConnectors()[0].getLocalPort();
-        KasperClientBuilder clientBuilder = new KasperClientBuilder();
+        final int port = server.getConnectors()[0].getLocalPort();
+        final KasperClientBuilder clientBuilder = new KasperClientBuilder();
         clientBuilder
 				.commandBaseLocation(new URL("http://127.0.0.1:" + port + "/rootpath/"))
 				.queryBaseLocation(new URL("http://127.0.0.1:" + port + "/rootpath/"));
@@ -72,9 +72,7 @@ public abstract class BaseHttpExposerTest {
         cli = clientBuilder.create();
 	}
 
-    protected void customize(KasperClientBuilder clientBuilder) {
-
-    }
+    protected void customize(KasperClientBuilder clientBuilder) { }
 
     protected abstract HttpExposerPlugin createExposerPlugin();
 
@@ -84,4 +82,5 @@ public abstract class BaseHttpExposerTest {
 	public void cleanUp() throws Exception {
 		server.stop();
 	}
+
 }

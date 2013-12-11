@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform.plugin;
 
 import com.codahale.metrics.MetricRegistry;
@@ -19,6 +25,6 @@ public interface Plugin {
      * @param metricRegistry the metric registry used by the platform
      * @param domainDescriptors the domain descriptors of each registered domain bundle on the platform
      */
-    void initialize(final Platform platform, final MetricRegistry metricRegistry, final DomainDescriptor... domainDescriptors);
+    void initialize(Platform platform, MetricRegistry metricRegistry, DomainDescriptor... domainDescriptors);
 
 }

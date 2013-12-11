@@ -37,9 +37,8 @@ public class KasperAggregateFixture<AGR extends AggregateRoot>
 {
 
     public static <AGR extends AggregateRoot> KasperAggregateFixture<AGR> forRepository(
-              final Repository<AGR> repository
-            , final Class<AGR> aggregateClass
-    ) {
+            final Repository<AGR> repository,
+            final Class<AGR> aggregateClass) {
         return new KasperAggregateFixture<>(checkNotNull(repository), checkNotNull(aggregateClass));
     }
 

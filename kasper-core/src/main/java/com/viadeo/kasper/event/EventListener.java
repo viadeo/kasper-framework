@@ -79,7 +79,7 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
      */
     public void publish(final IEvent event) {
         checkNotNull(event, "The specified event must be non null");
-        checkState(eventBus != null, "Unable to publish the specified event : the event bus is null");
+        checkState(null != eventBus, "Unable to publish the specified event : the event bus is null");
         org.axonframework.domain.EventMessage eventMessage = GenericEventMessage.asEventMessage(event);
         this.eventBus.publish(eventMessage);
     }

@@ -1,7 +1,15 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.doc.element;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class AbstractElement implements WithType {
 
@@ -12,18 +20,20 @@ public abstract class AbstractElement implements WithType {
     private String label;
     private String description;
 
-    public AbstractElement(DocumentedElementType type, Class referenceClass) {
-        this.type = type;
-        this.referenceClass = referenceClass;
+    // ------------------------------------------------------------------------
+
+    public AbstractElement(final DocumentedElementType type, final Class referenceClass) {
+        this.type = checkNotNull(type);
+        this.referenceClass = checkNotNull(referenceClass);
         this.name = referenceClass.getSimpleName();
         this.label = referenceClass.getSimpleName();
     }
 
-    public void setDescription(String description) {
+    public void setDescription(final String description) {
         this.description = description;
     }
 
-    public void setLabel(String label) {
+    public void setLabel(final String label) {
         this.label = label;
     }
 
@@ -57,5 +67,6 @@ public abstract class AbstractElement implements WithType {
         return referenceClass;
     }
 
-    public abstract void accept(DocumentedElementVisitor visitor);
+    public abstract void accept(final DocumentedElementVisitor visitor);
+
 }

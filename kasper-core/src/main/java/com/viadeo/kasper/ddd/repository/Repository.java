@@ -330,4 +330,5 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
     public boolean isInitialized() {
         return initialized;
     }
+
 }

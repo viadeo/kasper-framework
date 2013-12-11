@@ -1,14 +1,26 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
 import com.viadeo.kasper.ddd.repository.Repository;
 
-public class RepositoryDescriptor implements Descriptor {
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public class RepositoryDescriptor implements KasperComponentDescriptor {
+
     private final Class<? extends Repository> repositoryClass;
     private final AggregateDescriptor aggregateDescriptor;
 
-    public RepositoryDescriptor(Class<? extends Repository> repositoryClass, AggregateDescriptor aggregateDescriptor) {
-        this.repositoryClass = repositoryClass;
-        this.aggregateDescriptor = aggregateDescriptor;
+    // ------------------------------------------------------------------------
+
+    public RepositoryDescriptor(final Class<? extends Repository> repositoryClass,
+                                final AggregateDescriptor aggregateDescriptor) {
+        this.repositoryClass = checkNotNull(repositoryClass);
+        this.aggregateDescriptor = checkNotNull(aggregateDescriptor);
     }
 
     @Override

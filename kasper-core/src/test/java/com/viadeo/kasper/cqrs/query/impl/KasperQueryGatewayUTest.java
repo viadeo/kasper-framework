@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
@@ -19,6 +25,16 @@ public class KasperQueryGatewayUTest {
     private final KasperQueryGateway queryGateway;
     private final DefaultQueryHandlersLocator queryHandlersLocator;
 
+    @XKasperQueryHandler(domain = Domain.class)
+    private static class QueryHandlerForTest extends QueryHandler<Query, QueryResult> { }
+
+    @XKasperQueryHandler(domain = Domain.class, filters = { Filter1.class })
+    private static class QueryHandlerWithFiltersForTest extends QueryHandler<Query, QueryResult> { }
+
+    private final class Filter1 implements QueryHandlerFilter { }
+
+    // ------------------------------------------------------------------------
+
     public KasperQueryGatewayUTest(){
         queryHandlersLocator = mock(DefaultQueryHandlersLocator.class);
         queryGateway = new KasperQueryGateway(queryHandlersLocator);
@@ -29,10 +45,12 @@ public class KasperQueryGatewayUTest {
         reset(queryHandlersLocator);
     }
 
+    // ------------------------------------------------------------------------
+
     @Test(expected = NullPointerException.class)
     public void register_withNullAsQueryHandler_shouldThrownException(){
         // Given
-        QueryHandler queryHandler = null;
+        final QueryHandler queryHandler = null;
 
         // When
         queryGateway.register(queryHandler);
@@ -43,7 +61,7 @@ public class KasperQueryGatewayUTest {
     @Test
     public void register_withQueryHandler_shouldBeRegistered(){
         // Given
-        QueryHandler queryHandler = new QueryHandlerForTest();
+        final QueryHandler queryHandler = new QueryHandlerForTest();
 
         // When
         queryGateway.register(queryHandler);
@@ -58,7 +76,7 @@ public class KasperQueryGatewayUTest {
     @Test
     public void register_withQueryHandler_withFilters_shouldBeRegistered(){
         // Given
-        QueryHandler queryHandler = new QueryHandlerWithFiltersForTest();
+        final QueryHandler queryHandler = new QueryHandlerWithFiltersForTest();
 
         // When
         queryGateway.register(queryHandler);
@@ -71,11 +89,4 @@ public class KasperQueryGatewayUTest {
         assertEquals(queryGateway, queryHandler.getQueryGateway());
     }
 
-    @XKasperQueryHandler(domain = Domain.class)
-    private static class QueryHandlerForTest extends QueryHandler<Query, QueryResult> { }
-
-    @XKasperQueryHandler(domain = Domain.class, filters = {Filter1.class/*, Filter2.class*/})
-    private static class QueryHandlerWithFiltersForTest extends QueryHandler<Query, QueryResult> { }
-
-    private final class Filter1 implements QueryHandlerFilter { }
 }
