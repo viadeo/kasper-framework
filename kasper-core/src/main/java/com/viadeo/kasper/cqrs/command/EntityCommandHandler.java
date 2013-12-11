@@ -84,7 +84,7 @@ public abstract class EntityCommandHandler<C extends Command, AGR extends Aggreg
     /**
      * @see com.viadeo.kasper.cqrs.command.EntityCommandHandler#setRepository(com.viadeo.kasper.ddd.IRepository)
      */
-    protected void setRepository(final IRepository<AGR> repository) {
+    public void setRepository(final IRepository<AGR> repository) {
         this.consistentRepositoryEntity.setRepository(
                 new ClientRepository<AGR>(Preconditions.checkNotNull(repository)));
     }
