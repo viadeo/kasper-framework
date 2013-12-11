@@ -14,6 +14,7 @@ import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptorFactory;
 import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
@@ -153,8 +154,7 @@ public interface Platform {
 
             BuilderContext context = new BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, extraComponents);
 
-            // FIXME in waiting to have a better solution
-            KasperMetrics.setMetricRegistry(metricRegistry);
+            initializeKasperMetrics();
 
             List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
 
@@ -203,6 +203,32 @@ public interface Platform {
             }
 
             return platform;
+        }
+
+        protected void initializeKasperMetrics() {
+            // FIXME here we declare resolver allowing to defined the name of metrics
+            ConceptResolver conceptResolver = new ConceptResolver();
+            RelationResolver relationResolver = new RelationResolver(conceptResolver);
+            EntityResolver entityResolver = new EntityResolver(conceptResolver, relationResolver);
+            DomainResolver domainResolver = new DomainResolver();
+
+            EventListenerResolver eventListenerResolver = new EventListenerResolver();
+            eventListenerResolver.setDomainResolver(domainResolver);
+
+            CommandHandlerResolver commandHandlerResolver = new CommandHandlerResolver();
+            commandHandlerResolver.setDomainResolver(domainResolver);
+
+            RepositoryResolver repositoryResolver = new RepositoryResolver(entityResolver);
+            repositoryResolver.setDomainResolver(domainResolver);
+
+            ResolverFactory resolverFactory = new ResolverFactory();
+            resolverFactory.setCommandHandlerResolver(commandHandlerResolver);
+            resolverFactory.setEventListenerResolver(eventListenerResolver);
+            resolverFactory.setQueryHandlerResolver(new QueryHandlerResolver(domainResolver));
+            resolverFactory.setRepositoryResolver(repositoryResolver);
+
+            KasperMetrics.setResolverFactory(resolverFactory);
+            KasperMetrics.setMetricRegistry(metricRegistry);
         }
     }
 

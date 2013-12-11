@@ -33,7 +33,6 @@ public final class KasperMetrics {
     public static void setNamePrefix(final String prefix) { instance()._setNamePrefix(prefix); }
     public static String name(final String name, final String...names) { return instance()._name(name, names); }
     public static String name(final Class clazz, final String...names) { return instance()._name(clazz, names); }
-    public static String pathForKasperComponent(final Class clazz) { return instance()._pathForKasperComponent(clazz); }
     public static void setResolverFactory(final ResolverFactory resolverFactory) { instance()._setResolverFactory(resolverFactory); }
     public static void unsetResolverFactory() { instance()._unsetResolverFactory(); }
     public static void clearCache() { instance()._clearCache(); }
@@ -72,11 +71,11 @@ public final class KasperMetrics {
 
     public String _name(final Class clazz, final String...names) {
         final String prefix = namePrefix.isEmpty() ? "" : namePrefix + ".";
-        return prefix + MetricRegistry.name(_pathForKasperComponent(clazz), names);
+        return prefix + MetricRegistry.name(pathForKasperComponent(clazz), names);
     }
 
     @SuppressWarnings("unchecked")
-    public String _pathForKasperComponent(final Class clazz) {
+    protected String pathForKasperComponent(final Class clazz) {
 
         if (pathCache.containsKey(clazz)) {
             return pathCache.get(clazz);

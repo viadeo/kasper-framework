@@ -9,11 +9,12 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
+import com.viadeo.kasper.er.Concept;
+import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
@@ -35,20 +36,29 @@ public class MyCustomDomainBox {
     public static class MyCustomEventListener extends EventListener<Event> { }
 
     @XKasperRepository()
-    public static class MyCustomRepository extends Repository<AggregateRoot> {
+    public static class MyCustomRepository extends Repository<MyCustomEntity> {
         @Override
-        protected Optional<AggregateRoot> doLoad(KasperID aggregateIdentifier, Long expectedVersion) {
+        protected Optional<MyCustomEntity> doLoad(KasperID aggregateIdentifier, Long expectedVersion) {
             return null;
         }
 
         @Override
-        protected void doSave(AggregateRoot aggregate) {
+        protected void doSave(MyCustomEntity aggregate) {
             // nothing
         }
 
         @Override
-        protected void doDelete(AggregateRoot aggregate) {
+        protected void doDelete(MyCustomEntity aggregate) {
             // nothing
         }
     }
+
+    @XKasperConcept(domain = MyCustomDomain.class, label = "MyCustomEntity")
+    public static class MyCustomEntity extends Concept { }
+
+    public static class MyCustomCommand implements Command { }
+
+    public static class MyCustomQuery implements Query { }
+
+    public static class MyCustomQueryResult implements QueryResult { }
 }
