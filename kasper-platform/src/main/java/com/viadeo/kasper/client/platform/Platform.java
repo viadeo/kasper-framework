@@ -27,6 +27,8 @@ import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.QueryEventListener;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
 import java.util.List;
@@ -58,6 +60,8 @@ public interface Platform {
 
 
     public static class Builder {
+
+        private static final Logger LOGGER = LoggerFactory.getLogger(Builder.class);
 
         private final Collection<DomainBundle> domainBundles;
         private final Collection<Plugin> kasperPlugins;
@@ -159,6 +163,8 @@ public interface Platform {
             List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
 
             for (DomainBundle bundle : domainBundles) {
+                LOGGER.info("Configuring bundle : {}", bundle.getName());
+
                 bundle.configure(context);
 
                 for (Repository repository : bundle.getRepositories()) {
@@ -198,7 +204,10 @@ public interface Platform {
             KasperPlatform platform = new KasperPlatform(commandGateway, queryGateway, eventBus);
 
             DomainDescriptor[] domainDescriptorArray = domainDescriptors.toArray(new DomainDescriptor[domainDescriptors.size()]);
+
             for (Plugin plugin : kasperPlugins) {
+                LOGGER.info("Initializing plugin : {}" + plugin.getClass().getSimpleName());
+
                 plugin.initialize(platform, metricRegistry, domainDescriptorArray);
             }
 
