@@ -18,6 +18,7 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -27,6 +28,7 @@ import com.viadeo.kasper.query.exposition.query.QueryFactory;
 import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
 import com.viadeo.kasper.query.exposition.query.QueryParser;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
+import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -34,6 +36,7 @@ import org.slf4j.MDC;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.beans.Introspector;
@@ -188,9 +191,9 @@ public class HttpQueryExposer extends HttpExposer {
          * lets be very defensive and catch every thing in order to not break
          * the contract with clients = JSON only
          */
+        final String queryName = resourceName(req.getRequestURI());
         try {
 
-            final String queryName = resourceName(req.getRequestURI());
             final Query query = parseQuery(queryMapper.toQueryMap(req, resp), queryName, req, resp);
 
             QueryResponse response = null;
@@ -208,6 +211,23 @@ public class HttpQueryExposer extends HttpExposer {
             if (!resp.isCommitted()) {
                 sendResponse(queryName, response, req, resp);
             }
+
+        } catch (final JSR303ViolationException validationException) {
+
+            final List<String> errorMessages = new ArrayList<>();
+            for (final ConstraintViolation<Object> violation : validationException.getViolations()) {
+                errorMessages.add(violation.getPropertyPath() + " : " + violation.getMessage());
+            }
+
+            sendResponse(
+                    queryName,
+                    QueryResponse.error(
+                            new KasperReason(
+                                    CoreReasonCode.INVALID_INPUT.name(),
+                                    errorMessages
+                            )
+                    ),
+                    req, resp);
 
         } catch (final Throwable t) {
             sendError(

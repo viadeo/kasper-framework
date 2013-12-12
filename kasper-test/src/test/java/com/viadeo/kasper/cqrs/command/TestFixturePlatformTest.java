@@ -79,7 +79,7 @@ public class TestFixturePlatformTest {
     // ------------------------------------------------------------------------
 
     @Test
-    public void testSimpleExpectedValidation() {
+    public void testSimpleExpectedValidationOnCommand() {
 
         final KasperID createId = DefaultKasperId.random();
 
@@ -92,6 +92,21 @@ public class TestFixturePlatformTest {
                 )
             )
             .expectValidationErrorOnField("firstName");
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void testSimpleExpectedValidationOnQuery() {
+
+        final KasperID createId = DefaultKasperId.random();
+
+        fixture
+            .given()
+            .when(
+                new TestQuery(null)
+            )
+            .expectValidationErrorOnField("type");
     }
 
     // ------------------------------------------------------------------------

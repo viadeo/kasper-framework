@@ -12,6 +12,7 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import lombok.Data;
+import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.junit.Test;
 
 import javax.validation.Validation;
@@ -21,6 +22,7 @@ import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.fail;
 
 public class QueryValidationActorTest {
 
@@ -31,14 +33,16 @@ public class QueryValidationActorTest {
         final QueryValidationActor<QueryToValidate, QueryResult> actor = new QueryValidationActor<>(Validation.buildDefaultValidatorFactory());
 
         // When
-        final QueryResponse<QueryResult> response = actor.process(
-                new QueryToValidate(),
-                new DefaultContextBuilder().build(),
-                RequestActorsChain.<QueryToValidate, QueryResponse<QueryResult>>tail());
-
-        // Then
-        assertFalse(response.isOK());
-        assertEquals("VALIDATION:field:may not be null", response.getReason().getMessages().toArray()[0]);
+        try {
+            actor.process(
+                    new QueryToValidate(),
+                    new DefaultContextBuilder().build(),
+                    RequestActorsChain.<QueryToValidate, QueryResponse<QueryResult>>tail()
+            );
+            fail();
+        } catch (final JSR303ViolationException e) {
+            // Then should raise exception
+        }
     }
 
     @Test
@@ -48,14 +52,16 @@ public class QueryValidationActorTest {
         final QueryValidationActor<QueryToValidate, QueryResult> actor = new QueryValidationActor<>(Validation.buildDefaultValidatorFactory());
 
         // When
-        final QueryResponse<QueryResult> response = actor.process(
+        try {
+            actor.process(
                 new QueryToValidate("fr"),
                 new DefaultContextBuilder().build(),
-                RequestActorsChain.<QueryToValidate, QueryResponse<QueryResult>>tail());
-
-        // Then
-        assertFalse(response.isOK());
-        assertEquals("VALIDATION:field:size must be between 36 and 36", response.getReason().getMessages().toArray()[0]);
+                RequestActorsChain.<QueryToValidate, QueryResponse<QueryResult>>tail()
+            );
+            fail();
+        } catch (final JSR303ViolationException e) {
+            // Then should raise exception
+        }
     }
 
     @Data
