@@ -224,7 +224,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
             if (command.getCode() != null)
                 return CommandResponse.error(new KasperReason(command.getCode(), command.getMessages()));
             createAccountCommandName = command.getName();
-            return CommandResponse.ok();
+            return CommandResponse.ok().withSecurityToken(SECURITY_TOKEN);
         }
     }
 

@@ -6,16 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -33,6 +31,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /**
@@ -47,12 +46,11 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  */
 public class HttpEventExposer extends HttpExposer {
     protected static final transient Logger REQUEST_LOGGER = LoggerFactory.getLogger(HttpEventExposer.class);
-    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
-    private static final Timer METRICLASSTIMER = METRICS.timer(name(HttpEventExposer.class, "requests-time"));
-    private static final Timer METRICLASSHANDLETIMER = METRICS.timer(name(HttpEventExposer.class, "requests-handle-time"));
-    private static final Meter METRICLASSREQUESTS = METRICS.meter(name(HttpEventExposer.class, "requests"));
-    private static final Meter METRICLASSERRORS = METRICS.meter(name(HttpEventExposer.class, "errors"));
+    private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(HttpEventExposer.class, "requests-time");
+    private static final String GLOBAL_TIMER_REQUESTS_HANDLE_TIME_NAME = name(HttpEventExposer.class, "requests-handle-time");
+    private static final String GLOBAL_METER_REQUESTS_NAME = name(HttpEventExposer.class, "requests");
+    private static final String GLOBAL_METER_ERRORS_NAME = name(HttpEventExposer.class, "errors");
 
     private final Map<String, Class<? extends Event>> exposedEvents = new HashMap<>();
     private final KasperEventBus eventBus;
@@ -61,6 +59,15 @@ public class HttpEventExposer extends HttpExposer {
     private final transient HttpContextDeserializer contextDeserializer;
 
     // ------------------------------------------------------------------------
+
+    public HttpEventExposer(final KasperEventBus eventBus, final List<Class<? extends Event>> eventClasses) {
+        this(     eventBus
+                , eventClasses
+                , new HttpContextDeserializer()
+                , ObjectMapperProvider.INSTANCE.mapper()
+        );
+    }
+
 
     public HttpEventExposer(final KasperEventBus eventBus,
                             final List<Class<? extends Event>> events,
@@ -133,7 +140,7 @@ public class HttpEventExposer extends HttpExposer {
             throws IOException {
 
         /* Start request timer */
-        final Timer.Context classTimer = METRICLASSTIMER.time();
+        final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
 
         /* Create a request correlation id */
         final UUID kasperCorrelationUUID = UUID.randomUUID();
@@ -168,8 +175,8 @@ public class HttpEventExposer extends HttpExposer {
             MDC.setContextMap(context.asMap());
 
             /* send now that event to the platform and wait for the result */
-            final Timer.Context eventHandleTime = METRICS.timer(name(event.getClass(), "requests-handle-time")).time();
-            final Timer.Context classHandleTime = METRICLASSHANDLETIMER.time();
+            final Timer.Context eventHandleTime = getMetricRegistry().timer(name(event.getClass(), "requests-handle-time")).time();
+            final Timer.Context classHandleTime = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_HANDLE_TIME_NAME).time();
 
             eventBus.publish(event);
 
@@ -181,14 +188,14 @@ public class HttpEventExposer extends HttpExposer {
         } catch (final IOException e) {
 
             LOGGER.error("Error in event [" + eventClass.getName() + "]", e);
-            METRICLASSERRORS.mark();
+            getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
             resp.setStatus(Response.Status.BAD_REQUEST.getStatusCode());
 
         } catch (final Throwable th) {
 
             // we catch any other exception in order to still respond with json
             LOGGER.error("Error in event [" + eventClass.getName() + "]", th);
-            METRICLASSERRORS.mark();
+            getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
             resp.setStatus(Response.Status.INTERNAL_SERVER_ERROR.getStatusCode());
 
         } finally {
@@ -200,7 +207,7 @@ public class HttpEventExposer extends HttpExposer {
             /* Log & metrics */
             final long time = classTimer.stop();
             REQUEST_LOGGER.info("Execution Time '{}' ns", time);
-            METRICLASSREQUESTS.mark();
+            getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
         }
     }
 

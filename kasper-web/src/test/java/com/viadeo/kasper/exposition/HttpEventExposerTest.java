@@ -6,39 +6,38 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
+import com.google.common.collect.Lists;
+import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
+import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
+import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.ddd.annotation.XKasperDomain;
+import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.springframework.context.ApplicationContext;
 
-import java.util.Arrays;
 import java.util.Locale;
 
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-public class HttpEventExposerTest extends BaseHttpExposerTest<HttpEventExposer> {
+public class HttpEventExposerTest extends BaseHttpExposerTest {
 
     @Rule
     public final ExpectedException exception = ExpectedException.none();
 
     private KasperEventBus eventBus;
-
-    @XKasperUnregistered
-    public static class UnknownEvent extends Event {
-        public String name;
-    }
-
-    @XKasperUnregistered
-    public static class AccountCreatedEvent extends Event {
-        public String name;
-    }
 
     public HttpEventExposerTest() {
         Locale.setDefault(Locale.US);
@@ -47,14 +46,30 @@ public class HttpEventExposerTest extends BaseHttpExposerTest<HttpEventExposer> 
     // ------------------------------------------------------------------------
 
     @Override
-    protected HttpEventExposer createExposer(final ApplicationContext ctx) {
-        eventBus = spy(ctx.getBean(KasperEventBus.class));
-        return new HttpEventExposer(
-                eventBus,
-                Arrays.<Class<? extends Event>>asList(AccountCreatedEvent.class),
-                new HttpContextDeserializer(),
-                ObjectMapperProvider.INSTANCE.mapper()
+    protected HttpEventExposerPlugin createExposerPlugin() {
+        return new HttpEventExposerPlugin();
+    }
+
+    @Override
+    protected DomainBundle getDomainBundle(){
+        return new DefaultDomainBundle(
+                  Lists.<CommandHandler>newArrayList()
+                , Lists.<QueryHandler>newArrayList()
+                , Lists.<Repository>newArrayList()
+                , Lists.<EventListener>newArrayList(new AccountCreatedEventListener())
+                , new TestDomain()
+                , "TestDomain"
         );
+    }
+
+    @Override
+    protected void buildPlatform(PlatformConfiguration platformConfiguration, HttpExposerPlugin httpExposerPlugin, DomainBundle domainBundle){
+        eventBus = spy(platformConfiguration.eventBus());
+        new Platform.Builder(platformConfiguration)
+                .withEventBus(eventBus)
+                .addPlugin(httpExposerPlugin)
+                .addDomainBundle(domainBundle)
+                .build();
     }
 
     // ------------------------------------------------------------------------
@@ -87,4 +102,25 @@ public class HttpEventExposerTest extends BaseHttpExposerTest<HttpEventExposer> 
 
     }
 
+    // ------------------------------------------------------------------------
+
+    @XKasperUnregistered
+    public static class UnknownEvent extends Event {
+        public String name;
+    }
+
+    @XKasperUnregistered
+    public static class AccountCreatedEvent extends Event {
+        public String name;
+    }
+
+    @XKasperDomain(prefix = "test")
+    public static class TestDomain implements Domain { }
+
+    @XKasperEventListener(domain = TestDomain.class)
+    public static class AccountCreatedEventListener extends EventListener<AccountCreatedEvent> {
+
+        @Override
+        public void handle(AccountCreatedEvent event) { }
+    }
 }

@@ -6,16 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.codahale.metrics.MetricRegistry;
-import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.KasperClient;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
-import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
+import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
-import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -48,15 +44,7 @@ public abstract class BaseHttpExposerTest {
 	public void setUp() throws Exception {
         HttpExposerPlugin exposerPlugin = createExposerPlugin();
 
-        new Platform.Builder()
-                .withEventBus(new KasperEventBus())
-                .withCommandGateway(new KasperCommandGateway(new KasperCommandBus()))
-                .withQueryGateway(new KasperQueryGateway())
-                .withConfiguration(ConfigFactory.empty())
-                .withMetricRegistry(new MetricRegistry())
-                .addPlugin(exposerPlugin)
-                .addDomainBundle(getDomainBundle())
-                .build();
+        buildPlatform(new KasperPlatformConfiguration(), exposerPlugin, getDomainBundle());
 
         final ServletContextHandler servletContext = new ServletContextHandler();
         servletContext.setContextPath("/");
@@ -82,6 +70,13 @@ public abstract class BaseHttpExposerTest {
 
     protected void customize(final KasperClientBuilder clientBuilder) {
         /* FIXME: wtf ? */
+    }
+
+    protected void buildPlatform(PlatformConfiguration platformConfiguration, HttpExposerPlugin httpExposerPlugin, DomainBundle domainBundle){
+        new Platform.Builder(platformConfiguration)
+                .addPlugin(httpExposerPlugin)
+                .addDomainBundle(domainBundle)
+                .build();
     }
 
     protected abstract HttpExposerPlugin createExposerPlugin();
