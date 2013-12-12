@@ -213,7 +213,7 @@ Add the static files as an `assets bundle <http://dropwizard.codahale.com/manual
 
     DocumentationPlugin documentationPlugin = new DocumentationPlugin();
 
-    Platform platform = new platform.Builder(new KasperPlatformConfiguration())
+    Platform platform = new Platform.Builder(new KasperPlatformConfiguration())
         .addPlugin(documentationPlugin)
         .build();
 
