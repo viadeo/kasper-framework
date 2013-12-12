@@ -8,6 +8,9 @@ package com.viadeo.kasper.event;
 
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
+import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.domain.GenericEventMessage;
@@ -102,6 +105,17 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 
         /* Start timer */
         final Timer.Context timer = getMetricRegistry().timer(timerHandleTimeName).time();
+
+        /* Ensure a context is set */
+        if ( ! CurrentContext.value().isPresent()) {
+            final Context messageContext = message.getContext();
+            if (null != messageContext) {
+                CurrentContext.set(messageContext);
+            } else {
+                CurrentContext.set(DefaultContextBuilder.get());
+            }
+        }
+
 
         /* Handle event */
         try {

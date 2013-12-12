@@ -8,6 +8,7 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.doc.nodes.validation.ValidatedBeanPropertyVisitor;
 import com.viadeo.kasper.er.LinkedConcept;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.slf4j.Logger;
@@ -34,18 +35,20 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 	public DocumentedBean(final Class componentClazz) {
 		final List<Field> properties = Lists.newArrayList();
 		getAllFields(properties, componentClazz);
+
+        final ValidatedBeanPropertyVisitor validationProcessor = new ValidatedBeanPropertyVisitor();
 		
-		for (final Field property : properties) {
-			property.setAccessible(true);
+		for (final Field field : properties) {
+			field.setAccessible(true);
 
-			if (!Modifier.isTransient(property.getModifiers()) && !Modifier.isStatic(property.getModifiers())) {
-				final String name = property.getName();
+			if (!Modifier.isTransient(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())) {
+				final String name = field.getName();
 
-                if (null != property.getAnnotation(Transient.class)) {
+                if (null != field.getAnnotation(Transient.class)) {
                     continue;
                 }
 
-                if (LinkedConcept.class.isAssignableFrom(property.getType())) {
+                if (LinkedConcept.class.isAssignableFrom(field.getType())) {
                     continue;
                 }
 				
@@ -54,15 +57,15 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 				}
 				
 				final Boolean isList;
-                final Class propClass = property.getType();
+                final Class propClass = field.getType();
 				final String type;
 
-				if (Collection.class.isAssignableFrom(propClass)) {
+                if (Collection.class.isAssignableFrom(propClass)) {
 
 					@SuppressWarnings("unchecked")
 					final Optional<Class> optType = (Optional<Class>)
 							ReflectionGenericsResolver.getParameterTypeFromClass(
-									property, componentClazz, Collection.class, 0);
+									field, componentClazz, Collection.class, 0);
 					
 					if (!optType.isPresent()) {
 						LOGGER.warn(String.format("Unable to find collection enclosed type for field %s in class %s",
@@ -78,7 +81,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 					@SuppressWarnings("unchecked")
 					final Optional<Class> optType = (Optional<Class>)
 							ReflectionGenericsResolver.getParameterTypeFromClass(
-									property, componentClazz, Map.class, 1);
+									field, componentClazz, Map.class, 1);
 					
  					if (!optType.isPresent()) {
 						LOGGER.warn(String.format("Unable to find map enclosed type for field %s in class %s",
@@ -95,7 +98,9 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 				}
 
                 if (!name.startsWith("this$")) {
-				    this.add(new DocumentedProperty(name, type, isList));
+                    final DocumentedProperty documentedProperty = new DocumentedProperty(name, type, isList);
+                    validationProcessor.process(field, documentedProperty);
+                    this.add(documentedProperty);
                 }
 			}
 		}

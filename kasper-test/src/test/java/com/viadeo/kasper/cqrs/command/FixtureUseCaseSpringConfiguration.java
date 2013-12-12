@@ -1,0 +1,45 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
+package com.viadeo.kasper.cqrs.command;
+
+import org.springframework.context.annotation.Bean;
+
+import static com.viadeo.kasper.cqrs.command.FixtureUseCase.*;
+
+public class FixtureUseCaseSpringConfiguration {
+
+    @Bean
+    public TestDomain domain() {
+        return new TestDomain();
+    }
+
+    @Bean
+    public TestRepository repository() {
+        return new TestRepository();
+    }
+
+    @Bean
+    public TestEventRepository eventRepository() {
+        return new TestEventRepository();
+    }
+
+    @Bean
+    public TestCreateCommandHandler createCommandHandler() {
+        return new TestCreateCommandHandler();
+    }
+
+    @Bean
+    public TestChangeLastNameCommandHandler changeLastNameCommandHandler() {
+        return new TestChangeLastNameCommandHandler();
+    }
+
+    @Bean
+    public TestGetSomeDataQueryHandler queryHandler() {
+        return new TestGetSomeDataQueryHandler();
+    }
+
+}

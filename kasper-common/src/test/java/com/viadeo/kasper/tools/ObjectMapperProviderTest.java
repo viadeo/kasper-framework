@@ -7,6 +7,7 @@
 package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
@@ -14,11 +15,14 @@ import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
+import org.joda.money.CurrencyUnit;
+import org.joda.money.Money;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 
 import static org.junit.Assert.*;
@@ -178,6 +182,40 @@ public class ObjectMapperProviderTest {
         // Then
         final DateTime expectedDateTime = new DateTime(2013, 8, 6, 7, 35, 0, 123, DateTimeZone.UTC);
         assertEquals(expectedDateTime, actual);
+    }
+
+    @Test
+    public void serializeMoneyToISO4217() throws IOException {
+        // Given
+        final Money money = Money.of(CurrencyUnit.EUR, new BigDecimal("19.99"));
+
+        // When
+        final String actual = ObjectMapperProvider.INSTANCE.mapper().writeValueAsString(money);
+
+        // Then
+        assertEquals("\"EUR 19.99\"", actual);
+    }
+
+    @Test
+    public void deserializeISO4217ToMoney() throws IOException {
+        // Given
+        final String moneyIso4217 = "\"EUR 19.99\"";
+
+        // When
+        final Money actual = ObjectMapperProvider.INSTANCE.mapper().readValue(moneyIso4217, Money.class);
+
+        // Then
+        final Money expected = Money.of(CurrencyUnit.EUR, new BigDecimal("19.99"));
+        assertEquals(expected, actual);
+    }
+
+    @Test(expected = JsonMappingException.class)
+    public void deserializeNumberToMoney_fails() throws IOException {
+        // Given
+        final String number = "19";
+
+        // When
+        final Money actual = ObjectMapperProvider.INSTANCE.mapper().readValue(number, Money.class);
     }
 
 }

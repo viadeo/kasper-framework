@@ -14,7 +14,7 @@ public class TestContexts {
 
     public static final String CONTEXT_FULL = "full";
     public static final DefaultContext context_full = new DefaultContext();
-    {
+    static {
         context_full.setSessionCorrelationId(UUID.randomUUID().toString());
         context_full.setFunnelCorrelationId(UUID.randomUUID().toString());
         context_full.setRequestCorrelationId(UUID.randomUUID().toString());

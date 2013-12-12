@@ -39,6 +39,8 @@ import static org.junit.Assert.*;
 
 public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
+    private static final String SECURITY_TOKEN = "42-4242-24-2424";
+    
     public HttpCommandExposerTest() {
         Locale.setDefault(Locale.US);
     }
@@ -74,6 +76,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         // Then
         assertEquals(Status.ERROR, response.getStatus());
         assertNotNull(response.getReason().getMessages().toArray()[0]);
+        assertFalse(response.getSecurityToken().isPresent());
     }
 
     // ------------------------------------------------------------------------
@@ -90,6 +93,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         // Then
         assertEquals(Status.OK, response.getStatus());
         assertEquals(command.name, CreateAccountCommandHandler.createAccountCommandName);
+        assertTrue(response.getSecurityToken().isPresent());
+        assertEquals(SECURITY_TOKEN, response.getSecurityToken().get());
     }
 
     // ------------------------------------------------------------------------

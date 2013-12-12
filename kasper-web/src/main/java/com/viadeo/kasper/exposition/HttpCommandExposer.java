@@ -18,6 +18,7 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -169,7 +170,7 @@ public class HttpCommandExposer extends HttpExposer {
 
         try {
 
-            if (!req.getContentType().contains(MediaType.APPLICATION_JSON_VALUE)) {
+            if ((null == req.getContentType()) || ( ! req.getContentType().contains(MediaType.APPLICATION_JSON_VALUE))) {
                 sendError(req, resp, Response.Status.UNSUPPORTED_MEDIA_TYPE.getStatusCode(),
                           "Accepting and producing only " + MediaType.APPLICATION_JSON_VALUE);
                 return;
@@ -191,6 +192,10 @@ public class HttpCommandExposer extends HttpExposer {
 
             response = commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
             checkNotNull(response);
+
+            if (response.isOK() && response.getSecurityToken().isPresent()) {
+                resp.addHeader(HttpContextHeaders.HEADER_SECURITY_TOKEN, response.getSecurityToken().get());
+            }
 
             commandHandleTime.stop();
             classHandleTime.stop();

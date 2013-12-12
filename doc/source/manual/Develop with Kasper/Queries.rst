@@ -99,7 +99,7 @@ using the **@XKasperQueryResult** annotation.
 .. hint::
     The **EntityQueryResult** should be used for each result which is an entity (with an id, a type and optionally but preferably a last modification time)
 
-The **CollectionQueryResult** can be used to return a list of some other unit response results.
+The **CollectionQueryResult** and the **MapQueryResult** can be used to return a list or a map of some other unit response results.
 
 **usage**
 

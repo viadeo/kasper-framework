@@ -9,6 +9,9 @@ package com.viadeo.kasper.exposition;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.*;
@@ -22,7 +25,6 @@ import java.util.Locale;
 
 import static com.viadeo.kasper.exposition.TestContexts.CONTEXT_FULL;
 import static com.viadeo.kasper.exposition.TestContexts.context_full;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
@@ -53,7 +55,7 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
     // ------------------------------------------------------------------------
 
     @Test
-    public void testQueryHandlerThrowingException() {
+    public void testQueryHandler() {
         // Given
         final ContextCheckQuery query = new ContextCheckQuery(CONTEXT_FULL);
 
@@ -62,7 +64,7 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
                 context_full, query, ContextCheckResult.class);
 
         // Then
-        assertFalse(actual.isOK());
+        assertTrue(actual.isOK());
     }
 
     // ------------------------------------------------------------------------
@@ -76,9 +78,8 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
 
         private String contextName;
 
-        ContextCheckQuery() { }
-
-        ContextCheckQuery(final String contextName) {
+        @JsonCreator
+        public ContextCheckQuery(@JsonProperty("contextName") final String contextName) {
             this.contextName = contextName;
         }
 
@@ -93,7 +94,11 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
         @Override
         public QueryResponse<ContextCheckResult> retrieve(final QueryMessage<ContextCheckQuery> message) throws Exception {
             if (message.getQuery().getContextName().contentEquals(CONTEXT_FULL)) {
-                assertTrue(((DefaultContext) message.getContext()).equals(context_full));
+                /* Kasper correlation id is set by the gateway or auto-expo layer */
+                final Context copy_context_full = context_full.child();
+                ((DefaultContext) copy_context_full).setKasperCorrelationId(((DefaultContext) message.getContext()).getKasperCorrelationId());
+
+                assertTrue(((DefaultContext) message.getContext()).equals(copy_context_full));
             }
             return QueryResponse.of(new ContextCheckResult());
         }

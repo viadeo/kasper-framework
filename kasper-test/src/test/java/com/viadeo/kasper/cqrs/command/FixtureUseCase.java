@@ -228,7 +228,7 @@ public class FixtureUseCase {
     }
 
     @XKasperQueryHandler( domain = TestDomain.class )
-    public static class TestGetSomeData extends QueryHandler<TestQuery, TestResult> {
+    public static class TestGetSomeDataQueryHandler extends QueryHandler<TestQuery, TestResult> {
         public QueryResponse<TestResult> retrieve(final TestQuery query) throws Exception {
             if (query.getType().contentEquals("REFUSED")) {
                 return QueryResponse.refused(new KasperReason("REFUSED", "Go To Hell"));
@@ -242,7 +242,7 @@ public class FixtureUseCase {
     public static DomainBundle getDomainBundle() {
         return new DefaultDomainBundle(
                 Lists.<CommandHandler>newArrayList( new TestCreateCommandHandler(), new TestChangeLastNameCommandHandler()),
-                Lists.<QueryHandler>newArrayList( new TestGetSomeData()),
+                Lists.<QueryHandler>newArrayList( new TestGetSomeDataQueryHandler()),
                 Lists.<Repository>newArrayList(new TestRepository()),
                 Lists.<EventListener>newArrayList(),
                 new TestDomain(),

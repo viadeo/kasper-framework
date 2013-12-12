@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
+import com.google.common.base.Optional;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.annotation.Immutable;
@@ -37,6 +38,8 @@ public class CommandResponse implements Serializable, Immutable {
      */
     private final Status status;
     private final KasperReason reason;
+
+    private String securityToken;
 
     // ------------------------------------------------------------------------
 
@@ -74,9 +77,24 @@ public class CommandResponse implements Serializable, Immutable {
 
     // ------------------------------------------------------------------------
 
+    public CommandResponse withSecurityToken(final String securityToken) {
+        this.securityToken = checkNotNull(securityToken);
+        return this;
+    }
+
+    public Optional<String> getSecurityToken() {
+        return Optional.fromNullable(this.securityToken);
+    }
+
+    // ------------------------------------------------------------------------
+
     public CommandResponse(final CommandResponse response) {
         this.status = response.status;
         this.reason = response.reason;
+
+        if (response.getSecurityToken().isPresent()) {
+            this.securityToken = response.getSecurityToken().get();
+        }
     }
 
     public CommandResponse(final Status status, final KasperReason reason) {

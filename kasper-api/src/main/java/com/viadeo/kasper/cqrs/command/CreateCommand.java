@@ -25,7 +25,7 @@ public abstract class CreateCommand implements Command {
 
 	// ------------------------------------------------------------------------
 
-	public CreateCommand(final KasperID providedId) {
+	protected CreateCommand(final KasperID providedId) {
 		this.idToUse = checkNotNull(providedId);
 	}
 

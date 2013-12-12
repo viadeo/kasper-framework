@@ -23,6 +23,6 @@ public @interface XBidirectional {
      /**
      * @return the inverse relation verb from ontology
      */
-    String verb() default "";
+    String inverse_verb() default "";
 
 }

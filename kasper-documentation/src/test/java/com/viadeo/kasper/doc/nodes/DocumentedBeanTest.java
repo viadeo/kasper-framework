@@ -8,9 +8,11 @@ package com.viadeo.kasper.doc.nodes;
 
 import org.junit.Test;
 
+import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 public class DocumentedBeanTest {
@@ -55,6 +57,32 @@ public class DocumentedBeanTest {
         assertEquals("fieldCollection", prop.getName());
         assertEquals("String", prop.getType());
         assertTrue(prop.isList());
+    }
+
+    // ------------------------------------------------------------------------
+
+    public class ClassWithBeanValidation {
+        @NotNull
+        public String iCantBeNull;
+        public String imNullable;
+    }
+
+    @Test
+    public void testDetectBeanValidationAnnotation() {
+        // Given
+        final DocumentedBean bean = new DocumentedBean(ClassWithBeanValidation.class);
+
+        // Then
+        assertEquals(2, bean.size());
+        final DocumentedProperty firstProperty = bean.get(0);
+        assertEquals("iCantBeNull", firstProperty.getName());
+        assertEquals("String", firstProperty.getType());
+        assertTrue(firstProperty.isMandatory());
+
+        final DocumentedProperty secondProperty = bean.get(1);
+        assertEquals("imNullable", secondProperty.getName());
+        assertEquals("String", secondProperty.getType());
+        assertFalse(secondProperty.isMandatory());
     }
 
 }
