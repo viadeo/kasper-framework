@@ -35,6 +35,107 @@ public class KasperPlatformFixture
 
     private DomainBundle domainBundle;
 
+    public KasperPlatformFixture() {
+        this.platform = new RecordingPlatform();
+        this.eventBus = new SpyEventBus(platform);
+    }
+
+    // ------------------------------------------------------------------------
+
+    private KasperPlatformExecutor prepare() {
+        platform.recordedEvents.clear();
+        return new KasperPlatformExecutor(platform);
+    }
+
+    
+    private void initialize() {
+        platform.set(
+                new Platform.Builder()
+                        .withConfiguration(ConfigFactory.empty())
+                        .withEventBus(eventBus)
+                        .withQueryGateway(new KasperQueryGateway())
+                        .withCommandGateway(new KasperCommandGateway(new KasperCommandBus()))
+                        .withMetricRegistry(new MetricRegistry())
+                        .addDomainBundle(domainBundle)
+                        .build()
+        );
+    }
+
+    public KasperPlatformFixture register(final DomainBundle domainBundle){
+        this.domainBundle = domainBundle;
+        return this;
+    }
+
+    @Override
+    public KasperPlatformExecutor given() {
+        initialize();
+        return prepare();
+    }
+
+    @Override
+    public KasperPlatformExecutor givenEvents(final IEvent... events) {
+        return this.givenEvents(DefaultContextBuilder.get(), events);
+    }
+
+    @Override
+    public KasperPlatformExecutor givenEvents(final List<IEvent> events) {
+        return this.givenEvents(DefaultContextBuilder.get(), events);
+    }
+
+    @Override
+    public KasperPlatformExecutor givenEvents(final Context context, IEvent... events) {
+        return this.givenEvents(context, Arrays.asList(events));
+    }
+
+    @Override
+    public KasperPlatformExecutor givenEvents(final Context context, List<IEvent> events) {
+        initialize();
+
+        for (final IEvent event : events) {
+            try {
+                platform.get().getEventBus().publishEvent(context, event);
+            } catch (final Exception e) {
+                throw new KasperException(e);
+            }
+        }
+
+        return prepare();
+    }
+
+    @Override
+    public KasperPlatformExecutor givenCommands(final Command... commands) {
+        return this.givenCommands(DefaultContextBuilder.get(), commands);
+    }
+
+    @Override
+    public KasperPlatformExecutor givenCommands(final List<Command> commands) {
+        return this.givenCommands(DefaultContextBuilder.get(), commands);
+    }
+
+    @Override
+    public KasperPlatformExecutor givenCommands(final Context context, final Command... commands) {
+        return this.givenCommands(context, Arrays.asList(commands));
+    }
+
+    @Override
+    public KasperPlatformExecutor givenCommands(final Context context, final List<Command> commands) {
+        initialize();
+
+        for (final Command command : commands) {
+            try {
+                platform.get().getCommandGateway().sendCommandAndWaitForAResponse(
+                        command, context
+                );
+            } catch (final Exception e) {
+                throw new KasperException(e);
+            }
+        }
+
+        return prepare();
+    }
+
+    // ------------------------------------------------------------------------
+
     /**
      * A recording platform for fixture
      */
@@ -72,101 +173,4 @@ public class KasperPlatformFixture
             }
         }
     }
-
-    // ------------------------------------------------------------------------
-
-    public KasperPlatformFixture() {
-        this.platform = new RecordingPlatform();
-        this.eventBus = new SpyEventBus(platform);
-    }
-
-    // ------------------------------------------------------------------------
-
-    private void initialize() {
-        platform.set(
-                new Platform.Builder()
-                        .withConfiguration(ConfigFactory.empty())
-                        .withEventBus(eventBus)
-                        .withQueryGateway(new KasperQueryGateway())
-                        .withCommandGateway(new KasperCommandGateway(new KasperCommandBus()))
-                        .withMetricRegistry(new MetricRegistry())
-                        .addDomainBundle(domainBundle)
-                        .build()
-        );
-    }
-
-    public KasperPlatformFixture register(final DomainBundle domainBundle){
-        this.domainBundle = domainBundle;
-        return this;
-    }
-
-    @Override
-    public KasperPlatformExecutor given() {
-        initialize();
-        platform.recordedEvents.clear();
-        return new KasperPlatformExecutor(platform);
-    }
-
-    @Override
-    public KasperPlatformExecutor givenEvents(final IEvent... events) {
-        return this.givenEvents(DefaultContextBuilder.get(), events);
-    }
-
-    @Override
-    public KasperPlatformExecutor givenEvents(final List<IEvent> events) {
-        return this.givenEvents(DefaultContextBuilder.get(), events);
-    }
-
-    @Override
-    public KasperPlatformExecutor givenEvents(final Context context, IEvent... events) {
-        return this.givenEvents(context, Arrays.asList(events));
-    }
-
-    @Override
-    public KasperPlatformExecutor givenEvents(final Context context, List<IEvent> events) {
-        initialize();
-
-        for (final IEvent event : events) {
-            try {
-                platform.get().getEventBus().publishEvent(context, event);
-            } catch (final Exception e) {
-                throw new KasperException(e);
-            }
-        }
-
-        return given();
-    }
-
-    @Override
-    public KasperPlatformExecutor givenCommands(final Command... commands) {
-        return this.givenCommands(DefaultContextBuilder.get(), commands);
-    }
-
-    @Override
-    public KasperPlatformExecutor givenCommands(final List<Command> commands) {
-        return this.givenCommands(DefaultContextBuilder.get(), commands);
-    }
-
-    @Override
-    public KasperPlatformExecutor givenCommands(final Context context, final Command... commands) {
-        return this.givenCommands(context, Arrays.asList(commands));
-    }
-
-    @Override
-    public KasperPlatformExecutor givenCommands(final Context context, final List<Command> commands) {
-        initialize();
-
-        for (final Command command : commands) {
-            try {
-                platform.get().getCommandGateway().sendCommandAndWaitForAResponse(
-                        command, context
-                );
-            } catch (final Exception e) {
-                throw new KasperException(e);
-            }
-        }
-
-        return given();
-    }
-
 }

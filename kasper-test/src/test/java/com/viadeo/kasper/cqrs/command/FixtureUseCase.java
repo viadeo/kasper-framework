@@ -29,6 +29,7 @@ import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.domain.EntityCreatedEvent;
 import com.viadeo.kasper.event.domain.EntityUpdatedEvent;
 import org.axonframework.eventhandling.annotation.EventHandler;
+import org.axonframework.eventstore.EventStore;
 
 import javax.validation.constraints.NotNull;
 import java.util.Map;
@@ -155,8 +156,8 @@ public class FixtureUseCase {
 
     public static class TestEventRepository extends EventSourcedRepository<TestAggregate> {
         /* During tests, do not use constructor with event store */
-        public TestEventRepository() {
-            super();
+        public TestEventRepository(EventStore eventStore) {
+            super(eventStore);
         }
     }
 
@@ -241,12 +242,12 @@ public class FixtureUseCase {
 
     public static DomainBundle getDomainBundle() {
         return new DefaultDomainBundle(
-                Lists.<CommandHandler>newArrayList( new TestCreateCommandHandler(), new TestChangeLastNameCommandHandler()),
-                Lists.<QueryHandler>newArrayList( new TestGetSomeDataQueryHandler()),
-                Lists.<Repository>newArrayList(new TestRepository()),
-                Lists.<EventListener>newArrayList(),
-                new TestDomain(),
-                "TestDomain"
+                  Lists.<CommandHandler>newArrayList( new TestCreateCommandHandler(), new TestChangeLastNameCommandHandler())
+                , Lists.<QueryHandler>newArrayList( new TestGetSomeDataQueryHandler())
+                , Lists.<Repository>newArrayList(new TestRepository())
+                , Lists.<EventListener>newArrayList()
+                , new TestDomain()
+                , "TestDomain"
         );
     }
 

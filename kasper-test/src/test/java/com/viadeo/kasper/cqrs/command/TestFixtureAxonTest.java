@@ -15,6 +15,7 @@ import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.impl.DefaultKasperId;
+import org.axonframework.eventstore.EventStore;
 import org.axonframework.test.FixtureConfiguration;
 import org.axonframework.test.Fixtures;
 import org.junit.Before;
@@ -30,6 +31,7 @@ import java.util.Map;
 import static com.viadeo.kasper.cqrs.command.FixtureUseCase.*;
 import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
 import static org.axonframework.test.matchers.Matchers.*;
+import static org.mockito.Mockito.mock;
 
 @RunWith(Parameterized.class)
 public class TestFixtureAxonTest {
@@ -46,7 +48,7 @@ public class TestFixtureAxonTest {
     public static Collection repositories() {
         return Arrays.asList(new Object[][] {
             { new TestRepository() },
-            { new TestEventRepository() }
+            { new TestEventRepository(mock(EventStore.class)) }
         });
     }
 
