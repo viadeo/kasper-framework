@@ -13,6 +13,7 @@ import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptorFactory;
 import com.viadeo.kasper.client.platform.impl.KasperPlatform;
+import com.viadeo.kasper.client.platform.plugin.Plugin;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;

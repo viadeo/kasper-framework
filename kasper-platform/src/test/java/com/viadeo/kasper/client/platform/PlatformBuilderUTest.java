@@ -10,6 +10,7 @@ import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
+import com.viadeo.kasper.client.platform.plugin.Plugin;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;

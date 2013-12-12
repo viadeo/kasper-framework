@@ -13,20 +13,51 @@ import java.util.List;
 
 import static com.viadeo.kasper.client.platform.Platform.BuilderContext;
 
+/**
+ * The DomainBundle interface represents a domain with its components like : command handlers, query handlers, event
+ * listeners and repositories.
+ *
+ * A bundle can be configured in order to finalize the initialization for its components.
+ *
+ * Note that the components returned by this object will be wired during the construction of the platform.
+ */
 public interface DomainBundle {
 
+    /**
+     * Configure the bundle with the context of the builder in order to access to the components of the platform.
+     *
+     * @param context the context of the builder
+     */
     void configure(BuilderContext context);
 
+    /**
+     * @return the name of the domain
+     */
     String getName();
 
+    /**
+     * @return the domain
+     */
     Domain getDomain();
 
+    /**
+     * @return all command handlers identified as components of this domain bundle
+     */
     List<CommandHandler> getCommandHandlers();
 
+    /**
+     * @return all query handlers identified as components of this domain bundle
+     */
     List<QueryHandler> getQueryHandlers();
 
+    /**
+     * @return all event listeners identified as components of this domain bundle
+     */
     List<EventListener> getEventListeners();
 
+    /**
+     * @return all repositories identified as components of this domain bundle
+     */
     List<Repository> getRepositories();
 
 
