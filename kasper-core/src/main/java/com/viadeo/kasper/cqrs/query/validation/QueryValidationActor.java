@@ -58,7 +58,7 @@ public class QueryValidationActor<Q extends Query, P extends QueryResult> implem
             for (final ConstraintViolation<Object> violation : validations) {
                 errors.add("VALIDATION:" + violation.getPropertyPath() + ":" + violation.getMessage());
             }
-            return Optional.of(new KasperReason(CoreReasonCode.INVALID_INPUT.name(), errors));
+            return Optional.of(new KasperReason(CoreReasonCode.INVALID_INPUT, errors));
         }
     }
 

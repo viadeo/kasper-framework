@@ -99,6 +99,18 @@ public class TestFixturePlatformTest {
     // ------------------------------------------------------------------------
 
     @Test
+    public void testSimpleExpectedValidationOnQuery() {
+        fixture
+                .given()
+                .when(
+                        new TestQuery(null)
+                )
+                .expectValidationErrorOnField("type");
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Test
     public void testSimpleExpectedValidationOnBadField() {
 
         final KasperID createId = DefaultKasperId.random();

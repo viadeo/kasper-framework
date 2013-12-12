@@ -10,8 +10,10 @@ import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.event.IEvent;
+import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.AxonAssertionError;
 
+import javax.validation.ConstraintViolation;
 import java.util.Arrays;
 import java.util.Iterator;
 
@@ -187,6 +189,36 @@ public class KasperPlatformCommandResultValidator
                     "Command did not answered the expected error code"
             );
         }
+        return this;
+    }
+
+    @Override
+    public KasperFixtureResultValidator expectValidationErrorOnField(final String field) {
+
+        if ((null == exception()) || ( ! JSR303ViolationException.class.equals(exception().getClass()))) {
+            throw new AxonAssertionError(String.format(
+                    "The expected validation error on field %s not occured",
+                    field
+            ));
+        }
+
+        boolean found = false;
+
+        final JSR303ViolationException jsrException = (JSR303ViolationException) exception();
+
+        for (final ConstraintViolation violation : jsrException.getViolations()) {
+            if (violation.getPropertyPath().toString().contentEquals(field)) {
+                found = true;
+            }
+        }
+
+        if ( ! found) {
+            throw new AxonAssertionError(String.format(
+                    "The expected validation error on field %s not occured",
+                    field
+            ));
+        }
+
         return this;
     }
 

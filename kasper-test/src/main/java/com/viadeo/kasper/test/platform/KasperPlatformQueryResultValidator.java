@@ -10,8 +10,12 @@ import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
+import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.AxonAssertionError;
 
+import javax.validation.ConstraintViolation;
+
+import static com.viadeo.kasper.CoreReasonCode.INVALID_INPUT;
 import static com.viadeo.kasper.cqrs.query.QueryResponse.Status.*;
 import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
 
@@ -124,6 +128,36 @@ public class KasperPlatformQueryResultValidator
                     "Query did not answered the expected error code"
             );
         }
+        return this;
+    }
+
+    @Override
+    public KasperFixtureResultValidator expectValidationErrorOnField(final String field) {
+        final QueryResponse response = (QueryResponse) response();
+
+        if ((null != exception()) || (null != response) && (response.isOK() || ! INVALID_INPUT.equals(response.getReason().getCode()))) {
+            throw new AxonAssertionError(String.format(
+                    "The expected validation error on field %s not occured",
+                    field
+            ));
+        }
+
+        boolean found = false;
+
+        for (final String message : response.getReason().getMessages()) {
+            final String[] splits = message.split(":");
+            if ((splits.length == 3) && (splits[1].contentEquals(field))) {
+                found = true;
+            }
+        }
+
+        if ( ! found) {
+            throw new AxonAssertionError(String.format(
+                    "The expected validation error on field %s not occured",
+                    field
+            ));
+        }
+
         return this;
     }
 
