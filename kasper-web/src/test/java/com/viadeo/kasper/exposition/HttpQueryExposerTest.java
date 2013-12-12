@@ -11,15 +11,11 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.KasperClientBuilder;
-import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
-import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.ddd.repository.Repository;
-import com.viadeo.kasper.event.EventListener;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -163,14 +159,10 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
     @Override
     protected DomainBundle getDomainBundle(){
-        return new DefaultDomainBundle(
-                Lists.<CommandHandler>newArrayList()
-                , Lists.<QueryHandler>newArrayList(new SomeQueryHandler(), new SomeCollectionQueryHandler())
-                , Lists.<Repository>newArrayList()
-                , Lists.<EventListener>newArrayList()
-                , new AccountDomain()
-                , "AccountDomain"
-        );
+        return new DomainBundle.Builder(new AccountDomain())
+                .with(new SomeQueryHandler())
+                .with(new SomeCollectionQueryHandler())
+                .build();
     }
 
     @Test
