@@ -148,6 +148,10 @@ public class HttpCommandExposer extends HttpExposer {
         final UUID kasperCorrelationUUID = UUID.randomUUID();
         resp.addHeader("kasperCorrelationId", kasperCorrelationUUID.toString());
 
+        /* extract context from request */
+        final Context context = contextDeserializer.deserialize(req,kasperCorrelationUUID);
+        MDC.setContextMap(context.asMap());
+
         /* Log starting request */
         REQUEST_LOGGER.info("Processing HTTP Command '{}' '{}'", req.getMethod(), getFullRequestURI(req));
 
@@ -181,10 +185,6 @@ public class HttpCommandExposer extends HttpExposer {
             /* parse the input stream to that command, no utility method for inputstream+type?? */
             parser = reader.getFactory().createJsonParser(req.getInputStream());
             final Command command = reader.readValue(parser, commandClass);
-
-            /* extract context from request */
-            final Context context = contextDeserializer.deserialize(req,kasperCorrelationUUID);
-            MDC.setContextMap(context.asMap());
 
             /* send now that command to the platform and wait for the result */
             final Timer.Context commandHandleTime = getMetricRegistry().timer(name(command.getClass(), "requests-handle-time")).time();

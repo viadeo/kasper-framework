@@ -181,6 +181,10 @@ public class HttpQueryExposer extends HttpExposer {
         final UUID kasperCorrelationUUID = UUID.randomUUID();
         resp.addHeader("kasperCorrelationId", kasperCorrelationUUID.toString());
 
+        /* extract context from request */
+        final Context context = contextDeserializer.deserialize(req, kasperCorrelationUUID);
+        MDC.setContextMap(context.asMap());
+
         /* Log starting request */
         QUERY_LOGGER.info("Processing HTTP Query '{}' '{}'", req.getMethod(), getFullRequestURI(req));
 
@@ -201,7 +205,7 @@ public class HttpQueryExposer extends HttpExposer {
                 final Timer.Context queryHandleTimer = getMetricRegistry().timer(name(query.getClass(), "requests-handle-time")).time();
                 final Timer.Context classHandleTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_HANDLE_TIME_NAME).time();
 
-                response = handleQuery(queryName, query, req, resp, kasperCorrelationUUID );
+                response = handleQuery(queryName, query, req, resp, context);
 
                 queryHandleTimer.stop();
                 classHandleTimer.stop();
@@ -286,14 +290,10 @@ public class HttpQueryExposer extends HttpExposer {
 
     // can not use sendError it is forcing response to text/html
     protected QueryResponse handleQuery(final String queryName, final Query query, final HttpServletRequest req,
-                                         final HttpServletResponse resp, final UUID kasperCorrelationUUID)
+                                         final HttpServletResponse resp, final Context context)
             throws IOException {
 
         QueryResponse response = null;
-
-        /* extract context from request */
-        final Context context = contextDeserializer.deserialize(req, kasperCorrelationUUID);
-        MDC.setContextMap(context.asMap());
 
         /* send the query to the platform */
         try {
