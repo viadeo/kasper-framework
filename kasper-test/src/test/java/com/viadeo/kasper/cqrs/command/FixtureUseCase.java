@@ -156,6 +156,7 @@ public class FixtureUseCase {
 
     public static class TestEventRepository extends EventSourcedRepository<TestAggregate> {
         /* During tests, do not use constructor with event store */
+        public TestEventRepository() { }
         public TestEventRepository(EventStore eventStore) {
             super(eventStore);
         }

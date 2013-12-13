@@ -6,7 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Preconditions;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
@@ -24,8 +27,6 @@ import org.axonframework.test.GivenWhenThenTestFixture;
 
 import java.util.List;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * A mocked platform integration test fixture based on Axon GivenWhenThenFixture
  * oriented on testing a specific aggregate (and associated repository) testing
@@ -39,7 +40,7 @@ public class KasperAggregateFixture<AGR extends AggregateRoot>
     public static <AGR extends AggregateRoot> KasperAggregateFixture<AGR> forRepository(
             final Repository<AGR> repository,
             final Class<AGR> aggregateClass) {
-        return new KasperAggregateFixture<>(checkNotNull(repository), checkNotNull(aggregateClass));
+        return new KasperAggregateFixture<>(repository, aggregateClass);
     }
 
     // ------------------------------------------------------------------------
@@ -51,6 +52,9 @@ public class KasperAggregateFixture<AGR extends AggregateRoot>
     private boolean checkIllegalState = true;
 
     private KasperAggregateFixture(final Repository<AGR> repository, final Class<AGR> aggregateClass) {
+        Preconditions.checkNotNull(repository);
+        Preconditions.checkNotNull(aggregateClass);
+
         this.fixture = new GivenWhenThenTestFixture<>(aggregateClass);
         this.fixture.setReportIllegalStateChange(checkIllegalState);
 
@@ -62,7 +66,12 @@ public class KasperAggregateFixture<AGR extends AggregateRoot>
         this.repositoryManager = new DefaultRepositoryManager();
         this.repositoryManager.register(repository);
 
-        /* WARNING: fixture.registerRepository(repository); */
+        Preconditions.checkState(
+                aggregateClass == repository.getAggregateClass()
+                , "The specified repository don't support the specified aggregate, <expected=" + repository.getAggregateClass() + "> <actual=" + aggregateClass + "> "
+        );
+
+        KasperMetrics.setMetricRegistry(new MetricRegistry());
     }
 
     public KasperAggregateFixture<AGR> withoutIllegalStateCheck() {
