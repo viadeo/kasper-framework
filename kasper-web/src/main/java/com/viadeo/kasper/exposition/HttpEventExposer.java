@@ -61,10 +61,11 @@ public class HttpEventExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     public HttpEventExposer(final KasperEventBus eventBus, final List<Class<? extends Event>> eventClasses) {
-        this(     eventBus
-                , eventClasses
-                , new HttpContextDeserializer()
-                , ObjectMapperProvider.INSTANCE.mapper()
+        this(
+                eventBus,
+                eventClasses,
+                new HttpContextDeserializer(),
+                ObjectMapperProvider.INSTANCE.mapper()
         );
     }
 

@@ -72,7 +72,9 @@ public abstract class BaseHttpExposerTest {
         /* FIXME: wtf ? */
     }
 
-    protected void buildPlatform(PlatformConfiguration platformConfiguration, HttpExposerPlugin httpExposerPlugin, DomainBundle domainBundle){
+    protected void buildPlatform(final PlatformConfiguration platformConfiguration,
+                                 final HttpExposerPlugin httpExposerPlugin,
+                                 final DomainBundle domainBundle) {
         new Platform.Builder(platformConfiguration)
                 .addPlugin(httpExposerPlugin)
                 .addDomainBundle(domainBundle)

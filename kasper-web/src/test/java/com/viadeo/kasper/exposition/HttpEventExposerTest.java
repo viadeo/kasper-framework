@@ -39,6 +39,28 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
 
     private KasperEventBus eventBus;
 
+    @XKasperUnregistered
+    public static class UnknownEvent extends Event {
+        public String name;
+    }
+
+    @XKasperUnregistered
+    public static class AccountCreatedEvent extends Event {
+        public String name;
+    }
+
+    @XKasperDomain(prefix = "test")
+    public static class TestDomain implements Domain { }
+
+    @XKasperEventListener(domain = TestDomain.class)
+    public static class AccountCreatedEventListener extends EventListener<AccountCreatedEvent> {
+
+        @Override
+        public void handle(AccountCreatedEvent event) { }
+    }
+
+    // ------------------------------------------------------------------------
+
     public HttpEventExposerTest() {
         Locale.setDefault(Locale.US);
     }
@@ -53,17 +75,19 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     @Override
     protected DomainBundle getDomainBundle(){
         return new DefaultDomainBundle(
-                  Lists.<CommandHandler>newArrayList()
-                , Lists.<QueryHandler>newArrayList()
-                , Lists.<Repository>newArrayList()
-                , Lists.<EventListener>newArrayList(new AccountCreatedEventListener())
-                , new TestDomain()
-                , "TestDomain"
+                Lists.<CommandHandler>newArrayList(),
+                Lists.<QueryHandler>newArrayList(),
+                Lists.<Repository>newArrayList(),
+                Lists.<EventListener>newArrayList(new AccountCreatedEventListener()),
+                new TestDomain(),
+                "TestDomain"
         );
     }
 
     @Override
-    protected void buildPlatform(PlatformConfiguration platformConfiguration, HttpExposerPlugin httpExposerPlugin, DomainBundle domainBundle){
+    protected void buildPlatform(final PlatformConfiguration platformConfiguration,
+                                 final HttpExposerPlugin httpExposerPlugin,
+                                 final DomainBundle domainBundle){
         eventBus = spy(platformConfiguration.eventBus());
         new Platform.Builder(platformConfiguration)
                 .withEventBus(eventBus)
@@ -102,25 +126,4 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
 
     }
 
-    // ------------------------------------------------------------------------
-
-    @XKasperUnregistered
-    public static class UnknownEvent extends Event {
-        public String name;
-    }
-
-    @XKasperUnregistered
-    public static class AccountCreatedEvent extends Event {
-        public String name;
-    }
-
-    @XKasperDomain(prefix = "test")
-    public static class TestDomain implements Domain { }
-
-    @XKasperEventListener(domain = TestDomain.class)
-    public static class AccountCreatedEventListener extends EventListener<AccountCreatedEvent> {
-
-        @Override
-        public void handle(AccountCreatedEvent event) { }
-    }
 }
