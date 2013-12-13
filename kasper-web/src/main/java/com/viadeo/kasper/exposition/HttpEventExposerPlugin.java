@@ -7,20 +7,33 @@
 package com.viadeo.kasper.exposition;
 
 import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.client.platform.domain.descriptor.EventListenerDescriptor;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.tools.ObjectMapperProvider;
 
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkState;
+public class HttpEventExposerPlugin extends HttpExposerPlugin<HttpEventExposer> {
 
-public class HttpEventExposerPlugin implements HttpExposerPlugin {
+    public HttpEventExposerPlugin() {
+        this(ObjectMapperProvider.INSTANCE.mapper());
+    }
 
-    private HttpEventExposer httpEventExposer;
+    // ------------------------------------------------------------------------
+
+    public HttpEventExposerPlugin(final ObjectMapper objectMapper) {
+        this(new HttpContextDeserializer(), objectMapper);
+    }
+
+    public HttpEventExposerPlugin(final HttpContextDeserializer httpContextDeserializer,
+                                  final ObjectMapper objectMapper) {
+        super(httpContextDeserializer, objectMapper);
+    }
 
     // ------------------------------------------------------------------------
 
@@ -36,13 +49,14 @@ public class HttpEventExposerPlugin implements HttpExposerPlugin {
             }
         }
 
-        this.httpEventExposer = new HttpEventExposer(platform.getEventBus(), Lists.newArrayList(eventClasses));
-    }
-
-    @Override
-    public HttpEventExposer getHttpExposer() {
-        checkState(httpEventExposer != null, "The plugin should be initialized.");
-        return httpEventExposer;
+        initialize(
+                new HttpEventExposer(
+                        platform.getEventBus(),
+                        Lists.newArrayList(eventClasses),
+                        getContextDeserializer(),
+                        getMapper()
+                )
+        );
     }
 
 }
