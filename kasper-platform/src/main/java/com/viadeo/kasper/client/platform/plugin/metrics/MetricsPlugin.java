@@ -9,8 +9,8 @@ package com.viadeo.kasper.client.platform.plugin.metrics;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.plugin.Plugin;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
+import com.viadeo.kasper.client.platform.plugin.Plugin;
 
 import java.util.Collections;
 import java.util.List;

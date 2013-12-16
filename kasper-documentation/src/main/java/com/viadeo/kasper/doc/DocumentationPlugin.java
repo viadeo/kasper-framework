@@ -8,8 +8,8 @@ package com.viadeo.kasper.doc;
 
 import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.plugin.Plugin;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
+import com.viadeo.kasper.client.platform.plugin.Plugin;
 import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.KasperDocResource;

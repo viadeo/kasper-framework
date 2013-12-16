@@ -125,14 +125,14 @@ public interface DomainBundle {
         }
 
         @SafeVarargs
-        private final <COMP> void with(List<COMP> collection, COMP... components) {
-            checkNotNull(commandHandlers);
-            for (final COMP component : components) {
+        private final <COMP> void with(final List<COMP> collection, final COMP... components) {
+            checkNotNull(collection);
+            for (final COMP component : checkNotNull(components)) {
                 collection.add(checkNotNull(component));
             }
         }
 
-        public DomainBundle build(){
+        public DomainBundle build() {
             return new DefaultDomainBundle(
                     commandHandlers,
                     queryHandlers,
@@ -145,4 +145,5 @@ public interface DomainBundle {
         }
 
     }
+
 }

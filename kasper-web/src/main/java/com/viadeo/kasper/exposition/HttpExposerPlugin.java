@@ -9,6 +9,7 @@ package com.viadeo.kasper.exposition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 public abstract class HttpExposerPlugin<EXPOSER extends HttpExposer> implements Plugin {
@@ -23,12 +24,12 @@ public abstract class HttpExposerPlugin<EXPOSER extends HttpExposer> implements 
             final ObjectMapper mapper
     ) {
 
-        this.contextDeserializer = contextDeserializer;
-        this.mapper = mapper;
+        this.contextDeserializer = checkNotNull(contextDeserializer);
+        this.mapper = checkNotNull(mapper);
     }
 
     protected void initialize(EXPOSER exposer) {
-        this.exposer = exposer;
+        this.exposer = checkNotNull(exposer);
     }
 
     public EXPOSER getHttpExposer() {
@@ -43,4 +44,5 @@ public abstract class HttpExposerPlugin<EXPOSER extends HttpExposer> implements 
     protected HttpContextDeserializer getContextDeserializer() {
         return contextDeserializer;
     }
+
 }

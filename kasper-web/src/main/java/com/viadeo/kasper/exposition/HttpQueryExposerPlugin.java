@@ -20,6 +20,8 @@ import com.viadeo.kasper.tools.ObjectMapperProvider;
 
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class HttpQueryExposerPlugin extends HttpExposerPlugin<HttpQueryExposer> {
 
     @SuppressWarnings("unchecked")
@@ -33,26 +35,31 @@ public class HttpQueryExposerPlugin extends HttpExposerPlugin<HttpQueryExposer> 
 
     // ------------------------------------------------------------------------
 
-    public HttpQueryExposerPlugin(){
+    public HttpQueryExposerPlugin() {
         this(ObjectMapperProvider.INSTANCE.mapper());
     }
 
     public HttpQueryExposerPlugin(final ObjectMapper objectMapper){
-        this(new HttpContextDeserializer(), objectMapper);
+        this(new HttpContextDeserializer(), checkNotNull(objectMapper));
     }
 
-    public HttpQueryExposerPlugin(final HttpContextDeserializer httpContextDeserializer, final ObjectMapper objectMapper){
-        super(httpContextDeserializer, objectMapper);
+    public HttpQueryExposerPlugin(final HttpContextDeserializer httpContextDeserializer,
+                                  final ObjectMapper objectMapper) {
+        super(checkNotNull(httpContextDeserializer), checkNotNull(objectMapper));
     }
 
     @Override
     public void initialize(final Platform platform,
                            final MetricRegistry metricRegistry,
                            final DomainDescriptor... domainDescriptors) {
+
         final List<Class<? extends QueryHandler>> queryHandlerClasses = Lists.newArrayList();
 
-        for (final DomainDescriptor domainDescriptor:domainDescriptors) {
-            queryHandlerClasses.addAll(Collections2.transform(domainDescriptor.getQueryHandlerDescriptors(), TO_QUERY_HANDLER_CLASS_FUNCTION));
+        for (final DomainDescriptor domainDescriptor : domainDescriptors) {
+            queryHandlerClasses.addAll(Collections2.transform(
+                    domainDescriptor.getQueryHandlerDescriptors(),
+                    TO_QUERY_HANDLER_CLASS_FUNCTION)
+            );
         }
 
         initialize(

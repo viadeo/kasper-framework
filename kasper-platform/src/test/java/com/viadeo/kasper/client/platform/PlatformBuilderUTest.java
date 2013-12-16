@@ -56,7 +56,7 @@ public class PlatformBuilderUTest {
     private static class TestQueryFilter implements QueryFilter<Query> {
 
         @Override
-        public Query adapt(Context context, Query input) {
+        public Query adapt(final Context context, final Query input) {
             return input;
         }
 
@@ -78,7 +78,8 @@ public class PlatformBuilderUTest {
         }
 
         @Override
-        protected Optional<TestConcept> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {
+        protected Optional<TestConcept> doLoad(final KasperID aggregateIdentifier,
+                                               final Long expectedVersion) {
             return Optional.absent();
         }
 
@@ -528,19 +529,19 @@ public class PlatformBuilderUTest {
     @Test
     public void build_withDomainBundle_containingAdapter_shouldThrownException(){
         // Given
-        TestQueryFilter adapter = new TestQueryFilter();
+        final TestQueryFilter adapter = new TestQueryFilter();
         final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
                 .with(adapter)
                 .build();
 
         final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
 
-        Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
+        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
                 .withQueryGateway(queryGateway)
                 .addDomainBundle(domainBundle);
 
         // When
-        Platform platform = builder.build();
+        final Platform platform = builder.build();
 
         // Then
         assertNotNull(platform);
@@ -555,7 +556,9 @@ public class PlatformBuilderUTest {
                 .with(new TestQueryHandler())
                 .build();
 
-        Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration()).addDomainBundle(domainBundle);
+        final Platform.Builder builder =
+                new Platform.Builder(new KasperPlatformConfiguration())
+                        .addDomainBundle(domainBundle);
 
         // When
         builder.build();
@@ -566,21 +569,21 @@ public class PlatformBuilderUTest {
     @Test
     public void build_withDomainBundle_containingQueryHandler_andReferencingAnKnownFilter_shouldBeWired(){
         // Given
-        TestQueryFilter adapter = new TestQueryFilter();
-        TestQueryHandler queryHandler = new TestQueryHandler();
+        final TestQueryFilter adapter = new TestQueryFilter();
+        final TestQueryHandler queryHandler = new TestQueryHandler();
         final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
                 .with(queryHandler)
                 .with(adapter)
                 .build();
 
-        KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
+        final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
 
-        Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
+        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
                 .withQueryGateway(queryGateway)
                 .addDomainBundle(domainBundle);
 
         // When
-        Platform platform = builder.build();
+        final Platform platform = builder.build();
 
         // Then
         assertNotNull(platform);

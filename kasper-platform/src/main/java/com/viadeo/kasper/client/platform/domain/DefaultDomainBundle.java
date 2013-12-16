@@ -102,4 +102,5 @@ public class DefaultDomainBundle implements DomainBundle {
     public List<Adapter> getAdapters() {
         return adapters;
     }
+
 }

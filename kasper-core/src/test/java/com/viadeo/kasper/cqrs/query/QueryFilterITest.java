@@ -56,7 +56,7 @@ public class QueryFilterITest {
     @XKasperUnregistered
     private class TestFilterQuery implements QueryFilter<TestQuery> {
         @Override
-        public TestQuery adapt(Context context, TestQuery query) {
+        public TestQuery adapt(final Context context, final TestQuery query) {
             query.state = STATE_MODIFIED;
             return query;
         }
@@ -70,7 +70,7 @@ public class QueryFilterITest {
     @XKasperUnregistered
     private class TestQueryResponse implements QueryResponseFilter<TestResult> {
         @Override
-        public QueryResponse<TestResult> adapt(Context context, QueryResponse<TestResult> response) {
+        public QueryResponse<TestResult> adapt(final Context context, final QueryResponse<TestResult> response) {
             response.getResult().state = STATE_MODIFIED;
             return response;
         }

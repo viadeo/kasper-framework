@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs;
 
 import com.viadeo.kasper.context.Context;
@@ -15,7 +21,7 @@ public interface Adapter<ELEM> {
      * @param input   the element to be adapted
      * @return the adapted element
      */
-    ELEM adapt(final Context context, final ELEM input);
+    ELEM adapt(Context context, ELEM input);
 
     /**
      * Return the name of the adapter
@@ -23,4 +29,5 @@ public interface Adapter<ELEM> {
      * @return the adapter name
      */
     String getName();
+
  }

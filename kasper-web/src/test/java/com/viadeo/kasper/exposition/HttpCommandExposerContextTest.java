@@ -6,11 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.cqrs.Adapter;
 import com.viadeo.kasper.cqrs.command.Command;

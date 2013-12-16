@@ -8,7 +8,6 @@ package com.viadeo.kasper.cqrs.query.impl;
 
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
@@ -119,7 +118,7 @@ public class KasperQueryGateway implements QueryGateway {
      * @param name the name of the adapter
      * @param filter the query handler adapter to register
      */
-    public void register(String name, QueryHandlerFilter filter) {
+    public void register(final String name, final QueryHandlerFilter filter) {
         queryHandlersLocator.registerFilter(name, filter);
     }
 
@@ -129,7 +128,7 @@ public class KasperQueryGateway implements QueryGateway {
      * @param queryHandler the query handler to register
      */
     public void register(final QueryHandler queryHandler) {
-        Preconditions.checkNotNull(queryHandler);
+        checkNotNull(queryHandler);
 
         final Class<? extends QueryHandler> queryHandlerClass = queryHandler.getClass();
         LOGGER.info("Registering the query handler : " + queryHandlerClass.getName());

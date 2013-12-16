@@ -104,7 +104,8 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
     @SuppressWarnings("rawtypes")
     @Override
-    public void registerHandler(final String name, final QueryHandler handler, final Class<? extends Domain> domainClass) {
+    public void registerHandler(final String name, final QueryHandler handler,
+                                final Class<? extends Domain> domainClass) {
         checkNotNull(name);
         checkNotNull(handler);
 
@@ -133,6 +134,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
         if (this.handlerNames.containsKey(name)) {
             throw new KasperQueryException("An handler with the same name is already registered : " + name);
         }
+
         this.handlerQueryClasses.put(queryClass, handler);
         this.handlerNames.put(name, handler);
         this.handlers.put(handlerClass, handler);
@@ -147,16 +149,18 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
         checkNotNull(name);
         checkNotNull(queryFilter);
 
-        Class<? extends QueryHandlerFilter> queryFilterClass = queryFilter.getClass();
+        final Class<? extends QueryHandlerFilter> queryFilterClass = queryFilter.getClass();
 
         if (name.isEmpty()) {
             throw new KasperQueryException("Name of filter cannot be empty : " + queryFilterClass);
         }
 
-        QueryHandlerFilter queryHandlerFilter = filters.get(queryFilterClass);
+        final QueryHandlerFilter queryHandlerFilter = filters.get(queryFilterClass);
 
         if (null != queryHandlerFilter) {
-            throw new KasperQueryException("The specified filter is already registered : " + queryFilterClass);
+            throw new KasperQueryException(
+                    "The specified filter is already registered : "
+                            + queryFilterClass);
         }
 
         this.filters.put(queryFilterClass, queryFilter);
@@ -172,7 +176,9 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     }
 
     @Override
-    public void registerFilter(final String name, final QueryHandlerFilter queryFilter, boolean isGlobal) {
+    public void registerFilter(final String name,
+                               final QueryHandlerFilter queryFilter,
+                               final boolean isGlobal) {
         this.registerFilter(name, queryFilter, isGlobal, null);
     }
 
@@ -184,16 +190,17 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     // ------------------------------------------------------------------------
 
     @Override
-    public void registerFilterForQueryHandler(final Class<? extends QueryHandler> queryHandlerClass, final Class<? extends QueryHandlerFilter> filterClass) {
+    public void registerFilterForQueryHandler(final Class<? extends QueryHandler> queryHandlerClass,
+                                              final Class<? extends QueryHandlerFilter> filterClass) {
         checkNotNull(queryHandlerClass);
         checkNotNull(filterClass);
 
         final List<Class<? extends QueryHandlerFilter>> handlerFilters;
 
-        if (!this.appliedFilters.containsKey(queryHandlerClass)) {
+        if ( ! this.appliedFilters.containsKey(queryHandlerClass)) {
             handlerFilters = newArrayList();
             this.appliedFilters.put(queryHandlerClass, handlerFilters);
-        } else if (!this.appliedFilters.get(queryHandlerClass).contains(filterClass)) {
+        } else if ( ! this.appliedFilters.get(queryHandlerClass).contains(filterClass)) {
             handlerFilters = this.appliedFilters.get(queryHandlerClass);
         } else {
             handlerFilters = null;
@@ -244,7 +251,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     Optional<RequestActorsChain<Q, R>> getRequestActorChain(Class<? extends Q> queryClass) {
         RequestActorsChain<Q, R> chain = (RequestActorsChain<Q, R>) requestActorChainCache.get(queryClass);
 
-        if (chain == null) {
+        if (null == chain) {
             final Optional<QueryHandler> optionalQS = getHandlerFromQueryClass(queryClass);
 
             if (optionalQS.isPresent()) {
@@ -307,7 +314,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     public Collection<QueryHandlerFilter> getFiltersForHandlerClass(final Class<? extends QueryHandler> handlerClass) {
 
         // Ensure handler has filters
-        if (!this.appliedFilters.containsKey(handlerClass) && this.globalFilters.isEmpty()) {
+        if ( ! this.appliedFilters.containsKey(handlerClass) && this.globalFilters.isEmpty()) {
             return EMPTY_FILTERS;
         }
 
@@ -334,7 +341,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
             // Copy required filters instances to this handler cache
             final List<QueryHandlerFilter> instances = newArrayList();
-            for (Class<? extends QueryHandlerFilter> filterClass : Sets.newHashSet(filtersToApply)) {
+            for (final Class<? extends QueryHandlerFilter> filterClass : Sets.newHashSet(filtersToApply)) {
                 if (this.filters.containsKey(filterClass)) {
                     instances.add(this.filters.get(filterClass));
                 } else {
@@ -350,7 +357,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     }
 
     @Override
-    public boolean containsFilter(Class<? extends QueryHandlerFilter> filterClass) {
+    public boolean containsFilter(final Class<? extends QueryHandlerFilter> filterClass) {
         return filters.containsKey(filterClass);
     }
 

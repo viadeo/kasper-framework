@@ -1,7 +1,5 @@
 package com.viadeo.kasper.test.platform;
 
-import com.google.common.base.Optional;
-import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.command.Command;

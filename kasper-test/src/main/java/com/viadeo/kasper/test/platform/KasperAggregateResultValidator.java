@@ -15,8 +15,6 @@ import org.axonframework.test.ResultValidator;
 import org.hamcrest.Matcher;
 
 import javax.validation.ConstraintViolation;
-import java.util.Collection;
-import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
