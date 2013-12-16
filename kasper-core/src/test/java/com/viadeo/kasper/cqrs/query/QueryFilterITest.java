@@ -54,24 +54,43 @@ public class QueryFilterITest {
     }
 
     @XKasperUnregistered
-    private class TestFilter implements QueryFilter<TestQuery>, ResponseFilter<TestResult> {
+    private class TestFilterQuery implements QueryFilter<TestQuery> {
         @Override
-        public <R extends QueryResponse<TestResult>> R filter(Context context, R response) {
-            response.getResult().state = STATE_MODIFIED;
-            return response;        }
-
-        @Override
-        public TestQuery filter(Context context, TestQuery query) {
+        public TestQuery adapt(Context context, TestQuery query) {
             query.state = STATE_MODIFIED;
             return query;
+        }
+
+        @Override
+        public String getName() {
+            return getClass().getSimpleName();
+        }
+    }
+
+    @XKasperUnregistered
+    private class TestQueryResponse implements QueryResponseFilter<TestResult> {
+        @Override
+        public QueryResponse<TestResult> adapt(Context context, QueryResponse<TestResult> response) {
+            response.getResult().state = STATE_MODIFIED;
+            return response;
+        }
+
+        @Override
+        public String getName() {
+            return getClass().getSimpleName();
         }
     }
 
     @XKasperUnregistered
     private class TestFilterGlobal implements QueryFilter<Query> {
         @Override
-        public Query filter(final Context context, final Query query) throws KasperQueryException {
+        public Query adapt(final Context context, final Query query) throws KasperQueryException {
             return query;
+        }
+
+        @Override
+        public String getName() {
+            return getClass().getSimpleName();
         }
     }
 
@@ -85,7 +104,8 @@ public class QueryFilterITest {
         KasperMetrics.setMetricRegistry(new MetricRegistry());
 
         final TestHandler service = spy(new TestHandler());
-        final TestFilter filter = spy(new TestFilter());
+        final TestFilterQuery filter = spy(new TestFilterQuery());
+        final TestQueryResponse filterReponse = spy(new TestQueryResponse());
         final TestFilterGlobal filterGlobal = spy(new TestFilterGlobal());
         final DomainResolver domainResolver = new DomainResolver();
         final QueryHandlerResolver queryHandlerResolver = new QueryHandlerResolver();
@@ -94,8 +114,10 @@ public class QueryFilterITest {
         final DefaultQueryHandlersLocator locator = new DefaultQueryHandlersLocator(queryHandlerResolver);
         locator.registerHandler("testService", service, TestDomain.class);
         locator.registerFilter("testFilter", filter);
+        locator.registerFilter("testFilter1", filterReponse);
         locator.registerFilter("testFilter2", filterGlobal, true);
         locator.registerFilterForQueryHandler(service.getClass(), filter.getClass());
+        locator.registerFilterForQueryHandler(service.getClass(), filterReponse.getClass());
 
         final KasperQueryGateway gateway = new KasperQueryGateway(locator);
 
@@ -106,13 +128,10 @@ public class QueryFilterITest {
         final QueryResponse<TestResult> queryResponse = gateway.retrieve(query, context);
 
         // Then
-        // verify(filter).filter(eq(context), any(TestQuery.class));
         assertEquals(STATE_MODIFIED, query.state);
-
-        // verify(filter).filter(eq(context), any(QueryResponse.class));
         assertEquals(STATE_MODIFIED, queryResponse.getResult().state);
 
-        verify(filterGlobal).filter(eq(context), any(Query.class));
+        verify(filterGlobal).adapt(eq(context), any(Query.class));
     }
 
 }

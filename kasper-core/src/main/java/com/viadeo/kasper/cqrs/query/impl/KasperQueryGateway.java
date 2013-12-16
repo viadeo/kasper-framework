@@ -8,6 +8,7 @@ package com.viadeo.kasper.cqrs.query.impl;
 
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
+import com.google.common.base.Preconditions;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
@@ -23,7 +24,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
-/** The Kasper gateway base implementation */
+/**
+ * The Kasper gateway base implementation
+ */
 public class KasperQueryGateway implements QueryGateway {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperQueryGateway.class);
@@ -111,11 +114,23 @@ public class KasperQueryGateway implements QueryGateway {
     // ------------------------------------------------------------------------
 
     /**
+     * Register a query handler adapter to the gateway
+     *
+     * @param name the name of the adapter
+     * @param filter the query handler adapter to register
+     */
+    public void register(String name, QueryHandlerFilter filter) {
+        queryHandlersLocator.registerFilter(name, filter);
+    }
+
+    /**
      * Register a query handler to the gateway
      *
-     * @param queryHandler
+     * @param queryHandler the query handler to register
      */
     public void register(final QueryHandler queryHandler) {
+        Preconditions.checkNotNull(queryHandler);
+
         final Class<? extends QueryHandler> queryHandlerClass = queryHandler.getClass();
         LOGGER.info("Registering the query handler : " + queryHandlerClass.getName());
 
@@ -129,9 +144,15 @@ public class KasperQueryGateway implements QueryGateway {
         }
 
         final Class<? extends QueryHandlerFilter>[] filters = annotation.filters();
+
         if (null != filters) {
             for (final Class<? extends QueryHandlerFilter> filterClass : filters) {
-                LOGGER.info(String.format("  --> w/ filter %s", filterClass.getSimpleName()));
+                LOGGER.debug(String.format("  --> w/ filter %s", filterClass.getSimpleName()));
+
+                if ( !queryHandlersLocator.containsFilter(filterClass)) {
+                    throw new KasperException("Unknown filter" + filterClass);
+                }
+
                 this.queryHandlersLocator.registerFilterForQueryHandler(queryHandlerClass, filterClass);
             }
         }

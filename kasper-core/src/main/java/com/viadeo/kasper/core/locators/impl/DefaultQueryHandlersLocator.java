@@ -115,8 +115,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
         final Class<? extends QueryHandler> handlerClass = handler.getClass();
 
         @SuppressWarnings("unchecked") // Safe
-        final Class<? extends Query> optQueryClass = queryHandlerResolver.getQueryClass(handlerClass);
-        final Class<? extends Query> queryClass = optQueryClass;
+        final Class<? extends Query> queryClass = queryHandlerResolver.getQueryClass(handlerClass);
         if (this.handlerQueryClasses.containsKey(queryClass)) {
             throw new KasperQueryException("An handler for the same query class is already registered : " + queryClass);
         }
@@ -148,15 +147,22 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
         checkNotNull(name);
         checkNotNull(queryFilter);
 
+        Class<? extends QueryHandlerFilter> queryFilterClass = queryFilter.getClass();
+
         if (name.isEmpty()) {
-            throw new KasperQueryException("Name of query handler filters cannot be empty : " + queryFilter.getClass());
+            throw new KasperQueryException("Name of filter cannot be empty : " + queryFilterClass);
         }
 
-        final Class<? extends QueryHandlerFilter> filterClass = queryFilter.getClass();
-        this.filters.put(filterClass, queryFilter);
+        QueryHandlerFilter queryHandlerFilter = filters.get(queryFilterClass);
+
+        if (null != queryHandlerFilter) {
+            throw new KasperQueryException("The specified filter is already registered : " + queryFilterClass);
+        }
+
+        this.filters.put(queryFilterClass, queryFilter);
 
         if (isGlobal) {
-            this.globalFilters.add(filterClass);
+            this.globalFilters.add(queryFilterClass);
             this.instanceFilters.clear(); // Drop all handler instances caches
             if (null != stickyDomainClass) {
                 this.isDomainSticky.put(queryFilter.getClass(), stickyDomainClass);
@@ -284,8 +290,8 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
         final Collection<QueryFilter> queryFilters =
                 Lists.newArrayList(Iterables.filter(handlerFilters, QueryFilter.class));
 
-        final Collection<ResponseFilter> responseFilters =
-                Lists.newArrayList(Iterables.filter(handlerFilters, ResponseFilter.class));
+        final Collection<QueryResponseFilter> responseFilters =
+                Lists.newArrayList(Iterables.filter(handlerFilters, QueryResponseFilter.class));
 
         return new QueryFiltersActor(queryFilters, responseFilters);
     }
@@ -332,7 +338,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
                 if (this.filters.containsKey(filterClass)) {
                     instances.add(this.filters.get(filterClass));
                 } else {
-                    LOGGER.error(String.format("Query handler %s asks to be filtered, but no instance of filter %s can be found in records",
+                    LOGGER.error(String.format("Query handler %s asks to be filtered, but no instance of adapter %s can be found in records",
                             handlerClass, filterClass));
                 }
             }
@@ -341,6 +347,11 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
         // Return the filter instances
         return unmodifiableCollection(this.instanceFilters.get(handlerClass));
+    }
+
+    @Override
+    public boolean containsFilter(Class<? extends QueryHandlerFilter> filterClass) {
+        return filters.containsKey(filterClass);
     }
 
 }

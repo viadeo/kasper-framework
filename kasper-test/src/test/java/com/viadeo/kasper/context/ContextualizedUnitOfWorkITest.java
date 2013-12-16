@@ -14,6 +14,7 @@ import com.viadeo.kasper.KasperTestId;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.core.context.CurrentContext;
+import com.viadeo.kasper.cqrs.Adapter;
 import com.viadeo.kasper.cqrs.command.*;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
@@ -124,6 +125,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
                         Lists.<QueryHandler>newArrayList(),
                         Lists.<Repository>newArrayList(new ContextTestRepository()),
                         Lists.<EventListener>newArrayList(),
+                        Lists.<Adapter>newArrayList(),
                         new ContextTestDomain(),
                         "ContextTestDomain"
                 )

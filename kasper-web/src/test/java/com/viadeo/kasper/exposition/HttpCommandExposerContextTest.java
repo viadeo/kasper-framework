@@ -12,6 +12,7 @@ import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.viadeo.kasper.context.impl.DefaultContext;
+import com.viadeo.kasper.cqrs.Adapter;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
@@ -51,6 +52,7 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest {
                 , Lists.<QueryHandler>newArrayList()
                 , Lists.<Repository>newArrayList()
                 , Lists.<EventListener>newArrayList()
+                , Lists.<Adapter>newArrayList()
                 , new TestDomain()
                 , "TestDomain"
         );

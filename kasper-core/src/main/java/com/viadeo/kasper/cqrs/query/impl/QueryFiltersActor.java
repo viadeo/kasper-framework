@@ -19,12 +19,12 @@ public class QueryFiltersActor<Q extends Query, P extends QueryResult>
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryFiltersActor.class);
 
     private final Collection<? extends QueryFilter<Q>> queryFilters;
-    private final Collection<? extends ResponseFilter<P>> responseFilters;
+    private final Collection<? extends QueryResponseFilter<P>> responseFilters;
 
     // ------------------------------------------------------------------------
 
     public QueryFiltersActor(final Collection<? extends QueryFilter<Q>> queryFilters,
-                             final Collection<? extends ResponseFilter<P>> responseFilters) {
+                             final Collection<? extends QueryResponseFilter<P>> responseFilters) {
         this.queryFilters = checkNotNull(queryFilters);
         this.responseFilters = checkNotNull(responseFilters);
     }
@@ -45,8 +45,8 @@ public class QueryFiltersActor<Q extends Query, P extends QueryResult>
             final Timer.Context timerFilters = getMetricRegistry().timer(name(query.getClass(), "requests-query-filters-time")).time();
 
             for (final QueryFilter<Q> filter : queryFilters) {
-                LOGGER.info(String.format("Apply query filter %s", filter.getClass().getSimpleName()));
-                newQuery = filter.filter(context, query);
+                LOGGER.info(String.format("Apply query adapter %s", filter.getClass().getSimpleName()));
+                newQuery = filter.adapt(context, query);
             }
 
             timerFilters.stop();
@@ -57,17 +57,17 @@ public class QueryFiltersActor<Q extends Query, P extends QueryResult>
 
     // -----
 
-    private <R extends QueryResponse<P>> R applyResponseFilters(final Class queryClass, final R response, final Context context) {
-        R newResponse = response;
+    private QueryResponse<P> applyResponseFilters(final Class queryClass, final QueryResponse<P> response, final Context context) {
+        QueryResponse<P> newResponse = response;
 
         if ((null != response.getResult()) && !responseFilters.isEmpty()) {
             final Timer.Context timerFilters = getMetricRegistry().timer(name(queryClass, "requests-response-filters-time")).time();
-            for (final ResponseFilter<P> filter : responseFilters) {
-                if (ResponseFilter.class.isAssignableFrom(filter.getClass())) {
-                    LOGGER.info(String.format("Apply Response filter %s", filter.getClass().getSimpleName()));
+            for (final QueryResponseFilter<P> filter : responseFilters) {
+                if (QueryResponseFilter.class.isAssignableFrom(filter.getClass())) {
+                    LOGGER.info(String.format("Apply Response adapter %s", filter.getClass().getSimpleName()));
 
                     /* Apply filter */
-                    newResponse = filter.filter(context, response);
+                    newResponse = filter.adapt(context, response);
                 }
             }
             timerFilters.stop();

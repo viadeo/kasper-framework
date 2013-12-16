@@ -106,4 +106,11 @@ public interface QueryHandlersLocator {
      */
     Collection<QueryHandlerFilter> getFiltersForHandlerClass(Class<? extends QueryHandler> handlerClass);
 
+
+    /**
+     * @param filterClass the filter class
+     * @return Return true if the filter is registered, false overwise
+     */
+    boolean containsFilter(Class<? extends QueryHandlerFilter> filterClass);
+
 }

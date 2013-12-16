@@ -13,6 +13,7 @@ import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.cqrs.Adapter;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
@@ -57,6 +58,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
                 , Lists.<QueryHandler>newArrayList()
                 , Lists.<Repository>newArrayList()
                 , Lists.<EventListener>newArrayList()
+                , Lists.<Adapter>newArrayList()
                 , new AccountDomain()
                 , "AccountDomain"
         );

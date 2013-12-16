@@ -8,6 +8,7 @@ package com.viadeo.kasper.client.platform.domain;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
+import com.viadeo.kasper.cqrs.Adapter;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
@@ -66,6 +67,11 @@ public interface DomainBundle {
      */
     List<Repository> getRepositories();
 
+       /**
+         * @return all adapters used by the components of this domain bundle
+         */
+    List<Adapter> getAdapters();
+
     // ========================================================================
 
     public static class Builder {
@@ -77,6 +83,7 @@ public interface DomainBundle {
         private final List<QueryHandler> queryHandlers = Lists.newArrayList();
         private final List<EventListener> eventListeners = Lists.newArrayList();
         private final List<Repository> repositories = Lists.newArrayList();
+        private final List<Adapter> adapters = Lists.newArrayList();
 
         // --------------------------------------------------------------------
 
@@ -87,24 +94,42 @@ public interface DomainBundle {
 
         // --------------------------------------------------------------------
 
-        public Builder with(final CommandHandler commandHandler){
-            commandHandlers.add(checkNotNull(commandHandler));
+        public Builder with(final CommandHandler commandHandler, final CommandHandler... commandHandlers){
+            this.commandHandlers.add(checkNotNull(commandHandler));
+            with(this.commandHandlers, commandHandlers);
             return this;
         }
 
-        public Builder with(final QueryHandler queryHandler){
-            queryHandlers.add(checkNotNull(queryHandler));
+        public Builder with(final QueryHandler queryHandler, final QueryHandler... queryHandlers){
+            this.queryHandlers.add(checkNotNull(queryHandler));
+            with(this.queryHandlers, queryHandlers);
             return this;
         }
 
-        public Builder with(final EventListener eventListener){
-            eventListeners.add(checkNotNull(eventListener));
+        public Builder with(final EventListener eventListener, final EventListener... eventListeners){
+            this.eventListeners.add(checkNotNull(eventListener));
+            with(this.eventListeners, eventListeners);
             return this;
         }
 
-        public Builder with(final Repository repository){
-            repositories.add(checkNotNull(repository));
+        public Builder with(final Repository repository, final Repository... repositories){
+            this.repositories.add(checkNotNull(repository));
+            with(this.repositories, repositories);
             return this;
+        }
+
+        public Builder with(final Adapter adapter, final Adapter... adapters){
+            this.adapters.add(checkNotNull(adapter));
+            with(this.adapters, adapters);
+            return this;
+        }
+
+        @SafeVarargs
+        private final <COMP> void with(List<COMP> collection, COMP... components) {
+            checkNotNull(commandHandlers);
+            for (final COMP component : components) {
+                collection.add(checkNotNull(component));
+            }
         }
 
         public DomainBundle build(){
@@ -113,6 +138,7 @@ public interface DomainBundle {
                     queryHandlers,
                     repositories,
                     eventListeners,
+                    adapters,
                     domain,
                     domainName
             );

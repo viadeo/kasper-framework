@@ -13,6 +13,7 @@ import com.viadeo.kasper.cqrs.query.QueryHandlerFilter;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.exception.KasperException;
 import org.junit.After;
 import org.junit.Test;
 
@@ -73,15 +74,29 @@ public class KasperQueryGatewayUTest {
         assertEquals(queryGateway, queryHandler.getQueryGateway());
     }
 
-    @Test
-    public void register_withQueryHandler_withFilters_shouldBeRegistered(){
+    @Test(expected = KasperException.class)
+    public void register_withQueryHandler_withoutRegisteredFilters_shouldThrownException(){
         // Given
         final QueryHandler queryHandler = new QueryHandlerWithFiltersForTest();
 
         // When
         queryGateway.register(queryHandler);
 
+        // Then throw an exception
+    }
+
+    @Test(expected = KasperException.class)
+    public void register_withQueryHandler_withRegisteredFilters_shouldThrownException(){
+        // Given
+        final QueryHandler queryHandler = new QueryHandlerWithFiltersForTest();
+        queryGateway.register("test", new Filter1());
+        reset(queryHandlersLocator);
+
+        // When
+        queryGateway.register(queryHandler);
+
         // Then
+        verify(queryHandlersLocator).containsFilter(Filter1.class);
         verify(queryHandlersLocator).registerFilterForQueryHandler(refEq(QueryHandlerWithFiltersForTest.class), refEq(Filter1.class));
         verify(queryHandlersLocator).registerHandler(refEq("QueryHandlerWithFiltersForTest"), refEq(queryHandler), refEq(Domain.class));
         verifyNoMoreInteractions(queryHandlersLocator);

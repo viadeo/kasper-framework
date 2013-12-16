@@ -15,6 +15,7 @@ import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.cqrs.Adapter;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -247,6 +248,7 @@ public class FixtureUseCase {
                 , Lists.<QueryHandler>newArrayList( new TestGetSomeDataQueryHandler())
                 , Lists.<Repository>newArrayList(new TestRepository())
                 , Lists.<EventListener>newArrayList()
+                , Lists.<Adapter>newArrayList()
                 , new TestDomain()
                 , "TestDomain"
         );

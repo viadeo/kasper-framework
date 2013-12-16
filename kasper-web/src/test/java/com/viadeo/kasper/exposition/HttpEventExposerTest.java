@@ -14,6 +14,7 @@ import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
+import com.viadeo.kasper.cqrs.Adapter;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
@@ -79,6 +80,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
                 Lists.<QueryHandler>newArrayList(),
                 Lists.<Repository>newArrayList(),
                 Lists.<EventListener>newArrayList(new AccountCreatedEventListener()),
+                Lists.<Adapter>newArrayList(),
                 new TestDomain(),
                 "TestDomain"
         );

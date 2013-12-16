@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContext;
+import com.viadeo.kasper.cqrs.Adapter;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
@@ -47,6 +48,7 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
                 , Lists.<QueryHandler>newArrayList(new ContextCheckQueryHandler())
                 , Lists.<Repository>newArrayList()
                 , Lists.<EventListener>newArrayList()
+                , Lists.<Adapter>newArrayList()
                 , new AccountDomain()
                 , "AccountDomain"
         );

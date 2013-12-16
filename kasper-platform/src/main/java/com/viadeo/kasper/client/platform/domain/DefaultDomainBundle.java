@@ -9,6 +9,7 @@ package com.viadeo.kasper.client.platform.domain;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
+import com.viadeo.kasper.cqrs.Adapter;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
@@ -25,6 +26,7 @@ public class DefaultDomainBundle implements DomainBundle {
     protected final List<QueryHandler> queryHandlers;
     protected final List<Repository> repositories;
     protected final List<EventListener> eventListeners;
+    protected final List<Adapter> adapters;
     protected final Domain domain;
     protected final String name;
 
@@ -39,6 +41,7 @@ public class DefaultDomainBundle implements DomainBundle {
              Lists.<QueryHandler>newArrayList(),
              Lists.<Repository>newArrayList(),
              Lists.<EventListener>newArrayList(),
+             Lists.<Adapter>newArrayList(),
              domain,
              name
         );
@@ -48,12 +51,14 @@ public class DefaultDomainBundle implements DomainBundle {
                                final List<QueryHandler> queryHandlers,
                                final List<Repository> repositories,
                                final List<EventListener> eventListeners,
+                               final List<Adapter> adapters,
                                final Domain domain,
                                final String name) {
         this.commandHandlers = checkNotNull(commandHandlers);
         this.queryHandlers = checkNotNull(queryHandlers);
         this.repositories = checkNotNull(repositories);
         this.eventListeners = checkNotNull(eventListeners);
+        this.adapters = checkNotNull(adapters);
         this.domain = checkNotNull(domain);
         this.name = checkNotNull(name);
     }
@@ -93,4 +98,8 @@ public class DefaultDomainBundle implements DomainBundle {
         return repositories;
     }
 
+    @Override
+    public List<Adapter> getAdapters() {
+        return adapters;
+    }
 }

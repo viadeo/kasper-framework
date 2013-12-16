@@ -17,11 +17,16 @@ import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfigurati
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryFilter;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
@@ -29,11 +34,11 @@ import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.QueryEventListener;
+import com.viadeo.kasper.exception.KasperException;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
-import java.util.List;
 
 import static com.viadeo.kasper.client.platform.Platform.ExtraComponentKey;
 import static org.junit.Assert.assertEquals;
@@ -46,7 +51,23 @@ public class PlatformBuilderUTest {
 
     private static class TestDomain implements Domain { }
 
-    private static class TestConcept extends Concept {}
+    private static class TestConcept extends Concept { }
+
+    private static class TestQueryFilter implements QueryFilter<Query> {
+
+        @Override
+        public Query adapt(Context context, Query input) {
+            return input;
+        }
+
+        @Override
+        public String getName() {
+            return TestQueryFilter.class.getSimpleName();
+        }
+    }
+
+    @XKasperQueryHandler(domain = TestDomain.class, filters = {TestQueryFilter.class})
+    private static class TestQueryHandler extends QueryHandler<Query, QueryResult> { }
 
     private static class TestRepository extends Repository<TestConcept> {
 
@@ -235,12 +256,7 @@ public class PlatformBuilderUTest {
     @Test
     public void build_withDomainBundle_shouldConfiguredTheBundle(){
         // Given
-        final DomainBundle domainBundle = createMockedDomainBundle(
-                Lists.<CommandHandler>newArrayList(),
-                Lists.<QueryHandler>newArrayList(),
-                Lists.<Repository>newArrayList(),
-                Lists.<EventListener>newArrayList()
-        );
+        final DomainBundle domainBundle = spy(new DomainBundle.Builder(new TestDomain()).build());
 
         final KasperEventBus eventBus = mock(KasperEventBus.class);
         final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
@@ -295,12 +311,9 @@ public class PlatformBuilderUTest {
         // Given
         final CommandHandler commandHandler = mock(CommandHandler.class);
 
-        final DomainBundle domainBundle = createMockedDomainBundle(
-                Lists.<CommandHandler>newArrayList(commandHandler),
-                Lists.<QueryHandler>newArrayList(),
-                Lists.<Repository>newArrayList(),
-                Lists.<EventListener>newArrayList()
-        );
+        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
+                .with(commandHandler)
+                .build();
 
         final KasperEventBus eventBus = mock(KasperEventBus.class);
         final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
@@ -328,12 +341,9 @@ public class PlatformBuilderUTest {
         // Given
         final QueryHandler queryHandler = mock(QueryHandler.class);
 
-        final DomainBundle domainBundle = createMockedDomainBundle(
-                Lists.<CommandHandler>newArrayList(),
-                Lists.<QueryHandler>newArrayList(queryHandler),
-                Lists.<Repository>newArrayList(),
-                Lists.<EventListener>newArrayList()
-        );
+        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
+                .with(queryHandler)
+                .build();
 
         final KasperEventBus eventBus = mock(KasperEventBus.class);
         final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
@@ -360,12 +370,9 @@ public class PlatformBuilderUTest {
         // Given
         final EventListener eventListener = mock(EventListener.class);
 
-        final DomainBundle domainBundle = createMockedDomainBundle(
-                Lists.<CommandHandler>newArrayList(),
-                Lists.<QueryHandler>newArrayList(),
-                Lists.<Repository>newArrayList(),
-                Lists.<EventListener>newArrayList(eventListener)
-        );
+        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
+                .with(eventListener)
+                .build();
 
         final KasperEventBus eventBus = mock(KasperEventBus.class);
         final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
@@ -394,12 +401,9 @@ public class PlatformBuilderUTest {
         // Given
         final CommandEventListener eventListener = mock(CommandEventListener.class);
 
-        final DomainBundle domainBundle = createMockedDomainBundle(
-                Lists.<CommandHandler>newArrayList(),
-                Lists.<QueryHandler>newArrayList(),
-                Lists.<Repository>newArrayList(),
-                Lists.<EventListener>newArrayList(eventListener)
-        );
+        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
+                .with(eventListener)
+                .build();
 
         final KasperEventBus eventBus = mock(KasperEventBus.class);
         final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
@@ -429,12 +433,9 @@ public class PlatformBuilderUTest {
         // Given
         final QueryEventListener eventListener = mock(QueryEventListener.class);
 
-        final DomainBundle domainBundle = createMockedDomainBundle(
-                Lists.<CommandHandler>newArrayList(),
-                Lists.<QueryHandler>newArrayList(),
-                Lists.<Repository>newArrayList(),
-                Lists.<EventListener>newArrayList(eventListener)
-        );
+        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
+                .with(eventListener)
+                .build();
 
         final KasperEventBus eventBus = mock(KasperEventBus.class);
         final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
@@ -464,12 +465,9 @@ public class PlatformBuilderUTest {
         // Given
         final Repository repository = spy(new TestRepository());
 
-        final DomainBundle domainBundle = createMockedDomainBundle(
-                Lists.<CommandHandler>newArrayList(),
-                Lists.<QueryHandler>newArrayList(),
-                Lists.<Repository>newArrayList(repository),
-                Lists.<EventListener>newArrayList()
-        );
+        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
+                .with(repository)
+                .build();
 
         final KasperEventBus eventBus = mock(KasperEventBus.class);
         final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
@@ -497,12 +495,7 @@ public class PlatformBuilderUTest {
     @Test
     public void build_withExtraComponent_shouldConfiguredTheBundle() throws Exception {
         // Given
-        final DomainBundle domainBundle = createMockedDomainBundle(
-                Lists.<CommandHandler>newArrayList(),
-                Lists.<QueryHandler>newArrayList(),
-                Lists.<Repository>newArrayList(),
-                Lists.<EventListener>newArrayList()
-        );
+        final DomainBundle domainBundle = spy(new DomainBundle.Builder(new TestDomain()).build());
 
         final KasperEventBus eventBus = mock(KasperEventBus.class);
         final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
@@ -532,6 +525,70 @@ public class PlatformBuilderUTest {
         verify(domainBundle).configure(refEq(new Platform.BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, expectedExtraComponents)));
     }
 
+    @Test
+    public void build_withDomainBundle_containingAdapter_shouldThrownException(){
+        // Given
+        TestQueryFilter adapter = new TestQueryFilter();
+        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
+                .with(adapter)
+                .build();
+
+        final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
+
+        Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
+                .withQueryGateway(queryGateway)
+                .addDomainBundle(domainBundle);
+
+        // When
+        Platform platform = builder.build();
+
+        // Then
+        assertNotNull(platform);
+        verify(queryGateway).register(refEq(adapter.getName()), refEq(adapter));
+        verifyNoMoreInteractions(queryGateway);
+    }
+
+    @Test(expected = KasperException.class)
+    public void build_withDomainBundle_containingQueryHandler_andReferencingAnUnknownFilter_shouldThrownException(){
+        // Given
+        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
+                .with(new TestQueryHandler())
+                .build();
+
+        Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration()).addDomainBundle(domainBundle);
+
+        // When
+        builder.build();
+
+        // Then throws an exception
+    }
+
+    @Test
+    public void build_withDomainBundle_containingQueryHandler_andReferencingAnKnownFilter_shouldBeWired(){
+        // Given
+        TestQueryFilter adapter = new TestQueryFilter();
+        TestQueryHandler queryHandler = new TestQueryHandler();
+        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
+                .with(queryHandler)
+                .with(adapter)
+                .build();
+
+        KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
+
+        Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
+                .withQueryGateway(queryGateway)
+                .addDomainBundle(domainBundle);
+
+        // When
+        Platform platform = builder.build();
+
+        // Then
+        assertNotNull(platform);
+        verify(queryGateway).register(refEq(adapter.getName()), refEq(adapter));
+        verify(queryGateway).register(refEq(queryHandler));
+        verifyNoMoreInteractions(queryGateway);
+    }
+
     private DomainDescriptorFactory createMockedDomainDescriptorFactory(){
         final DomainDescriptorFactory domainDescriptorFactory = mock(DomainDescriptorFactory.class);
         when(domainDescriptorFactory.createFrom(any(DomainBundle.class))).thenReturn(
@@ -545,20 +602,6 @@ public class PlatformBuilderUTest {
                 )
         );
         return domainDescriptorFactory;
-    }
-
-    private DomainBundle createMockedDomainBundle(final List<CommandHandler> commandHandlers,
-                                                  final List<QueryHandler> queryHandlers,
-                                                  final List<Repository> repositories,
-                                                  final List<EventListener> eventListeners) {
-        final DomainBundle domainBundle = mock(DomainBundle.class);
-        when(domainBundle.getName()).thenReturn("MockedDomain");
-        when(domainBundle.getDomain()).thenReturn(new TestDomain());
-        when(domainBundle.getCommandHandlers()).thenReturn(commandHandlers);
-        when(domainBundle.getQueryHandlers()).thenReturn(queryHandlers);
-        when(domainBundle.getRepositories()).thenReturn(repositories);
-        when(domainBundle.getEventListeners()).thenReturn(eventListeners);
-        return domainBundle;
     }
 
 }

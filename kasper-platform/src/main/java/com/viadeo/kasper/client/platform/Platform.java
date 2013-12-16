@@ -21,6 +21,7 @@ import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.*;
+import com.viadeo.kasper.cqrs.Adapter;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
@@ -28,6 +29,7 @@ import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryHandlerFilter;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.CommandEventListener;
@@ -187,6 +189,14 @@ public interface Platform {
                 LOGGER.info("Configuring bundle : {}", bundle.getName());
 
                 bundle.configure(context);
+
+                for (final Adapter adapter : bundle.getAdapters()) {
+                    if (QueryHandlerFilter.class.isAssignableFrom(adapter.getClass())) {
+                        queryGateway.register(adapter.getName(), (QueryHandlerFilter) adapter);
+                    } else {
+                        LOGGER.warn("Unknown adapter : {}", adapter.getClass().getName());
+                    }
+                }
 
                 for (final Repository repository : bundle.getRepositories()) {
                     repository.init();

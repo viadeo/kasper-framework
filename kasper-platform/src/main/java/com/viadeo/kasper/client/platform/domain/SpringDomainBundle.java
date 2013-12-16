@@ -11,7 +11,9 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.query.QueryFilter;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryResponseFilter;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
@@ -122,6 +124,8 @@ public class SpringDomainBundle extends DefaultDomainBundle {
         this.repositories.addAll(applicationContext.getBeansOfType(Repository.class).values());
         this.queryHandlers.addAll(applicationContext.getBeansOfType(QueryHandler.class).values());
         this.eventListeners.addAll(applicationContext.getBeansOfType(EventListener.class).values());
+        this.adapters.addAll(applicationContext.getBeansOfType(QueryFilter.class).values());
+        this.adapters.addAll(applicationContext.getBeansOfType(QueryResponseFilter.class).values());
     }
 
     protected void doConfigure(final ConfigurableListableBeanFactory beanFactory, final  Platform.BuilderContext context) {

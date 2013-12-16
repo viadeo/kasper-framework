@@ -43,7 +43,7 @@ public class QueryHandlerFiltersProcessor extends SingletonAnnotationProcessor<X
 	 */
 	@Override
 	public void process(final Class queryFilterClazz, final QueryHandlerFilter queryFilter) {
-		LOGGER.info("Record filter on query handlers locator : " + queryFilterClazz.getName());
+		LOGGER.info("Record adapter on query handlers locator : " + queryFilterClazz.getName());
 
 		final String filterName;
 		final XKasperQueryHandlerFilter annotation = (XKasperQueryHandlerFilter)
@@ -62,7 +62,7 @@ public class QueryHandlerFiltersProcessor extends SingletonAnnotationProcessor<X
 
         final boolean isGlobal = annotation.global();
 
-        //- Register the query filter to the locator -------------------------
+        //- Register the query adapter to the locator -------------------------
 		this.queryHandlersLocator.registerFilter(filterName, queryFilter, isGlobal, stickyDomainClass);
 	}
 
