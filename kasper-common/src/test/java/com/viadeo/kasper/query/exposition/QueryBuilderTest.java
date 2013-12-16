@@ -120,5 +120,4 @@ public class QueryBuilderTest {
         assertEquals(new URI("http://www.google.com/somepath?name=f%C3%A9e&names=foo&names=bar").toASCIIString(),
                 builder.build(new URI("http://www.google.com/somepath")).toASCIIString());
     }
-
 }
