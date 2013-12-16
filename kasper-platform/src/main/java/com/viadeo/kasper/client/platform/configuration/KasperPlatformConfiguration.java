@@ -16,6 +16,8 @@ import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 
+import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus.Policy;
+
 /**
  * The KasperPlatformConfiguration class provides default implementation of the components required by the  {@link com.viadeo.kasper.client.platform.Platform}.
  *
@@ -32,7 +34,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     public KasperPlatformConfiguration() {
-        this.eventBus = new KasperEventBus();
+        this.eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
         this.queryGateway = new KasperQueryGateway();
         this.metricRegistry = new MetricRegistry();
         this.configuration = ConfigFactory.empty();
