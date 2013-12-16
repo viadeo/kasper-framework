@@ -67,7 +67,7 @@ class BeanQueryMapper implements TypeAdapter<Query> {
     }
 
     private SortedSet<PropertyAdapter> sortPropertyAdapterSet(Set<PropertyAdapter> propertyAdapters) {
-        SortedSet<PropertyAdapter> sorted = new TreeSet<>(new Comparator<PropertyAdapter>() {
+        SortedSet<PropertyAdapter> sorted = new TreeSet<PropertyAdapter>(new Comparator<PropertyAdapter>() {
             @Override
             public int compare(PropertyAdapter o1, PropertyAdapter o2) {
                 return o1.getName().compareTo(o2.getName());
