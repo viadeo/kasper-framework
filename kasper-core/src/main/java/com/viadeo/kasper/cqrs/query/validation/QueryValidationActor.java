@@ -6,11 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.validation;
 
-import com.google.common.base.Optional;
-import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
-import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryRequestActor;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
@@ -34,7 +31,6 @@ public class QueryValidationActor<Q extends Query, P extends QueryResult> implem
     // ------------------------------------------------------------------------
 
     @Override
-    @SuppressWarnings("unchecked")
     public QueryResponse<P> process(final Q q, final Context context, final RequestActorsChain<Q, QueryResponse<P>> chain) throws Exception {
         validate(validatorFactory, q);
         return chain.next(q, context);

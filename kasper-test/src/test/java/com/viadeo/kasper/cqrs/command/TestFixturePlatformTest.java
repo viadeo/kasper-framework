@@ -100,9 +100,6 @@ public class TestFixturePlatformTest {
 
     @Test
     public void testSimpleExpectedValidationOnQuery() {
-
-        final KasperID createId = DefaultKasperId.random();
-
         fixture
             .given()
             .when(
@@ -113,13 +110,11 @@ public class TestFixturePlatformTest {
 
     // ------------------------------------------------------------------------
 
-    @Test
+    @Test(expected = AxonAssertionError.class)
     public void testSimpleExpectedValidationOnBadField() {
-
         final KasperID createId = DefaultKasperId.random();
 
-        try {
-            fixture
+        fixture
                 .given()
                 .when(
                     new TestCreateCommand(
@@ -128,9 +123,6 @@ public class TestFixturePlatformTest {
                     )
                 )
                 .expectValidationErrorOnField("foo");
-        } catch (final AxonAssertionError e) {
-            // expected
-        }
 
     }
 
