@@ -292,12 +292,12 @@ public interface Platform {
                               final MetricRegistry metricRegistry,
                               final Map<ExtraComponentKey, Object> extraComponent
         ) {
-            this.configuration = configuration;
-            this.eventBus = eventBus;
-            this.commandGateway = commandGateway;
-            this.queryGateway = queryGateway;
-            this.metricRegistry = metricRegistry;
-            this.extraComponent = extraComponent;
+            this.configuration = checkNotNull(configuration);
+            this.eventBus = checkNotNull(eventBus);
+            this.commandGateway = checkNotNull(commandGateway);
+            this.queryGateway = checkNotNull(queryGateway);
+            this.metricRegistry = checkNotNull(metricRegistry);
+            this.extraComponent = checkNotNull(extraComponent);
         }
 
         // --------------------------------------------------------------------
@@ -325,6 +325,10 @@ public interface Platform {
         @SuppressWarnings("unchecked")
         public <E> Optional<E> getExtraComponent(final String name, final Class<E> clazz) {
             return Optional.fromNullable((E) extraComponent.get(new ExtraComponentKey(name, clazz)));
+        }
+
+        public Map<ExtraComponentKey, Object> getExtraComponents(){
+            return extraComponent;
         }
 
     }
