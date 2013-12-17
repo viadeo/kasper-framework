@@ -16,7 +16,7 @@ import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.cache.impl.AnnotationQueryCacheActorFactory;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.cqrs.query.impl.QueryFiltersActor;
+import com.viadeo.kasper.cqrs.query.impl.QueryAdaptersActor;
 import com.viadeo.kasper.cqrs.query.impl.QueryHandlerActor;
 import com.viadeo.kasper.cqrs.query.validation.QueryValidationActor;
 import com.viadeo.kasper.ddd.Domain;
@@ -39,21 +39,21 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DefaultQueryHandlersLocator.class);
 
-    private static final Collection<QueryHandlerFilter> EMPTY_FILTERS =
-            unmodifiableCollection(new ArrayList<QueryHandlerFilter>());
+    private static final Collection<QueryHandlerAdapter> EMPTY_ADAPTERS =
+            unmodifiableCollection(new ArrayList<QueryHandlerAdapter>());
 
     /**
-     * Registered handlers and filters
+     * Registered handlers and adapters
      */
     @SuppressWarnings("rawtypes")
     private final ClassToInstanceMap<QueryHandler> handlers = MutableClassToInstanceMap.create();
-    private final ClassToInstanceMap<QueryHandlerFilter> filters = MutableClassToInstanceMap.create();
+    private final ClassToInstanceMap<QueryHandlerAdapter> adapters = MutableClassToInstanceMap.create();
     private final Map<Class<? extends QueryHandler>, Class<? extends Domain>> handlerDomains = Maps.newHashMap();
 
     /**
-     * Global filters *
+     * Global adapters *
      */
-    private final List<Class<? extends QueryHandlerFilter>> globalFilters = Lists.newArrayList();
+    private final List<Class<? extends QueryHandlerAdapter>> globalAdapters = Lists.newArrayList();
 
     /**
      * Registered query classes and associated handler instances
@@ -72,11 +72,11 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     private final Map<String, QueryHandler> handlerNames = newHashMap();
 
     /**
-     * Association of filters per handler and domains *
+     * Association of adapters per handler and domains *
      */
-    private final Map<Class<? extends QueryHandler>, List<Class<? extends QueryHandlerFilter>>> appliedFilters = newHashMap();
-    private final Map<Class<? extends QueryHandler>, List<QueryHandlerFilter>> instanceFilters = newHashMap();
-    private final Map<Class<? extends QueryHandlerFilter>, Class<? extends Domain>> isDomainSticky = Maps.newHashMap();
+    private final Map<Class<? extends QueryHandler>, List<Class<? extends QueryHandlerAdapter>>> appliedAdapters = newHashMap();
+    private final Map<Class<? extends QueryHandler>, List<QueryHandlerAdapter>> instanceAdapters = newHashMap();
+    private final Map<Class<? extends QueryHandlerAdapter>, Class<? extends Domain>> isDomainSticky = Maps.newHashMap();
 
     /**
      * The factory for caches
@@ -145,70 +145,70 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
     /* Filter name is not currently used in the locator */
     @Override
-    public void registerFilter(final String name, final QueryHandlerFilter queryFilter, final boolean isGlobal, final Class<? extends Domain> stickyDomainClass) {
+    public void registerAdapter(final String name, final QueryHandlerAdapter adapter, final boolean isGlobal, final Class<? extends Domain> stickyDomainClass) {
         checkNotNull(name);
-        checkNotNull(queryFilter);
+        checkNotNull(adapter);
 
-        final Class<? extends QueryHandlerFilter> queryFilterClass = queryFilter.getClass();
+        final Class<? extends QueryHandlerAdapter> adapterClass = adapter.getClass();
 
         if (name.isEmpty()) {
-            throw new KasperQueryException("Name of filter cannot be empty : " + queryFilterClass);
+            throw new KasperQueryException("Name of adapter cannot be empty : " + adapterClass);
         }
 
-        final QueryHandlerFilter queryHandlerFilter = filters.get(queryFilterClass);
+        final QueryHandlerAdapter queryHandlerAdapter = adapters.get(adapterClass);
 
-        if (null != queryHandlerFilter) {
+        if (null != queryHandlerAdapter) {
             throw new KasperQueryException(
-                    "The specified filter is already registered : "
-                            + queryFilterClass);
+                    "The specified adapter is already registered : "
+                            + queryHandlerAdapter);
         }
 
-        this.filters.put(queryFilterClass, queryFilter);
+        this.adapters.put(adapterClass, adapter);
 
         if (isGlobal) {
-            this.globalFilters.add(queryFilterClass);
-            this.instanceFilters.clear(); // Drop all handler instances caches
+            this.globalAdapters.add(adapterClass);
+            this.instanceAdapters.clear(); // Drop all handler instances caches
             if (null != stickyDomainClass) {
-                this.isDomainSticky.put(queryFilter.getClass(), stickyDomainClass);
+                this.isDomainSticky.put(adapter.getClass(), stickyDomainClass);
             }
         }
 
     }
 
     @Override
-    public void registerFilter(final String name,
-                               final QueryHandlerFilter queryFilter,
-                               final boolean isGlobal) {
-        this.registerFilter(name, queryFilter, isGlobal, null);
+    public void registerAdapter(final String name, 
+                                final QueryHandlerAdapter adapter, 
+                                final boolean isGlobal) {
+        this.registerAdapter(name, adapter, isGlobal, null);
     }
 
     @Override
-    public void registerFilter(final String name, final QueryHandlerFilter queryFilter) {
-        this.registerFilter(name, queryFilter, false, null);
+    public void registerAdapter(final String name, final QueryHandlerAdapter adapter) {
+        this.registerAdapter(name, adapter, false, null);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public void registerFilterForQueryHandler(final Class<? extends QueryHandler> queryHandlerClass,
-                                              final Class<? extends QueryHandlerFilter> filterClass) {
+    public void registerAdapterForQueryHandler(final Class<? extends QueryHandler> queryHandlerClass,
+                                               final Class<? extends QueryHandlerAdapter> adapterClass) {
         checkNotNull(queryHandlerClass);
-        checkNotNull(filterClass);
+        checkNotNull(adapterClass);
 
-        final List<Class<? extends QueryHandlerFilter>> handlerFilters;
+        final List<Class<? extends QueryHandlerAdapter>> handlerAdapters;
 
-        if ( ! this.appliedFilters.containsKey(queryHandlerClass)) {
-            handlerFilters = newArrayList();
-            this.appliedFilters.put(queryHandlerClass, handlerFilters);
-        } else if ( ! this.appliedFilters.get(queryHandlerClass).contains(filterClass)) {
-            handlerFilters = this.appliedFilters.get(queryHandlerClass);
+       if ( ! this.appliedAdapters.containsKey(queryHandlerClass)) {
+            handlerAdapters = newArrayList();
+            this.appliedAdapters.put(queryHandlerClass, handlerAdapters);
+        } else if ( ! this.appliedAdapters.get(queryHandlerClass).contains(adapterClass)) {
+            handlerAdapters = this.appliedAdapters.get(queryHandlerClass);
         } else {
-            handlerFilters = null;
+            handlerAdapters = null;
         }
 
-        if (null != handlerFilters) {
-            handlerFilters.add(filterClass);
-            this.instanceFilters.remove(queryHandlerClass); // Drop cache of instances
+        if (null != handlerAdapters) {
+            handlerAdapters.add(adapterClass);
+            this.instanceAdapters.remove(queryHandlerClass); // Drop cache of instances
         }
     }
 
@@ -258,7 +258,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
                 final QueryHandler<Q, P> qs = optionalQS.get();
                 final Class<? extends QueryHandler<Q, P>> qsClass = (Class<? extends QueryHandler<Q, P>>) qs.getClass();
 
-                final Collection<QueryHandlerFilter> handlerFilters = getFiltersForHandlerClass(qsClass);
+                final Collection<QueryHandlerAdapter> handlerAdapters = getAdaptersForHandlerClass(qsClass);
                 final List<RequestActor<Q, R>> requestActors = Lists.newArrayList();
 
                 /* Add cache actor if required */
@@ -274,8 +274,8 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
                     LOGGER.warn("No implementation found for BEAN VALIDATION - JSR 303", ve);
                 }
 
-                /* Add filters actor */
-                requestActors.add(filtersActor(handlerFilters));
+                /* Add adapters actor */
+                requestActors.add(adaptersActor(handlerAdapters));
 
                 /* Add handler actor */
                 requestActors.add(new QueryHandlerActor(qs));
@@ -292,15 +292,15 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    private QueryFiltersActor filtersActor(final Collection<QueryHandlerFilter> handlerFilters) {
+    private QueryAdaptersActor adaptersActor(final Collection<QueryHandlerAdapter> handlerAdapters) {
 
-        final Collection<QueryFilter> queryFilters =
-                Lists.newArrayList(Iterables.filter(handlerFilters, QueryFilter.class));
+        final Collection<QueryAdapter> queryAdapters =
+                Lists.newArrayList(Iterables.filter(handlerAdapters, QueryAdapter.class));
 
-        final Collection<QueryResponseFilter> responseFilters =
-                Lists.newArrayList(Iterables.filter(handlerFilters, QueryResponseFilter.class));
+        final Collection<QueryResponseAdapter> responseFilters =
+                Lists.newArrayList(Iterables.filter(handlerAdapters, QueryResponseAdapter.class));
 
-        return new QueryFiltersActor(queryFilters, responseFilters);
+        return new QueryAdaptersActor(queryAdapters, responseFilters);
     }
 
     @Override
@@ -311,24 +311,23 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     // ------------------------------------------------------------------------
 
     @Override
-    public Collection<QueryHandlerFilter> getFiltersForHandlerClass(final Class<? extends QueryHandler> handlerClass) {
+    public Collection<QueryHandlerAdapter> getAdaptersForHandlerClass(final Class<? extends QueryHandler> handlerClass) {
 
-        // Ensure handler has filters
-        if ( ! this.appliedFilters.containsKey(handlerClass) && this.globalFilters.isEmpty()) {
-            return EMPTY_FILTERS;
+       // Ensure handler has adapters
+        if ( ! this.appliedAdapters.containsKey(handlerClass) && this.globalAdapters.isEmpty()) {
+            return EMPTY_ADAPTERS;
         }
 
-
         // Ensure instances has been collected, lazy loading
-        if (!this.instanceFilters.containsKey(handlerClass)) {
-            List<Class<? extends QueryHandlerFilter>> filtersToApply = this.appliedFilters.get(handlerClass);
+        if ( ! this.instanceAdapters.containsKey(handlerClass)) {
+            List<Class<? extends QueryHandlerAdapter>> filtersToApply = this.appliedAdapters.get(handlerClass);
 
             if (null == filtersToApply) {
                 filtersToApply = Lists.newArrayList();
             }
 
-            // Apply required global filters
-            for (final Class<? extends QueryHandlerFilter> globalFilterClass : this.globalFilters) {
+            // Apply required global adapters
+            for (final Class<? extends QueryHandlerAdapter> globalFilterClass : this.globalAdapters) {
                 if (this.isDomainSticky.containsKey(globalFilterClass)) {
                     final Class<? extends Domain> stickyDomainClass = this.isDomainSticky.get(globalFilterClass);
                     if ((null != stickyDomainClass) && stickyDomainClass.equals(this.handlerDomains.get(handlerClass))) {
@@ -339,26 +338,26 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
                 }
             }
 
-            // Copy required filters instances to this handler cache
-            final List<QueryHandlerFilter> instances = newArrayList();
-            for (final Class<? extends QueryHandlerFilter> filterClass : Sets.newHashSet(filtersToApply)) {
-                if (this.filters.containsKey(filterClass)) {
-                    instances.add(this.filters.get(filterClass));
+            // Copy required adapters instances to this handler cache
+            final List<QueryHandlerAdapter> instances = newArrayList();
+            for (final Class<? extends QueryHandlerAdapter> adapterClass : Sets.newHashSet(filtersToApply)) {
+                if (this.adapters.containsKey(adapterClass)) {
+                    instances.add(this.adapters.get(adapterClass));
                 } else {
                     LOGGER.error(String.format("Query handler %s asks to be filtered, but no instance of adapter %s can be found in records",
-                            handlerClass, filterClass));
+                            handlerClass, adapterClass));
                 }
             }
-            this.instanceFilters.put(handlerClass, instances);
+            this.instanceAdapters.put(handlerClass, instances);
         }
 
         // Return the filter instances
-        return unmodifiableCollection(this.instanceFilters.get(handlerClass));
+        return unmodifiableCollection(this.instanceAdapters.get(handlerClass));
     }
 
     @Override
-    public boolean containsFilter(final Class<? extends QueryHandlerFilter> filterClass) {
-        return filters.containsKey(filterClass);
+    public boolean containsAdapter(final Class<? extends QueryHandlerAdapter> adapterClass) {
+        return adapters.containsKey(adapterClass);
     }
 
 }

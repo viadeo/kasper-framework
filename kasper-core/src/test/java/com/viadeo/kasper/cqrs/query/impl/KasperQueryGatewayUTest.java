@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs.query.impl;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryHandlerFilter;
+import com.viadeo.kasper.cqrs.query.QueryHandlerAdapter;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.ddd.Domain;
@@ -29,10 +29,10 @@ public class KasperQueryGatewayUTest {
     @XKasperQueryHandler(domain = Domain.class)
     private static class QueryHandlerForTest extends QueryHandler<Query, QueryResult> { }
 
-    @XKasperQueryHandler(domain = Domain.class, filters = { Filter1.class })
+    @XKasperQueryHandler(domain = Domain.class, adapters = { Adapter1.class })
     private static class QueryHandlerWithFiltersForTest extends QueryHandler<Query, QueryResult> { }
 
-    private final class Filter1 implements QueryHandlerFilter { }
+    private final class Adapter1 implements QueryHandlerAdapter { }
 
     // ------------------------------------------------------------------------
 
@@ -89,15 +89,15 @@ public class KasperQueryGatewayUTest {
     public void register_withQueryHandler_withRegisteredFilters_shouldThrownException(){
         // Given
         final QueryHandler queryHandler = new QueryHandlerWithFiltersForTest();
-        queryGateway.register("test", new Filter1());
+        queryGateway.register("test", new Adapter1());
         reset(queryHandlersLocator);
 
         // When
         queryGateway.register(queryHandler);
 
         // Then
-        verify(queryHandlersLocator).containsFilter(Filter1.class);
-        verify(queryHandlersLocator).registerFilterForQueryHandler(refEq(QueryHandlerWithFiltersForTest.class), refEq(Filter1.class));
+        verify(queryHandlersLocator).containsAdapter(Adapter1.class);
+        verify(queryHandlersLocator).registerAdapterForQueryHandler(refEq(QueryHandlerWithFiltersForTest.class), refEq(Adapter1.class));
         verify(queryHandlersLocator).registerHandler(refEq("QueryHandlerWithFiltersForTest"), refEq(queryHandler), refEq(Domain.class));
         verifyNoMoreInteractions(queryHandlersLocator);
 

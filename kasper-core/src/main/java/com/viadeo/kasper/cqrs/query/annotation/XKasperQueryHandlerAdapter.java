@@ -19,7 +19,7 @@ import java.lang.annotation.Target;
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface XKasperQueryHandlerFilter {
+public @interface XKasperQueryHandlerAdapter {
 
 	/**
 	 * @return the name of the handler

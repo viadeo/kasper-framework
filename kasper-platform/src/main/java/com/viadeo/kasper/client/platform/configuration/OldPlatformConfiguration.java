@@ -37,7 +37,7 @@ public interface OldPlatformConfiguration {
 
      /**
       * @return the manager responsible to keep a reference to all Kasper platform
-      * elements (domains, command handlers, listeners, query handlers, repositories, filters, ...)
+      * elements (domains, command handlers, listeners, query handlers, repositories, adapters, ...)
      */
      ComponentsInstanceManager getComponentsInstanceManager();
 

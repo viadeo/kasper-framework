@@ -8,8 +8,8 @@ package com.viadeo.kasper.core.boot;
 
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
-import com.viadeo.kasper.cqrs.query.QueryHandlerFilter;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandlerFilter;
+import com.viadeo.kasper.cqrs.query.QueryHandlerAdapter;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandlerAdapter;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
 
@@ -20,7 +20,7 @@ import static org.mockito.Mockito.verify;
 
 public class QueryFiltersProcessorTest {
 
-    private static final String FILTER_NAME = "TestFilter";
+    private static final String FILTER_NAME = "TestAdapter";
 
     // ------------------------------------------------------------------------
 
@@ -30,14 +30,14 @@ public class QueryFiltersProcessorTest {
 
     // ------------------------------------------------------------------------
 
-    @XKasperQueryHandlerFilter( name = FILTER_NAME )
-    private static final class TestFilterSimple implements QueryHandlerFilter {
-        TestFilterSimple() {}
+    @XKasperQueryHandlerAdapter( name = FILTER_NAME )
+    private static final class TestAdapterSimple implements QueryHandlerAdapter {
+        TestAdapterSimple() {}
     }
 
-    @XKasperQueryHandlerFilter
-    private static final class TestFilterNoName implements QueryHandlerFilter {
-        TestFilterNoName() {}
+    @XKasperQueryHandlerAdapter
+    private static final class TestAdapterNoName implements QueryHandlerAdapter {
+        TestAdapterNoName() {}
     }
 
     // ------------------------------------------------------------------------
@@ -47,13 +47,13 @@ public class QueryFiltersProcessorTest {
     public void processorShouldRegisterFilterWithName() {
 
         // Given
-        final TestFilterSimple filter = new TestFilterSimple();
+        final TestAdapterSimple adapter = new TestAdapterSimple();
 
         // When
-        processor.process(filter.getClass(), filter);
+        processor.process(adapter.getClass(), adapter);
 
         // Then
-        verify(locator).registerFilter(eq(FILTER_NAME), eq(filter), eq(false), (Class<? extends Domain>) isNull());
+        verify(locator).registerAdapter(eq(FILTER_NAME), eq(adapter), eq(false), (Class<? extends Domain>) isNull());
     }
 
     @Test
@@ -61,13 +61,13 @@ public class QueryFiltersProcessorTest {
     public void processorShouldRegisterFilterWithoutName() {
 
         // Given
-        final TestFilterNoName filter = new TestFilterNoName();
+        final TestAdapterNoName adapter = new TestAdapterNoName();
 
         // When
-        processor.process(filter.getClass(), filter);
+        processor.process(adapter.getClass(), adapter);
 
         // Then
-        verify(locator).registerFilter(eq(filter.getClass().getSimpleName()), eq(filter), eq(false), (Class<? extends Domain>) isNull());
+        verify(locator).registerAdapter(eq(adapter.getClass().getSimpleName()), eq(adapter), eq(false), (Class<? extends Domain>) isNull());
     }
 
 }

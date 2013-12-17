@@ -9,10 +9,10 @@ package com.viadeo.kasper.cqrs.query;
 import com.viadeo.kasper.cqrs.Adapter;
 
 /**
- * A Kasper query filter
+ * A Kasper query response filter
  *
  * @see Query
  */
-public interface QueryFilter<Q extends Query> extends QueryHandlerFilter, Adapter<Q> { }
+public interface QueryResponseAdapter<P extends QueryResult> extends QueryHandlerAdapter, Adapter<QueryResponse<P>> { }
 
 

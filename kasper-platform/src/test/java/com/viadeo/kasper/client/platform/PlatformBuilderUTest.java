@@ -23,7 +23,7 @@ import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryFilter;
+import com.viadeo.kasper.cqrs.query.QueryAdapter;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
@@ -53,7 +53,7 @@ public class PlatformBuilderUTest {
 
     private static class TestConcept extends Concept { }
 
-    private static class TestQueryFilter implements QueryFilter<Query> {
+    private static class TestQueryAdapter implements QueryAdapter<Query> {
 
         @Override
         public Query adapt(final Context context, final Query input) {
@@ -62,11 +62,11 @@ public class PlatformBuilderUTest {
 
         @Override
         public String getName() {
-            return TestQueryFilter.class.getSimpleName();
+            return TestQueryAdapter.class.getSimpleName();
         }
     }
 
-    @XKasperQueryHandler(domain = TestDomain.class, filters = {TestQueryFilter.class})
+    @XKasperQueryHandler(domain = TestDomain.class, adapters = {TestQueryAdapter.class})
     private static class TestQueryHandler extends QueryHandler<Query, QueryResult> { }
 
     private static class TestRepository extends Repository<TestConcept> {
@@ -529,7 +529,7 @@ public class PlatformBuilderUTest {
     @Test
     public void build_withDomainBundle_containingAdapter_shouldThrownException(){
         // Given
-        final TestQueryFilter adapter = new TestQueryFilter();
+        final TestQueryAdapter adapter = new TestQueryAdapter();
         final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
                 .with(adapter)
                 .build();
@@ -569,7 +569,7 @@ public class PlatformBuilderUTest {
     @Test
     public void build_withDomainBundle_containingQueryHandler_andReferencingAnKnownFilter_shouldBeWired(){
         // Given
-        final TestQueryFilter adapter = new TestQueryFilter();
+        final TestQueryAdapter adapter = new TestQueryAdapter();
         final TestQueryHandler queryHandler = new TestQueryHandler();
         final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
                 .with(queryHandler)

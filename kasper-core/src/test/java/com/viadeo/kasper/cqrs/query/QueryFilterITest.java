@@ -54,7 +54,7 @@ public class QueryFilterITest {
     }
 
     @XKasperUnregistered
-    private class TestFilterQuery implements QueryFilter<TestQuery> {
+    private class TestFilterQuery implements QueryAdapter<TestQuery> {
         @Override
         public TestQuery adapt(final Context context, final TestQuery query) {
             query.state = STATE_MODIFIED;
@@ -68,7 +68,7 @@ public class QueryFilterITest {
     }
 
     @XKasperUnregistered
-    private class TestQueryResponse implements QueryResponseFilter<TestResult> {
+    private class TestQueryResponse implements QueryResponseAdapter<TestResult> {
         @Override
         public QueryResponse<TestResult> adapt(final Context context, final QueryResponse<TestResult> response) {
             response.getResult().state = STATE_MODIFIED;
@@ -82,7 +82,7 @@ public class QueryFilterITest {
     }
 
     @XKasperUnregistered
-    private class TestFilterGlobal implements QueryFilter<Query> {
+    private class TestAdapterGlobal implements QueryAdapter<Query> {
         @Override
         public Query adapt(final Context context, final Query query) throws KasperQueryException {
             return query;
@@ -104,20 +104,20 @@ public class QueryFilterITest {
         KasperMetrics.setMetricRegistry(new MetricRegistry());
 
         final TestHandler service = spy(new TestHandler());
-        final TestFilterQuery filter = spy(new TestFilterQuery());
-        final TestQueryResponse filterReponse = spy(new TestQueryResponse());
-        final TestFilterGlobal filterGlobal = spy(new TestFilterGlobal());
+        final TestFilterQuery adapter = spy(new TestFilterQuery());
+        final TestQueryResponse responseAdapter = spy(new TestQueryResponse());
+        final TestAdapterGlobal globalAdapter = spy(new TestAdapterGlobal());
         final DomainResolver domainResolver = new DomainResolver();
         final QueryHandlerResolver queryHandlerResolver = new QueryHandlerResolver();
         queryHandlerResolver.setDomainResolver(domainResolver);
 
         final DefaultQueryHandlersLocator locator = new DefaultQueryHandlersLocator(queryHandlerResolver);
         locator.registerHandler("testService", service, TestDomain.class);
-        locator.registerFilter("testFilter", filter);
-        locator.registerFilter("testFilter1", filterReponse);
-        locator.registerFilter("testFilter2", filterGlobal, true);
-        locator.registerFilterForQueryHandler(service.getClass(), filter.getClass());
-        locator.registerFilterForQueryHandler(service.getClass(), filterReponse.getClass());
+        locator.registerAdapter("testAdapter", adapter);
+        locator.registerAdapter("testAdapter1", responseAdapter);
+        locator.registerAdapter("testAdapter2", globalAdapter, true);
+        locator.registerAdapterForQueryHandler(service.getClass(), adapter.getClass());
+        locator.registerAdapterForQueryHandler(service.getClass(), responseAdapter.getClass());
 
         final KasperQueryGateway gateway = new KasperQueryGateway(locator);
 
@@ -131,7 +131,7 @@ public class QueryFilterITest {
         assertEquals(STATE_MODIFIED, query.state);
         assertEquals(STATE_MODIFIED, queryResponse.getResult().state);
 
-        verify(filterGlobal).adapt(eq(context), any(Query.class));
+        verify(globalAdapter).adapt(eq(context), any(Query.class));
     }
 
 }

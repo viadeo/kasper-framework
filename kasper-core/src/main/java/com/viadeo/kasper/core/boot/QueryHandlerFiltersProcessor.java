@@ -8,8 +8,8 @@ package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
-import com.viadeo.kasper.cqrs.query.QueryHandlerFilter;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandlerFilter;
+import com.viadeo.kasper.cqrs.query.QueryHandlerAdapter;
+import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandlerAdapter;
 import com.viadeo.kasper.ddd.Domain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,7 +20,7 @@ import org.slf4j.LoggerFactory;
  * 
  * @see com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler
  */
-public class QueryHandlerFiltersProcessor extends SingletonAnnotationProcessor<XKasperQueryHandlerFilter, QueryHandlerFilter> {
+public class QueryHandlerFiltersProcessor extends SingletonAnnotationProcessor<XKasperQueryHandlerAdapter, QueryHandlerAdapter> {
 	private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandlerFiltersProcessor.class);
 
 	/**
@@ -42,28 +42,28 @@ public class QueryHandlerFiltersProcessor extends SingletonAnnotationProcessor<X
 	 * @see com.viadeo.kasper.core.boot.AnnotationProcessor#process(Class)
 	 */
 	@Override
-	public void process(final Class queryFilterClazz, final QueryHandlerFilter queryFilter) {
+	public void process(final Class queryFilterClazz, final QueryHandlerAdapter queryAdapter) {
 		LOGGER.info("Record adapter on query handlers locator : " + queryFilterClazz.getName());
 
-		final String filterName;
-		final XKasperQueryHandlerFilter annotation = (XKasperQueryHandlerFilter)
-                queryFilterClazz.getAnnotation(XKasperQueryHandlerFilter.class);
+		final String name;
+		final XKasperQueryHandlerAdapter annotation = (XKasperQueryHandlerAdapter)
+                queryFilterClazz.getAnnotation(XKasperQueryHandlerAdapter.class);
 
 		if (annotation.name().isEmpty()) {
-			filterName = queryFilterClazz.getSimpleName();
+            name = queryFilterClazz.getSimpleName();
 		} else {
-			filterName = annotation.name();
+            name = annotation.name();
 		}
 
         Class<? extends Domain> stickyDomainClass = null;
-        if (!annotation.domain().equals(XKasperQueryHandlerFilter.NullDomain.class)) {
+        if (!annotation.domain().equals(XKasperQueryHandlerAdapter.NullDomain.class)) {
             stickyDomainClass = annotation.domain();
         }
 
         final boolean isGlobal = annotation.global();
 
         //- Register the query adapter to the locator -------------------------
-		this.queryHandlersLocator.registerFilter(filterName, queryFilter, isGlobal, stickyDomainClass);
+		this.queryHandlersLocator.registerAdapter(name, queryAdapter, isGlobal, stickyDomainClass);
 	}
 
 	// ------------------------------------------------------------------------

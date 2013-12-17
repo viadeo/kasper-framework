@@ -11,7 +11,7 @@ package com.viadeo.kasper.cqrs.query;
  *
  * @see com.viadeo.kasper.cqrs.query.Query
  */
-public interface QueryHandlerFilter {
+public interface QueryHandlerAdapter {
 
 }
 

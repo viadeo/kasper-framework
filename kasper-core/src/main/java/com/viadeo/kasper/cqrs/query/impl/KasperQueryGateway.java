@@ -116,10 +116,10 @@ public class KasperQueryGateway implements QueryGateway {
      * Register a query handler adapter to the gateway
      *
      * @param name the name of the adapter
-     * @param filter the query handler adapter to register
+     * @param adapter the query handler adapter to register
      */
-    public void register(final String name, final QueryHandlerFilter filter) {
-        queryHandlersLocator.registerFilter(name, filter);
+    public void register(final String name, final  QueryHandlerAdapter adapter) {
+        queryHandlersLocator.registerAdapter(name, adapter);
     }
 
     /**
@@ -142,17 +142,17 @@ public class KasperQueryGateway implements QueryGateway {
             handlerName = annotation.name();
         }
 
-        final Class<? extends QueryHandlerFilter>[] filters = annotation.filters();
+        final Class<? extends QueryHandlerAdapter>[] adapters = annotation.adapters();
 
-        if (null != filters) {
-            for (final Class<? extends QueryHandlerFilter> filterClass : filters) {
-                LOGGER.debug(String.format("  --> w/ filter %s", filterClass.getSimpleName()));
+        if (null != adapters) {
+            for (final Class<? extends QueryHandlerAdapter> adapterClass : adapters) {
+                LOGGER.debug(String.format("  --> w/ adapter %s", adapterClass.getSimpleName()));
 
-                if ( !queryHandlersLocator.containsFilter(filterClass)) {
-                    throw new KasperException("Unknown filter" + filterClass);
+                if ( !queryHandlersLocator.containsAdapter(adapterClass)) {
+                    throw new KasperException("Unknown adapter : " + adapterClass);
                 }
 
-                this.queryHandlersLocator.registerFilterForQueryHandler(queryHandlerClass, filterClass);
+                this.queryHandlersLocator.registerAdapterForQueryHandler(queryHandlerClass, adapterClass);
             }
         }
 
