@@ -25,7 +25,7 @@ public class QueryFiltersProcessorTest {
     // ------------------------------------------------------------------------
 
     final QueryHandlersLocator locator = spy(new DefaultQueryHandlersLocator());
-    final QueryHandlerFiltersProcessor processor = new QueryHandlerFiltersProcessor();
+    final QueryHandlerAdaptersProcessor processor = new QueryHandlerAdaptersProcessor();
     { processor.setQueryHandlersLocator(locator); }
 
     // ------------------------------------------------------------------------

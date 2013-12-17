@@ -550,7 +550,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test(expected = KasperException.class)
-    public void build_withDomainBundle_containingQueryHandler_andReferencingAnUnknownFilter_shouldThrownException(){
+    public void build_withDomainBundle_containingQueryHandler_andReferencingAnUnknownAdapter_shouldThrownException(){
         // Given
         final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
                 .with(new TestQueryHandler())
@@ -567,7 +567,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void build_withDomainBundle_containingQueryHandler_andReferencingAnKnownFilter_shouldBeWired(){
+    public void build_withDomainBundle_containingQueryHandler_andReferencingAnKnownAdapter_shouldBeWired(){
         // Given
         final TestQueryAdapter adapter = new TestQueryAdapter();
         final TestQueryHandler queryHandler = new TestQueryHandler();

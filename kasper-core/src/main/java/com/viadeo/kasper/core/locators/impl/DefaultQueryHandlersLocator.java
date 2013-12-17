@@ -143,7 +143,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
     // ------------------------------------------------------------------------
 
-    /* Filter name is not currently used in the locator */
+    /* Adapter name is not currently used in the locator */
     @Override
     public void registerAdapter(final String name, final QueryHandlerAdapter adapter, final boolean isGlobal, final Class<? extends Domain> stickyDomainClass) {
         checkNotNull(name);
@@ -267,7 +267,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
                     requestActors.add((RequestActor<Q, R>) queryCacheFactory.make(queryClass, qsClass).get());
                 }
 
-                /* Add validation filter */
+                /* Add validation adapter */
                 try {
                     requestActors.add(new QueryValidationActor(Validation.buildDefaultValidatorFactory()));
                 } catch (final ValidationException ve) {
@@ -297,10 +297,10 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
         final Collection<QueryAdapter> queryAdapters =
                 Lists.newArrayList(Iterables.filter(handlerAdapters, QueryAdapter.class));
 
-        final Collection<QueryResponseAdapter> responseFilters =
+        final Collection<QueryResponseAdapter> responseAdapters =
                 Lists.newArrayList(Iterables.filter(handlerAdapters, QueryResponseAdapter.class));
 
-        return new QueryAdaptersActor(queryAdapters, responseFilters);
+        return new QueryAdaptersActor(queryAdapters, responseAdapters);
     }
 
     @Override
@@ -320,38 +320,38 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
         // Ensure instances has been collected, lazy loading
         if ( ! this.instanceAdapters.containsKey(handlerClass)) {
-            List<Class<? extends QueryHandlerAdapter>> filtersToApply = this.appliedAdapters.get(handlerClass);
+            List<Class<? extends QueryHandlerAdapter>> adaptersToApply = this.appliedAdapters.get(handlerClass);
 
-            if (null == filtersToApply) {
-                filtersToApply = Lists.newArrayList();
+            if (null == adaptersToApply) {
+                adaptersToApply = Lists.newArrayList();
             }
 
             // Apply required global adapters
-            for (final Class<? extends QueryHandlerAdapter> globalFilterClass : this.globalAdapters) {
-                if (this.isDomainSticky.containsKey(globalFilterClass)) {
-                    final Class<? extends Domain> stickyDomainClass = this.isDomainSticky.get(globalFilterClass);
+            for (final Class<? extends QueryHandlerAdapter> globalAdapterClass : this.globalAdapters) {
+                if (this.isDomainSticky.containsKey(globalAdapterClass)) {
+                    final Class<? extends Domain> stickyDomainClass = this.isDomainSticky.get(globalAdapterClass);
                     if ((null != stickyDomainClass) && stickyDomainClass.equals(this.handlerDomains.get(handlerClass))) {
-                        filtersToApply.add(globalFilterClass);
+                        adaptersToApply.add(globalAdapterClass);
                     }
                 } else {
-                    filtersToApply.add(globalFilterClass);
+                    adaptersToApply.add(globalAdapterClass);
                 }
             }
 
             // Copy required adapters instances to this handler cache
             final List<QueryHandlerAdapter> instances = newArrayList();
-            for (final Class<? extends QueryHandlerAdapter> adapterClass : Sets.newHashSet(filtersToApply)) {
+            for (final Class<? extends QueryHandlerAdapter> adapterClass : Sets.newHashSet(adaptersToApply)) {
                 if (this.adapters.containsKey(adapterClass)) {
                     instances.add(this.adapters.get(adapterClass));
                 } else {
-                    LOGGER.error(String.format("Query handler %s asks to be filtered, but no instance of adapter %s can be found in records",
+                    LOGGER.error(String.format("Query handler %s asks to be adaptered, but no instance of adapter %s can be found in records",
                             handlerClass, adapterClass));
                 }
             }
             this.instanceAdapters.put(handlerClass, instances);
         }
 
-        // Return the filter instances
+        // Return the adapter instances
         return unmodifiableCollection(this.instanceAdapters.get(handlerClass));
     }
 

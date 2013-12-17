@@ -37,6 +37,7 @@ public class QueryHandlersProcessor extends SingletonAnnotationProcessor<XKasper
 	 * @see AnnotationProcessor#process(java.lang.Class)
 	 */
 	@Override
+    @SuppressWarnings("unchecked")
 	public void process(final Class queryHandlerClazz, final QueryHandler queryHandler) {
 		LOGGER.info("Record on query handlers locator : " + queryHandlerClazz.getName());
 
@@ -54,7 +55,10 @@ public class QueryHandlersProcessor extends SingletonAnnotationProcessor<XKasper
         if (null != adapters) {
             for (final Class<? extends QueryHandlerAdapter> adapterClass : adapters) {
                 LOGGER.info(String.format("  --> w/ adapter %s", adapterClass.getSimpleName()));
-                this.queryHandlersLocator.registerAdapterForQueryHandler((Class<? extends QueryHandler>) queryHandlerClazz, adapterClass);
+                this.queryHandlersLocator.registerAdapterForQueryHandler(
+                        (Class<? extends QueryHandler>) queryHandlerClazz,
+                        adapterClass
+                );
             }
         }
 

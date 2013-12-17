@@ -27,16 +27,16 @@ public @interface XKasperQueryHandlerAdapter {
 	String name() default "";
 
     /**
-     * Sets to true if this filter must be applied to every handler in the runtime context
+     * Sets to true if this adapter must be applied to every handler in the runtime context
      *
-     * @return if this filter is global
+     * @return if this adapter is global
      */
     boolean global() default false;
 
     /**
-     * Optional sticky domain for this handler (in case of global filter)
+     * Optional sticky domain for this handler (in case of global adapter)
      *
-     * The filter will only be applied on handlers of this domain
+     * The adapter will only be applied on handlers of this domain
      */
     Class<? extends Domain> domain() default NullDomain.class;
 

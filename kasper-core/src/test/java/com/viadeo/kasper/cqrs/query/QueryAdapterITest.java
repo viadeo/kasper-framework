@@ -25,7 +25,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
-public class QueryFilterITest {
+public class QueryAdapterITest {
 
     private static int STATE_START = 0;
     private static int STATE_MODIFIED = 42;
@@ -54,7 +54,7 @@ public class QueryFilterITest {
     }
 
     @XKasperUnregistered
-    private class TestFilterQuery implements QueryAdapter<TestQuery> {
+    private class TestAdapterQuery implements QueryAdapter<TestQuery> {
         @Override
         public TestQuery adapt(final Context context, final TestQuery query) {
             query.state = STATE_MODIFIED;
@@ -98,13 +98,13 @@ public class QueryFilterITest {
 
     @Test
     @SuppressWarnings("unchecked") // Safe
-    public void queryFilterShouldBeCalled() throws Exception {
+    public void queryAdapterShouldBeCalled() throws Exception {
 
         // Given
         KasperMetrics.setMetricRegistry(new MetricRegistry());
 
         final TestHandler service = spy(new TestHandler());
-        final TestFilterQuery adapter = spy(new TestFilterQuery());
+        final TestAdapterQuery adapter = spy(new TestAdapterQuery());
         final TestQueryResponse responseAdapter = spy(new TestQueryResponse());
         final TestAdapterGlobal globalAdapter = spy(new TestAdapterGlobal());
         final DomainResolver domainResolver = new DomainResolver();

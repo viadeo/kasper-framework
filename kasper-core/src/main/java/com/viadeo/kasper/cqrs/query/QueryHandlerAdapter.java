@@ -7,7 +7,7 @@
 package com.viadeo.kasper.cqrs.query;
 
 /**
- * A Kasper query filter
+ * A Kasper query adapter
  *
  * @see com.viadeo.kasper.cqrs.query.Query
  */

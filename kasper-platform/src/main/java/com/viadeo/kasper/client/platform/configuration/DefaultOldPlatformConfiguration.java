@@ -335,19 +335,19 @@ public class DefaultOldPlatformConfiguration implements OldPlatformConfiguration
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryHandlerFiltersProcessor queryHandlerFiltersProcessor(QueryHandlersLocator locator) {
-        this.ensureNotPresent(QueryHandlerFiltersProcessor.class);
+    public QueryHandlerAdaptersProcessor queryHandlerAdaptersProcessor(QueryHandlersLocator locator) {
+        this.ensureNotPresent(QueryHandlerAdaptersProcessor.class);
 
-        final QueryHandlerFiltersProcessor queryHandlerFiltersProcessor = new QueryHandlerFiltersProcessor();
-        queryHandlerFiltersProcessor.setQueryHandlersLocator(locator);
+        final QueryHandlerAdaptersProcessor queryHandlerAdaptersProcessor = new QueryHandlerAdaptersProcessor();
+        queryHandlerAdaptersProcessor.setQueryHandlersLocator(locator);
 
-        registerInstance(QueryHandlerFiltersProcessor.class, queryHandlerFiltersProcessor);
-        return queryHandlerFiltersProcessor;
+        registerInstance(QueryHandlerAdaptersProcessor.class, queryHandlerAdaptersProcessor);
+        return queryHandlerAdaptersProcessor;
     }
 
     @Override
-    public QueryHandlerFiltersProcessor queryHandlerFiltersProcessor() {
-        return this.getAvailableInstance(QueryHandlerFiltersProcessor.class);
+    public QueryHandlerAdaptersProcessor queryHandlerAdaptersProcessor() {
+        return this.getAvailableInstance(QueryHandlerAdaptersProcessor.class);
     }
 
     // ------------------------------------------------------------------------

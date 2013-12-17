@@ -143,8 +143,8 @@ public class OldPlatformConfigurationTest {
         final RepositoriesProcessor repositoriesProcessor=
                 this.testCachedComponent(pf, "repositoriesProcessor", repositoryManager, eventBus);
 
-        final QueryHandlerFiltersProcessor queryHandlerFiltersProcessor =
-                this.testCachedComponent(pf, "queryHandlerFiltersProcessor", queryHandlersLocator);
+        final QueryHandlerAdaptersProcessor queryHandlerAdaptersProcessor =
+                this.testCachedComponent(pf, "queryHandlerAdaptersProcessor", queryHandlersLocator);
 
         final OldPlatform platform =
                 this.testCachedComponent(pf, "kasperPlatform",

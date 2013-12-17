@@ -20,8 +20,8 @@ import org.slf4j.LoggerFactory;
  * 
  * @see com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler
  */
-public class QueryHandlerFiltersProcessor extends SingletonAnnotationProcessor<XKasperQueryHandlerAdapter, QueryHandlerAdapter> {
-	private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandlerFiltersProcessor.class);
+public class QueryHandlerAdaptersProcessor extends SingletonAnnotationProcessor<XKasperQueryHandlerAdapter, QueryHandlerAdapter> {
+	private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandlerAdaptersProcessor.class);
 
 	/**
 	 * The locator to register query handlers on

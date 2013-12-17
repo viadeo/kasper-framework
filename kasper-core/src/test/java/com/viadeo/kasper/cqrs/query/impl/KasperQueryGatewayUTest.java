@@ -30,7 +30,7 @@ public class KasperQueryGatewayUTest {
     private static class QueryHandlerForTest extends QueryHandler<Query, QueryResult> { }
 
     @XKasperQueryHandler(domain = Domain.class, adapters = { Adapter1.class })
-    private static class QueryHandlerWithFiltersForTest extends QueryHandler<Query, QueryResult> { }
+    private static class QueryHandlerWithAdaptersForTest extends QueryHandler<Query, QueryResult> { }
 
     private final class Adapter1 implements QueryHandlerAdapter { }
 
@@ -75,9 +75,9 @@ public class KasperQueryGatewayUTest {
     }
 
     @Test(expected = KasperException.class)
-    public void register_withQueryHandler_withoutRegisteredFilters_shouldThrownException(){
+    public void register_withQueryHandler_withoutRegisteredAdapters_shouldThrownException(){
         // Given
-        final QueryHandler queryHandler = new QueryHandlerWithFiltersForTest();
+        final QueryHandler queryHandler = new QueryHandlerWithAdaptersForTest();
 
         // When
         queryGateway.register(queryHandler);
@@ -86,9 +86,9 @@ public class KasperQueryGatewayUTest {
     }
 
     @Test(expected = KasperException.class)
-    public void register_withQueryHandler_withRegisteredFilters_shouldThrownException(){
+    public void register_withQueryHandler_withRegisteredAdapters_shouldThrownException(){
         // Given
-        final QueryHandler queryHandler = new QueryHandlerWithFiltersForTest();
+        final QueryHandler queryHandler = new QueryHandlerWithAdaptersForTest();
         queryGateway.register("test", new Adapter1());
         reset(queryHandlersLocator);
 
@@ -97,8 +97,8 @@ public class KasperQueryGatewayUTest {
 
         // Then
         verify(queryHandlersLocator).containsAdapter(Adapter1.class);
-        verify(queryHandlersLocator).registerAdapterForQueryHandler(refEq(QueryHandlerWithFiltersForTest.class), refEq(Adapter1.class));
-        verify(queryHandlersLocator).registerHandler(refEq("QueryHandlerWithFiltersForTest"), refEq(queryHandler), refEq(Domain.class));
+        verify(queryHandlersLocator).registerAdapterForQueryHandler(refEq(QueryHandlerWithAdaptersForTest.class), refEq(Adapter1.class));
+        verify(queryHandlersLocator).registerHandler(refEq("QueryHandlerWithAdaptersForTest"), refEq(queryHandler), refEq(Domain.class));
         verifyNoMoreInteractions(queryHandlersLocator);
 
         assertEquals(queryGateway, queryHandler.getQueryGateway());

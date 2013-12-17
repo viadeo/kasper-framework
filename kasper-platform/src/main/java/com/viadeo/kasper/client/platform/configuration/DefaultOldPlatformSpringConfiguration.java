@@ -114,8 +114,8 @@ public class DefaultOldPlatformSpringConfiguration extends DefaultOldPlatformCon
 
     @Bean
     @Override
-    public QueryHandlerFiltersProcessor queryHandlerFiltersProcessor(QueryHandlersLocator locator) {
-        return super.queryHandlerFiltersProcessor(locator);
+    public QueryHandlerAdaptersProcessor queryHandlerAdaptersProcessor(QueryHandlersLocator locator) {
+        return super.queryHandlerAdaptersProcessor(locator);
     }
 
     @Bean

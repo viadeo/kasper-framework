@@ -179,8 +179,8 @@ public interface OldPlatformConfiguration {
      * @param locator the query handlers locator to be used
      * @return the processor
      */
-     QueryHandlerFiltersProcessor queryHandlerFiltersProcessor(QueryHandlersLocator locator);
-     QueryHandlerFiltersProcessor queryHandlerFiltersProcessor();
+     QueryHandlerAdaptersProcessor queryHandlerAdaptersProcessor(QueryHandlersLocator locator);
+     QueryHandlerAdaptersProcessor queryHandlerAdaptersProcessor();
 
     /**
      * Initialize one or several Yammer metrics reporters

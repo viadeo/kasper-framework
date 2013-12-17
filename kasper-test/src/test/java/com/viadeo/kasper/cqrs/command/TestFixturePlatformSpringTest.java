@@ -26,12 +26,12 @@ public class TestFixturePlatformSpringTest extends TestFixturePlatformTest {
     @Before
     @Override
     public void resetFixture() {
-        DomainEventMessage<FixtureUseCase.TestAggregate> domainEventMessage = new GenericDomainEventMessage<>("", 0L, new FixtureUseCase.TestAggregate(new StringKasperId("miaou")));
+        final DomainEventMessage<FixtureUseCase.TestAggregate> domainEventMessage = new GenericDomainEventMessage<>("", 0L, new FixtureUseCase.TestAggregate(new StringKasperId("miaou")));
 
-        DomainEventStream domainEventStream = mock(DomainEventStream.class);
+        final DomainEventStream domainEventStream = mock(DomainEventStream.class);
         when(domainEventStream.peek()).thenReturn(domainEventMessage);
 
-        EventStore eventStore = mock(EventStore.class);
+        final EventStore eventStore = mock(EventStore.class);
         when(eventStore.readEvents(refEq("TestAggregate"), any())).thenReturn(domainEventStream);
 
         this.fixture = new KasperPlatformFixture();

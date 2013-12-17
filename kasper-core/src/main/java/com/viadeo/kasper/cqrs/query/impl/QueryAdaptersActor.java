@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.codahale.metrics.Timer;
@@ -33,11 +39,13 @@ public class QueryAdaptersActor<Q extends Query, P extends QueryResult>
         this.responseAdapters = checkNotNull(responseAdapters);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
     public QueryResponse<P> process(final Q query, final Context context, final RequestActorsChain<Q, QueryResponse<P>> chain) throws Exception {
         Class<? extends Query> queryClass = query.getClass();
 
-        QueryResponse<P> responses = chain.next(
+        final QueryResponse<P> responses = chain.next(
                 applyAdapters(getMetricRegistry().timer(name(queryClass, "requests-query-adapters-time")),
                         queryAdapters,
                         context,
@@ -60,10 +68,10 @@ public class QueryAdaptersActor<Q extends Query, P extends QueryResult>
                                       final ELEM elem) {
         ELEM newElem = elem;
 
-        if (!adapters.isEmpty()) {
-            Timer.Context timerContext = timer.time();
+        if ( ! adapters.isEmpty()) {
+            final Timer.Context timerContext = timer.time();
 
-            try{
+            try {
                 for (final Adapter<ELEM> adapter : adapters) {
                     LOGGER.info("Apply adapter {} on {}", adapter.getClass().getSimpleName(), elem.getClass().getSimpleName());
                     newElem = adapter.adapt(context, elem);

@@ -160,8 +160,8 @@ public class PlatformFactory {
         final RepositoriesProcessor repositoriesProcessor = oldPlatformConfiguration.repositoriesProcessor(repositoryManager, eventBus);
         annotationRootProcessor.registerProcessor(repositoriesProcessor);
 
-        final QueryHandlerFiltersProcessor queryHandlerFiltersProcessor = oldPlatformConfiguration.queryHandlerFiltersProcessor(queryHandlersLocator);
-        annotationRootProcessor.registerProcessor(queryHandlerFiltersProcessor);
+        final QueryHandlerAdaptersProcessor queryHandlerAdaptersProcessor = oldPlatformConfiguration.queryHandlerAdaptersProcessor(queryHandlersLocator);
+        annotationRootProcessor.registerProcessor(queryHandlerAdaptersProcessor);
 
         // -- Metrics
         KasperMetrics.setResolverFactory(resolverFactory);
