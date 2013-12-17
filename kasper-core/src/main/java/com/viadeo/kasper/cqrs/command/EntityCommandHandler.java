@@ -31,12 +31,12 @@ public abstract class EntityCommandHandler<C extends Command, AGR extends Aggreg
     /**
      * Generic parameter position for the handled command
      */
-    public static int COMMAND_PARAMETER_POSITION = 0;
+    public static final int COMMAND_PARAMETER_POSITION = 0;
 
     /**
      * Generic parameter position for the handled entity
      */
-    public static int ENTITY_PARAMETER_POSITION = 1;
+    public static final int ENTITY_PARAMETER_POSITION = 1;
 
     // Consistent data container for entity class and repository
     private static final class ConsistentRepositoryEntity<E extends AggregateRoot> {
@@ -90,20 +90,22 @@ public abstract class EntityCommandHandler<C extends Command, AGR extends Aggreg
     }
 
     /**
-     * @see com.viadeo.kasper.cqrs.command.EntityCommandHandler#getRepository()
+     * Get the related repository of the entity handled by this command handler
+     *
+     * @return the repository
      */
     @SuppressWarnings("unchecked")
     public ClientRepository<AGR> getRepository() {
         if (null == this.consistentRepositoryEntity.repository) {
 
-            if (null == this.getDomainLocator()) {
-                throw new KasperCommandException("Unable to resolve repository, no domain locator was provided");
+            if (null == repositoryManager) {
+                throw new KasperCommandException("Unable to resolve repository, no repository manager was provided");
             }
 
             final Optional<ClientRepository<AGR>> optRepo =
-                    this.getDomainLocator().getEntityRepository(this.consistentRepositoryEntity.entityClass);
+                    repositoryManager.getEntityRepository(this.consistentRepositoryEntity.entityClass);
 
-            if (!optRepo.isPresent()) {
+            if ( ! optRepo.isPresent()) {
                 throw new KasperCommandException(String.format("The entity %s has not been recorded on any domain",
                                                                this.consistentRepositoryEntity.entityClass.getSimpleName()));
             }
@@ -112,6 +114,17 @@ public abstract class EntityCommandHandler<C extends Command, AGR extends Aggreg
         }
 
         return this.consistentRepositoryEntity.repository;
+    }
+
+    /**
+     * Get the related repository of the specified entity class
+     * @return the entity repository
+     */
+    public <E extends AggregateRoot> Optional<ClientRepository<E>> getRepositoryOf(final Class<E> entityClass) {
+        if (null == repositoryManager) {
+            throw new KasperCommandException("Unable to resolve repository, no repository manager was provided");
+        }
+        return repositoryManager.getEntityRepository(entityClass);
     }
 
 }

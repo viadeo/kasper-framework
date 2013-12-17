@@ -8,17 +8,11 @@ package com.viadeo.kasper.test.platform;
 
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandHandler;
 
 import java.util.List;
 
-public interface KasperCommandFixture<
-        EXECUTOR extends KasperFixtureCommandExecutor<VALIDATOR>,
-        VALIDATOR extends KasperFixtureCommandResultValidator> extends KasperFixture<EXECUTOR> {
-
-    KasperCommandFixture<EXECUTOR, VALIDATOR> registerCommandHandler(final CommandHandler commandHandler);
-
-    // ------------------------------------------------------------------------
+public interface KasperCommandFixture<EXECUTOR extends KasperFixtureCommandExecutor<VALIDATOR>, VALIDATOR extends KasperFixtureCommandResultValidator>
+        extends KasperFixture<EXECUTOR> {
 
     EXECUTOR givenCommands(final Command... commands);
 

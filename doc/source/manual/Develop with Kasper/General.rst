@@ -43,7 +43,7 @@ Available Kasper annotations
 The following annotations are currently used by the framework :
 
 - **XKasperEventListener**
-- **XKasperServiceFilter**
+- **XKasperServiceAdapter**
 - **XKasperQueryHandler**
 - **XKasperCommandHandler**
 - **XKasperRepository**
@@ -63,7 +63,7 @@ Naming practices
 
 It is heavily recommended to name your components using an explicit suffix :
 
-- ServiceFilter
+- ServiceAdapter
 - QueryHandler
 - DomainService
 - [Command]Handler
@@ -121,7 +121,7 @@ packages hierarchy :
 +----------------------------------+----------+---------------+--------------------------------------------------------+
 | Query services                   |   FLOW   |    QUERY      |  *com.viadeo.platform*.<domain>.query.                 |
 +----------------------------------+----------+---------------+--------------------------------------------------------+
-| Query filters                    |   FLOW   |    QUERY      |  *com.viadeo.platform*.<domain>.query.                 |
+| Query adapters                   |   FLOW   |    QUERY      |  *com.viadeo.platform*.<domain>.query.                 |
 +----------------------------------+----------+---------------+--------------------------------------------------------+
 | Query indexers                   | FLOW/DATA|    QUERY      |  *com.viadeo.platform*.<domain>.query.index.           |
 +----------------------------------+----------+---------------+--------------------------------------------------------+

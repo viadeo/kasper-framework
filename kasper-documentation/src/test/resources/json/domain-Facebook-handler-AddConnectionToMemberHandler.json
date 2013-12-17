@@ -1,24 +1,5 @@
 {
-  "command": {
-    "description": "The AddConnectionToMember command",
-    "label": "AddConnectionToMember",
-    "name": "AddConnectionToMemberCommand",
-    "type": "command",
-    "typePlural": "commands",
-    "url": "/domain/Facebook/command/AddConnectionToMemberCommand"
-  },
-  "description": "The handler for AddConnectionToMember commands",
-  "domain": {
-    "description": "Root Facebook domain",
-    "label": "Facebook",
-    "name": "Facebook",
-    "type": "domain",
-    "typePlural": "domains",
-    "url": "/domain/Facebook"
-  },
-  "label": "AddConnectionToMemberHandler",
-  "name": "AddConnectionToMemberHandler",
-  "type": "handler",
-  "typePlural": "handlers",
-  "url": "/domain/Facebook/handler/AddConnectionToMemberHandler"
+  "message": "Unexistent entity",
+  "name": "handler (type)",
+  "type": "error"
 }

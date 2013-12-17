@@ -39,7 +39,7 @@ allprojects  {
   apply plugin: 'findbugs'
 
   group = 'com.viadeo.kasper'
-  version = '0.1.2.11'
+  version = '0.2'
 
   idea {
     module {
@@ -198,7 +198,9 @@ subprojects {
                                 'org.hibernate:hibernate-validator:5.0.1.Final',
                                 'org.glassfish.web:el-impl:2.2'
                               ],
-      GLASSFISH_EXPR_LANG   : 'org.glassfish.web:javax.el:2.2.3'
+      GLASSFISH_EXPR_LANG   : 'org.glassfish.web:javax.el:2.2.3',
+
+      TYPESAFE_CONFIG       : 'com.typesafe:config:1.0.2'
 
   ] // see http://stackoverflow.com/questions/9547170/in-gradle-how-do-i-declare-common-dependencies-in-a-single-place
 

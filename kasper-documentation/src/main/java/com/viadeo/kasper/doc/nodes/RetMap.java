@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
+import com.viadeo.kasper.doc.element.WithType;
+
 import java.util.Collection;
 import java.util.Map;
 
@@ -13,16 +15,20 @@ public class RetMap extends RetBase {
 	private static final long serialVersionUID = -5808650563772119762L;
 
 	private static final String TYPE = "list";
-	
-	private final Collection<? extends DocumentedNode> list;
-	
+	private final Collection<? extends WithType> list;
 	private String itemType = null;
-	
 	private Integer count = 0;
 
 	// ------------------------------------------------------------------------
-	
-	public RetMap(final Map<String, ? extends DocumentedNode> map) {
+
+    public RetMap(final String itemType, final Collection<? extends WithType> list) {
+        super(TYPE);
+        this.list = list;
+        this.itemType = itemType;
+        this.count = list.size();
+    }
+
+	public RetMap(final Map<String, ? extends WithType> map) {
 		super(TYPE);
 		this.list = map.values();
 		if (map.size() > 0) {
@@ -34,7 +40,7 @@ public class RetMap extends RetBase {
 
 	// ------------------------------------------------------------------------
 	
-	public Collection<? extends DocumentedNode> getList() {
+	public Collection<? extends WithType> getList() {
 		return this.list;
 	}
 	

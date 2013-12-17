@@ -1,8 +1,6 @@
 {
-  "aggregate": true,
   "componentConcepts": [],
-  "componentRelations": [],
-  "description": "The Member concept",
+  "description": "The FacebookMember concept",
   "domain": {
     "description": "Root Facebook domain",
     "label": "Facebook",
@@ -13,8 +11,28 @@
   },
   "label": "FacebookMember",
   "name": "Member",
-  "parent": null,
-  "properties": [],
+  "properties": [
+    {
+      "list": false,
+      "name": "id",
+      "type": "KasperID"
+    },
+    {
+      "list": false,
+      "name": "version",
+      "type": "Long"
+    },
+    {
+      "list": false,
+      "name": "lastEventSequenceNumber",
+      "type": "Long"
+    },
+    {
+      "list": false,
+      "name": "version",
+      "type": "Long"
+    }
+  ],
   "sourceEvents": [{
     "description": "The MemberCreated event",
     "label": "MemberCreated",
@@ -23,70 +41,26 @@
     "typePlural": "events",
     "url": "/domain/Facebook/event/MemberCreatedEvent"
   }],
-  "sourceRelations": [
-    {
-      "description": "The connected_to relation between Member and Member",
-      "label": "connected_to",
-      "name": "Member_connectedTo_Member",
-      "sourceConceptName": "Member",
-      "targetConceptName": "Member",
-      "type": "relation",
-      "typePlural": "relations",
-      "url": "/domain/Facebook/relation/Member_connectedTo_Member"
-    },
-    {
-      "description": "Tha Member is a big fan of this application",
-      "label": "fan_of",
-      "name": "Member_fanOf_Application",
-      "sourceConceptName": "Member",
-      "targetConceptName": "Application",
-      "type": "relation",
-      "typePlural": "relations",
-      "url": "/domain/Applications/relation/Member_fanOf_Application"
-    }
-  ],
-  "targetRelations": [
-    {
-      "description": "The created_by relation between Application and Member",
-      "label": "created_by",
-      "name": "Application_createdBy_Member",
-      "sourceConceptName": "Application",
-      "targetConceptName": "Member",
-      "type": "relation",
-      "typePlural": "relations",
-      "url": "/domain/Applications/relation/Application_createdBy_Member"
-    },
-    {
-      "description": "The connected_to relation between Member and Member",
-      "label": "connected_to",
-      "name": "Member_connectedTo_Member",
-      "sourceConceptName": "Member",
-      "targetConceptName": "Member",
-      "type": "relation",
-      "typePlural": "relations",
-      "url": "/domain/Facebook/relation/Member_connectedTo_Member"
-    },
-    {
-      "description": "A status is published by a Member",
-      "label": "published_by",
-      "name": "Status_publishedBy_Member",
-      "sourceConceptName": "Status",
-      "targetConceptName": "Member",
-      "type": "relation",
-      "typePlural": "relations",
-      "url": "/domain/Timelines/relation/Status_publishedBy_Member"
-    },
-    {
-      "description": "The published_by relation between Timeline and Member",
-      "label": "published_by",
-      "name": "Timeline_ownedBy_Member",
-      "sourceConceptName": "Timeline",
-      "targetConceptName": "Member",
-      "type": "relation",
-      "typePlural": "relations",
-      "url": "/domain/Timelines/relation/Timeline_ownedBy_Member"
-    }
-  ],
+  "sourceRelations": [{
+    "description": "The connected_to relation between FacebookMember and FacebookMember",
+    "label": "connected_to",
+    "name": "Member_connectedTo_Member",
+    "sourceConceptName": "Member",
+    "targetConceptName": "Member",
+    "type": "relation",
+    "typePlural": "relations",
+    "url": "/domain/Facebook/relation/Member_connectedTo_Member"
+  }],
+  "targetRelations": [{
+    "description": "The connected_to relation between FacebookMember and FacebookMember",
+    "label": "connected_to",
+    "name": "Member_connectedTo_Member",
+    "sourceConceptName": "Member",
+    "targetConceptName": "Member",
+    "type": "relation",
+    "typePlural": "relations",
+    "url": "/domain/Facebook/relation/Member_connectedTo_Member"
+  }],
   "type": "concept",
   "typePlural": "concepts",
   "url": "/domain/Facebook/concept/Member"

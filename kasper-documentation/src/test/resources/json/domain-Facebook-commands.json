@@ -2,6 +2,15 @@
   "count": 1,
   "itemType": "command",
   "list": [{
+    "commandHandler": {
+      "commandName": "AddConnectionToMemberCommand",
+      "description": "The AddConnectionToMember command handler",
+      "label": "AddConnectionToMember",
+      "name": "AddConnectionToMemberHandler",
+      "type": "commandHandler",
+      "typePlural": "commandHandlers",
+      "url": "/domain/Facebook/commandHandler/AddConnectionToMemberHandler"
+    },
     "description": "The AddConnectionToMember command",
     "domain": {
       "description": "Root Facebook domain",
@@ -10,14 +19,6 @@
       "type": "domain",
       "typePlural": "domains",
       "url": "/domain/Facebook"
-    },
-    "handler": {
-      "description": "The handler for AddConnectionToMember commands",
-      "label": "AddConnectionToMemberHandler",
-      "name": "AddConnectionToMemberHandler",
-      "type": "handler",
-      "typePlural": "handlers",
-      "url": "/domain/Facebook/handler/AddConnectionToMemberHandler"
     },
     "label": "AddConnectionToMember",
     "name": "AddConnectionToMemberCommand",

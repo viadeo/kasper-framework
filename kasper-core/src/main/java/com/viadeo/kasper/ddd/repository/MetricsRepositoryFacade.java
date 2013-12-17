@@ -6,17 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.repository;
 
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /**
@@ -27,87 +22,79 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  *
  */
 class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacade<AGR> {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MetricsRepositoryFacade.class);
-    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
-    private final Class kasperRepositoryClass;
+    private static final String GLOBAL_HISTO_SAVE_TIMES_NAME = name(IRepository.class, "save-times");
+    private static final String GLOBAL_METER_SAVES_NAME = name(IRepository.class, "saves");
+    private static final String GLOBAL_METER_SAVE_ERRORS_NAME = name(IRepository.class, "save-errors");
 
-    private final Histogram metricClassSaveTimes = METRICS.histogram(name(IRepository.class, "save-times"));
-    private final Meter metricClassSaves = METRICS.meter(name(IRepository.class, "saves"));
-    private final Meter metricClassSaveErrors = METRICS.meter(name(IRepository.class, "save-errors"));
+    private static final String GLOBAL_HISTO_LOAD_TIMES_NAME = name(IRepository.class, "load-times");
+    private static final String GLOBAL_METER_LOADS_NAME = name(IRepository.class, "loads");
+    private static final String GLOBAL_METER_LOAD_ERRORS_NAME = name(IRepository.class, "load-errors");
 
-    private final Histogram metricClassLoadTimes = METRICS.histogram(name(IRepository.class, "load-times"));
-    private final Meter metricClassLoads = METRICS.meter(name(IRepository.class, "loads"));
-    private final Meter metricClassLoadErrors = METRICS.meter(name(IRepository.class, "load-errors"));
+    private static final String GLOBAL_HISTO_DELETE_TIMES_NAME = name(IRepository.class, "delete-times");
+    private static final String GLOBAL_METER_DELETES_NAME = name(IRepository.class, "deletes");
+    private static final String GLOBAL_METER_DELETE_ERRORS_NAME = name(IRepository.class, "delete-errors");
 
-    private final Histogram metricClassDeleteTimes = METRICS.histogram(name(IRepository.class, "delete-times"));
-    private final Meter metricClassDeletes = METRICS.meter(name(IRepository.class, "deletes"));
-    private final Meter metricClassDeleteErrors = METRICS.meter(name(IRepository.class, "delete-errors"));
+    // ------------------------------------------------------------------------
 
-    private Timer metricTimerSave;
-    private Histogram metricSaveTimes;
-    private Meter metricSaves;
-    private Meter metricSaveErrors;
+    private final String timerSaveTimeName;
+    private final String meterSaveErrorsName;
+    private final String histoSavesTimesName;
+    private final String meterSavesName;
 
-    private Timer metricTimerLoad;
-    private Histogram metricLoadTimes;
-    private Meter metricLoads;
-    private Meter metricLoadErrors;
+    private final String timerLoadTimeName;
+    private final String meterLoadErrorsName;
+    private final String histoLoadsTimesName;
+    private final String meterLoadsName;
 
-    private Timer metricTimerDelete;
-    private Histogram metricDeleteTimes;
-    private Meter metricDeletes;
-    private Meter metricDeleteErrors;
+    private final String timerDeleteTimeName;
+    private final String meterDeleteErrorsName;
+    private final String histoDeletesTimesName;
+    private final String meterDeletesName;
 
     // ------------------------------------------------------------------------
 
     MetricsRepositoryFacade(final Repository<AGR> kasperRepository) {
         super(kasperRepository);
-        this.kasperRepositoryClass = checkNotNull(kasperRepository).getClass();
-    }
+        Class kasperRepositoryClass = checkNotNull(kasperRepository).getClass();
 
-    private final void initMetrics() {
-        if (null == metricTimerSave) {
-            metricTimerSave = METRICS.timer(name(kasperRepositoryClass, "save-time"));
-            metricSaveTimes = METRICS.histogram(name(kasperRepositoryClass, "save-times"));
-            metricSaves = METRICS.meter(name(kasperRepositoryClass, "saves"));
-            metricSaveErrors = METRICS.meter(name(kasperRepositoryClass, "save-errors"));
+        this.timerSaveTimeName = name(kasperRepositoryClass, "save-time");
+        this.meterSaveErrorsName = name(kasperRepositoryClass, "save-errors");
+        this.histoSavesTimesName = name(kasperRepositoryClass, "save-times");
+        this.meterSavesName = name(kasperRepositoryClass, "saves");
 
-            metricTimerLoad = METRICS.timer(name(kasperRepositoryClass, "load-time"));
-            metricLoadTimes = METRICS.histogram(name(kasperRepositoryClass, "load-times"));
-            metricLoads = METRICS.meter(name(kasperRepositoryClass, "loads"));
-            metricLoadErrors = METRICS.meter(name(kasperRepositoryClass, "load-errors"));
+        this.timerLoadTimeName = name(kasperRepositoryClass, "load-time");
+        this.meterLoadErrorsName = name(kasperRepositoryClass, "load-errors");
+        this.histoLoadsTimesName = name(kasperRepositoryClass, "load-times");
+        this.meterLoadsName = name(kasperRepositoryClass, "loads");
 
-            metricTimerDelete = METRICS.timer(name(kasperRepositoryClass, "delete-time"));
-            metricDeleteTimes = METRICS.histogram(name(kasperRepositoryClass, "delete-times"));
-            metricDeletes = METRICS.meter(name(kasperRepositoryClass, "deletes"));
-            metricDeleteErrors = METRICS.meter(name(kasperRepositoryClass, "delete-errors"));
-        }
+        this.timerDeleteTimeName = name(kasperRepositoryClass, "delete-time");
+        this.meterDeleteErrorsName = name(kasperRepositoryClass, "delete-errors");
+        this.histoDeletesTimesName = name(kasperRepositoryClass, "delete-times");
+        this.meterDeletesName = name(kasperRepositoryClass, "deletes");
     }
 
     // ------------------------------------------------------------------------
 
     @Override
     protected void doSave(final AGR aggregate) {
-        initMetrics();
-
-        final Timer.Context timer = metricTimerSave.time();
+        final Timer.Context timer = getMetricRegistry().timer(timerSaveTimeName).time();
 
         try {
-
             super.doSave(aggregate);
 
         } catch (final RuntimeException e) {
-            metricClassSaveErrors.mark();
-            metricSaveErrors.mark();
+            getMetricRegistry().meter(GLOBAL_METER_SAVE_ERRORS_NAME).mark();
+            getMetricRegistry().meter(meterSaveErrorsName).mark();
             throw e;
 
         } finally {
             final long time = timer.stop();
-            metricSaveTimes.update(time);
-            metricClassSaveTimes.update(time);
-            metricSaves.mark();
-            metricClassSaves.mark();
+            getMetricRegistry().histogram(GLOBAL_HISTO_SAVE_TIMES_NAME).update(time);
+            getMetricRegistry().histogram(histoSavesTimesName).update(time);
+
+            getMetricRegistry().meter(GLOBAL_METER_SAVES_NAME).mark();
+            getMetricRegistry().meter(meterSavesName).mark();
         }
 
     }
@@ -116,26 +103,25 @@ class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacad
 
     @Override
     protected AGR doLoad(final Object aggregateIdentifier, final Long expectedVersion) {
-        initMetrics();
-
-        final Timer.Context timer = metricTimerLoad.time();
+        final Timer.Context timer = getMetricRegistry().timer(timerLoadTimeName).time();
 
         final AGR agr;
-        try {
 
+        try {
             agr = super.doLoad(aggregateIdentifier, expectedVersion);
 
         } catch (final RuntimeException e) {
-            metricClassLoadErrors.mark();
-            metricLoadErrors.mark();
+            getMetricRegistry().meter(GLOBAL_METER_LOAD_ERRORS_NAME).mark();
+            getMetricRegistry().meter(meterLoadErrorsName).mark();
             throw e;
 
         } finally {
             final long time = timer.stop();
-            metricLoadTimes.update(time);
-            metricClassLoadTimes.update(time);
-            metricLoads.mark();
-            metricClassLoads.mark();
+            getMetricRegistry().histogram(GLOBAL_HISTO_LOAD_TIMES_NAME).update(time);
+            getMetricRegistry().histogram(histoLoadsTimesName).update(time);
+
+            getMetricRegistry().meter(GLOBAL_METER_LOADS_NAME).mark();
+            getMetricRegistry().meter(meterLoadsName).mark();
         }
 
         return agr;
@@ -145,25 +131,23 @@ class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacad
 
     @Override
     protected void doDelete(final AGR aggregate) {
-        initMetrics();
-
-        final Timer.Context timer = metricTimerDelete.time();
+        final Timer.Context timer = getMetricRegistry().timer(timerDeleteTimeName).time();
 
         try {
-
             super.doDelete(aggregate);
 
         } catch (final RuntimeException e) {
-            metricClassDeleteErrors.mark();
-            metricDeleteErrors.mark();
+            getMetricRegistry().meter(GLOBAL_METER_DELETE_ERRORS_NAME).mark();
+            getMetricRegistry().meter(meterDeleteErrorsName).mark();
             throw e;
 
         } finally {
             final long time = timer.stop();
-            metricDeleteTimes.update(time);
-            metricClassDeleteTimes.update(time);
-            metricDeletes.mark();
-            metricClassDeletes.mark();
+            getMetricRegistry().histogram(GLOBAL_HISTO_DELETE_TIMES_NAME).update(time);
+            getMetricRegistry().histogram(histoDeletesTimesName).update(time);
+
+            getMetricRegistry().meter(GLOBAL_METER_DELETES_NAME).mark();
+            getMetricRegistry().meter(meterDeletesName).mark();
         }
 
     }

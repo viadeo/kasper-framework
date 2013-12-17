@@ -10,6 +10,7 @@ import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.eventhandling.EventBus;
@@ -47,7 +48,12 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
      */
     private transient CommandHandlerResolver commandHandlerResolver;
 
-	// ------------------------------------------------------------------------
+    /**
+     * The repo
+     */
+    private transient RepositoryManager repositoryManager;
+
+    // ------------------------------------------------------------------------
 
 	/**
 	 *
@@ -88,7 +94,7 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 		LOGGER.info("Subscribe to command bus : " + commandHandlerClazz.getName());
 
 		if (CommandHandler.class.isAssignableFrom(commandHandler.getClass())) {
-			((CommandHandler) commandHandler).setDomainLocator(this.domainLocator);
+			((CommandHandler) commandHandler).setRepositoryManager(this.repositoryManager);
  			((CommandHandler) commandHandler).setEventBus(this.eventBus);
 		}
 		
@@ -131,8 +137,18 @@ public class CommandHandlersProcessor extends SingletonAnnotationProcessor<XKasp
 		this.eventBus = checkNotNull(eventBus);
 	}
 
+    /**
+     * @param commandHandlerResolver the command handlers resolver to be used
+     */
     public void setCommandHandlerResolver(final CommandHandlerResolver commandHandlerResolver) {
         this.commandHandlerResolver = checkNotNull(commandHandlerResolver);
+    }
+
+    /**
+     * @param repositoryManager the repository manager used to deal with registered repositories
+     */
+    public void setRepositoryManager(final RepositoryManager repositoryManager) {
+        this.repositoryManager = repositoryManager;
     }
 
 }

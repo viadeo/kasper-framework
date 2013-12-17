@@ -6,17 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
-import org.axonframework.commandhandling.CommandBus;
-import org.axonframework.eventhandling.EventBus;
-
 public interface KasperFixture<EXECUTOR extends KasperFixtureExecutor> {
 
     EXECUTOR given();
-
-    // ------------------------------------------------------------------------
-
-    public CommandBus commandBus();
-
-    public EventBus eventBus();
 
 }

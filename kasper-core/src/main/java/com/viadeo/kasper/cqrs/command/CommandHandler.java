@@ -6,14 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
@@ -28,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /**
@@ -37,25 +35,25 @@ public abstract class CommandHandler<C extends Command>
         implements  org.axonframework.commandhandling.CommandHandler<C> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandHandler.class);
-    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
+
+    private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(CommandGateway.class, "requests-time");
+    private static final String GLOBAL_METER_REQUESTS_NAME = name(CommandGateway.class, "requests");
+    private static final String GLOBAL_METER_ERRORS_NAME = name(CommandGateway.class, "errors");
 
     /**
      * Generic parameter position for the handled command
      */
     public static int COMMAND_PARAMETER_POSITION = 0;
 
-    private static final Timer METRICLASSTIMER = METRICS.timer(name(CommandGateway.class, "requests-time"));
-    private static final Meter METRICLASSREQUESTS = METRICS.meter(name(CommandGateway.class, "requests"));
-    private static final Meter METRICLASSERRORS = METRICS.meter(name(CommandGateway.class, "errors"));
+    private final Class<C> commandClass;
 
-    private Timer metricTimer;
-    private Meter metricRequests;
-    private Meter metricErrors;
+    private final String timerRequestsTimeName;
+    private final String meterErrorsName;
+    private final String meterRequestsName;
 
-    private transient DomainLocator domainLocator;
     private transient EventBus eventBus;
-
-    private transient Class<C> commandClass;
+    private transient CommandGateway commandGateway;
+    protected transient RepositoryManager repositoryManager;
 
     // ------------------------------------------------------------------------
 
@@ -71,6 +69,10 @@ public abstract class CommandHandler<C extends Command>
         }
 
         this.commandClass = commandClass.get();
+
+        this.timerRequestsTimeName = name(this.commandClass, "requests-time");
+        this.meterErrorsName = name(this.commandClass, "errors");
+        this.meterRequestsName = name(this.commandClass, "requests");
     }
 
     // ------------------------------------------------------------------------
@@ -86,21 +88,16 @@ public abstract class CommandHandler<C extends Command>
         final KasperCommandMessage<C> kmessage = new KasperCommandMessage<>(message);
         CurrentContext.set(kmessage.getContext());
 
-        if (null == metricTimer) {
-            metricTimer = METRICS.timer(name(commandClass, "requests-time"));
-            metricRequests = METRICS.meter(name(commandClass, "requests"));
-            metricErrors = METRICS.meter(name(commandClass, "errors"));
-        }
-
         CommandHandler.LOGGER.debug("Handle command " + commandClass.getSimpleName());
 
         /* Start timer */
-        final Timer.Context classTimer = METRICLASSTIMER.time();
-        final Timer.Context timer = metricTimer.time();
+        final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
+        final Timer.Context timer = getMetricRegistry().timer(timerRequestsTimeName).time();
 
         CommandResponse ret = null;
         Exception exception = null;
         boolean isError = false;
+
         try {
 
             try {
@@ -149,11 +146,12 @@ public abstract class CommandHandler<C extends Command>
         }
 
         /* Monitor the request calls */
-        METRICLASSREQUESTS.mark();
-        metricRequests.mark();
+        getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
+        getMetricRegistry().meter(meterRequestsName).mark();
+
         if ((null != exception) || ! ret.isOK()) {
-            METRICLASSERRORS.mark();
-            metricErrors.mark();
+            getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
+            getMetricRegistry().meter(meterErrorsName).mark();
         }
 
         if (null != exception) {
@@ -211,15 +209,19 @@ public abstract class CommandHandler<C extends Command>
 
     // ------------------------------------------------------------------------
 
-    /**
-     * @param domainLocator
-     */
-    public void setDomainLocator(final DomainLocator domainLocator) {
-        this.domainLocator = checkNotNull(domainLocator);
+    public Class<C> getCommandClass() {
+        return commandClass;
     }
 
-    protected DomainLocator getDomainLocator() {
-        return this.domainLocator;
+    public CommandGateway getCommandGateway() {
+        return commandGateway;
+    }
+
+    public Context getContext() {
+        if (CurrentContext.value().isPresent()) {
+            return CurrentContext.value().get();
+        }
+        throw new KasperCommandException("Unexpected condition : no context was set during command handling");
     }
 
     // ------------------------------------------------------------------------
@@ -228,8 +230,12 @@ public abstract class CommandHandler<C extends Command>
         this.eventBus = checkNotNull(eventBus);
     }
 
-    protected EventBus getEventBus() {
-        return this.eventBus;
+    public void setRepositoryManager(final RepositoryManager repositoryManager) {
+        this.repositoryManager = checkNotNull(repositoryManager);
+    }
+
+    public void setCommandGateway(final CommandGateway commandGateway) {
+        this.commandGateway = checkNotNull(commandGateway);
     }
 
 }

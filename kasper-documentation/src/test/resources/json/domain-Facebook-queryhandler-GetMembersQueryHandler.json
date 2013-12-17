@@ -1,38 +1,5 @@
 {
-  "description": "The GetMembers query handler",
-  "domain": {
-    "description": "Root Facebook domain",
-    "label": "Facebook",
-    "name": "Facebook",
-    "type": "domain",
-    "typePlural": "domains",
-    "url": "/domain/Facebook"
-  },
-  "label": "GetMembers",
-  "name": "GetMembersQueryHandler",
-  "query": [{
-    "list": false,
-    "name": "name",
-    "type": "String"
-  }],
-  "response": [
-    {
-      "list": false,
-      "name": "lastName",
-      "type": "String"
-    },
-    {
-      "list": false,
-      "name": "firstName",
-      "type": "String"
-    },
-    {
-      "list": false,
-      "name": "id",
-      "type": "KasperID"
-    }
-  ],
-  "type": "queryservice",
-  "typePlural": "queryservices",
-  "url": "/domain/Facebook/queryservice/GetMembersQueryHandler"
+  "message": "Unexistent entity",
+  "name": "queryhandler (type)",
+  "type": "error"
 }

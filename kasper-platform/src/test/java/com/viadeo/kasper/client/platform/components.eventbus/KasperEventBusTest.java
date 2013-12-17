@@ -1,11 +1,13 @@
 package com.viadeo.kasper.client.platform.components.eventbus;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.context.CurrentContext;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.EventMessage;
@@ -34,6 +36,11 @@ public class KasperEventBusTest {
 
     @XKasperUnregistered
     private static class TestEvent extends Event { }
+
+
+    public KasperEventBusTest() {
+        KasperMetrics.setMetricRegistry(new MetricRegistry());
+    }
 
     // ------------------------------------------------------------------------
 

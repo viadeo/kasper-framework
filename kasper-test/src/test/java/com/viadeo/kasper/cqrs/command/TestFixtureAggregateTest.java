@@ -6,9 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.ddd.IRepository;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
+import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.test.platform.KasperAggregateFixture;
 import org.axonframework.test.AxonAssertionError;
@@ -27,7 +29,7 @@ import static org.junit.Assert.fail;
 public class TestFixtureAggregateTest {
 
     private KasperAggregateFixture<TestAggregate> fixture;
-    private IRepository<TestAggregate> testRepository;
+    private Repository<TestAggregate> testRepository;
 
     private static final String firstName = "Richard";
     private static final String lastName = "Stallman";
@@ -42,8 +44,9 @@ public class TestFixtureAggregateTest {
         });
     }
 
-    public TestFixtureAggregateTest(final IRepository testRepository) {
+    public TestFixtureAggregateTest(final Repository<TestAggregate> testRepository) {
         this.testRepository = testRepository;
+        KasperMetrics.setMetricRegistry(new MetricRegistry());
     }
 
     @Before

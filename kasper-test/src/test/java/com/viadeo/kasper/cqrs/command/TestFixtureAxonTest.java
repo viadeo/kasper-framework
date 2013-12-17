@@ -6,13 +6,16 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.impl.DefaultKasperId;
+import org.axonframework.eventstore.EventStore;
 import org.axonframework.test.FixtureConfiguration;
 import org.axonframework.test.Fixtures;
 import org.junit.Before;
@@ -28,6 +31,7 @@ import java.util.Map;
 import static com.viadeo.kasper.cqrs.command.FixtureUseCase.*;
 import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
 import static org.axonframework.test.matchers.Matchers.*;
+import static org.mockito.Mockito.mock;
 
 @RunWith(Parameterized.class)
 public class TestFixtureAxonTest {
@@ -44,7 +48,7 @@ public class TestFixtureAxonTest {
     public static Collection repositories() {
         return Arrays.asList(new Object[][] {
             { new TestRepository() },
-            { new TestEventRepository() }
+            { new TestEventRepository(mock(EventStore.class)) }
         });
     }
 
@@ -52,6 +56,7 @@ public class TestFixtureAxonTest {
         if (null != testRepository) {
             this.testRepository = testRepository;
         }
+        KasperMetrics.setMetricRegistry(new MetricRegistry());
     }
 
     @Before
@@ -77,10 +82,9 @@ public class TestFixtureAxonTest {
 
     private Map<String, Object> newContext() {
         final Context context = DefaultContextBuilder.get();
-        final Map<String, Object> metaContext = new HashMap<String, Object>() {{
+        return new HashMap<String, Object>() {{
             this.put(Context.METANAME, context);
         }};
-        return metaContext;
     }
 
     // ========================================================================

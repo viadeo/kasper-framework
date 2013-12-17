@@ -6,20 +6,19 @@
 // ============================================================================
 package com.viadeo.kasper.event;
 
-import com.codahale.metrics.Histogram;
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
+import org.axonframework.domain.GenericEventMessage;
+import org.axonframework.eventhandling.EventBus;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /**
@@ -35,18 +34,17 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
      */
     public static final int EVENT_PARAMETER_POSITION = 0;
 
-    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
-    private static final Histogram METRICLASSHANDLETIMES = METRICS.histogram(name(EventListener.class, "handle-times"));
-    private static final Meter METRICLASSHANDLES = METRICS.meter(name(EventListener.class, "handles"));
-    private static final Meter METRICLASSERRORS = METRICS.meter(name(EventListener.class, "errors"));
-
-    private Timer metricTimer;
-    private Histogram metricHandleTimes;
-    private Meter metricHandles;
-    private Meter metricErrors;
+    private static final String GLOBAL_HISTO_HANDLE_TIMES_NAME = name(EventListener.class, "handle-times");
+    private static final String GLOBAL_METER_HANDLES_NAME = name(EventListener.class, "handles");
+    private static final String GLOBAL_METER_ERRORS_NAME = name(EventListener.class, "errors");
 
 	private final Class<? extends IEvent> eventClass;
-	private CommandGateway commandGateway;
+    private final String timerHandleTimeName;
+    private final String meterErrorsName;
+    private final String meterHandlesName;
+    private final String histoHandleTimesName;
+
+    private EventBus eventBus;
 
 	// ------------------------------------------------------------------------
 	
@@ -63,6 +61,10 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 			throw new KasperException("Unable to identify event class for " + this.getClass());
 		}
 
+        this.timerHandleTimeName = name(this.getClass(), "handle-time");
+        this.histoHandleTimesName = name(this.getClass(), "handle-times");
+        this.meterHandlesName = name(this.getClass(), "handles");
+        this.meterErrorsName = name(this.getClass(), "errors");
 	}
 	
 	// ------------------------------------------------------------------------
@@ -71,17 +73,28 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 		return this.eventClass;
 	}
 
-    // ------------------------------------------------------------------------
-
-    public void setCommandGateway(final CommandGateway commandGateway) {
-        this.commandGateway = checkNotNull(commandGateway);
-    }
-
-    protected Optional<CommandGateway> getCommandGateway() {
-        return Optional.of(this.commandGateway);
+    public Context getContext() {
+        if (CurrentContext.value().isPresent()) {
+            return CurrentContext.value().get();
+        }
+        throw new KasperException("Unexpected condition : no context was set during event handling");
     }
 
 	// ------------------------------------------------------------------------
+
+    /**
+     * Publish an event on the event bus
+     *
+     * @param event The event
+     */
+    public void publish(final IEvent event) {
+        checkNotNull(event, "The specified event must be non null");
+        checkState(null != eventBus, "Unable to publish the specified event : the event bus is null");
+        org.axonframework.domain.EventMessage eventMessage = GenericEventMessage.asEventMessage(event);
+        this.eventBus.publish(eventMessage);
+    }
+
+    // ------------------------------------------------------------------------
 	
 	/**
 	 * Wrapper for Axon event messages
@@ -95,17 +108,10 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 			return;
 		}
 
-        if (null == metricTimer) {
-            metricTimer = METRICS.timer(name(this.getClass(), "handle-time"));
-            metricHandleTimes = METRICS.histogram(name(this.getClass(), "handle-times"));
-            metricHandles = METRICS.meter(name(this.getClass(), "handles"));
-            metricErrors = METRICS.meter(name(this.getClass(), "errors"));
-        }
-
 		final com.viadeo.kasper.event.EventMessage<E> message = new EventMessage(eventMessage);
 
         /* Start timer */
-        final Timer.Context timer = metricTimer.time();
+        final Timer.Context timer = getMetricRegistry().timer(timerHandleTimeName).time();
 
         /* Ensure a context is set */
         if ( ! CurrentContext.value().isPresent()) {
@@ -117,6 +123,7 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
             }
         }
 
+
         /* Handle event */
         try {
             try {
@@ -125,20 +132,20 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
                 this.handle((E) eventMessage.getPayload());
             }
         } catch (final RuntimeException e) {
-            METRICLASSERRORS.mark();
-            metricErrors.mark();
+            getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
+            getMetricRegistry().meter(meterErrorsName).mark();
             throw e;
         } finally {
             /* Stop timer and record a tick */
             final long time = timer.stop();
-            METRICLASSHANDLETIMES.update(time);
-            metricHandleTimes.update(time);
-            METRICLASSHANDLES.mark();
-            metricHandles.mark();
+
+            getMetricRegistry().histogram(GLOBAL_HISTO_HANDLE_TIMES_NAME).update(time);
+            getMetricRegistry().meter(GLOBAL_METER_HANDLES_NAME).mark();
+
+            getMetricRegistry().histogram(histoHandleTimesName).update(time);
+            getMetricRegistry().meter(meterHandlesName).mark();
         }
 	}
-
-	// ------------------------------------------------------------------------
 	
 	/**
 	 * @param eventMessage the Kasper event message to handle
@@ -150,8 +157,13 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 	/**
 	 * @param event the Kasper event to handle
 	 */
-	public void handle(final E event){
+	public void handle(final E event) {
 		throw new UnsupportedOperationException();
 	}
-	
+
+    // ------------------------------------------------------------------------
+
+    public void setEventBus(EventBus eventBus) {
+        this.eventBus = eventBus;
+    }
 }

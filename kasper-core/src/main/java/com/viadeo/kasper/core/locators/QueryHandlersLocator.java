@@ -20,31 +20,31 @@ public interface QueryHandlersLocator {
 	void registerHandler(String name, QueryHandler handler, Class<? extends Domain> domainClass);
 
     /**
-     * @param filterName the name of the query filter to be registered
-     * @param queryFilter the filter instance to be registered
-     * @param isGlobal sets TRUE if this filter must be applied to all handlers
+     * @param name the name of the adapter to be registered
+     * @param adapter the adapter instance to be registered
+     * @param isGlobal sets TRUE if this adapter must be applied to all handlers
      * @param stickyDomainClass the domain class to be sticky (if global) : filter will only be applied of this domain handlers
      */
-    void registerFilter(String filterName, QueryHandlerFilter queryFilter, boolean isGlobal, Class<? extends Domain> stickyDomainClass);
+    void registerAdapter(String name, QueryHandlerAdapter adapter, boolean isGlobal, Class<? extends Domain> stickyDomainClass);
 
     /**
-     * @param filterName the name of the query filter to be registered
-     * @param queryFilter the filter instance to be registered
-     * @param isGlobal sets TRUE if this filter must be applied to all handlers
+     * @param name the name of the adapter to be registered
+     * @param adapter the adapter instance to be registered
+     * @param isGlobal sets TRUE if this adapter must be applied to all handlers
      */
-    void registerFilter(String filterName, QueryHandlerFilter queryFilter, boolean isGlobal);
+    void registerAdapter(String name, QueryHandlerAdapter adapter, boolean isGlobal);
 
     /**
-     * @param filterName the name of the query filter to be registered
-     * @param queryFilter the filter instance to be registered
+     * @param name the name of the query filter to be registered
+     * @param adapter the filter instance to be registered
      */
-    void registerFilter(String filterName, QueryHandlerFilter queryFilter);
+    void registerAdapter(String name, QueryHandlerAdapter adapter);
 
     /**
-     * @param queryHandlerClass the handler on which the filter must be applied
-     * @param filterClass the class of the filter to be applied
+     * @param queryHandlerClass the handler on which the adapter must be applied
+     * @param adapterClass the class of the adapter to be applied
      */
-    void registerFilterForQueryHandler(Class<? extends QueryHandler> queryHandlerClass, Class<? extends QueryHandlerFilter> filterClass);
+    void registerAdapterForQueryHandler(Class<? extends QueryHandler> queryHandlerClass, Class<? extends QueryHandlerAdapter> adapterClass);
 
 	/**
 	 * Retrieve an handler instance from its query class
@@ -99,11 +99,18 @@ public interface QueryHandlersLocator {
 	Collection<QueryHandler> getHandlers();
 
     /**
-     * Get all filters to be applied on a particular handler class
+     * Get all adapters to be applied on a particular handler class
      *
-     * @param handlerClass the class of the servcie to search filters for
-     * @return a list of filter instances to apply on the handler
+     * @param handlerClass the class of the service to search adapters for
+         * @return a list of adapter instances to apply on the handler
      */
-    Collection<QueryHandlerFilter> getFiltersForHandlerClass(Class<? extends QueryHandler> handlerClass);
+    Collection<QueryHandlerAdapter> getAdaptersForHandlerClass(Class<? extends QueryHandler> handlerClass);
+
+
+    /**
+     * @param adapter the adapter class
+     * @return Return true if the adapter is registered, false otherwise
+     */
+    boolean containsAdapter(Class<? extends QueryHandlerAdapter> adapter);
 
 }

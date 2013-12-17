@@ -7,13 +7,10 @@
 
 package com.viadeo.kasper.client.platform.components.eventbus;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.domain.EventMessage;
@@ -25,12 +22,14 @@ import org.axonframework.unitofwork.NoTransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /*
@@ -41,11 +40,9 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  *
  */
 public class KasperEventBus extends ClusteringEventBus {
+
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBus.class);
-    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
-
-    private static final Meter METRICLASSREQUESTS = METRICS.meter(name(KasperEventBus.class, "events"));
-
+    private static final String GLOBAL_METER_EVENTS_NAME = name(KasperEventBus.class, "events");
     private static final String KASPER_CLUSTER_NAME = "kasper";
 
     /* FIXME: make it configurable */
@@ -173,7 +170,7 @@ public class KasperEventBus extends ClusteringEventBus {
 
     @Override
     public void publish(final EventMessage... messages) {
-        METRICLASSREQUESTS.mark();
+        getMetricRegistry().meter(GLOBAL_METER_EVENTS_NAME).mark();
 
         final EventMessage[] newMessages;
 
@@ -204,6 +201,17 @@ public class KasperEventBus extends ClusteringEventBus {
 
     public void publish(final IEvent event) {
         this.publish(GenericEventMessage.asEventMessage(event));
+    }
+
+    public void publishEvent(final Context context, final IEvent event) {
+        this.publish(
+                new GenericEventMessage<>(
+                        checkNotNull(event),
+                        new HashMap<String, Object>() {{
+                            this.put(Context.METANAME, context);
+                        }}
+                )
+        );
     }
 
 }

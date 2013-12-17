@@ -16,7 +16,7 @@ Components which manipulates I/O between layers :
 - **CH** - Command handlers
 - **EL** - Event listeners
 - **QH** - Query handlers
-- **SF** - Service filters
+- **SA** - Service adapters
 
 Components of the model :
 

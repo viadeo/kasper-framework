@@ -18,6 +18,7 @@ import org.joda.time.DateTime;
 import org.junit.Test;
 
 import java.lang.reflect.Type;
+import java.net.URI;
 import java.util.*;
 
 import static org.junit.Assert.*;
@@ -131,7 +132,40 @@ public class TestStdQueryFactory {
         }
     }
 
+    @Test
+    public void beanQueryMapper_shouldAlphabeticallySortFields() throws Exception {
+        // Given
+        final QueryBuilder builder = new QueryBuilder();
+        final TypeAdapter<SomeQueryWithUnsortedFields> adapter = new DefaultQueryFactory(
+                new FeatureConfiguration(),
+                ImmutableMap.<Type, TypeAdapter>of(int.class, DefaultTypeAdapters.INT_ADAPTER),
+                ImmutableMap.<Type, BeanAdapter>of(),
+                new ArrayList<TypeAdapterFactory>(),
+                VisibilityFilter.PACKAGE_PUBLIC).create(TypeToken.of(SomeQueryWithUnsortedFields.class));
+
+        // When
+        adapter.adapt(new SomeQueryWithUnsortedFields(), builder);
+
+        // Then
+        // We want to test order is deterministic. Testing 20 times.
+        for (int i = 0; i < 20; ++i) {
+            assertEquals(new URI("http://test.com/test?aaa=2&bbb=1").toASCIIString()
+                    , builder.build(new URI("http://test.com/test")).toASCIIString());
+        }
+    }
+
     // ========================================================================
+
+    public static class SomeQueryWithUnsortedFields implements Query {
+        public int getBbb() { return 1; }
+
+        public void setBbb(final int dummyInt) { }
+
+        public int getAaa() { return 2; }
+
+        public void setAaa(final int dummyInt) { }
+
+    }
 
     private TypeAdapterFactory<Map<String, List<DateTime>>> createTypeAdapterFactory() {
         return new TypeAdapterFactory<Map<String, List<DateTime>>>() {

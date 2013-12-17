@@ -30,7 +30,7 @@ public class TestFixturePlatformTest {
 
     @Before
     public void resetFixture() {
-        this.fixture = KasperPlatformFixture.scanPrefix(this.getClass().getPackage().getName());
+        this.fixture = new KasperPlatformFixture().register(FixtureUseCase.getDomainBundle());
     }
 
     // ========================================================================
@@ -81,7 +81,7 @@ public class TestFixturePlatformTest {
     // ------------------------------------------------------------------------
 
     @Test
-    public void testSimpleExpectedValidation() {
+    public void testSimpleExpectedValidationOnCommand() {
 
         final KasperID createId = DefaultKasperId.random();
 
@@ -99,12 +99,22 @@ public class TestFixturePlatformTest {
     // ------------------------------------------------------------------------
 
     @Test
-    public void testSimpleExpectedValidationOnBadField() {
+    public void testSimpleExpectedValidationOnQuery() {
+        fixture
+            .given()
+            .when(
+                new TestQuery(null)
+            )
+            .expectValidationErrorOnField("type");
+    }
 
+    // ------------------------------------------------------------------------
+
+    @Test(expected = AxonAssertionError.class)
+    public void testSimpleExpectedValidationOnBadField() {
         final KasperID createId = DefaultKasperId.random();
 
-        try {
-            fixture
+        fixture
                 .given()
                 .when(
                     new TestCreateCommand(
@@ -113,9 +123,6 @@ public class TestFixturePlatformTest {
                     )
                 )
                 .expectValidationErrorOnField("foo");
-        } catch (final AxonAssertionError e) {
-            // expected
-        }
 
     }
 

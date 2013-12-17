@@ -8,11 +8,9 @@ package com.viadeo.kasper.core.boot;
 
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
-import com.viadeo.kasper.core.resolvers.DomainResolver;
-import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryHandlerFilter;
+import com.viadeo.kasper.cqrs.query.QueryHandlerAdapter;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.ddd.Domain;
@@ -30,13 +28,9 @@ public class QueryHandlersProcessorTest {
     // ------------------------------------------------------------------------
 
     final DefaultQueryHandlersLocator locator = spy(new DefaultQueryHandlersLocator());
-    final DomainResolver domainResolver = new DomainResolver();
-    final QueryHandlerResolver queryHandlerResolver = new QueryHandlerResolver();
     final QueryHandlersProcessor processor = new QueryHandlersProcessor();
 
-    {
-        queryHandlerResolver.setDomainResolver(domainResolver);
-        locator.setQueryHandlerResolver(queryHandlerResolver);
+    /* init */ {
         processor.setQueryHandlersLocator(locator);
     }
 
@@ -49,10 +43,10 @@ public class QueryHandlersProcessorTest {
     public class TestQuery implements Query { }
 
     @XKasperUnregistered
-    public class TestFilter implements QueryHandlerFilter { }
+    public class TestAdapter implements QueryHandlerAdapter { }
 
     @XKasperUnregistered
-    public class TestFilter2 implements QueryHandlerFilter { }
+    public class TestAdapter2 implements QueryHandlerAdapter { }
 
     public class TestResult implements QueryResult { }
 
@@ -67,11 +61,11 @@ public class QueryHandlersProcessorTest {
     public static class TestHandlerNoName extends QueryHandler<TestQuery, TestResult> { }
 
     @XKasperUnregistered
-    @XKasperQueryHandler( domain = TestDomain.class, filters = TestFilter.class )
+    @XKasperQueryHandler( domain = TestDomain.class, adapters = TestAdapter.class )
     public static class TestHandlerOneFilter extends QueryHandler<TestQuery, TestResult> { }
 
     @XKasperUnregistered
-    @XKasperQueryHandler( domain = TestDomain.class, filters = { TestFilter.class, TestFilter2.class } )
+    @XKasperQueryHandler( domain = TestDomain.class, adapters = { TestAdapter.class, TestAdapter2.class } )
     public static class TestHandlerMultipleFilters extends QueryHandler<TestQuery, TestResult> { }
 
     // ------------------------------------------------------------------------
@@ -115,7 +109,7 @@ public class QueryHandlersProcessorTest {
 
         // Then
         verify(locator).registerHandler(any(String.class), any(QueryHandler.class), eq(TestDomain.class));
-        verify(locator).registerFilterForQueryHandler(eq(handler.getClass()), eq(TestFilter.class));
+        verify(locator).registerAdapterForQueryHandler(eq(handler.getClass()), eq(TestAdapter.class));
 
     }
 
@@ -130,8 +124,8 @@ public class QueryHandlersProcessorTest {
 
         // Then
         verify(locator).registerHandler(any(String.class), any(QueryHandler.class), eq(TestDomain.class));
-        verify(locator).registerFilterForQueryHandler(eq(handler.getClass()), eq(TestFilter.class));
-        verify(locator).registerFilterForQueryHandler(eq(handler.getClass()), eq(TestFilter2.class));
+        verify(locator).registerAdapterForQueryHandler(eq(handler.getClass()), eq(TestAdapter.class));
+        verify(locator).registerAdapterForQueryHandler(eq(handler.getClass()), eq(TestAdapter2.class));
     }
 
 }

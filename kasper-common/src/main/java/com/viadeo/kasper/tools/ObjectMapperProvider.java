@@ -85,6 +85,10 @@ public final class ObjectMapperProvider {
         mapper.registerModule(new JodaMoneyModule());
     }
 
+    public static final ObjectMapperProvider defaults() {
+        return ObjectMapperProvider.INSTANCE;
+    }
+
     // ------------------------------------------------------------------------
 
     static KasperReason translateOldErrorToKasperReason(final ObjectNode root) {

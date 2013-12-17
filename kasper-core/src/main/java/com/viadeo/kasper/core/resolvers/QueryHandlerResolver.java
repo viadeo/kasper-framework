@@ -25,6 +25,17 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
 
     // ------------------------------------------------------------------------
 
+    public QueryHandlerResolver(){
+        super();
+    }
+
+    public QueryHandlerResolver(final DomainResolver domainResolver) {
+        this();
+        setDomainResolver(domainResolver);
+    }
+
+    // ------------------------------------------------------------------------
+
     @Override
     public String getTypeName() {
         return "QueryHandler";

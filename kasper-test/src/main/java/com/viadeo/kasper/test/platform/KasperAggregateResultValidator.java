@@ -9,11 +9,12 @@ package com.viadeo.kasper.test.platform;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.event.IEvent;
+import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.AxonAssertionError;
 import org.axonframework.test.ResultValidator;
 import org.hamcrest.Matcher;
 
-import java.util.Collection;
+import javax.validation.ConstraintViolation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
@@ -23,17 +24,17 @@ public class KasperAggregateResultValidator
         implements KasperFixtureResultValidator, KasperFixtureCommandResultValidator {
 
     private final ResultValidator validator;
-    private final KasperReason validationReason;
+    private final JSR303ViolationException validationException;
 
     // ------------------------------------------------------------------------
 
     KasperAggregateResultValidator(final ResultValidator validator) {
         this.validator = checkNotNull(validator);
-        this.validationReason = null;
+        this.validationException = null;
     }
 
-    KasperAggregateResultValidator(final KasperReason validationReason) {
-        this.validationReason = validationReason;
+    KasperAggregateResultValidator(final JSR303ViolationException validationException) {
+        this.validationException = validationException;
         this.validator = null;
     }
 
@@ -56,7 +57,7 @@ public class KasperAggregateResultValidator
 
     @Override
     public KasperAggregateResultValidator expectExactSequenceOfEvents(final IEvent... events) {
-        checkValidation();;
+        checkValidation();
 
         final Matcher[] matchers = new Matcher[events.length + 1];
 
@@ -118,23 +119,19 @@ public class KasperAggregateResultValidator
 
     @Override
     public KasperFixtureResultValidator expectValidationErrorOnField(final String field) {
-        if (null == validationReason) {
+
+        if (null == validationException) {
             throw new AxonAssertionError(String.format(
                     "The expected validation error on field %s not occured",
                     field
             ));
         }
 
-        final Collection<String> messages = validationReason.getMessages();
         boolean found = false;
-        for (final String message : messages) {
-            if (message.startsWith("VALIDATION")) {
-                final String[] parts = message.split(":");
-                if (parts.length > 2) {
-                    if (parts[1].contentEquals(field)) {
-                        found = true;
-                    }
-                }
+
+        for (final ConstraintViolation violation : validationException.getViolations()) {
+            if (violation.getPropertyPath().toString().contentEquals(field)) {
+                found = true;
             }
         }
 
@@ -151,8 +148,8 @@ public class KasperAggregateResultValidator
     // ------------------------------------------------------------------------
 
     private void checkValidation() {
-        if (null != validationReason) {
-            throw new AxonAssertionError("Error on validation : " + validationReason.toString());
+        if (null != validationException) {
+            throw new AxonAssertionError("Error on validation : " + validationException.toString());
         }
     }
 

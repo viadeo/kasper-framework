@@ -6,19 +6,18 @@
 // ============================================================================
 package com.viadeo.kasper.core.metrics;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.resolvers.CommandResolver;
 import com.viadeo.kasper.core.resolvers.Resolver;
 import com.viadeo.kasper.core.resolvers.ResolverFactory;
 import com.viadeo.kasper.cqrs.command.Command;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.*;
 
-@Ignore
 public class KasperMetricsTest {
 
     @XKasperUnregistered
@@ -26,8 +25,12 @@ public class KasperMetricsTest {
 
     // ------------------------------------------------------------------------
 
+    public KasperMetricsTest(){
+        KasperMetrics.setMetricRegistry(new MetricRegistry());
+    }
+
     @Test
-    public void testNameFromString() {
+    public void name_fromString_shouldBeOk() {
         // Given
         final KasperMetrics kasperMetrics = new KasperMetrics();
         kasperMetrics._setNamePrefix("dummy");
@@ -40,7 +43,7 @@ public class KasperMetricsTest {
     }
 
     @Test
-    public void testNameFromClass() {
+    public void name_fromClass_shouldBeOk() {
         // Given
         final KasperMetrics kasperMetrics = new KasperMetrics();
         kasperMetrics._setNamePrefix("");
@@ -49,21 +52,21 @@ public class KasperMetricsTest {
         final String name = kasperMetrics._name(this.getClass(), "b");
 
         // Then
-        assertEquals(this.getClass().getName() + ".b", name);
+        assertEquals((this.getClass().getName() + ".b").toLowerCase(), name);
     }
 
     @Test
-    public void testKasperPathDefault() {
+    public void name_fromCommandHandler_shouldBeOk() {
         // Given
         final KasperMetrics kasperMetrics = new KasperMetrics();
         kasperMetrics._unsetResolverFactory();
 
         // When
         kasperMetrics._clearCache();
-        final String path = kasperMetrics._pathForKasperComponent(TestCommand.class);
+        final String path = kasperMetrics.pathForKasperComponent(TestCommand.class);
 
         // Then
-        assertEquals(TestCommand.class.getName(), path);
+        assertEquals(TestCommand.class.getName().toLowerCase(), path);
     }
 
     @Test
@@ -86,10 +89,10 @@ public class KasperMetricsTest {
 
         // When
         kasperMetrics._clearCache();
-        final String path = kasperMetrics._pathForKasperComponent(TestCommand.class);
+        final String path = kasperMetrics.pathForKasperComponent(TestCommand.class);
 
         // Then
-        assertEquals("Test.Command." + TestCommand.class.getSimpleName(), path);
+        assertEquals(("Test.Command." + TestCommand.class.getSimpleName()).toLowerCase(), path);
         verify(commandResolver, times(1)).getDomainLabel(TestCommand.class);
         verify(commandResolver, times(1)).getTypeName();
         verifyNoMoreInteractions(commandResolver);

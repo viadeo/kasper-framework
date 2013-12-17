@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -21,8 +19,6 @@ import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.HttpContextHeaders;
-import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -44,38 +40,43 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 public class HttpCommandExposer extends HttpExposer {
-    private static final long serialVersionUID = 8444284922303895624L;
-    protected static final transient Logger REQUEST_LOGGER = LoggerFactory.getLogger(HttpCommandExposer.class);
-    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
-    private static final Timer METRICLASSTIMER = METRICS.timer(name(HttpCommandExposer.class, "requests-time"));
-    private static final Timer METRICLASSHANDLETIMER = METRICS.timer(name(HttpCommandExposer.class, "requests-handle-time"));
-    private static final Meter METRICLASSREQUESTS = METRICS.meter(name(HttpCommandExposer.class, "requests"));
-    private static final Meter METRICLASSERRORS = METRICS.meter(name(HttpCommandExposer.class, "errors"));
+    private static final long serialVersionUID = 8444284922303895624L;
+
+    protected static final transient Logger REQUEST_LOGGER = LoggerFactory.getLogger(HttpCommandExposer.class);
+
+    private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(HttpCommandExposer.class, "requests-time");
+    private static final String GLOBAL_TIMER_REQUESTS_HANDLE_TIME_NAME = name(HttpCommandExposer.class, "requests-handle-time");
+    private static final String GLOBAL_METER_REQUESTS_NAME = name(HttpCommandExposer.class, "requests");
+    private static final String GLOBAL_METER_ERRORS_NAME = name(HttpCommandExposer.class, "errors");
 
     private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
-    private final transient DomainLocator domainLocator;
+    private final transient List<Class<? extends CommandHandler>> commandHandlerClasses;
     private final ObjectMapper mapper;
     private final transient CommandGateway commandGateway;
     private final transient HttpContextDeserializer contextDeserializer;
 
     // ------------------------------------------------------------------------
 
-    public HttpCommandExposer(final CommandGateway commandGateway, final DomainLocator domainLocator) {
-        this(commandGateway, domainLocator,
+    public HttpCommandExposer(final CommandGateway commandGateway, final List<Class<? extends CommandHandler>> commandHandlerClasses) {
+        this(
+                commandGateway,
+                commandHandlerClasses,
                 new HttpContextDeserializer(),
-                ObjectMapperProvider.INSTANCE.mapper());
+                ObjectMapperProvider.INSTANCE.mapper()
+        );
     }
     
     public HttpCommandExposer(final CommandGateway commandGateway,
-                              final DomainLocator domainLocator,
+                              final List<Class<? extends CommandHandler>> commandHandlerClasses,
                               final HttpContextDeserializer contextDeserializer,
                               final ObjectMapper mapper) {
         this.commandGateway = commandGateway;
-        this.domainLocator = checkNotNull(domainLocator);
+        this.commandHandlerClasses = checkNotNull(commandHandlerClasses);
         this.contextDeserializer = contextDeserializer;
         this.mapper = mapper;
     }
@@ -86,8 +87,8 @@ public class HttpCommandExposer extends HttpExposer {
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing commands ===============");
 
-        for (final CommandHandler handler : domainLocator.getHandlers()) {
-            expose(handler);
+        for (final Class<? extends CommandHandler> handlerClass : commandHandlerClasses) {
+            expose(handlerClass);
         }
 
         if (exposedCommands.isEmpty()) {
@@ -141,11 +142,15 @@ public class HttpCommandExposer extends HttpExposer {
             throws IOException {
 
         /* Start request timer */
-        final Timer.Context classTimer = METRICLASSTIMER.time();
+        final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
 
         /* Create a request correlation id */
         final UUID kasperCorrelationUUID = UUID.randomUUID();
         resp.addHeader("kasperCorrelationId", kasperCorrelationUUID.toString());
+
+        /* extract context from request */
+        final Context context = contextDeserializer.deserialize(req,kasperCorrelationUUID);
+        MDC.setContextMap(context.asMap());
 
         /* Log starting request */
         REQUEST_LOGGER.info("Processing HTTP Command '{}' '{}'", req.getMethod(), getFullRequestURI(req));
@@ -181,13 +186,9 @@ public class HttpCommandExposer extends HttpExposer {
             parser = reader.getFactory().createJsonParser(req.getInputStream());
             final Command command = reader.readValue(parser, commandClass);
 
-            /* extract context from request */
-            final Context context = contextDeserializer.deserialize(req,kasperCorrelationUUID);
-            MDC.setContextMap(context.asMap());
-
             /* send now that command to the platform and wait for the result */
-            final Timer.Context commandHandleTime = METRICS.timer(name(command.getClass(), "requests-handle-time")).time();
-            final Timer.Context classHandleTime = METRICLASSHANDLETIMER.time();
+            final Timer.Context commandHandleTime = getMetricRegistry().timer(name(command.getClass(), "requests-handle-time")).time();
+            final Timer.Context classHandleTime = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_HANDLE_TIME_NAME).time();
 
             response = commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
             checkNotNull(response);
@@ -240,7 +241,7 @@ public class HttpCommandExposer extends HttpExposer {
             /* Log & metrics */
             final long time = classTimer.stop();
             REQUEST_LOGGER.info("Execution Time '{}' ns",time);
-            METRICLASSREQUESTS.mark();
+            getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
         }
 
         if (null != response) {
@@ -331,16 +332,16 @@ public class HttpCommandExposer extends HttpExposer {
         REQUEST_LOGGER.info("HTTP Response {} '{}' : {} {}", request.getMethod(), request.getRequestURI(), status, reason);
 
         /* Log error metric */
-        METRICLASSERRORS.mark();
+        getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
     }
 
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    HttpExposer expose(final CommandHandler commandHandler) {
-        checkNotNull(commandHandler);
+    HttpExposer expose(final Class<? extends CommandHandler> commandHandlerClass) {
+        checkNotNull(commandHandlerClass);
 
-        final TypeToken<? extends CommandHandler> typeToken = TypeToken.of(commandHandler.getClass());
+        final TypeToken<? extends CommandHandler> typeToken = TypeToken.of(commandHandlerClass);
 
         final Class<? super Command> commandClass = (Class<? super Command>) typeToken
                 .getSupertype(CommandHandler.class)

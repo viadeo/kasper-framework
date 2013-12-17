@@ -1,11 +1,10 @@
 package com.viadeo.kasper.test.platform;
 
-import com.google.common.base.Optional;
-import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.query.validation.QueryValidationActor;
+import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.TestExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,13 +41,12 @@ public class KasperAggregateExecutor implements KasperFixtureCommandExecutor<Kas
         }};
 
         try {
-            final Optional<KasperReason> reason = QueryValidationActor.validate(
+            QueryValidationActor.validate(
                 Validation.buildDefaultValidatorFactory(),
                 command
             );
-            if (reason.isPresent()) {
-                return new KasperAggregateResultValidator(reason.get());
-            }
+        } catch (JSR303ViolationException e) {
+            return new KasperAggregateResultValidator(e);
         } catch (final ValidationException ve) {
             LOGGER.warn("No implementation found for BEAN VALIDATION - JSR 303", ve);
         }
