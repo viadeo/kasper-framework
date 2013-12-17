@@ -6,33 +6,51 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
+import com.google.common.base.Supplier;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
 import com.viadeo.kasper.client.platform.domain.SpringDomainBundle;
-import com.viadeo.kasper.impl.StringKasperId;
 import com.viadeo.kasper.test.platform.KasperPlatformFixture;
 import org.axonframework.domain.DomainEventMessage;
 import org.axonframework.domain.DomainEventStream;
-import org.axonframework.domain.GenericDomainEventMessage;
+import org.axonframework.domain.SimpleDomainEventStream;
 import org.axonframework.eventstore.EventStore;
 import org.junit.Before;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.refEq;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import java.util.Collection;
+import java.util.List;
 
 public class TestFixturePlatformSpringTest extends TestFixturePlatformTest {
 
     @Before
     @Override
     public void resetFixture() {
-        final DomainEventMessage<FixtureUseCase.TestAggregate> domainEventMessage = new GenericDomainEventMessage<>("", 0L, new FixtureUseCase.TestAggregate(new StringKasperId("miaou")));
+        EventStore eventStore = new EventStore() {
+            private final Multimap<String, DomainEventMessage> messageByIdentifiers = Multimaps.newListMultimap(
+                    Maps.<String, Collection<DomainEventMessage>>newHashMap(),
+                    new Supplier<List<DomainEventMessage>>() {
+                        @Override
+                        public List<DomainEventMessage> get() {
+                            return Lists.newArrayList();
+                        }
+                    }
+            );
 
-        final DomainEventStream domainEventStream = mock(DomainEventStream.class);
-        when(domainEventStream.peek()).thenReturn(domainEventMessage);
+            @Override
+            public void appendEvents(String type, DomainEventStream events) {
+                while (events.hasNext()) {
+                    final DomainEventMessage eventMessage = events.next();
+                    messageByIdentifiers.put(String.valueOf(eventMessage.getAggregateIdentifier()), eventMessage);
+                }
+            }
 
-        final EventStore eventStore = mock(EventStore.class);
-        when(eventStore.readEvents(refEq("TestAggregate"), any())).thenReturn(domainEventStream);
+            @Override
+            public DomainEventStream readEvents(String type, Object identifier) {
+                return new SimpleDomainEventStream(messageByIdentifiers.get(String.valueOf(identifier)));
+            }
+        };
 
         this.fixture = new KasperPlatformFixture();
         this.fixture.register(
