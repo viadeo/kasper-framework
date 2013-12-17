@@ -73,6 +73,13 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 		return this.eventClass;
 	}
 
+    public Context getContext() {
+        if (CurrentContext.value().isPresent()) {
+            return CurrentContext.value().get();
+        }
+        throw new KasperException("Unexpected condition : no context was set during event handling");
+    }
+
 	// ------------------------------------------------------------------------
 
     /**
@@ -150,7 +157,7 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 	/**
 	 * @param event the Kasper event to handle
 	 */
-	public void handle(final E event){
+	public void handle(final E event) {
 		throw new UnsupportedOperationException();
 	}
 

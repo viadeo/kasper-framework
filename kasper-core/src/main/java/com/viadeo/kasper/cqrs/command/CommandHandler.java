@@ -9,6 +9,7 @@ package com.viadeo.kasper.cqrs.command;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.event.IEvent;
@@ -214,6 +215,13 @@ public abstract class CommandHandler<C extends Command>
 
     public CommandGateway getCommandGateway() {
         return commandGateway;
+    }
+
+    public Context getContext() {
+        if (CurrentContext.value().isPresent()) {
+            return CurrentContext.value().get();
+        }
+        throw new KasperCommandException("Unexpected condition : no context was set during command handling");
     }
 
     // ------------------------------------------------------------------------
