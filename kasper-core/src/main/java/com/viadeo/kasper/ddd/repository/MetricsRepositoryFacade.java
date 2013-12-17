@@ -8,11 +8,9 @@ package com.viadeo.kasper.ddd.repository;
 
 import com.codahale.metrics.Timer;
 import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.ddd.IRepository;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
-import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.*;
 
 /**
  * Facade repository used to :
@@ -22,20 +20,6 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  *
  */
 class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacade<AGR> {
-
-    private static final String GLOBAL_HISTO_SAVE_TIMES_NAME = name(IRepository.class, "save-times");
-    private static final String GLOBAL_METER_SAVES_NAME = name(IRepository.class, "saves");
-    private static final String GLOBAL_METER_SAVE_ERRORS_NAME = name(IRepository.class, "save-errors");
-
-    private static final String GLOBAL_HISTO_LOAD_TIMES_NAME = name(IRepository.class, "load-times");
-    private static final String GLOBAL_METER_LOADS_NAME = name(IRepository.class, "loads");
-    private static final String GLOBAL_METER_LOAD_ERRORS_NAME = name(IRepository.class, "load-errors");
-
-    private static final String GLOBAL_HISTO_DELETE_TIMES_NAME = name(IRepository.class, "delete-times");
-    private static final String GLOBAL_METER_DELETES_NAME = name(IRepository.class, "deletes");
-    private static final String GLOBAL_METER_DELETE_ERRORS_NAME = name(IRepository.class, "delete-errors");
-
-    // ------------------------------------------------------------------------
 
     private final String timerSaveTimeName;
     private final String meterSaveErrorsName;
@@ -84,16 +68,16 @@ class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacad
             super.doSave(aggregate);
 
         } catch (final RuntimeException e) {
-            getMetricRegistry().meter(GLOBAL_METER_SAVE_ERRORS_NAME).mark();
+            GLOBAL_REPOSITORY_METER_SAVE_ERRORS.mark();
             getMetricRegistry().meter(meterSaveErrorsName).mark();
             throw e;
 
         } finally {
             final long time = timer.stop();
-            getMetricRegistry().histogram(GLOBAL_HISTO_SAVE_TIMES_NAME).update(time);
+            GLOBAL_REPOSITORY_HISTO_SAVE_TIMES.update(time);
             getMetricRegistry().histogram(histoSavesTimesName).update(time);
 
-            getMetricRegistry().meter(GLOBAL_METER_SAVES_NAME).mark();
+            GLOBAL_REPOSITORY_METER_SAVES.mark();
             getMetricRegistry().meter(meterSavesName).mark();
         }
 
@@ -111,16 +95,16 @@ class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacad
             agr = super.doLoad(aggregateIdentifier, expectedVersion);
 
         } catch (final RuntimeException e) {
-            getMetricRegistry().meter(GLOBAL_METER_LOAD_ERRORS_NAME).mark();
+            GLOBAL_REPOSITORY_METER_LOAD_ERRORS.mark();
             getMetricRegistry().meter(meterLoadErrorsName).mark();
             throw e;
 
         } finally {
             final long time = timer.stop();
-            getMetricRegistry().histogram(GLOBAL_HISTO_LOAD_TIMES_NAME).update(time);
+            GLOBAL_REPOSITORY_HISTO_LOAD_TIMES.update(time);
             getMetricRegistry().histogram(histoLoadsTimesName).update(time);
 
-            getMetricRegistry().meter(GLOBAL_METER_LOADS_NAME).mark();
+            GLOBAL_REPOSITORY_METER_LOADS.mark();
             getMetricRegistry().meter(meterLoadsName).mark();
         }
 
@@ -137,16 +121,16 @@ class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacad
             super.doDelete(aggregate);
 
         } catch (final RuntimeException e) {
-            getMetricRegistry().meter(GLOBAL_METER_DELETE_ERRORS_NAME).mark();
+            GLOBAL_REPOSITORY_METER_DELETE_ERRORS.mark();
             getMetricRegistry().meter(meterDeleteErrorsName).mark();
             throw e;
 
         } finally {
             final long time = timer.stop();
-            getMetricRegistry().histogram(GLOBAL_HISTO_DELETE_TIMES_NAME).update(time);
+            GLOBAL_REPOSITORY_HISTO_DELETE_TIMES.update(time);
             getMetricRegistry().histogram(histoDeletesTimesName).update(time);
 
-            getMetricRegistry().meter(GLOBAL_METER_DELETES_NAME).mark();
+            GLOBAL_REPOSITORY_METER_DELETES.mark();
             getMetricRegistry().meter(meterDeletesName).mark();
         }
 

@@ -25,8 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
-import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.*;
 
 /**
  * @param <C> Command
@@ -35,10 +34,6 @@ public abstract class CommandHandler<C extends Command>
         implements  org.axonframework.commandhandling.CommandHandler<C> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandHandler.class);
-
-    private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(CommandGateway.class, "requests-time");
-    private static final String GLOBAL_METER_REQUESTS_NAME = name(CommandGateway.class, "requests");
-    private static final String GLOBAL_METER_ERRORS_NAME = name(CommandGateway.class, "errors");
 
     /**
      * Generic parameter position for the handled command
@@ -91,7 +86,7 @@ public abstract class CommandHandler<C extends Command>
         CommandHandler.LOGGER.debug("Handle command " + commandClass.getSimpleName());
 
         /* Start timer */
-        final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
+        final Timer.Context classTimer = GLOBAL_COMMAND_TIMER_REQUESTS_TIME.time();
         final Timer.Context timer = getMetricRegistry().timer(timerRequestsTimeName).time();
 
         CommandResponse ret = null;
@@ -146,11 +141,11 @@ public abstract class CommandHandler<C extends Command>
         }
 
         /* Monitor the request calls */
-        getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
+        GLOBAL_COMMAND_METER_REQUESTS.mark();
         getMetricRegistry().meter(meterRequestsName).mark();
 
         if ((null != exception) || ! ret.isOK()) {
-            getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
+            GLOBAL_COMMAND_METER_ERRORS.mark();
             getMetricRegistry().meter(meterErrorsName).mark();
         }
 
