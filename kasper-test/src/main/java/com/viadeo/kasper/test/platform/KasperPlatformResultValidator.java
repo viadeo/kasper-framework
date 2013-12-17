@@ -88,4 +88,34 @@ public abstract class KasperPlatformResultValidator
 
     }
 
+    @Override
+    public KasperFixtureResultValidator expectValidationErrorOnField(final String field) {
+
+        if ((null == exception()) || ( ! JSR303ViolationException.class.equals(exception().getClass()))) {
+            throw new AxonAssertionError(String.format(
+                    "The expected validation error on field %s not occured",
+                    field
+            ));
+        }
+
+        boolean found = false;
+
+        final JSR303ViolationException jsrException = (JSR303ViolationException) exception();
+
+        for (final ConstraintViolation violation : jsrException.getViolations()) {
+            if (violation.getPropertyPath().toString().contentEquals(field)) {
+                found = true;
+            }
+        }
+
+        if ( ! found) {
+            throw new AxonAssertionError(String.format(
+                    "The expected validation error on field %s not occured",
+                    field
+            ));
+        }
+
+        return this;
+    }
+
 }

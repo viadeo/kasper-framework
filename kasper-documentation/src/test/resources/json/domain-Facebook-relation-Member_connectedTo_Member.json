@@ -1,9 +1,5 @@
 {
-  "aggregate": true,
-  "bidirectional": false,
-  "componentConcepts": [],
-  "componentRelations": [],
-  "description": "The connected_to relation between Member and Member",
+  "description": "The connected_to relation between FacebookMember and FacebookMember",
   "domain": {
     "description": "Root Facebook domain",
     "label": "Facebook",
@@ -14,18 +10,39 @@
   },
   "label": "connected_to",
   "name": "Member_connectedTo_Member",
-  "parent": null,
-  "properties": [],
+  "properties": [
+    {
+      "list": false,
+      "name": "id",
+      "type": "KasperID"
+    },
+    {
+      "list": false,
+      "name": "version",
+      "type": "Long"
+    },
+    {
+      "list": false,
+      "name": "lastEventSequenceNumber",
+      "type": "Long"
+    },
+    {
+      "list": false,
+      "name": "version",
+      "type": "Long"
+    }
+  ],
   "sourceConcept": {
-    "description": "The Member concept",
+    "description": "The FacebookMember concept",
     "label": "FacebookMember",
     "name": "Member",
     "type": "concept",
     "typePlural": "concepts",
     "url": "/domain/Facebook/concept/Member"
   },
+  "sourceEvents": [],
   "targetConcept": {
-    "description": "The Member concept",
+    "description": "The FacebookMember concept",
     "label": "FacebookMember",
     "name": "Member",
     "type": "concept",
@@ -34,5 +51,6 @@
   },
   "type": "relation",
   "typePlural": "relations",
-  "url": "/domain/Facebook/relation/Member_connectedTo_Member"
+  "url": "/domain/Facebook/relation/Member_connectedTo_Member",
+  "verb": ""
 }

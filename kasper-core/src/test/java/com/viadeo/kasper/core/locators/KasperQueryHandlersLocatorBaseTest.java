@@ -19,8 +19,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import java.util.Collection;
-
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 
@@ -56,8 +54,7 @@ public class KasperQueryHandlersLocatorBaseTest {
         final QueryHandlerResolver queryHandlerResolver = new QueryHandlerResolver();
         queryHandlerResolver.setDomainResolver(domainResolver);
 
-		locator = new DefaultQueryHandlersLocator();
-        locator.setQueryHandlerResolver(queryHandlerResolver);
+		locator = new DefaultQueryHandlersLocator(queryHandlerResolver);
 	}
 
 	@Test
@@ -104,51 +101,49 @@ public class KasperQueryHandlersLocatorBaseTest {
     // ------------------------------------------------------------------------
 
     @XKasperUnregistered
-    private static class TestFilter implements QueryHandlerFilter { }
+    private static class TestAdapter implements QueryHandlerAdapter { }
 
     @XKasperUnregistered
-    private static class TestFilter2 implements QueryHandlerFilter { }
+    private static class TestAdapter2 implements QueryHandlerAdapter { }
 
     @Test
     public void registerQueryHandlerFilter() {
 
-        final Collection<QueryHandlerFilter> filters;
-
         // Given
-        final TestFilter filter = mock(TestFilter.class);
+        final TestAdapter adapter = mock(TestAdapter.class);
         final TestHandler handler = mock(TestHandler.class);
         final Class<? extends TestHandler> handlerClass = handler.getClass();
 
         // When
-        locator.registerFilter("testFilter", filter);
+        locator.registerAdapter("testAdapter", adapter);
         locator.registerHandler("testHandler", handler, TestDomain.class);
-        locator.registerFilterForQueryHandler(handlerClass, filter.getClass());
+        locator.registerAdapterForQueryHandler(handlerClass, adapter.getClass());
 
         // Then
-        assertEquals(1, locator.getFiltersForHandlerClass(handlerClass).size());
+        assertEquals(1, locator.getAdaptersForHandlerClass(handlerClass).size());
 
         // --
 
         // Given
-        final TestFilter2 filter2 = mock(TestFilter2.class);
+        final TestAdapter2 adapter2 = mock(TestAdapter2.class);
 
         // When
-        locator.registerFilter("testFilter2", filter2);
-        locator.registerFilterForQueryHandler(handlerClass, filter2.getClass());
+        locator.registerAdapter("testAdapter2", adapter2);
+        locator.registerAdapterForQueryHandler(handlerClass, adapter2.getClass());
 
         // Then
-        assertEquals(2, locator.getFiltersForHandlerClass(handlerClass).size());
+        assertEquals(2, locator.getAdaptersForHandlerClass(handlerClass).size());
 
          // --
 
         // Given
-        final QueryHandlerFilter filterGlobal = mock(QueryHandlerFilter.class);
+        final QueryHandlerAdapter adapterGlobal = mock(QueryHandlerAdapter.class);
 
         // When
-        locator.registerFilter("testFilterGlobal", filterGlobal, true);
+        locator.registerAdapter("testAdapterGlobal", adapterGlobal, true);
 
         // Then
-        assertEquals(3, locator.getFiltersForHandlerClass(handlerClass).size());
+        assertEquals(3, locator.getAdaptersForHandlerClass(handlerClass).size());
 
     }
 
@@ -170,24 +165,24 @@ public class KasperQueryHandlersLocatorBaseTest {
     }
 
     @XKasperUnregistered
-    private static class TestFilterDomain implements QueryHandlerFilter { }
+    private static class TestAdapterDomain implements QueryHandlerAdapter { }
 
     @Test
     public void registerStickyDomainFilter() {
 
         // Given
-        final TestFilterDomain filter = new TestFilterDomain();
+        final TestAdapterDomain adapter = new TestAdapterDomain();
         final TestHandler handler = new TestHandler();
         final TestHandler2 handler2 = new TestHandler2();
 
         // When
-        locator.registerFilter("testFilter", filter, true, TestDomain.class);
+        locator.registerAdapter("testAdapter", adapter, true, TestDomain.class);
         locator.registerHandler("testHandler", handler, TestDomain.class);
         locator.registerHandler("testHandler2", handler2, TestDomain2.class);
 
         // Then
-        assertEquals(1, locator.getFiltersForHandlerClass(handler.getClass()).size());
-        assertEquals(0, locator.getFiltersForHandlerClass(handler2.getClass()).size());
+        assertEquals(1, locator.getAdaptersForHandlerClass(handler.getClass()).size());
+        assertEquals(0, locator.getAdaptersForHandlerClass(handler2.getClass()).size());
     }
 
 }

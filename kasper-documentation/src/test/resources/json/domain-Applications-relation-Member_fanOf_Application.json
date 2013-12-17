@@ -1,8 +1,4 @@
 {
-  "aggregate": true,
-  "bidirectional": false,
-  "componentConcepts": [],
-  "componentRelations": [],
   "description": "Tha Member is a big fan of this application",
   "domain": {
     "description": "Applications domain",
@@ -14,16 +10,37 @@
   },
   "label": "fan_of",
   "name": "Member_fanOf_Application",
-  "parent": null,
-  "properties": [],
+  "properties": [
+    {
+      "list": false,
+      "name": "id",
+      "type": "KasperID"
+    },
+    {
+      "list": false,
+      "name": "version",
+      "type": "Long"
+    },
+    {
+      "list": false,
+      "name": "lastEventSequenceNumber",
+      "type": "Long"
+    },
+    {
+      "list": false,
+      "name": "version",
+      "type": "Long"
+    }
+  ],
   "sourceConcept": {
-    "description": "[Not resolved]",
-    "label": "Member",
+    "description": "The FacebookMember concept",
+    "label": "FacebookMember",
     "name": "Member",
     "type": "concept",
     "typePlural": "concepts",
     "url": "/domain/Applications/concept/Member"
   },
+  "sourceEvents": [],
   "targetConcept": {
     "description": "The Application concept",
     "label": "Application",
@@ -34,5 +51,6 @@
   },
   "type": "relation",
   "typePlural": "relations",
-  "url": "/domain/Applications/relation/Member_fanOf_Application"
+  "url": "/domain/Applications/relation/Member_fanOf_Application",
+  "verb": ""
 }

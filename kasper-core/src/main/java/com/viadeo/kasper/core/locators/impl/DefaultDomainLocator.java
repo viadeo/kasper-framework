@@ -10,14 +10,10 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
-import com.viadeo.kasper.core.resolvers.RepositoryResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
-import com.viadeo.kasper.ddd.IRepository;
-import com.viadeo.kasper.ddd.repository.ClientRepository;
 import com.viadeo.kasper.exception.KasperException;
 
 import java.util.*;
@@ -31,11 +27,6 @@ public class DefaultDomainLocator implements DomainLocator {
 
     // - Convenient Cache types ------------------------------------------------
 
-    private static final class RepositoriesByAggregateCache extends
-            HashMap<Class<? extends AggregateRoot>, IRepository> {
-        private static final long serialVersionUID = 4713909577649004213L;
-    }
-
     private static final class DomainsPropertiesCache extends HashMap<Domain, Map<String, String>> {
         private static final long serialVersionUID = -145508661436546886L;
     }
@@ -48,9 +39,6 @@ public class DefaultDomainLocator implements DomainLocator {
 
     // ------------------------------------------------------------------------
 
-    /** Domain repositories */
-    private final transient RepositoriesByAggregateCache entityRepositories;
-
     /** Domains */
     private final transient DomainsPropertiesCache domains;
     private final transient DomainByPropertyCache domainNames;
@@ -58,21 +46,18 @@ public class DefaultDomainLocator implements DomainLocator {
 
     // ------------------------------------------------------------------------
 
-    private RepositoryResolver repositoryResolver;
     private CommandHandlerResolver commandHandlerResolver;
 
     // ------------------------------------------------------------------------
 
     public DefaultDomainLocator() {
-        this.entityRepositories = new RepositoriesByAggregateCache();
         this.domains = new DomainsPropertiesCache();
         this.domainNames = new DomainByPropertyCache();
         this.domainPrefixes = new DomainByPropertyCache();
     }
 
-    public DefaultDomainLocator(final RepositoryResolver repositoryResolver, final CommandHandlerResolver commandHandlerResolver) {
+    public DefaultDomainLocator(final CommandHandlerResolver commandHandlerResolver) {
         this();
-        this.repositoryResolver = repositoryResolver;
         this.commandHandlerResolver = commandHandlerResolver;
     }
 
@@ -135,45 +120,6 @@ public class DefaultDomainLocator implements DomainLocator {
         checkNotNull(entity);
         // TODO Auto-generated method stub
         throw new KasperException("Entity has no registered domain : " + entity.getClass().getName());
-    }
-
-    // ========================================================================
-
-    /**
-     * @see com.viadeo.kasper.core.locators.DomainLocator#registerRepository(com.viadeo.kasper.ddd.IRepository)
-     */
-    @Override
-    public void registerRepository(final IRepository repository) {
-        checkNotNull(repository);
-
-        final Class<? extends AggregateRoot> entity =
-                repositoryResolver.getStoredEntityClass(repository.getClass());
-
-        this.entityRepositories.put(entity, repository);
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * @see com.viadeo.kasper.core.locators.DomainLocator#getEntityRepository(com.viadeo.kasper.ddd.AggregateRoot)
-     */
-    @SuppressWarnings("unchecked")
-    // Safe
-    @Override
-    public <E extends AggregateRoot> Optional<ClientRepository<E>> getEntityRepository(final E entity) {
-        checkNotNull(entity);
-        return Optional.fromNullable(new ClientRepository<E>((IRepository<E>) this.entityRepositories.get(entity.getClass())));
-    }
-
-    /**
-     * @see com.viadeo.kasper.core.locators.DomainLocator#getEntityRepository(java.lang.Class)
-     */
-    @Override
-    @SuppressWarnings("unchecked")
-    public <E extends AggregateRoot> Optional<ClientRepository<E>> getEntityRepository(final Class<E> entityClass) {
-        checkNotNull(entityClass);
-
-        return Optional.fromNullable(new ClientRepository<E>((IRepository<E>) this.entityRepositories.get(entityClass)));
     }
 
     // ========================================================================
@@ -259,10 +205,6 @@ public class DefaultDomainLocator implements DomainLocator {
     }
 
     // ------------------------------------------------------------------------
-
-    public void setRepositoryResolver(final RepositoryResolver repositoryResolver) {
-        this.repositoryResolver = checkNotNull(repositoryResolver);
-    }
 
     public void setCommandHandlerResolver(final CommandHandlerResolver commandHandlerResolver) {
         this.commandHandlerResolver = checkNotNull(commandHandlerResolver);

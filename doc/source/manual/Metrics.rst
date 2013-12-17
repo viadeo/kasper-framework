@@ -9,38 +9,43 @@ metrics and encourages you to use it in your platform developments.
 Configuration
 -------------
 
-Kasper framework uses a global **MetricRegistry** used to record all provided metrics.
+Kasper framework uses a global **MetricRegistry** used to record all provided metrics (Available by KasperMetrics class).
 
 This **MetricRegistry** has to be set up in one or several Metrics reporters.
 
-The framework defines by default an SLF4J reporter with log level set to TRACE, through the **Platform**
-class logger, publishing metrics every 20 seconds.
-
-You can override or augment this configuration in your own **PlatformConfiguration** (see :ref:`Configuration`),
-using the global registry available through **KasperMetrics** :
+You can implement your own reporter easily in adding a reporter initializer to the plugin : MetricsPlugin
 
 .. code-block:: java
     :linenos:
 
-    public class MyPlatformConfiguration extends DefaultPlatformConfiguration {
+    public interface MyReporterInitializer implements ReporterInitializer {
 
         @Override
-        public void initializeMetricsReporters() {
-            /* if you want to keep the default SLF4J one */
-            super.initializeMetricsReporters();
-
-            /* Add your own reporter (Graphite, CSV, Console, etc..) */
-            final ConsoleReporter reporter = ConsoleReporter.forRegistry(KasperMetrics.getRegistry())
-                                                            .convertRatesTo(TimeUnit.SECONDS)
-                                                            .convertDurationsTo(TimeUnit.MILLISECONDS)
-                                                            .build();
-            reporter.start(1, TimeUnit.MINUTES);
-
-            /* Sets an optional prefix for metrics names */
-            KasperMetrics.setNamePrefix(System.getenv("PLATFORM_ENV"));
+        public void initialize(MetricRegistry metricRegistry) {
+            // Here your implementation
         }
-
     }
+
+.. code-block:: java
+    :linenos:
+
+    Platform platform = new Platform.Builder(new KasperPlatformConfiguration.class)
+        .addPlugin(
+            new MetricsPlugin(
+                  new Slf4ReporterInitializer()
+                , new MyReporterInitializer()
+            )
+        )
+        .build();
+
+List of default reporter initializer provided by the framework :
+
++-----------------------------+---------------------------------------------------------------------------------------------------------------------------------------+
+| Name                        | Description                                                                                                                           |
++=============================+=======================================================================================================================================+
+| Slf4jReporterInitializer    | Initialize a SLF4J reporter with log level set to TRACE, through the **Platform** class logger, publishing metrics every 20 seconds.  |
++-----------------------------+---------------------------------------------------------------------------------------------------------------------------------------+
+
 
 Core provided metrics
 ---------------------
@@ -70,9 +75,9 @@ The following table lists all metrics directly provided by the framework :
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
 | Query gateway   | Timer     | com.viadeo.kasper.cqrs.query.QueryGateway.**requests-time**          | Time to handle the query (all)                              |
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
-| Query gateway   | Timer     | <Query Class>.**requests-response-filters-time**                     | Time to filter the query filters                            |
+| Query gateway   | Timer     | <Query Class>.**requests-response-adapters-time**                     | Time to adapter the query adapters                            |
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
-| Query gateway   | Timer     | <Query Class>.**requests-query-filters-time**                        | Time to filter the query response                           |
+| Query gateway   | Timer     | <Query Class>.**requests-query-adapters-time**                        | Time to adapter the query response                           |
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
 | Query gateway   | Histogram | <Query Class>.**requests-times**                                     | Distribution of request handling time for this query        |
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
@@ -146,6 +151,8 @@ The following table lists all metrics directly provided by the framework :
 Use Metrics in your developments
 --------------------------------
 
-Get the global **MetricRegistry** using **KasperMetrics.getRegistry()** and simply use it as explained in
+Get the global **MetricRegistry** using **KasperMetrics.getMetricRegistry()** and simply use it as explained in
 the `Metrics documentation <http://metrics.codahale.com/>`_.
+
+The metric registry available here is initialized by the platform.
 

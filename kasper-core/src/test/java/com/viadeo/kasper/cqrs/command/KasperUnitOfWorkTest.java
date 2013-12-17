@@ -12,7 +12,10 @@ import com.viadeo.kasper.event.impl.UnitOfWorkEvent;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.MetaData;
 import org.axonframework.eventhandling.EventBus;
+import org.axonframework.unitofwork.CurrentUnitOfWork;
 import org.hamcrest.Description;
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.ArgumentMatcher;
@@ -114,10 +117,23 @@ public class KasperUnitOfWorkTest {
 
     // ------------------------------------------------------------------------
 
+    private KasperUnitOfWork uow;
+
+    @Before
+    public void setUp() {
+        this.uow = KasperUnitOfWork.startAndGet();
+    }
+
+    @After
+    public void cleanUp() {
+        CurrentUnitOfWork.clear(uow);
+    }
+
+    // ------------------------------------------------------------------------
+
     @Test
     public void testMacroEvent_OneEventNormalCase() {
         // Given
-        final KasperUnitOfWork uow = KasperUnitOfWork.startAndGet();
         final Event event = mock(Event.class);
         final EventMessage message = mock(EventMessage.class);
         final EventBus eventBus = mock(EventBus.class);
@@ -144,7 +160,7 @@ public class KasperUnitOfWorkTest {
     @Test
     public void testMacroEvent_MultipleEventsNormalCase() {
         // Given
-        final KasperUnitOfWork uow = spy(KasperUnitOfWork.startAndGet());
+        final KasperUnitOfWork uow = spy(this.uow);
 
         final Event event1 = mock(Event.class);
         final EventMessage message1 = mock(EventMessage.class);

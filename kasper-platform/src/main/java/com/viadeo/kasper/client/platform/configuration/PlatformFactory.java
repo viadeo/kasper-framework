@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform.configuration;
 
-import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.client.platform.OldPlatform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.boot.*;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -14,35 +14,40 @@ import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
+import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 
+/**
+ * @deprecated use {@link com.viadeo.kasper.client.platform.Platform.Builder} instead.
+ */
+@Deprecated
 public class PlatformFactory {
 
-    private final PlatformConfiguration platformConfiguration;
-    private Platform platform;
+    private final OldPlatformConfiguration oldPlatformConfiguration;
+    private OldPlatform platform;
 
     // ------------------------------------------------------------------------
 
     public PlatformFactory() {
-        platformConfiguration = new DefaultPlatformConfiguration();
+        oldPlatformConfiguration = new DefaultOldPlatformConfiguration();
     }
 
-    public PlatformFactory(final PlatformConfiguration pc) {
-        this.platformConfiguration = pc;
+    public PlatformFactory(final OldPlatformConfiguration pc) {
+        this.oldPlatformConfiguration = pc;
     }
 
-    public PlatformConfiguration getPlatformConfiguration() {
-        return this.platformConfiguration;
+    public OldPlatformConfiguration getPlatformConfiguration() {
+        return this.oldPlatformConfiguration;
     }
 
     // ------------------------------------------------------------------------
 
     public PlatformFactory configure() {
         if (null != platform) {
-            throw new KasperException("Platform factory as already been configured");
+            throw new KasperException("OldPlatform factory as already been configured");
         }
         platform = getPlatform();
         return this;
@@ -53,7 +58,7 @@ public class PlatformFactory {
             this.configure();
         }
         if (platform.isBooted()) {
-            throw new KasperException("Platform has already been booted");
+            throw new KasperException("OldPlatform has already been booted");
         }
         platform.boot();
         return this;
@@ -61,11 +66,11 @@ public class PlatformFactory {
 
     // ------------------------------------------------------------------------
 
-    public Platform getPlatform() {
+    public OldPlatform getPlatform() {
         return this.getPlatform(false);
     }
 
-    public Platform getPlatform(final boolean bootPlatform) {
+    public OldPlatform getPlatform(final boolean bootPlatform) {
 
         if (null != platform) {
             return platform;
@@ -73,45 +78,49 @@ public class PlatformFactory {
 
         // -- COMMAND
 
-        final UnitOfWorkFactory uowFactory = platformConfiguration.uowFactory();
-        final CommandBus commandBus = platformConfiguration.commandBus(uowFactory);
-        final CommandGateway commandGateway = platformConfiguration.commandGateway(commandBus);
+        final UnitOfWorkFactory uowFactory = oldPlatformConfiguration.uowFactory();
+        final CommandBus commandBus = oldPlatformConfiguration.commandBus(uowFactory);
+        final CommandGateway commandGateway = oldPlatformConfiguration.commandGateway(commandBus);
 
         // -- MAIN RESOLVERS
 
-        final DomainResolver domainResolver = platformConfiguration.domainResolver();
+        final DomainResolver domainResolver = oldPlatformConfiguration.domainResolver();
 
-        final CommandHandlerResolver commandHandlerResolver = platformConfiguration.commandHandlerResolver(domainResolver);
+        final CommandHandlerResolver commandHandlerResolver = oldPlatformConfiguration.commandHandlerResolver(domainResolver);
 
-        final ConceptResolver conceptResolver = platformConfiguration.conceptResolver(domainResolver);
+        final ConceptResolver conceptResolver = oldPlatformConfiguration.conceptResolver(domainResolver);
 
-        final RelationResolver relationResolver = platformConfiguration.relationResolver(domainResolver, conceptResolver);
+        final RelationResolver relationResolver = oldPlatformConfiguration.relationResolver(domainResolver, conceptResolver);
 
-        final EntityResolver entityResolver = platformConfiguration.entityResolver(conceptResolver, relationResolver, domainResolver);
+        final EntityResolver entityResolver = oldPlatformConfiguration.entityResolver(conceptResolver, relationResolver, domainResolver);
 
-        final RepositoryResolver repositoryResolver = platformConfiguration.repositoryResolver(entityResolver, domainResolver);
+        final RepositoryResolver repositoryResolver = oldPlatformConfiguration.repositoryResolver(entityResolver, domainResolver);
 
          // -- DOMAIN LOCATOR
 
-        final DomainLocator domainLocator = platformConfiguration.domainLocator(commandHandlerResolver, repositoryResolver);
+        final DomainLocator domainLocator = oldPlatformConfiguration.domainLocator(commandHandlerResolver, repositoryResolver);
+
+        // -- REPOSITORY MANAGER
+
+        final RepositoryManager repositoryManager = oldPlatformConfiguration.repositoryManager();
 
         // -- COMPONENTS RESOLVERS
 
-        final CommandResolver commandResolver = platformConfiguration.commandResolver(domainLocator, domainResolver, commandHandlerResolver);
+        final CommandResolver commandResolver = oldPlatformConfiguration.commandResolver(domainLocator, domainResolver, commandHandlerResolver);
 
-        final EventResolver eventResolver = platformConfiguration.eventResolver(domainResolver);
+        final EventResolver eventResolver = oldPlatformConfiguration.eventResolver(domainResolver);
 
-        final EventListenerResolver eventListenerResolver = platformConfiguration.eventListenerResolver(domainResolver);
+        final EventListenerResolver eventListenerResolver = oldPlatformConfiguration.eventListenerResolver(domainResolver);
 
-        final QueryHandlerResolver queryHandlerResolver = platformConfiguration.queryHandlerResolver(domainResolver);
+        final QueryHandlerResolver queryHandlerResolver = oldPlatformConfiguration.queryHandlerResolver(domainResolver);
 
-        final QueryHandlersLocator queryHandlersLocator = platformConfiguration.queryHandlersLocator(queryHandlerResolver);
+        final QueryHandlersLocator queryHandlersLocator = oldPlatformConfiguration.queryHandlersLocator(queryHandlerResolver);
 
-        final QueryResolver queryResolver = platformConfiguration.queryResolver(domainResolver, queryHandlerResolver, queryHandlersLocator);
+        final QueryResolver queryResolver = oldPlatformConfiguration.queryResolver(domainResolver, queryHandlerResolver, queryHandlersLocator);
 
-        final QueryResultResolver queryResultResolver = platformConfiguration.queryResultResolver(domainResolver, queryHandlerResolver, queryHandlersLocator);
+        final QueryResultResolver queryResultResolver = oldPlatformConfiguration.queryResultResolver(domainResolver, queryHandlerResolver, queryHandlersLocator);
         
-        final ResolverFactory resolverFactory = platformConfiguration.resolverFactory(
+        final ResolverFactory resolverFactory = oldPlatformConfiguration.resolverFactory(
                 domainResolver,
                 commandResolver,
                 commandHandlerResolver,
@@ -127,38 +136,38 @@ public class PlatformFactory {
         );
 
         // -- QUERY
-        final QueryGateway queryGateway = platformConfiguration.queryGateway(queryHandlersLocator);
+        final QueryGateway queryGateway = oldPlatformConfiguration.queryGateway(queryHandlersLocator);
 
         // -- EVENT
-        final KasperEventBus eventBus = platformConfiguration.eventBus();
+        final KasperEventBus eventBus = oldPlatformConfiguration.eventBus();
 
         // -- ROOT PROCESSING
-        final ComponentsInstanceManager componentsInstanceManager = platformConfiguration.getComponentsInstanceManager();
-        final AnnotationRootProcessor annotationRootProcessor = platformConfiguration.annotationRootProcessor(componentsInstanceManager);
+        final ComponentsInstanceManager componentsInstanceManager = oldPlatformConfiguration.getComponentsInstanceManager();
+        final AnnotationRootProcessor annotationRootProcessor = oldPlatformConfiguration.annotationRootProcessor(componentsInstanceManager);
 
-        final CommandHandlersProcessor commandHandlersProcessor = platformConfiguration.commandHandlersProcessor(commandBus, domainLocator, eventBus, commandHandlerResolver);
+        final CommandHandlersProcessor commandHandlersProcessor = oldPlatformConfiguration.commandHandlersProcessor(commandBus, domainLocator, repositoryManager, eventBus, commandHandlerResolver);
         annotationRootProcessor.registerProcessor(commandHandlersProcessor);
 
-        final DomainsProcessor domainsProcessor = platformConfiguration.domainsProcessor(domainLocator);
+        final DomainsProcessor domainsProcessor = oldPlatformConfiguration.domainsProcessor(domainLocator);
         annotationRootProcessor.registerProcessor(domainsProcessor);
 
-        final EventListenersProcessor eventListenersProcessor = platformConfiguration.eventListenersProcessor(eventBus, commandGateway);
+        final EventListenersProcessor eventListenersProcessor = oldPlatformConfiguration.eventListenersProcessor(eventBus, commandGateway);
         annotationRootProcessor.registerProcessor(eventListenersProcessor);
 
-        final QueryHandlersProcessor queryHandlersProcessor = platformConfiguration.queryHandlersProcessor(queryHandlersLocator);
+        final QueryHandlersProcessor queryHandlersProcessor = oldPlatformConfiguration.queryHandlersProcessor(queryHandlersLocator);
         annotationRootProcessor.registerProcessor(queryHandlersProcessor);
 
-        final RepositoriesProcessor repositoriesProcessor = platformConfiguration.repositoriesProcessor(domainLocator, eventBus);
+        final RepositoriesProcessor repositoriesProcessor = oldPlatformConfiguration.repositoriesProcessor(repositoryManager, eventBus);
         annotationRootProcessor.registerProcessor(repositoriesProcessor);
 
-        final QueryHandlerFiltersProcessor queryHandlerFiltersProcessor = platformConfiguration.queryHandlerFiltersProcessor(queryHandlersLocator);
-        annotationRootProcessor.registerProcessor(queryHandlerFiltersProcessor);
+        final QueryHandlerAdaptersProcessor queryHandlerAdaptersProcessor = oldPlatformConfiguration.queryHandlerAdaptersProcessor(queryHandlersLocator);
+        annotationRootProcessor.registerProcessor(queryHandlerAdaptersProcessor);
 
         // -- Metrics
         KasperMetrics.setResolverFactory(resolverFactory);
 
         // -- PLATFORM
-        platform = platformConfiguration.kasperPlatform(commandGateway, queryGateway, eventBus, annotationRootProcessor);
+        platform = oldPlatformConfiguration.kasperPlatform(commandGateway, queryGateway, eventBus, annotationRootProcessor);
 
         if (bootPlatform) {
             platform.boot();

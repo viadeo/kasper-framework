@@ -1,52 +1,28 @@
 package com.viadeo.kasper.test.applications.repositories;
 
+import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
+import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.test.applications.entities.Application;
 
 @XKasperRepository(description = ApplicationRepository.DESCRIPTION)
-public class ApplicationRepository implements IRepository<Application> {
+public class ApplicationRepository extends Repository<Application> {
 
 	public static final String DESCRIPTION = "The applications repository";
-	
-	@Override
-	public void add(final Application arg0) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public Application load(final Object arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Application load(final Object arg0, final Long arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void init() {
-		// TODO Auto-generated method stub
-		
-	}
 
     @Override
-    public boolean has(KasperID id) {
-        return false;
+    protected Optional<Application> doLoad(KasperID aggregateIdentifier, Long expectedVersion) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Application get(KasperID aggregateIdentifier, Long expectedVersion) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    protected void doSave(Application aggregate) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public Application get(KasperID aggregateIdentifier) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+    protected void doDelete(Application aggregate) {
+        throw new UnsupportedOperationException();
     }
-
 }

@@ -23,4 +23,5 @@ dependencies {
     testCompile libraries.JETTY_SERVLET
     testCompile libraries.GLASSFISH_EXPR_LANG
     testCompile libraries.HIBERNATE_VALIDATOR
+    testCompile libraries.TYPESAFE_CONFIG
 }

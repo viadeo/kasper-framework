@@ -9,13 +9,37 @@ package com.viadeo.kasper.test.doc.web;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
+import com.viadeo.kasper.client.platform.domain.descriptor.*;
+import com.viadeo.kasper.doc.element.DocumentedPlatform;
+import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
+import com.viadeo.kasper.test.applications.Applications;
+import com.viadeo.kasper.test.applications.entities.Application;
+import com.viadeo.kasper.test.applications.entities.Member_fanOf_Application;
+import com.viadeo.kasper.test.applications.repositories.ApplicationMemberFansRepository;
+import com.viadeo.kasper.test.applications.repositories.ApplicationRepository;
+import com.viadeo.kasper.test.root.Facebook;
+import com.viadeo.kasper.test.root.commands.AddConnectionToMemberCommand;
+import com.viadeo.kasper.test.root.entities.Member;
+import com.viadeo.kasper.test.root.entities.Member_connectedTo_Member;
+import com.viadeo.kasper.test.root.events.MemberCreatedEvent;
+import com.viadeo.kasper.test.root.handlers.AddConnectionToMemberHandler;
+import com.viadeo.kasper.test.root.listeners.MemberCreatedEventListener;
+import com.viadeo.kasper.test.root.queries.GetMembersQueryHandler;
+import com.viadeo.kasper.test.root.repositories.MemberConnectionsRepository;
+import com.viadeo.kasper.test.root.repositories.MemberRepository;
+import com.viadeo.kasper.test.timelines.Timelines;
+import com.viadeo.kasper.test.timelines.entities.Status;
+import com.viadeo.kasper.test.timelines.entities.Timeline;
+import com.viadeo.kasper.test.timelines.repositories.StatusRepository;
+import com.viadeo.kasper.test.timelines.repositories.TimelineRepository;
 import difflib.Delta;
 import difflib.DiffUtils;
 import difflib.Patch;
@@ -67,11 +91,6 @@ public class KasperDocResourceTest extends JerseyTest {
 	 */
 	private static final boolean UPDATE_TESTS = false;
 
-    /**
-     * Used to boot Kasper platform for documentation capabilities testing
-     */
-    private static final KasperConfigurator kasperConfigurator = new KasperConfigurator();
-
     // ------------------------------------------------------------------------
 
     /**
@@ -86,15 +105,83 @@ public class KasperDocResourceTest extends JerseyTest {
 
         @Path("/")
         public KasperDocResource delegate() {
-            final KasperDocResource res = new KasperDocResource();
-            res.setKasperLibrary(kasperConfigurator.getKasperLibrary());
-            return res;
+
+            final DomainDescriptor facebookDomainDescriptor = new DomainDescriptor(
+                    Facebook.NAME,
+                    Facebook.class,
+                    ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(
+                            GetMembersQueryHandler.class,
+                            GetMembersQueryHandler.GetMembersQuery.class,
+                            GetMembersQueryHandler.MembersResult.class
+                    )),
+                    ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(
+                            AddConnectionToMemberHandler.class,
+                            AddConnectionToMemberCommand.class)
+                    ),
+                    ImmutableList.<RepositoryDescriptor>of(
+                        new RepositoryDescriptor(
+                                MemberRepository.class,
+                                DomainDescriptorFactory.toAggregateDescriptor(Member.class)
+                        ),
+                        new RepositoryDescriptor(
+                                MemberConnectionsRepository.class,
+                                DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class)
+                        )
+                    ),
+                    ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(
+                            MemberCreatedEventListener.class,
+                            MemberCreatedEvent.class
+                    ))
+            );
+
+            final DomainDescriptor applicationDomainDescriptor = new DomainDescriptor(
+                    Applications.NAME,
+                    Applications.class,
+                    ImmutableList.<QueryHandlerDescriptor>of(),
+                    ImmutableList.<CommandHandlerDescriptor>of(),
+                    ImmutableList.<RepositoryDescriptor>of(
+                        new RepositoryDescriptor(
+                                ApplicationRepository.class,
+                                DomainDescriptorFactory.toAggregateDescriptor(Application.class)
+                        ),
+                        new RepositoryDescriptor(
+                                ApplicationMemberFansRepository.class,
+                                DomainDescriptorFactory.toAggregateDescriptor(Member_fanOf_Application.class)
+                        )
+                    ),
+                    ImmutableList.<EventListenerDescriptor>of()
+            );
+
+            final DomainDescriptor timelinesDomainDescriptor = new DomainDescriptor(
+                    Timeline.NAME,
+                    Timelines.class,
+                    ImmutableList.<QueryHandlerDescriptor>of(),
+                    ImmutableList.<CommandHandlerDescriptor>of(),
+                    ImmutableList.<RepositoryDescriptor>of(
+                        new RepositoryDescriptor(
+                                StatusRepository.class,
+                                DomainDescriptorFactory.toAggregateDescriptor(Status.class)
+                        ),
+                        new RepositoryDescriptor(
+                                TimelineRepository.class,
+                                DomainDescriptorFactory.toAggregateDescriptor(Timeline.class)
+                        )
+                    ),
+                    ImmutableList.<EventListenerDescriptor>of()
+            );
+
+            final DocumentedPlatform documentedPlatform = new DocumentedPlatform();
+            documentedPlatform.registerDomain(Facebook.NAME, facebookDomainDescriptor);
+            documentedPlatform.registerDomain(Applications.NAME, applicationDomainDescriptor);
+            documentedPlatform.registerDomain(Timelines.NAME, timelinesDomainDescriptor);
+            documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
+
+            return new KasperDocResource(documentedPlatform);
         }
 
     }
 
     static class TestConfiguration extends DefaultResourceConfig {
-
         public TestConfiguration() {
             super(WrappedDocResource.class);
             getProviderSingletons().add(new JacksonJsonProvider(new ObjectMapperKasperResolver().getContext(null)));
@@ -108,7 +195,7 @@ public class KasperDocResourceTest extends JerseyTest {
     }
 
     // ------------------------------------------------------------------------
-	
+
 	/**
 	 * Main run test method
 	 * 
@@ -123,10 +210,12 @@ public class KasperDocResourceTest extends JerseyTest {
     	
     	// Traverse available json responses ------------------------------------
         final Predicate<String> filter = new FilterBuilder().include(".*\\.json");
-        final Reflections reflections = new Reflections(new ConfigurationBuilder()
-                .filterInputsBy(filter)
-                .setScanners(new ResourcesScanner())
-                .setUrls(Arrays.asList(ClasspathHelper.forClass(this.getClass()))));
+        final Reflections reflections = new Reflections(
+                new ConfigurationBuilder()
+                    .filterInputsBy(filter)
+                    .setScanners(new ResourcesScanner())
+                    .setUrls(Arrays.asList(ClasspathHelper.forClass(this.getClass())))
+        );
 
         final Set<String> resolved = reflections.getResources(Pattern.compile(".*"));
     	
@@ -138,9 +227,9 @@ public class KasperDocResourceTest extends JerseyTest {
     		final String json = getJson(jsonFilename);
     		
     		final String path = jsonFilename
-    				.replaceAll("json/", "")
-    				.replaceAll("-", "/")
-    				.replaceAll("\\.json", "");
+                                    .replaceAll("json/", "")
+                                    .replaceAll("-", "/")
+                                    .replaceAll("\\.json", "");
 	
 			final WebResource webResource = resource();
 	        final String responseMsg = webResource.path("/" + path).get(String.class);

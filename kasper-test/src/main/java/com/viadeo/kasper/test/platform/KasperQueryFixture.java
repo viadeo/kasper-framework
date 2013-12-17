@@ -7,21 +7,12 @@
 package com.viadeo.kasper.test.platform;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.IEvent;
 
 import java.util.List;
 
-public interface KasperQueryFixture<
-        EXECUTOR extends KasperFixtureQueryExecutor,
-        VALIDATOR extends KasperFixtureQueryResultValidator> {
-
-    KasperQueryFixture<EXECUTOR, VALIDATOR> registerEventListener(final EventListener eventListener);
-
-    KasperQueryFixture<EXECUTOR, VALIDATOR> registerQueryHandler(final QueryHandler queryHandler);
-
-    // ------------------------------------------------------------------------
+public interface KasperQueryFixture<EXECUTOR extends KasperFixtureQueryExecutor, VALIDATOR extends KasperFixtureQueryResultValidator>
+    extends KasperFixture<EXECUTOR> {
 
     EXECUTOR givenEvents(final IEvent... events);
 

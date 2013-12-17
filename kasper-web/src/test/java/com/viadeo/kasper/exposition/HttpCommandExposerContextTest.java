@@ -8,13 +8,21 @@ package com.viadeo.kasper.exposition;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.Lists;
+import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
+import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.impl.DefaultContext;
-import com.viadeo.kasper.core.locators.DomainLocator;
-import com.viadeo.kasper.cqrs.command.*;
+import com.viadeo.kasper.cqrs.Adapter;
+import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.ddd.repository.Repository;
+import com.viadeo.kasper.event.EventListener;
 import org.junit.Test;
-import org.springframework.context.ApplicationContext;
 
 import java.util.Locale;
 import java.util.UUID;
@@ -24,7 +32,7 @@ import static com.viadeo.kasper.exposition.TestContexts.context_full;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-public class HttpCommandExposerContextTest extends BaseHttpExposerTest<HttpCommandExposer> {
+public class HttpCommandExposerContextTest extends BaseHttpExposerTest {
 
     public static final String RETURNED_SECURITY_TOKEN = UUID.randomUUID().toString();
 
@@ -33,8 +41,21 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest<HttpComma
     }
 
     @Override
-    protected HttpCommandExposer createExposer(final ApplicationContext ctx) {
-        return new HttpCommandExposer(ctx.getBean(CommandGateway.class), ctx.getBean(DomainLocator.class));
+    protected HttpCommandExposerPlugin createExposerPlugin() {
+        return new HttpCommandExposerPlugin();
+    }
+
+    @Override
+    protected DomainBundle getDomainBundle(){
+        return new DefaultDomainBundle(
+                Lists.<CommandHandler>newArrayList(new ContextCheckCommandHandler())
+                , Lists.<QueryHandler>newArrayList()
+                , Lists.<Repository>newArrayList()
+                , Lists.<EventListener>newArrayList()
+                , Lists.<Adapter>newArrayList()
+                , new TestDomain()
+                , "TestDomain"
+        );
     }
 
     // ------------------------------------------------------------------------

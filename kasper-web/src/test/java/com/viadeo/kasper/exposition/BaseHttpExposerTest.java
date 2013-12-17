@@ -8,26 +8,24 @@ package com.viadeo.kasper.exposition;
 
 import com.viadeo.kasper.client.KasperClient;
 import com.viadeo.kasper.client.KasperClientBuilder;
-import com.viadeo.kasper.client.platform.configuration.DefaultPlatformSpringConfiguration;
-import com.viadeo.kasper.web.KasperPlatformSpringBootListener;
+import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
+import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
+import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.junit.After;
 import org.junit.Before;
-import org.springframework.context.ApplicationContext;
-import org.springframework.web.context.ContextLoaderListener;
-import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 
 import java.net.URL;
 
-public abstract class BaseHttpExposerTest<T extends HttpExposer> {
+public abstract class BaseHttpExposerTest {
 
     private static final String HTTP_ENDPOINT = "http://127.0.0.1";
     private static final String ROOTPATH = "/rootpath/";
 
 	private Server server;
-	private int port;
 	private KasperClient cli;
 
     // ------------------------------------------------------------------------
@@ -44,30 +42,27 @@ public abstract class BaseHttpExposerTest<T extends HttpExposer> {
 
 	@Before
 	public void setUp() throws Exception {
-		server = new Server(0);
+        HttpExposerPlugin exposerPlugin = createExposerPlugin();
 
-		final ServletContextHandler servletContext = new ServletContextHandler();
-		servletContext.setContextPath("/");
-		server.setHandler(servletContext);
+        buildPlatform(new KasperPlatformConfiguration(), exposerPlugin, getDomainBundle());
 
-        final AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
-        ctx.register(DefaultPlatformSpringConfiguration.class);
-        ctx.refresh();
+        final ServletContextHandler servletContext = new ServletContextHandler();
+        servletContext.setContextPath("/");
+        servletContext.addServlet(new ServletHolder(exposerPlugin.getHttpExposer()), "/rootpath/*");
 
-		servletContext.addEventListener(new ContextLoaderListener(ctx));
-		servletContext.addEventListener(new KasperPlatformSpringBootListener());
-		servletContext.addServlet(new ServletHolder(createExposer(ctx)), "/rootpath/*");
+        server = new Server(0);
+        server.setHandler(servletContext);
+        server.start();
 
-		server.start();
-		port = server.getConnectors()[0].getLocalPort();
-
+        final int port = server.getConnectors()[0].getLocalPort();
         final URL fullPath = new URL(HTTP_ENDPOINT + ":" + port + ROOTPATH);
 
         KasperClientBuilder clientBuilder = new KasperClientBuilder();
-		clientBuilder
-				.commandBaseLocation(fullPath)
+        clientBuilder
+                .commandBaseLocation(fullPath)
                 .eventBaseLocation(fullPath)
-				.queryBaseLocation(fullPath);
+                .queryBaseLocation(fullPath);
+        
         customize(clientBuilder);
 
         cli = clientBuilder.create();
@@ -77,7 +72,18 @@ public abstract class BaseHttpExposerTest<T extends HttpExposer> {
         /* FIXME: wtf ? */
     }
 
-	protected abstract T createExposer(final ApplicationContext ctx);
+    protected void buildPlatform(final PlatformConfiguration platformConfiguration,
+                                 final HttpExposerPlugin httpExposerPlugin,
+                                 final DomainBundle domainBundle) {
+        new Platform.Builder(platformConfiguration)
+                .addPlugin(httpExposerPlugin)
+                .addDomainBundle(domainBundle)
+                .build();
+    }
+
+    protected abstract HttpExposerPlugin createExposerPlugin();
+
+    protected abstract DomainBundle getDomainBundle();
 	
 	@After
 	public void cleanUp() throws Exception {

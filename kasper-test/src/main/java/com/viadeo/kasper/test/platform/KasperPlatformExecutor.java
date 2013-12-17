@@ -49,7 +49,7 @@ public class KasperPlatformExecutor implements
         QueryResponse response = null;
         Exception exception = null;
         try {
-            response = platform.get().retrieve(query, context);
+            response = platform.get().getQueryGateway().retrieve(query, context);
         } catch (final Exception e) {
             exception = e;
         }

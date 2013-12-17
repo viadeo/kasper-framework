@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.codahale.metrics.Meter;
-import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -20,8 +18,6 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.locators.QueryHandlersLocator;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -31,6 +27,7 @@ import com.viadeo.kasper.query.exposition.query.QueryFactory;
 import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
 import com.viadeo.kasper.query.exposition.query.QueryParser;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
+import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -38,16 +35,15 @@ import org.slf4j.MDC;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.beans.Introspector;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 import static javax.ws.rs.core.Response.Status.INTERNAL_SERVER_ERROR;
 
@@ -55,12 +51,11 @@ public class HttpQueryExposer extends HttpExposer {
     private static final long serialVersionUID = 8448984922303895624L;
 
     protected static final transient Logger QUERY_LOGGER = LoggerFactory.getLogger(HttpQueryExposer.class);
-    private static final MetricRegistry METRICS = KasperMetrics.getRegistry();
 
-    private static final Timer METRICLASSTIMER = METRICS.timer(name(HttpQueryExposer.class, "requests-time"));
-    private static final Timer METRICLASSHANDLETIMER = METRICS.timer(name(HttpQueryExposer.class, "requests-handle-time"));
-    private static final Meter METRICLASSREQUESTS = METRICS.meter(name(HttpQueryExposer.class, "requests"));
-    private static final Meter METRICLASSERRORS = METRICS.meter(name(HttpQueryExposer.class, "errors"));
+    private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(HttpQueryExposer.class, "requests-time");
+    private static final String GLOBAL_TIMER_REQUESTS_HANDLE_TIME_NAME = name(HttpQueryExposer.class, "requests-handle-time");
+    private static final String GLOBAL_METER_REQUESTS_NAME = name(HttpQueryExposer.class, "requests");
+    private static final String GLOBAL_METER_ERRORS_NAME = name(HttpQueryExposer.class, "errors");
 
     // ------------------------------------------------------------------------
 
@@ -80,9 +75,7 @@ public class HttpQueryExposer extends HttpExposer {
             final ObjectMapper tmpMapper = ObjectMapperProvider.INSTANCE.mapper();
             final JsonParser parser = tmpMapper.reader().getFactory().createParser(req.getInputStream());
 
-            final SetMultimap<String, String> queryMap = tmpMapper.reader().readValue(parser, STRINGS_TYPE);
-
-            return queryMap;
+            return tmpMapper.reader().readValue(parser, STRINGS_TYPE);
         }
     };
 
@@ -108,7 +101,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
-    private final transient QueryHandlersLocator queryHandlersLocator;
+    private final transient List<Class<? extends QueryHandler>> queryHandlerClasses;
     private final transient QueryFactory queryAdapterFactory;
     private final ObjectMapper mapper;
     private final transient QueryGateway queryGateway;
@@ -117,22 +110,26 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     public HttpQueryExposer(final QueryGateway queryGateway,
-                            final QueryHandlersLocator queryHandlersLocator,
+                            final List<Class<? extends QueryHandler>> queryHandlerClasses,
                             final QueryFactory queryAdapterFactory,
                             final HttpContextDeserializer contextDeserializer,
                             final ObjectMapper mapper) {
 
         this.queryGateway = queryGateway;
-        this.queryHandlersLocator = queryHandlersLocator;
+        this.queryHandlerClasses = queryHandlerClasses;
         this.queryAdapterFactory = queryAdapterFactory;
         this.contextDeserializer = contextDeserializer;
         this.mapper = mapper;
     }
 
-    public HttpQueryExposer(final QueryGateway queryGateway, final QueryHandlersLocator queryLocator) {
-        this(queryGateway, queryLocator, new QueryFactoryBuilder().create(),
+    public HttpQueryExposer(final QueryGateway queryGateway, final List<Class<? extends QueryHandler>> queryHandlerClasses) {
+        this(
+                queryGateway,
+                checkNotNull(queryHandlerClasses),
+                new QueryFactoryBuilder().create(),
                 new HttpContextDeserializer(),
-                ObjectMapperProvider.INSTANCE.mapper());
+                ObjectMapperProvider.INSTANCE.mapper()
+        );
     }
 
     // ------------------------------------------------------------------------
@@ -142,8 +139,8 @@ public class HttpQueryExposer extends HttpExposer {
         LOGGER.info("=============== Exposing queries ===============");
 
         /* expose all registered queries and commands */
-        for (final QueryHandler queryHandler : queryHandlersLocator.getHandlers()) {
-            expose(queryHandler);
+        for (final Class<? extends QueryHandler> queryHandlerClass : queryHandlerClasses) {
+            expose(queryHandlerClass);
         }
 
         if (exposedQueries.isEmpty()) {
@@ -177,11 +174,15 @@ public class HttpQueryExposer extends HttpExposer {
 
     protected void handleQuery(final QueryToQueryMap queryMapper, final HttpServletRequest req, final HttpServletResponse resp) throws IOException {
          /* Start request timer */
-        final Timer.Context classTimer = METRICLASSTIMER.time();
+        final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
 
         /* Create a kasper correlation id */
         final UUID kasperCorrelationUUID = UUID.randomUUID();
         resp.addHeader("kasperCorrelationId", kasperCorrelationUUID.toString());
+
+        /* extract context from request */
+        final Context context = contextDeserializer.deserialize(req, kasperCorrelationUUID);
+        MDC.setContextMap(context.asMap());
 
         /* Log starting request */
         QUERY_LOGGER.info("Processing HTTP Query '{}' '{}'", req.getMethod(), getFullRequestURI(req));
@@ -193,17 +194,17 @@ public class HttpQueryExposer extends HttpExposer {
          * lets be very defensive and catch every thing in order to not break
          * the contract with clients = JSON only
          */
+        final String queryName = resourceName(req.getRequestURI());
         try {
 
-            final String queryName = resourceName(req.getRequestURI());
             final Query query = parseQuery(queryMapper.toQueryMap(req, resp), queryName, req, resp);
 
             QueryResponse response = null;
             if (!resp.isCommitted()) {
-                final Timer.Context queryHandleTimer = METRICS.timer(name(query.getClass(), "requests-handle-time")).time();
-                final Timer.Context classHandleTimer = METRICLASSHANDLETIMER.time();
+                final Timer.Context queryHandleTimer = getMetricRegistry().timer(name(query.getClass(), "requests-handle-time")).time();
+                final Timer.Context classHandleTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_HANDLE_TIME_NAME).time();
 
-                response = handleQuery(queryName, query, req, resp, kasperCorrelationUUID );
+                response = handleQuery(queryName, query, req, resp, context);
 
                 queryHandleTimer.stop();
                 classHandleTimer.stop();
@@ -213,6 +214,23 @@ public class HttpQueryExposer extends HttpExposer {
             if (!resp.isCommitted()) {
                 sendResponse(queryName, response, req, resp);
             }
+
+        } catch (final JSR303ViolationException validationException) {
+
+            final List<String> errorMessages = new ArrayList<>();
+            for (final ConstraintViolation<Object> violation : validationException.getViolations()) {
+                errorMessages.add(violation.getPropertyPath() + " : " + violation.getMessage());
+            }
+
+            sendResponse(
+                    queryName,
+                    QueryResponse.error(
+                            new KasperReason(
+                                    CoreReasonCode.INVALID_INPUT.name(),
+                                    errorMessages
+                            )
+                    ),
+                    req, resp);
 
         } catch (final Throwable t) {
             sendError(
@@ -224,7 +242,7 @@ public class HttpQueryExposer extends HttpExposer {
             /* Log & metrics */
             final long time = classTimer.stop();
             QUERY_LOGGER.info("Execution Time '{}' ns",time);
-            METRICLASSREQUESTS.mark();
+            getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
         }
 
         if (!resp.isCommitted()) {
@@ -271,14 +289,10 @@ public class HttpQueryExposer extends HttpExposer {
 
     // can not use sendError it is forcing response to text/html
     protected QueryResponse handleQuery(final String queryName, final Query query, final HttpServletRequest req,
-                                         final HttpServletResponse resp, final UUID kasperCorrelationUUID)
+                                         final HttpServletResponse resp, final Context context)
             throws IOException {
 
         QueryResponse response = null;
-
-        /* extract context from request */
-        final Context context = contextDeserializer.deserialize(req, kasperCorrelationUUID);
-        MDC.setContextMap(context.asMap());
 
         /* send the query to the platform */
         try {
@@ -377,16 +391,16 @@ public class HttpQueryExposer extends HttpExposer {
         QUERY_LOGGER.info("HTTP Response {} '{}' : {} {}", req.getMethod(), req.getRequestURI(), status, message, exception);
 
         /* Log error metric */
-        METRICLASSERRORS.mark();
+        getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
     }
 
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected HttpQueryExposer expose(final QueryHandler queryHandler) {
-        checkNotNull(queryHandler);
+    protected HttpQueryExposer expose(final Class<? extends QueryHandler> queryHandlerClass) {
+        checkNotNull(queryHandlerClass);
 
-        final TypeToken<? extends QueryHandler> typeToken = TypeToken.of(queryHandler.getClass());
+        final TypeToken<? extends QueryHandler> typeToken = TypeToken.of(queryHandlerClass);
         final Class<? super Query> queryClass = (Class<? super Query>) typeToken
                 .getSupertype(QueryHandler.class)
                 .resolveType(QueryHandler.class.getTypeParameters()[0])

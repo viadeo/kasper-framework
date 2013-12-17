@@ -9,7 +9,7 @@
     "typePlural": "relations",
     "url": "/domain/Applications/relation/Member_fanOf_Application"
   },
-  "description": "The repository for Member_fanOf_Application aggregates",
+  "description": "The repository for fan_of aggregates",
   "domain": {
     "description": "Applications domain",
     "label": "Applications",
@@ -18,7 +18,7 @@
     "typePlural": "domains",
     "url": "/domain/Applications"
   },
-  "label": "ApplicationMemberFansRepository",
+  "label": "ApplicationMemberFans",
   "name": "ApplicationMemberFansRepository",
   "type": "repository",
   "typePlural": "repositories",

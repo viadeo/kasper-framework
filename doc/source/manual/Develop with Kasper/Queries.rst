@@ -192,33 +192,33 @@ You can also have custom KeyGenerators, to do so just implement **QueryCacheKeyG
     @XKasperQueryCache( keyGenerator = MyKeyGenerator.class )
 
 
-Service filters
+Service adapters
 ---------------
 
-Kasper framework allows you to define filters on Query services.
+Kasper framework allows you to define adapters on Query services.
 
-These filters can be of two kind :
+These adapters can be of two kind :
 
-- **Query filters** : can be used to mutate the query before its processing by the service
-- **Response filters** : can be used to mutate the response generated after processing of the query by the service
+- **Query adapters** : can be used to mutate the query before its processing by the service
+- **Response adapters** : can be used to mutate the response generated after processing of the query by the service
 
-In order to define a service filter, you have to :
+In order to define a service adapter, you have to :
 
-1. Implement **QueryFilter** or **ResponseFilter** interfaces (Kasper core)
-2. Add the annotation **@XKasperServiceFilter**, where you can define an optional name for your filter
+1. Implement **QueryAdapter** or **ResponseAdapter** interfaces (Kasper core)
+2. Add the annotation **@XKasperServiceAdapter**, where you can define an optional name for your adapter
 
 ex :
 
-**ValidateIdQueryFilter.class** :
+**ValidateIdQueryAdapter.class** :
 
 .. code-block:: java
     :linenos:
 
-    @XKasperServiceFilter( name = "ValidateUniverseId" )
-    public class ValidateIdQueryFilter implements QueryFilter<HasAnIdQuery> {
+    @XKasperServiceAdapter( name = "ValidateUniverseId" )
+    public class ValidateIdQueryAdapter implements QueryAdapter<HasAnIdQuery> {
 
         @Override
-        public HasAnIdQuery filter(final Context context, final HasAnIdQuery query) throws KasperQueryException {
+        public HasAnIdQuery adapter(final Context context, final HasAnIdQuery query) throws KasperQueryException {
             if (query.id > 42) {
                 throw new KasperQueryException("The id cannot be greater than 42 !");
             }
@@ -227,18 +227,18 @@ ex :
 
     }
 
-A filter can be defined global (set the global flag (**global = true**) on the annotation).
+A adapter can be defined global (set the global flag (**global = true**) on the annotation).
 
-**IdEraserResponseFilter.class** :
+**IdEraserResponseAdapter.class** :
 
 .. code-block:: java
     :linenos:
 
-    @XKasperServiceFilter( global = true ) // Will be applied to all query handlers
-    public class IdEraserResponseFilter implements ResponseFilter<HasAnIdResult> {
+    @XKasperServiceAdapter( global = true ) // Will be applied to all query handlers
+    public class IdEraserResponseAdapter implements ResponseAdapter<HasAnIdResult> {
 
         @Override
-        public QueryResponse<HasAnIdResult> filter(final Context context, final QueryResponse<HasAnIdResult> dto) throws KasperQueryException {
+        public QueryResponse<HasAnIdResult> adapter(final Context context, final QueryResponse<HasAnIdResult> dto) throws KasperQueryException {
             QueryResponse<HasAnIdResult res = dto; /* Result DTO should be immutable */
             if (!res.isError() && HasAnIdResult.class.isAssignableFrom(dto.getResult())) {
                 res = QueryResponse.of(new HasAnIdResult.Builder(dto.getResult()).setId("").build());
@@ -248,20 +248,20 @@ A filter can be defined global (set the global flag (**global = true**) on the a
 
     }
 
-Global filters will be applied after user-defined filters, and user-defined filters are applied in the order of their definition within the annotation.
+Global adapters will be applied after user-defined adapters, and user-defined adapters are applied in the order of their definition within the annotation.
 
-A global service filter can be domain-sticky (only executed on services of the specified domain) using the **domain** field of the
+A global service adapter can be domain-sticky (only executed on services of the specified domain) using the **domain** field of the
 **@XKasperQueryHandler** annotation.
 
-A non-global filter can then be associated to one or several services using the **@XKasperQueryHandler** annotation,
-filling the 'filters' field.
+A non-global adapter can then be associated to one or several services using the **@XKasperQueryHandler** annotation,
+filling the 'adapters' field.
 
 **GetThingsQueryHandler.class** :
 
 .. code-block:: java
     :linenos:
 
-    @XKasperQueryHandler( ... , filters = ValidateIdQueryFilter.class )
+    @XKasperQueryHandler( ... , adapters = ValidateIdQueryAdapter.class )
     public class GetThingsQueryHandler extends QueryHandler<GetThingsQuery, ThingsListQueryResult> {
 
         @Override
