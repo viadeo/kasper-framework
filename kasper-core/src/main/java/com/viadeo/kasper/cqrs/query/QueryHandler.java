@@ -7,6 +7,9 @@
 package com.viadeo.kasper.cqrs.query;
 
 import com.google.common.base.Preconditions;
+import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.context.CurrentContext;
+import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.event.IEvent;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
@@ -74,6 +77,13 @@ public abstract class QueryHandler<Q extends Query, RESULT extends QueryResult> 
 
     public QueryGateway getQueryGateway() {
         return queryGateway;
+    }
+
+    public Context getContext() {
+        if (CurrentContext.value().isPresent()) {
+            return CurrentContext.value().get();
+        }
+        throw new KasperQueryException("Unexpected condition : no context was set during query handling");
     }
 
     // ------------------------------------------------------------------------
