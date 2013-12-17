@@ -9,6 +9,9 @@ package com.viadeo.kasper.cqrs.query;
 /** A paginated Kasper query */
 public interface PaginatedQueryResult extends QueryResult {
 
+    /** The total number of elements. */
+    int getTotal();
+
 	/** The requested number of elements. */
 	int getCount();
 
