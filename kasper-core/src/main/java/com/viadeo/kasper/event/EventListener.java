@@ -18,7 +18,8 @@ import org.axonframework.eventhandling.EventBus;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
-import static com.viadeo.kasper.core.metrics.KasperMetrics.*;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /**
  *
@@ -32,6 +33,10 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
      * Generic parameter position for the listened event
      */
     public static final int EVENT_PARAMETER_POSITION = 0;
+
+    private static final String GLOBAL_HISTO_HANDLE_TIMES_NAME = name(EventListener.class, "handle-times");
+    private static final String GLOBAL_METER_HANDLES_NAME = name(EventListener.class, "handles");
+    private static final String GLOBAL_METER_ERRORS_NAME = name(EventListener.class, "errors");
 
 	private final Class<? extends IEvent> eventClass;
     private final String timerHandleTimeName;
@@ -127,15 +132,15 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
                 this.handle((E) eventMessage.getPayload());
             }
         } catch (final RuntimeException e) {
-            GLOBAL_EVENTLISTENER_METER_ERRORS.mark();
+            getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
             getMetricRegistry().meter(meterErrorsName).mark();
             throw e;
         } finally {
             /* Stop timer and record a tick */
             final long time = timer.stop();
 
-            GLOBAL_EVENTLISTENER_HISTO_HANDLE_TIMES.update(time);
-            GLOBAL_EVENTLISTENER_METER_HANDLES.mark();
+            getMetricRegistry().histogram(GLOBAL_HISTO_HANDLE_TIMES_NAME).update(time);
+            getMetricRegistry().meter(GLOBAL_METER_HANDLES_NAME).mark();
 
             getMetricRegistry().histogram(histoHandleTimesName).update(time);
             getMetricRegistry().meter(meterHandlesName).mark();
