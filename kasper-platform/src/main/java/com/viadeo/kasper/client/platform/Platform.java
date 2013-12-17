@@ -194,7 +194,7 @@ public interface Platform {
                     if (QueryHandlerAdapter.class.isAssignableFrom(adapter.getClass())) {
                         queryGateway.register(adapter.getName(), (QueryHandlerAdapter) adapter);
                     } else {
-                        LOGGER.warn("Unknown adapter : {}", adapter.getClass().getName());
+                        LOGGER.warn("Unrecognized adapter type : {}", adapter.getClass().getName());
                     }
                 }
 
