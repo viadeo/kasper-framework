@@ -72,7 +72,7 @@ public class BuilderContextHelperUTest {
         final Map<Platform.ExtraComponentKey, Object> extraComponents = Maps.newHashMap();
         extraComponents.put(new Platform.ExtraComponentKey(name, ExecutorService.class), workers);
 
-        KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
+        final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
         final Platform.BuilderContext builderContext = new Platform.BuilderContext(
                 platformConfiguration.configuration(),
@@ -84,7 +84,7 @@ public class BuilderContextHelperUTest {
         );
 
         // When
-        ApplicationContext applicationContext = BuilderContextHelper.createApplicationContextFrom(builderContext);
+        final ApplicationContext applicationContext = BuilderContextHelper.createApplicationContextFrom(builderContext);
 
         // Then
         assertNotNull(applicationContext);
