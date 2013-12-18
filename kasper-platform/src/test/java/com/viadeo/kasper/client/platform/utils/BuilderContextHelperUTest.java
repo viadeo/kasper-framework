@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform.utils;
 
 import com.codahale.metrics.MetricRegistry;
@@ -34,7 +40,7 @@ public class BuilderContextHelperUTest {
     @Test
     public void createApplicationContextFrom_validBuilderContext_shouldCreateAnApplicationContext() {
         // Given
-        KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
+        final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
         final Platform.BuilderContext builderContext = new Platform.BuilderContext(
                 platformConfiguration.configuration(),
@@ -46,7 +52,7 @@ public class BuilderContextHelperUTest {
         );
 
         // When
-        ApplicationContext applicationContext = BuilderContextHelper.createApplicationContextFrom(builderContext);
+        final ApplicationContext applicationContext = BuilderContextHelper.createApplicationContextFrom(builderContext);
 
         // Then
         assertNotNull(applicationContext);
@@ -60,10 +66,10 @@ public class BuilderContextHelperUTest {
     @Test
     public void createApplicationContextFrom_validBuilderContext_containingExtraComponent_shouldCreateAnApplicationContext() {
         // Given
-        String name = "workers";
-        ExecutorService workers = Executors.newFixedThreadPool(2);
+        final String name = "workers";
+        final ExecutorService workers = Executors.newFixedThreadPool(2);
 
-        Map<Platform.ExtraComponentKey, Object> extraComponents = Maps.newHashMap();
+        final Map<Platform.ExtraComponentKey, Object> extraComponents = Maps.newHashMap();
         extraComponents.put(new Platform.ExtraComponentKey(name, ExecutorService.class), workers);
 
         KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
@@ -89,17 +95,17 @@ public class BuilderContextHelperUTest {
     @Test
     public void createApplicationContextFrom_validBuilderContext_containingTwoSameExtraComponent_shouldCreateAnApplicationContext() {
         // Given
-        String name1 = "workers1";
-        ExecutorService workers1 = Executors.newFixedThreadPool(2);
+        final String name1 = "workers1";
+        final ExecutorService workers1 = Executors.newFixedThreadPool(2);
 
-        String name2 = "workers2";
-        ExecutorService workers2 = Executors.newFixedThreadPool(2);
+        final String name2 = "workers2";
+        final ExecutorService workers2 = Executors.newFixedThreadPool(2);
 
-        Map<Platform.ExtraComponentKey, Object> extraComponents = Maps.newHashMap();
+        final Map<Platform.ExtraComponentKey, Object> extraComponents = Maps.newHashMap();
         extraComponents.put(new Platform.ExtraComponentKey(name1, ExecutorService.class), workers1);
         extraComponents.put(new Platform.ExtraComponentKey(name2, ExecutorService.class), workers2);
 
-        KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
+        final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
         final Platform.BuilderContext builderContext = new Platform.BuilderContext(
                 platformConfiguration.configuration(),

@@ -146,19 +146,15 @@ public class SpringDomainBundleUTest {
                 Lists.<Class>newArrayList()
         );
 
-        ExecutorService workers = Executors.newFixedThreadPool(2);
+        final ExecutorService workers = Executors.newFixedThreadPool(2);
 
-        Map<Platform.ExtraComponentKey, Object> extraComponents = Maps.newHashMap();
+        final Map<Platform.ExtraComponentKey, Object> extraComponents = Maps.newHashMap();
         extraComponents.put(new Platform.ExtraComponentKey("workers", ExecutorService.class), workers);
 
-        KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
+        final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
         final Platform.BuilderContext builderContext = new Platform.BuilderContext(
-                platformConfiguration.configuration(),
-                platformConfiguration.eventBus(),
-                platformConfiguration.commandGateway(),
-                platformConfiguration.queryGateway(),
-                platformConfiguration.metricRegistry(),
+                platformConfiguration,
                 extraComponents
         );
 
