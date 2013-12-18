@@ -45,6 +45,8 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  *
  */
 public class HttpEventExposer extends HttpExposer {
+    private static final long serialVersionUID = 3099102125586430908L;
+
     protected static final transient Logger REQUEST_LOGGER = LoggerFactory.getLogger(HttpEventExposer.class);
 
     private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(HttpEventExposer.class, "requests-time");
