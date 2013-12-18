@@ -131,7 +131,8 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
                     parameters.add(applicationContext.getBean(parameterClass));
                 }
 
-                final DomainBundle domainBundle = (DomainBundle) constructor.newInstance(parameters.toArray());
+                final Object[] initargs = parameters.toArray(new Object[parameters.size()]);
+                final DomainBundle domainBundle = (DomainBundle) constructor.newInstance(initargs);
                 domainBundles.add(domainBundle);
             }
         }
