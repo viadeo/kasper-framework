@@ -17,6 +17,8 @@ dependencies {
     compile libraries.MOCKITO
     compile libraries.JUNIT
     compile libraries.HIBERNATE_VALIDATOR
+    compile libraries.JAVAX_INJECT
+    compile libraries.SPRING_TEST
 
     // Test dependencies
     testCompile libraries.JACKSON_CORE
