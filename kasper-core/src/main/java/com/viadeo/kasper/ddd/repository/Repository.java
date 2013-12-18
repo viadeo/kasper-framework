@@ -191,7 +191,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return the fetched aggregate if any
      */
     @Override
-    public final AGR get(final KasperID aggregateIdentifier, final Long expectedVersion) {
+    public AGR get(final KasperID aggregateIdentifier, final Long expectedVersion) {
         return this.doLoad((Object) aggregateIdentifier, expectedVersion);
     }
 
@@ -202,7 +202,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return the fetched aggregate if any
      */
     @Override
-    public final AGR get(final KasperID aggregateIdentifier) {
+    public AGR get(final KasperID aggregateIdentifier) {
         return this.get(aggregateIdentifier, null);
     }
 
@@ -213,7 +213,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
      * @return true if this aggregate exists
      */
     @Override
-    public final boolean has(final KasperID id) {
+    public boolean has(final KasperID id) {
         return this.doHas(id);
     }
 

@@ -27,6 +27,8 @@ public abstract class BaseHttpExposerTest {
 
 	private Server server;
 	private KasperClient cli;
+    private Platform platform;
+    private int port;
 
     // ------------------------------------------------------------------------
 
@@ -38,11 +40,19 @@ public abstract class BaseHttpExposerTest {
 		return cli;
 	}
 
+    protected int port() {
+        return port;
+    }
+
+    protected String url() {
+        return HTTP_ENDPOINT + ":" + port + ROOTPATH;
+    }
+
     // ------------------------------------------------------------------------
 
 	@Before
 	public void setUp() throws Exception {
-        HttpExposerPlugin exposerPlugin = createExposerPlugin();
+        final HttpExposerPlugin exposerPlugin = createExposerPlugin();
 
         buildPlatform(new KasperPlatformConfiguration(), exposerPlugin, getDomainBundle());
 
@@ -53,11 +63,11 @@ public abstract class BaseHttpExposerTest {
         server = new Server(0);
         server.setHandler(servletContext);
         server.start();
+        port = server.getConnectors()[0].getLocalPort();
 
-        final int port = server.getConnectors()[0].getLocalPort();
-        final URL fullPath = new URL(HTTP_ENDPOINT + ":" + port + ROOTPATH);
+        final URL fullPath = new URL(url());
 
-        KasperClientBuilder clientBuilder = new KasperClientBuilder();
+        final KasperClientBuilder clientBuilder = new KasperClientBuilder();
         clientBuilder
                 .commandBaseLocation(fullPath)
                 .eventBaseLocation(fullPath)
@@ -75,10 +85,11 @@ public abstract class BaseHttpExposerTest {
     protected void buildPlatform(final PlatformConfiguration platformConfiguration,
                                  final HttpExposerPlugin httpExposerPlugin,
                                  final DomainBundle domainBundle) {
-        new Platform.Builder(platformConfiguration)
-                .addPlugin(httpExposerPlugin)
-                .addDomainBundle(domainBundle)
-                .build();
+        final Platform.Builder builder = new Platform.Builder(platformConfiguration).addPlugin(httpExposerPlugin);
+        if (null != domainBundle) {
+            builder.addDomainBundle(domainBundle);
+        }
+        platform = builder.build();
     }
 
     protected abstract HttpExposerPlugin createExposerPlugin();
