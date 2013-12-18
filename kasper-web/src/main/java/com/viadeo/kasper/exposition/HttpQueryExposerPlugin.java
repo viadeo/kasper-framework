@@ -29,7 +29,7 @@ public class HttpQueryExposerPlugin extends HttpExposerPlugin<HttpQueryExposer> 
             new Function<KasperComponentDescriptor, Class<? extends QueryHandler>>() {
         @Override
         public Class<? extends QueryHandler> apply(final KasperComponentDescriptor descriptor) {
-            return descriptor.getReferenceClass();
+            return checkNotNull(descriptor).getReferenceClass();
         }
     };
 

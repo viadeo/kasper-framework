@@ -11,6 +11,8 @@ import com.google.common.collect.Collections2;
 
 import java.util.Collection;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDomain> {
 
     private final Collection<LightDocumentedElement> commands;
@@ -27,7 +29,7 @@ public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDoma
     private static final Function<AbstractElement, LightDocumentedElement> LIGHTER = new Function<AbstractElement, LightDocumentedElement>() {
         @Override
         public LightDocumentedElement apply(AbstractElement input) {
-            return input.getLightDocumentedElement();
+            return checkNotNull(input).getLightDocumentedElement();
         }
     };
 
