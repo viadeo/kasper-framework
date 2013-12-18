@@ -39,7 +39,7 @@ allprojects  {
   apply plugin: 'findbugs'
 
   group = 'com.viadeo.kasper'
-  version = '0.2.1'
+  version = '0.2.2'
 
   idea {
     module {
@@ -162,6 +162,7 @@ subprojects {
       SPRING_CORE           : 'org.springframework:spring-core:3.1.4.RELEASE',
       SPRING_CONTEXT        : 'org.springframework:spring-context:3.1.4.RELEASE',
       SPRING_WEB            : 'org.springframework:spring-web:3.1.4.RELEASE',
+      SPRING_TEST           : 'org.springframework:spring-test:3.1.4.RELEASE',
 
       YAMMER_METRICS        : 'com.codahale.metrics:metrics-core:3.0.0',
 
@@ -177,6 +178,7 @@ subprojects {
 
       VALIDATION_API        : 'javax.validation:validation-api:1.1.0.Final',
       JAVAX_EL              : 'javax.el:javax.el-api:3.0.0',
+      JAVAX_INJECT          : 'javax.inject:javax.inject:1',
 
       SLF4J                 : 'org.slf4j:slf4j-api:1.7.5',
       LOG4J_OVER_SLF4J      : 'org.slf4j:log4j-over-slf4j:1.7.5',
