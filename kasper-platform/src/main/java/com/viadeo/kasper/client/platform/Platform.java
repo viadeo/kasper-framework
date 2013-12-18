@@ -13,6 +13,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
@@ -281,23 +282,36 @@ public interface Platform {
         private final CommandGateway commandGateway;
         private final QueryGateway queryGateway;
         private final MetricRegistry metricRegistry;
-        private final Map<ExtraComponentKey, Object> extraComponent;
+        private final Map<ExtraComponentKey, Object> extraComponents;
 
         // --------------------------------------------------------------------
+
+        public BuilderContext(final KasperPlatformConfiguration platformConfiguration,
+                              final Map<ExtraComponentKey, Object> extraComponents
+        ) {
+            this(
+                    platformConfiguration.configuration(),
+                    platformConfiguration.eventBus(),
+                    platformConfiguration.commandGateway(),
+                    platformConfiguration.queryGateway(),
+                    platformConfiguration.metricRegistry(),
+                    extraComponents
+            );
+        }
 
         public BuilderContext(final Config configuration,
                               final KasperEventBus eventBus,
                               final CommandGateway commandGateway,
                               final QueryGateway queryGateway,
                               final MetricRegistry metricRegistry,
-                              final Map<ExtraComponentKey, Object> extraComponent
+                              final Map<ExtraComponentKey, Object> extraComponents
         ) {
-            this.configuration = configuration;
-            this.eventBus = eventBus;
-            this.commandGateway = commandGateway;
-            this.queryGateway = queryGateway;
-            this.metricRegistry = metricRegistry;
-            this.extraComponent = extraComponent;
+            this.configuration = checkNotNull(configuration);
+            this.eventBus = checkNotNull(eventBus);
+            this.commandGateway = checkNotNull(commandGateway);
+            this.queryGateway = checkNotNull(queryGateway);
+            this.metricRegistry = checkNotNull(metricRegistry);
+            this.extraComponents = checkNotNull(extraComponents);
         }
 
         // --------------------------------------------------------------------
@@ -324,7 +338,11 @@ public interface Platform {
 
         @SuppressWarnings("unchecked")
         public <E> Optional<E> getExtraComponent(final String name, final Class<E> clazz) {
-            return Optional.fromNullable((E) extraComponent.get(new ExtraComponentKey(name, clazz)));
+            return Optional.fromNullable((E) extraComponents.get(new ExtraComponentKey(name, clazz)));
+        }
+
+        public Map<ExtraComponentKey, Object> getExtraComponents(){
+            return extraComponents;
         }
 
     }

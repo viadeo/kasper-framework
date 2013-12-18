@@ -13,8 +13,11 @@ import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
+import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
+import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.context.annotation.Bean;
@@ -22,6 +25,9 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.swing.text.DateFormatter;
 import javax.swing.text.DefaultFormatter;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
@@ -130,6 +136,38 @@ public class SpringDomainBundleUTest {
         assertNotNull(formatterOptional2);
         assertTrue(formatterOptional2.isPresent());
         assertEquals(dateFormatter, formatterOptional2.get());
+    }
+
+    @Test
+    public void configure_withComponentsDefinedInTheBuilderContext_shouldBeAccessibleThroughDomainContext() {
+        // Given
+        final SpringDomainBundle springDomainBundle = new SpringDomainBundle(
+                new MyCustomDomainBox.MyCustomDomain(),
+                Lists.<Class>newArrayList()
+        );
+
+        final ExecutorService workers = Executors.newFixedThreadPool(2);
+
+        final Map<Platform.ExtraComponentKey, Object> extraComponents = Maps.newHashMap();
+        extraComponents.put(new Platform.ExtraComponentKey("workers", ExecutorService.class), workers);
+
+        final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
+
+        final Platform.BuilderContext builderContext = new Platform.BuilderContext(
+                platformConfiguration,
+                extraComponents
+        );
+
+        // When
+        springDomainBundle.configure(builderContext);
+
+        // Then
+        assertEquals(workers, springDomainBundle.get(ExecutorService.class).get());
+        assertEquals(platformConfiguration.eventBus(), springDomainBundle.get(KasperEventBus.class).get());
+        assertEquals(platformConfiguration.commandGateway(), springDomainBundle.get(KasperCommandGateway.class).get());
+        assertEquals(platformConfiguration.queryGateway(), springDomainBundle.get(KasperQueryGateway.class).get());
+        assertEquals(platformConfiguration.configuration(), springDomainBundle.get(Config.class).get());
+        assertEquals(platformConfiguration.metricRegistry(), springDomainBundle.get(MetricRegistry.class).get());
     }
 
 }
