@@ -60,7 +60,11 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
         public Class[] configurations() default {};
     }
 
+    // ------------------------------------------------------------------------
+
     private final AnnotationConfigApplicationContext applicationContext;
+
+    // ------------------------------------------------------------------------
 
     public PlatformRunner(final Class<?> clazz) throws InitializationError, ReflectiveOperationException {
         super(clazz);
@@ -83,8 +87,10 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
             platformBuilder.addDomainBundle(domainBundle);
 
             beanFactory.registerSingleton(
-                    domainBundle.getName().trim().isEmpty() ? domainBundle.getClass().getSimpleName() : domainBundle.getName()
-                    , domainBundle
+                    domainBundle.getName().trim().isEmpty() ?
+                            domainBundle.getClass().getSimpleName()
+                          : domainBundle.getName(),
+                    domainBundle
             );
         }
 
@@ -152,5 +158,6 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
 
         return bean;
     }
+
 }
 
