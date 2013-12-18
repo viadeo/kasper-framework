@@ -275,7 +275,7 @@ public interface Platform {
 
     // ========================================================================
 
-    public static class BuilderContext {
+    static class BuilderContext {
 
         private final Config configuration;
         private final KasperEventBus eventBus;
@@ -349,7 +349,7 @@ public interface Platform {
 
     // ========================================================================
 
-    public static class ExtraComponentKey {
+    static class ExtraComponentKey {
         private final String name;
         private final Class clazz;
 

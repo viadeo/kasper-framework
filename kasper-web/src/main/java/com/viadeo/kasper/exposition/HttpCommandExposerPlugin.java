@@ -19,6 +19,8 @@ import com.viadeo.kasper.tools.ObjectMapperProvider;
 
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class HttpCommandExposerPlugin extends HttpExposerPlugin<HttpCommandExposer> {
 
     @SuppressWarnings("unchecked")
@@ -26,7 +28,7 @@ public class HttpCommandExposerPlugin extends HttpExposerPlugin<HttpCommandExpos
             new Function<KasperComponentDescriptor, Class<? extends CommandHandler>>() {
         @Override
         public Class<? extends CommandHandler> apply(final KasperComponentDescriptor descriptor) {
-            return descriptor.getReferenceClass();
+            return checkNotNull(descriptor).getReferenceClass();
         }
     };
 

@@ -74,7 +74,7 @@ public interface DomainBundle {
 
     // ========================================================================
 
-    public static class Builder {
+    static class Builder {
 
         private final Domain domain;
         private final String domainName;
