@@ -9,6 +9,7 @@ package com.viadeo.kasper.client.platform.domain;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.client.platform.utils.BuilderContextHelper;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryAdapter;
@@ -116,7 +117,10 @@ public class SpringDomainBundle extends DefaultDomainBundle {
 
     @Override
     public final void configure(final Platform.BuilderContext context) {
+        applicationContext.setParent(BuilderContextHelper.createApplicationContextFrom(context));
+
         final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+
         doConfigure(beanFactory, checkNotNull(context));
         applicationContext.refresh();
 
