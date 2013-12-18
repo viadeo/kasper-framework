@@ -48,6 +48,8 @@ public class HttpQueryExposerPlugin extends HttpExposerPlugin<HttpQueryExposer> 
         super(checkNotNull(httpContextDeserializer), checkNotNull(objectMapper));
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
     public void initialize(final Platform platform,
                            final MetricRegistry metricRegistry,
@@ -57,19 +59,19 @@ public class HttpQueryExposerPlugin extends HttpExposerPlugin<HttpQueryExposer> 
 
         for (final DomainDescriptor domainDescriptor : domainDescriptors) {
             queryHandlerClasses.addAll(Collections2.transform(
-                    domainDescriptor.getQueryHandlerDescriptors(),
-                    TO_QUERY_HANDLER_CLASS_FUNCTION)
+                domainDescriptor.getQueryHandlerDescriptors(),
+                TO_QUERY_HANDLER_CLASS_FUNCTION)
             );
         }
 
         initialize(
-                new HttpQueryExposer(
-                        platform.getQueryGateway(),
-                        queryHandlerClasses,
-                        new QueryFactoryBuilder().create(),
-                        getContextDeserializer(),
-                        getMapper()
-                )
+            new HttpQueryExposer(
+                platform.getQueryGateway(),
+                queryHandlerClasses,
+                new QueryFactoryBuilder().create(),
+                getContextDeserializer(),
+                getMapper()
+            )
         );
     }
 

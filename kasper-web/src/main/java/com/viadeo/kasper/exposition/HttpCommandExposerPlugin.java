@@ -44,24 +44,26 @@ public class HttpCommandExposerPlugin extends HttpExposerPlugin<HttpCommandExpos
         super(httpContextDeserializer, objectMapper);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
     public void initialize(final Platform platform, final MetricRegistry metricRegistry, final DomainDescriptor... domainDescriptors) {
         final List<Class<? extends CommandHandler>> commandHandlerClasses = Lists.newArrayList();
 
         for (final DomainDescriptor domainDescriptor:domainDescriptors) {
             commandHandlerClasses.addAll(Collections2.transform(
-                    domainDescriptor.getCommandHandlerDescriptors(),
-                    TO_COMMAND_HANDLER_CLASS_FUNCTION
+                domainDescriptor.getCommandHandlerDescriptors(),
+                TO_COMMAND_HANDLER_CLASS_FUNCTION
             ));
         }
 
         initialize(
-                new HttpCommandExposer(
-                        platform.getCommandGateway(),
-                        commandHandlerClasses,
-                        getContextDeserializer(),
-                        getMapper()
-                )
+            new HttpCommandExposer(
+                platform.getCommandGateway(),
+                commandHandlerClasses,
+                getContextDeserializer(),
+                getMapper()
+            )
         );
     }
 

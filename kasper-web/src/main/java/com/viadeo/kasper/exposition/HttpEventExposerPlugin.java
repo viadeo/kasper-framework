@@ -50,12 +50,12 @@ public class HttpEventExposerPlugin extends HttpExposerPlugin<HttpEventExposer> 
         }
 
         initialize(
-                new HttpEventExposer(
-                        platform.getEventBus(),
-                        Lists.newArrayList(eventClasses),
-                        getContextDeserializer(),
-                        getMapper()
-                )
+            new HttpEventExposer(
+                platform.getEventBus(),
+                Lists.newArrayList(eventClasses),
+                getContextDeserializer(),
+                getMapper()
+            )
         );
     }
 

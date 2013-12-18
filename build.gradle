@@ -165,6 +165,7 @@ subprojects {
       SPRING_TEST           : 'org.springframework:spring-test:3.1.4.RELEASE',
 
       YAMMER_METRICS        : 'com.codahale.metrics:metrics-core:3.0.0',
+      METRICS_JSON          : 'com.codahale.metrics:metrics-json:3.0.0',
 
       AXON_TEST             : 'org.axonframework:axon-test:2.0.5',
       AXON_CORE             : [

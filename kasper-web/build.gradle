@@ -12,6 +12,7 @@ dependencies {
     compile project(':kasper-platform')
 
     // Third-party dependencies
+    compile libraries.METRICS_JSON
     compile libraries.JERSEY_CORE
     compile libraries.SPRING_WEB
     compile libraries.SERVLET
