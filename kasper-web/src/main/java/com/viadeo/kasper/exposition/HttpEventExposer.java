@@ -53,7 +53,7 @@ public class HttpEventExposer extends HttpExposer {
     private static final String GLOBAL_METER_ERRORS_NAME = name(HttpEventExposer.class, "errors");
 
     private final Map<String, Class<? extends Event>> exposedEvents = new HashMap<>();
-    private final KasperEventBus eventBus;
+    private final transient KasperEventBus eventBus;
     private final List<Class<? extends Event>> events;
     private final ObjectMapper mapper;
     private final transient HttpContextDeserializer contextDeserializer;
