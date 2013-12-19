@@ -37,7 +37,7 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface Bundles {
-        public Class<? extends DomainBundle>[] list() default {};
+        Class<? extends DomainBundle>[] list() default {};
     }
 
     /**
@@ -47,7 +47,7 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface Configuration {
-        public Class<? extends PlatformConfiguration> value() default KasperPlatformConfiguration.class;
+        Class<? extends PlatformConfiguration> value() default KasperPlatformConfiguration.class;
     }
 
     /**
@@ -57,7 +57,7 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface InfrastructureContext {
-        public Class[] configurations() default {};
+        Class[] configurations() default {};
     }
 
     // ------------------------------------------------------------------------
@@ -131,7 +131,8 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
                     parameters.add(applicationContext.getBean(parameterClass));
                 }
 
-                final DomainBundle domainBundle = (DomainBundle) constructor.newInstance(parameters.toArray());
+                final Object[] initargs = parameters.toArray(new Object[parameters.size()]);
+                final DomainBundle domainBundle = (DomainBundle) constructor.newInstance(initargs);
                 domainBundles.add(domainBundle);
             }
         }

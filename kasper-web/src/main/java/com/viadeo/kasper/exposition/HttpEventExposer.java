@@ -45,6 +45,8 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  *
  */
 public class HttpEventExposer extends HttpExposer {
+    private static final long serialVersionUID = 3099102125586430908L;
+
     protected static final transient Logger REQUEST_LOGGER = LoggerFactory.getLogger(HttpEventExposer.class);
 
     private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(HttpEventExposer.class, "requests-time");
@@ -53,7 +55,7 @@ public class HttpEventExposer extends HttpExposer {
     private static final String GLOBAL_METER_ERRORS_NAME = name(HttpEventExposer.class, "errors");
 
     private final Map<String, Class<? extends Event>> exposedEvents = new HashMap<>();
-    private final KasperEventBus eventBus;
+    private final transient KasperEventBus eventBus;
     private final List<Class<? extends Event>> events;
     private final ObjectMapper mapper;
     private final transient HttpContextDeserializer contextDeserializer;

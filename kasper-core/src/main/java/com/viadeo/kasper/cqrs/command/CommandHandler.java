@@ -43,7 +43,7 @@ public abstract class CommandHandler<C extends Command>
     /**
      * Generic parameter position for the handled command
      */
-    public static int COMMAND_PARAMETER_POSITION = 0;
+    public static final int COMMAND_PARAMETER_POSITION = 0;
 
     private final Class<C> commandClass;
 
@@ -128,16 +128,14 @@ public abstract class CommandHandler<C extends Command>
             classTimer.close();
             timer.close();
 
-            if (isError) {
-                /* rollback uow on failure */
-                if (uow.isStarted()) {
-                    if (null != exception) {
-                        uow.rollback(exception);
-                    } else {
-                        uow.rollback();
-                    }
-                    uow.start();
+            /* rollback uow on failure */
+            if (isError && uow.isStarted()) {
+                if (null != exception) {
+                    uow.rollback(exception);
+                } else {
+                    uow.rollback();
                 }
+                uow.start();
             }
         }
 

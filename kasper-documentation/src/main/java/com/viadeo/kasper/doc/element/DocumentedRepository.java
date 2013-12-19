@@ -22,7 +22,7 @@ public class DocumentedRepository extends AbstractDomainElement {
 
     private final DocumentedAggregate documentedAggregate;
 
-     public static abstract class DocumentedAggregate extends AbstractPropertyDomainElement {
+     public abstract static class DocumentedAggregate extends AbstractPropertyDomainElement {
 
         private final Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents;
 

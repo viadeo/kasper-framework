@@ -33,7 +33,7 @@ import java.util.List;
  *
  * @param <AGR> the aggregate type
  */
-public class KasperAggregateFixture<AGR extends AggregateRoot>
+public final class KasperAggregateFixture<AGR extends AggregateRoot>
         implements KasperCommandFixture<KasperAggregateExecutor, KasperAggregateResultValidator>
 {
 

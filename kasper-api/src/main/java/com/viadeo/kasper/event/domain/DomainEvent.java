@@ -21,6 +21,6 @@ import com.viadeo.kasper.event.IEvent;
  */
 public interface DomainEvent<D extends Domain> extends IEvent {
 
-    public static int DOMAIN_PARAMETER_POSITION = 0;
+    static int DOMAIN_PARAMETER_POSITION = 0;
 
 }
