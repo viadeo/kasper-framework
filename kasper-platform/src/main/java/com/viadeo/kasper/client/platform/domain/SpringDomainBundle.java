@@ -9,6 +9,7 @@ package com.viadeo.kasper.client.platform.domain;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.client.platform.configuration.TypeSafeConfigPropertyPlaceholder;
 import com.viadeo.kasper.client.platform.utils.BuilderContextHelper;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -117,11 +118,16 @@ public class SpringDomainBundle extends DefaultDomainBundle {
 
     @Override
     public final void configure(final Platform.BuilderContext context) {
+        checkNotNull(context);
+
         applicationContext.setParent(BuilderContextHelper.createApplicationContextFrom(context));
 
         final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
-        doConfigure(beanFactory, checkNotNull(context));
+        configureConfigPropertyPlaceHolder(beanFactory, context);
+
+        doConfigure(beanFactory, context);
+
         applicationContext.refresh();
 
         this.commandHandlers.addAll(applicationContext.getBeansOfType(CommandHandler.class).values());
@@ -130,6 +136,12 @@ public class SpringDomainBundle extends DefaultDomainBundle {
         this.eventListeners.addAll(applicationContext.getBeansOfType(EventListener.class).values());
         this.adapters.addAll(applicationContext.getBeansOfType(QueryAdapter.class).values());
         this.adapters.addAll(applicationContext.getBeansOfType(QueryResponseAdapter.class).values());
+    }
+
+    protected void configureConfigPropertyPlaceHolder(final ConfigurableListableBeanFactory beanFactory,
+                                                      final  Platform.BuilderContext context) {
+        TypeSafeConfigPropertyPlaceholder configPropertyPlaceholder = new TypeSafeConfigPropertyPlaceholder(context.getConfiguration());
+        configPropertyPlaceholder.postProcessBeanFactory(beanFactory);
     }
 
     protected void doConfigure(final ConfigurableListableBeanFactory beanFactory, final  Platform.BuilderContext context) {
