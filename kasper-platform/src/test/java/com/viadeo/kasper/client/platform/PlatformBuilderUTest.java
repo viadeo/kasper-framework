@@ -18,6 +18,7 @@ import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.cqrs.Adapter;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
@@ -51,7 +52,9 @@ public class PlatformBuilderUTest {
 
     private static class TestDomain implements Domain { }
 
-    private static class TestConcept extends Concept { }
+    private static class TestConcept extends Concept {
+        private static final long serialVersionUID = -7248313390394661735L;
+    }
 
     private static class TestQueryAdapter implements QueryAdapter<Query> {
 
@@ -87,14 +90,26 @@ public class PlatformBuilderUTest {
         protected void doSave(final TestConcept aggregate) { }
 
         @Override
-        protected void doDelete(final TestConcept aggregate) {  }
+        protected void doDelete(final TestConcept aggregate) { }
 
     }
 
+    private static class TestAdapter implements QueryAdapter<Query> {
+
+        @Override
+        public Query adapt(Context context, Query input) {
+            return input;
+        }
+
+        @Override
+        public String getName() {
+            return TestAdapter.class.getSimpleName();
+        }
+    }
     // ------------------------------------------------------------------------
 
     @Test(expected = NullPointerException.class)
-    public void addDomainBundle_withNullAsDomainBundle_shouldThrownException(){
+    public void addDomainBundle_withNullAsDomainBundle_shouldThrownException() {
         // Given
         final DomainBundle domainBundle = null;
         final Platform.Builder builder = new Platform.Builder();
@@ -106,7 +121,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void addDomainBundle_withDomainBundle_shouldBeOk(){
+    public void addDomainBundle_withDomainBundle_shouldBeOk() {
         // Given
         final DomainBundle domainBundle = mock(DomainBundle.class);
         final Platform.Builder builder = new Platform.Builder();
@@ -118,7 +133,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void addPlugin_withNullAsPlugin_shouldThrownException(){
+    public void addPlugin_withNullAsPlugin_shouldThrownException() {
         // Given
         final Plugin plugin = null;
         final Platform.Builder builder = new Platform.Builder();
@@ -130,7 +145,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void addPlugin_withPlugin_shouldBeOk(){
+    public void addPlugin_withPlugin_shouldBeOk() {
         // Given
         final Plugin plugin = mock(Plugin.class);
         final Platform.Builder builder = new Platform.Builder();
@@ -141,8 +156,32 @@ public class PlatformBuilderUTest {
         // Then no exception
     }
 
+    @Test(expected = NullPointerException.class)
+    public void addGlobalAdapter_withNullAsAdapter_shouldThrownException() {
+        // Given
+        final Adapter adapter = null;
+        final Platform.Builder builder = new Platform.Builder();
+
+        // When
+        builder.addGlobalAdapter(adapter);
+
+        // Then throws an exception
+    }
+
+    @Test
+    public void addGlobalAdapter_withAdapter_shouldBeOk() {
+        // Given
+        final Adapter adapter = new TestAdapter();
+        final Platform.Builder builder = new Platform.Builder();
+
+        // When
+        builder.addGlobalAdapter(adapter);
+
+        // Then no exception
+    }
+
     @Test(expected = IllegalStateException.class)
-    public void build_withoutCommandGateway_shouldThrownException(){
+    public void build_withoutCommandGateway_shouldThrownException() {
         // Given
         final Platform.Builder builder = new Platform.Builder()
                 .withQueryGateway(mock(KasperQueryGateway.class))
@@ -156,7 +195,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void build_withoutQueryGateway_shouldThrownException(){
+    public void build_withoutQueryGateway_shouldThrownException() {
         // Given
         final Platform.Builder builder = new Platform.Builder()
                 .withCommandGateway(mock(KasperCommandGateway.class))
@@ -170,7 +209,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void build_withoutEventBus_shouldThrownException(){
+    public void build_withoutEventBus_shouldThrownException() {
         // Given
         final Platform.Builder builder = new Platform.Builder()
                 .withQueryGateway(mock(KasperQueryGateway.class))
@@ -185,7 +224,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void build_withoutConfiguration_shouldThrownException(){
+    public void build_withoutConfiguration_shouldThrownException() {
         // Given
         final Platform.Builder builder = new Platform.Builder()
                 .withQueryGateway(mock(KasperQueryGateway.class))
@@ -199,7 +238,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test(expected = IllegalStateException.class)
-    public void build_withoutMetricRegistry_shouldThrownException(){
+    public void build_withoutMetricRegistry_shouldThrownException() {
         // Given
         final Platform.Builder builder = new Platform.Builder()
                 .withQueryGateway(mock(KasperQueryGateway.class))
@@ -214,7 +253,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void build_withQueryGateway_withCommandGateway_withEventBus_withConfiguration_withMetricRegistry_shouldBeOk(){
+    public void build_withQueryGateway_withCommandGateway_withEventBus_withConfiguration_withMetricRegistry_shouldBeOk() {
         // Given
         final KasperEventBus eventBus = mock(KasperEventBus.class);
         final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
@@ -225,8 +264,7 @@ public class PlatformBuilderUTest {
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
                 .withConfiguration(mock(Config.class))
-                .withMetricRegistry(mock(MetricRegistry.class))
-        ;
+                .withMetricRegistry(mock(MetricRegistry.class));
 
         // When
         final Platform platform = builder.build();
@@ -255,7 +293,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void build_withDomainBundle_shouldConfiguredTheBundle(){
+    public void build_withDomainBundle_shouldConfiguredTheBundle() {
         // Given
         final DomainBundle domainBundle = spy(new DomainBundle.Builder(new TestDomain()).build());
 
@@ -282,7 +320,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void build_withPlugin_shouldInitializedThePlugin(){
+    public void build_withPlugin_shouldInitializedThePlugin() {
         // Given
         final Plugin plugin = mock(Plugin.class);
         final KasperEventBus eventBus = mock(KasperEventBus.class);
@@ -308,7 +346,34 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void build_withDomainBundle_containingCommandHandler_shouldWiredTheComponent(){
+    public void build_withTestAdapter_asGlobalAdapter_shouldRegisterOnQueryGateway() {
+        // Given
+        final TestAdapter testAdapter = new TestAdapter();
+
+        final KasperEventBus eventBus = mock(KasperEventBus.class);
+        final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
+        final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
+        final Config configuration = mock(Config.class);
+        final MetricRegistry metricRegistry = mock(MetricRegistry.class);
+
+        final Platform.Builder builder = new Platform.Builder()
+                .withQueryGateway(queryGateway)
+                .withCommandGateway(commandGateway)
+                .withEventBus(eventBus)
+                .withConfiguration(configuration)
+                .withMetricRegistry(metricRegistry)
+                .addGlobalAdapter(testAdapter);
+
+        // When
+        final Platform platform = builder.build();
+
+        // Then
+        assertNotNull(platform);
+        verify(queryGateway).register(refEq(testAdapter.getName()), refEq(testAdapter), eq(true));
+    }
+
+    @Test
+    public void build_withDomainBundle_containingCommandHandler_shouldWiredTheComponent() {
         // Given
         final CommandHandler commandHandler = mock(CommandHandler.class);
 
@@ -338,7 +403,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void build_withDomainBundle_containingQueryHandler_shouldWiredTheComponent(){
+    public void build_withDomainBundle_containingQueryHandler_shouldWiredTheComponent() {
         // Given
         final QueryHandler queryHandler = mock(QueryHandler.class);
 
@@ -367,7 +432,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void build_withDomainBundle_containingEventListener_shouldWiredTheComponent(){
+    public void build_withDomainBundle_containingEventListener_shouldWiredTheComponent() {
         // Given
         final EventListener eventListener = mock(EventListener.class);
 
@@ -398,7 +463,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void build_withDomainBundle_containingCommandEventListener_shouldWiredTheComponent(){
+    public void build_withDomainBundle_containingCommandEventListener_shouldWiredTheComponent() {
         // Given
         final CommandEventListener eventListener = mock(CommandEventListener.class);
 
@@ -430,7 +495,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void build_withDomainBundle_containingQueryEventListener_shouldWiredTheComponent(){
+    public void build_withDomainBundle_containingQueryEventListener_shouldWiredTheComponent() {
         // Given
         final QueryEventListener eventListener = mock(QueryEventListener.class);
 
@@ -519,7 +584,7 @@ public class PlatformBuilderUTest {
         final Platform platform = builder.addExtraComponent(name, String.class, component).build();
 
         // Then
-        final HashMap<ExtraComponentKey,Object> expectedExtraComponents = Maps.newHashMap();
+        final HashMap<ExtraComponentKey, Object> expectedExtraComponents = Maps.newHashMap();
         expectedExtraComponents.put(new ExtraComponentKey(name, component.getClass()), component);
 
         assertNotNull(platform);
@@ -527,7 +592,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void build_withDomainBundle_containingAdapter_shouldThrownException(){
+    public void build_withDomainBundle_containingAdapter_shouldThrownException() {
         // Given
         final TestQueryAdapter adapter = new TestQueryAdapter();
         final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
@@ -545,12 +610,12 @@ public class PlatformBuilderUTest {
 
         // Then
         assertNotNull(platform);
-        verify(queryGateway).register(refEq(adapter.getName()), refEq(adapter));
+        verify(queryGateway).register(refEq(adapter.getName()), refEq(adapter), eq(false));
         verifyNoMoreInteractions(queryGateway);
     }
 
     @Test(expected = KasperException.class)
-    public void build_withDomainBundle_containingQueryHandler_andReferencingAnUnknownAdapter_shouldThrownException(){
+    public void build_withDomainBundle_containingQueryHandler_andReferencingAnUnknownAdapter_shouldThrownException() {
         // Given
         final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
                 .with(new TestQueryHandler())
@@ -567,7 +632,7 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void build_withDomainBundle_containingQueryHandler_andReferencingAnKnownAdapter_shouldBeWired(){
+    public void build_withDomainBundle_containingQueryHandler_andReferencingAnKnownAdapter_shouldBeWired() {
         // Given
         final TestQueryAdapter adapter = new TestQueryAdapter();
         final TestQueryHandler queryHandler = new TestQueryHandler();
@@ -587,16 +652,16 @@ public class PlatformBuilderUTest {
 
         // Then
         assertNotNull(platform);
-        verify(queryGateway).register(refEq(adapter.getName()), refEq(adapter));
+        verify(queryGateway).register(refEq(adapter.getName()), refEq(adapter), eq(false));
         verify(queryGateway).register(refEq(queryHandler));
         verifyNoMoreInteractions(queryGateway);
     }
 
-    private DomainDescriptorFactory createMockedDomainDescriptorFactory(){
+    private DomainDescriptorFactory createMockedDomainDescriptorFactory() {
         final DomainDescriptorFactory domainDescriptorFactory = mock(DomainDescriptorFactory.class);
         when(domainDescriptorFactory.createFrom(any(DomainBundle.class))).thenReturn(
                 new DomainDescriptor(
-                          "FakeDomain"
+                        "FakeDomain"
                         , Domain.class
                         , Lists.<QueryHandlerDescriptor>newArrayList()
                         , Lists.<CommandHandlerDescriptor>newArrayList()

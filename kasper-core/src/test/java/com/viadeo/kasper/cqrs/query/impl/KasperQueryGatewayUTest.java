@@ -29,27 +29,27 @@ public class KasperQueryGatewayUTest {
     @XKasperQueryHandler(domain = Domain.class)
     private static class QueryHandlerForTest extends QueryHandler<Query, QueryResult> { }
 
-    @XKasperQueryHandler(domain = Domain.class, adapters = { Adapter1.class })
+    @XKasperQueryHandler(domain = Domain.class, adapters = {Adapter1.class})
     private static class QueryHandlerWithAdaptersForTest extends QueryHandler<Query, QueryResult> { }
 
     private final class Adapter1 implements QueryHandlerAdapter { }
 
     // ------------------------------------------------------------------------
 
-    public KasperQueryGatewayUTest(){
+    public KasperQueryGatewayUTest() {
         queryHandlersLocator = mock(DefaultQueryHandlersLocator.class);
         queryGateway = new KasperQueryGateway(queryHandlersLocator);
     }
 
     @After
-    public void clean(){
+    public void clean() {
         reset(queryHandlersLocator);
     }
 
     // ------------------------------------------------------------------------
 
     @Test(expected = NullPointerException.class)
-    public void register_withNullAsQueryHandler_shouldThrownException(){
+    public void register_withNullAsQueryHandler_shouldThrownException() {
         // Given
         final QueryHandler queryHandler = null;
 
@@ -60,7 +60,7 @@ public class KasperQueryGatewayUTest {
     }
 
     @Test
-    public void register_withQueryHandler_shouldBeRegistered(){
+    public void register_withQueryHandler_shouldBeRegistered() {
         // Given
         final QueryHandler queryHandler = new QueryHandlerForTest();
 
@@ -75,7 +75,7 @@ public class KasperQueryGatewayUTest {
     }
 
     @Test(expected = KasperException.class)
-    public void register_withQueryHandler_withoutRegisteredAdapters_shouldThrownException(){
+    public void register_withQueryHandler_withoutRegisteredAdapters_shouldThrownException() {
         // Given
         final QueryHandler queryHandler = new QueryHandlerWithAdaptersForTest();
 
@@ -86,10 +86,10 @@ public class KasperQueryGatewayUTest {
     }
 
     @Test(expected = KasperException.class)
-    public void register_withQueryHandler_withRegisteredAdapters_shouldThrownException(){
+    public void register_withQueryHandler_withRegisteredAdapters_shouldThrownException() {
         // Given
         final QueryHandler queryHandler = new QueryHandlerWithAdaptersForTest();
-        queryGateway.register("test", new Adapter1());
+        queryGateway.register("test", new Adapter1(), false);
         reset(queryHandlersLocator);
 
         // When
