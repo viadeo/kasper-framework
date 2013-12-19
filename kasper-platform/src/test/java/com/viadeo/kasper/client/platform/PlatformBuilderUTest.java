@@ -97,7 +97,7 @@ public class PlatformBuilderUTest {
     private static class TestAdapter implements QueryAdapter<Query> {
 
         @Override
-        public Query adapt(Context context, Query input) {
+        public Query adapt(final Context context, final Query input) {
             return input;
         }
 
@@ -661,12 +661,12 @@ public class PlatformBuilderUTest {
         final DomainDescriptorFactory domainDescriptorFactory = mock(DomainDescriptorFactory.class);
         when(domainDescriptorFactory.createFrom(any(DomainBundle.class))).thenReturn(
                 new DomainDescriptor(
-                        "FakeDomain"
-                        , Domain.class
-                        , Lists.<QueryHandlerDescriptor>newArrayList()
-                        , Lists.<CommandHandlerDescriptor>newArrayList()
-                        , Lists.<RepositoryDescriptor>newArrayList()
-                        , Lists.<EventListenerDescriptor>newArrayList()
+                        "FakeDomain",
+                        Domain.class,
+                        Lists.<QueryHandlerDescriptor>newArrayList(),
+                        Lists.<CommandHandlerDescriptor>newArrayList(),
+                        Lists.<RepositoryDescriptor>newArrayList(),
+                        Lists.<EventListenerDescriptor>newArrayList()
                 )
         );
         return domainDescriptorFactory;

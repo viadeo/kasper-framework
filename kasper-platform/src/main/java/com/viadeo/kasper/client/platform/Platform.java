@@ -213,7 +213,7 @@ public interface Platform {
             return platform;
         }
 
-        protected void configureGlobalAdapters(){
+        protected void configureGlobalAdapters() {
             for (final Adapter adapter : adapters) {
                 LOGGER.info("Registering global adapter : {}", adapter.getName());
 

@@ -14,7 +14,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.client.platform.Platform.*;
+import static com.viadeo.kasper.client.platform.Platform.BuilderContext;
 
 public final class BuilderContextHelper {
 
