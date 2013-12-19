@@ -14,6 +14,7 @@ import com.typesafe.config.Config;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
+import com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;

@@ -65,8 +65,13 @@ The framework propose several implementations in order to facilitate the creatio
         )
     );
 
+    /* Create a domain bundle with a discovery process from a given package*/
+    DomainBundle domainBundle3= new DiscoveryDomainBundle(
+          "com.viadeo.platform.awesomedomain"
+    );
+
     /* Create a domain bundle with a Builder*/
-    DomainBundle domainBundle3 = new DomainBundle.Builder(new TestDomain())
+    DomainBundle domainBundle4 = new DomainBundle.Builder(new TestDomain())
         .with(commandHandler)
         .with(repository)
         .with(queryHandlerA)
