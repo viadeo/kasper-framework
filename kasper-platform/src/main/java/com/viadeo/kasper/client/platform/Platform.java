@@ -81,6 +81,7 @@ public interface Platform {
 
         private final Collection<DomainBundle> domainBundles;
         private final Collection<Plugin> kasperPlugins;
+        private final Collection<Adapter> adapters;
         private final Map<ExtraComponentKey, Object> extraComponents;
         private final DomainDescriptorFactory domainDescriptorFactory;
 
@@ -107,6 +108,7 @@ public interface Platform {
             this.repositoryManager = checkNotNull(repositoryManager);
             this.domainBundles = Lists.newArrayList();
             this.kasperPlugins = Lists.newArrayList();
+            this.adapters = Lists.newArrayList();
             this.extraComponents = Maps.newHashMap();
         }
 
@@ -122,13 +124,21 @@ public interface Platform {
 
         // --------------------------------------------------------------------
 
-        public Builder addDomainBundle(final DomainBundle domainBundle) {
+        public Builder addDomainBundle(final DomainBundle domainBundle, final DomainBundle... domainBundles) {
             this.domainBundles.add(checkNotNull(domainBundle));
+            with(this.domainBundles, domainBundles);
             return this;
         }
 
-        public Builder addPlugin(final Plugin plugin) {
+        public Builder addPlugin(final Plugin plugin, final Plugin... plugins) {
             this.kasperPlugins.add(checkNotNull(plugin));
+            with(this.kasperPlugins, plugins);
+            return this;
+        }
+
+        public Builder addGlobalAdapter(final Adapter adapter, final Adapter... adapters) {
+            this.adapters.add(checkNotNull(adapter));
+            with(this.adapters, adapters);
             return this;
         }
 
@@ -170,6 +180,14 @@ public interface Platform {
             return this;
         }
 
+        @SafeVarargs
+        private final <COMP> void with(final Collection<COMP> collection, final COMP... components) {
+            checkNotNull(collection);
+            for (final COMP component : checkNotNull(components)) {
+                collection.add(checkNotNull(component));
+            }
+        }
+
         // --------------------------------------------------------------------
 
         public Platform build() {
@@ -184,65 +202,93 @@ public interface Platform {
 
             initializeKasperMetrics();
 
-            final List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
+            configureGlobalAdapters();
 
-            for (final DomainBundle bundle : domainBundles) {
-                LOGGER.info("Configuring bundle : {}", bundle.getName());
-
-                bundle.configure(context);
-
-                for (final Adapter adapter : bundle.getAdapters()) {
-                    if (QueryHandlerAdapter.class.isAssignableFrom(adapter.getClass())) {
-                        queryGateway.register(adapter.getName(), (QueryHandlerAdapter) adapter);
-                    } else {
-                        LOGGER.warn("Unrecognized adapter type : {}", adapter.getClass().getName());
-                    }
-                }
-
-                for (final Repository repository : bundle.getRepositories()) {
-                    repository.init();
-                    repository.setEventBus(eventBus);
-                    repositoryManager.register(repository);
-                }
-
-                for (final CommandHandler commandHandler : bundle.getCommandHandlers()) {
-                    commandHandler.setEventBus(eventBus);
-                    commandHandler.setRepositoryManager(repositoryManager);
-                    commandGateway.register(commandHandler);
-                }
-
-                for (final QueryHandler queryHandler : bundle.getQueryHandlers()) {
-                    queryHandler.setEventBus(eventBus);
-                    queryGateway.register(queryHandler);
-                }
-
-                for (final EventListener eventListener : bundle.getEventListeners()) {
-                    eventListener.setEventBus(eventBus);
-
-                    if (CommandEventListener.class.isAssignableFrom(eventListener.getClass())) {
-                        final CommandEventListener commandEventListener = (CommandEventListener) eventListener;
-                        commandEventListener.setCommandGateway(commandGateway);
-                    } else if (QueryEventListener.class.isAssignableFrom(eventListener.getClass())) {
-                        final QueryEventListener queryEventListener = (QueryEventListener) eventListener;
-                        queryEventListener.setQueryGateway(queryGateway);
-                    }
-
-                    eventBus.subscribe(eventListener);
-                }
-
-                domainDescriptors.add(domainDescriptorFactory.createFrom(bundle));
-            }
+            final Collection<DomainDescriptor> domainDescriptors = configureDomainBundles(context);
 
             final KasperPlatform platform = new KasperPlatform(commandGateway, queryGateway, eventBus);
 
+            initializePlugins(platform, domainDescriptors);
+
+            return platform;
+        }
+
+        protected void configureGlobalAdapters() {
+            for (final Adapter adapter : adapters) {
+                LOGGER.info("Registering global adapter : {}", adapter.getName());
+
+                if (QueryHandlerAdapter.class.isAssignableFrom(adapter.getClass())) {
+                    queryGateway.register(adapter.getName(), (QueryHandlerAdapter) adapter, true);
+                } else {
+                    LOGGER.warn("Unrecognized adapter type : {}", adapter.getClass().getName());
+                }
+            }
+        }
+
+        protected Collection<DomainDescriptor> configureDomainBundles(final BuilderContext context){
+            final List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
+
+            for (final DomainBundle bundle : domainBundles) {
+                domainDescriptors.add(configureDomainBundle(context, bundle));
+            }
+
+            return domainDescriptors;
+        }
+
+        protected DomainDescriptor configureDomainBundle(final BuilderContext context, final DomainBundle bundle){
+            LOGGER.info("Configuring bundle : {}", bundle.getName());
+
+            bundle.configure(context);
+
+            for (final Adapter adapter : bundle.getAdapters()) {
+                if (QueryHandlerAdapter.class.isAssignableFrom(adapter.getClass())) {
+                    queryGateway.register(adapter.getName(), (QueryHandlerAdapter) adapter, false);
+                } else {
+                    LOGGER.warn("Unrecognized adapter type : {}", adapter.getClass().getName());
+                }
+            }
+
+            for (final Repository repository : bundle.getRepositories()) {
+                repository.init();
+                repository.setEventBus(eventBus);
+                repositoryManager.register(repository);
+            }
+
+            for (final CommandHandler commandHandler : bundle.getCommandHandlers()) {
+                commandHandler.setEventBus(eventBus);
+                commandHandler.setRepositoryManager(repositoryManager);
+                commandGateway.register(commandHandler);
+            }
+
+            for (final QueryHandler queryHandler : bundle.getQueryHandlers()) {
+                queryHandler.setEventBus(eventBus);
+                queryGateway.register(queryHandler);
+            }
+
+            for (final EventListener eventListener : bundle.getEventListeners()) {
+                eventListener.setEventBus(eventBus);
+
+                if (CommandEventListener.class.isAssignableFrom(eventListener.getClass())) {
+                    final CommandEventListener commandEventListener = (CommandEventListener) eventListener;
+                    commandEventListener.setCommandGateway(commandGateway);
+                } else if (QueryEventListener.class.isAssignableFrom(eventListener.getClass())) {
+                    final QueryEventListener queryEventListener = (QueryEventListener) eventListener;
+                    queryEventListener.setQueryGateway(queryGateway);
+                }
+
+                eventBus.subscribe(eventListener);
+            }
+
+            return domainDescriptorFactory.createFrom(bundle);
+        }
+
+        protected void initializePlugins(final Platform platform, final Collection<DomainDescriptor> domainDescriptors) {
             final DomainDescriptor[] domainDescriptorArray = domainDescriptors.toArray(new DomainDescriptor[domainDescriptors.size()]);
 
             for (final Plugin plugin : kasperPlugins) {
                 LOGGER.info("Initializing plugin : {}" + plugin.getClass().getSimpleName());
                 plugin.initialize(platform, metricRegistry, domainDescriptorArray);
             }
-
-            return platform;
         }
 
         protected void initializeKasperMetrics() {
