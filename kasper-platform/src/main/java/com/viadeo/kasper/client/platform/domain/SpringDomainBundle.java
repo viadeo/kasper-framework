@@ -11,11 +11,11 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.configuration.TypeSafeConfigPropertyPlaceholder;
 import com.viadeo.kasper.client.platform.utils.BuilderContextHelper;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.query.QueryAdapter;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryResponseAdapter;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
@@ -134,8 +134,8 @@ public class SpringDomainBundle extends DefaultDomainBundle {
         this.repositories.addAll(applicationContext.getBeansOfType(Repository.class).values());
         this.queryHandlers.addAll(applicationContext.getBeansOfType(QueryHandler.class).values());
         this.eventListeners.addAll(applicationContext.getBeansOfType(EventListener.class).values());
-        this.adapters.addAll(applicationContext.getBeansOfType(QueryAdapter.class).values());
-        this.adapters.addAll(applicationContext.getBeansOfType(QueryResponseAdapter.class).values());
+        this.queryInterceptorFactories.addAll(applicationContext.getBeansOfType(QueryInterceptorFactory.class).values());
+        this.commandInterceptorFactories.addAll(applicationContext.getBeansOfType(CommandInterceptorFactory.class).values());
     }
 
     protected void configureConfigPropertyPlaceHolder(final ConfigurableListableBeanFactory beanFactory,

@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.repository;
 
+import com.codahale.metrics.MetricRegistry;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import org.junit.Test;
@@ -14,6 +16,12 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.*;
 
 public class MetricsRepositoryFacadeTest {
+
+    // ------------------------------------------------------------------------
+
+    public MetricsRepositoryFacadeTest() {
+        KasperMetrics.setMetricRegistry(new MetricRegistry());
+    }
 
     // ------------------------------------------------------------------------
     // doSave()

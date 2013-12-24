@@ -8,6 +8,7 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
@@ -148,6 +149,15 @@ public class KasperCommandGateway implements CommandGateway {
         commandBus.subscribe(castor.getBeanClass().getName(), castor.getContainerClass());
 
         commandHandler.setCommandGateway(this);
+    }
+
+    /**
+     * Register an interceptor factory to the gateway
+     *
+     * @param interceptorFactory the query interceptor factory to register
+     */
+    public void register(final CommandInterceptorFactory interceptorFactory) {
+        // TODO not yet implemented
     }
 
     /**

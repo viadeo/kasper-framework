@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.cqrs;
+package com.viadeo.kasper.core.interceptor;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
@@ -13,22 +13,22 @@ import com.viadeo.kasper.cqrs.query.QueryResult;
 import org.junit.Assert;
 import org.junit.Test;
 
-public class RequestActorsChainTest {
+public class InterceptorChainTest {
 
     @Test
     public void testIteratorToChain() {
         // Given
-        final DummyRequestActor d1 = new DummyRequestActor();
-        final DummyRequestActor d2 = new DummyRequestActor();
-        final Iterable<DummyRequestActor> chain = Lists.newArrayList(null, d1, null, d2, null);
+        final DummyInterceptor d1 = new DummyInterceptor();
+        final DummyInterceptor d2 = new DummyInterceptor();
+        final Iterable<DummyInterceptor> chain = Lists.newArrayList(null, d1, null, d2, null);
 
         // When
-        final RequestActorsChain<Query, QueryResult> actualChain =
-                RequestActorsChain.makeChain(chain);
+        final InterceptorChain<Query, QueryResult> actualChain =
+                InterceptorChain.makeChain(chain);
 
         // Then
-        RequestActorsChain<Query, QueryResult> elt = actualChain;
-        for (final DummyRequestActor e : Lists.newArrayList(d1, d2)) {
+        InterceptorChain<Query, QueryResult> elt = actualChain;
+        for (final DummyInterceptor e : Lists.newArrayList(d1, d2)) {
             Assert.assertEquals(e, elt.actor.get());
             elt = actualChain.next.get();
         }
@@ -36,9 +36,9 @@ public class RequestActorsChainTest {
 
     // ------------------------------------------------------------------------
 
-    static class DummyRequestActor implements RequestActor<Query, QueryResult> {
+    static class DummyInterceptor implements Interceptor<Query, QueryResult> {
         @Override
-        public QueryResult process(Query query, Context context, RequestActorsChain chain) {
+        public QueryResult process(Query query, Context context, InterceptorChain chain) {
             return null;
         }
     }

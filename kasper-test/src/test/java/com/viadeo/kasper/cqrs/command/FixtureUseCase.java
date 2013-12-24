@@ -15,7 +15,8 @@ import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.cqrs.Adapter;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -42,6 +43,9 @@ public class FixtureUseCase {
     public static class TestDomain implements Domain { }
 
     public static class TestCreateCommand extends CreateCommand {
+
+        private static final long serialVersionUID = 4487842725516232104L;
+
         @NotNull
         private final String firstName;
         public TestCreateCommand(KasperID providedId, String firstName) {
@@ -54,6 +58,9 @@ public class FixtureUseCase {
     }
 
     public static class TestChangeLastNameCommand extends UpdateCommand {
+
+        private static final long serialVersionUID = -4871267299717519334L;
+
         private final String lastName;
         public TestChangeLastNameCommand(KasperID providedId, String lastName) {
             super(providedId);
@@ -65,12 +72,16 @@ public class FixtureUseCase {
     }
 
     public static class TestCreatedEvent extends EntityCreatedEvent<TestDomain> {
+        private static final long serialVersionUID = -5387545841270513825L;
+
         protected TestCreatedEvent(KasperID id) {
             super(id);
         }
     }
 
     public static class TestFirstNameChangedEvent extends EntityUpdatedEvent<TestDomain> {
+        private static final long serialVersionUID = -3951590352755201574L;
+
         private final String firstName;
         protected TestFirstNameChangedEvent(String firstName) {
             this.firstName = firstName;
@@ -81,6 +92,8 @@ public class FixtureUseCase {
     }
 
     public static class TestLastNameChangedEvent extends EntityUpdatedEvent<TestDomain> {
+        private static final long serialVersionUID = -3765684302496734855L;
+
         private final String lastName;
         protected TestLastNameChangedEvent(String lastName) {
             this.lastName = lastName;
@@ -91,6 +104,7 @@ public class FixtureUseCase {
     }
 
     public static class TestAggregate extends Concept {
+        private static final long serialVersionUID = -6659974540945049543L;
 
         private String firstName = "unknown";
         private String lastName = "unknown";
@@ -203,6 +217,8 @@ public class FixtureUseCase {
     }
 
     public static class TestQuery implements Query {
+        private static final long serialVersionUID = 2544486429078930789L;
+
         @NotNull
         private final String type;
         TestQuery(final String type) {
@@ -214,6 +230,8 @@ public class FixtureUseCase {
     }
 
     public static class TestResult implements QueryResult {
+        private static final long serialVersionUID = 4986629752879834584L;
+
         private final String answer;
         TestResult(final String answer) {
             this.answer = answer;
@@ -248,7 +266,8 @@ public class FixtureUseCase {
                 , Lists.<QueryHandler>newArrayList( new TestGetSomeDataQueryHandler())
                 , Lists.<Repository>newArrayList(new TestRepository())
                 , Lists.<EventListener>newArrayList()
-                , Lists.<Adapter>newArrayList()
+                , Lists.<QueryInterceptorFactory>newArrayList()
+                , Lists.<CommandInterceptorFactory>newArrayList()
                 , new TestDomain()
                 , "TestDomain"
         );

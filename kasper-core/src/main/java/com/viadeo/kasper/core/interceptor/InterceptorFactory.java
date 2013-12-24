@@ -4,11 +4,15 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.cqrs.query;
+package com.viadeo.kasper.core.interceptor;
 
-import com.viadeo.kasper.cqrs.RequestActor;
+import com.google.common.base.Optional;
+import com.google.common.reflect.TypeToken;
 
-public interface QueryRequestActor<Q extends Query, P extends QueryResult>
-        extends RequestActor<Q, QueryResponse<P>> {
+public interface InterceptorFactory<INPUT, OUTPUT> {
+
+    Optional<InterceptorChain<INPUT, OUTPUT>> create(final TypeToken<?> type);
+
+    boolean accept(final TypeToken<?> type);
 
 }

@@ -13,6 +13,7 @@ import com.viadeo.kasper.cqrs.Adapter;
  *
  * @see Query
  */
+@Deprecated
 public interface QueryAdapter<Q extends Query> extends QueryHandlerAdapter, Adapter<Q> { }
 
 

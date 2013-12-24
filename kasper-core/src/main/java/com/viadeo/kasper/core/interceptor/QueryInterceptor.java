@@ -4,12 +4,10 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.cqrs;
+package com.viadeo.kasper.core.interceptor;
 
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 
-public interface RequestActor<INPUT, OUTPUT> {
-
-    OUTPUT process(INPUT input, Context context, RequestActorsChain<INPUT, OUTPUT> chain) throws Exception;
-
-}
+public interface QueryInterceptor<Q extends Query, P extends QueryResult> extends Interceptor<Q, QueryResponse<P>> { }

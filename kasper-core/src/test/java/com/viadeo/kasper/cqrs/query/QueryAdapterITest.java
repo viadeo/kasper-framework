@@ -17,6 +17,7 @@ import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import static junit.framework.Assert.assertEquals;
@@ -25,6 +26,7 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
+@Ignore
 public class QueryAdapterITest {
 
     private static int STATE_START = 0;
@@ -37,11 +39,13 @@ public class QueryAdapterITest {
 
     @XKasperUnregistered
     private class TestQuery implements Query {
+        private static final long serialVersionUID = -3543360005452825389L;
         public int state = STATE_START;
     }
 
     @XKasperUnregistered
     private class TestResult implements QueryResult {
+        private static final long serialVersionUID = -9036630685658784888L;
         public int state = STATE_START;
     }
 

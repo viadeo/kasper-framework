@@ -11,7 +11,10 @@ import com.viadeo.kasper.context.Context;
 /**
 * Defines the method used to adapt an element. This interface is used into the framework in order to provide specialization
 * that is used by domain in order to write a custom adapting code.
+*
+* @deprecated prefers to use {@link com.viadeo.kasper.core.interceptor.Interceptor}
 */
+@Deprecated
 public interface Adapter<ELEM> {
 
     /**

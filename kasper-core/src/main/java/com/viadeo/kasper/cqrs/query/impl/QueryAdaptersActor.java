@@ -9,9 +9,9 @@ package com.viadeo.kasper.cqrs.query.impl;
 import com.codahale.metrics.Timer;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.Adapter;
-import com.viadeo.kasper.cqrs.RequestActorsChain;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryRequestActor;
+import com.viadeo.kasper.core.interceptor.QueryInterceptor;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import org.slf4j.Logger;
@@ -24,7 +24,7 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 public class QueryAdaptersActor<Q extends Query, P extends QueryResult>
-        implements QueryRequestActor<Q, P> {
+        implements QueryInterceptor<Q, P> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryAdaptersActor.class);
 
@@ -42,7 +42,7 @@ public class QueryAdaptersActor<Q extends Query, P extends QueryResult>
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryResponse<P> process(final Q query, final Context context, final RequestActorsChain<Q, QueryResponse<P>> chain) throws Exception {
+    public QueryResponse<P> process(final Q query, final Context context, final InterceptorChain<Q, QueryResponse<P>> chain) throws Exception {
         Class<? extends Query> queryClass = query.getClass();
 
         final QueryResponse<P> responses = chain.next(

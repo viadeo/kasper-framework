@@ -7,14 +7,22 @@
 package com.viadeo.kasper.client.platform.configuration;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
+import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
+import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
+import com.viadeo.kasper.cqrs.query.interceptor.ValidationInterceptorFactory;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
+
+import java.util.List;
 
 import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus.Policy;
 
@@ -30,6 +38,8 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     private final MetricRegistry metricRegistry;
     private final Config configuration;
     private final KasperCommandGateway commandGateway;
+    private final List<CommandInterceptorFactory> commandInterceptorFactories;
+    private final List<QueryInterceptorFactory> queryInterceptorFactories;
 
     // ------------------------------------------------------------------------
 
@@ -45,6 +55,14 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         commandBus.setUnitOfWorkFactory(uowFactory);
 
         this.commandGateway = new KasperCommandGateway(commandBus);
+
+        this.commandInterceptorFactories = Lists.newArrayList();
+
+        this.queryInterceptorFactories =  Lists.newArrayList(
+                new CacheInterceptorFactory(),
+                new ValidationInterceptorFactory(),
+                new QueryFilterInterceptorFactory()
+        );
     }
 
     // ------------------------------------------------------------------------
@@ -72,6 +90,16 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     @Override
     public Config configuration() {
         return configuration;
+    }
+
+    @Override
+    public List<CommandInterceptorFactory> commandInterceptorFactories() {
+        return commandInterceptorFactories;
+    }
+
+    @Override
+    public List<QueryInterceptorFactory> queryInterceptorFactories() {
+        return queryInterceptorFactories;
     }
 
 }

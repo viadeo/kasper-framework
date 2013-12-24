@@ -4,18 +4,23 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.cqrs.query.cache.impl;
+package com.viadeo.kasper.cqrs;
 
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.cqrs.RequestActorsChain;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.cqrs.query.impl.QueryHandlerActor;
+import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptor;
+import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptor;
+import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Before;
 import org.junit.Test;
@@ -24,36 +29,38 @@ import javax.cache.Caching;
 
 import static org.junit.Assert.*;
 
-public class QueryCacheActorTest {
+public class CacheInterceptorFactoryTest {
 
-    final static long TTL = 1;
+    private static final long TTL = 1;
 
-    private AnnotationQueryCacheActorFactory factory;
-    private RequestActorsChain<DummyQuery, QueryResponse<DummyResult>> chain;
+    private final CacheInterceptorFactory factory;
+    private InterceptorChain<Query, QueryResponse<QueryResult>> chain;
+
+    // ------------------------------------------------------------------------
+
+    public CacheInterceptorFactoryTest() {
+        factory = new CacheInterceptorFactory(Caching.getCacheManager());
+        KasperMetrics.setMetricRegistry(new MetricRegistry());
+    }
 
     // ------------------------------------------------------------------------
 
     @Before
-    @SuppressWarnings("unchecked")
     public void setUp() {
-        factory = new AnnotationQueryCacheActorFactory(Caching.getCacheManager());
-        chain = RequestActorsChain.makeChain(
-                (QueryCacheActor<DummyQuery, DummyResult>)
-                        factory.make(
-                                DummyQuery.class,
-                                WithCacheQueryHandler.class
-                        ).get(),
-                new QueryHandlerActor<>(new WithCacheQueryHandler()));
+        chain = factory.create(TypeToken.of(WithCacheQueryHandler.class)).get().withNextChain(
+                InterceptorChain.makeChain(new QueryHandlerInterceptor(new WithCacheQueryHandler()))
+        );
     }
 
     @Test
     public void testFactoryForQueryHandlerWithoutCache() {
-        assertFalse(factory.make(DummyQuery.class, WithoutCacheQueryHandler.class).isPresent());
+        assertFalse(factory.create(TypeToken.of(WithoutCacheQueryHandler.class)).isPresent());
     }
 
     @Test
     public void testFactoryForQueryHandlerWithCache() {
-        assertEquals(QueryCacheActor.class, factory.make(DummyQuery.class, WithCacheQueryHandler.class).get().getClass());
+        InterceptorChain<Query, QueryResponse<QueryResult>> actorsChain = factory.create(TypeToken.of(WithCacheQueryHandler.class)).get();
+        assertEquals(CacheInterceptor.class, actorsChain.actor.get().getClass());
     }
 
     @Test
@@ -62,9 +69,9 @@ public class QueryCacheActorTest {
         final DummyQuery nullFields = new DummyQuery();
 
         // When
-        final QueryResponse<DummyResult> expected = chain.next(nullFields, new DefaultContext());
-        final QueryResponse<DummyResult> actual = chain.next(nullFields, new DefaultContext());
-        final QueryResponse<DummyResult> anotherNotPresentInCache = chain.next(new DummyQuery(), new DefaultContext());
+        final QueryResponse<QueryResult> expected = chain.next(nullFields, new DefaultContext());
+        final QueryResponse<QueryResult> actual = chain.next(nullFields, new DefaultContext());
+        final QueryResponse<QueryResult> anotherNotPresentInCache = chain.next(new DummyQuery(), new DefaultContext());
 
         // Then
         assertSame(expected.getResult(), actual.getResult());
@@ -77,8 +84,8 @@ public class QueryCacheActorTest {
         final DummyQuery nullFields = new DummyQuery();
 
         // When
-        final QueryResponse<DummyResult> expected = chain.next(nullFields, new DefaultContext());
-        final QueryResponse<DummyResult> actual = chain.next(nullFields, new DefaultContext());
+        final QueryResponse<QueryResult> expected = chain.next(nullFields, new DefaultContext());
+        final QueryResponse<QueryResult> actual = chain.next(nullFields, new DefaultContext());
 
         // Wait
         synchronized (this) {
@@ -86,7 +93,7 @@ public class QueryCacheActorTest {
         }
 
         // And
-        final QueryResponse<DummyResult> shouldBeNewAsExpiredFromCache = chain.next(nullFields, new DefaultContext());
+        final QueryResponse<QueryResult> shouldBeNewAsExpiredFromCache = chain.next(nullFields, new DefaultContext());
 
         // Then
         assertSame(expected.getResult(), actual.getResult());
@@ -94,18 +101,15 @@ public class QueryCacheActorTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testKeyGeneratedBasedOnSetOfFields() throws Exception {
         // Given
-        chain = RequestActorsChain.makeChain(
-                (QueryCacheActor<DummyQuery, DummyResult>) factory.make(
-                        DummyQuery.class,
-                        WithFilteredFieldsCacheQueryHandler.class).get(),
-                new QueryHandlerActor<>(new WithFilteredFieldsCacheQueryHandler()));
+        chain = factory.create(TypeToken.of(WithFilteredFieldsCacheQueryHandler.class)).get().withNextChain(
+                InterceptorChain.makeChain(new QueryHandlerInterceptor(new WithCacheQueryHandler()))
+        );
 
         // When
-        final QueryResponse<DummyResult> expected = chain.next(new DummyQuery("aa", 2), new DefaultContext());
-        final QueryResponse<DummyResult> actual = chain.next(new DummyQuery("aa", 3333), new DefaultContext());
+        final QueryResponse<QueryResult> expected = chain.next(new DummyQuery("aa", 2), new DefaultContext());
+        final QueryResponse<QueryResult> actual = chain.next(new DummyQuery("aa", 3333), new DefaultContext());
 
         // Then
         assertSame(expected.getResult(), actual.getResult());
@@ -141,6 +145,8 @@ public class QueryCacheActorTest {
     }
 
     public static class DummyQuery implements Query {
+        private static final long serialVersionUID = 3528905729942568435L;
+
         public String someField;
         public int anotherField;
 
@@ -152,7 +158,9 @@ public class QueryCacheActorTest {
         }
     }
 
-    public static class DummyResult implements QueryResult { }
+    public static class DummyResult implements QueryResult {
+        private static final long serialVersionUID = -8799094444094294006L;
+    }
 
     @XKasperUnregistered
     public static class DummyDomain implements Domain { }
