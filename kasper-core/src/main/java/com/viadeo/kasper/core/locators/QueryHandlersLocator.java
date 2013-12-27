@@ -7,6 +7,7 @@
 package com.viadeo.kasper.core.locators;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.security.SecurityConfiguration;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.ddd.Domain;
@@ -33,6 +34,8 @@ public interface QueryHandlersLocator {
      * @param isGlobal sets TRUE if this adapter must be applied to all handlers
      */
     void registerAdapter(String name, QueryHandlerAdapter adapter, boolean isGlobal);
+
+    void configureSecurity(SecurityConfiguration securityConfiguration);
 
     /**
      * @param name the name of the query filter to be registered

@@ -10,12 +10,14 @@ import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
+import com.viadeo.kasper.core.interceptors.SecurityInterceptor;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.security.SecurityConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,6 +124,10 @@ public class KasperQueryGateway implements QueryGateway {
      */
     public void register(final String name, final  QueryHandlerAdapter adapter, final boolean global) {
         queryHandlersLocator.registerAdapter(name, adapter, global);
+    }
+
+    public void configureSecurity(SecurityConfiguration securityConfiguration) {
+        queryHandlersLocator.configureSecurity(securityConfiguration);
     }
 
     /**

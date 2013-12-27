@@ -1,5 +1,7 @@
 package com.viadeo.kasper.core.interceptors;
 
+import com.google.common.base.Optional;
+import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryRequestActor;
@@ -19,11 +21,9 @@ public class SecurityInterceptor<Q extends Query, P extends QueryResult> impleme
 
     private final List<IdentityElementContextProvider> identityElementContextProviders;
 
-    public SecurityInterceptor(com.viadeo.kasper.security.SecurityConfiguration securityConfiguration) {
+    public SecurityInterceptor(SecurityConfiguration securityConfiguration) {
         this.identityElementContextProviders = securityConfiguration.getIdentityElementContextProvider();
     }
-
-
 
     private void addSecurityIdentity(Context context) {
         for (IdentityElementContextProvider provider : identityElementContextProviders) {
@@ -32,8 +32,11 @@ public class SecurityInterceptor<Q extends Query, P extends QueryResult> impleme
     }
 
     @Override
-    //TODO: Needs access to Context
     public Object handle(CommandMessage<?> commandMessage, UnitOfWork unitOfWork, InterceptorChain interceptorChain) throws Throwable {
+        Optional<Context> optContext = CurrentContext.value();
+        if (optContext.isPresent()) {
+            addSecurityIdentity(optContext.get());
+        }
         return interceptorChain.proceed();
     }
 

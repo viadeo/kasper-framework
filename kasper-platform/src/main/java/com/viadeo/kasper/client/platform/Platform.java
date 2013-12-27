@@ -14,6 +14,7 @@ import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
+import com.viadeo.kasper.client.platform.configuration.KasperSecurityConfiguration;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
@@ -91,6 +92,7 @@ public interface Platform {
         private Config configuration;
         private RepositoryManager repositoryManager;
         private MetricRegistry metricRegistry;
+        private KasperSecurityConfiguration securityConfiguration;
 
         // --------------------------------------------------------------------
 
@@ -155,6 +157,11 @@ public interface Platform {
             return this;
         }
 
+        public Builder withSecurityConfiguration(final KasperSecurityConfiguration securityConfiguration) {
+            this.securityConfiguration = checkNotNull(securityConfiguration);
+            return this;
+        }
+
         public Builder withEventBus(final KasperEventBus eventBus) {
             this.eventBus = checkNotNull(eventBus);
             return this;
@@ -202,7 +209,12 @@ public interface Platform {
 
             initializeKasperMetrics();
 
+
             configureGlobalAdapters();
+
+            if (securityConfiguration != null) {
+                queryGateway.configureSecurity(securityConfiguration);
+            }
 
             final Collection<DomainDescriptor> domainDescriptors = configureDomainBundles(context);
 

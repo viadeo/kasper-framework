@@ -8,6 +8,7 @@ package com.viadeo.kasper.core.locators.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
+import com.viadeo.kasper.core.interceptors.SecurityInterceptor;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
@@ -20,6 +21,7 @@ import com.viadeo.kasper.cqrs.query.impl.QueryAdaptersActor;
 import com.viadeo.kasper.cqrs.query.impl.QueryHandlerActor;
 import com.viadeo.kasper.cqrs.query.validation.QueryValidationActor;
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.security.SecurityConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -85,6 +87,8 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     private final Map<Class<? extends Query>, RequestActorsChain<? extends Query, ? extends QueryResponse>> requestActorChainCache = newHashMap();
     private final QueryHandlerResolver queryHandlerResolver;
 
+    private Optional<SecurityConfiguration> securityConfiguration;
+
     // ------------------------------------------------------------------------
 
     public DefaultQueryHandlersLocator() {
@@ -101,6 +105,10 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     }
 
     // ------------------------------------------------------------------------
+
+    public void configureSecurity(SecurityConfiguration securityConfiguration) {
+        this.securityConfiguration = Optional.of(securityConfiguration);
+    }
 
     @SuppressWarnings("rawtypes")
     @Override
@@ -260,6 +268,11 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
                 final Collection<QueryHandlerAdapter> handlerAdapters = getAdaptersForHandlerClass(qsClass);
                 final List<RequestActor<Q, R>> requestActors = Lists.newArrayList();
+
+                /* Add security interceptor if security is configured */
+                if (securityConfiguration.isPresent()) {
+                    requestActors.add(new SecurityInterceptor(securityConfiguration.get()));
+                }
 
                 /* Add cache actor if required */
                 final Optional<RequestActor<Q, R>> cacheActor = queryCacheFactory.make(queryClass, qsClass);

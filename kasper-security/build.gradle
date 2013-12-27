@@ -6,3 +6,8 @@
 
 description = 'KASPER SECURITY'
 
+dependencies {
+
+    // Projects
+    compile project(':kasper-api')
+}
