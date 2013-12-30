@@ -28,7 +28,7 @@ public class ValidationInterceptorTest {
     public void testNotNullValidation() throws Exception {
         // Given
         Locale.setDefault(Locale.US);
-        final ValidationInterceptor<QueryToValidate, QueryResult> actor = new ValidationInterceptor<>(Validation.buildDefaultValidatorFactory());
+        final QueryValidationInterceptor<QueryToValidate, QueryResult> actor = new QueryValidationInterceptor<>(Validation.buildDefaultValidatorFactory());
 
         // When
         try {
@@ -47,7 +47,7 @@ public class ValidationInterceptorTest {
     public void testSizeValidation() throws Exception {
         // Given
         Locale.setDefault(Locale.US);
-        final ValidationInterceptor<QueryToValidate, QueryResult> actor = new ValidationInterceptor<>(Validation.buildDefaultValidatorFactory());
+        final QueryValidationInterceptor<QueryToValidate, QueryResult> actor = new QueryValidationInterceptor<>(Validation.buildDefaultValidatorFactory());
 
         // When
         try {

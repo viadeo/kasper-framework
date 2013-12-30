@@ -7,25 +7,23 @@
 package com.viadeo.kasper.cqrs.query.interceptor;
 
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.interceptor.BaseValidationInterceptor;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 
-import javax.validation.ConstraintViolation;
 import javax.validation.ValidatorFactory;
-import java.util.Set;
 
-public class ValidationInterceptor<Q extends Query, R extends QueryResult> implements Interceptor<Q, QueryResponse<R>> {
-
-    private final ValidatorFactory validatorFactory;
+public class QueryValidationInterceptor<Q extends Query, R extends QueryResult>
+        extends BaseValidationInterceptor<Q>
+        implements Interceptor<Q, QueryResponse<R>> {
 
     // ------------------------------------------------------------------------
 
-    public ValidationInterceptor(final ValidatorFactory validatorFactory) {
-        this.validatorFactory = validatorFactory;
+    public QueryValidationInterceptor(final ValidatorFactory validatorFactory) {
+        super(validatorFactory);
     }
 
     // ------------------------------------------------------------------------
@@ -34,16 +32,8 @@ public class ValidationInterceptor<Q extends Query, R extends QueryResult> imple
     public QueryResponse<R> process(final Q q,
                                     final Context context,
                                     final InterceptorChain<Q, QueryResponse<R>> chain) throws Exception {
-        validate(validatorFactory, q);
+        validate(q);
         return chain.next(q, context);
-    }
-
-    public static void validate(final ValidatorFactory validatorFactory, final Object obj) {
-        final Set<ConstraintViolation<Object>> violations = validatorFactory.getValidator().validate(obj);
-
-        if ( ! violations.isEmpty()) {
-            throw new JSR303ViolationException("Validation error on query", violations);
-        }
     }
 
 }

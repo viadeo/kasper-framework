@@ -20,9 +20,9 @@ import org.slf4j.LoggerFactory;
 import javax.validation.Validation;
 import javax.validation.ValidationException;
 
-public class ValidationInterceptorFactory extends QueryInterceptorFactory {
+public class QueryValidationInterceptorFactory extends QueryInterceptorFactory {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ValidationInterceptorFactory.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryValidationInterceptorFactory.class);
 
     @Override
     @SuppressWarnings("unchecked")
@@ -30,7 +30,7 @@ public class ValidationInterceptorFactory extends QueryInterceptorFactory {
         final Interceptor<Query, QueryResponse<QueryResult>> interceptor;
 
         try {
-            interceptor = new ValidationInterceptor(Validation.buildDefaultValidatorFactory());
+            interceptor = new QueryValidationInterceptor(Validation.buildDefaultValidatorFactory());
         } catch (final ValidationException ve) {
             LOGGER.warn("Unexpected error when instantiating interceptor for `{}` : No implementation found for BEAN VALIDATION - JSR 303", type.getRawType(), ve);
             return Optional.absent();

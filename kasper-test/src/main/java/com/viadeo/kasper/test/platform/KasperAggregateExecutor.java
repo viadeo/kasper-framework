@@ -4,7 +4,7 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.query.interceptor.ValidationInterceptor;
+import com.viadeo.kasper.cqrs.command.interceptor.CommandValidationInterceptor;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.TestExecutor;
 import org.slf4j.Logger;
@@ -40,10 +40,7 @@ public class KasperAggregateExecutor implements KasperFixtureCommandExecutor<Kas
         metaContext.put(Context.METANAME, context);
 
         try {
-            ValidationInterceptor.validate(
-                    Validation.buildDefaultValidatorFactory(),
-                    command
-            );
+            new CommandValidationInterceptor<>(Validation.buildDefaultValidatorFactory()).validate(command);
         } catch (JSR303ViolationException e) {
             return new KasperAggregateResultValidator(e);
         } catch (final ValidationException ve) {

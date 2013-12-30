@@ -6,16 +6,19 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.interceptor.InterceptorChainRepository;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import org.axonframework.commandhandling.CommandBus;
+import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
 
 import static org.mockito.Matchers.any;
@@ -26,9 +29,10 @@ import static org.mockito.Mockito.*;
 public class KasperCommandGatewayUTest {
 
     private final KasperCommandGateway commandGateway;
-    private final CommandBus commandBus;
+    private final KasperCommandBus commandBus;
     private final DomainLocator domainLocator;
     private final CommandGateway decoratedCommandGateway;
+    private final InterceptorChainRepository<Command, Command> interceptorChainRepository;
 
     // ------------------------------------------------------------------------
 
@@ -37,9 +41,10 @@ public class KasperCommandGatewayUTest {
         final CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean = mock(CommandGatewayFactoryBean.class);
         decoratedCommandGateway = mock(CommandGateway.class);
         when(commandGatewayFactoryBean.getObject()).thenReturn(decoratedCommandGateway);
-        commandBus = mock(CommandBus.class);
+        commandBus = mock(KasperCommandBus.class);
         domainLocator = mock(DomainLocator.class);
-        commandGateway = new KasperCommandGateway(commandGatewayFactoryBean, commandBus, domainLocator);
+        interceptorChainRepository = mock(InterceptorChainRepository.class);
+        commandGateway = new KasperCommandGateway(commandGatewayFactoryBean, commandBus, domainLocator, interceptorChainRepository);
     }
 
     @Before
@@ -158,12 +163,17 @@ public class KasperCommandGatewayUTest {
         verify(domainLocator).registerHandler(refEq(commandHandler));
         verifyNoMoreInteractions(domainLocator);
 
+        ArrayList<CommandHandlerInterceptor> handlerInterceptors = Lists.<CommandHandlerInterceptor>newArrayList(mock(KasperCommandInterceptor.class));
         verify(commandBus).subscribe(refEq(Command.class.getName()), any(org.axonframework.commandhandling.CommandHandler.class));
+        verify(commandBus).setHandlerInterceptors(refEq(handlerInterceptors));
         verifyNoMoreInteractions(commandBus);
 
         verify(commandHandler).setCommandGateway(refEq(commandGateway));
         verify(commandHandler).getCommandClass();
         verifyNoMoreInteractions(commandHandler);
+
+        verify(interceptorChainRepository).create(Command.class, KasperCommandGateway.COMMAND_TAIL);
+        verifyNoMoreInteractions(interceptorChainRepository);
     }
 
 }
