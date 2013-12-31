@@ -17,18 +17,13 @@ import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfigurati
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
-import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.core.interceptor.QueryInterceptor;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
-import com.viadeo.kasper.cqrs.query.*;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryFilter;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
@@ -56,17 +51,6 @@ public class PlatformBuilderUTest {
         private static final long serialVersionUID = -7248313390394661735L;
     }
 
-    private static class TestQueryAdapter implements QueryInterceptor<Query, QueryResult> {
-        @Override
-        public QueryResponse<QueryResult> process(Query query, Context context, InterceptorChain<Query, QueryResponse<QueryResult>> chain) throws Exception {
-            return chain.next(query, context);
-        }
-    }
-
-    @XKasperQueryHandler(domain = TestDomain.class)
-    @XKasperQueryFilter(value = {TestQueryAdapter.class})
-    private static class TestQueryHandler extends QueryHandler<Query, QueryResult> { }
-
     private static class TestRepository extends Repository<TestConcept> {
 
         public TestRepository() throws Exception {
@@ -89,18 +73,6 @@ public class PlatformBuilderUTest {
 
     }
 
-    private static class TestAdapter implements QueryAdapter<Query> {
-
-        @Override
-        public Query adapt(final Context context, final Query input) {
-            return input;
-        }
-
-        @Override
-        public String getName() {
-            return TestAdapter.class.getSimpleName();
-        }
-    }
     // ------------------------------------------------------------------------
 
     @Test(expected = NullPointerException.class)
