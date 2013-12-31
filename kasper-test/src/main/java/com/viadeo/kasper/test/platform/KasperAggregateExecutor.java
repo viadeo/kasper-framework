@@ -1,9 +1,10 @@
 package com.viadeo.kasper.test.platform;
 
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.query.validation.QueryValidationActor;
+import com.viadeo.kasper.cqrs.command.interceptor.CommandValidationInterceptor;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.TestExecutor;
 import org.slf4j.Logger;
@@ -11,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.validation.Validation;
 import javax.validation.ValidationException;
-import java.util.HashMap;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -36,15 +36,11 @@ public class KasperAggregateExecutor implements KasperFixtureCommandExecutor<Kas
 
     @Override
     public KasperAggregateResultValidator when(final Command command, final Context context) {
-        final Map<String, Object> metaContext = new HashMap<String, Object>() {{
-            this.put(Context.METANAME, context);
-        }};
+        final Map<String, Object> metaContext = Maps.newHashMap();
+        metaContext.put(Context.METANAME, context);
 
         try {
-            QueryValidationActor.validate(
-                Validation.buildDefaultValidatorFactory(),
-                command
-            );
+            new CommandValidationInterceptor<>(Validation.buildDefaultValidatorFactory()).validate(command);
         } catch (JSR303ViolationException e) {
             return new KasperAggregateResultValidator(e);
         } catch (final ValidationException ve) {

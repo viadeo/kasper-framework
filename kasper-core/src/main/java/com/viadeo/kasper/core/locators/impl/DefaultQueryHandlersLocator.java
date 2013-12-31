@@ -8,25 +8,19 @@ package com.viadeo.kasper.core.locators.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.*;
-import com.viadeo.kasper.core.interceptors.SecurityInterceptor;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
-import com.viadeo.kasper.cqrs.RequestActor;
-import com.viadeo.kasper.cqrs.RequestActorsChain;
-import com.viadeo.kasper.cqrs.query.*;
-import com.viadeo.kasper.cqrs.query.cache.impl.AnnotationQueryCacheActorFactory;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryHandlerAdapter;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.cqrs.query.impl.QueryAdaptersActor;
-import com.viadeo.kasper.cqrs.query.impl.QueryHandlerActor;
-import com.viadeo.kasper.cqrs.query.validation.QueryValidationActor;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.security.SecurityConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.Validation;
-import javax.validation.ValidationException;
 import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -66,7 +60,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
      * Registered query answer classes and associated handler instances
      */
     private final Map<Class<? extends QueryResult>, Collection<QueryHandler>> handlerQueryResultClasses = newHashMap();
-    
+
     /**
      * Registered handlers names and associated handler instances
      */
@@ -80,11 +74,6 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     private final Map<Class<? extends QueryHandler>, List<QueryHandlerAdapter>> instanceAdapters = newHashMap();
     private final Map<Class<? extends QueryHandlerAdapter>, Class<? extends Domain>> isDomainSticky = Maps.newHashMap();
 
-    /**
-     * The factory for caches
-     */
-    private final AnnotationQueryCacheActorFactory queryCacheFactory;
-    private final Map<Class<? extends Query>, RequestActorsChain<? extends Query, ? extends QueryResponse>> requestActorChainCache = newHashMap();
     private final QueryHandlerResolver queryHandlerResolver;
 
     private Optional<SecurityConfiguration> securityConfiguration;
@@ -92,15 +81,10 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     // ------------------------------------------------------------------------
 
     public DefaultQueryHandlersLocator() {
-        this(new QueryHandlerResolver(new DomainResolver()), new AnnotationQueryCacheActorFactory());
+        this(new QueryHandlerResolver(new DomainResolver()));
     }
 
-    public DefaultQueryHandlersLocator(QueryHandlerResolver queryHandlerResolver) {
-        this(queryHandlerResolver, new AnnotationQueryCacheActorFactory());
-    }
-
-    public DefaultQueryHandlersLocator(QueryHandlerResolver queryHandlerResolver, final AnnotationQueryCacheActorFactory queryCacheFactory) {
-        this.queryCacheFactory = queryCacheFactory;
+    public DefaultQueryHandlersLocator(final QueryHandlerResolver queryHandlerResolver) {
         this.queryHandlerResolver = queryHandlerResolver;
     }
 
@@ -184,8 +168,8 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     }
 
     @Override
-    public void registerAdapter(final String name, 
-                                final QueryHandlerAdapter adapter, 
+    public void registerAdapter(final String name,
+                                final QueryHandlerAdapter adapter,
                                 final boolean isGlobal) {
         this.registerAdapter(name, adapter, isGlobal, null);
     }
@@ -237,9 +221,9 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     }
 
     @Override
-    @SuppressWarnings("rawtypes")
-    public Optional<QueryHandler> getHandlerFromQueryClass(final Class<? extends Query> queryClass) {
-        final QueryHandler handler = this.handlerQueryClasses.get(queryClass);
+    @SuppressWarnings("unchecked")
+    public Optional<QueryHandler<Query,QueryResult>> getHandlerFromQueryClass(Class<? extends Query> queryClass) {
+        final QueryHandler<Query,QueryResult> handler = this.handlerQueryClasses.get(queryClass);
         return Optional.fromNullable(handler);
     }
 
@@ -252,7 +236,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
         }
         return tmpHandlers;
     }
-
+/*
     @Override
     @SuppressWarnings("unchecked")
     public <Q extends Query, P extends QueryResult, R extends QueryResponse<P>>
@@ -270,17 +254,20 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
                 final List<RequestActor<Q, R>> requestActors = Lists.newArrayList();
 
                 /* Add security interceptor if security is configured */
+/*
                 if (securityConfiguration.isPresent()) {
                     requestActors.add(new SecurityInterceptor(securityConfiguration.get()));
                 }
 
                 /* Add cache actor if required */
+/*
                 final Optional<RequestActor<Q, R>> cacheActor = queryCacheFactory.make(queryClass, qsClass);
                 if (cacheActor.isPresent()) {
                     requestActors.add((RequestActor<Q, R>) queryCacheFactory.make(queryClass, qsClass).get());
                 }
 
                 /* Add validation adapter */
+/*
                 try {
                     requestActors.add(new QueryValidationActor(Validation.buildDefaultValidatorFactory()));
                 } catch (final ValidationException ve) {
@@ -288,12 +275,15 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
                 }
 
                 /* Add adapters actor */
+/*
                 requestActors.add(adaptersActor(handlerAdapters));
 
                 /* Add handler actor */
+/*
                 requestActors.add(new QueryHandlerActor(qs));
 
                 /* Finally build the actors chan */
+/*
                 chain = RequestActorsChain.makeChain(requestActors);
             }
 
@@ -302,21 +292,8 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
         return Optional.fromNullable(chain);
     }
+*/
 
-
-    @SuppressWarnings({"rawtypes", "unchecked"})
-    private QueryAdaptersActor adaptersActor(final Collection<QueryHandlerAdapter> handlerAdapters) {
-
-        final Collection<QueryAdapter> queryAdapters =
-                Lists.newArrayList(Iterables.filter(handlerAdapters, QueryAdapter.class));
-
-        final Collection<QueryResponseAdapter> responseAdapters =
-                Lists.newArrayList(Iterables.filter(handlerAdapters, QueryResponseAdapter.class));
-
-        return new QueryAdaptersActor(queryAdapters, responseAdapters);
-    }
-
-    @Override
     public Collection<QueryHandler> getHandlers() {
         return unmodifiableCollection(this.handlerQueryClasses.values());
     }

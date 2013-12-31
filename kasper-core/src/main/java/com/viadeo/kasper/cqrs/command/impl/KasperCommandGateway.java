@@ -8,6 +8,10 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.Interceptor;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
+import com.viadeo.kasper.core.interceptor.InterceptorChainRepository;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
@@ -16,17 +20,13 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.exception.KasperException;
-import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.commandhandling.CommandDispatchInterceptor;
+import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
-import org.axonframework.commandhandling.interceptors.BeanValidationInterceptor;
 import org.axonframework.common.annotation.MetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.Validation;
-import javax.validation.ValidationException;
-import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -36,54 +36,58 @@ public class KasperCommandGateway implements CommandGateway {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperCommandGateway.class);
 
+    protected static final Interceptor<Command,Command> COMMAND_TAIL = new Interceptor<Command, Command>() {
+        @Override
+        public Command process(Command command, Context context, InterceptorChain<Command, Command> chain) throws Exception {
+            return command;
+        }
+    };
+
     private final CommandGateway commandGateway;
-    private final CommandBus commandBus;
+    private final KasperCommandBus commandBus;
     private final DomainLocator domainLocator;
+    private final InterceptorChainRepository<Command, Command> interceptorChainRepository;
 
     // ------------------------------------------------------------------------
 
-    public KasperCommandGateway(final CommandBus commandBus) {
+    public KasperCommandGateway(final KasperCommandBus commandBus) {
         this(
                  new CommandGatewayFactoryBean<CommandGateway>(),
                  commandBus,
-                 new DefaultDomainLocator(new CommandHandlerResolver())
+                 new DefaultDomainLocator(new CommandHandlerResolver()),
+                 new InterceptorChainRepository<Command, Command>()
         );
     }
 
-    public KasperCommandGateway(final CommandBus commandBus,
+    public KasperCommandGateway(final KasperCommandBus commandBus,
                                 final CommandDispatchInterceptor... commandDispatchInterceptors) {
         this(
                 new CommandGatewayFactoryBean<CommandGateway>(),
                 commandBus,
                 new DefaultDomainLocator(new CommandHandlerResolver()),
+                new InterceptorChainRepository<Command, Command>(),
                 commandDispatchInterceptors
         );
     }
 
     protected KasperCommandGateway(final CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean,
-                                   final CommandBus commandBus,
+                                   final KasperCommandBus commandBus,
                                    final DomainLocator domainLocator,
+                                   final InterceptorChainRepository<Command, Command> interceptorChainRepository,
                                    final CommandDispatchInterceptor... commandDispatchInterceptors) {
 
         this.commandBus = checkNotNull(commandBus);
         this.domainLocator = checkNotNull(domainLocator);
+        this.interceptorChainRepository = checkNotNull(interceptorChainRepository);
 
         checkNotNull(commandGatewayFactoryBean);
         checkNotNull(commandDispatchInterceptors);
 
-        final List<CommandDispatchInterceptor> interceptors = Lists.newArrayList(commandDispatchInterceptors);
-
-        try {
-            final BeanValidationInterceptor validationInterceptor =
-                    new BeanValidationInterceptor(Validation.buildDefaultValidatorFactory());
-            interceptors.add(validationInterceptor);
-        } catch (final ValidationException ve) {
-            LOGGER.warn("No implementation found for BEAN VALIDATION - JSR 303" , ve);
-        }
-
         commandGatewayFactoryBean.setCommandBus(commandBus);
         commandGatewayFactoryBean.setGatewayInterface(CommandGateway.class);
-        commandGatewayFactoryBean.setCommandDispatchInterceptors(interceptors);
+        commandGatewayFactoryBean.setCommandDispatchInterceptors(Lists.newArrayList(commandDispatchInterceptors));
+
+        this.commandBus.setHandlerInterceptors(Lists.<CommandHandlerInterceptor>newArrayList(new KasperCommandInterceptor(interceptorChainRepository)));
 
         try {
             commandGatewayFactoryBean.afterPropertiesSet();
@@ -140,14 +144,32 @@ public class KasperCommandGateway implements CommandGateway {
     public void register(final CommandHandler commandHandler) {
         domainLocator.registerHandler(checkNotNull(commandHandler));
 
+        final Class commandClass = commandHandler.getCommandClass();
+
         //- Dynamic type command class and command handler for Axon -------
         final AxonCommandCastor<Command> castor = new AxonCommandCastor<>(
-            commandHandler.getCommandClass(),
+                commandClass,
             commandHandler
         );
+
         commandBus.subscribe(castor.getBeanClass().getName(), castor.getContainerClass());
 
         commandHandler.setCommandGateway(this);
+
+        interceptorChainRepository.create(commandClass, COMMAND_TAIL);
+    }
+
+    /**
+     * Register an interceptor factory to the gateway
+     *
+     * @param interceptorFactory the query interceptor factory to register
+     */
+    public void register(final CommandInterceptorFactory interceptorFactory) {
+        checkNotNull(interceptorFactory);
+
+        LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
+
+        interceptorChainRepository.register(interceptorFactory);
     }
 
     /**

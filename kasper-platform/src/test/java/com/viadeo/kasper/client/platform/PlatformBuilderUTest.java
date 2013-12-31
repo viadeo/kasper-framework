@@ -18,17 +18,13 @@ import com.viadeo.kasper.client.platform.configuration.KasperSecurityConfigurati
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.IdentityElementContextProvider;
-import com.viadeo.kasper.context.impl.DefaultContext;
-import com.viadeo.kasper.cqrs.Adapter;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
-import com.viadeo.kasper.cqrs.query.*;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.cqrs.query.cache.impl.QueryCacheActorTest;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
@@ -36,7 +32,6 @@ import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.QueryEventListener;
-import com.viadeo.kasper.exception.KasperException;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -56,22 +51,6 @@ public class PlatformBuilderUTest {
     private static class TestConcept extends Concept {
         private static final long serialVersionUID = -7248313390394661735L;
     }
-
-    private static class TestQueryAdapter implements QueryAdapter<Query> {
-
-        @Override
-        public Query adapt(final Context context, final Query input) {
-            return input;
-        }
-
-        @Override
-        public String getName() {
-            return TestQueryAdapter.class.getSimpleName();
-        }
-    }
-
-    @XKasperQueryHandler(domain = TestDomain.class, adapters = {TestQueryAdapter.class})
-    private static class TestQueryHandler extends QueryHandler<Query, QueryResult> { }
 
     private static class TestRepository extends Repository<TestConcept> {
 
@@ -95,18 +74,6 @@ public class PlatformBuilderUTest {
 
     }
 
-    private static class TestAdapter implements QueryAdapter<Query> {
-
-        @Override
-        public Query adapt(final Context context, final Query input) {
-            return input;
-        }
-
-        @Override
-        public String getName() {
-            return TestAdapter.class.getSimpleName();
-        }
-    }
     // ------------------------------------------------------------------------
 
     @Test(expected = NullPointerException.class)
@@ -158,27 +125,63 @@ public class PlatformBuilderUTest {
     }
 
     @Test(expected = NullPointerException.class)
-    public void addGlobalAdapter_withNullAsAdapter_shouldThrownException() {
+    public void addQueryInterceptorFactory_withNullAsInterceptorFactory_shouldThrownException() {
         // Given
-        final Adapter adapter = null;
+        final QueryInterceptorFactory interceptorFactory = null;
         final Platform.Builder builder = new Platform.Builder();
 
         // When
-        builder.addGlobalAdapter(adapter);
+        builder.addQueryInterceptorFactory(interceptorFactory);
 
-        // Then throws an exception
+        // Then throws exception
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void addCommandInterceptorFactory_withNullAsInterceptorFactory_shouldThrownException() {
+        // Given
+        final CommandInterceptorFactory interceptorFactory = null;
+        final Platform.Builder builder = new Platform.Builder();
+
+        // When
+        builder.addCommandInterceptorFactory(interceptorFactory);
+
+        // Then throws exception
     }
 
     @Test
-    public void addGlobalAdapter_withAdapter_shouldBeOk() {
+    public void registerInterceptors_withQueryInterceptorFactory_shouldBeRegisteredOnQueryGateway() {
         // Given
-        final Adapter adapter = new TestAdapter();
-        final Platform.Builder builder = new Platform.Builder();
+        final QueryInterceptorFactory interceptorFactory = mock(QueryInterceptorFactory.class);
+        final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
+        final Platform.Builder builder = new Platform.Builder()
+                .withQueryGateway(queryGateway)
+                .addQueryInterceptorFactory(interceptorFactory);
 
         // When
-        builder.addGlobalAdapter(adapter);
+        builder.registerInterceptors();
 
-        // Then no exception
+        // Then
+        verify(queryGateway).register(refEq(interceptorFactory));
+        verifyNoMoreInteractions(queryGateway);
+        verifyNoMoreInteractions(interceptorFactory);
+    }
+
+    @Test
+    public void registerInterceptors_withCommandInterceptorFactory_shouldBeRegisteredOnCommandGateway() {
+        // Given
+        final CommandInterceptorFactory interceptorFactory = mock(CommandInterceptorFactory.class);
+        final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
+        final Platform.Builder builder = new Platform.Builder()
+                .withCommandGateway(commandGateway)
+                .addCommandInterceptorFactory(interceptorFactory);
+
+        // When
+        builder.registerInterceptors();
+
+        // Then
+        verify(commandGateway).register(refEq(interceptorFactory));
+        verifyNoMoreInteractions(commandGateway);
+        verifyNoMoreInteractions(interceptorFactory);
     }
 
     @Test(expected = IllegalStateException.class)
@@ -347,30 +350,39 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void build_withTestAdapter_asGlobalAdapter_shouldRegisterOnQueryGateway() {
+    public void build_withQueryInterceptorFactory_shouldRegisterOnQueryGateway() {
         // Given
-        final TestAdapter testAdapter = new TestAdapter();
-
-        final KasperEventBus eventBus = mock(KasperEventBus.class);
-        final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
+        final QueryInterceptorFactory queryInterceptorFactory = mock(QueryInterceptorFactory.class);
         final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
-        final Config configuration = mock(Config.class);
-        final MetricRegistry metricRegistry = mock(MetricRegistry.class);
 
-        final Platform.Builder builder = new Platform.Builder()
+        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
                 .withQueryGateway(queryGateway)
-                .withCommandGateway(commandGateway)
-                .withEventBus(eventBus)
-                .withConfiguration(configuration)
-                .withMetricRegistry(metricRegistry)
-                .addGlobalAdapter(testAdapter);
+                .addQueryInterceptorFactory(queryInterceptorFactory);
 
         // When
         final Platform platform = builder.build();
 
         // Then
         assertNotNull(platform);
-        verify(queryGateway).register(refEq(testAdapter.getName()), refEq(testAdapter), eq(true));
+        verify(queryGateway).register(refEq(queryInterceptorFactory));
+    }
+
+    @Test
+    public void build_withCommandInterceptorFactory_shouldRegisterOnCommandGateway() {
+        // Given
+        final CommandInterceptorFactory commandInterceptorFactory = mock(CommandInterceptorFactory.class);
+        final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
+
+        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
+                .withCommandGateway(commandGateway)
+                .addCommandInterceptorFactory(commandInterceptorFactory);
+
+        // When
+        final Platform platform = builder.build();
+
+        // Then
+        assertNotNull(platform);
+        verify(commandGateway).register(refEq(commandInterceptorFactory));
     }
 
     @Test
@@ -593,11 +605,11 @@ public class PlatformBuilderUTest {
     }
 
     @Test
-    public void build_withDomainBundle_containingAdapter_shouldThrownException() {
+    public void build_withDomainBundle_containingQueryInterceptorFactory_shouldBeRegistered() {
         // Given
-        final TestQueryAdapter adapter = new TestQueryAdapter();
+        final QueryInterceptorFactory queryInterceptorFactory = mock(QueryInterceptorFactory.class);
         final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
-                .with(adapter)
+                .with(queryInterceptorFactory)
                 .build();
 
         final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
@@ -611,41 +623,21 @@ public class PlatformBuilderUTest {
 
         // Then
         assertNotNull(platform);
-        verify(queryGateway).register(refEq(adapter.getName()), refEq(adapter), eq(false));
-        verifyNoMoreInteractions(queryGateway);
-    }
-
-    @Test(expected = KasperException.class)
-    public void build_withDomainBundle_containingQueryHandler_andReferencingAnUnknownAdapter_shouldThrownException() {
-        // Given
-        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
-                .with(new TestQueryHandler())
-                .build();
-
-        final Platform.Builder builder =
-                new Platform.Builder(new KasperPlatformConfiguration())
-                        .addDomainBundle(domainBundle);
-
-        // When
-        builder.build();
-
-        // Then throws an exception
+        verify(queryGateway).register(refEq(queryInterceptorFactory));
     }
 
     @Test
-    public void build_withDomainBundle_containingQueryHandler_andReferencingAnKnownAdapter_shouldBeWired() {
+    public void build_withDomainBundle_containingCommandInterceptorFactory_shouldBeRegistered() {
         // Given
-        final TestQueryAdapter adapter = new TestQueryAdapter();
-        final TestQueryHandler queryHandler = new TestQueryHandler();
+        final CommandInterceptorFactory commandInterceptorFactory = mock(CommandInterceptorFactory.class);
         final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
-                .with(queryHandler)
-                .with(adapter)
+                .with(commandInterceptorFactory)
                 .build();
 
-        final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
+        final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
 
         final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
-                .withQueryGateway(queryGateway)
+                .withCommandGateway(commandGateway)
                 .addDomainBundle(domainBundle);
 
         // When
@@ -653,9 +645,7 @@ public class PlatformBuilderUTest {
 
         // Then
         assertNotNull(platform);
-        verify(queryGateway).register(refEq(adapter.getName()), refEq(adapter), eq(false));
-        verify(queryGateway).register(refEq(queryHandler));
-        verifyNoMoreInteractions(queryGateway);
+        verify(commandGateway).register(refEq(commandInterceptorFactory));
     }
 
 

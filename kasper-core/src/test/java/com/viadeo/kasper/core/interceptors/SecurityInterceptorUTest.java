@@ -4,9 +4,10 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.IdentityElementContextProvider;
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.cqrs.RequestActorsChain;
+//import com.viadeo.kasper.cqrs.RequestActorsChain;
+import com.viadeo.kasper.cqrs.query.interceptor.SecurityInterceptor;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.cache.impl.QueryCacheActorTest;
+//import com.viadeo.kasper.cqrs.query.cache.impl.QueryCacheActorTest;
 import com.viadeo.kasper.security.SecurityConfiguration;
 import org.junit.Test;
 
@@ -40,7 +41,7 @@ public class SecurityInterceptorUTest {
         Context context = new DefaultContext();
 // When
         try {
-            securityInterceptor.process(new DummyQuery(), context, RequestActorsChain.tail());
+//            securityInterceptor.process(new DummyQuery(), context, RequestActorsChain.tail());
         } catch (IllegalStateException ignore) {
             // We may need a tail that do nothing...
         }

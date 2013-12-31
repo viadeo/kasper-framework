@@ -8,8 +8,10 @@ package com.viadeo.kasper.core.locators;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.security.SecurityConfiguration;
-import com.viadeo.kasper.cqrs.RequestActorsChain;
-import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryHandlerAdapter;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.ddd.Domain;
 
 import java.util.Collection;
@@ -56,7 +58,7 @@ public interface QueryHandlersLocator {
 	 * @return a corresponding handler instance
 	 */
 	@SuppressWarnings("rawtypes")
-	Optional<QueryHandler> getHandlerFromQueryClass(Class<? extends Query> queryClass);
+	Optional<QueryHandler<Query,QueryResult>> getHandlerFromQueryClass(Class<? extends Query> queryClass);
 
 	/**
 	 * Retrieve a service instance from its query class
@@ -66,15 +68,6 @@ public interface QueryHandlersLocator {
 	 */
 	@SuppressWarnings("rawtypes")
 	Collection<QueryHandler> getHandlersFromQueryResultClass(Class<? extends QueryResult> queryResultClass);
-
-    /*
-     * Retrieve the actors chain for a specified query class
-     *
-     * @param queryClass the query class
-     * @return the computed actors chain
-     */
-    <Q extends Query, P extends QueryResult, R extends QueryResponse<P>>
-    Optional<RequestActorsChain<Q, R>> getRequestActorChain(Class<? extends Q> queryClass);
 
 	/**
 	 * Retrieve an handler instance from its class

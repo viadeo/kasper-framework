@@ -13,7 +13,8 @@ import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
-import com.viadeo.kasper.cqrs.Adapter;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
@@ -33,6 +34,7 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.ws.rs.core.Response;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
@@ -58,7 +60,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
                 , Lists.<QueryHandler>newArrayList()
                 , Lists.<Repository>newArrayList()
                 , Lists.<EventListener>newArrayList()
-                , Lists.<Adapter>newArrayList()
+                , Lists.<QueryInterceptorFactory>newArrayList()
+                , Lists.<CommandInterceptorFactory>newArrayList()
                 , new AccountDomain()
                 , "AccountDomain"
         );
@@ -146,7 +149,10 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         // Then
         assertEquals(Status.ERROR, response.getStatus());
         assertEquals(command.getCode(), response.getReason().getCode());
-        final String[] responseMessages = response.getReason().getMessages().toArray(new String[0]);
+
+        Collection<String> messages = response.getReason().getMessages();
+        final String[] responseMessages = messages.toArray(new String[messages.size()]);
+
         for (int i = 0; i < command.getMessages().size(); i++) {
             assertEquals(command.getMessages().get(i), responseMessages[i]);
         }
@@ -164,10 +170,11 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
         // Then
         assertFalse(response.isOK());
-        final List<String> errorStrings = new ArrayList<String>() {{
-            add("innerObject.age : must be greater than or equal to 2");
-            add("str : size must be between 1 and 2147483647");
-        }};
+
+        final List<String> errorStrings = new ArrayList<>();
+        errorStrings.add("innerObject.age : must be greater than or equal to 2");
+        errorStrings.add("str : size must be between 1 and 2147483647");
+
         for (final String errorMessage : response.getReason().getMessages()) {
             if (!errorStrings.contains(errorMessage)) {
                 fail(String.format("Cannot find expected validation message : %s", errorMessage));

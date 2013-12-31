@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.annotation;
 
-import com.viadeo.kasper.cqrs.query.QueryHandlerAdapter;
 import com.viadeo.kasper.ddd.Domain;
 
 import java.lang.annotation.ElementType;
@@ -35,11 +34,6 @@ public @interface XKasperQueryHandler {
      * @return the associated domain
      */
     Class<? extends Domain> domain();
-
-    /**
-     * @return the associated query handler adapters
-     */
-    Class<? extends QueryHandlerAdapter>[] adapters() default {};
 
     /**
      * Whether the response of this query handler should be cached.

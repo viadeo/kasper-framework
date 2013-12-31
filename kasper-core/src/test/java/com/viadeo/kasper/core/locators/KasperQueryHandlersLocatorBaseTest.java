@@ -71,7 +71,7 @@ public class KasperQueryHandlersLocatorBaseTest {
 	@Test
 	@SuppressWarnings("rawtypes")
 	public void getHandlerFromQueryClassEmptyState() {
-		final Optional<QueryHandler> registeredHandler = locator.getHandlerFromQueryClass(TestQuery.class);
+		final Optional<QueryHandler<Query, QueryResult>> registeredHandler = locator.getHandlerFromQueryClass(TestQuery.class);
 		assertFalse(registeredHandler.isPresent());
 	}
 
@@ -82,7 +82,7 @@ public class KasperQueryHandlersLocatorBaseTest {
 		assertEquals(locator.getHandlers().size(), 1);
 
 		@SuppressWarnings("rawtypes")
-		final Optional<QueryHandler> registeredHandler = locator.getHandlerFromQueryClass(TestQuery.class);
+		final Optional<QueryHandler<Query, QueryResult>> registeredHandler = locator.getHandlerFromQueryClass(TestQuery.class);
 		assertTrue(registeredHandler.isPresent());
 		assertSame(handler, registeredHandler.get());
 	}
