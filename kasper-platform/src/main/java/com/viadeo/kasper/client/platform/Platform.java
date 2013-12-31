@@ -92,7 +92,6 @@ public interface Platform {
         private Config configuration;
         private RepositoryManager repositoryManager;
         private MetricRegistry metricRegistry;
-        private KasperSecurityConfiguration securityConfiguration;
 
         // --------------------------------------------------------------------
 
@@ -157,11 +156,6 @@ public interface Platform {
             return this;
         }
 
-        public Builder withSecurityConfiguration(final KasperSecurityConfiguration securityConfiguration) {
-            this.securityConfiguration = checkNotNull(securityConfiguration);
-            return this;
-        }
-
         public Builder withEventBus(final KasperEventBus eventBus) {
             this.eventBus = checkNotNull(eventBus);
             return this;
@@ -212,10 +206,6 @@ public interface Platform {
 
             configureGlobalAdapters();
 
-            if (securityConfiguration != null) {
-                queryGateway.configureSecurity(securityConfiguration);
-            }
-
             final Collection<DomainDescriptor> domainDescriptors = configureDomainBundles(context);
 
             final KasperPlatform platform = new KasperPlatform(commandGateway, queryGateway, eventBus);
@@ -237,7 +227,7 @@ public interface Platform {
             }
         }
 
-        protected Collection<DomainDescriptor> configureDomainBundles(final BuilderContext context){
+        protected Collection<DomainDescriptor> configureDomainBundles(final BuilderContext context) {
             final List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
 
             for (final DomainBundle bundle : domainBundles) {
@@ -247,7 +237,7 @@ public interface Platform {
             return domainDescriptors;
         }
 
-        protected DomainDescriptor configureDomainBundle(final BuilderContext context, final DomainBundle bundle){
+        protected DomainDescriptor configureDomainBundle(final BuilderContext context, final DomainBundle bundle) {
             LOGGER.info("Configuring bundle : {}", bundle.getName());
 
             bundle.configure(context);
@@ -399,7 +389,7 @@ public interface Platform {
             return Optional.fromNullable((E) extraComponents.get(new ExtraComponentKey(name, clazz)));
         }
 
-        public Map<ExtraComponentKey, Object> getExtraComponents(){
+        public Map<ExtraComponentKey, Object> getExtraComponents() {
             return extraComponents;
         }
 
@@ -440,7 +430,7 @@ public interface Platform {
             if (this == obj) {
                 return true;
             }
-            if ((obj == null) || ( ! getClass().equals(obj.getClass()))) {
+            if ((obj == null) || (!getClass().equals(obj.getClass()))) {
                 return false;
             }
             final ExtraComponentKey other = (ExtraComponentKey) obj;

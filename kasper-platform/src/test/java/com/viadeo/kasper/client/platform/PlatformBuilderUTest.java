@@ -26,10 +26,7 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryAdapter;
-import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.cache.impl.QueryCacheActorTest;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
@@ -180,30 +177,6 @@ public class PlatformBuilderUTest {
 
         // When
         builder.addGlobalAdapter(adapter);
-
-        // Then no exception
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void addSecurityConfiguration_withNullAsSecurityConfiguration_shouldThrowException() {
-        // Given
-        final KasperSecurityConfiguration securityConfiguration = null;
-        final Platform.Builder builder = new Platform.Builder();
-
-        // When
-        builder.withSecurityConfiguration(securityConfiguration);
-
-        // Then throws an exception
-    }
-
-    @Test
-    public void addSecurityConfiguration_withSecurityConfiguration_shouldBeOk() {
-        // Given
-        final KasperSecurityConfiguration securityConfiguration = new KasperSecurityConfiguration();
-        final Platform.Builder builder = new Platform.Builder();
-
-        // When
-        builder.withSecurityConfiguration(securityConfiguration);
 
         // Then no exception
     }
@@ -372,33 +345,6 @@ public class PlatformBuilderUTest {
         assertNotNull(platform);
         verify(plugin).initialize(refEq(platform), refEq(metricRegistry), (DomainDescriptor[]) anyVararg());
     }
-
-    @Test
-    public void build_withSecurityConfiguration_shouldRegisterOnQueryGateway() {
-        // Given
-        final KasperSecurityConfiguration securityConfiguration = new KasperSecurityConfiguration();
-        final KasperEventBus eventBus = mock(KasperEventBus.class);
-        final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
-        final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
-        final Config configuration = mock(Config.class);
-        final MetricRegistry metricRegistry = mock(MetricRegistry.class);
-
-        final Platform.Builder builder = new Platform.Builder()
-                .withQueryGateway(queryGateway)
-                .withCommandGateway(commandGateway)
-                .withEventBus(eventBus)
-                .withConfiguration(configuration)
-                .withMetricRegistry(metricRegistry)
-                .withSecurityConfiguration(securityConfiguration);
-
-        // When
-        final Platform platform = builder.build();
-
-        // Then
-        assertNotNull(platform);
-        verify(queryGateway).configureSecurity(refEq(securityConfiguration));
-    }
-
 
     @Test
     public void build_withTestAdapter_asGlobalAdapter_shouldRegisterOnQueryGateway() {
@@ -710,6 +656,30 @@ public class PlatformBuilderUTest {
         verify(queryGateway).register(refEq(adapter.getName()), refEq(adapter), eq(false));
         verify(queryGateway).register(refEq(queryHandler));
         verifyNoMoreInteractions(queryGateway);
+    }
+
+
+    @Test
+    public void build_withSecurityConfiguration_shouldRegisterOnQueryGateway() {
+        // Given
+        final KasperSecurityConfiguration securityConfiguration = new KasperSecurityConfiguration();
+/*
+        final KasperEventBus eventBus = mock(KasperEventBus.class);
+        final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
+        final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
+        final Config configuration = mock(Config.class);
+        final MetricRegistry metricRegistry = mock(MetricRegistry.class);
+*/
+        final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration(securityConfiguration);
+        final KasperQueryGateway queryGateway = spy(platformConfiguration.queryGateway());
+        final Platform.Builder builder = new Platform.Builder(platformConfiguration);
+
+        // When
+        final Platform platform = builder.build();
+
+        // Then
+        assertNotNull(platform);
+        verify(queryGateway).configureSecurity(refEq(securityConfiguration));
     }
 
     private DomainDescriptorFactory createMockedDomainDescriptorFactory() {

@@ -11,8 +11,10 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.core.interceptors.SecurityInterceptor;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
+import com.viadeo.kasper.security.SecurityConfiguration;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 
@@ -34,6 +36,10 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     public KasperPlatformConfiguration() {
+        this(null);
+    }
+
+    public KasperPlatformConfiguration(SecurityConfiguration securityConfiguration) {
         this.eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
         this.queryGateway = new KasperQueryGateway();
         this.metricRegistry = new MetricRegistry();
@@ -44,7 +50,12 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         KasperCommandBus commandBus = new KasperCommandBus();
         commandBus.setUnitOfWorkFactory(uowFactory);
 
-        this.commandGateway = new KasperCommandGateway(commandBus);
+        if (securityConfiguration != null) {
+            this.commandGateway = new KasperCommandGateway(commandBus, new SecurityInterceptor(securityConfiguration));
+            this.queryGateway.configureSecurity(securityConfiguration);
+        } else {
+            this.commandGateway = new KasperCommandGateway(commandBus);
+        }
     }
 
     // ------------------------------------------------------------------------
