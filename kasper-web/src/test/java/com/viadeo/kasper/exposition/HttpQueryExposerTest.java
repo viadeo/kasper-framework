@@ -8,6 +8,7 @@ package com.viadeo.kasper.exposition;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.google.common.collect.Lists;
+import com.sun.jersey.api.client.ClientResponse;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.KasperClientBuilder;
@@ -16,11 +17,16 @@ import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
+import com.viadeo.kasper.exposition.alias.Alias;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -35,7 +41,9 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         private static final long serialVersionUID = 104409802777527460L;
     }
 
-    public static class SomeCollectionResponse extends CollectionQueryResult<SomeResponse> { }
+    public static class SomeCollectionResponse extends CollectionQueryResult<SomeResponse> {
+        private static final long serialVersionUID = 1433643086186132048L;
+    }
 
     @XKasperQueryHandler(domain = AccountDomain.class)
     public static class SomeCollectionQueryHandler extends QueryHandler<SomeCollectionQuery, SomeCollectionResponse> {
@@ -133,6 +141,21 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         }
     }
 
+    public static final String NEED_VALIDATION_2_ALIAS = "needvalidation2";
+
+    public static class NeedValidationWithAlias implements Query {
+        private static final long serialVersionUID = -8083928873466120009L;
+    }
+
+    @XKasperQueryHandler(domain = AccountDomain.class)
+    @Alias(values = {NEED_VALIDATION_2_ALIAS})
+    public static class NeedValidationWithAliasQueryHandler extends QueryHandler<NeedValidationWithAlias, SomeResponse> {
+        @Override
+        public QueryResponse<SomeResponse> retrieve(NeedValidationWithAlias query) throws Exception {
+            return QueryResponse.of(new SomeResponse());
+        }
+    }
+
     // ------------------------------------------------------------------------
     private boolean usePostForQueries;
 
@@ -160,8 +183,11 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
     @Override
     protected DomainBundle getDomainBundle(){
         return new DomainBundle.Builder(new AccountDomain())
-                .with(new SomeQueryHandler())
-                .with(new SomeCollectionQueryHandler())
+                .with(
+                        new SomeQueryHandler(),
+                        new SomeCollectionQueryHandler(),
+                        new NeedValidationWithAliasQueryHandler()
+                )
                 .build();
     }
 
@@ -259,6 +285,24 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         for (int i = 0; i < query.getErrorCodes().size(); i++) {
             assertEquals(query.getErrorCodes().get(i), actualMessages[i]);
         }
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void testAliasedQuery() throws MalformedURLException, URISyntaxException {
+        // Given
+        final String queryPath = NEED_VALIDATION_2_ALIAS;
+
+        // When
+        final ClientResponse response = httpClient()
+                .resource(new URL(new URL(url()), queryPath).toURI())
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .get(ClientResponse.class);
+
+        // Then
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
 }

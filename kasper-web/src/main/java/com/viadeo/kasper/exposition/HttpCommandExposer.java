@@ -23,6 +23,7 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.exposition.alias.AliasRegistry;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.slf4j.Logger;
@@ -59,6 +60,7 @@ public class HttpCommandExposer extends HttpExposer {
     private final ObjectMapper mapper;
     private final transient CommandGateway commandGateway;
     private final transient HttpContextDeserializer contextDeserializer;
+    private final AliasRegistry aliasRegistry;
 
     // ------------------------------------------------------------------------
 
@@ -80,6 +82,7 @@ public class HttpCommandExposer extends HttpExposer {
         this.descriptors = checkNotNull(descriptors);
         this.contextDeserializer = contextDeserializer;
         this.mapper = mapper;
+        this.aliasRegistry = new AliasRegistry();
     }
 
     // ------------------------------------------------------------------------
@@ -160,10 +163,9 @@ public class HttpCommandExposer extends HttpExposer {
         resp.setContentType(MediaType.APPLICATION_JSON + "; charset=utf-8");
 
         // FIXME can throw an error ensure to respond a json stream
-        final String commandName = resourceName(req.getRequestURI());
+        final String commandName = aliasRegistry.resolve(resourceName(req.getRequestURI()));
 
         /* locate corresponding command class */
-        //TODO here introduce alias management
         final Class<? extends Command> commandClass = exposedCommands.get(commandName);
         if (null == commandClass) {
             sendError(req, resp, Response.Status.NOT_FOUND.getStatusCode(),
@@ -343,8 +345,6 @@ public class HttpCommandExposer extends HttpExposer {
     HttpExposer expose(final ExposureDescriptor<Command,CommandHandler> descriptor) {
         checkNotNull(descriptor);
 
-        //TODO here introduce alias registration
-
         final TypeToken<? extends CommandHandler> typeToken = TypeToken.of(descriptor.getHandler());
 
         final Class<? super Command> commandClass = (Class<? super Command>) typeToken
@@ -353,12 +353,22 @@ public class HttpCommandExposer extends HttpExposer {
                 .getRawType();
 
         final String commandPath = commandToPath(commandClass);
+        final List<String> aliases = AliasRegistry.aliasesFrom(descriptor.getHandler());
+        final String commandName = commandClass.getSimpleName();
 
         LOGGER.info("-> Exposing command[{}] at path[/{}]",
-                    commandClass.getSimpleName(),
+                commandName,
                     getServletContext().getContextPath() + commandPath);
 
+        for (final String alias : aliases) {
+            LOGGER.info("-> Exposing command[{}] at path[/{}]",
+                    commandName,
+                    getServletContext().getContextPath() + alias);
+        }
+
         putKey(commandPath, commandClass, exposedCommands);
+
+        aliasRegistry.register(commandPath, aliases);
 
         return this;
     }

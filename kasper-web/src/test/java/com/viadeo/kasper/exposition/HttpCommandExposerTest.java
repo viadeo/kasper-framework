@@ -8,6 +8,7 @@ package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import com.sun.jersey.api.client.ClientResponse;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
@@ -23,6 +24,7 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.exposition.alias.Alias;
 import lombok.Data;
 import org.junit.Test;
 
@@ -31,7 +33,11 @@ import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -41,7 +47,8 @@ import static org.junit.Assert.*;
 public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
     private static final String SECURITY_TOKEN = "42-4242-24-2424";
-    
+    public static final String NEED_VALIDATION_2_ALIAS = "needvalidation2";
+
     public HttpCommandExposerTest() {
         Locale.setDefault(Locale.US);
     }
@@ -54,7 +61,11 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
     @Override
     protected DomainBundle getDomainBundle(){
         return new DefaultDomainBundle(
-                  Lists.<CommandHandler>newArrayList(new NeedValidationCommandHandler(), new CreateAccountCommandHandler())
+                  Lists.<CommandHandler>newArrayList(
+                          new NeedValidationCommandHandler(),
+                          new CreateAccountCommandHandler(),
+                          new NeedValidationWithAliasCommandHandler()
+                  )
                 , Lists.<QueryHandler>newArrayList()
                 , Lists.<Repository>newArrayList()
                 , Lists.<EventListener>newArrayList()
@@ -177,6 +188,23 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         assertEquals(0, errorStrings.size());
     }
 
+    @Test
+    public void testAliasedCommand() throws MalformedURLException, URISyntaxException {
+        // Given
+        final String commandPath = NEED_VALIDATION_2_ALIAS;
+        final NeedValidationWithAlias needValidationWithAlias = new NeedValidationWithAlias();
+
+        // When
+        final ClientResponse response = httpClient()
+                .resource(new URL(new URL(url()), commandPath).toURI())
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .put(ClientResponse.class, needValidationWithAlias);
+
+        // Then
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
     // ------------------------------------------------------------------------
 
     public static class CreateAccountCommand implements Command {
@@ -232,6 +260,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
     @Data
     public static class NeedValidationCommand implements Command {
+        private static final long serialVersionUID = -6767141217213758937L;
         @NotNull @Size(min = 1) public String str;
         @Valid @NotNull public InnerObject innerObject;
     }
@@ -243,6 +272,20 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
     @XKasperCommandHandler(domain = AccountDomain.class)
     public static class NeedValidationCommandHandler extends CommandHandler<NeedValidationCommand> { }
+
+    public static class NeedValidationWithAlias implements Command {
+        private static final long serialVersionUID = -8083928873466120009L;
+    }
+
+    @XKasperCommandHandler(domain = AccountDomain.class)
+    @Alias(values = {NEED_VALIDATION_2_ALIAS})
+    public static class NeedValidationWithAliasCommandHandler extends CommandHandler<NeedValidationWithAlias> {
+
+        @Override
+        public CommandResponse handle(NeedValidationWithAlias command) throws Exception {
+            return CommandResponse.ok();
+        }
+    }
 
 }
 

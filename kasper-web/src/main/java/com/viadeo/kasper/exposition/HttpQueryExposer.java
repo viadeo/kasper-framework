@@ -22,6 +22,7 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
+import com.viadeo.kasper.exposition.alias.AliasRegistry;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
 import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
@@ -106,6 +107,7 @@ public class HttpQueryExposer extends HttpExposer {
     private final ObjectMapper mapper;
     private final transient QueryGateway queryGateway;
     private final transient HttpContextDeserializer contextDeserializer;
+    private final AliasRegistry aliasRegistry;
 
     // ------------------------------------------------------------------------
 
@@ -120,6 +122,7 @@ public class HttpQueryExposer extends HttpExposer {
         this.queryAdapterFactory = queryAdapterFactory;
         this.contextDeserializer = contextDeserializer;
         this.mapper = mapper;
+        this.aliasRegistry = new AliasRegistry();
     }
 
     public HttpQueryExposer(final QueryGateway queryGateway, final List<ExposureDescriptor<Query,QueryHandler>> descriptors) {
@@ -194,8 +197,7 @@ public class HttpQueryExposer extends HttpExposer {
          * lets be very defensive and catch every thing in order to not break
          * the contract with clients = JSON only
          */
-        //TODO here introduce alias management
-        final String queryName = resourceName(req.getRequestURI());
+        final String queryName = aliasRegistry.resolve(resourceName(req.getRequestURI()));
         try {
 
             final Query query = parseQuery(queryMapper.toQueryMap(req, resp), queryName, req, resp);
@@ -401,8 +403,6 @@ public class HttpQueryExposer extends HttpExposer {
     protected HttpQueryExposer expose(final ExposureDescriptor<Query,QueryHandler> descriptor) {
         checkNotNull(descriptor);
 
-        //TODO here introduce alias registration
-
         final TypeToken<? extends QueryHandler> typeToken = TypeToken.of(descriptor.getHandler());
         final Class<? super Query> queryClass = (Class<? super Query>) typeToken
                 .getSupertype(QueryHandler.class)
@@ -410,11 +410,21 @@ public class HttpQueryExposer extends HttpExposer {
                 .getRawType();
 
         final String queryPath = queryToPath(queryClass);
+        final List<String> aliases = AliasRegistry.aliasesFrom(descriptor.getHandler());
+        final String queryName = queryClass.getSimpleName();
 
-        LOGGER.info("-> Exposing query[{}] at path[/{}]", queryClass.getSimpleName(),
+        LOGGER.info("-> Exposing query[{}] at path[/{}]", queryName,
                     getServletContext().getContextPath() + queryPath);
 
+        for (final String alias : aliases) {
+            LOGGER.info("-> Exposing query[{}] at path[/{}]",
+                    queryName,
+                    getServletContext().getContextPath() + alias);
+        }
+
         putKey(queryPath, queryClass, exposedQueries);
+
+        aliasRegistry.register(queryPath, aliases);
 
         return this;
     }
