@@ -111,3 +111,61 @@ You instantiate it giving a java package name to scan and you're done :
             )
             .expectValidationErrorOnField("firstName");
 
+Platform Runner
+---------------------
+
+An another way to create an integration test is to use a custom runner using JUnit. This runner allows to mount a
+platform in background and to access directly to its components via the `Inject` annotation.
+
+.. code-block:: java
+    :linenos:
+
+    import com.viadeo.kasper.test.platform.PlatformRunner;
+    import org.junit.runner.RunWith;
+
+    @RunWith(PlatformRunner.class)
+    public class SomethingITest...
+
+In more of the runner, we have several annotations allowing to customize the platform that will be mounted.
+
+**Bundles**:
+
+This `Bundles` annotation specifies a set of bundle that will be added to the platform.
+
+.. code-block:: java
+    :linenos:
+
+    import com.viadeo.kasper.test.platform.*;
+    import org.junit.runner.RunWith;
+
+    @RunWith(PlatformRunner.class)
+    @Bundles(list = {BundleA.class, BundleB.class})
+    public class SomethingITest...
+
+**Configuration**:
+
+The `Configuration` annotation specifies which platform configuration will be used in order to build the platform.
+
+.. code-block:: java
+    :linenos:
+
+    import com.viadeo.kasper.test.platform.*;
+    import org.junit.runner.RunWith;
+
+    @RunWith(PlatformRunner.class)
+    @Configuration(value = MyCustomPlatformConfiguration.class)
+    public class SomethingITest...
+
+**Infrastructure context**:
+
+The `InfrastructureContext` annotation specifies the infrastructure components that is required by the bundles.
+
+.. code-block:: java
+    :linenos:
+
+    import com.viadeo.kasper.test.platform.*;
+    import org.junit.runner.RunWith;
+
+    @RunWith(PlatformRunner.class)
+    @InfrastructureContext(configurations = {InfrastructureConfiguration.class})
+    public class SomethingITest...
