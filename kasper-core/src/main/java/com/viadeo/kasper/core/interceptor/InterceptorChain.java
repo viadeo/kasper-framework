@@ -22,7 +22,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class InterceptorChain<INPUT, OUTPUT> {
 
     @SuppressWarnings("unchecked") // Generic element
-    private static final InterceptorChain TAIL = new InterceptorChain() {
+    public static final InterceptorChain TAIL = new InterceptorChain() {
         @Override
         public Object next(final Object i, final Context context) throws Exception {
             throw new IllegalStateException("Reached chain tail without handling the input request");

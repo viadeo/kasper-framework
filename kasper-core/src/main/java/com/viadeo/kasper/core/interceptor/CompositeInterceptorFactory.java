@@ -24,13 +24,18 @@ public class CompositeInterceptorFactory<INPUT, OUTPUT> implements InterceptorFa
 
     @Override
     public Optional<InterceptorChain<INPUT, OUTPUT>> create(final TypeToken<?> type) {
+        return create(type, null);
+    }
+
+    public Optional<InterceptorChain<INPUT, OUTPUT>> create(final TypeToken<?> type,
+                                                            final InterceptorChain<INPUT, OUTPUT> givenTail) {
         checkNotNull(type);
 
         if (!accept(type)) {
             return Optional.absent();
         }
 
-        InterceptorChain<INPUT, OUTPUT> tail = null;
+        InterceptorChain<INPUT, OUTPUT> tail = givenTail;
 
         for (final InterceptorFactory<INPUT, OUTPUT> factory : Lists.reverse(factories)) {
             Optional<InterceptorChain<INPUT, OUTPUT>> optChain = factory.create(type);

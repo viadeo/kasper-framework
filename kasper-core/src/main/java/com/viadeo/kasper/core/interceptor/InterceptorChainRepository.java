@@ -35,16 +35,15 @@ public class InterceptorChainRepository<INPUT, OUTPUT> {
         checkNotNull(key);
         checkNotNull(tail);
 
-        final Optional<InterceptorChain<INPUT, OUTPUT>> headChain = new CompositeInterceptorFactory<>(
+        Optional<InterceptorChain<INPUT, OUTPUT>> optionalChain = new CompositeInterceptorFactory<>(
                 interceptorFactories
-        ).create(TypeToken.of(key));
+        ).create(TypeToken.of(key), InterceptorChain.makeChain(tail));
 
         final InterceptorChain<INPUT, OUTPUT> interceptorChain;
 
-        if(headChain.isPresent()){
-            interceptorChain = headChain.get().withNextChain(InterceptorChain.makeChain(tail));
-        }
-        else{
+        if (optionalChain.isPresent()) {
+            interceptorChain = optionalChain.get();
+        } else {
             interceptorChain = InterceptorChain.makeChain(tail);
         }
 
