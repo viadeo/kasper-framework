@@ -27,8 +27,9 @@ public abstract class BaseValidationInterceptor<E> {
     public void validate(final E obj) {
         final Set<ConstraintViolation<Object>> violations = validatorFactory.getValidator().validate((Object) obj);
 
-        if (!violations.isEmpty()) {
+        if ( ! violations.isEmpty()) {
             throw new JSR303ViolationException("One or more JSR303 constraints were violated.", violations);
         }
     }
+
 }

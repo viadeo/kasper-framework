@@ -11,7 +11,7 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.core.interceptor.InterceptorChainRepository;
+import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
@@ -46,7 +46,7 @@ public class KasperCommandGateway implements CommandGateway {
     private final CommandGateway commandGateway;
     private final KasperCommandBus commandBus;
     private final DomainLocator domainLocator;
-    private final InterceptorChainRepository<Command, Command> interceptorChainRepository;
+    private final InterceptorChainRegistry<Command, Command> interceptorChainRegistry;
 
     // ------------------------------------------------------------------------
 
@@ -55,7 +55,7 @@ public class KasperCommandGateway implements CommandGateway {
                  new CommandGatewayFactoryBean<CommandGateway>(),
                  commandBus,
                  new DefaultDomainLocator(new CommandHandlerResolver()),
-                 new InterceptorChainRepository<Command, Command>()
+                 new InterceptorChainRegistry<Command, Command>()
         );
     }
 
@@ -65,7 +65,7 @@ public class KasperCommandGateway implements CommandGateway {
                 new CommandGatewayFactoryBean<CommandGateway>(),
                 commandBus,
                 new DefaultDomainLocator(new CommandHandlerResolver()),
-                new InterceptorChainRepository<Command, Command>(),
+                new InterceptorChainRegistry<Command, Command>(),
                 commandDispatchInterceptors
         );
     }
@@ -73,12 +73,12 @@ public class KasperCommandGateway implements CommandGateway {
     protected KasperCommandGateway(final CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean,
                                    final KasperCommandBus commandBus,
                                    final DomainLocator domainLocator,
-                                   final InterceptorChainRepository<Command, Command> interceptorChainRepository,
+                                   final InterceptorChainRegistry<Command, Command> interceptorChainRegistry,
                                    final CommandDispatchInterceptor... commandDispatchInterceptors) {
 
         this.commandBus = checkNotNull(commandBus);
         this.domainLocator = checkNotNull(domainLocator);
-        this.interceptorChainRepository = checkNotNull(interceptorChainRepository);
+        this.interceptorChainRegistry = checkNotNull(interceptorChainRegistry);
 
         checkNotNull(commandGatewayFactoryBean);
         checkNotNull(commandDispatchInterceptors);
@@ -87,7 +87,9 @@ public class KasperCommandGateway implements CommandGateway {
         commandGatewayFactoryBean.setGatewayInterface(CommandGateway.class);
         commandGatewayFactoryBean.setCommandDispatchInterceptors(Lists.newArrayList(commandDispatchInterceptors));
 
-        this.commandBus.setHandlerInterceptors(Lists.<CommandHandlerInterceptor>newArrayList(new KasperCommandInterceptor(interceptorChainRepository)));
+        this.commandBus.setHandlerInterceptors(Lists.<CommandHandlerInterceptor>newArrayList(
+                new KasperCommandInterceptor(interceptorChainRegistry)
+        ));
 
         try {
             commandGatewayFactoryBean.afterPropertiesSet();
@@ -156,7 +158,7 @@ public class KasperCommandGateway implements CommandGateway {
 
         commandHandler.setCommandGateway(this);
 
-        interceptorChainRepository.create(commandClass, COMMAND_TAIL);
+        interceptorChainRegistry.create(commandClass, COMMAND_TAIL);
     }
 
     /**
@@ -169,7 +171,7 @@ public class KasperCommandGateway implements CommandGateway {
 
         LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
 
-        interceptorChainRepository.register(interceptorFactory);
+        interceptorChainRegistry.register(interceptorFactory);
     }
 
     /**

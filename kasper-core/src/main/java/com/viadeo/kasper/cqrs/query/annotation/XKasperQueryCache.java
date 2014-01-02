@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.annotation;
 
-import com.viadeo.kasper.cqrs.query.interceptor.cache.QueryCacheKeyGenerator;
 import com.viadeo.kasper.cqrs.query.interceptor.cache.QueryAttributesKeyGenerator;
+import com.viadeo.kasper.cqrs.query.interceptor.cache.QueryCacheKeyGenerator;
 
 import java.lang.annotation.*;
 

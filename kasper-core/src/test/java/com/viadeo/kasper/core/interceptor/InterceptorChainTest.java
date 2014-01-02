@@ -10,10 +10,20 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import org.junit.Assert;
 import org.junit.Test;
 
+import static org.junit.Assert.assertEquals;
+
 public class InterceptorChainTest {
+
+    static class DummyInterceptor implements Interceptor<Query, QueryResult> {
+        @Override
+        public QueryResult process(Query query, Context context, InterceptorChain chain) {
+            return null;
+        }
+    }
+
+    // ------------------------------------------------------------------------
 
     @Test
     public void testIteratorToChain() {
@@ -23,23 +33,13 @@ public class InterceptorChainTest {
         final Iterable<DummyInterceptor> chain = Lists.newArrayList(null, d1, null, d2, null);
 
         // When
-        final InterceptorChain<Query, QueryResult> actualChain =
-                InterceptorChain.makeChain(chain);
+        final InterceptorChain<Query, QueryResult> actualChain = InterceptorChain.makeChain(chain);
 
         // Then
         InterceptorChain<Query, QueryResult> elt = actualChain;
         for (final DummyInterceptor e : Lists.newArrayList(d1, d2)) {
-            Assert.assertEquals(e, elt.actor.get());
+            assertEquals(e, elt.actor.get());
             elt = actualChain.next.get();
-        }
-    }
-
-    // ------------------------------------------------------------------------
-
-    static class DummyInterceptor implements Interceptor<Query, QueryResult> {
-        @Override
-        public QueryResult process(Query query, Context context, InterceptorChain chain) {
-            return null;
         }
     }
 

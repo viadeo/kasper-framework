@@ -13,7 +13,8 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 public abstract class CommandInterceptorFactory implements InterceptorFactory<Command, Command> {
 
     @Override
-    public boolean accept(TypeToken<?> type) {
+    public boolean accept(final TypeToken<?> type) {
         return CommandHandler.class.isAssignableFrom(type.getRawType());
     }
+
 }

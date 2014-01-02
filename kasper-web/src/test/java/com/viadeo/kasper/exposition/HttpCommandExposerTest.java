@@ -43,10 +43,79 @@ import static org.junit.Assert.*;
 public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
     private static final String SECURITY_TOKEN = "42-4242-24-2424";
+
+    // ------------------------------------------------------------------------
+
+    public static class CreateAccountCommand implements Command {
+        private static final long serialVersionUID = 674842094873929150L;
+
+        private String name;
+        private boolean throwException;
+        private String code;
+        private List<String> messages;
+
+        public String getName() {
+            return this.name;
+        }
+
+        public boolean isThrowException() {
+            return throwException;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public void setCode(String code) {
+            this.code = code;
+        }
+
+        public List<String> getMessages() {
+            return messages;
+        }
+
+        public void setMessages(List<String> messages) {
+            this.messages = messages;
+        }
+
+    }
+
+    @XKasperCommandHandler(domain = AccountDomain.class)
+    public static class CreateAccountCommandHandler extends CommandHandler<CreateAccountCommand> {
+        static String createAccountCommandName = null;
+
+        @Override
+        public CommandResponse handle(final CreateAccountCommand command) throws Exception {
+            if (command.isThrowException())
+                throw new KasperException("Something bad happened!");
+            if (command.getCode() != null)
+                return CommandResponse.error(new KasperReason(command.getCode(), command.getMessages()));
+            createAccountCommandName = command.getName();
+            return CommandResponse.ok().withSecurityToken(SECURITY_TOKEN);
+        }
+    }
+
+    @Data
+    public static class NeedValidationCommand implements Command {
+        @NotNull @Size(min = 1) public String str;
+        @Valid @NotNull public InnerObject innerObject;
+    }
+
+    @Data
+    public static class InnerObject {
+        @Min(2) @Max(5) private int age;
+    }
+
+    @XKasperCommandHandler(domain = AccountDomain.class)
+    public static class NeedValidationCommandHandler extends CommandHandler<NeedValidationCommand> { }
+
+    // ------------------------------------------------------------------------
     
     public HttpCommandExposerTest() {
         Locale.setDefault(Locale.US);
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     protected HttpCommandExposerPlugin createExposerPlugin() {
@@ -150,7 +219,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         assertEquals(Status.ERROR, response.getStatus());
         assertEquals(command.getCode(), response.getReason().getCode());
 
-        Collection<String> messages = response.getReason().getMessages();
+        final Collection<String> messages = response.getReason().getMessages();
         final String[] responseMessages = messages.toArray(new String[messages.size()]);
 
         for (int i = 0; i < command.getMessages().size(); i++) {
@@ -176,80 +245,13 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         errorStrings.add("str : size must be between 1 and 2147483647");
 
         for (final String errorMessage : response.getReason().getMessages()) {
-            if (!errorStrings.contains(errorMessage)) {
+            if ( ! errorStrings.contains(errorMessage)) {
                 fail(String.format("Cannot find expected validation message : %s", errorMessage));
             }
             errorStrings.remove(errorMessage);
         }
         assertEquals(0, errorStrings.size());
     }
-
-    // ------------------------------------------------------------------------
-
-    public static class CreateAccountCommand implements Command {
-        private static final long serialVersionUID = 674842094873929150L;
-
-        private String name;
-        private boolean throwException;
-        private String code;
-        private List<String> messages;
-
-        public String getName() {
-            return this.name;
-        }
-
-        public boolean isThrowException() {
-            return throwException;
-        }
-
-        public String getCode() {
-            return code;
-        }
-
-        public void setCode(String code) {
-            this.code = code;
-        }
-
-        public List<String> getMessages() {
-            return messages;
-        }
-
-        public void setMessages(List<String> messages) {
-            this.messages = messages;
-        }
-
-    }
-
-    // ------------------------------------------------------------------------
-
-    @XKasperCommandHandler(domain = AccountDomain.class)
-    public static class CreateAccountCommandHandler extends CommandHandler<CreateAccountCommand> {
-        static String createAccountCommandName = null;
-
-        @Override
-        public CommandResponse handle(final CreateAccountCommand command) throws Exception {
-            if (command.isThrowException())
-                throw new KasperException("Something bad happened!");
-            if (command.getCode() != null)
-                return CommandResponse.error(new KasperReason(command.getCode(), command.getMessages()));
-            createAccountCommandName = command.getName();
-            return CommandResponse.ok().withSecurityToken(SECURITY_TOKEN);
-        }
-    }
-
-    @Data
-    public static class NeedValidationCommand implements Command {
-        @NotNull @Size(min = 1) public String str;
-        @Valid @NotNull public InnerObject innerObject;
-    }
-
-    @Data
-    public static class InnerObject {
-        @Min(2) @Max(5) private int age;
-    }
-
-    @XKasperCommandHandler(domain = AccountDomain.class)
-    public static class NeedValidationCommandHandler extends CommandHandler<NeedValidationCommand> { }
 
 }
 

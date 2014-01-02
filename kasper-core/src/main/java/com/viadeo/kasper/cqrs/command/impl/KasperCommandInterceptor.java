@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs.command.impl;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.interceptor.InterceptorChainRepository;
+import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.cqrs.command.Command;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.CommandMessage;
@@ -23,15 +23,24 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class KasperCommandInterceptor implements CommandHandlerInterceptor {
 
-    private final InterceptorChainRepository<Command, Command> interceptorChainRepository;
+    private final InterceptorChainRegistry<Command, Command> interceptorChainRegistry;
 
-    public KasperCommandInterceptor(InterceptorChainRepository<Command, Command> interceptorChainRepository) {
-        this.interceptorChainRepository = checkNotNull(interceptorChainRepository);
+    // ------------------------------------------------------------------------
+
+    public KasperCommandInterceptor(InterceptorChainRegistry<Command, Command> interceptorChainRegistry) {
+        this.interceptorChainRegistry = checkNotNull(interceptorChainRegistry);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public Object handle(CommandMessage<?> commandMessage, UnitOfWork unitOfWork, InterceptorChain interceptorChain) throws Throwable {
-        final Optional<com.viadeo.kasper.core.interceptor.InterceptorChain<Command, Command>> interceptorChainOptional = interceptorChainRepository.get(commandMessage.getPayloadType());
+    public Object handle(final CommandMessage<?> commandMessage,
+                         final UnitOfWork unitOfWork,
+                         final InterceptorChain interceptorChain)
+            throws Throwable {
+
+        final Optional<com.viadeo.kasper.core.interceptor.InterceptorChain<Command, Command>> interceptorChainOptional =
+                interceptorChainRegistry.get(commandMessage.getPayloadType());
         final CommandMessage newCommandMessage;
 
         if (interceptorChainOptional.isPresent()) {
@@ -52,4 +61,5 @@ public class KasperCommandInterceptor implements CommandHandlerInterceptor {
 
         return interceptorChain.proceed(newCommandMessage);
     }
+
 }

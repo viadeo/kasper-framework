@@ -20,8 +20,6 @@ public class QueryValidationInterceptor<Q extends Query, R extends QueryResult>
         extends BaseValidationInterceptor<Q>
         implements Interceptor<Q, QueryResponse<R>> {
 
-    // ------------------------------------------------------------------------
-
     public QueryValidationInterceptor(final ValidatorFactory validatorFactory) {
         super(validatorFactory);
     }

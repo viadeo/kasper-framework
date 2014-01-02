@@ -25,6 +25,8 @@ public class QueryFilterInterceptorFactory extends QueryInterceptorFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryFilterInterceptorFactory.class);
 
+    // ------------------------------------------------------------------------
+
     @Override
     @SuppressWarnings("unchecked")
     protected Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> doCreate(final TypeToken<?> type) {
@@ -48,4 +50,5 @@ public class QueryFilterInterceptorFactory extends QueryInterceptorFactory {
 
         return Optional.absent();
     }
+
 }

@@ -131,7 +131,6 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
 
         // When
         client().emit(DefaultContextBuilder.get(), event);
-
     }
 
 }

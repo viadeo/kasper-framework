@@ -22,7 +22,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class InterceptorChain<INPUT, OUTPUT> {
 
     @SuppressWarnings("unchecked") // Generic element
-    public static final InterceptorChain TAIL = new InterceptorChain() {
+    private static final InterceptorChain TAIL = new InterceptorChain() {
         @Override
         public Object next(final Object i, final Context context) throws Exception {
             throw new IllegalStateException("Reached chain tail without handling the input request");
@@ -33,6 +33,8 @@ public class InterceptorChain<INPUT, OUTPUT> {
     public static <I, O> InterceptorChain<I, O> tail() {
         return TAIL;
     }
+
+    // ------------------------------------------------------------------------
 
     @SafeVarargs
     public static <I, O> InterceptorChain<I, O> makeChain(final Interceptor<I, O>...chain) {
@@ -78,6 +80,7 @@ public class InterceptorChain<INPUT, OUTPUT> {
     public final Optional<InterceptorChain<INPUT, OUTPUT>> next;
 
     // ------------------------------------------------------------------------
+
     public InterceptorChain() {
         this.actor = Optional.absent();
         this.next = Optional.absent();
@@ -97,17 +100,17 @@ public class InterceptorChain<INPUT, OUTPUT> {
     // ------------------------------------------------------------------------
 
     public OUTPUT next(final INPUT input, final Context context) throws Exception {
-        if (!actor.isPresent()) {
+        if ( ! actor.isPresent()) {
             throw new NoSuchElementException("Actors chain has not more elements !");
         }
         return actor.get().process(input, context, next.get());
     }
 
-    public InterceptorChain<INPUT, OUTPUT> withPrevious(Interceptor<INPUT, OUTPUT> previous) {
+    public InterceptorChain<INPUT, OUTPUT> withPrevious(final Interceptor<INPUT, OUTPUT> previous) {
         return new InterceptorChain<>(previous, this);
     }
 
-    public InterceptorChain<INPUT, OUTPUT> withNextChain(InterceptorChain<INPUT, OUTPUT> chain) {
+    public InterceptorChain<INPUT, OUTPUT> withNextChain(final InterceptorChain<INPUT, OUTPUT> chain) {
         return new InterceptorChain<>(this.actor.get(), chain);
     }
 

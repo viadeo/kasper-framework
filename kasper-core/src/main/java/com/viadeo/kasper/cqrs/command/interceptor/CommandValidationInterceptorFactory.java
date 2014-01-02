@@ -22,9 +22,11 @@ public class CommandValidationInterceptorFactory extends CommandInterceptorFacto
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandValidationInterceptorFactory.class);
 
+    // ------------------------------------------------------------------------
+
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<InterceptorChain<Command, Command>> create(TypeToken<?> type) {
+    public Optional<InterceptorChain<Command, Command>> create(final TypeToken<?> type) {
         final Interceptor<Command, Command> interceptor;
 
         try {
@@ -36,4 +38,5 @@ public class CommandValidationInterceptorFactory extends CommandInterceptorFacto
 
         return Optional.of(InterceptorChain.makeChain(interceptor));
     }
+
 }

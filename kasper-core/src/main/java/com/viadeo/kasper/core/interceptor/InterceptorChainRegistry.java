@@ -16,15 +16,19 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class InterceptorChainRepository<INPUT, OUTPUT> {
+public class InterceptorChainRegistry<INPUT, OUTPUT> {
 
     private final List<InterceptorFactory<INPUT, OUTPUT>> interceptorFactories;
     private final Map<Class, InterceptorChain<INPUT, OUTPUT>> chains;
 
-    public InterceptorChainRepository() {
+    // ------------------------------------------------------------------------
+
+    public InterceptorChainRegistry() {
         this.interceptorFactories = Lists.newArrayList();
         this.chains = Maps.newHashMap();
     }
+
+    // ------------------------------------------------------------------------
 
     public void register(final InterceptorFactory<INPUT, OUTPUT> interceptorFactory) {
         this.interceptorFactories.add(checkNotNull(interceptorFactory));
@@ -35,9 +39,12 @@ public class InterceptorChainRepository<INPUT, OUTPUT> {
         checkNotNull(key);
         checkNotNull(tail);
 
-        Optional<InterceptorChain<INPUT, OUTPUT>> optionalChain = new CompositeInterceptorFactory<>(
+        final Optional<InterceptorChain<INPUT, OUTPUT>> optionalChain = new CompositeInterceptorFactory<>(
                 interceptorFactories
-        ).create(TypeToken.of(key), InterceptorChain.makeChain(tail));
+        ).create(
+                TypeToken.of(key),
+                InterceptorChain.makeChain(tail)
+        );
 
         final InterceptorChain<INPUT, OUTPUT> interceptorChain;
 

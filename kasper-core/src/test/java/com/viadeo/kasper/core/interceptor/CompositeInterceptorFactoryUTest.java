@@ -19,7 +19,7 @@ import static org.mockito.Mockito.when;
 public class CompositeInterceptorFactoryUTest {
 
     @Test(expected = NullPointerException.class)
-    public void create_withNullAsTypeToken_shouldThrownException(){
+    public void create_withNullAsTypeToken_shouldThrownException() {
         // Given
         final CompositeInterceptorFactory<Object, Object> compositeInterceptorFactory = new CompositeInterceptorFactory<>(
                 Lists.<InterceptorFactory<Object,Object>>newArrayList()
@@ -32,14 +32,15 @@ public class CompositeInterceptorFactoryUTest {
     }
 
     @Test
-    public void create_withNoRegisteredInterceptorFactory_shouldReturnedAbsent(){
+    public void create_withNoRegisteredInterceptorFactory_shouldReturnedAbsent() {
         // Given
         final CompositeInterceptorFactory<Object, Object> compositeInterceptorFactory = new CompositeInterceptorFactory<>(
                 Lists.<InterceptorFactory<Object,Object>>newArrayList()
         );
 
         // When
-        final Optional<InterceptorChain<Object,Object>> interceptorChainOptional = compositeInterceptorFactory.create(TypeToken.of(String.class));
+        final Optional<InterceptorChain<Object,Object>> interceptorChainOptional =
+                compositeInterceptorFactory.create(TypeToken.of(String.class));
 
         // Then
         assertNotNull(interceptorChainOptional);
@@ -48,7 +49,7 @@ public class CompositeInterceptorFactoryUTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void create_withAcceptableType_withInterceptorFactoryReturningAbsent_shouldReturnedTail(){
+    public void create_withAcceptableType_withInterceptorFactoryReturningAbsent_shouldReturnedTail() {
         // Given
         final InterceptorFactory<Object, Object> interceptorFactory = mock(InterceptorFactory.class);
         when(interceptorFactory.create(any(TypeToken.class))).thenReturn(Optional.<InterceptorChain<Object, Object>>absent());
@@ -58,7 +59,8 @@ public class CompositeInterceptorFactoryUTest {
         );
 
         // When
-        final Optional<InterceptorChain<Object,Object>> interceptorChainOptional = compositeInterceptorFactory.create(TypeToken.of(String.class));
+        final Optional<InterceptorChain<Object,Object>> interceptorChainOptional =
+                compositeInterceptorFactory.create(TypeToken.of(String.class));
 
         // Then
         assertNotNull(interceptorChainOptional);
@@ -67,7 +69,7 @@ public class CompositeInterceptorFactoryUTest {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void create_withAcceptableType_withInterceptorFactoryReturningChain_shouldReturnedFullChain(){
+    public void create_withAcceptableType_withInterceptorFactoryReturningChain_shouldReturnedFullChain() {
         // Given
         final InterceptorChain<Object, Object> chainA = mock(InterceptorChain.class);
 
@@ -80,11 +82,13 @@ public class CompositeInterceptorFactoryUTest {
         );
 
         // When
-        final Optional<InterceptorChain<Object,Object>> interceptorChainOptional = compositeInterceptorFactory.create(TypeToken.of(String.class));
+        final Optional<InterceptorChain<Object,Object>> interceptorChainOptional =
+                compositeInterceptorFactory.create(TypeToken.of(String.class));
 
         // Then
         assertNotNull(interceptorChainOptional);
         assertTrue(interceptorChainOptional.isPresent());
         assertEquals(chainA, interceptorChainOptional.get());
     }
+
 }

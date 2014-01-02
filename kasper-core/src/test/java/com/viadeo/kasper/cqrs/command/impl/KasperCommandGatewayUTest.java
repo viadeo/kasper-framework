@@ -8,7 +8,7 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.interceptor.InterceptorChainRepository;
+import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
@@ -32,7 +32,7 @@ public class KasperCommandGatewayUTest {
     private final KasperCommandBus commandBus;
     private final DomainLocator domainLocator;
     private final CommandGateway decoratedCommandGateway;
-    private final InterceptorChainRepository<Command, Command> interceptorChainRepository;
+    private final InterceptorChainRegistry<Command, Command> interceptorChainRegistry;
 
     // ------------------------------------------------------------------------
 
@@ -43,8 +43,8 @@ public class KasperCommandGatewayUTest {
         when(commandGatewayFactoryBean.getObject()).thenReturn(decoratedCommandGateway);
         commandBus = mock(KasperCommandBus.class);
         domainLocator = mock(DomainLocator.class);
-        interceptorChainRepository = mock(InterceptorChainRepository.class);
-        commandGateway = new KasperCommandGateway(commandGatewayFactoryBean, commandBus, domainLocator, interceptorChainRepository);
+        interceptorChainRegistry = mock(InterceptorChainRegistry.class);
+        commandGateway = new KasperCommandGateway(commandGatewayFactoryBean, commandBus, domainLocator, interceptorChainRegistry);
     }
 
     @Before
@@ -172,8 +172,8 @@ public class KasperCommandGatewayUTest {
         verify(commandHandler).getCommandClass();
         verifyNoMoreInteractions(commandHandler);
 
-        verify(interceptorChainRepository).create(Command.class, KasperCommandGateway.COMMAND_TAIL);
-        verifyNoMoreInteractions(interceptorChainRepository);
+        verify(interceptorChainRegistry).create(Command.class, KasperCommandGateway.COMMAND_TAIL);
+        verifyNoMoreInteractions(interceptorChainRegistry);
     }
 
 }

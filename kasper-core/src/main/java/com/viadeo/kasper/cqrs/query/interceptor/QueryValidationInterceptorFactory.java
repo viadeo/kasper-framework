@@ -24,6 +24,8 @@ public class QueryValidationInterceptorFactory extends QueryInterceptorFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryValidationInterceptorFactory.class);
 
+    // ------------------------------------------------------------------------
+
     @Override
     @SuppressWarnings("unchecked")
     protected Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> doCreate(final TypeToken<?> type) {
@@ -32,7 +34,11 @@ public class QueryValidationInterceptorFactory extends QueryInterceptorFactory {
         try {
             interceptor = new QueryValidationInterceptor(Validation.buildDefaultValidatorFactory());
         } catch (final ValidationException ve) {
-            LOGGER.warn("Unexpected error when instantiating interceptor for `{}` : No implementation found for BEAN VALIDATION - JSR 303", type.getRawType(), ve);
+            LOGGER.warn(
+                    "Unexpected error when instantiating interceptor for `{}` : "
+                  + "No implementation found for BEAN VALIDATION - JSR 303",
+                    type.getRawType(), ve
+            );
             return Optional.absent();
         }
 

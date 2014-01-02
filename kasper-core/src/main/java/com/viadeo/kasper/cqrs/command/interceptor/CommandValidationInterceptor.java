@@ -18,12 +18,14 @@ public class CommandValidationInterceptor<C extends Command>
         extends BaseValidationInterceptor<C>
         implements Interceptor<C, C> {
 
-    public CommandValidationInterceptor(ValidatorFactory validatorFactory) {
+    public CommandValidationInterceptor(final ValidatorFactory validatorFactory) {
         super(validatorFactory);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public C process(C c, Context context, InterceptorChain<C, C> chain) throws Exception {
+    public C process(final C c, final Context context, final InterceptorChain<C, C> chain) throws Exception {
         validate(c);
         return chain.next(c, context);
     }

@@ -17,16 +17,18 @@ public abstract class QueryInterceptorFactory implements InterceptorFactory<Quer
 
     protected abstract Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> doCreate(TypeToken<?> type);
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public final Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> create(TypeToken<?> type) {
-        if (!accept(type)) {
+    public final Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> create(final TypeToken<?> type) {
+        if ( ! accept(type)) {
             return Optional.absent();
         }
         return doCreate(type);
     }
 
     @Override
-    public boolean accept(TypeToken<?> type) {
+    public boolean accept(final TypeToken<?> type) {
         return QueryHandler.class.isAssignableFrom(type.getRawType());
     }
 

@@ -12,14 +12,16 @@ import com.google.common.reflect.TypeToken;
 
 import java.util.List;
 
-import static com.google.common.base.Preconditions.*;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CompositeInterceptorFactory<INPUT, OUTPUT> implements InterceptorFactory<INPUT, OUTPUT> {
 
     private final List<InterceptorFactory<INPUT, OUTPUT>> factories;
 
+    // ------------------------------------------------------------------------
+
     public CompositeInterceptorFactory(final List<InterceptorFactory<INPUT, OUTPUT>> factories) {
-        this.factories = checkNotNull(factories);
+        this.factories = Lists.newArrayList(checkNotNull(factories));
     }
 
     @Override
@@ -29,16 +31,14 @@ public class CompositeInterceptorFactory<INPUT, OUTPUT> implements InterceptorFa
 
     public Optional<InterceptorChain<INPUT, OUTPUT>> create(final TypeToken<?> type,
                                                             final InterceptorChain<INPUT, OUTPUT> givenTail) {
-        checkNotNull(type);
-
-        if (!accept(type)) {
+        if ( ! accept(checkNotNull(type))) {
             return Optional.absent();
         }
 
         InterceptorChain<INPUT, OUTPUT> tail = givenTail;
 
         for (final InterceptorFactory<INPUT, OUTPUT> factory : Lists.reverse(factories)) {
-            Optional<InterceptorChain<INPUT, OUTPUT>> optChain = factory.create(type);
+            final Optional<InterceptorChain<INPUT, OUTPUT>> optChain = factory.create(type);
 
             if (optChain.isPresent()) {
                 if (null == tail) {
@@ -53,7 +53,8 @@ public class CompositeInterceptorFactory<INPUT, OUTPUT> implements InterceptorFa
     }
 
     @Override
-    public boolean accept(TypeToken<?> type) {
-        return factories.size() > 0;
+    public boolean accept(final TypeToken<?> type) {
+        return (factories.size() > 0);
     }
+
 }
