@@ -101,7 +101,7 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
-    private final transient List<Class<? extends QueryHandler>> queryHandlerClasses;
+    private final transient List<ExposureDescriptor<Query,QueryHandler>> descriptors;
     private final transient QueryFactory queryAdapterFactory;
     private final ObjectMapper mapper;
     private final transient QueryGateway queryGateway;
@@ -110,22 +110,22 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     public HttpQueryExposer(final QueryGateway queryGateway,
-                            final List<Class<? extends QueryHandler>> queryHandlerClasses,
+                            final List<ExposureDescriptor<Query,QueryHandler>> descriptors,
                             final QueryFactory queryAdapterFactory,
                             final HttpContextDeserializer contextDeserializer,
                             final ObjectMapper mapper) {
 
         this.queryGateway = queryGateway;
-        this.queryHandlerClasses = queryHandlerClasses;
+        this.descriptors = descriptors;
         this.queryAdapterFactory = queryAdapterFactory;
         this.contextDeserializer = contextDeserializer;
         this.mapper = mapper;
     }
 
-    public HttpQueryExposer(final QueryGateway queryGateway, final List<Class<? extends QueryHandler>> queryHandlerClasses) {
+    public HttpQueryExposer(final QueryGateway queryGateway, final List<ExposureDescriptor<Query,QueryHandler>> descriptors) {
         this(
                 queryGateway,
-                checkNotNull(queryHandlerClasses),
+                checkNotNull(descriptors),
                 new QueryFactoryBuilder().create(),
                 new HttpContextDeserializer(),
                 ObjectMapperProvider.INSTANCE.mapper()
@@ -139,8 +139,8 @@ public class HttpQueryExposer extends HttpExposer {
         LOGGER.info("=============== Exposing queries ===============");
 
         /* expose all registered queries and commands */
-        for (final Class<? extends QueryHandler> queryHandlerClass : queryHandlerClasses) {
-            expose(queryHandlerClass);
+        for (final ExposureDescriptor<Query,QueryHandler> descriptor : descriptors) {
+            expose(descriptor);
         }
 
         if (exposedQueries.isEmpty()) {
@@ -194,6 +194,7 @@ public class HttpQueryExposer extends HttpExposer {
          * lets be very defensive and catch every thing in order to not break
          * the contract with clients = JSON only
          */
+        //TODO here introduce alias management
         final String queryName = resourceName(req.getRequestURI());
         try {
 
@@ -397,10 +398,12 @@ public class HttpQueryExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected HttpQueryExposer expose(final Class<? extends QueryHandler> queryHandlerClass) {
-        checkNotNull(queryHandlerClass);
+    protected HttpQueryExposer expose(final ExposureDescriptor<Query,QueryHandler> descriptor) {
+        checkNotNull(descriptor);
 
-        final TypeToken<? extends QueryHandler> typeToken = TypeToken.of(queryHandlerClass);
+        //TODO here introduce alias registration
+
+        final TypeToken<? extends QueryHandler> typeToken = TypeToken.of(descriptor.getHandler());
         final Class<? super Query> queryClass = (Class<? super Query>) typeToken
                 .getSupertype(QueryHandler.class)
                 .resolveType(QueryHandler.class.getTypeParameters()[0])

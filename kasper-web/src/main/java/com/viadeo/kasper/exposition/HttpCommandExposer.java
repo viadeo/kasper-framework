@@ -55,28 +55,29 @@ public class HttpCommandExposer extends HttpExposer {
     private static final String GLOBAL_METER_ERRORS_NAME = name(HttpCommandExposer.class, "errors");
 
     private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
-    private final transient List<Class<? extends CommandHandler>> commandHandlerClasses;
+    private final transient List<ExposureDescriptor<Command,CommandHandler>> descriptors;
     private final ObjectMapper mapper;
     private final transient CommandGateway commandGateway;
     private final transient HttpContextDeserializer contextDeserializer;
 
     // ------------------------------------------------------------------------
 
-    public HttpCommandExposer(final CommandGateway commandGateway, final List<Class<? extends CommandHandler>> commandHandlerClasses) {
+    public HttpCommandExposer(final CommandGateway commandGateway,
+                              final List<ExposureDescriptor<Command,CommandHandler>> descriptors) {
         this(
                 commandGateway,
-                commandHandlerClasses,
+                descriptors,
                 new HttpContextDeserializer(),
                 ObjectMapperProvider.INSTANCE.mapper()
         );
     }
     
     public HttpCommandExposer(final CommandGateway commandGateway,
-                              final List<Class<? extends CommandHandler>> commandHandlerClasses,
+                              final List<ExposureDescriptor<Command,CommandHandler>> descriptors,
                               final HttpContextDeserializer contextDeserializer,
                               final ObjectMapper mapper) {
         this.commandGateway = commandGateway;
-        this.commandHandlerClasses = checkNotNull(commandHandlerClasses);
+        this.descriptors = checkNotNull(descriptors);
         this.contextDeserializer = contextDeserializer;
         this.mapper = mapper;
     }
@@ -87,8 +88,8 @@ public class HttpCommandExposer extends HttpExposer {
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing commands ===============");
 
-        for (final Class<? extends CommandHandler> handlerClass : commandHandlerClasses) {
-            expose(handlerClass);
+        for (final ExposureDescriptor<Command,CommandHandler> descriptor : descriptors) {
+            expose(descriptor);
         }
 
         if (exposedCommands.isEmpty()) {
@@ -162,6 +163,7 @@ public class HttpCommandExposer extends HttpExposer {
         final String commandName = resourceName(req.getRequestURI());
 
         /* locate corresponding command class */
+        //TODO here introduce alias management
         final Class<? extends Command> commandClass = exposedCommands.get(commandName);
         if (null == commandClass) {
             sendError(req, resp, Response.Status.NOT_FOUND.getStatusCode(),
@@ -338,10 +340,12 @@ public class HttpCommandExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    HttpExposer expose(final Class<? extends CommandHandler> commandHandlerClass) {
-        checkNotNull(commandHandlerClass);
+    HttpExposer expose(final ExposureDescriptor<Command,CommandHandler> descriptor) {
+        checkNotNull(descriptor);
 
-        final TypeToken<? extends CommandHandler> typeToken = TypeToken.of(commandHandlerClass);
+        //TODO here introduce alias registration
+
+        final TypeToken<? extends CommandHandler> typeToken = TypeToken.of(descriptor.getHandler());
 
         final Class<? super Command> commandClass = (Class<? super Command>) typeToken
                 .getSupertype(CommandHandler.class)
