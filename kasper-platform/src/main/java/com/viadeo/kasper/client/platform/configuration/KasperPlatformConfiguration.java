@@ -15,12 +15,14 @@ import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandBus;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
+import com.viadeo.kasper.cqrs.command.interceptor.CommandSecurityInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandValidationInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
-import com.viadeo.kasper.security.SecurityConfiguration;
 import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
+import com.viadeo.kasper.cqrs.query.interceptor.QuerySecurityInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryValidationInterceptorFactory;
+import com.viadeo.kasper.security.SecurityConfiguration;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 
@@ -71,6 +73,11 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
                 new QueryValidationInterceptorFactory(),
                 new QueryFilterInterceptorFactory()
         );
+        if (securityConfiguration != null) {
+            // TODO: to be refactored when interceptors weighting is available.
+            this.commandInterceptorFactories.add(0, new CommandSecurityInterceptorFactory(securityConfiguration));
+            this.queryInterceptorFactories.add(0, new QuerySecurityInterceptorFactory(securityConfiguration));
+        }
     }
 
     // ------------------------------------------------------------------------

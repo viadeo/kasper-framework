@@ -1,7 +1,7 @@
 package com.viadeo.kasper.client.platform.configuration;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.context.IdentityElementContextProvider;
+import com.viadeo.kasper.security.IdentityElementContextProvider;
 import com.viadeo.kasper.security.SecurityConfiguration;
 
 import java.util.Collections;
@@ -13,6 +13,7 @@ public class KasperSecurityConfiguration implements SecurityConfiguration {
 
     private final List<IdentityElementContextProvider> identityElementContextProviders = Lists.newArrayList();
 
+    @Override
     public void addIdentityElementContextProvider(IdentityElementContextProvider provider) {
         checkNotNull(provider);
         identityElementContextProviders.add(provider);

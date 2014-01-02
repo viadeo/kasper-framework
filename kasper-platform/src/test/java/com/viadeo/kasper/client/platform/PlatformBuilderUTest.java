@@ -14,7 +14,6 @@ import com.typesafe.config.Config;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.client.platform.configuration.KasperSecurityConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
@@ -646,30 +645,6 @@ public class PlatformBuilderUTest {
         // Then
         assertNotNull(platform);
         verify(commandGateway).register(refEq(commandInterceptorFactory));
-    }
-
-
-    @Test
-    public void build_withSecurityConfiguration_shouldRegisterOnQueryGateway() {
-        // Given
-        final KasperSecurityConfiguration securityConfiguration = new KasperSecurityConfiguration();
-/*
-        final KasperEventBus eventBus = mock(KasperEventBus.class);
-        final KasperCommandGateway commandGateway = mock(KasperCommandGateway.class);
-        final KasperQueryGateway queryGateway = mock(KasperQueryGateway.class);
-        final Config configuration = mock(Config.class);
-        final MetricRegistry metricRegistry = mock(MetricRegistry.class);
-*/
-        final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration(securityConfiguration);
-        final KasperQueryGateway queryGateway = spy(platformConfiguration.queryGateway());
-        final Platform.Builder builder = new Platform.Builder(platformConfiguration);
-
-        // When
-        final Platform platform = builder.build();
-
-        // Then
-        assertNotNull(platform);
-        verify(queryGateway).configureSecurity(refEq(securityConfiguration));
     }
 
     private DomainDescriptorFactory createMockedDomainDescriptorFactory() {

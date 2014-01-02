@@ -19,7 +19,6 @@ import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptor;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.security.SecurityConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -134,10 +133,6 @@ public class KasperQueryGateway implements QueryGateway {
     @Deprecated
     public void register(final String name, final  QueryHandlerAdapter adapter, final boolean global) {
         queryHandlersLocator.registerAdapter(name, adapter, global);
-    }
-
-    public void configureSecurity(SecurityConfiguration securityConfiguration) {
-        queryHandlersLocator.configureSecurity(securityConfiguration);
     }
 
     /**

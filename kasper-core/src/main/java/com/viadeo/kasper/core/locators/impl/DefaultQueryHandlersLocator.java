@@ -17,7 +17,6 @@ import com.viadeo.kasper.cqrs.query.QueryHandlerAdapter;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.security.SecurityConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,8 +75,6 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
     private final QueryHandlerResolver queryHandlerResolver;
 
-    private Optional<SecurityConfiguration> securityConfiguration;
-
     // ------------------------------------------------------------------------
 
     public DefaultQueryHandlersLocator() {
@@ -89,10 +86,6 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     }
 
     // ------------------------------------------------------------------------
-
-    public void configureSecurity(SecurityConfiguration securityConfiguration) {
-        this.securityConfiguration = Optional.of(securityConfiguration);
-    }
 
     @SuppressWarnings("rawtypes")
     @Override

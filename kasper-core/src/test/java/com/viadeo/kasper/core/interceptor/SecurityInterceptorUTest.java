@@ -1,13 +1,10 @@
-package com.viadeo.kasper.core.interceptors;
+package com.viadeo.kasper.core.interceptor;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.IdentityElementContextProvider;
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-//import com.viadeo.kasper.cqrs.RequestActorsChain;
-import com.viadeo.kasper.cqrs.query.interceptor.SecurityInterceptor;
 import com.viadeo.kasper.cqrs.query.Query;
-//import com.viadeo.kasper.cqrs.query.cache.impl.QueryCacheActorTest;
+import com.viadeo.kasper.security.IdentityElementContextProvider;
 import com.viadeo.kasper.security.SecurityConfiguration;
 import org.junit.Test;
 
@@ -19,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 public class SecurityInterceptorUTest {
     static private final String USER_ID = "UserIdSetByInterceptor";
     @XKasperUnregistered
-    static private class DummyQuery implements Query { }
+    static private final class DummyQuery implements Query { }
 
     @Test
     public void testIdentityElementProvider() throws Exception {
@@ -31,19 +28,24 @@ public class SecurityInterceptorUTest {
                 context.setUserId(USER_ID);
             }
         };
-        SecurityConfiguration securityConfiguration = new SecurityConfiguration() {
+        final SecurityConfiguration securityConfiguration = new SecurityConfiguration() {
+            @Override
+            public void addIdentityElementContextProvider(IdentityElementContextProvider provider) {
+                throw new UnsupportedOperationException();
+            }
+
             @Override
             public List<IdentityElementContextProvider> getIdentityElementContextProvider() {
                 return Collections.singletonList(provider);
             };
         };
         final SecurityInterceptor securityInterceptor = new SecurityInterceptor(securityConfiguration);
-        Context context = new DefaultContext();
+        final Context context = new DefaultContext();
 // When
         try {
-//            securityInterceptor.process(new DummyQuery(), context, RequestActorsChain.tail());
+            securityInterceptor.process(null, context, InterceptorChain.tail());
         } catch (IllegalStateException ignore) {
-            // We may need a tail that do nothing...
+            // next to tail will throw Exception, but we don't care here.
         }
 
 // Then
