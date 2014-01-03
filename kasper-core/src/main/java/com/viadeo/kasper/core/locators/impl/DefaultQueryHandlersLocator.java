@@ -229,63 +229,6 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
         }
         return tmpHandlers;
     }
-/*
-    @Override
-    @SuppressWarnings("unchecked")
-    public <Q extends Query, P extends QueryResult, R extends QueryResponse<P>>
-    Optional<RequestActorsChain<Q, R>> getRequestActorChain(Class<? extends Q> queryClass) {
-        RequestActorsChain<Q, R> chain = (RequestActorsChain<Q, R>) requestActorChainCache.get(queryClass);
-
-        if (null == chain) {
-            final Optional<QueryHandler> optionalQS = getHandlerFromQueryClass(queryClass);
-
-            if (optionalQS.isPresent()) {
-                final QueryHandler<Q, P> qs = optionalQS.get();
-                final Class<? extends QueryHandler<Q, P>> qsClass = (Class<? extends QueryHandler<Q, P>>) qs.getClass();
-
-                final Collection<QueryHandlerAdapter> handlerAdapters = getAdaptersForHandlerClass(qsClass);
-                final List<RequestActor<Q, R>> requestActors = Lists.newArrayList();
-
-                /* Add security interceptor if security is configured */
-/*
-                if (securityConfiguration.isPresent()) {
-                    requestActors.add(new SecurityInterceptor(securityConfiguration.get()));
-                }
-
-                /* Add cache actor if required */
-/*
-                final Optional<RequestActor<Q, R>> cacheActor = queryCacheFactory.make(queryClass, qsClass);
-                if (cacheActor.isPresent()) {
-                    requestActors.add((RequestActor<Q, R>) queryCacheFactory.make(queryClass, qsClass).get());
-                }
-
-                /* Add validation adapter */
-/*
-                try {
-                    requestActors.add(new QueryValidationActor(Validation.buildDefaultValidatorFactory()));
-                } catch (final ValidationException ve) {
-                    LOGGER.warn("No implementation found for BEAN VALIDATION - JSR 303", ve);
-                }
-
-                /* Add adapters actor */
-/*
-                requestActors.add(adaptersActor(handlerAdapters));
-
-                /* Add handler actor */
-/*
-                requestActors.add(new QueryHandlerActor(qs));
-
-                /* Finally build the actors chan */
-/*
-                chain = RequestActorsChain.makeChain(requestActors);
-            }
-
-            requestActorChainCache.put(queryClass, chain);
-        }
-
-        return Optional.fromNullable(chain);
-    }
-*/
 
     public Collection<QueryHandler> getHandlers() {
         return unmodifiableCollection(this.handlerQueryClasses.values());
