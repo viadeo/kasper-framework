@@ -117,9 +117,11 @@ public class KasperQueryGateway implements QueryGateway {
      *
      * @param name the name of the adapter
      * @param adapter the query handler adapter to register
+     * @param global the kind of the adapter. If true then the adapter will be applied to every query handler component.
+     *               Otherwise the  adapter will be applied only on the component whose reference it
      */
-    public void register(final String name, final  QueryHandlerAdapter adapter) {
-        queryHandlersLocator.registerAdapter(name, adapter);
+    public void register(final String name, final  QueryHandlerAdapter adapter, final boolean global) {
+        queryHandlersLocator.registerAdapter(name, adapter, global);
     }
 
     /**
