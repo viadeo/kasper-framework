@@ -5,7 +5,6 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.core.interceptor.SecurityInterceptor;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.security.SecurityConfiguration;
 
@@ -23,7 +22,7 @@ public class CommandSecurityInterceptorFactory extends CommandInterceptorFactory
     public Optional<InterceptorChain<Command, Command>> create(TypeToken<?> type) {
         final Interceptor<Command, Command> interceptor;
 
-        interceptor = new SecurityInterceptor<Command, Command>(securityConfiguration);
+        interceptor = new CommandSecurityInterceptor(securityConfiguration);
         return Optional.of(InterceptorChain.makeChain(interceptor));
     }
 

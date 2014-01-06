@@ -31,7 +31,7 @@ import static junit.framework.Assert.assertNotNull;
 @PlatformRunner.Bundles(list = {SecuredPlatformRunnerITest.SecuredDomainBundle.class})
 public class SecuredPlatformRunnerITest {
 
-    final private static String SECURITY_TOKEN = "SET_BY_SECURITY_LAYER";
+    final private static String SECURITY_TOKEN = "SET_BY_SECURITY_INTERCEPTOR";
 
     @Inject
     private CommandGateway commandGateway;
@@ -43,12 +43,7 @@ public class SecuredPlatformRunnerITest {
         SecuredKasperPlatformConfiguration() {
             super(new SecurityConfiguration() {
                 @Override
-                public void addIdentityElementContextProvider(IdentityElementContextProvider provider) {
-                    throw new UnsupportedOperationException();
-                }
-
-                @Override
-                public List<IdentityElementContextProvider> getIdentityElementContextProvider() {
+                public List<IdentityElementContextProvider> getIdentityElementContextProviders() {
                     IdentityElementContextProvider provider = new IdentityElementContextProvider() {
                         @Override
                         public void provideIdentityElement(Context context) {
