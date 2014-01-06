@@ -10,11 +10,11 @@ import java.util.List;
 public abstract class BaseSecurityInterceptor {
     private final List<IdentityElementContextProvider> identityElementContextProviders;
 
-    public BaseSecurityInterceptor(SecurityConfiguration securityConfiguration) {
+    public BaseSecurityInterceptor(final SecurityConfiguration securityConfiguration) {
         this.identityElementContextProviders = securityConfiguration.getIdentityElementContextProviders();
     }
 
-    protected void addSecurityIdentity(Context context) throws KasperSecurityException {
+    protected void addSecurityIdentity(final Context context) throws KasperSecurityException {
         for (IdentityElementContextProvider provider : identityElementContextProviders) {
             provider.provideIdentityElement(context);
         }
