@@ -106,6 +106,17 @@ public class InterceptorChain<INPUT, OUTPUT> {
         return actor.get().process(input, context, next.get());
     }
 
+    /**
+     * @return the last interceptor of this chain
+     */
+    public Optional<Interceptor<INPUT, OUTPUT>> last() {
+        if (next.isPresent() && next.get().actor.isPresent()) {
+            return next.get().last();
+        } else {
+            return actor;
+        }
+    }
+
     public InterceptorChain<INPUT, OUTPUT> withPrevious(final Interceptor<INPUT, OUTPUT> previous) {
         return new InterceptorChain<>(previous, this);
     }

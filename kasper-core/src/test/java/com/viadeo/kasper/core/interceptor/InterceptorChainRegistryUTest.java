@@ -86,7 +86,7 @@ public class InterceptorChainRegistryUTest {
         // Given
         final Class key = String.class;
         final Interceptor<Object, Object> tail = createMockedInterceptor("tail");
-        chainRegistry.create(key, tail);
+        chainRegistry.create(key, new MockInterceptorFactory(tail));
 
         // When
         final Optional<InterceptorChain<Object, Object>> chainOptional = chainRegistry.get(key);
@@ -105,7 +105,7 @@ public class InterceptorChainRegistryUTest {
         final Interceptor<Object, Object> tail = createMockedInterceptor("tail");
 
         // When
-        final Optional<InterceptorChain<Object, Object>> chainOptional = chainRegistry.create(key, tail);
+        final Optional<InterceptorChain<Object, Object>> chainOptional = chainRegistry.create(key, new MockInterceptorFactory(tail));
 
         // Then
         assertNotNull(chainOptional);
@@ -127,7 +127,7 @@ public class InterceptorChainRegistryUTest {
         chainRegistry.register(headFactory);
 
         // When
-        final Optional<InterceptorChain<Object, Object>> chainOptional = chainRegistry.create(key, tail);
+        final Optional<InterceptorChain<Object, Object>> chainOptional = chainRegistry.create(key, new MockInterceptorFactory(tail));
 
         // Then
         assertNotNull(chainOptional);
@@ -150,7 +150,7 @@ public class InterceptorChainRegistryUTest {
         chainRegistry.register(new MockInterceptorFactory(elem2));
 
         // When
-        final Optional<InterceptorChain<Object, Object>> chainOptional = chainRegistry.create(key, tail);
+        final Optional<InterceptorChain<Object, Object>> chainOptional = chainRegistry.create(key, new MockInterceptorFactory(tail));
 
         // Then
         assertNotNull(chainOptional);

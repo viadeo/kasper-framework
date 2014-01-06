@@ -12,6 +12,7 @@ import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,8 +27,8 @@ public class CommandValidationInterceptorFactory extends CommandInterceptorFacto
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<InterceptorChain<Command, Command>> create(final TypeToken<?> type) {
-        final Interceptor<Command, Command> interceptor;
+    public Optional<InterceptorChain<Command, CommandResponse>> create(final TypeToken<?> type) {
+        final Interceptor<Command, CommandResponse> interceptor;
 
         try {
             interceptor = new CommandValidationInterceptor(Validation.buildDefaultValidatorFactory());

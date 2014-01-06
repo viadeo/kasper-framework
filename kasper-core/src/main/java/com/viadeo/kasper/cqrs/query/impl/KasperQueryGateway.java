@@ -17,7 +17,7 @@ import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptor;
+import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptorFactory;
 import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -173,8 +173,8 @@ public class KasperQueryGateway implements QueryGateway {
 
         queryHandler.setQueryGateway(this);
 
-        // create immediately the chain instead of lazy mode
-        interceptorChainRegistry.create(queryHandlerClass, new QueryHandlerInterceptor(queryHandler));
+        // create immediately the interceptor chain instead of lazy mode
+        interceptorChainRegistry.create(queryHandlerClass, new QueryHandlerInterceptorFactory(queryHandler));
     }
 
     protected Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> getInterceptorChain(final Class<? extends Query> queryClass) {
@@ -195,7 +195,7 @@ public class KasperQueryGateway implements QueryGateway {
 
         return interceptorChainRegistry.create(
                 queryHandlerClass,
-                new QueryHandlerInterceptor<>(queryHandlerOptional.get())
+                new QueryHandlerInterceptorFactory(queryHandlerOptional.get())
         );
     }
 

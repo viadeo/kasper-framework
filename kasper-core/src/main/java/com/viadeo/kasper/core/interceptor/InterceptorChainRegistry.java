@@ -12,55 +12,56 @@ import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 
 import java.util.List;
-import java.util.Map;
+import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class InterceptorChainRegistry<INPUT, OUTPUT> {
 
     private final List<InterceptorFactory<INPUT, OUTPUT>> interceptorFactories;
-    private final Map<Class, InterceptorChain<INPUT, OUTPUT>> chains;
+    private final ConcurrentMap<Class, InterceptorChain<INPUT, OUTPUT>> chains;
 
     // ------------------------------------------------------------------------
 
     public InterceptorChainRegistry() {
-        this.interceptorFactories = Lists.newArrayList();
-        this.chains = Maps.newHashMap();
+        this(Lists.<InterceptorFactory<INPUT, OUTPUT>>newArrayList());
+    }
+
+    public InterceptorChainRegistry(final List<InterceptorFactory<INPUT, OUTPUT>> interceptorFactories) {
+        this.interceptorFactories = Lists.newArrayList(checkNotNull(interceptorFactories));
+        this.chains = Maps.newConcurrentMap();
     }
 
     // ------------------------------------------------------------------------
 
-    public void register(final InterceptorFactory<INPUT, OUTPUT> interceptorFactory) {
-        this.interceptorFactories.add(checkNotNull(interceptorFactory));
-    }
-
     public Optional<InterceptorChain<INPUT, OUTPUT>> create(final Class key,
-                                                            final Interceptor<INPUT, OUTPUT> tail) {
+                                                            final InterceptorFactory<INPUT, OUTPUT> tailFactory) {
         checkNotNull(key);
-        checkNotNull(tail);
+        checkNotNull(tailFactory);
 
-        final Optional<InterceptorChain<INPUT, OUTPUT>> optionalChain = new CompositeInterceptorFactory<>(
-                interceptorFactories
-        ).create(
-                TypeToken.of(key),
-                InterceptorChain.makeChain(tail)
-        );
+        Optional<InterceptorChain<INPUT, OUTPUT>> optionalInterceptorChain = get(key);
 
-        final InterceptorChain<INPUT, OUTPUT> interceptorChain;
+        if( ! optionalInterceptorChain.isPresent()){
+            final List<InterceptorFactory<INPUT, OUTPUT>> factories = Lists.newArrayList();
+            factories.addAll(interceptorFactories);
+            factories.add(tailFactory);
 
-        if (optionalChain.isPresent()) {
-            interceptorChain = optionalChain.get();
-        } else {
-            interceptorChain = InterceptorChain.makeChain(tail);
+            optionalInterceptorChain = new CompositeInterceptorFactory<>(factories).create(TypeToken.of(key));
+            chains.putIfAbsent(key, optionalInterceptorChain.get());
         }
 
-        chains.put(key, interceptorChain);
-
-        return Optional.of(interceptorChain);
+        return optionalInterceptorChain;
     }
+
+    // ------------------------------------------------------------------------
 
     public Optional<InterceptorChain<INPUT, OUTPUT>> get(final Class key) {
         return Optional.fromNullable(chains.get(checkNotNull(key)));
     }
 
+    // ------------------------------------------------------------------------
+
+    public void register(InterceptorFactory<INPUT, OUTPUT> interceptorFactory) {
+        this.interceptorFactories.add(checkNotNull(interceptorFactory));
+    }
 }

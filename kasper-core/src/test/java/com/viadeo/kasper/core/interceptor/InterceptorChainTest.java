@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.interceptor;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.query.Query;
@@ -13,6 +14,8 @@ import com.viadeo.kasper.cqrs.query.QueryResult;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class InterceptorChainTest {
 
@@ -41,6 +44,33 @@ public class InterceptorChainTest {
             assertEquals(e, elt.actor.get());
             elt = actualChain.next.get();
         }
+    }
+
+    @Test
+    public void last_fromEmptyChain_shouldReturnAbsent(){
+        // Given
+        final InterceptorChain<Query, QueryResult> chain = new InterceptorChain<>();
+
+        // When
+        final Optional<Interceptor<Query,QueryResult>> optionalLastInterceptor = chain.last();
+
+        // Then
+        assertFalse(optionalLastInterceptor.isPresent());
+    }
+
+    @Test
+    public void last_shouldReturnLastInterceptor(){
+        // Given
+        final DummyInterceptor d1 = new DummyInterceptor();
+        final DummyInterceptor d2 = new DummyInterceptor();
+        final InterceptorChain<Query, QueryResult> chain = InterceptorChain.makeChain(d1, d2);
+
+        // When
+        final Optional<Interceptor<Query,QueryResult>> optionalLastInterceptor = chain.last();
+
+        // Then
+        assertTrue(optionalLastInterceptor.isPresent());
+        assertEquals(optionalLastInterceptor.get(), d2);
     }
 
 }
