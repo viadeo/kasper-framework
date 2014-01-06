@@ -78,10 +78,10 @@ public class HttpCommandExposer extends HttpExposer {
                               final List<ExposureDescriptor<Command,CommandHandler>> descriptors,
                               final HttpContextDeserializer contextDeserializer,
                               final ObjectMapper mapper) {
-        this.commandGateway = commandGateway;
+        this.commandGateway = checkNotNull(commandGateway);
         this.descriptors = checkNotNull(descriptors);
-        this.contextDeserializer = contextDeserializer;
-        this.mapper = mapper;
+        this.contextDeserializer = checkNotNull(contextDeserializer);
+        this.mapper = checkNotNull(mapper);
         this.aliasRegistry = new AliasRegistry();
     }
 
@@ -186,7 +186,7 @@ public class HttpCommandExposer extends HttpExposer {
 
             final ObjectReader reader = mapper.reader();
 
-            /* parse the input stream to that command, no utility method for inputstream+type?? */
+            /* parse the input stream to that command, no utility method for input stream+type?? */
             parser = reader.getFactory().createJsonParser(req.getInputStream());
             final Command command = reader.readValue(parser, commandClass);
 

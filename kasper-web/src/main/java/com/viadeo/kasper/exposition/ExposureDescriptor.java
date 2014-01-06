@@ -11,10 +11,11 @@ import com.google.common.base.Objects;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ExposureDescriptor<INPUT, HANDLER> {
+
     private final Class<? extends INPUT> input;
     private final Class<? extends HANDLER> handler;
 
-    public ExposureDescriptor(Class<? extends INPUT> input, Class<? extends HANDLER> handler) {
+    public ExposureDescriptor(final Class<? extends INPUT> input, final Class<? extends HANDLER> handler) {
         this.input = checkNotNull(input);
         this.handler = checkNotNull(handler);
     }

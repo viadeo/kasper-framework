@@ -111,28 +111,28 @@ public class HttpQueryExposer extends HttpExposer {
 
     // ------------------------------------------------------------------------
 
+    public HttpQueryExposer(final QueryGateway queryGateway, final List<ExposureDescriptor<Query,QueryHandler>> descriptors) {
+        this(
+                queryGateway,
+                descriptors,
+                new QueryFactoryBuilder().create(),
+                new HttpContextDeserializer(),
+                ObjectMapperProvider.INSTANCE.mapper()
+        );
+    }
+
     public HttpQueryExposer(final QueryGateway queryGateway,
                             final List<ExposureDescriptor<Query,QueryHandler>> descriptors,
                             final QueryFactory queryAdapterFactory,
                             final HttpContextDeserializer contextDeserializer,
                             final ObjectMapper mapper) {
 
-        this.queryGateway = queryGateway;
-        this.descriptors = descriptors;
-        this.queryAdapterFactory = queryAdapterFactory;
-        this.contextDeserializer = contextDeserializer;
-        this.mapper = mapper;
+        this.queryGateway = checkNotNull(queryGateway);
+        this.descriptors = checkNotNull(descriptors);
+        this.queryAdapterFactory = checkNotNull(queryAdapterFactory);
+        this.contextDeserializer = checkNotNull(contextDeserializer);
+        this.mapper = checkNotNull(mapper);
         this.aliasRegistry = new AliasRegistry();
-    }
-
-    public HttpQueryExposer(final QueryGateway queryGateway, final List<ExposureDescriptor<Query,QueryHandler>> descriptors) {
-        this(
-                queryGateway,
-                checkNotNull(descriptors),
-                new QueryFactoryBuilder().create(),
-                new HttpContextDeserializer(),
-                ObjectMapperProvider.INSTANCE.mapper()
-        );
     }
 
     // ------------------------------------------------------------------------
