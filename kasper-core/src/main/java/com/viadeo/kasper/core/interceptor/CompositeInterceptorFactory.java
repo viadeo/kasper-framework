@@ -31,7 +31,9 @@ public class CompositeInterceptorFactory<INPUT, OUTPUT> implements InterceptorFa
 
     public Optional<InterceptorChain<INPUT, OUTPUT>> create(final TypeToken<?> type,
                                                             final InterceptorChain<INPUT, OUTPUT> givenTail) {
-        if ( ! accept(checkNotNull(type))) {
+        checkNotNull(type);
+
+        if (factories.size() == 0) {
             return Optional.absent();
         }
 
@@ -50,11 +52,6 @@ public class CompositeInterceptorFactory<INPUT, OUTPUT> implements InterceptorFa
         }
 
         return Optional.fromNullable(tail);
-    }
-
-    @Override
-    public boolean accept(final TypeToken<?> type) {
-        return (factories.size() > 0);
     }
 
 }

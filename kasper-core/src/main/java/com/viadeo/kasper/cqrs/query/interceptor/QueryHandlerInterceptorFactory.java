@@ -24,7 +24,7 @@ public class QueryHandlerInterceptorFactory extends QueryInterceptorFactory {
     }
 
     @Override
-    protected Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> doCreate(TypeToken<?> type) {
+    public Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> create(TypeToken<?> type) {
         return Optional.of(InterceptorChain.makeChain(new QueryHandlerInterceptor<>(queryHandler)));
     }
 }

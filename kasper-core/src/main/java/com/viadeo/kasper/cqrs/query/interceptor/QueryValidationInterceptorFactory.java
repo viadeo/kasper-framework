@@ -28,7 +28,7 @@ public class QueryValidationInterceptorFactory extends QueryInterceptorFactory {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> doCreate(final TypeToken<?> type) {
+    public Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> create(final TypeToken<?> type) {
         final Interceptor<Query, QueryResponse<QueryResult>> interceptor;
 
         try {
