@@ -56,4 +56,5 @@ public interface PlatformConfiguration {
      * @return the list of interceptor factories dedicated to the query side
      */
     List<QueryInterceptorFactory> queryInterceptorFactories();
+
 }

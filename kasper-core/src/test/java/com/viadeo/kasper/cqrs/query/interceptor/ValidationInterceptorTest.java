@@ -24,6 +24,23 @@ import static org.junit.Assert.fail;
 
 public class ValidationInterceptorTest {
 
+    @Data
+    public static class QueryToValidate implements Query {
+        private static final long serialVersionUID = -2017104008425866649L;
+
+        @NotNull
+        @Size(min = 36, max = 36)
+        private String field;
+
+        QueryToValidate() { }
+
+        QueryToValidate(final String value) {
+            field = value;
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
     @Test
     public void testNotNullValidation() throws Exception {
         // Given
@@ -62,18 +79,4 @@ public class ValidationInterceptorTest {
         }
     }
 
-    @Data
-    public static class QueryToValidate implements Query {
-        private static final long serialVersionUID = -2017104008425866649L;
-
-        @NotNull
-        @Size(min = 36, max = 36)
-        private String field;
-
-        QueryToValidate() { }
-
-        QueryToValidate(final String value) {
-            field = value;
-        }
-    }
 }

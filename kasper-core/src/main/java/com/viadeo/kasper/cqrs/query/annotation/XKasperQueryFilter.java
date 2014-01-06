@@ -16,5 +16,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface XKasperQueryFilter {
+
     Class<? extends QueryInterceptor>[] value() default {};
+
 }

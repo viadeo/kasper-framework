@@ -9,9 +9,7 @@ package com.viadeo.kasper.cqrs.command.impl;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
-import com.viadeo.kasper.core.interceptor.Interceptor;
-import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.core.interceptor.InterceptorChainRepository;
+import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
@@ -19,6 +17,8 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.command.interceptor.CommandHandlerInterceptorFactory;
+import com.viadeo.kasper.cqrs.command.interceptor.KasperCommandInterceptor;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandDispatchInterceptor;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
@@ -36,17 +36,10 @@ public class KasperCommandGateway implements CommandGateway {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperCommandGateway.class);
 
-    protected static final Interceptor<Command,Command> COMMAND_TAIL = new Interceptor<Command, Command>() {
-        @Override
-        public Command process(Command command, Context context, InterceptorChain<Command, Command> chain) throws Exception {
-            return command;
-        }
-    };
-
     private final CommandGateway commandGateway;
     private final KasperCommandBus commandBus;
     private final DomainLocator domainLocator;
-    private final InterceptorChainRepository<Command, Command> interceptorChainRepository;
+    private final InterceptorChainRegistry<Command, CommandResponse> interceptorChainRegistry;
 
     // ------------------------------------------------------------------------
 
@@ -55,7 +48,7 @@ public class KasperCommandGateway implements CommandGateway {
                  new CommandGatewayFactoryBean<CommandGateway>(),
                  commandBus,
                  new DefaultDomainLocator(new CommandHandlerResolver()),
-                 new InterceptorChainRepository<Command, Command>()
+                 new InterceptorChainRegistry<Command, CommandResponse>()
         );
     }
 
@@ -65,7 +58,7 @@ public class KasperCommandGateway implements CommandGateway {
                 new CommandGatewayFactoryBean<CommandGateway>(),
                 commandBus,
                 new DefaultDomainLocator(new CommandHandlerResolver()),
-                new InterceptorChainRepository<Command, Command>(),
+                new InterceptorChainRegistry<Command, CommandResponse>(),
                 commandDispatchInterceptors
         );
     }
@@ -73,12 +66,12 @@ public class KasperCommandGateway implements CommandGateway {
     protected KasperCommandGateway(final CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean,
                                    final KasperCommandBus commandBus,
                                    final DomainLocator domainLocator,
-                                   final InterceptorChainRepository<Command, Command> interceptorChainRepository,
+                                   final InterceptorChainRegistry<Command, CommandResponse> interceptorChainRegistry,
                                    final CommandDispatchInterceptor... commandDispatchInterceptors) {
 
         this.commandBus = checkNotNull(commandBus);
         this.domainLocator = checkNotNull(domainLocator);
-        this.interceptorChainRepository = checkNotNull(interceptorChainRepository);
+        this.interceptorChainRegistry = checkNotNull(interceptorChainRegistry);
 
         checkNotNull(commandGatewayFactoryBean);
         checkNotNull(commandDispatchInterceptors);
@@ -87,7 +80,9 @@ public class KasperCommandGateway implements CommandGateway {
         commandGatewayFactoryBean.setGatewayInterface(CommandGateway.class);
         commandGatewayFactoryBean.setCommandDispatchInterceptors(Lists.newArrayList(commandDispatchInterceptors));
 
-        this.commandBus.setHandlerInterceptors(Lists.<CommandHandlerInterceptor>newArrayList(new KasperCommandInterceptor(interceptorChainRepository)));
+        this.commandBus.setHandlerInterceptors(Lists.<CommandHandlerInterceptor>newArrayList(
+                new KasperCommandInterceptor(interceptorChainRegistry)
+        ));
 
         try {
             commandGatewayFactoryBean.afterPropertiesSet();
@@ -156,7 +151,8 @@ public class KasperCommandGateway implements CommandGateway {
 
         commandHandler.setCommandGateway(this);
 
-        interceptorChainRepository.create(commandClass, COMMAND_TAIL);
+        // create immediately the interceptor chain instead of lazy mode
+        interceptorChainRegistry.create(commandClass, new CommandHandlerInterceptorFactory());
     }
 
     /**
@@ -169,7 +165,7 @@ public class KasperCommandGateway implements CommandGateway {
 
         LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
 
-        interceptorChainRepository.register(interceptorFactory);
+        interceptorChainRegistry.register(interceptorFactory);
     }
 
     /**

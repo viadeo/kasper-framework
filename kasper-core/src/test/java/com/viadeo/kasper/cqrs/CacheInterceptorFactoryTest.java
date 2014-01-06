@@ -19,8 +19,8 @@ import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptor;
-import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptor;
 import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
+import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptor;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Before;
 import org.junit.Test;
@@ -38,12 +38,60 @@ public class CacheInterceptorFactoryTest {
 
     // ------------------------------------------------------------------------
 
+    @XKasperUnregistered
+    @XKasperQueryHandler(domain = DummyDomain.class, cache = @XKasperQueryCache(keys = "someField"))
+    public static class WithFilteredFieldsCacheQueryHandler extends QueryHandler<DummyQuery, DummyResult> {
+        @Override
+        public QueryResponse<DummyResult> retrieve(DummyQuery query) throws Exception {
+            return QueryResponse.of(new DummyResult());
+        }
+    }
+
+    @XKasperUnregistered
+    @XKasperQueryHandler(domain = DummyDomain.class, cache = @XKasperQueryCache(ttl = TTL))
+    public static class WithCacheQueryHandler extends QueryHandler<DummyQuery, DummyResult> {
+        @Override
+        public QueryResponse<DummyResult> retrieve(DummyQuery query) throws Exception {
+            return QueryResponse.of(new DummyResult());
+        }
+    }
+
+    @XKasperUnregistered
+    @XKasperQueryHandler(domain = DummyDomain.class)
+    public static class WithoutCacheQueryHandler extends QueryHandler<DummyQuery, DummyResult> {
+        @Override
+        public QueryResponse<DummyResult> retrieve(DummyQuery query) throws Exception {
+            return QueryResponse.of(new DummyResult());
+        }
+    }
+
+    public static class DummyQuery implements Query {
+        private static final long serialVersionUID = 3528905729942568435L;
+
+        public String someField;
+        public int anotherField;
+
+        public DummyQuery() { }
+
+        public DummyQuery(final String someField, final int anotherField) {
+            this.someField = someField;
+            this.anotherField = anotherField;
+        }
+    }
+
+    public static class DummyResult implements QueryResult {
+        private static final long serialVersionUID = -8799094444094294006L;
+    }
+
+    @XKasperUnregistered
+    public static class DummyDomain implements Domain { }
+
+    // ------------------------------------------------------------------------
+
     public CacheInterceptorFactoryTest() {
         factory = new CacheInterceptorFactory(Caching.getCacheManager());
         KasperMetrics.setMetricRegistry(new MetricRegistry());
     }
-
-    // ------------------------------------------------------------------------
 
     @Before
     public void setUp() {
@@ -51,6 +99,8 @@ public class CacheInterceptorFactoryTest {
                 InterceptorChain.makeChain(new QueryHandlerInterceptor(new WithCacheQueryHandler()))
         );
     }
+
+    // ------------------------------------------------------------------------
 
     @Test
     public void testFactoryForQueryHandlerWithoutCache() {
@@ -114,56 +164,6 @@ public class CacheInterceptorFactoryTest {
         // Then
         assertSame(expected.getResult(), actual.getResult());
     }
-
-    // ------------------------------------------------------------------------
-
-    @XKasperUnregistered
-    @XKasperQueryHandler(domain = DummyDomain.class, cache = @XKasperQueryCache(keys = "someField"))
-    public static class WithFilteredFieldsCacheQueryHandler extends QueryHandler<DummyQuery, DummyResult> {
-        @Override
-        public QueryResponse<DummyResult> retrieve(DummyQuery query) throws Exception {
-            return QueryResponse.of(new DummyResult());
-        }
-    }
-
-    @XKasperUnregistered
-    @XKasperQueryHandler(domain = DummyDomain.class, cache = @XKasperQueryCache(ttl = TTL))
-    public static class WithCacheQueryHandler extends QueryHandler<DummyQuery, DummyResult> {
-        @Override
-        public QueryResponse<DummyResult> retrieve(DummyQuery query) throws Exception {
-            return QueryResponse.of(new DummyResult());
-        }
-    }
-
-    @XKasperUnregistered
-    @XKasperQueryHandler(domain = DummyDomain.class)
-    public static class WithoutCacheQueryHandler extends QueryHandler<DummyQuery, DummyResult> {
-        @Override
-        public QueryResponse<DummyResult> retrieve(DummyQuery query) throws Exception {
-            return QueryResponse.of(new DummyResult());
-        }
-    }
-
-    public static class DummyQuery implements Query {
-        private static final long serialVersionUID = 3528905729942568435L;
-
-        public String someField;
-        public int anotherField;
-
-        public DummyQuery() { }
-
-        public DummyQuery(final String someField, final int anotherField) {
-            this.someField = someField;
-            this.anotherField = anotherField;
-        }
-    }
-
-    public static class DummyResult implements QueryResult {
-        private static final long serialVersionUID = -8799094444094294006L;
-    }
-
-    @XKasperUnregistered
-    public static class DummyDomain implements Domain { }
 
 }
 

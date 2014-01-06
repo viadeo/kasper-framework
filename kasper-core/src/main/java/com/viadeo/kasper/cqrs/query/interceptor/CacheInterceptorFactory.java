@@ -29,22 +29,24 @@ import javax.cache.Caching;
 import java.io.Serializable;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class CacheInterceptorFactory extends QueryInterceptorFactory {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CacheInterceptorFactory.class);
 
-    private static CacheManager defaultCacheManager() {
-        try {
-            return Caching.getCacheManager();
-        } catch (final IllegalStateException ise) {
-            LOGGER.info("No cache manager available, if you want to enable cache support please provide an implementation of JCache - jsr 107.");
-        }
-        return null;
-    }
+    private final CacheManager cacheManager;
 
     // ------------------------------------------------------------------------
 
-    private final CacheManager cacheManager;
+    private static Optional<CacheManager> defaultCacheManager() {
+        try {
+            return Optional.of(Caching.getCacheManager());
+        } catch (final IllegalStateException ise) {
+            LOGGER.info("No cache manager available, if you want to enable cache support please provide an implementation of JCache - jsr 107.");
+        }
+        return Optional.absent();
+    }
 
     // ------------------------------------------------------------------------
 
@@ -52,27 +54,38 @@ public class CacheInterceptorFactory extends QueryInterceptorFactory {
         this(defaultCacheManager());
     }
 
+    private CacheInterceptorFactory(final Optional<CacheManager> optCacheManager) {
+        if (optCacheManager.isPresent()) {
+            this.cacheManager = optCacheManager.get();
+        } else {
+            this.cacheManager = null;
+        }
+    }
+
     public CacheInterceptorFactory(final CacheManager cacheManager) {
-        this.cacheManager = cacheManager;
+        this.cacheManager = checkNotNull(cacheManager);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public boolean accept(TypeToken<?> type) {
-        return super.accept(type) || null == cacheManager;
+    public boolean accept(final TypeToken<?> type) {
+        return super.accept(checkNotNull(type)) || (null == cacheManager);
     }
 
     @Override
     @SuppressWarnings("unchecked")
+    /**
+     * Will not be called if cacheManager is null (accept() returns false)
+     */
     protected Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> doCreate(final TypeToken<?> type) {
-        final Class<?> rawType = type.getRawType();
-
-        final Class<? extends Query> queryClass = new QueryHandlerResolver().getQueryClass((Class<? extends QueryHandler>) rawType);
-        final XKasperQueryCache annotation;
+        final Class<?> rawType = checkNotNull(type).getRawType();
 
         final XKasperQueryHandler queryHandlerAnnotation = rawType.getAnnotation(XKasperQueryHandler.class);
+        final Class<? extends Query> queryClass =
+                new QueryHandlerResolver().getQueryClass((Class<? extends QueryHandler>) rawType);
 
+        final XKasperQueryCache annotation;
         if(null != queryHandlerAnnotation) {
             annotation = queryHandlerAnnotation.cache();
         } else {
@@ -128,20 +141,21 @@ public class CacheInterceptorFactory extends QueryInterceptorFactory {
                             QueryCacheKeyGenerator.class.getTypeParameters()[0]
                     );
 
-            if (!typeOfQuery.getRawType().isAssignableFrom(queryClass)) {
+            if ( ! typeOfQuery.getRawType().isAssignableFrom(queryClass)) {
                 throw new IllegalStateException(
                         String.format("Type %s in %s is not assignable from %s",
                                 typeOfQuery.getRawType().getName(),
                                 keyGenClass.getName(),
-                                queryClass.getName()));
+                                queryClass.getName()
+                        )
+                );
             }
 
             return keyGenClass.newInstance();
 
-        } catch (InstantiationException | IllegalAccessException e) {
+        } catch (final InstantiationException | IllegalAccessException e) {
             throw new RuntimeException(e);
         }
     }
-
 
 }

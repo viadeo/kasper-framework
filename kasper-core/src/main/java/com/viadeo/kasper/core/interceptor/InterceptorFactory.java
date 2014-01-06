@@ -11,8 +11,8 @@ import com.google.common.reflect.TypeToken;
 
 public interface InterceptorFactory<INPUT, OUTPUT> {
 
-    Optional<InterceptorChain<INPUT, OUTPUT>> create(final TypeToken<?> type);
+    Optional<InterceptorChain<INPUT, OUTPUT>> create(TypeToken<?> type);
 
-    boolean accept(final TypeToken<?> type);
+    boolean accept(TypeToken<?> type);
 
 }

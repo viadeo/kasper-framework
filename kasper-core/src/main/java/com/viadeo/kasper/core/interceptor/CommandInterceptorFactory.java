@@ -9,11 +9,13 @@ package com.viadeo.kasper.core.interceptor;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 
-public abstract class CommandInterceptorFactory implements InterceptorFactory<Command, Command> {
+public abstract class CommandInterceptorFactory implements InterceptorFactory<Command, CommandResponse> {
 
     @Override
-    public boolean accept(TypeToken<?> type) {
+    public boolean accept(final TypeToken<?> type) {
         return CommandHandler.class.isAssignableFrom(type.getRawType());
     }
+
 }

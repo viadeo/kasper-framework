@@ -34,6 +34,8 @@ public class InterceptorChain<INPUT, OUTPUT> {
         return TAIL;
     }
 
+    // ------------------------------------------------------------------------
+
     @SafeVarargs
     public static <I, O> InterceptorChain<I, O> makeChain(final Interceptor<I, O>...chain) {
         return makeChain(Lists.newArrayList(checkNotNull(chain)));
@@ -78,6 +80,7 @@ public class InterceptorChain<INPUT, OUTPUT> {
     public final Optional<InterceptorChain<INPUT, OUTPUT>> next;
 
     // ------------------------------------------------------------------------
+
     public InterceptorChain() {
         this.actor = Optional.absent();
         this.next = Optional.absent();
@@ -97,17 +100,28 @@ public class InterceptorChain<INPUT, OUTPUT> {
     // ------------------------------------------------------------------------
 
     public OUTPUT next(final INPUT input, final Context context) throws Exception {
-        if (!actor.isPresent()) {
+        if ( ! actor.isPresent()) {
             throw new NoSuchElementException("Actors chain has not more elements !");
         }
         return actor.get().process(input, context, next.get());
     }
 
-    public InterceptorChain<INPUT, OUTPUT> withPrevious(Interceptor<INPUT, OUTPUT> previous) {
+    /**
+     * @return the last interceptor of this chain
+     */
+    public Optional<Interceptor<INPUT, OUTPUT>> last() {
+        if (next.isPresent() && next.get().actor.isPresent()) {
+            return next.get().last();
+        } else {
+            return actor;
+        }
+    }
+
+    public InterceptorChain<INPUT, OUTPUT> withPrevious(final Interceptor<INPUT, OUTPUT> previous) {
         return new InterceptorChain<>(previous, this);
     }
 
-    public InterceptorChain<INPUT, OUTPUT> withNextChain(InterceptorChain<INPUT, OUTPUT> chain) {
+    public InterceptorChain<INPUT, OUTPUT> withNextChain(final InterceptorChain<INPUT, OUTPUT> chain) {
         return new InterceptorChain<>(this.actor.get(), chain);
     }
 
