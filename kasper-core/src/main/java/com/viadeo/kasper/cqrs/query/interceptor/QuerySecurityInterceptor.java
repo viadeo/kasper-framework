@@ -13,7 +13,7 @@ import com.viadeo.kasper.exception.KasperSecurityException;
 import com.viadeo.kasper.security.SecurityConfiguration;
 
 public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult> extends BaseSecurityInterceptor
-        implements Interceptor<Q, QueryResponse<R>>  {
+        implements Interceptor<Q, QueryResponse<R>> {
 
     public QuerySecurityInterceptor(SecurityConfiguration securityConfiguration) {
         super(securityConfiguration);
@@ -24,7 +24,7 @@ public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult> ex
                                     final Context context,
                                     final InterceptorChain<Q, QueryResponse<R>> chain) throws Exception {
         try {
-        addSecurityIdentity(context);
+            addSecurityIdentity(context);
         } catch (KasperSecurityException e) {
             return QueryResponse.error(
                     new KasperReason(

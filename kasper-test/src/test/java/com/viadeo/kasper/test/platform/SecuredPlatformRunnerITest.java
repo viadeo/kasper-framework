@@ -1,5 +1,7 @@
 package com.viadeo.kasper.test.platform;
 
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.context.Context;
@@ -13,12 +15,15 @@ import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.exception.KasperSecurityException;
 import com.viadeo.kasper.security.IdentityElementContextProvider;
 import com.viadeo.kasper.security.SecurityConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import sun.org.mozilla.javascript.internal.ScriptRuntime;
 
 import javax.inject.Inject;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -32,6 +37,7 @@ import static junit.framework.Assert.assertNotNull;
 public class SecuredPlatformRunnerITest {
 
     final private static String SECURITY_TOKEN = "SET_BY_SECURITY_INTERCEPTOR";
+    final private static String ERROR_MSG = "Can't decrypt security token";
 
     @Inject
     private CommandGateway commandGateway;
@@ -39,18 +45,29 @@ public class SecuredPlatformRunnerITest {
     @Inject
     private QueryGateway queryGateway;
 
+    static private class IdentityProvider implements IdentityElementContextProvider {
+        boolean shouldThrowException = false;
+        @Override
+        public void provideIdentityElement(Context context) {
+            if (shouldThrowException) {
+                throw new KasperSecurityException(ERROR_MSG);
+            }
+            context.setSecurityToken(SECURITY_TOKEN);
+        }
+        public void setShouldThrowException(boolean shouldThrowException) {
+            this.shouldThrowException = shouldThrowException;
+        }
+    }
+
+    static private IdentityProvider identityProvider = new IdentityProvider();
+
     static final class SecuredKasperPlatformConfiguration extends KasperPlatformConfiguration {
         SecuredKasperPlatformConfiguration() {
+
             super(new SecurityConfiguration() {
                 @Override
                 public List<IdentityElementContextProvider> getIdentityElementContextProviders() {
-                    IdentityElementContextProvider provider = new IdentityElementContextProvider() {
-                        @Override
-                        public void provideIdentityElement(Context context) {
-                            context.setSecurityToken(SECURITY_TOKEN);
-                        }
-                    };
-                    return Collections.singletonList(provider);
+                    return Collections.singletonList((IdentityElementContextProvider)identityProvider);
                 }
             });
         }
@@ -125,7 +142,32 @@ public class SecuredPlatformRunnerITest {
         assertNotNull(queryGateway);
         Context context = new DefaultContext();
         QueryResponse<TestResult> response = queryGateway.retrieve(new TestQuery(), context);
-        assertEquals("Context's security token not set correctly", SECURITY_TOKEN, response.getResult().getSecurityToken());
+        assertEquals("Context's security token not set correctly",
+                SECURITY_TOKEN, response.getResult().getSecurityToken());
+    }
+
+    @Test
+    public void securityInterceptorOnQuery_shouldReturnQueryErrorWhenExceptionIsThrown() throws Exception {
+        assertNotNull(queryGateway);
+        Context context = new DefaultContext();
+        identityProvider.setShouldThrowException(true);
+        QueryResponse<TestResult> response = queryGateway.retrieve(new TestQuery(), context);
+        KasperReason reason = response.getReason();
+        assertNotNull(reason);
+        assertEquals("Interceptor didn't set INVALID_INPUT reason code",
+                CoreReasonCode.INVALID_INPUT.name(), reason.getCode());
+    }
+
+    @Test
+    public void securityInterceptorOnCommand_shouldReturnCommandErrorWhenExceptionIsThrown() throws Exception {
+        assertNotNull(commandGateway);
+        Context context = new DefaultContext();
+        identityProvider.setShouldThrowException(true);
+        CommandResponse response = commandGateway.sendCommandAndWaitForAResponse(new TestCommand(), context);
+        KasperReason reason = response.getReason();
+        assertNotNull(reason);
+        assertEquals("Interceptor didn't set INVALID_INPUT reason code",
+                CoreReasonCode.INVALID_INPUT.name(), reason.getCode());
     }
 
 }
