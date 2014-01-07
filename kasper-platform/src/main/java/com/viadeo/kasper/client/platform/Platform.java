@@ -120,6 +120,7 @@ public interface Platform {
             this.queryGateway = checkNotNull(platformConfiguration.queryGateway());
             this.configuration = checkNotNull(platformConfiguration.configuration());
             this.metricRegistry = checkNotNull(platformConfiguration.metricRegistry());
+            this.extraComponents.putAll(checkNotNull(platformConfiguration.extraComponents()));
         }
 
         // --------------------------------------------------------------------
