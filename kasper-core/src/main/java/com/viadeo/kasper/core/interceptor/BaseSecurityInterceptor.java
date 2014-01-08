@@ -2,21 +2,17 @@ package com.viadeo.kasper.core.interceptor;
 
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.exception.KasperSecurityException;
-import com.viadeo.kasper.security.IdentityElementContextProvider;
+import com.viadeo.kasper.security.IdentityContextProvider;
 import com.viadeo.kasper.security.SecurityConfiguration;
 
-import java.util.List;
-
 public abstract class BaseSecurityInterceptor {
-    private final List<IdentityElementContextProvider> identityElementContextProviders;
+    private final IdentityContextProvider identityContextProvider;
 
     public BaseSecurityInterceptor(final SecurityConfiguration securityConfiguration) {
-        this.identityElementContextProviders = securityConfiguration.getIdentityElementContextProviders();
+        this.identityContextProvider = securityConfiguration.getIdentityContextProvider();
     }
 
     protected void addSecurityIdentity(final Context context) throws KasperSecurityException {
-        for (IdentityElementContextProvider provider : identityElementContextProviders) {
-            provider.provideIdentityElement(context);
-        }
+        identityContextProvider.provideIdentity(context);
     }
 }

@@ -7,5 +7,5 @@ import java.util.List;
  */
 
 public interface SecurityConfiguration {
-    List<IdentityElementContextProvider> getIdentityElementContextProviders();
+    IdentityContextProvider getIdentityContextProvider();
 }

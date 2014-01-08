@@ -16,14 +16,12 @@ import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.exception.KasperSecurityException;
-import com.viadeo.kasper.security.IdentityElementContextProvider;
+import com.viadeo.kasper.security.IdentityContextProvider;
 import com.viadeo.kasper.security.SecurityConfiguration;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import sun.org.mozilla.javascript.internal.ScriptRuntime;
 
 import javax.inject.Inject;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -45,10 +43,10 @@ public class SecuredPlatformRunnerITest {
     @Inject
     private QueryGateway queryGateway;
 
-    static private class IdentityProvider implements IdentityElementContextProvider {
+    static private class IdentityProvider implements IdentityContextProvider {
         boolean shouldThrowException = false;
         @Override
-        public void provideIdentityElement(Context context) {
+        public void provideIdentity(Context context) {
             if (shouldThrowException) {
                 throw new KasperSecurityException(ERROR_MSG);
             }
@@ -66,8 +64,8 @@ public class SecuredPlatformRunnerITest {
 
             super(new SecurityConfiguration() {
                 @Override
-                public List<IdentityElementContextProvider> getIdentityElementContextProviders() {
-                    return Collections.singletonList((IdentityElementContextProvider)identityProvider);
+                public IdentityContextProvider getIdentityContextProvider() {
+                    return identityProvider;
                 }
             });
         }
