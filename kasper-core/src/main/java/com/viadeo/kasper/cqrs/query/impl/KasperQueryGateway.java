@@ -10,11 +10,14 @@ import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
+import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
+import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
-import com.viadeo.kasper.cqrs.RequestActorsChain;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
+import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptorFactory;
 import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,6 +39,7 @@ public class KasperQueryGateway implements QueryGateway {
     private static final String GLOBAL_METER_ERRORS_NAME = name(QueryGateway.class, "errors");
 
     private final QueryHandlersLocator queryHandlersLocator;
+    private final InterceptorChainRegistry<Query, QueryResponse<QueryResult>> interceptorChainRegistry;
 
     // -----------------------------------------------------------------------
 
@@ -44,7 +48,13 @@ public class KasperQueryGateway implements QueryGateway {
     }
 
     public KasperQueryGateway(final QueryHandlersLocator queryHandlersLocator) {
+        this(queryHandlersLocator, new InterceptorChainRegistry<Query, QueryResponse<QueryResult>>());
+    }
+
+    public KasperQueryGateway(final QueryHandlersLocator queryHandlersLocator,
+                              final InterceptorChainRegistry<Query, QueryResponse<QueryResult>> interceptorChainRegistry) {
         this.queryHandlersLocator = checkNotNull(queryHandlersLocator);
+        this.interceptorChainRegistry = interceptorChainRegistry;
     }
 
     // ------------------------------------------------------------------------
@@ -68,8 +78,8 @@ public class KasperQueryGateway implements QueryGateway {
 
         // Search for associated handler --------------------------------------
         LOGGER.debug("Retrieve request processor chain for query " + queryClass.getSimpleName());
-        Optional<RequestActorsChain<Query, QueryResponse<QueryResult>>> optionalRequestChain =
-                queryHandlersLocator.getRequestActorChain(queryClass);
+        final Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> optionalRequestChain =
+                getInterceptorChain(queryClass);
 
         if (!optionalRequestChain.isPresent()) {
             timer.close();
@@ -98,7 +108,7 @@ public class KasperQueryGateway implements QueryGateway {
         getMetricRegistry().histogram(name(queryClass, "requests-times")).update(time);
         getMetricRegistry().meter(name(queryClass, "requests")).mark();
 
-        if ((null != exception) || ! ret.isOK()) {
+        if (null != exception) {
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
             getMetricRegistry().meter(name(queryClass, "errors")).mark();
         }
@@ -120,8 +130,22 @@ public class KasperQueryGateway implements QueryGateway {
      * @param global the kind of the adapter. If true then the adapter will be applied to every query handler component.
      *               Otherwise the  adapter will be applied only on the component whose reference it
      */
+    @Deprecated
     public void register(final String name, final  QueryHandlerAdapter adapter, final boolean global) {
         queryHandlersLocator.registerAdapter(name, adapter, global);
+    }
+
+    /**
+     * Register an interceptor factory to the gateway
+     *
+     * @param interceptorFactory the query interceptor factory to register
+     */
+    public void register(final QueryInterceptorFactory interceptorFactory) {
+        checkNotNull(interceptorFactory);
+
+        LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
+
+        interceptorChainRegistry.register(interceptorFactory);
     }
 
     /**
@@ -129,6 +153,7 @@ public class KasperQueryGateway implements QueryGateway {
      *
      * @param queryHandler the query handler to register
      */
+    @SuppressWarnings("unchecked")
     public void register(final QueryHandler queryHandler) {
         checkNotNull(queryHandler);
 
@@ -144,22 +169,34 @@ public class KasperQueryGateway implements QueryGateway {
             handlerName = annotation.name();
         }
 
-        final Class<? extends QueryHandlerAdapter>[] adapters = annotation.adapters();
+        queryHandlersLocator.registerHandler(handlerName, queryHandler, annotation.domain());
 
-        if (null != adapters) {
-            for (final Class<? extends QueryHandlerAdapter> adapterClass : adapters) {
-                LOGGER.debug(String.format("  --> w/ adapter %s", adapterClass.getSimpleName()));
+        queryHandler.setQueryGateway(this);
 
-                if ( !queryHandlersLocator.containsAdapter(adapterClass)) {
-                    throw new KasperException("Unknown adapter : " + adapterClass);
-                }
+        // create immediately the interceptor chain instead of lazy mode
+        interceptorChainRegistry.create(queryHandlerClass, new QueryHandlerInterceptorFactory(queryHandler));
+    }
 
-                this.queryHandlersLocator.registerAdapterForQueryHandler(queryHandlerClass, adapterClass);
-            }
+    protected Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> getInterceptorChain(final Class<? extends Query> queryClass) {
+        final Optional<QueryHandler<Query, QueryResult>> queryHandlerOptional = queryHandlersLocator.getHandlerFromQueryClass(queryClass);
+
+        if ( ! queryHandlerOptional.isPresent()) {
+            return Optional.absent();
         }
 
-        queryHandlersLocator.registerHandler(handlerName, queryHandler, annotation.domain());
-        queryHandler.setQueryGateway(this);
+        final Class<? extends QueryHandler> queryHandlerClass = queryHandlerOptional.get().getClass();
+
+        final Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> chainOptional =
+                interceptorChainRegistry.get(queryHandlerClass);
+
+        if (chainOptional.isPresent()) {
+            return chainOptional;
+        }
+
+        return interceptorChainRegistry.create(
+                queryHandlerClass,
+                new QueryHandlerInterceptorFactory(queryHandlerOptional.get())
+        );
     }
 
 }

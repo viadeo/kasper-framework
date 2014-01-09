@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.cqrs.query.cache;
+package com.viadeo.kasper.cqrs.query.interceptor.cache;
 
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;

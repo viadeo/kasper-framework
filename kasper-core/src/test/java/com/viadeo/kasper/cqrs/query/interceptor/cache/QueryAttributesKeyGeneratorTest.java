@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.cqrs.query.cache.impl;
+package com.viadeo.kasper.cqrs.query.interceptor.cache;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -79,6 +79,7 @@ public class QueryAttributesKeyGeneratorTest {
     // -----------------------------------------------------------------------
 
     public static class SomeQuery implements Query {
+        private static final long serialVersionUID = -3365219562073272864L;
         public String str = "someStr";
         public int integer = 11;
     }

@@ -6,18 +6,15 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
+import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.components.commandbus.KasperCommandBus;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
-import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.domain.EventMessage;
@@ -32,10 +29,16 @@ public class KasperPlatformFixture
 
     private final RecordingPlatform platform;
     private final SpyEventBus eventBus;
+    private final Config config;
 
     private DomainBundle domainBundle;
 
     public KasperPlatformFixture() {
+        this(ConfigFactory.empty());
+    }
+
+    public KasperPlatformFixture(final Config config) {
+        this.config = config;
         this.platform = new RecordingPlatform();
         this.eventBus = new SpyEventBus(platform);
     }
@@ -51,11 +54,8 @@ public class KasperPlatformFixture
     private void initialize() {
         platform.set(
                 new Platform.Builder()
-                        .withConfiguration(ConfigFactory.empty())
+                        .withConfiguration(config)
                         .withEventBus(eventBus)
-                        .withQueryGateway(new KasperQueryGateway())
-                        .withCommandGateway(new KasperCommandGateway(new KasperCommandBus()))
-                        .withMetricRegistry(new MetricRegistry())
                         .addDomainBundle(domainBundle)
                         .build()
         );

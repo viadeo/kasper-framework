@@ -9,7 +9,6 @@ package com.viadeo.kasper.core.boot;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryHandlerAdapter;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,17 +49,6 @@ public class QueryHandlersProcessor extends SingletonAnnotationProcessor<XKasper
 		} else {
 			handlerName = annotation.name();
 		}
-
-        final Class<? extends QueryHandlerAdapter>[] adapters = annotation.adapters();
-        if (null != adapters) {
-            for (final Class<? extends QueryHandlerAdapter> adapterClass : adapters) {
-                LOGGER.info(String.format("  --> w/ adapter %s", adapterClass.getSimpleName()));
-                this.queryHandlersLocator.registerAdapterForQueryHandler(
-                        (Class<? extends QueryHandler>) queryHandlerClazz,
-                        adapterClass
-                );
-            }
-        }
 
 		//- Register the query handler to the locator -------------------------
 		this.queryHandlersLocator.registerHandler(handlerName, queryHandler, annotation.domain());

@@ -20,9 +20,10 @@ import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptorFactory;
 import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.*;
-import com.viadeo.kasper.cqrs.Adapter;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
@@ -30,7 +31,6 @@ import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryHandlerAdapter;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.CommandEventListener;
@@ -81,7 +81,8 @@ public interface Platform {
 
         private final Collection<DomainBundle> domainBundles;
         private final Collection<Plugin> kasperPlugins;
-        private final Collection<Adapter> adapters;
+        private final List<QueryInterceptorFactory> queryInterceptorFactories;
+        private final List<CommandInterceptorFactory> commandInterceptorFactories;
         private final Map<ExtraComponentKey, Object> extraComponents;
         private final DomainDescriptorFactory domainDescriptorFactory;
 
@@ -108,8 +109,9 @@ public interface Platform {
             this.repositoryManager = checkNotNull(repositoryManager);
             this.domainBundles = Lists.newArrayList();
             this.kasperPlugins = Lists.newArrayList();
-            this.adapters = Lists.newArrayList();
             this.extraComponents = Maps.newHashMap();
+            this.queryInterceptorFactories = Lists.newArrayList();
+            this.commandInterceptorFactories = Lists.newArrayList();
         }
 
         public Builder(final PlatformConfiguration platformConfiguration) {
@@ -121,6 +123,8 @@ public interface Platform {
             this.configuration = checkNotNull(platformConfiguration.configuration());
             this.metricRegistry = checkNotNull(platformConfiguration.metricRegistry());
             this.extraComponents.putAll(checkNotNull(platformConfiguration.extraComponents()));
+            this.queryInterceptorFactories.addAll(checkNotNull(platformConfiguration.queryInterceptorFactories()));
+            this.commandInterceptorFactories.addAll(checkNotNull(platformConfiguration.commandInterceptorFactories()));
         }
 
         // --------------------------------------------------------------------
@@ -137,9 +141,15 @@ public interface Platform {
             return this;
         }
 
-        public Builder addGlobalAdapter(final Adapter adapter, final Adapter... adapters) {
-            this.adapters.add(checkNotNull(adapter));
-            with(this.adapters, adapters);
+        public Builder addQueryInterceptorFactory(final QueryInterceptorFactory factory, final QueryInterceptorFactory... factories) {
+            this.queryInterceptorFactories.add(checkNotNull(factory));
+            with(this.queryInterceptorFactories, factories);
+            return this;
+        }
+
+        public Builder addCommandInterceptorFactory(final CommandInterceptorFactory factory, final CommandInterceptorFactory... factories) {
+            this.commandInterceptorFactories.add(checkNotNull(factory));
+            with(this.commandInterceptorFactories, factories);
             return this;
         }
 
@@ -201,9 +211,9 @@ public interface Platform {
 
             final BuilderContext context = new BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, extraComponents);
 
-            initializeKasperMetrics();
+            registerInterceptors();
 
-            configureGlobalAdapters();
+            initializeKasperMetrics();
 
             final Collection<DomainDescriptor> domainDescriptors = configureDomainBundles(context);
 
@@ -214,15 +224,20 @@ public interface Platform {
             return platform;
         }
 
-        protected void configureGlobalAdapters() {
-            for (final Adapter adapter : adapters) {
-                LOGGER.info("Registering global adapter : {}", adapter.getName());
+        protected void registerInterceptors() {
+            for (final DomainBundle bundle : domainBundles) {
+                commandInterceptorFactories.addAll(bundle.getCommandInterceptorFactories());
+                queryInterceptorFactories.addAll(bundle.getQueryInterceptorFactories());
+            }
 
-                if (QueryHandlerAdapter.class.isAssignableFrom(adapter.getClass())) {
-                    queryGateway.register(adapter.getName(), (QueryHandlerAdapter) adapter, true);
-                } else {
-                    LOGGER.warn("Unrecognized adapter type : {}", adapter.getClass().getName());
-                }
+            for (final QueryInterceptorFactory interceptorFactory : queryInterceptorFactories) {
+                LOGGER.info("Registering query interceptor factory : {}", interceptorFactory.getClass().getSimpleName());
+                queryGateway.register(interceptorFactory);
+            }
+
+            for (final CommandInterceptorFactory interceptorFactory : commandInterceptorFactories) {
+                LOGGER.info("Registering command interceptor factory : {}", interceptorFactory.getClass().getSimpleName());
+                commandGateway.register(interceptorFactory);
             }
         }
 
@@ -240,14 +255,6 @@ public interface Platform {
             LOGGER.info("Configuring bundle : {}", bundle.getName());
 
             bundle.configure(context);
-
-            for (final Adapter adapter : bundle.getAdapters()) {
-                if (QueryHandlerAdapter.class.isAssignableFrom(adapter.getClass())) {
-                    queryGateway.register(adapter.getName(), (QueryHandlerAdapter) adapter, false);
-                } else {
-                    LOGGER.warn("Unrecognized adapter type : {}", adapter.getClass().getName());
-                }
-            }
 
             for (final Repository repository : bundle.getRepositories()) {
                 repository.init();

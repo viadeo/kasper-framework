@@ -19,6 +19,7 @@ dependencies {
     compile libraries.YAMMER_METRICS
     compile libraries.JCACHE
     compile libraries.VALIDATION_API
+    compile libraries.GUAVA
 
     testCompile libraries.JCACHE_EHCACHE
     testCompile libraries.HIBERNATE_VALIDATOR
