@@ -10,4 +10,6 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 
-public abstract class QueryInterceptorFactory implements InterceptorFactory<Query, QueryResponse<QueryResult>> { }
+public abstract class QueryInterceptorFactory implements InterceptorFactory<Query, QueryResponse<QueryResult>> {
+
+}

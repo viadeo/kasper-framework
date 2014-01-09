@@ -9,4 +9,6 @@ package com.viadeo.kasper.core.interceptor;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 
-public abstract class CommandInterceptorFactory implements InterceptorFactory<Command, CommandResponse> { }
+public abstract class CommandInterceptorFactory implements InterceptorFactory<Command, CommandResponse> {
+
+}
