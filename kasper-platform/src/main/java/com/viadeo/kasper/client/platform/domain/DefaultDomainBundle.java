@@ -8,8 +8,9 @@ package com.viadeo.kasper.client.platform.domain;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
-import com.viadeo.kasper.cqrs.Adapter;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
@@ -26,7 +27,8 @@ public class DefaultDomainBundle implements DomainBundle {
     protected final List<QueryHandler> queryHandlers;
     protected final List<Repository> repositories;
     protected final List<EventListener> eventListeners;
-    protected final List<Adapter> adapters;
+    protected final List<QueryInterceptorFactory> queryInterceptorFactories;
+    protected final List<CommandInterceptorFactory> commandInterceptorFactories;
     protected final Domain domain;
     protected final String name;
 
@@ -41,7 +43,8 @@ public class DefaultDomainBundle implements DomainBundle {
              Lists.<QueryHandler>newArrayList(),
              Lists.<Repository>newArrayList(),
              Lists.<EventListener>newArrayList(),
-             Lists.<Adapter>newArrayList(),
+             Lists.<QueryInterceptorFactory>newArrayList(),
+             Lists.<CommandInterceptorFactory>newArrayList(),
              domain,
              name
         );
@@ -51,14 +54,16 @@ public class DefaultDomainBundle implements DomainBundle {
                                final List<QueryHandler> queryHandlers,
                                final List<Repository> repositories,
                                final List<EventListener> eventListeners,
-                               final List<Adapter> adapters,
+                               final List<QueryInterceptorFactory> queryInterceptorFactories,
+                               final List<CommandInterceptorFactory> commandInterceptorFactories,
                                final Domain domain,
                                final String name) {
         this.commandHandlers = checkNotNull(commandHandlers);
         this.queryHandlers = checkNotNull(queryHandlers);
         this.repositories = checkNotNull(repositories);
         this.eventListeners = checkNotNull(eventListeners);
-        this.adapters = checkNotNull(adapters);
+        this.queryInterceptorFactories = checkNotNull(queryInterceptorFactories);
+        this.commandInterceptorFactories = checkNotNull(commandInterceptorFactories);
         this.domain = checkNotNull(domain);
         this.name = checkNotNull(name);
     }
@@ -99,8 +104,12 @@ public class DefaultDomainBundle implements DomainBundle {
     }
 
     @Override
-    public List<Adapter> getAdapters() {
-        return adapters;
+    public List<QueryInterceptorFactory> getQueryInterceptorFactories() {
+        return queryInterceptorFactories;
     }
 
+    @Override
+    public List<CommandInterceptorFactory> getCommandInterceptorFactories() {
+        return commandInterceptorFactories;
+    }
 }

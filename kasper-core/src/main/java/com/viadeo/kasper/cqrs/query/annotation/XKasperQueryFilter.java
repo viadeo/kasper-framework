@@ -6,39 +6,17 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.annotation;
 
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.core.interceptor.QueryInterceptor;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-/**
- * Query handler marker
- */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-public @interface XKasperQueryHandler {
+public @interface XKasperQueryFilter {
 
-    /**
-     * @return the name of the handler
-     */
-    String name() default "";
-
-    /**
-     * @return the description of the handler
-     */
-    String description() default "";
-
-    /**
-     * @return the associated domain
-     */
-    Class<? extends Domain> domain();
-
-    /**
-     * Whether the response of this query handler should be cached.
-     * False by default.
-     */
-    XKasperQueryCache cache() default @XKasperQueryCache(enabled = false);
+    Class<? extends QueryInterceptor>[] value() default {};
 
 }

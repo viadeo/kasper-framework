@@ -13,7 +13,8 @@ import com.viadeo.kasper.KasperTestIdGenerator;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
-import com.viadeo.kasper.cqrs.Adapter;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
@@ -56,7 +57,8 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
                         Lists.<QueryHandler>newArrayList(),
                         Lists.<Repository>newArrayList(),
                         Lists.<EventListener>newArrayList(new TestListener()),
-                        Lists.<Adapter>newArrayList(),
+                        Lists.<QueryInterceptorFactory>newArrayList(),
+                        Lists.<CommandInterceptorFactory>newArrayList(),
                         new TestDomain(),
                         "testDomain"
                 )

@@ -4,24 +4,23 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.cqrs.query.cache.impl;
+package com.viadeo.kasper.cqrs.query.interceptor;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.cqrs.RequestActorsChain;
+import com.viadeo.kasper.core.interceptor.Interceptor;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryRequestActor;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
-import com.viadeo.kasper.cqrs.query.cache.QueryCacheKeyGenerator;
+import com.viadeo.kasper.cqrs.query.interceptor.cache.QueryCacheKeyGenerator;
 
 import javax.cache.Cache;
 import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class QueryCacheActor<Q extends Query, P extends QueryResult>
-        implements QueryRequestActor<Q, P> {
+public class CacheInterceptor<Q extends Query, P extends QueryResult> implements Interceptor<Q, QueryResponse<P>> {
 
     private final Cache<Serializable, P> cache;
     private final XKasperQueryCache cacheAnnotation;
@@ -29,9 +28,9 @@ public class QueryCacheActor<Q extends Query, P extends QueryResult>
 
     // ------------------------------------------------------------------------
 
-    public QueryCacheActor(final XKasperQueryCache cacheAnnotation,
-                           final Cache<Serializable, P> cache,
-                           final QueryCacheKeyGenerator<Q> keyGenerator) {
+    public CacheInterceptor(final XKasperQueryCache cacheAnnotation,
+                            final Cache<Serializable, P> cache,
+                            final QueryCacheKeyGenerator<Q> keyGenerator) {
         this.cache = checkNotNull(cache);
         this.cacheAnnotation = checkNotNull(cacheAnnotation);
         this.keyGenerator = checkNotNull(keyGenerator);
@@ -41,8 +40,9 @@ public class QueryCacheActor<Q extends Query, P extends QueryResult>
 
 
     @Override
-    public QueryResponse<P> process(Q q, Context context, RequestActorsChain<Q, QueryResponse<P>> chain) throws
-            Exception {
+    public QueryResponse<P> process(final Q q,
+                                    final Context context,
+                                    final InterceptorChain<Q, QueryResponse<P>> chain) throws Exception {
         final Serializable key = keyGenerator.computeKey(cacheAnnotation, q);
 
         if (cache.containsKey(key) && (null != cache.get(key))) {

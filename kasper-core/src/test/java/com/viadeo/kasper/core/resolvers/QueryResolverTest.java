@@ -11,6 +11,7 @@ import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
 
@@ -24,7 +25,9 @@ public class QueryResolverTest {
     private static final class TestDomain implements Domain {}
 
     @XKasperUnregistered
-    private static final class TestQuery implements Query { }
+    private static final class TestQuery implements Query {
+        private static final long serialVersionUID = 9074545422570302563L;
+    }
 
     // ------------------------------------------------------------------------
 
@@ -42,7 +45,7 @@ public class QueryResolverTest {
         resolver.setDomainResolver(domainResolver);
 
         when( queryHandlersLocator.getHandlerFromQueryClass(TestQuery.class) )
-                .thenReturn(Optional.<QueryHandler>of(queryHandler) );
+                .thenReturn(Optional.<QueryHandler<Query, QueryResult>>of(queryHandler) );
 
         when( queryHandlerResolver.getDomainClass(queryHandler.getClass()) )
                 .thenReturn(Optional.<Class<? extends Domain>>of(TestDomain.class));
