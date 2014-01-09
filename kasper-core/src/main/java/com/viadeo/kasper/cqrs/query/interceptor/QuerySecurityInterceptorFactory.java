@@ -28,7 +28,7 @@ public class QuerySecurityInterceptorFactory extends QueryInterceptorFactory {
     }
 
     @Override
-    protected Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> doCreate(final TypeToken<?> type) {
+    public Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> create(final TypeToken<?> type) {
         final Interceptor<Query, QueryResponse<QueryResult>> interceptor =
             new QuerySecurityInterceptor<>(securityConfiguration);
         return Optional.of(InterceptorChain.makeChain(interceptor));
