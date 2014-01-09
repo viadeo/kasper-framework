@@ -22,12 +22,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class AliasRegistry {
 
-    public static List<String> aliasesFrom(Class clazz) {
-        final List<String> aliases = Lists.newArrayList();
-        final Alias aliasAnnotation = (Alias) clazz.getAnnotation(Alias.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AliasRegistry.class);
 
-        if (null != aliasAnnotation) {
-            for (final String alias : aliasAnnotation.values()) {
+    public static List<String> aliasesFrom(final Class clazz) {
+        final List<String> aliases = Lists.newArrayList();
+        final XKasperAlias XKasperAliasAnnotation = (XKasperAlias) clazz.getAnnotation(XKasperAlias.class);
+
+        if (null != XKasperAliasAnnotation) {
+            for (final String alias : XKasperAliasAnnotation.values()) {
                 aliases.add(Introspector.decapitalize(checkNotNull(alias)));
             }
         }
@@ -35,35 +37,41 @@ public class AliasRegistry {
         return aliases;
     }
 
-    // ------------------------------------------------------------------------
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(AliasRegistry.class);
-
     private final MultiValueMap<String, String> aliasesByName;
     private final Map<String, String> nameByAlias;
+
+    // ------------------------------------------------------------------------
 
     public AliasRegistry() {
         this.aliasesByName = CollectionUtils.toMultiValueMap(Maps.<String, List<String>>newHashMap());
         this.nameByAlias = Maps.newHashMap();
     }
 
+    // ------------------------------------------------------------------------
+
     public void register(final String name, final List<String> aliases) {
         checkNotNull(name);
         checkNotNull(aliases);
 
         if (null != aliasesByName.get(name)) {
-            String error = String.format("Unable to register aliases : Some aliases are already registered for the name `%s`", name);
+            final String error = String.format(
+                    "Unable to register aliases : Some aliases are already registered for the name `%s`",
+                    name
+            );
             LOGGER.error(error);
             throw new RuntimeException(error);
         }
 
         aliasesByName.put(name, aliases);
 
-        for (String alias : aliases) {
-            String existingName = nameByAlias.get(alias);
+        for (final String alias : aliases) {
+            final String existingName = nameByAlias.get(alias);
 
             if (null != existingName) {
-                String error = String.format("Unable to register an alias already used : `%s` used by `%s`", alias, existingName);
+                final String error = String.format(
+                        "Unable to register an alias already used : `%s` used by `%s`",
+                        alias, existingName
+                );
                 LOGGER.error(error);
                 throw new RuntimeException(error);
             }
@@ -80,4 +88,5 @@ public class AliasRegistry {
     public Optional<List<String>> aliasesOf(final String name) {
         return Optional.fromNullable(aliasesByName.get(checkNotNull(name)));
     }
+
 }

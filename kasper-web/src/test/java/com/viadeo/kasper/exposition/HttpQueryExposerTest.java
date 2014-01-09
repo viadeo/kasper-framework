@@ -17,7 +17,7 @@ import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.exposition.alias.Alias;
+import com.viadeo.kasper.exposition.alias.XKasperAlias;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -148,7 +148,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
     }
 
     @XKasperQueryHandler(domain = AccountDomain.class)
-    @Alias(values = {NEED_VALIDATION_2_ALIAS})
+    @XKasperAlias(values = {NEED_VALIDATION_2_ALIAS})
     public static class NeedValidationWithAliasQueryHandler extends QueryHandler<NeedValidationWithAlias, SomeResponse> {
         @Override
         public QueryResponse<SomeResponse> retrieve(NeedValidationWithAlias query) throws Exception {

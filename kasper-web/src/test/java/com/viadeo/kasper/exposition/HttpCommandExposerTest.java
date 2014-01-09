@@ -24,7 +24,7 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.exposition.alias.Alias;
+import com.viadeo.kasper.exposition.alias.XKasperAlias;
 import lombok.Data;
 import org.junit.Test;
 
@@ -278,7 +278,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
     }
 
     @XKasperCommandHandler(domain = AccountDomain.class)
-    @Alias(values = {NEED_VALIDATION_2_ALIAS})
+    @XKasperAlias(values = {NEED_VALIDATION_2_ALIAS})
     public static class NeedValidationWithAliasCommandHandler extends CommandHandler<NeedValidationWithAlias> {
 
         @Override

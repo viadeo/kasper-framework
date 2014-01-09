@@ -25,7 +25,7 @@ import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.exposition.alias.Alias;
+import com.viadeo.kasper.exposition.alias.XKasperAlias;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -78,7 +78,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     }
 
     @XKasperEventListener(domain = TestDomain.class)
-    @Alias(values = {NEED_VALIDATION_2_ALIAS})
+    @XKasperAlias(values = {NEED_VALIDATION_2_ALIAS})
     public static class NeedValidationEventListener extends EventListener<NeedValidationEvent> {
 
         @Override

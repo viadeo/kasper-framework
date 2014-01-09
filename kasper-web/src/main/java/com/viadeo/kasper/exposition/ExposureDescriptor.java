@@ -15,10 +15,14 @@ public class ExposureDescriptor<INPUT, HANDLER> {
     private final Class<? extends INPUT> input;
     private final Class<? extends HANDLER> handler;
 
+    // ------------------------------------------------------------------------
+
     public ExposureDescriptor(final Class<? extends INPUT> input, final Class<? extends HANDLER> handler) {
         this.input = checkNotNull(input);
         this.handler = checkNotNull(handler);
     }
+
+    // ------------------------------------------------------------------------
 
     public Class<? extends INPUT> getInput() {
         return input;
@@ -34,14 +38,16 @@ public class ExposureDescriptor<INPUT, HANDLER> {
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public boolean equals(final Object obj) {
         if (this == obj) {
             return true;
         }
-        if (obj == null || getClass() != obj.getClass()) {
+        if ((obj == null) || (getClass() != obj.getClass())) {
             return false;
         }
         final ExposureDescriptor other = (ExposureDescriptor) obj;
-        return Objects.equal(this.input, other.input) && Objects.equal(this.handler, other.handler);
+        return Objects.equal(this.input, other.input)
+                && Objects.equal(this.handler, other.handler);
     }
+
 }

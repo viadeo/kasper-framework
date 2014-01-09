@@ -77,7 +77,7 @@ public class AliasRegistryUTest {
         aliasRegistry.register(name, aliases);
 
         // When
-        Optional<List<String>> optionalAliases = aliasRegistry.aliasesOf(name);
+        final Optional<List<String>> optionalAliases = aliasRegistry.aliasesOf(name);
 
         // Then
         assertNotNull(optionalAliases);
@@ -93,7 +93,7 @@ public class AliasRegistryUTest {
         final AliasRegistry aliasRegistry = new AliasRegistry();
 
         // When
-        Optional<List<String>> optionalAliases = aliasRegistry.aliasesOf(name);
+        final Optional<List<String>> optionalAliases = aliasRegistry.aliasesOf(name);
 
         // Then
         assertNotNull(optionalAliases);
@@ -118,7 +118,7 @@ public class AliasRegistryUTest {
         final AliasRegistry aliasRegistry = new AliasRegistry();
 
         // When
-        String actualName = aliasRegistry.resolve(input);
+        final String actualName = aliasRegistry.resolve(input);
 
         // Then
         assertNotNull(actualName);
@@ -135,10 +135,11 @@ public class AliasRegistryUTest {
         aliasRegistry.register(expectedName, aliases);
 
         // When
-        String actualName = aliasRegistry.resolve(aliases.get(0));
+        final String actualName = aliasRegistry.resolve(aliases.get(0));
 
         // Then
         assertNotNull(actualName);
         assertEquals(expectedName, actualName);
     }
+
 }
