@@ -147,7 +147,7 @@ public abstract class CommandHandler<C extends Command>
         getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
         getMetricRegistry().meter(meterRequestsName).mark();
 
-        if ((null != exception) || ! ret.isOK()) {
+        if (null != exception) {
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
             getMetricRegistry().meter(meterErrorsName).mark();
         }

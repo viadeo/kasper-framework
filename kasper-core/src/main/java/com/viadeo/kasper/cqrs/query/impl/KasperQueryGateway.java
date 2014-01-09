@@ -98,7 +98,7 @@ public class KasperQueryGateway implements QueryGateway {
         getMetricRegistry().histogram(name(queryClass, "requests-times")).update(time);
         getMetricRegistry().meter(name(queryClass, "requests")).mark();
 
-        if ((null != exception) || ! ret.isOK()) {
+        if (null != exception) {
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
             getMetricRegistry().meter(name(queryClass, "errors")).mark();
         }
