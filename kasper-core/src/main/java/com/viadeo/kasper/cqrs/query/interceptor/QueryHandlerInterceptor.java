@@ -4,12 +4,12 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.cqrs.query.impl;
+package com.viadeo.kasper.cqrs.query.interceptor;
 
 import com.codahale.metrics.Timer;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.cqrs.RequestActor;
-import com.viadeo.kasper.cqrs.RequestActorsChain;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
+import com.viadeo.kasper.core.interceptor.QueryInterceptor;
 import com.viadeo.kasper.cqrs.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,24 +17,26 @@ import org.slf4j.LoggerFactory;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
-public class QueryHandlerActor<Q extends Query, RESULT extends QueryResult> implements RequestActor<Q, QueryResponse<RESULT>> {
+public class QueryHandlerInterceptor<QUERY extends Query, RESULT extends QueryResult>
+        implements QueryInterceptor<QUERY, RESULT> {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandlerActor.class);
-    private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryHandlerActor.class, "requests-time");
+    private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandlerInterceptor.class);
+    private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryHandlerInterceptor.class, "requests-time");
 
-    private final QueryHandler<Q, RESULT> queryHandler;
+    private final QueryHandler<QUERY, RESULT> queryHandler;
 
     // ------------------------------------------------------------------------
 
-    public QueryHandlerActor(final QueryHandler<Q, RESULT> queryHandler) {
+    public QueryHandlerInterceptor(final QueryHandler<QUERY, RESULT> queryHandler) {
         this.queryHandler = queryHandler;
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryResponse<RESULT> process(final Q query, final Context context,
-                                        final RequestActorsChain<Q, QueryResponse<RESULT>> chain) throws Exception {
+    public QueryResponse<RESULT> process(final QUERY query,
+                                         final Context context,
+                                         final InterceptorChain<QUERY, QueryResponse<RESULT>> chain) throws Exception {
         /* Call the handler */
         Exception exception = null;
         QueryResponse<RESULT> ret = null;
@@ -42,7 +44,7 @@ public class QueryHandlerActor<Q extends Query, RESULT extends QueryResult> impl
         final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
         final Timer.Context timer = getMetricRegistry().timer(name(query.getClass(), "requests-time")).time();
 
-        final QueryMessage<Q> message = new QueryMessage<Q>(context, query);
+        final QueryMessage<QUERY> message = new QueryMessage<>(context, query);
 
         try {
             try {
@@ -52,7 +54,7 @@ public class QueryHandlerActor<Q extends Query, RESULT extends QueryResult> impl
 
             } catch (final UnsupportedOperationException e) {
                 if (QueryHandler.class.isAssignableFrom(queryHandler.getClass())) {
-                    ret = (QueryResponse<RESULT>) ((QueryHandler) queryHandler).retrieve(message.getQuery());
+                    ret = queryHandler.retrieve(message.getQuery());
                 } else {
                     timer.close();
                     classTimer.close();
