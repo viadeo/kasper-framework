@@ -13,7 +13,8 @@ import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContext;
-import com.viadeo.kasper.cqrs.Adapter;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
@@ -48,7 +49,8 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
                 , Lists.<QueryHandler>newArrayList(new ContextCheckQueryHandler())
                 , Lists.<Repository>newArrayList()
                 , Lists.<EventListener>newArrayList()
-                , Lists.<Adapter>newArrayList()
+                , Lists.<QueryInterceptorFactory>newArrayList()
+                , Lists.<CommandInterceptorFactory>newArrayList()
                 , new AccountDomain()
                 , "AccountDomain"
         );
@@ -73,7 +75,9 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
 
     public static class TestDomain implements Domain { }
 
-    public static class ContextCheckResult implements QueryResult { }
+    public static class ContextCheckResult implements QueryResult {
+        private static final long serialVersionUID = 6219709753203593506L;
+    }
 
     public static class ContextCheckQuery implements Query {
         private static final long serialVersionUID = 674422094842929150L;
@@ -100,7 +104,7 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
                 final Context copy_context_full = context_full.child();
                 ((DefaultContext) copy_context_full).setKasperCorrelationId(((DefaultContext) message.getContext()).getKasperCorrelationId());
 
-                assertTrue(((DefaultContext) message.getContext()).equals(copy_context_full));
+                assertTrue(message.getContext().equals(copy_context_full));
             }
             return QueryResponse.of(new ContextCheckResult());
         }

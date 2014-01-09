@@ -93,7 +93,7 @@ defining a command mainly dedicated to create, modify and delete a domain entity
 
     }
 
-If you need to retrieve a different repository, use the platform domain locator :
+If you need to retrieve a different repository, use the method **getRepositoryOf** :
 
 .. code-block:: java
     :linenos:
@@ -104,7 +104,7 @@ If you need to retrieve a different repository, use the platform domain locator 
         public Thing getThing() {
             Thing thing = null;
 
-            final Optional<ThingRepository> thingRepositoryOpt = this.getDomainLocator().getEntityRepository(Thing.class);
+            final Optional<ThingRepository> thingRepositoryOpt = this.getRepositoryOf(Thing.class);
             if (thingRepositoryOpt.isPresent()) {
                 thing = thingRepositoryOpt.get().load(...);
             }

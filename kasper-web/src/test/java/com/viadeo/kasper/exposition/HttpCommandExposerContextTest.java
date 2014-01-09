@@ -12,7 +12,8 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.impl.DefaultContext;
-import com.viadeo.kasper.cqrs.Adapter;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
@@ -52,7 +53,8 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest {
                 , Lists.<QueryHandler>newArrayList()
                 , Lists.<Repository>newArrayList()
                 , Lists.<EventListener>newArrayList()
-                , Lists.<Adapter>newArrayList()
+                , Lists.<QueryInterceptorFactory>newArrayList()
+                , Lists.<CommandInterceptorFactory>newArrayList()
                 , new TestDomain()
                 , "TestDomain"
         );

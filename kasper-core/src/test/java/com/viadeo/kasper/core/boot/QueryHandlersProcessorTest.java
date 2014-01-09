@@ -16,7 +16,6 @@ import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.Test;
 
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -61,11 +60,11 @@ public class QueryHandlersProcessorTest {
     public static class TestHandlerNoName extends QueryHandler<TestQuery, TestResult> { }
 
     @XKasperUnregistered
-    @XKasperQueryHandler( domain = TestDomain.class, adapters = TestAdapter.class )
+    @XKasperQueryHandler( domain = TestDomain.class )
     public static class TestHandlerOneFilter extends QueryHandler<TestQuery, TestResult> { }
 
     @XKasperUnregistered
-    @XKasperQueryHandler( domain = TestDomain.class, adapters = { TestAdapter.class, TestAdapter2.class } )
+    @XKasperQueryHandler( domain = TestDomain.class )
     public static class TestHandlerMultipleFilters extends QueryHandler<TestQuery, TestResult> { }
 
     // ------------------------------------------------------------------------
@@ -96,36 +95,6 @@ public class QueryHandlersProcessorTest {
         // Then
         verify(locator).registerHandler(eq(handler.getClass().getSimpleName()), eq(handler), eq(TestDomain.class));
 
-    }
-
-    @Test
-    public void processorShouldRegisterHandlerWithOneFilter() {
-
-         // Given
-        final TestHandlerOneFilter handler = new TestHandlerOneFilter();
-
-        // When
-        processor.process(handler.getClass(), handler);
-
-        // Then
-        verify(locator).registerHandler(any(String.class), any(QueryHandler.class), eq(TestDomain.class));
-        verify(locator).registerAdapterForQueryHandler(eq(handler.getClass()), eq(TestAdapter.class));
-
-    }
-
-    @Test
-    public void processorShouldRegisterHandlerWithMultipleFilters() {
-
-         // Given
-        final TestHandlerMultipleFilters handler = new TestHandlerMultipleFilters();
-
-        // When
-        processor.process(handler.getClass(), handler);
-
-        // Then
-        verify(locator).registerHandler(any(String.class), any(QueryHandler.class), eq(TestDomain.class));
-        verify(locator).registerAdapterForQueryHandler(eq(handler.getClass()), eq(TestAdapter.class));
-        verify(locator).registerAdapterForQueryHandler(eq(handler.getClass()), eq(TestAdapter2.class));
     }
 
 }
