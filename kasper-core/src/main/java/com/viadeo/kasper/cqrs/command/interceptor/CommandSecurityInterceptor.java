@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.command.interceptor;
 
 import com.viadeo.kasper.CoreReasonCode;
@@ -18,12 +24,15 @@ public class CommandSecurityInterceptor<C extends Command> extends BaseSecurityI
         super(securityConfiguration);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public CommandResponse process(final C input, final Context context,
+    public CommandResponse process(final C input,
+                                   final Context context,
                                    final InterceptorChain<C, CommandResponse> chain) throws Exception {
         try {
             addSecurityIdentity(context);
-        } catch (KasperSecurityException e) {
+        } catch (final KasperSecurityException e) {
             return CommandResponse.error(
                     new KasperReason(
                             CoreReasonCode.INVALID_INPUT.name(),
@@ -32,4 +41,5 @@ public class CommandSecurityInterceptor<C extends Command> extends BaseSecurityI
         }
         return chain.next(input, context);
     }
+
 }

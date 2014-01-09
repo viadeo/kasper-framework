@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.command.interceptor;
 
 import com.google.common.base.Optional;
@@ -14,16 +20,16 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class CommandSecurityInterceptorFactory extends CommandInterceptorFactory {
     private SecurityConfiguration securityConfiguration;
 
-    public CommandSecurityInterceptorFactory(SecurityConfiguration securityConfiguration) {
-        checkNotNull(securityConfiguration);
-        this.securityConfiguration = securityConfiguration;
+    public CommandSecurityInterceptorFactory(final SecurityConfiguration securityConfiguration) {
+        this.securityConfiguration = checkNotNull(securityConfiguration);
     }
 
-    @Override
-    public Optional<InterceptorChain<Command, CommandResponse>> create(TypeToken<?> type) {
-        final Interceptor<Command, CommandResponse> interceptor;
+    // ------------------------------------------------------------------------
 
-        interceptor = new CommandSecurityInterceptor(securityConfiguration);
+    @Override
+    public Optional<InterceptorChain<Command, CommandResponse>> create(final TypeToken<?> type) {
+        final Interceptor<Command, CommandResponse> interceptor =
+            new CommandSecurityInterceptor<>(securityConfiguration);
         return Optional.of(InterceptorChain.makeChain(interceptor));
     }
 

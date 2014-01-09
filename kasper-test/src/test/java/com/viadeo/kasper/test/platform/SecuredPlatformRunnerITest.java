@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.test.platform;
 
 import com.viadeo.kasper.CoreReasonCode;
@@ -23,7 +29,6 @@ import org.junit.runner.RunWith;
 
 import javax.inject.Inject;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -81,7 +86,6 @@ public class SecuredPlatformRunnerITest {
     private static class TestCommand implements Command {
     }
 
-
     private static class TestResult implements QueryResult {
 
         private String securityToken;
@@ -127,19 +131,33 @@ public class SecuredPlatformRunnerITest {
 
     }
 
+    // ------------------------------------------------------------------------
+
     @Test
     public void securityInterceptorOnCommand_shouldSetSecurityToken() throws Exception {
         assertNotNull(commandGateway);
-        Context context = new DefaultContext();
-        CommandResponse response = commandGateway.sendCommandAndWaitForAResponse(new TestCommand(), context);
+
+        // Given
+        final Context context = new DefaultContext();
+
+        // When
+        final CommandResponse response = commandGateway.sendCommandAndWaitForAResponse(new TestCommand(), context);
+
+        // Then
         assertEquals("Context's security token not set correctly", SECURITY_TOKEN, response.getSecurityToken().get());
     }
 
     @Test
     public void securityInterceptorOnQuery_shouldSetSecurityToken() throws Exception {
         assertNotNull(queryGateway);
-        Context context = new DefaultContext();
-        QueryResponse<TestResult> response = queryGateway.retrieve(new TestQuery(), context);
+
+        // Given
+        final Context context = new DefaultContext();
+
+        // When
+        final QueryResponse<TestResult> response = queryGateway.retrieve(new TestQuery(), context);
+
+        // Then
         assertEquals("Context's security token not set correctly",
                 SECURITY_TOKEN, response.getResult().getSecurityToken());
     }
@@ -147,10 +165,16 @@ public class SecuredPlatformRunnerITest {
     @Test
     public void securityInterceptorOnQuery_shouldReturnQueryErrorWhenExceptionIsThrown() throws Exception {
         assertNotNull(queryGateway);
-        Context context = new DefaultContext();
+
+        // Given
+        final Context context = new DefaultContext();
         identityProvider.setShouldThrowException(true);
-        QueryResponse<TestResult> response = queryGateway.retrieve(new TestQuery(), context);
-        KasperReason reason = response.getReason();
+        final QueryResponse<TestResult> response = queryGateway.retrieve(new TestQuery(), context);
+
+        // When
+        final KasperReason reason = response.getReason();
+
+        // Then
         assertNotNull(reason);
         assertEquals("Interceptor didn't set INVALID_INPUT reason code",
                 CoreReasonCode.INVALID_INPUT.name(), reason.getCode());
@@ -159,10 +183,16 @@ public class SecuredPlatformRunnerITest {
     @Test
     public void securityInterceptorOnCommand_shouldReturnCommandErrorWhenExceptionIsThrown() throws Exception {
         assertNotNull(commandGateway);
-        Context context = new DefaultContext();
+
+        // Given
+        final Context context = new DefaultContext();
         identityProvider.setShouldThrowException(true);
-        CommandResponse response = commandGateway.sendCommandAndWaitForAResponse(new TestCommand(), context);
-        KasperReason reason = response.getReason();
+        final CommandResponse response = commandGateway.sendCommandAndWaitForAResponse(new TestCommand(), context);
+
+        // When
+        final KasperReason reason = response.getReason();
+
+        // Then
         assertNotNull(reason);
         assertEquals("Interceptor didn't set INVALID_INPUT reason code",
                 CoreReasonCode.INVALID_INPUT.name(), reason.getCode());

@@ -73,7 +73,8 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
                 new QueryValidationInterceptorFactory(),
                 new QueryFilterInterceptorFactory()
         );
-        if (securityConfiguration != null) {
+
+        if (null != securityConfiguration) {
             // TODO: to be refactored when interceptors weighting is available.
             this.commandInterceptorFactories.add(0, new CommandSecurityInterceptorFactory(securityConfiguration));
             this.queryInterceptorFactories.add(0, new QuerySecurityInterceptorFactory(securityConfiguration));

@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.query.interceptor;
 
 import com.viadeo.kasper.CoreReasonCode;
@@ -19,6 +25,8 @@ public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult> ex
         super(securityConfiguration);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
     public QueryResponse<R> process(final Q input,
                                     final Context context,
@@ -34,4 +42,5 @@ public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult> ex
         }
         return chain.next(input, context);
     }
+
 }

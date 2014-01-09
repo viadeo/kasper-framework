@@ -435,7 +435,7 @@ public interface Platform {
             if (this == obj) {
                 return true;
             }
-            if ((obj == null) || (!getClass().equals(obj.getClass()))) {
+            if ((obj == null) || ( ! getClass().equals(obj.getClass()))) {
                 return false;
             }
             final ExtraComponentKey other = (ExtraComponentKey) obj;
