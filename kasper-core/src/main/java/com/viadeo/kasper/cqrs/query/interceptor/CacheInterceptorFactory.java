@@ -69,16 +69,15 @@ public class CacheInterceptorFactory extends QueryInterceptorFactory {
     // ------------------------------------------------------------------------
 
     @Override
-    public boolean accept(final TypeToken<?> type) {
-        return super.accept(checkNotNull(type)) || (null == cacheManager);
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     /**
      * Will not be called if cacheManager is null (accept() returns false)
      */
-    protected Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> doCreate(final TypeToken<?> type) {
+    public Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> create(final TypeToken<?> type) {
+        if (null == cacheManager) {
+            return Optional.absent();
+        }
+
         final Class<?> rawType = checkNotNull(type).getRawType();
 
         final XKasperQueryHandler queryHandlerAnnotation = rawType.getAnnotation(XKasperQueryHandler.class);

@@ -13,6 +13,4 @@ public interface InterceptorFactory<INPUT, OUTPUT> {
 
     Optional<InterceptorChain<INPUT, OUTPUT>> create(TypeToken<?> type);
 
-    boolean accept(TypeToken<?> type);
-
 }

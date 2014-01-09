@@ -40,11 +40,6 @@ public class InterceptorChainRegistryUTest {
         public Optional<InterceptorChain<Object, Object>> create(final TypeToken<?> type) {
             return Optional.of(interceptorChain);
         }
-
-        @Override
-        public boolean accept(final TypeToken<?> type) {
-            return true;
-        }
     }
 
     // ------------------------------------------------------------------------

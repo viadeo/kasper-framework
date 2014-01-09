@@ -29,7 +29,7 @@ public class QueryFilterInterceptorFactory extends QueryInterceptorFactory {
 
     @Override
     @SuppressWarnings("unchecked")
-    protected Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> doCreate(final TypeToken<?> type) {
+    public Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> create(final TypeToken<?> type) {
         final XKasperQueryFilter annotation = type.getRawType().getAnnotation(XKasperQueryFilter.class);
 
         if (null != annotation) {
@@ -39,7 +39,7 @@ public class QueryFilterInterceptorFactory extends QueryInterceptorFactory {
             for (final Class<? extends QueryInterceptor> interceptorClass : classes) {
                 try {
                     interceptors.add(interceptorClass.newInstance());
-                } catch (ReflectiveOperationException e) {
+                } catch (final ReflectiveOperationException e) {
                     LOGGER.warn("Unexpected error when instantiating interceptor for `{}`", type.getRawType(), e);
                     return Optional.absent();
                 }
