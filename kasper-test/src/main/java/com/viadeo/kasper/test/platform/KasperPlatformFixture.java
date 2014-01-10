@@ -54,7 +54,7 @@ public class KasperPlatformFixture
     
     private void initialize() {
         platform.set(
-                new Platform.Builder()
+                new Platform.Builder(new KasperPlatformConfiguration())
                         .withConfiguration(config)
                         .withEventBus(eventBus)
                         .addDomainBundle(domainBundle)
