@@ -20,6 +20,8 @@ public class DomainResolver implements Resolver<Domain> {
 
     private static ConcurrentMap<Class, String> cacheDomains = Maps.newConcurrentMap();
 
+    private DomainHelper domainHelper;
+
     // ------------------------------------------------------------------------
 
     @Override
@@ -93,10 +95,31 @@ public class DomainResolver implements Resolver<Domain> {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
+    public Optional<Class<? extends Domain>> getDomainClassOf(final Class<?> clazz) {
+        if (Domain.class.isAssignableFrom(clazz)) {
+            return getDomainClass((Class<? extends Domain>) clazz);
+        } else {
+            if (null != domainHelper) {
+                return Optional.<Class<? extends Domain>>fromNullable(domainHelper.getDomainClassOf(clazz));
+            }
+        }
+        return Optional.absent();
+    }
+
+    // ------------------------------------------------------------------------
+
     @Override
     @SuppressWarnings("unchecked")
     public String getDomainLabel(final Class<? extends Domain> clazz) {
         return this.getLabel(clazz);
+    }
+
+    // ------------------------------------------------------------------------
+
+
+    public void setDomainHelper(final DomainHelper domainHelper) {
+        this.domainHelper = domainHelper;
     }
 
     // ------------------------------------------------------------------------

@@ -27,24 +27,28 @@ public class EventResolver extends AbstractResolver<IEvent> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends IEvent> clazz) {
 
-        /* Force events to be DomainEvents for domain resolution */
-        if ( ! DomainEvent.class.isAssignableFrom(clazz)) {
-            return Optional.absent();
-        }
-
         if (DOMAINS_CACHE.containsKey(clazz)) {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
-        final Optional<Class<? extends Domain>> domainClazz =
-                (Optional<Class<? extends Domain>>)
-                        ReflectionGenericsResolver.getParameterTypeFromClass(
-                                clazz,
-                                DomainEvent.class,
-                                DomainEvent.DOMAIN_PARAMETER_POSITION);
+        final Optional<Class<? extends Domain>> domainClazz;
 
-        if (!domainClazz.isPresent()) {
-            throw new KasperException("Unable to find domain type for domain event " + clazz.getClass());
+        if (DomainEvent.class.isAssignableFrom(clazz)) {
+            domainClazz = (Optional<Class<? extends Domain>>)
+                    ReflectionGenericsResolver.getParameterTypeFromClass(
+                            clazz,
+                            DomainEvent.class,
+                            DomainEvent.DOMAIN_PARAMETER_POSITION
+                    );
+
+            if ( ! domainClazz.isPresent()) {
+                throw new KasperException("Unable to find domain type for domain event " + clazz.getClass());
+            }
+
+        } else if (null == domainResolver) {
+            domainClazz = Optional.absent();
+        } else {
+           domainClazz = domainResolver.getDomainClassOf(clazz);
         }
 
         if (domainClazz.isPresent()) {
@@ -55,20 +59,22 @@ public class EventResolver extends AbstractResolver<IEvent> {
     }
 
     @Override
-    public String getLabel(Class<? extends IEvent> clazz) {
+    public String getLabel(final Class<? extends IEvent> clazz) {
         return clazz.getSimpleName().replace("Event", "");
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public String getDescription(Class<? extends IEvent> eventClazz) {
+    public String getDescription(final Class<? extends IEvent> eventClazz) {
         final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
 
         String description = "";
+
         if (null != annotation) {
             description = annotation.description();
         }
+
         if (description.isEmpty()) {
             description = String.format("The %s event", this.getLabel(eventClazz));
         }
@@ -78,7 +84,7 @@ public class EventResolver extends AbstractResolver<IEvent> {
 
     // ------------------------------------------------------------------------
 
-    public String getAction(Class<? extends IEvent> eventClazz) {
+    public String getAction(final Class<? extends IEvent> eventClazz) {
         final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
 
         String action = "";

@@ -12,6 +12,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
+import com.viadeo.kasper.core.resolvers.DomainHelper;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
@@ -83,6 +84,8 @@ public interface Platform {
         private final Collection<Plugin> kasperPlugins;
         private final Map<ExtraComponentKey, Object> extraComponents;
         private final DomainDescriptorFactory domainDescriptorFactory;
+        private final List<DomainDescriptor> domainDescriptors;
+        private final DomainHelper domainHelper;
 
         private KasperEventBus eventBus;
         private KasperCommandGateway commandGateway;
@@ -108,6 +111,8 @@ public interface Platform {
             this.domainBundles = Lists.newArrayList();
             this.kasperPlugins = Lists.newArrayList();
             this.extraComponents = Maps.newHashMap();
+            this.domainDescriptors = Lists.newArrayList();
+            this.domainHelper = new DomainHelper();
         }
 
         public Builder(final PlatformConfiguration platformConfiguration) {
@@ -124,6 +129,12 @@ public interface Platform {
 
         public Builder addDomainBundle(final DomainBundle domainBundle) {
             this.domainBundles.add(checkNotNull(domainBundle));
+
+            final DomainDescriptor domainDescriptor = domainDescriptorFactory.createFrom(domainBundle);
+
+            this.domainDescriptors.add(domainDescriptor);
+            this.domainHelper.add(DomainDescriptorFactory.mapToDomainClassByComponentClass(domainDescriptor));
+
             return this;
         }
 
@@ -182,9 +193,7 @@ public interface Platform {
 
             final BuilderContext context = new BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, extraComponents);
 
-            initializeKasperMetrics();
-
-            final List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
+            initializeKasperMetrics(domainHelper);
 
             for (final DomainBundle bundle : domainBundles) {
                 LOGGER.info("Configuring bundle : {}", bundle.getName());
@@ -229,8 +238,6 @@ public interface Platform {
 
                     eventBus.subscribe(eventListener);
                 }
-
-                domainDescriptors.add(domainDescriptorFactory.createFrom(bundle));
             }
 
             final KasperPlatform platform = new KasperPlatform(commandGateway, queryGateway, eventBus);
@@ -245,12 +252,14 @@ public interface Platform {
             return platform;
         }
 
-        protected void initializeKasperMetrics() {
+        protected void initializeKasperMetrics(final DomainHelper domainHelper) {
             // FIXME here we declare resolver allowing to defined the name of metrics
             final ConceptResolver conceptResolver = new ConceptResolver();
             final RelationResolver relationResolver = new RelationResolver(conceptResolver);
             final EntityResolver entityResolver = new EntityResolver(conceptResolver, relationResolver);
+
             final DomainResolver domainResolver = new DomainResolver();
+            domainResolver.setDomainHelper(domainHelper);
 
             final EventListenerResolver eventListenerResolver = new EventListenerResolver();
             eventListenerResolver.setDomainResolver(domainResolver);
@@ -261,11 +270,32 @@ public interface Platform {
             final RepositoryResolver repositoryResolver = new RepositoryResolver(entityResolver);
             repositoryResolver.setDomainResolver(domainResolver);
 
+            final QueryHandlerResolver queryHandlerResolver = new QueryHandlerResolver(domainResolver);
+
+            final CommandResolver commandResolver = new CommandResolver();
+            commandResolver.setCommandHandlerResolver(commandHandlerResolver);
+            commandResolver.setDomainResolver(domainResolver);
+
+            final QueryResolver queryResolver = new QueryResolver();
+            queryResolver.setQueryHandlerResolver(queryHandlerResolver);
+            queryResolver.setDomainResolver(domainResolver);
+
+            final QueryResultResolver queryResultResolver = new QueryResultResolver();
+            queryResultResolver.setQueryHandlerResolver(queryHandlerResolver);
+            queryResultResolver.setDomainResolver(domainResolver);
+
+            final EventResolver eventResolver = new EventResolver();
+            eventResolver.setDomainResolver(domainResolver);
+
             final ResolverFactory resolverFactory = new ResolverFactory();
             resolverFactory.setCommandHandlerResolver(commandHandlerResolver);
             resolverFactory.setEventListenerResolver(eventListenerResolver);
-            resolverFactory.setQueryHandlerResolver(new QueryHandlerResolver(domainResolver));
+            resolverFactory.setEventResolver(eventResolver);
             resolverFactory.setRepositoryResolver(repositoryResolver);
+            resolverFactory.setQueryHandlerResolver(queryHandlerResolver);
+            resolverFactory.setCommandResolver(commandResolver);
+            resolverFactory.setQueryResolver(queryResolver);
+            resolverFactory.setQueryResultResolver(queryResultResolver);
 
             KasperMetrics.setResolverFactory(resolverFactory);
             KasperMetrics.setMetricRegistry(metricRegistry);
