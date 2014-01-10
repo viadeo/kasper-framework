@@ -23,6 +23,7 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.exposition.alias.AliasRegistry;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.slf4j.Logger;
@@ -55,30 +56,33 @@ public class HttpCommandExposer extends HttpExposer {
     private static final String GLOBAL_METER_ERRORS_NAME = name(HttpCommandExposer.class, "errors");
 
     private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
-    private final transient List<Class<? extends CommandHandler>> commandHandlerClasses;
+    private final transient List<ExposureDescriptor<Command,CommandHandler>> descriptors;
     private final ObjectMapper mapper;
     private final transient CommandGateway commandGateway;
     private final transient HttpContextDeserializer contextDeserializer;
+    private final AliasRegistry aliasRegistry;
 
     // ------------------------------------------------------------------------
 
-    public HttpCommandExposer(final CommandGateway commandGateway, final List<Class<? extends CommandHandler>> commandHandlerClasses) {
+    public HttpCommandExposer(final CommandGateway commandGateway,
+                              final List<ExposureDescriptor<Command,CommandHandler>> descriptors) {
         this(
                 commandGateway,
-                commandHandlerClasses,
+                descriptors,
                 new HttpContextDeserializer(),
                 ObjectMapperProvider.INSTANCE.mapper()
         );
     }
     
     public HttpCommandExposer(final CommandGateway commandGateway,
-                              final List<Class<? extends CommandHandler>> commandHandlerClasses,
+                              final List<ExposureDescriptor<Command,CommandHandler>> descriptors,
                               final HttpContextDeserializer contextDeserializer,
                               final ObjectMapper mapper) {
-        this.commandGateway = commandGateway;
-        this.commandHandlerClasses = checkNotNull(commandHandlerClasses);
-        this.contextDeserializer = contextDeserializer;
-        this.mapper = mapper;
+        this.commandGateway = checkNotNull(commandGateway);
+        this.descriptors = checkNotNull(descriptors);
+        this.contextDeserializer = checkNotNull(contextDeserializer);
+        this.mapper = checkNotNull(mapper);
+        this.aliasRegistry = new AliasRegistry();
     }
 
     // ------------------------------------------------------------------------
@@ -87,8 +91,8 @@ public class HttpCommandExposer extends HttpExposer {
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing commands ===============");
 
-        for (final Class<? extends CommandHandler> handlerClass : commandHandlerClasses) {
-            expose(handlerClass);
+        for (final ExposureDescriptor<Command,CommandHandler> descriptor : descriptors) {
+            expose(descriptor);
         }
 
         if (exposedCommands.isEmpty()) {
@@ -159,7 +163,7 @@ public class HttpCommandExposer extends HttpExposer {
         resp.setContentType(MediaType.APPLICATION_JSON + "; charset=utf-8");
 
         // FIXME can throw an error ensure to respond a json stream
-        final String commandName = resourceName(req.getRequestURI());
+        final String commandName = aliasRegistry.resolve(resourceName(req.getRequestURI()));
 
         /* locate corresponding command class */
         final Class<? extends Command> commandClass = exposedCommands.get(commandName);
@@ -182,7 +186,7 @@ public class HttpCommandExposer extends HttpExposer {
 
             final ObjectReader reader = mapper.reader();
 
-            /* parse the input stream to that command, no utility method for inputstream+type?? */
+            /* parse the input stream to that command, no utility method for input stream+type?? */
             parser = reader.getFactory().createJsonParser(req.getInputStream());
             final Command command = reader.readValue(parser, commandClass);
 
@@ -338,10 +342,10 @@ public class HttpCommandExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-    HttpExposer expose(final Class<? extends CommandHandler> commandHandlerClass) {
-        checkNotNull(commandHandlerClass);
+    HttpExposer expose(final ExposureDescriptor<Command,CommandHandler> descriptor) {
+        checkNotNull(descriptor);
 
-        final TypeToken<? extends CommandHandler> typeToken = TypeToken.of(commandHandlerClass);
+        final TypeToken<? extends CommandHandler> typeToken = TypeToken.of(descriptor.getHandler());
 
         final Class<? super Command> commandClass = (Class<? super Command>) typeToken
                 .getSupertype(CommandHandler.class)
@@ -349,12 +353,22 @@ public class HttpCommandExposer extends HttpExposer {
                 .getRawType();
 
         final String commandPath = commandToPath(commandClass);
+        final List<String> aliases = AliasRegistry.aliasesFrom(descriptor.getHandler());
+        final String commandName = commandClass.getSimpleName();
 
         LOGGER.info("-> Exposing command[{}] at path[/{}]",
-                    commandClass.getSimpleName(),
+                commandName,
                     getServletContext().getContextPath() + commandPath);
 
+        for (final String alias : aliases) {
+            LOGGER.info("-> Exposing command[{}] at path[/{}]",
+                    commandName,
+                    getServletContext().getContextPath() + alias);
+        }
+
         putKey(commandPath, commandClass, exposedCommands);
+
+        aliasRegistry.register(commandPath, aliases);
 
         return this;
     }

@@ -13,6 +13,8 @@ import com.fasterxml.jackson.databind.ObjectReader;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.exposition.alias.AliasRegistry;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,16 +58,17 @@ public class HttpEventExposer extends HttpExposer {
 
     private final Map<String, Class<? extends Event>> exposedEvents = new HashMap<>();
     private final transient KasperEventBus eventBus;
-    private final List<Class<? extends Event>> events;
+    private final List<ExposureDescriptor<Event,EventListener>> descriptors;
     private final ObjectMapper mapper;
     private final transient HttpContextDeserializer contextDeserializer;
+    private final AliasRegistry aliasRegistry;
 
     // ------------------------------------------------------------------------
 
-    public HttpEventExposer(final KasperEventBus eventBus, final List<Class<? extends Event>> eventClasses) {
+    public HttpEventExposer(final KasperEventBus eventBus, final List<ExposureDescriptor<Event,EventListener>> descriptors) {
         this(
                 eventBus,
-                eventClasses,
+                descriptors,
                 new HttpContextDeserializer(),
                 ObjectMapperProvider.INSTANCE.mapper()
         );
@@ -73,13 +76,14 @@ public class HttpEventExposer extends HttpExposer {
 
 
     public HttpEventExposer(final KasperEventBus eventBus,
-                            final List<Class<? extends Event>> events,
+                            final List<ExposureDescriptor<Event,EventListener>> descriptors,
                             final HttpContextDeserializer contextDeserializer,
                             final ObjectMapper mapper) {
         this.eventBus = checkNotNull(eventBus);
-        this.events = checkNotNull(events);
+        this.descriptors = checkNotNull(descriptors);
         this.contextDeserializer = checkNotNull(contextDeserializer);
         this.mapper = checkNotNull(mapper);
+        this.aliasRegistry = new AliasRegistry();
     }
 
     // ------------------------------------------------------------------------
@@ -88,8 +92,8 @@ public class HttpEventExposer extends HttpExposer {
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing events ===============");
 
-        for (final Class<? extends Event> eventClass : events) {
-            expose(eventClass);
+        for (final ExposureDescriptor<Event,EventListener> descriptor : descriptors) {
+            expose(descriptor);
         }
 
         if (exposedEvents.isEmpty()) {
@@ -151,7 +155,7 @@ public class HttpEventExposer extends HttpExposer {
 
         /* Log starting request */
         REQUEST_LOGGER.info("Processing HTTP Event '{}' '{}'", req.getMethod(), getFullRequestURI(req));
-        final String eventName = resourceName(req.getRequestURI());
+        final String eventName = aliasRegistry.resolve(resourceName(req.getRequestURI()));
 
         final Class<? extends Event> eventClass = exposedEvents.get(eventName);
         if (null == eventClass) {
@@ -218,14 +222,27 @@ public class HttpEventExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    HttpExposer expose(final Class<? extends Event> eventClass) {
-        final String eventPath = eventToPath(checkNotNull(eventClass));
+    HttpExposer expose(final ExposureDescriptor<Event,EventListener> descriptor) {
+        checkNotNull(descriptor);
+
+        final Class<? extends Event> eventClass = descriptor.getInput();
+        final String eventPath = eventToPath(eventClass);
+        final List<String> aliases = AliasRegistry.aliasesFrom(descriptor.getHandler());
+        final String eventName = eventClass.getSimpleName();
 
         LOGGER.info("-> Exposing event[{}] at path[/{}]",
-                    eventClass.getSimpleName(),
+                eventName,
                     getServletContext().getContextPath() + eventPath);
 
+        for (final String alias : aliases) {
+            LOGGER.info("-> Exposing event[{}] at path[/{}]",
+                    eventName,
+                    getServletContext().getContextPath() + alias);
+        }
+
         putKey(eventPath, eventClass, exposedEvents);
+
+        aliasRegistry.register(eventPath, aliases);
 
         return this;
     }

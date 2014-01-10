@@ -11,6 +11,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
@@ -53,7 +54,7 @@ public class KasperPlatformFixture
     
     private void initialize() {
         platform.set(
-                new Platform.Builder()
+                new Platform.Builder(new KasperPlatformConfiguration())
                         .withConfiguration(config)
                         .withEventBus(eventBus)
                         .addDomainBundle(domainBundle)
