@@ -47,10 +47,6 @@ public abstract class CommandHandler<C extends Command>
 
     private final Class<C> commandClass;
 
-    private final String timerRequestsTimeName;
-    private final String meterErrorsName;
-    private final String meterRequestsName;
-
     private transient EventBus eventBus;
     private transient CommandGateway commandGateway;
     protected transient RepositoryManager repositoryManager;
@@ -69,10 +65,6 @@ public abstract class CommandHandler<C extends Command>
         }
 
         this.commandClass = commandClass.get();
-
-        this.timerRequestsTimeName = name(this.commandClass, "requests-time");
-        this.meterErrorsName = name(this.commandClass, "errors");
-        this.meterRequestsName = name(this.commandClass, "requests");
     }
 
     // ------------------------------------------------------------------------
@@ -89,6 +81,10 @@ public abstract class CommandHandler<C extends Command>
         CurrentContext.set(kmessage.getContext());
 
         CommandHandler.LOGGER.debug("Handle command " + commandClass.getSimpleName());
+
+        final String timerRequestsTimeName = name(this.commandClass, "requests-time");
+        final String meterErrorsName = name(this.commandClass, "errors");
+        final String meterRequestsName = name(this.commandClass, "requests");
 
         /* Start timer */
         final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();

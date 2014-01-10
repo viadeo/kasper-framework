@@ -38,19 +38,23 @@ public class QueryResolver extends AbstractResolver<Query> {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
-        final Optional<QueryHandler<Query, QueryResult>> handler = this.queryHandlersLocator.getHandlerFromQueryClass(clazz);
+        if (null != queryHandlersLocator) {
+            final Optional<QueryHandler<Query, QueryResult>> handler = this.queryHandlersLocator.getHandlerFromQueryClass(clazz);
 
-        if (handler.isPresent()) {
-            final Optional<Class<? extends Domain>> domain =
-                    this.queryHandlerResolver.getDomainClass(handler.get().getClass());
+            if (handler.isPresent()) {
+                final Optional<Class<? extends Domain>> domain =
+                        this.queryHandlerResolver.getDomainClass(handler.get().getClass());
 
-            if (domain.isPresent()) {
-                DOMAINS_CACHE.put(clazz, domain.get());
-                return domain;
+                if (domain.isPresent()) {
+                    DOMAINS_CACHE.put(clazz, domain.get());
+                    return domain;
+                }
             }
+        } else {
+            return domainResolver.getDomainClassOf(clazz);
         }
 
-        return Optional.absent();
+    return Optional.absent();
     }
 
     // ------------------------------------------------------------------------

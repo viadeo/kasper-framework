@@ -14,6 +14,7 @@ import com.typesafe.config.Config;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
+import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
@@ -90,7 +91,7 @@ public class PlatformBuilderUTest {
     @Test
     public void addDomainBundle_withDomainBundle_shouldBeOk() {
         // Given
-        final DomainBundle domainBundle = mock(DomainBundle.class);
+        final DomainBundle domainBundle = new DefaultDomainBundle(new TestDomain());
         final Platform.Builder builder = new Platform.Builder();
 
         // When

@@ -10,6 +10,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -26,6 +27,7 @@ import org.axonframework.eventhandling.annotation.EventHandler;
 import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -175,6 +177,35 @@ public class DomainDescriptorFactory {
         }
 
         return listenedSourceEvents;
+    }
+
+    public static Map<Class, Class<? extends Domain>> mapToDomainClassByComponentClass(final DomainDescriptor domainDescriptor){
+        final Map<Class, Class<? extends Domain>> domainClassByComponentClass = Maps.newHashMap();
+
+        final Class domainClass = domainDescriptor.getDomainClass();
+
+        for(final CommandHandlerDescriptor descriptor : domainDescriptor.getCommandHandlerDescriptors()){
+            domainClassByComponentClass.put(descriptor.getReferenceClass(), domainClass);
+            domainClassByComponentClass.put(descriptor.getCommandClass(), domainClass);
+        }
+
+        for(final QueryHandlerDescriptor descriptor : domainDescriptor.getQueryHandlerDescriptors()){
+            domainClassByComponentClass.put(descriptor.getReferenceClass(), domainClass);
+            domainClassByComponentClass.put(descriptor.getQueryClass(), domainClass);
+            domainClassByComponentClass.put(descriptor.getQueryResultClass(), domainClass);
+        }
+
+        for(final RepositoryDescriptor descriptor : domainDescriptor.getRepositoryDescriptors()){
+            domainClassByComponentClass.put(descriptor.getReferenceClass(), domainClass);
+            domainClassByComponentClass.put(descriptor.getAggregateDescriptor().getReferenceClass(), domainClass);
+        }
+
+        for(final EventListenerDescriptor descriptor : domainDescriptor.getEventListenerDescriptors()){
+            domainClassByComponentClass.put(descriptor.getReferenceClass(), domainClass);
+            domainClassByComponentClass.put(descriptor.getEventClass(), domainClass);
+        }
+
+        return domainClassByComponentClass;
     }
 
 }
