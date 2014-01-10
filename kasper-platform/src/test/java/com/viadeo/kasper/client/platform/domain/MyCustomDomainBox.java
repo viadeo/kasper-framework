@@ -24,6 +24,7 @@ import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
+import com.viadeo.kasper.event.domain.DomainEvent;
 
 public class MyCustomDomainBox {
 
@@ -33,13 +34,13 @@ public class MyCustomDomainBox {
     public static class MyCustomDomain implements Domain { }
 
     @XKasperCommandHandler(domain = MyCustomDomain.class)
-    public static class MyCustomCommandHandler extends CommandHandler<Command> { }
+    public static class MyCustomCommandHandler extends CommandHandler<MyCustomCommand> { }
 
     @XKasperQueryHandler(domain = MyCustomDomain.class)
-    public static class MyCustomQueryHandler extends QueryHandler<Query, QueryResult> { }
+    public static class MyCustomQueryHandler extends QueryHandler<MyCustomQuery, MyCustomQueryResult> { }
 
     @XKasperEventListener(domain = MyCustomDomain.class)
-    public static class MyCustomEventListener extends EventListener<Event> { }
+    public static class MyCustomEventListener extends EventListener<MyCustomEvent> { }
 
     @XKasperRepository()
     public static class MyCustomRepository extends Repository<MyCustomEntity> {
@@ -68,5 +69,20 @@ public class MyCustomDomainBox {
     public static class MyCustomQuery implements Query { }
 
     public static class MyCustomQueryResult implements QueryResult { }
+
+    public static class MyCustomEvent extends Event { }
+
+    public static class MyCustomDomainEvent implements DomainEvent<MyCustomDomain> { }
+
+    public static class MyCustomMalformedDomainEvent implements DomainEvent { }
+
+    public static DomainBundle getBundle(){
+        return new DomainBundle.Builder(new MyCustomDomain())
+                .with(new MyCustomCommandHandler())
+                .with(new MyCustomQueryHandler())
+                .with(new MyCustomEventListener())
+                .with(new MyCustomRepository())
+                .build();
+    }
 
 }

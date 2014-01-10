@@ -13,7 +13,8 @@ import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
-import com.viadeo.kasper.client.platform.domain.descriptor.KasperComponentDescriptor;
+import com.viadeo.kasper.client.platform.domain.descriptor.QueryHandlerDescriptor;
+import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
@@ -24,14 +25,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class HttpQueryExposerPlugin extends HttpExposerPlugin<HttpQueryExposer> {
 
-    @SuppressWarnings("unchecked")
-    public static final Function<KasperComponentDescriptor,Class<? extends QueryHandler>> TO_QUERY_HANDLER_CLASS_FUNCTION =
-            new Function<KasperComponentDescriptor, Class<? extends QueryHandler>>() {
-        @Override
-        public Class<? extends QueryHandler> apply(final KasperComponentDescriptor descriptor) {
-            return checkNotNull(descriptor).getReferenceClass();
-        }
-    };
+    public static final Function<QueryHandlerDescriptor, ExposureDescriptor<Query, QueryHandler>> TO_DESCRIPTOR_FUNCTION =
+            new Function<QueryHandlerDescriptor, ExposureDescriptor<Query, QueryHandler>>() {
+                @Override
+                public ExposureDescriptor<Query, QueryHandler> apply(final QueryHandlerDescriptor descriptor) {
+                    checkNotNull(descriptor);
+                    return new ExposureDescriptor<>(descriptor.getQueryClass(), descriptor.getReferenceClass());
+                }
+            };
 
     // ------------------------------------------------------------------------
 
@@ -55,19 +56,19 @@ public class HttpQueryExposerPlugin extends HttpExposerPlugin<HttpQueryExposer> 
                            final MetricRegistry metricRegistry,
                            final DomainDescriptor... domainDescriptors) {
 
-        final List<Class<? extends QueryHandler>> queryHandlerClasses = Lists.newArrayList();
+        final List<ExposureDescriptor<Query, QueryHandler>> exposureDescriptors = Lists.newArrayList();
 
         for (final DomainDescriptor domainDescriptor : domainDescriptors) {
-            queryHandlerClasses.addAll(Collections2.transform(
-                domainDescriptor.getQueryHandlerDescriptors(),
-                TO_QUERY_HANDLER_CLASS_FUNCTION)
+            exposureDescriptors.addAll(Collections2.transform(
+                    domainDescriptor.getQueryHandlerDescriptors(),
+                    TO_DESCRIPTOR_FUNCTION)
             );
         }
 
         initialize(
             new HttpQueryExposer(
                 platform.getQueryGateway(),
-                queryHandlerClasses,
+                exposureDescriptors,
                 new QueryFactoryBuilder().create(),
                 getContextDeserializer(),
                 getMapper()

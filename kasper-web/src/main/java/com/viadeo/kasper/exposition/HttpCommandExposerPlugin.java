@@ -12,8 +12,9 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.client.platform.domain.descriptor.CommandHandlerDescriptor;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
-import com.viadeo.kasper.client.platform.domain.descriptor.KasperComponentDescriptor;
+import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 
@@ -23,14 +24,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class HttpCommandExposerPlugin extends HttpExposerPlugin<HttpCommandExposer> {
 
-    @SuppressWarnings("unchecked")
-    public static final Function<KasperComponentDescriptor,Class<? extends CommandHandler>> TO_COMMAND_HANDLER_CLASS_FUNCTION =
-            new Function<KasperComponentDescriptor, Class<? extends CommandHandler>>() {
-        @Override
-        public Class<? extends CommandHandler> apply(final KasperComponentDescriptor descriptor) {
-            return checkNotNull(descriptor).getReferenceClass();
-        }
-    };
+    public static final Function<CommandHandlerDescriptor, ExposureDescriptor<Command, CommandHandler>> TO_DESCRIPTOR_FUNCTION =
+            new Function<CommandHandlerDescriptor, ExposureDescriptor<Command, CommandHandler>>() {
+                @Override
+                public ExposureDescriptor<Command, CommandHandler> apply(final CommandHandlerDescriptor descriptor) {
+                    checkNotNull(descriptor);
+                    return new ExposureDescriptor<>(descriptor.getCommandClass(), descriptor.getReferenceClass());
+                }
+            };
 
     // ------------------------------------------------------------------------
 
@@ -50,19 +51,19 @@ public class HttpCommandExposerPlugin extends HttpExposerPlugin<HttpCommandExpos
 
     @Override
     public void initialize(final Platform platform, final MetricRegistry metricRegistry, final DomainDescriptor... domainDescriptors) {
-        final List<Class<? extends CommandHandler>> commandHandlerClasses = Lists.newArrayList();
+        final List<ExposureDescriptor<Command, CommandHandler>> exposureDescriptors = Lists.newArrayList();
 
         for (final DomainDescriptor domainDescriptor:domainDescriptors) {
-            commandHandlerClasses.addAll(Collections2.transform(
-                domainDescriptor.getCommandHandlerDescriptors(),
-                TO_COMMAND_HANDLER_CLASS_FUNCTION
+            exposureDescriptors.addAll(Collections2.transform(
+                    domainDescriptor.getCommandHandlerDescriptors(),
+                    TO_DESCRIPTOR_FUNCTION
             ));
         }
 
         initialize(
             new HttpCommandExposer(
                 platform.getCommandGateway(),
-                commandHandlerClasses,
+                exposureDescriptors,
                 getContextDeserializer(),
                 getMapper()
             )

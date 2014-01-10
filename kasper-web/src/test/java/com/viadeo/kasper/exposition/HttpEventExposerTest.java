@@ -7,6 +7,7 @@
 package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.Lists;
+import com.sun.jersey.api.client.ClientResponse;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
@@ -25,12 +26,19 @@ import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.exposition.alias.XKasperAlias;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Locale;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -44,14 +52,12 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     @XKasperUnregistered
     public static class UnknownEvent extends Event {
         private static final long serialVersionUID = 6761261204648630883L;
-
         public String name;
     }
 
     @XKasperUnregistered
     public static class AccountCreatedEvent extends Event {
         private static final long serialVersionUID = -6112121621645049559L;
-
         public String name;
     }
 
@@ -63,6 +69,21 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
 
         @Override
         public void handle(AccountCreatedEvent event) { }
+    }
+
+    public static final String NEED_VALIDATION_2_ALIAS = "needvalidation2";
+
+    @XKasperUnregistered
+    public static class NeedValidationEvent extends Event {
+        private static final long serialVersionUID = -8918994635071831597L;
+    }
+
+    @XKasperEventListener(domain = TestDomain.class)
+    @XKasperAlias(values = {NEED_VALIDATION_2_ALIAS})
+    public static class NeedValidationEventListener extends EventListener<NeedValidationEvent> {
+
+        @Override
+        public void handle(NeedValidationEvent event) { }
     }
 
     // ------------------------------------------------------------------------
@@ -84,7 +105,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
                 Lists.<CommandHandler>newArrayList(),
                 Lists.<QueryHandler>newArrayList(),
                 Lists.<Repository>newArrayList(),
-                Lists.<EventListener>newArrayList(new AccountCreatedEventListener()),
+                Lists.<EventListener>newArrayList(new AccountCreatedEventListener(), new NeedValidationEventListener()),
                 Lists.<QueryInterceptorFactory>newArrayList(),
                 Lists.<CommandInterceptorFactory>newArrayList(),
                 new TestDomain(),
@@ -131,6 +152,23 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
 
         // When
         client().emit(DefaultContextBuilder.get(), event);
+    }
+
+    @Test
+    public void testAliasedEvent() throws MalformedURLException, URISyntaxException {
+        // Given
+        final String eventPath = NEED_VALIDATION_2_ALIAS;
+        final NeedValidationEvent needValidationWithAlias = new NeedValidationEvent();
+
+        // When
+        final ClientResponse response = httpClient()
+                .resource(new URL(new URL(url()), eventPath).toURI())
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .put(ClientResponse.class, needValidationWithAlias);
+
+        // Then
+        assertEquals(Response.Status.ACCEPTED.getStatusCode(), response.getStatus());
     }
 
 }

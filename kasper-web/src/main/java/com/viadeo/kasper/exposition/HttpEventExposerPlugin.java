@@ -14,6 +14,7 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.client.platform.domain.descriptor.EventListenerDescriptor;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 
 import java.util.Set;
@@ -42,17 +43,17 @@ public class HttpEventExposerPlugin extends HttpExposerPlugin<HttpEventExposer> 
                            final MetricRegistry metricRegistry,
                            final DomainDescriptor... domainDescriptors) {
 
-        final Set<Class<? extends Event>> eventClasses = Sets.newHashSet();
+        final Set<ExposureDescriptor<Event,EventListener>> exposureDescriptors = Sets.newHashSet();
         for (final DomainDescriptor domainDescriptor:domainDescriptors) {
             for (final EventListenerDescriptor eventListenerDescriptor : domainDescriptor.getEventListenerDescriptors()) {
-                eventClasses.add(eventListenerDescriptor.getEventClass());
+                exposureDescriptors.add(new ExposureDescriptor<>(eventListenerDescriptor.getEventClass(), eventListenerDescriptor.getReferenceClass()));
             }
         }
 
         initialize(
             new HttpEventExposer(
                 platform.getEventBus(),
-                Lists.newArrayList(eventClasses),
+                Lists.newArrayList(exposureDescriptors),
                 getContextDeserializer(),
                 getMapper()
             )

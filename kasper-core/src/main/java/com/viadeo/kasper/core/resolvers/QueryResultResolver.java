@@ -39,19 +39,24 @@ public class QueryResultResolver extends AbstractResolver<QueryResult> {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
-        final Collection<QueryHandler> queryHandlers = this.queryHandlersLocator.getHandlersFromQueryResultClass(clazz);
-
         Optional<Class<? extends Domain>> result = Optional.absent();
-        for (QueryHandler queryHandler : queryHandlers) {
-            final Optional<Class<? extends Domain>> domain =
-                    this.queryHandlerResolver.getDomainClass(queryHandler.getClass());
-            if (domain.isPresent()) {
-                if (result.isPresent()) {
-                    throw new KasperException("More than one domain found");
+
+        if (null != queryHandlersLocator) {
+            final Collection<QueryHandler> queryHandlers = this.queryHandlersLocator.getHandlersFromQueryResultClass(clazz);
+
+            for (QueryHandler queryHandler : queryHandlers) {
+                final Optional<Class<? extends Domain>> domain =
+                        this.queryHandlerResolver.getDomainClass(queryHandler.getClass());
+                if (domain.isPresent()) {
+                    if (result.isPresent()) {
+                        throw new KasperException("More than one domain found");
+                    }
+                    result = domain;
                 }
-                result = domain;
+
             }
-            
+        } else {
+            result = domainResolver.getDomainClassOf(clazz);
         }
         
         if (result.isPresent()) {
