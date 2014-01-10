@@ -139,11 +139,12 @@ public class SecuredPlatformRunnerITest {
 
         // Given
         final Context context = new DefaultContext();
-
+        identityProvider.setShouldThrowException(false);
         // When
         final CommandResponse response = commandGateway.sendCommandAndWaitForAResponse(new TestCommand(), context);
 
         // Then
+        assertNotNull("No security token set is response", response.getSecurityToken());
         assertEquals("Context's security token not set correctly", SECURITY_TOKEN, response.getSecurityToken().get());
     }
 
@@ -153,11 +154,12 @@ public class SecuredPlatformRunnerITest {
 
         // Given
         final Context context = new DefaultContext();
-
+        identityProvider.setShouldThrowException(false);
         // When
         final QueryResponse<TestResult> response = queryGateway.retrieve(new TestQuery(), context);
 
         // Then
+        assertNotNull("Query did not return result", response.getResult());
         assertEquals("Context's security token not set correctly",
                 SECURITY_TOKEN, response.getResult().getSecurityToken());
     }
