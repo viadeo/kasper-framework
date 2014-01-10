@@ -36,7 +36,7 @@ import static junit.framework.Assert.assertNotNull;
 
 @RunWith(PlatformRunner.class)
 @PlatformRunner.Configuration(SecuredPlatformRunnerITest.SecuredKasperPlatformConfiguration.class)
-@PlatformRunner.Bundles(list = {SecuredPlatformRunnerITest.SecuredDomainBundle.class})
+@PlatformRunner.Bundles({SecuredPlatformRunnerITest.SecuredDomainBundle.class})
 public class SecuredPlatformRunnerITest {
 
     final private static String SECURITY_TOKEN = "SET_BY_SECURITY_INTERCEPTOR";
