@@ -10,6 +10,8 @@ import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.MyCustomDomainBox;
+import com.viadeo.kasper.core.resolvers.CommandResolver;
+import com.viadeo.kasper.exception.KasperException;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;
@@ -21,7 +23,12 @@ public class KasperMetricsITest {
     private static void buildPlatformWith(final MetricRegistry metricRegistry) {
         new Platform.Builder(new KasperPlatformConfiguration())
                 .withMetricRegistry(metricRegistry)
+                .addDomainBundle(MyCustomDomainBox.getBundle())
                 .build();
+
+        // clear caches in order to ensure test integrity
+        KasperMetrics.clearCache();
+        new CommandResolver().clearCache();
     }
 
     // ------------------------------------------------------------------------
@@ -108,7 +115,7 @@ public class KasperMetricsITest {
         final String name = KasperMetrics.name(MyCustomDomainBox.MyCustomCommand.class, "bip");
 
         // Then
-        assertEquals((MyCustomDomainBox.MyCustomCommand.class.getName() + ".bip").toLowerCase(), name);
+        assertEquals("mycustomdomain.command.mycustomcommand.bip", name);
     }
 
     @Test
@@ -120,7 +127,7 @@ public class KasperMetricsITest {
         final String name = KasperMetrics.name(MyCustomDomainBox.MyCustomQuery.class, "bip");
 
         // Then
-        assertEquals((MyCustomDomainBox.MyCustomQuery.class.getName() + ".bip").toLowerCase(), name);
+        assertEquals("mycustomdomain.query.mycustomquery.bip", name);
     }
 
     @Test
@@ -132,7 +139,41 @@ public class KasperMetricsITest {
         final String name = KasperMetrics.name(MyCustomDomainBox.MyCustomQueryResult.class, "bip");
 
         // Then
-        assertEquals((MyCustomDomainBox.MyCustomQueryResult.class.getName() + ".bip").toLowerCase(), name);
+        assertEquals("mycustomdomain.queryresult.mycustomqueryresult.bip", name);
     }
 
+    @Test
+    public void name_fromMyCustomEvent_shouldBeOk() {
+        // Given
+        buildPlatformWith(new MetricRegistry());
+
+        // When
+        final String name = KasperMetrics.name(MyCustomDomainBox.MyCustomEvent.class, "bip");
+
+        // Then
+        assertEquals("mycustomdomain.event.mycustomevent.bip", name);
+    }
+
+    @Test
+    public void name_fromMyCustomDomainEvent_shouldBeOk() {
+        // Given
+        buildPlatformWith(new MetricRegistry());
+
+        // When
+        final String name = KasperMetrics.name(MyCustomDomainBox.MyCustomDomainEvent.class, "bip");
+
+        // Then
+        assertEquals("mycustomdomain.event.mycustomdomainevent.bip", name);
+    }
+
+    @Test(expected = KasperException.class)
+    public void name_MyCustomMalformedDomainEvent_shouldThrownException() {
+        // Given
+        buildPlatformWith(new MetricRegistry());
+
+        // When
+        KasperMetrics.name(MyCustomDomainBox.MyCustomMalformedDomainEvent.class, "bip");
+
+        // Then throws an exception
+    }
 }

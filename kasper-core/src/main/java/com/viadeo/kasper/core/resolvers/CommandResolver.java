@@ -39,15 +39,19 @@ public class CommandResolver extends AbstractResolver<Command> {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
-        final Optional<CommandHandler> handler = domainLocator.getHandlerForCommandClass(clazz);
+        if (null != domainLocator) {
+            final Optional<CommandHandler> handler = domainLocator.getHandlerForCommandClass(clazz);
 
-        if (handler.isPresent()) {
-            final Optional<Class<? extends Domain>> domain =
-                    commandHandlerResolver.getDomainClass(handler.get().getClass());
-            if (domain.isPresent()) {
-                DOMAINS_CACHE.put(clazz, domain.get());
-                return domain;
+            if (handler.isPresent()) {
+                final Optional<Class<? extends Domain>> domain =
+                        commandHandlerResolver.getDomainClass(handler.get().getClass());
+                if (domain.isPresent()) {
+                    DOMAINS_CACHE.put(clazz, domain.get());
+                    return domain;
+                }
             }
+        } else {
+            return domainResolver.getDomainClassOf(clazz);
         }
 
         return Optional.absent();
