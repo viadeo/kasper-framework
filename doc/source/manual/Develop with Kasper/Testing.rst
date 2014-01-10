@@ -139,7 +139,7 @@ This `Bundles` annotation specifies a set of bundle that will be added to the pl
     import org.junit.runner.RunWith;
 
     @RunWith(PlatformRunner.class)
-    @Bundles(list = {BundleA.class, BundleB.class})
+    @Bundles({BundleA.class, BundleB.class})
     public class SomethingITest...
 
 **Configuration**:
@@ -153,12 +153,13 @@ The `Configuration` annotation specifies which platform configuration will be us
     import org.junit.runner.RunWith;
 
     @RunWith(PlatformRunner.class)
-    @Configuration(value = MyCustomPlatformConfiguration.class)
+    @Configuration(MyCustomPlatformConfiguration.class)
     public class SomethingITest...
 
 **Infrastructure context**:
 
-The `InfrastructureContext` annotation specifies the infrastructure components that is required by the bundles.
+The `InfrastructureContext` annotation is used to determine how to load and configure an ApplicationContext containing
+infrastructure components that can be required in order to instantiate bundle.
 
 .. code-block:: java
     :linenos:
@@ -167,5 +168,8 @@ The `InfrastructureContext` annotation specifies the infrastructure components t
     import org.junit.runner.RunWith;
 
     @RunWith(PlatformRunner.class)
-    @InfrastructureContext(configurations = {InfrastructureConfiguration.class})
+    @InfrastructureContext(
+        configurations = {InfrastructureConfiguration.class},
+        activeProfiles = {"embedded"}
+    )
     public class SomethingITest...

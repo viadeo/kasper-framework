@@ -8,8 +8,10 @@ package com.viadeo.kasper.client.platform.configuration;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
@@ -27,6 +29,7 @@ import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus.Policy;
 
@@ -42,6 +45,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     private final MetricRegistry metricRegistry;
     private final Config configuration;
     private final KasperCommandGateway commandGateway;
+    private final Map<Platform.ExtraComponentKey, Object> extraComponents;
     private final List<CommandInterceptorFactory> commandInterceptorFactories;
     private final List<QueryInterceptorFactory> queryInterceptorFactories;
 
@@ -55,6 +59,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         this.eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
         this.queryGateway = new KasperQueryGateway();
         this.metricRegistry = new MetricRegistry();
+        this.extraComponents = Maps.newHashMap();
         this.configuration = ConfigFactory.empty();
 
         UnitOfWorkFactory uowFactory = new DefaultUnitOfWorkFactory();
@@ -106,6 +111,11 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     @Override
     public Config configuration() {
         return configuration;
+    }
+
+    @Override
+    public Map<Platform.ExtraComponentKey, Object> extraComponents() {
+        return extraComponents;
     }
 
     @Override
