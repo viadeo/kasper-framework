@@ -16,6 +16,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 
 import javax.inject.Inject;
 import java.util.concurrent.ExecutorService;
@@ -26,8 +27,11 @@ import static com.viadeo.kasper.test.platform.PlatformRunnerITest.*;
 import static junit.framework.Assert.assertNotNull;
 
 @RunWith(PlatformRunner.class)
-@PlatformRunner.Bundles(list = {TestDomainBundleA.class, TestDomainBundleB.class})
-@PlatformRunner.InfrastructureContext(configurations = {InfrastructureConfiguration.class})
+@PlatformRunner.Bundles({TestDomainBundleA.class, TestDomainBundleB.class})
+@PlatformRunner.InfrastructureContext(
+        configurations = {InfrastructureConfiguration.class},
+        activeProfiles = {"hero"}
+)
 public class PlatformRunnerITest {
 
     public static class TestDomainBundleA extends DefaultDomainBundle {
@@ -46,6 +50,7 @@ public class PlatformRunnerITest {
     }
 
     @Configuration
+    @Profile("hero")
     public static class InfrastructureConfiguration {
         @Bean
         public ExecutorService worker() {
@@ -72,6 +77,9 @@ public class PlatformRunnerITest {
 
     @Inject
     public TestDomainBundleB testDomainBundleB;
+
+    @Inject
+    public ExecutorService executorService;
 
     // ------------------------------------------------------------------------
 
@@ -105,4 +113,8 @@ public class PlatformRunnerITest {
         assertNotNull(testDomainBundleB);
     }
 
+    @Test
+    public void inject_ExecutorService_shouldBeOk() {
+        assertNotNull(executorService);
+    }
 }

@@ -7,6 +7,7 @@
 package com.viadeo.kasper.test.platform;
 
 import com.google.common.collect.Lists;
+import com.typesafe.config.Config;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
@@ -17,6 +18,7 @@ import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -37,7 +39,7 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface Bundles {
-        Class<? extends DomainBundle>[] list() default {};
+        Class<? extends DomainBundle>[] value() default {};
     }
 
     /**
@@ -51,13 +53,21 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
     }
 
     /**
-     * The <code>InfrastructureContext</code> annotation specifies infrastructure components that can be required in
-     * order to instantiate bundle.
+     * The <code>InfrastructureContext</code> annotation is used to determine how to load and configure an
+     * ApplicationContext containing infrastructure components that can be required in order to instantiate bundle.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.TYPE)
     public @interface InfrastructureContext {
+        /**
+         * The annotated classes to use for loading an ApplicationContext
+         */
         Class[] configurations() default {};
+
+        /**
+         * The bean definition profiles to activate.
+         */
+        String[] activeProfiles() default {};
     }
 
     // ------------------------------------------------------------------------
@@ -73,14 +83,21 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
 
         final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
 
+        // Initialize the builder
+        final PlatformConfiguration platformConfiguration = initializePlatformConfiguration(clazz.getAnnotation(Configuration.class));
+        final Platform.Builder platformBuilder = new Platform.Builder(platformConfiguration);
+
         // Define an application context of infrastructure components
-        final ApplicationContext applicationContextOfInfra = createApplicationContextOf(clazz.getAnnotation(InfrastructureContext.class));
+        final ApplicationContext applicationContextOfInfra = createApplicationContextOf(
+                clazz.getAnnotation(InfrastructureContext.class),
+                platformConfiguration.configuration()
+        );
+
+        // Link the infrastructure context with the main application context
+        applicationContext.setParent(applicationContextOfInfra);
 
         // Create bundle instances
         final List<DomainBundle> domainBundles = createDomainBundle(applicationContextOfInfra, clazz.getAnnotation(Bundles.class));
-
-        // Initialize the builder
-        final Platform.Builder platformBuilder = initializeBuilder(clazz.getAnnotation(Configuration.class));
 
         // Specialize the builder with the bundles
         for (final DomainBundle domainBundle : domainBundles) {
@@ -105,7 +122,7 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
         applicationContext.refresh();
     }
 
-    protected Platform.Builder initializeBuilder(final Configuration configuration) throws ReflectiveOperationException {
+    protected PlatformConfiguration initializePlatformConfiguration(final Configuration configuration) throws ReflectiveOperationException {
         final PlatformConfiguration platformConfiguration;
 
         if (null == configuration) {
@@ -114,7 +131,7 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
             platformConfiguration = configuration.value().newInstance();
         }
 
-        return new Platform.Builder(platformConfiguration);
+        return platformConfiguration;
     }
 
     protected List<DomainBundle> createDomainBundle(final ApplicationContext applicationContext,
@@ -123,7 +140,7 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
         final List<DomainBundle> domainBundles = Lists.newArrayList();
 
         if (null != bundlesAnnotation) {
-            for (final Class domainBundleClass : bundlesAnnotation.list()) {
+            for (final Class domainBundleClass : bundlesAnnotation.value()) {
                 final Constructor constructor = domainBundleClass.getDeclaredConstructors()[0];
 
                 final List<Object> parameters = Lists.newArrayList();
@@ -140,11 +157,24 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
         return domainBundles;
     }
 
-    protected ApplicationContext createApplicationContextOf(InfrastructureContext infrastructureContextAnnotation) {
+    protected ApplicationContext createApplicationContextOf(
+            final InfrastructureContext infrastructureContextAnnotation,
+            final Config config
+    ) {
         final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+
+        if(null != config){
+            final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+            beanFactory.registerSingleton(config.getClass().getSimpleName(),config);
+        }
+
         if (null != infrastructureContextAnnotation) {
+            final ConfigurableEnvironment environment = applicationContext.getEnvironment();
+            environment.setActiveProfiles(infrastructureContextAnnotation.activeProfiles());
+
             applicationContext.register(infrastructureContextAnnotation.configurations());
         }
+
         applicationContext.refresh();
         return applicationContext;
     }
