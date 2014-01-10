@@ -251,7 +251,7 @@ public interface Platform {
             }
         }
 
-        protected Collection<DomainDescriptor> configureDomainBundles(final BuilderContext context){
+        protected Collection<DomainDescriptor> configureDomainBundles(final BuilderContext context) {
             final List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
             initializeKasperMetrics(domainHelper);
 
@@ -262,7 +262,7 @@ public interface Platform {
             return domainDescriptors;
         }
 
-        protected DomainDescriptor configureDomainBundle(final BuilderContext context, final DomainBundle bundle){
+        protected DomainDescriptor configureDomainBundle(final BuilderContext context, final DomainBundle bundle) {
             LOGGER.info("Configuring bundle : {}", bundle.getName());
 
             bundle.configure(context);
@@ -429,7 +429,7 @@ public interface Platform {
             return Optional.fromNullable((E) extraComponents.get(new ExtraComponentKey(name, clazz)));
         }
 
-        public Map<ExtraComponentKey, Object> getExtraComponents(){
+        public Map<ExtraComponentKey, Object> getExtraComponents() {
             return extraComponents;
         }
 

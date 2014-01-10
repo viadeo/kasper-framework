@@ -230,7 +230,6 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
         return tmpHandlers;
     }
 
-    @Override
     public Collection<QueryHandler> getHandlers() {
         return unmodifiableCollection(this.handlerQueryClasses.values());
     }
