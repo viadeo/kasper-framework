@@ -21,9 +21,13 @@ public class DomainHelper {
 
     private final Map<Class, Class<? extends Domain>> domainClassByComponentClasses;
 
+    // ------------------------------------------------------------------------
+
     public DomainHelper() {
         domainClassByComponentClasses = Maps.newConcurrentMap();
     }
+
+    // ------------------------------------------------------------------------
 
     public void add(final Map<Class, Class<? extends Domain>> domainClassByComponentClasses) {
         this.domainClassByComponentClasses.putAll(checkNotNull(domainClassByComponentClasses));
@@ -34,10 +38,9 @@ public class DomainHelper {
         this.domainClassByComponentClasses.put(checkNotNull(componentClass), checkNotNull(domainClass));
     }
 
-
-
     public Class<? extends Domain> getDomainClassOf(final Class componentClass){
         LOGGER.info("getDomainClassOf {}, {}", componentClass, domainClassByComponentClasses);
         return domainClassByComponentClasses.get(componentClass);
     }
+
 }

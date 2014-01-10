@@ -38,11 +38,13 @@ public class EventResolver extends AbstractResolver<IEvent> {
                     ReflectionGenericsResolver.getParameterTypeFromClass(
                             clazz,
                             DomainEvent.class,
-                            DomainEvent.DOMAIN_PARAMETER_POSITION);
+                            DomainEvent.DOMAIN_PARAMETER_POSITION
+                    );
 
-            if (!domainClazz.isPresent()) {
+            if ( ! domainClazz.isPresent()) {
                 throw new KasperException("Unable to find domain type for domain event " + clazz.getClass());
             }
+
         } else if (null == domainResolver) {
             domainClazz = Optional.absent();
         } else {
@@ -57,20 +59,22 @@ public class EventResolver extends AbstractResolver<IEvent> {
     }
 
     @Override
-    public String getLabel(Class<? extends IEvent> clazz) {
+    public String getLabel(final Class<? extends IEvent> clazz) {
         return clazz.getSimpleName().replace("Event", "");
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public String getDescription(Class<? extends IEvent> eventClazz) {
+    public String getDescription(final Class<? extends IEvent> eventClazz) {
         final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
 
         String description = "";
+
         if (null != annotation) {
             description = annotation.description();
         }
+
         if (description.isEmpty()) {
             description = String.format("The %s event", this.getLabel(eventClazz));
         }
@@ -80,7 +84,7 @@ public class EventResolver extends AbstractResolver<IEvent> {
 
     // ------------------------------------------------------------------------
 
-    public String getAction(Class<? extends IEvent> eventClazz) {
+    public String getAction(final Class<? extends IEvent> eventClazz) {
         final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
 
         String action = "";

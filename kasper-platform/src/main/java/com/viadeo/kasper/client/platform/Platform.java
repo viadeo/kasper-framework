@@ -128,8 +128,7 @@ public interface Platform {
         // --------------------------------------------------------------------
 
         public Builder addDomainBundle(final DomainBundle domainBundle) {
-            checkNotNull(domainBundle);
-            this.domainBundles.add(domainBundle);
+            this.domainBundles.add(checkNotNull(domainBundle));
 
             final DomainDescriptor domainDescriptor = domainDescriptorFactory.createFrom(domainBundle);
 
