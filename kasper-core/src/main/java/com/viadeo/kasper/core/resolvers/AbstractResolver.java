@@ -18,14 +18,14 @@ public abstract class AbstractResolver<T> implements Resolver<T> {
 
     protected static final ConcurrentMap<Class, Class> DOMAINS_CACHE = Maps.newConcurrentMap();
 
-    private DomainResolver domainResolver;
+    protected DomainResolver domainResolver;
 
     // ------------------------------------------------------------------------
 
     @Override
     public String getDomainLabel(final Class<? extends T> clazz) {
-
         final Optional<Class<? extends Domain>> domain = this.getDomainClass(clazz);
+
         if (domain.isPresent()) {
             return domainResolver.getLabel(domain.get());
         }
