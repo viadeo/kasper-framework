@@ -12,7 +12,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.typesafe.config.Config;
-import com.viadeo.kasper.core.resolvers.DomainHelper;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
@@ -84,7 +83,6 @@ public interface Platform {
         private final Collection<Plugin> kasperPlugins;
         private final Map<ExtraComponentKey, Object> extraComponents;
         private final DomainDescriptorFactory domainDescriptorFactory;
-        private final List<DomainDescriptor> domainDescriptors;
         private final DomainHelper domainHelper;
 
         private KasperEventBus eventBus;
@@ -111,7 +109,6 @@ public interface Platform {
             this.domainBundles = Lists.newArrayList();
             this.kasperPlugins = Lists.newArrayList();
             this.extraComponents = Maps.newHashMap();
-            this.domainDescriptors = Lists.newArrayList();
             this.domainHelper = new DomainHelper();
         }
 
@@ -129,12 +126,6 @@ public interface Platform {
 
         public Builder addDomainBundle(final DomainBundle domainBundle) {
             this.domainBundles.add(checkNotNull(domainBundle));
-
-            final DomainDescriptor domainDescriptor = domainDescriptorFactory.createFrom(domainBundle);
-
-            this.domainDescriptors.add(domainDescriptor);
-            this.domainHelper.add(DomainDescriptorFactory.mapToDomainClassByComponentClass(domainDescriptor));
-
             return this;
         }
 
@@ -195,6 +186,8 @@ public interface Platform {
 
             initializeKasperMetrics(domainHelper);
 
+            final List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
+
             for (final DomainBundle bundle : domainBundles) {
                 LOGGER.info("Configuring bundle : {}", bundle.getName());
 
@@ -238,6 +231,10 @@ public interface Platform {
 
                     eventBus.subscribe(eventListener);
                 }
+
+                final DomainDescriptor domainDescriptor = domainDescriptorFactory.createFrom(bundle);
+                domainDescriptors.add(domainDescriptor);
+                domainHelper.add(DomainDescriptorFactory.mapToDomainClassByComponentClass(domainDescriptor));
             }
 
             final KasperPlatform platform = new KasperPlatform(commandGateway, queryGateway, eventBus);

@@ -25,6 +25,6 @@ public interface Plugin {
      * @param metricRegistry the metric registry used by the platform
      * @param domainDescriptors the domain descriptors of each registered domain bundle on the platform
      */
-    void initialize(Platform platform, MetricRegistry metricRegistry, DomainDescriptor... domainDescriptors);
+    void initialize(final Platform platform, final MetricRegistry metricRegistry, final DomainDescriptor... domainDescriptors);
 
 }
