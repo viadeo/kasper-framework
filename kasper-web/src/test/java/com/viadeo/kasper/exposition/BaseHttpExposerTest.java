@@ -6,12 +6,16 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
+import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.sun.jersey.api.client.Client;
+import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.viadeo.kasper.client.KasperClient;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
@@ -27,6 +31,7 @@ public abstract class BaseHttpExposerTest {
 
 	private Server server;
 	private KasperClient cli;
+    private Client client;
     private Platform platform;
     private int port;
 
@@ -39,6 +44,10 @@ public abstract class BaseHttpExposerTest {
 	protected KasperClient client() {
 		return cli;
 	}
+
+    protected Client httpClient() {
+        return client;
+    }
 
     protected int port() {
         return port;
@@ -63,12 +72,17 @@ public abstract class BaseHttpExposerTest {
         server = new Server(0);
         server.setHandler(servletContext);
         server.start();
+
         port = server.getConnectors()[0].getLocalPort();
+
+        final DefaultClientConfig cfg = new DefaultClientConfig();
+        cfg.getSingletons().add(new JacksonJsonProvider(ObjectMapperProvider.INSTANCE.mapper()));
+        client = Client.create(cfg);
 
         final URL fullPath = new URL(url());
 
-        final KasperClientBuilder clientBuilder = new KasperClientBuilder();
-        clientBuilder
+        final KasperClientBuilder clientBuilder = new KasperClientBuilder()
+                .client(client)
                 .commandBaseLocation(fullPath)
                 .eventBaseLocation(fullPath)
                 .queryBaseLocation(fullPath);
