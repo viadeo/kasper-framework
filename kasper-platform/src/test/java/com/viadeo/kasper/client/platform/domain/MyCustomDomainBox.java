@@ -25,6 +25,8 @@ import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.event.domain.DomainEvent;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 public class MyCustomDomainBox {
 
@@ -76,7 +78,31 @@ public class MyCustomDomainBox {
 
     public static class MyCustomMalformedDomainEvent implements DomainEvent { }
 
-    public static DomainBundle getBundle(){
+    @Configuration
+    public static class MyCustomDomainSpringConfiguration {
+
+        @Bean
+        public MyCustomCommandHandler myCustomCommandHandler() {
+            return new MyCustomCommandHandler();
+        }
+
+        @Bean
+        public MyCustomQueryHandler myCustomQueryHandler() {
+            return new MyCustomQueryHandler();
+        }
+
+        @Bean
+        public MyCustomEventListener myCustomEventListener() {
+            return new MyCustomEventListener();
+        }
+
+        @Bean
+        public MyCustomRepository myCustomRepository() {
+            return new MyCustomRepository();
+        }
+    }
+
+    public static DomainBundle getBundle() {
         return new DomainBundle.Builder(new MyCustomDomain())
                 .with(new MyCustomCommandHandler())
                 .with(new MyCustomQueryHandler())
