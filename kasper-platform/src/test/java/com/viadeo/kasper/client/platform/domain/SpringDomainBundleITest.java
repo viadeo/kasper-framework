@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform.domain;
 
 import com.codahale.metrics.MetricRegistry;
@@ -16,6 +22,20 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 public class SpringDomainBundleITest {
+
+    private static class SpyPlugin implements Plugin {
+
+        final List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
+
+        @Override
+        public void initialize(final Platform platform,
+                               final MetricRegistry metricRegistry,
+                               final DomainDescriptor... domainDescriptors) {
+            this.domainDescriptors.addAll(Lists.newArrayList(domainDescriptors));
+        }
+    }
+
+    // ------------------------------------------------------------------------
 
     @Test
     public void build_withSpringDomainBundle_usingMyCustomDomainSpringConfiguration_shouldBeOk() {
@@ -45,18 +65,6 @@ public class SpringDomainBundleITest {
         assertEquals(1, domainDescriptor.getQueryHandlerDescriptors().size());
         assertEquals(1, domainDescriptor.getEventListenerDescriptors().size());
         assertEquals(1, domainDescriptor.getRepositoryDescriptors().size());
-    }
-
-    private static class SpyPlugin implements Plugin {
-
-        final List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
-
-        @Override
-        public void initialize(final Platform platform,
-                               final MetricRegistry metricRegistry,
-                               final DomainDescriptor... domainDescriptors) {
-            this.domainDescriptors.addAll(Lists.newArrayList(domainDescriptors));
-        }
     }
 
 }

@@ -82,27 +82,27 @@ public class MyCustomDomainBox {
     public static class MyCustomDomainSpringConfiguration {
 
         @Bean
-        public MyCustomCommandHandler myCustomCommandHandler(){
+        public MyCustomCommandHandler myCustomCommandHandler() {
             return new MyCustomCommandHandler();
         }
 
         @Bean
-        public MyCustomQueryHandler myCustomQueryHandler(){
+        public MyCustomQueryHandler myCustomQueryHandler() {
             return new MyCustomQueryHandler();
         }
 
         @Bean
-        public MyCustomEventListener myCustomEventListener(){
+        public MyCustomEventListener myCustomEventListener() {
             return new MyCustomEventListener();
         }
 
         @Bean
-        public MyCustomRepository myCustomRepository(){
+        public MyCustomRepository myCustomRepository() {
             return new MyCustomRepository();
         }
     }
 
-    public static DomainBundle getBundle(){
+    public static DomainBundle getBundle() {
         return new DomainBundle.Builder(new MyCustomDomain())
                 .with(new MyCustomCommandHandler())
                 .with(new MyCustomQueryHandler())
