@@ -85,7 +85,6 @@ public interface Platform {
         private final List<CommandInterceptorFactory> commandInterceptorFactories;
         private final Map<ExtraComponentKey, Object> extraComponents;
         private final DomainDescriptorFactory domainDescriptorFactory;
-        private final List<DomainDescriptor> domainDescriptors;
         private final DomainHelper domainHelper;
 
         private KasperEventBus eventBus;
@@ -114,7 +113,6 @@ public interface Platform {
             this.extraComponents = Maps.newHashMap();
             this.queryInterceptorFactories = Lists.newArrayList();
             this.commandInterceptorFactories = Lists.newArrayList();
-            this.domainDescriptors = Lists.newArrayList();
             this.domainHelper = new DomainHelper();
         }
 
@@ -138,8 +136,6 @@ public interface Platform {
             with(this.domainBundles, domainBundles);
 
             final DomainDescriptor domainDescriptor = domainDescriptorFactory.createFrom(domainBundle);
-
-            this.domainDescriptors.add(domainDescriptor);
             this.domainHelper.add(DomainDescriptorFactory.mapToDomainClassByComponentClass(domainDescriptor));
 
             return this;
@@ -235,6 +231,8 @@ public interface Platform {
         }
 
         protected void registerInterceptors() {
+            final List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
+
             for (final DomainBundle bundle : domainBundles) {
                 commandInterceptorFactories.addAll(bundle.getCommandInterceptorFactories());
                 queryInterceptorFactories.addAll(bundle.getQueryInterceptorFactories());
@@ -296,6 +294,8 @@ public interface Platform {
                 }
 
                 eventBus.subscribe(eventListener);
+                final DomainDescriptor domainDescriptor = domainDescriptorFactory.createFrom(bundle);
+                domainHelper.add(DomainDescriptorFactory.mapToDomainClassByComponentClass(domainDescriptor));
             }
 
             return domainDescriptorFactory.createFrom(bundle);
