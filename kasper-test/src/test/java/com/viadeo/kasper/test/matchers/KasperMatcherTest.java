@@ -20,11 +20,9 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.mongodb.util.MyAsserts.assertFalse;
-import static com.mongodb.util.MyAsserts.assertTrue;
 import static com.viadeo.kasper.test.matchers.KasperMatcher.anyDate;
 import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class KasperMatcherTest {
 
