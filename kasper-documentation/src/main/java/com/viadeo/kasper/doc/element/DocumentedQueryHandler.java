@@ -8,6 +8,9 @@ package com.viadeo.kasper.doc.element;
 
 import com.viadeo.kasper.client.platform.domain.descriptor.QueryHandlerDescriptor;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
+import org.springframework.util.LinkedMultiValueMap;
+
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -44,17 +47,19 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
 
     public static class DocumentedQueryResult extends AbstractPropertyDomainElement {
 
-        private final DocumentedQueryHandler queryHandler;
+        private static final LinkedMultiValueMap<Class, LightDocumentedElement> HANDLERS_BY_QUERY_RESULTS = new LinkedMultiValueMap<>();
 
         public DocumentedQueryResult(final DocumentedDomain domain,
                                      final DocumentedQueryHandler queryHandler,
                                      final Class queryResultClass) {
             super(domain, DocumentedElementType.QUERY_RESULT, queryResultClass);
-            this.queryHandler = queryHandler;
+
+            HANDLERS_BY_QUERY_RESULTS.add(queryResultClass, queryHandler.getLightDocumentedElement());
         }
 
-        public LightDocumentedElement<DocumentedQueryHandler> getQueryHandler() {
-            return queryHandler.getLightDocumentedElement();
+        public List<LightDocumentedElement> getQueryHandlers() {
+            final List<LightDocumentedElement> queryHandlers = HANDLERS_BY_QUERY_RESULTS.get(getReferenceClass());
+            return queryHandlers != null ? queryHandlers : null;
         }
 
         @Override

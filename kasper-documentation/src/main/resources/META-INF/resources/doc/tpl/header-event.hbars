@@ -1,9 +1,9 @@
 
 <div class="well well-small">
   <h2>Listeners</h2>
-  {{#if node.listeners}}
+  {{#if node.eventListeners}}
   	<ul>
-  	{{#each node.listeners}}
+  	{{#each node.eventListeners}}
   		<li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
   	{{/each}}
   	</ul>

@@ -1,4 +1,4 @@
-  
+
   {{#if node.command}}
   	<div class="well well-small">
   		<h2><small>Command :</small> <a class="klink" href="#{{node.command.name}}">{{node.command.label}}</a></h2>
