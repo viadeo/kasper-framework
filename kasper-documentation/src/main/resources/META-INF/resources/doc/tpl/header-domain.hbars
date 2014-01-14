@@ -25,7 +25,7 @@
         <!--/span-->
 
         <div class="span4 well well-small">
-            <h2>Query Handlers</h2>
+            <h2>Handlers</h2>
             {{#if node.queryHandlers}}
             <ul>
                 {{#each node.queryHandlers}}
@@ -73,9 +73,9 @@
         
         <div class="span4 well well-small">
             <h2>Handlers</h2>
-            {{#if node.handlers}}
+            {{#if node.commandHandlers}}
             <ul>
-                {{#each node.handlers}}
+                {{#each node.commandHandlers}}
                 <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
                 {{/each}}
             </ul>
@@ -106,9 +106,9 @@
 
         <div class="span4 well well-small">
             <h2>Listeners</h2>
-            {{#if node.listeners}}
+            {{#if node.eventListeners}}
             <ul>
-                {{#each node.listeners}}
+                {{#each node.eventListeners}}
                 <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
                 {{/each}}
             </ul>

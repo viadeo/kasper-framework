@@ -8,6 +8,9 @@ package com.viadeo.kasper.doc.element;
 
 import com.viadeo.kasper.client.platform.domain.descriptor.EventListenerDescriptor;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
+import org.springframework.util.LinkedMultiValueMap;
+
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -17,7 +20,7 @@ public class DocumentedEventListener extends AbstractDomainElement {
 
     public static class DocumentedEvent extends AbstractPropertyDomainElement {
 
-        private final DocumentedEventListener documentedEventListener;
+        private static final LinkedMultiValueMap<Class, LightDocumentedElement> LISTENERS_BY_EVENTS = new LinkedMultiValueMap<>();
 
         private String action;
 
@@ -25,7 +28,10 @@ public class DocumentedEventListener extends AbstractDomainElement {
                                final DocumentedEventListener documentedEventListener,
                                final Class eventClass) {
             super(documentedDomain, DocumentedElementType.EVENT, eventClass);
-            this.documentedEventListener = documentedEventListener;
+
+            if (null != documentedEventListener) {
+                LISTENERS_BY_EVENTS.add(eventClass, documentedEventListener.getLightDocumentedElement());
+            }
         }
 
         public String getAction() {
@@ -36,8 +42,9 @@ public class DocumentedEventListener extends AbstractDomainElement {
             this.action = action;
         }
 
-        public LightDocumentedElement<DocumentedEventListener> getEventListener() {
-            return documentedEventListener != null ? documentedEventListener.getLightDocumentedElement() : null;
+        public List<LightDocumentedElement> getEventListeners() {
+            final List<LightDocumentedElement> eventListeners = LISTENERS_BY_EVENTS.get(getReferenceClass());
+            return eventListeners != null ? eventListeners : null;
         }
 
         @Override
