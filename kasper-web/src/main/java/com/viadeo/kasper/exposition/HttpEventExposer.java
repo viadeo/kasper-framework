@@ -10,6 +10,9 @@ import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
@@ -20,6 +23,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 import org.springframework.http.MediaType;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.MultiValueMap;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,10 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 import java.beans.Introspector;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
@@ -92,8 +94,22 @@ public class HttpEventExposer extends HttpExposer {
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing events ===============");
 
-        for (final ExposureDescriptor<Event,EventListener> descriptor : descriptors) {
-            expose(descriptor);
+        final MultiValueMap<Class<? extends Event>, String> aliasesByEventClasses = CollectionUtils.toMultiValueMap(Maps.<Class<? extends Event>, List<String>>newHashMap());
+        final Set<Class<? extends Event>> eventClasses = Sets.newHashSet();
+
+        for (final ExposureDescriptor<Event, EventListener> descriptor : descriptors) {
+            for (final String alias : AliasRegistry.aliasesFrom(descriptor.getHandler())) {
+                aliasesByEventClasses.add(descriptor.getInput(), alias);
+            }
+            eventClasses.add(descriptor.getInput());
+        }
+
+        for (final Class<? extends Event> eventClass : eventClasses) {
+            List<String> aliases = aliasesByEventClasses.get(eventClass);
+            if (null == aliases) {
+                aliases = Lists.newArrayList();
+            }
+            expose(eventClass, aliases);
         }
 
         if (exposedEvents.isEmpty()) {
@@ -222,12 +238,11 @@ public class HttpEventExposer extends HttpExposer {
     // ------------------------------------------------------------------------
 
     @SuppressWarnings({"rawtypes", "unchecked"})
-    HttpExposer expose(final ExposureDescriptor<Event,EventListener> descriptor) {
-        checkNotNull(descriptor);
+    HttpExposer expose(final Class<? extends Event> eventClass, final List<String> aliases) {
+        checkNotNull(eventClass);
+        checkNotNull(aliases);
 
-        final Class<? extends Event> eventClass = descriptor.getInput();
         final String eventPath = eventToPath(eventClass);
-        final List<String> aliases = AliasRegistry.aliasesFrom(descriptor.getHandler());
         final String eventName = eventClass.getSimpleName();
 
         LOGGER.info("-> Exposing event[{}] at path[/{}]",
