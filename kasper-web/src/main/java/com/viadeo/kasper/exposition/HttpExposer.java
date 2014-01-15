@@ -28,7 +28,7 @@ public abstract class HttpExposer extends HttpServlet {
 		final Class value = (Class) mapping.get(key);
 
 		if (null != value) {
-			throw new IllegalArgumentException("Duplicate entry for name="
+			throw new HttpExposerError("Duplicate entry for name="
 					+ key + ", existing value is " + value.getName());
         }
 
