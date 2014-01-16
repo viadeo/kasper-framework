@@ -39,7 +39,7 @@ allprojects  {
   apply plugin: 'findbugs'
 
   group = 'com.viadeo.kasper'
-  version = '0.3.3'
+  version = '0.3.4'
 
   idea {
     module {
