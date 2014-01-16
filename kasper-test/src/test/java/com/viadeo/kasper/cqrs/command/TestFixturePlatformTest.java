@@ -188,4 +188,27 @@ public class TestFixturePlatformTest {
             );
     }
 
+    @Test
+    public void testTwoTimesOrMoreSimpleQueryRefused() {
+        // 1rst time
+        fixture
+                .given()
+                .when(
+                        new TestQuery("REFUSED")
+                )
+                .expectReturnRefused(
+                        new KasperReason("REFUSED", "Go To Hell")
+                );
+
+        // 2nd time
+        fixture
+                .given()
+                .when(
+                        new TestQuery("REFUSED")
+                )
+                .expectReturnRefused(
+                        new KasperReason("REFUSED", "Go To Hell")
+                );
+    }
+
 }

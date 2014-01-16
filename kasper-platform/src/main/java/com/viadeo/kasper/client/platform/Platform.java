@@ -231,8 +231,6 @@ public interface Platform {
         }
 
         protected void registerInterceptors() {
-            final List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
-
             for (final DomainBundle bundle : domainBundles) {
                 commandInterceptorFactories.addAll(bundle.getCommandInterceptorFactories());
                 queryInterceptorFactories.addAll(bundle.getQueryInterceptorFactories());
