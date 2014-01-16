@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.Lists;
@@ -32,13 +38,13 @@ public class HttpQueryExposerUTest {
                 new ExposureDescriptor<Query, QueryHandler>(AQuery.class, QueryHandlerB.class)
         );
 
-        ServletContext servletContext = mock(ServletContext.class);
+        final ServletContext servletContext = mock(ServletContext.class);
         when(servletContext.getContextPath()).thenReturn("");
 
-        ServletConfig servletConfig = mock(ServletConfig.class);
+        final ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
 
-        HttpQueryExposer queryExposer = new HttpQueryExposer(mock(QueryGateway.class), descriptors);
+        final HttpQueryExposer queryExposer = new HttpQueryExposer(mock(QueryGateway.class), descriptors);
 
         // When
         queryExposer.init(servletConfig);

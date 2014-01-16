@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.Lists;
@@ -33,13 +39,13 @@ public class HttpEventExposerUTest {
                 new ExposureDescriptor<Event, EventListener>(AEvent.class, EventListenerB.class)
         );
 
-        ServletContext servletContext = mock(ServletContext.class);
+        final ServletContext servletContext = mock(ServletContext.class);
         when(servletContext.getContextPath()).thenReturn("");
 
-        ServletConfig servletConfig = mock(ServletConfig.class);
+        final ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
 
-        HttpEventExposer eventExposer = new HttpEventExposer(mock(KasperEventBus.class), descriptors);
+        final HttpEventExposer eventExposer = new HttpEventExposer(mock(KasperEventBus.class), descriptors);
 
         // When
         eventExposer.init(servletConfig);
