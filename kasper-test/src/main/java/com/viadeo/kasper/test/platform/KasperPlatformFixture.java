@@ -32,6 +32,7 @@ public class KasperPlatformFixture
     private final SpyEventBus eventBus;
     private final Config config;
 
+    private boolean initialized;
     private DomainBundle domainBundle;
 
     public KasperPlatformFixture() {
@@ -53,17 +54,25 @@ public class KasperPlatformFixture
 
     
     private void initialize() {
-        platform.set(
-                new Platform.Builder(new KasperPlatformConfiguration())
-                        .withConfiguration(config)
-                        .withEventBus(eventBus)
-                        .addDomainBundle(domainBundle)
-                        .build()
-        );
+        if( ! initialized) {
+            platform.set(
+                    new Platform.Builder(new KasperPlatformConfiguration())
+                            .withConfiguration(config)
+                            .withEventBus(eventBus)
+                            .addDomainBundle(domainBundle)
+                            .build()
+            );
+            initialized = true;
+        }
+    }
+
+    private void reset() {
+        initialized = false;
     }
 
     public KasperPlatformFixture register(final DomainBundle domainBundle){
         this.domainBundle = domainBundle;
+        reset();
         return this;
     }
 
