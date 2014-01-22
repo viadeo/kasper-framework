@@ -28,7 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SpringDomainBundle extends DefaultDomainBundle {
 
-    private final AnnotationConfigApplicationContext applicationContext;
+    protected final AnnotationConfigApplicationContext applicationContext;
 
     public static class BeanDescriptor {
 
@@ -117,7 +117,7 @@ public class SpringDomainBundle extends DefaultDomainBundle {
     }
 
     @Override
-    public final void configure(final Platform.BuilderContext context) {
+    public void configure(final Platform.BuilderContext context) {
         checkNotNull(context);
 
         applicationContext.setParent(BuilderContextHelper.createApplicationContextFrom(context));

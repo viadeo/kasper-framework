@@ -4,10 +4,11 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.domain;
+package com.viadeo.kasper.client.platform.domain.sample;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;

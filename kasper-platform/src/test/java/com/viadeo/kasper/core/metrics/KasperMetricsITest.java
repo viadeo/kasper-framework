@@ -9,7 +9,7 @@ package com.viadeo.kasper.core.metrics;
 import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
-import com.viadeo.kasper.client.platform.domain.MyCustomDomainBox;
+import com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox;
 import com.viadeo.kasper.core.resolvers.CommandResolver;
 import com.viadeo.kasper.exception.KasperException;
 import org.junit.Test;
