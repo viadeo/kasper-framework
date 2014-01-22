@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static com.mongodb.util.MyAsserts.assertEquals;
+import static org.junit.Assert.assertEquals;
 import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus.Policy;
 import static org.mockito.Mockito.spy;
 
@@ -35,7 +35,9 @@ public class KasperEventBusTest {
     ArgumentCaptor<GenericEventMessage<Event>> captor;
 
     @XKasperUnregistered
-    private static class TestEvent extends Event { }
+    private static class TestEvent extends Event {
+        private static final long serialVersionUID = 7266657610382378609L;
+    }
 
 
     public KasperEventBusTest() {
