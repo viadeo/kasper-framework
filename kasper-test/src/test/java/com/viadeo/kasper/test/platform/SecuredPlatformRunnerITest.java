@@ -21,9 +21,12 @@ import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.exception.KasperSecurityException;
-import com.viadeo.kasper.security.IdentityContextProvider;
+import com.viadeo.kasper.security.KasperInvalidSecurityTokenException;
+import com.viadeo.kasper.security.KasperMissingSecurityTokenException;
 import com.viadeo.kasper.security.SecurityConfiguration;
+import com.viadeo.kasper.security.annotation.Public;
+import com.viadeo.kasper.security.callback.IdentityContextProvider;
+import com.viadeo.kasper.security.callback.SecurityTokenValidator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -31,16 +34,17 @@ import javax.inject.Inject;
 import java.util.Arrays;
 import java.util.List;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 @RunWith(PlatformRunner.class)
 @PlatformRunner.Configuration(SecuredPlatformRunnerITest.SecuredKasperPlatformConfiguration.class)
 @PlatformRunner.Bundles({SecuredPlatformRunnerITest.SecuredDomainBundle.class})
 public class SecuredPlatformRunnerITest {
 
-    final private static String SECURITY_TOKEN = "SET_BY_SECURITY_INTERCEPTOR";
-    final private static String ERROR_MSG = "Can't decrypt security token";
+    final private static String SECURITY_TOKEN = "DUMMY_SECRET";
+    final private static String USER_ID = "SET_BY_SECURITY_INTERCEPTOR";
+    final private static String CANNOT_DECRYPT_SECURITY_TOKEN_ERROR_MSG = "Can't decrypt security token";
+    final private static String INVALID_TOKEN_ERROR_MSG = "Security Token is invalid";
 
     @Inject
     private CommandGateway commandGateway;
@@ -48,31 +52,31 @@ public class SecuredPlatformRunnerITest {
     @Inject
     private QueryGateway queryGateway;
 
-    static private class IdentityProvider implements IdentityContextProvider {
-        boolean shouldThrowException = false;
+    static private class RejectEmptyTokenValidator implements SecurityTokenValidator {
+
         @Override
-        public void provideIdentity(Context context) {
-            if (shouldThrowException) {
-                throw new KasperSecurityException(ERROR_MSG);
+        public void validate(String securityToken) throws KasperMissingSecurityTokenException, KasperInvalidSecurityTokenException {
+            if ("".equals(securityToken)) {
+                throw new KasperInvalidSecurityTokenException(INVALID_TOKEN_ERROR_MSG, CoreReasonCode.REQUIRE_AUTHENTICATION);
             }
-            context.setSecurityToken(SECURITY_TOKEN);
-        }
-        public void setShouldThrowException(boolean shouldThrowException) {
-            this.shouldThrowException = shouldThrowException;
         }
     }
 
-    static private IdentityProvider identityProvider = new IdentityProvider();
+    static private class IdentityProvider implements IdentityContextProvider {
+
+        @Override
+        public void provideIdentity(Context context) {
+            context.setUserId(USER_ID);
+        }
+
+    }
 
     static final class SecuredKasperPlatformConfiguration extends KasperPlatformConfiguration {
         SecuredKasperPlatformConfiguration() {
-
-            super(new SecurityConfiguration() {
-                @Override
-                public IdentityContextProvider getIdentityContextProvider() {
-                    return identityProvider;
-                }
-            });
+            super(new SecurityConfiguration.Builder().
+                    withIdentityProvider(new IdentityProvider()).
+                    withSecurityTokenValidator(new RejectEmptyTokenValidator()).
+                    build());
         }
     }
 
@@ -82,27 +86,34 @@ public class SecuredPlatformRunnerITest {
     private static class TestQuery implements Query {
     }
 
+    @Public
+    private static class TestPublicQuery implements Query {
+    }
+
     @XKasperCommand
     private static class TestCommand implements Command {
     }
 
+    @Public
+    @XKasperCommand
+    private static class TestPublicCommand implements Command {
+    }
+
+
     private static class TestResult implements QueryResult {
-
-        private String securityToken;
-
-        TestResult(String securityToken) {
-            this.securityToken = securityToken;
-        }
-
-        public String getSecurityToken() {
-            return securityToken;
-        }
     }
 
     @XKasperQueryHandler(domain = SecuredDomain.class)
     private static class TestQueryHandler extends QueryHandler<TestQuery, TestResult> {
         public QueryResponse<TestResult> retrieve(final QueryMessage<TestQuery> message) throws Exception {
-            return QueryResponse.of(new TestResult(message.getContext().getSecurityToken()));
+            return QueryResponse.of(new TestResult());
+        }
+    }
+
+    @XKasperQueryHandler(domain = SecuredDomain.class)
+    private static class TestPublicQueryHandler extends QueryHandler<TestPublicQuery, TestResult> {
+        public QueryResponse<TestResult> retrieve(final QueryMessage<TestPublicQuery> message) throws Exception {
+            return QueryResponse.of(new TestResult());
         }
     }
 
@@ -110,9 +121,17 @@ public class SecuredPlatformRunnerITest {
     private static class TestCommandHandler extends CommandHandler<TestCommand> {
         public CommandResponse handle(final TestCommand command) {
             Context context = getContext();
-            return CommandResponse.ok().withSecurityToken(context.getSecurityToken());
+            return CommandResponse.ok();
         }
     }
+
+    @XKasperCommandHandler(domain = SecuredDomain.class)
+    private static class TestPublicCommandHandler extends CommandHandler<TestPublicCommand> {
+        public CommandResponse handle(final TestPublicCommand command) {
+            return CommandResponse.ok();
+        }
+    }
+
 
     static final class SecuredDomainBundle extends DefaultDomainBundle {
         SecuredDomainBundle() {
@@ -121,83 +140,127 @@ public class SecuredPlatformRunnerITest {
 
         @Override
         public List<CommandHandler> getCommandHandlers() {
-            return Arrays.asList((CommandHandler) new TestCommandHandler());
+            return Arrays.asList((CommandHandler) new TestCommandHandler(),
+                    (CommandHandler) new TestPublicCommandHandler());
         }
 
         @Override
         public List<QueryHandler> getQueryHandlers() {
-            return Arrays.asList((QueryHandler) new TestQueryHandler());
+            return Arrays.asList((QueryHandler) new TestQueryHandler(),
+                    (QueryHandler) new TestPublicQueryHandler());
         }
 
     }
 
-    // ------------------------------------------------------------------------
+    @Test
+    public void issuingCommand_withNoSecurityToken_shouldResponseKasperReasonWithRequireAuthentication() throws Exception {
+        // Given
+        final Context unauthenticatedContext = getUnauthenticatedContext();
+        // When
+        final CommandResponse response = sendCommand(unauthenticatedContext);
+        // Then
+        assertAuthenticationRequired(response.getReason());
+    }
+
 
     @Test
-    public void securityInterceptorOnCommand_shouldSetSecurityToken() throws Exception {
-        assertNotNull(commandGateway);
-
+    public void issuingPublicCommand_withNoSecurityToken_shouldBeOk() throws Exception {
         // Given
-        final Context context = new DefaultContext();
-        identityProvider.setShouldThrowException(false);
+        final Context unauthenticatedContext = getUnauthenticatedContext();
+        String previousUserId = unauthenticatedContext.getUserId();
         // When
-        final CommandResponse response = commandGateway.sendCommandAndWaitForAResponse(new TestCommand(), context);
-
+        final CommandResponse response = sendPublicCommand(unauthenticatedContext);
         // Then
-        assertNotNull("No security token set is response", response.getSecurityToken());
-        assertEquals("Context's security token not set correctly", SECURITY_TOKEN, response.getSecurityToken().get());
+        assertPublicRequestGoTroughWithoutAlteringSecurityIdentity(response.getReason(),
+                previousUserId, unauthenticatedContext.getUserId());
     }
 
     @Test
-    public void securityInterceptorOnQuery_shouldSetSecurityToken() throws Exception {
-        assertNotNull(queryGateway);
-
+    public void issuingQuery_withNoSecurityToken_shouldResponseKasperReasonWithRequireAuthentication() throws Exception {
         // Given
-        final Context context = new DefaultContext();
-        identityProvider.setShouldThrowException(false);
+        final Context unauthenticatedContext = getUnauthenticatedContext();
         // When
-        final QueryResponse<TestResult> response = queryGateway.retrieve(new TestQuery(), context);
-
+        final QueryResponse<TestResult> response = queryGateway.retrieve(new TestQuery(), unauthenticatedContext);
         // Then
-        assertNotNull("Query did not return result", response.getResult());
-        assertEquals("Context's security token not set correctly",
-                SECURITY_TOKEN, response.getResult().getSecurityToken());
+        assertAuthenticationRequired(response.getReason());
+    }
+
+
+    @Test
+    public void issuingPublicQuery_withNoSecurityToken_shouldBeOk() throws Exception {
+        // Given
+        final Context authenticatedContext = getAuthenticatedContext();
+        String previousUserId = authenticatedContext.getUserId();
+        // When
+        final QueryResponse<TestResult> response = sendPublicQuery(authenticatedContext);
+        // Then
+        assertPublicRequestGoTroughWithoutAlteringSecurityIdentity(response.getReason(),
+                previousUserId, authenticatedContext.getUserId());
     }
 
     @Test
-    public void securityInterceptorOnQuery_shouldReturnQueryErrorWhenExceptionIsThrown() throws Exception {
-        assertNotNull(queryGateway);
-
+    public void issuingCommand_withSecurityToken_shouldSetSecurityIdentityInContext() throws Exception {
         // Given
-        final Context context = new DefaultContext();
-        identityProvider.setShouldThrowException(true);
-        final QueryResponse<TestResult> response = queryGateway.retrieve(new TestQuery(), context);
-
+        final Context authenticatedContext = getAuthenticatedContext();
         // When
-        final KasperReason reason = response.getReason();
-
+        final CommandResponse response = sendCommand(authenticatedContext);
         // Then
-        assertNotNull(reason);
-        assertEquals("Interceptor didn't set INVALID_INPUT reason code",
-                CoreReasonCode.INVALID_INPUT.name(), reason.getCode());
+        assertSecurityIdentityProvided(response.isOK(), authenticatedContext.getUserId());
     }
 
     @Test
-    public void securityInterceptorOnCommand_shouldReturnCommandErrorWhenExceptionIsThrown() throws Exception {
-        assertNotNull(commandGateway);
-
+    public void issuingQuery_withSecurityToken_shouldSetSecurityIdentityInContext() throws Exception {
         // Given
-        final Context context = new DefaultContext();
-        identityProvider.setShouldThrowException(true);
-        final CommandResponse response = commandGateway.sendCommandAndWaitForAResponse(new TestCommand(), context);
-
+        final Context authenticatedContext = getAuthenticatedContext();
         // When
-        final KasperReason reason = response.getReason();
-
+        final QueryResponse<TestResult> response = sendQuery(authenticatedContext);
         // Then
-        assertNotNull(reason);
-        assertEquals("Interceptor didn't set INVALID_INPUT reason code",
-                CoreReasonCode.INVALID_INPUT.name(), reason.getCode());
+        assertSecurityIdentityProvided(response.isOK(), authenticatedContext.getUserId());
+    }
+
+    private CommandResponse sendCommand(final Context context) throws Exception {
+        return commandGateway.sendCommandAndWaitForAResponse(new TestCommand(), context);
+    }
+
+    private CommandResponse sendPublicCommand(final Context context) throws Exception {
+        return commandGateway.sendCommandAndWaitForAResponse(new TestPublicCommand(), context);
+    }
+
+    private QueryResponse sendQuery(final Context context) throws Exception {
+        return queryGateway.retrieve(new TestQuery(), context);
+    }
+
+    private QueryResponse sendPublicQuery(final Context context) throws Exception {
+        return queryGateway.retrieve(new TestPublicQuery(), context);
+    }
+
+
+    private Context getUnauthenticatedContext() {
+        return new DefaultContext();
+    }
+
+    private Context getAuthenticatedContext() {
+        final Context context = new DefaultContext();
+        context.setSecurityToken(SECURITY_TOKEN);
+        return context;
+    }
+
+    private void assertAuthenticationRequired(KasperReason kasperReason) {
+        assertNotNull(kasperReason);
+        assertEquals("Security Interceptor didn't set correct Kasper Reason",
+                new KasperReason(CoreReasonCode.REQUIRE_AUTHENTICATION, INVALID_TOKEN_ERROR_MSG), kasperReason);
+    }
+
+    private void assertSecurityIdentityProvided(boolean responseIsOK, String actualUserId) {
+        assertTrue("Security Interceptor didn't let go a valid authenticated request", responseIsOK);
+        assertEquals("Security Interceptor didn't set correct UserId", USER_ID, actualUserId);
+    }
+
+    private void assertPublicRequestGoTroughWithoutAlteringSecurityIdentity(KasperReason kasperReason,
+                                                                            String previousUserId,
+                                                                            String actualUserId) {
+        assertNull("Security Interceptor didn't let go a request on a public command", kasperReason);
+        assertEquals("Security Interceptor shouldn't change user Id on public request", previousUserId, actualUserId);
     }
 
 }

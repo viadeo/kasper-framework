@@ -4,10 +4,10 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.security;
+package com.viadeo.kasper.security.callback;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.exception.KasperSecurityException;
+import com.viadeo.kasper.security.KasperSecurityException;
 
 /**
  * Capability to provide identity elements to the execution Context.

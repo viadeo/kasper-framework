@@ -13,7 +13,11 @@ import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.security.DefaultPublicSecurityStrategy;
+import com.viadeo.kasper.security.DefaultSecurityStrategy;
 import com.viadeo.kasper.security.SecurityConfiguration;
+import com.viadeo.kasper.security.SecurityStrategy;
+import com.viadeo.kasper.security.annotation.Public;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -28,8 +32,13 @@ public class CommandSecurityInterceptorFactory extends CommandInterceptorFactory
 
     @Override
     public Optional<InterceptorChain<Command, CommandResponse>> create(final TypeToken<?> type) {
+        final Class<?> commandClass = type.getRawType();
+        final boolean isPublicCommand = commandClass.isAnnotationPresent(Public.class);
+        SecurityStrategy securityStrategy = isPublicCommand ?
+                new DefaultPublicSecurityStrategy(securityConfiguration) :
+                new DefaultSecurityStrategy(securityConfiguration);
         final Interceptor<Command, CommandResponse> interceptor =
-            new CommandSecurityInterceptor<>(securityConfiguration);
+                new CommandSecurityInterceptor(securityStrategy);
         return Optional.of(InterceptorChain.makeChain(interceptor));
     }
 

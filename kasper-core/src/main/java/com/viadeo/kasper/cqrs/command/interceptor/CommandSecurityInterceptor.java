@@ -6,22 +6,19 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.interceptor;
 
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.interceptor.BaseSecurityInterceptor;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.exception.KasperSecurityException;
-import com.viadeo.kasper.security.SecurityConfiguration;
+import com.viadeo.kasper.security.KasperSecurityException;
+import com.viadeo.kasper.security.SecurityStrategy;
 
-public class CommandSecurityInterceptor<C extends Command> extends BaseSecurityInterceptor
-        implements Interceptor<C, CommandResponse> {
+public class CommandSecurityInterceptor<C extends Command> implements Interceptor<C, CommandResponse> {
+    private SecurityStrategy securityStrategy;
 
-    public CommandSecurityInterceptor(SecurityConfiguration securityConfiguration) {
-        super(securityConfiguration);
+    public CommandSecurityInterceptor(SecurityStrategy securityStrategy) {
+        this.securityStrategy = securityStrategy;
     }
 
     // ------------------------------------------------------------------------
@@ -31,15 +28,13 @@ public class CommandSecurityInterceptor<C extends Command> extends BaseSecurityI
                                    final Context context,
                                    final InterceptorChain<C, CommandResponse> chain) throws Exception {
         try {
-            addSecurityIdentity(context);
+            securityStrategy.beforeRequest(context);
         } catch (final KasperSecurityException e) {
-            return CommandResponse.error(
-                    new KasperReason(
-                            CoreReasonCode.INVALID_INPUT.name(),
-                            e.getMessage()
-                    ));
+            return CommandResponse.error(e.getKasperReason());
         }
-        return chain.next(input, context);
+        CommandResponse commandResponse = chain.next(input, context);
+        securityStrategy.afterRequest();
+        return commandResponse;
     }
 
 }

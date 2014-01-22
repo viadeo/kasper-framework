@@ -1,0 +1,17 @@
+package com.viadeo.kasper.security;
+
+import com.viadeo.kasper.CoreReasonCode;
+
+public class KasperInvalidSecurityTokenException extends KasperSecurityException {
+
+    private static final long serialVersionUID = -6948187421968186520L;
+
+    public KasperInvalidSecurityTokenException(String message, CoreReasonCode coreReasonCode) {
+        super(message, coreReasonCode);
+    }
+
+    public KasperInvalidSecurityTokenException(String message, Throwable cause, CoreReasonCode coreReasonCode) {
+        super(message, cause, coreReasonCode);
+    }
+
+}

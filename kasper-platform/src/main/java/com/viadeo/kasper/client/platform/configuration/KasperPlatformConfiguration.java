@@ -52,7 +52,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     public KasperPlatformConfiguration() {
-        this(null);
+        this(new SecurityConfiguration.Builder().build());
     }
 
     public KasperPlatformConfiguration(SecurityConfiguration securityConfiguration) {
@@ -70,20 +70,16 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         this.commandGateway = new KasperCommandGateway(commandBus);
 
         this.commandInterceptorFactories = Lists.<CommandInterceptorFactory>newArrayList(
+                new CommandSecurityInterceptorFactory(securityConfiguration),
                 new CommandValidationInterceptorFactory()
         );
 
         this.queryInterceptorFactories =  Lists.newArrayList(
+                new QuerySecurityInterceptorFactory(securityConfiguration),
                 new CacheInterceptorFactory(),
                 new QueryValidationInterceptorFactory(),
                 new QueryFilterInterceptorFactory()
         );
-
-        if (null != securityConfiguration) {
-            // TODO: to be refactored when interceptors weighting is available.
-            this.commandInterceptorFactories.add(0, new CommandSecurityInterceptorFactory(securityConfiguration));
-            this.queryInterceptorFactories.add(0, new QuerySecurityInterceptorFactory(securityConfiguration));
-        }
     }
 
     // ------------------------------------------------------------------------
