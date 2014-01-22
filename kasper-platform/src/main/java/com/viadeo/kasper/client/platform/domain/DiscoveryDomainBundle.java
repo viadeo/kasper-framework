@@ -23,6 +23,8 @@ import org.springframework.beans.factory.BeanCreationException;
 import java.util.Collection;
 import java.util.List;
 
+import static com.viadeo.kasper.client.platform.domain.DiscoveryDomainHelper.findComponents;
+
 public class DiscoveryDomainBundle extends SpringDomainBundle {
 
     protected final Collection<Class<QueryHandler>> queryHandlerClasses;
@@ -32,31 +34,51 @@ public class DiscoveryDomainBundle extends SpringDomainBundle {
     protected final Collection<Class<QueryInterceptorFactory>> queryInterceptorFactoryClasses;
     protected final Collection<Class<CommandInterceptorFactory>> commandInterceptorFactoryClasses;
 
+    // ------------------------------------------------------------------------
+
     public DiscoveryDomainBundle(final String basePackage, final List<Class> springConfigurations, final BeanDescriptor... beans) {
-        this(basePackage, DiscoveryDomainHelper.findCandidateDomain(basePackage), springConfigurations, beans);
+        this(
+                basePackage,
+                DiscoveryDomainHelper.findCandidateDomain(basePackage),
+                springConfigurations,
+                beans
+        );
     }
 
     public DiscoveryDomainBundle(final String basePackage, final BeanDescriptor... beans) {
-        this(basePackage, DiscoveryDomainHelper.findCandidateDomain(basePackage), Lists.<Class>newArrayList(), beans);
+        this(
+                basePackage,
+                DiscoveryDomainHelper.findCandidateDomain(basePackage),
+                Lists.<Class>newArrayList(),
+                beans
+        );
     }
 
     public DiscoveryDomainBundle(final String basePackage,
                                  final Domain domain,
                                  final List<Class> springConfigurations,
                                  final BeanDescriptor... beans) {
+
         super(domain, springConfigurations, beans);
 
         try {
-            this.queryHandlerClasses = DiscoveryDomainHelper.findComponents(basePackage, QueryHandler.class);
-            this.commandHandlerClasses = DiscoveryDomainHelper.findComponents(basePackage, CommandHandler.class);
-            this.eventListenerClasses = DiscoveryDomainHelper.findComponents(basePackage, EventListener.class);
-            this.repositoryClasses = DiscoveryDomainHelper.findComponents(basePackage, Repository.class);
-            this.queryInterceptorFactoryClasses = DiscoveryDomainHelper.findComponents(basePackage, QueryInterceptorFactory.class);
-            this.commandInterceptorFactoryClasses = DiscoveryDomainHelper.findComponents(basePackage, CommandInterceptorFactory.class);
-        } catch (ReflectiveOperationException e) {
-            throw new KasperException("Unexpected error occurred while initializing the domain bundle with `" + basePackage + "` as base package");
+
+            this.queryHandlerClasses = findComponents(basePackage, QueryHandler.class);
+            this.commandHandlerClasses = findComponents(basePackage, CommandHandler.class);
+            this.eventListenerClasses = findComponents(basePackage, EventListener.class);
+            this.repositoryClasses = findComponents(basePackage, Repository.class);
+            this.queryInterceptorFactoryClasses = findComponents(basePackage, QueryInterceptorFactory.class);
+            this.commandInterceptorFactoryClasses = findComponents(basePackage, CommandInterceptorFactory.class);
+
+        } catch (final ReflectiveOperationException e) {
+            throw new KasperException(String.format(
+                    "Unexpected error occurred while initializing the domain bundle with `%s` as base package",
+                    basePackage
+            ));
         }
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public void configure(Platform.BuilderContext context) {
@@ -67,20 +89,25 @@ public class DiscoveryDomainBundle extends SpringDomainBundle {
         componentsInstanceManager.setBeansMustExists(false);
 
         try {
+
             commandHandlers.addAll(instantiate(componentsInstanceManager, commandHandlerClasses));
             queryHandlers.addAll(instantiate(componentsInstanceManager, queryHandlerClasses));
             eventListeners.addAll(instantiate(componentsInstanceManager, eventListenerClasses));
             repositories.addAll(instantiate(componentsInstanceManager, repositoryClasses));
             queryInterceptorFactories.addAll(instantiate(componentsInstanceManager, queryInterceptorFactoryClasses));
             commandInterceptorFactories.addAll(instantiate(componentsInstanceManager, commandInterceptorFactoryClasses));
-        } catch (ReflectiveOperationException e) {
+
+        } catch (final ReflectiveOperationException e) {
             throw new KasperException("Unexpected error occurred while configuring the domain bundle : " + getName());
         }
     }
 
+    // ------------------------------------------------------------------------
+
     protected <COMP> Collection<COMP> instantiate(final SpringComponentsInstanceManager componentsInstanceManager,
                                                   final Collection<Class<COMP>> componentClasses)
             throws ReflectiveOperationException {
+
         final List<COMP> components = Lists.newArrayList();
 
         for (final Class<COMP> componentClass : componentClasses) {
@@ -90,8 +117,8 @@ public class DiscoveryDomainBundle extends SpringDomainBundle {
                 if (instanceFromClass.isPresent()) {
                     components.add(instanceFromClass.get());
                 }
-            } catch (BeanCreationException e) {
-                COMP componentInstance = DiscoveryDomainHelper.instantiateComponent(applicationContext, componentClass);
+            } catch (final BeanCreationException e) {
+                final COMP componentInstance = DiscoveryDomainHelper.instantiateComponent(applicationContext, componentClass);
                 components.add(componentInstance);
                 componentsInstanceManager.recordInstance(componentClass, componentInstance);
             }
@@ -99,4 +126,5 @@ public class DiscoveryDomainBundle extends SpringDomainBundle {
 
         return components;
     }
+
 }

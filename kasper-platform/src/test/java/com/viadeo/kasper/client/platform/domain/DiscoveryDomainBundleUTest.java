@@ -18,7 +18,7 @@ import org.springframework.context.annotation.Configuration;
 
 import static com.viadeo.kasper.client.platform.Platform.BuilderContext;
 import static com.viadeo.kasper.client.platform.Platform.ExtraComponentKey;
-import static com.viadeo.kasper.client.platform.domain.SpringDomainBundle.*;
+import static com.viadeo.kasper.client.platform.domain.SpringDomainBundle.BeanDescriptor;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 

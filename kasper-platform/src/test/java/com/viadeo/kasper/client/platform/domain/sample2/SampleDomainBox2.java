@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform.domain.sample2;
 
 import com.viadeo.kasper.cqrs.command.Command;
@@ -5,7 +11,6 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
-
 
 public class SampleDomainBox2 {
 
@@ -16,7 +21,7 @@ public class SampleDomainBox2 {
 
     @XKasperCommandHandler(domain = MyCustomDomain.class)
     public static class MyCustomCommandHandler extends CommandHandler<Command> {
-
-        public MyCustomCommandHandler(Infra infra) { }
+        public MyCustomCommandHandler(final Infra infra) { }
     }
+
 }

@@ -22,7 +22,10 @@ import java.util.Set;
 public class DiscoveryDomainHelper {
 
     @SuppressWarnings("unchecked")
-    public static <COMP> COMP instantiateComponent(ApplicationContext applicationContext, Class<COMP> componentClass) throws ReflectiveOperationException {
+    public static <COMP> COMP instantiateComponent(final ApplicationContext applicationContext,
+                                                   final Class<COMP> componentClass)
+            throws ReflectiveOperationException {
+
         final Constructor constructor = componentClass.getDeclaredConstructors()[0];
 
         final List<Object> parameters = Lists.newArrayList();
@@ -35,14 +38,16 @@ public class DiscoveryDomainHelper {
     }
 
     @SuppressWarnings("unchecked")
-    public static <COMP> Collection<Class<COMP>> findComponents(final String basePackage, Class<COMP> componentClazz) throws ReflectiveOperationException {
+    public static <COMP> Collection<Class<COMP>> findComponents(final String basePackage,
+                                                                final Class<COMP> componentClazz)
+            throws ReflectiveOperationException {
+
         final ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
         scanner.addIncludeFilter(new AssignableTypeFilter(componentClazz));
 
         final Set<BeanDefinition> beanDefinitions = scanner.findCandidateComponents(basePackage);
 
         final List<Class<COMP>> componentClasses = Lists.newArrayList();
-
         for (final BeanDefinition beanDefinition : beanDefinitions) {
             Class<?> clazz = Class.forName(beanDefinition.getBeanClassName());
             componentClasses.add((Class<COMP>) clazz);
@@ -55,7 +60,7 @@ public class DiscoveryDomainHelper {
         try {
             final Collection<Class<Domain>> candidateDomains = findComponents(basePackage, Domain.class);
 
-            if (null == candidateDomains || candidateDomains.size() == 0) {
+            if ( (null == candidateDomains) || (0 == candidateDomains.size()) ) {
                 throw new IllegalStateException("No found domain with `" + basePackage + "` as base package");
             }
 
@@ -67,8 +72,10 @@ public class DiscoveryDomainHelper {
             final Constructor<?>[] constructors = domainClass.getDeclaredConstructors();
 
             return (Domain) constructors[0].newInstance();
-        } catch (ReflectiveOperationException e) {
+
+        } catch (final ReflectiveOperationException e) {
             throw new KasperException(e);
         }
     }
+
 }
