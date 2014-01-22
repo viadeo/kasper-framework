@@ -29,8 +29,12 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
+<<<<<<< HEAD
 import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus.Policy;
 import static junit.framework.Assert.*;
+=======
+import static org.junit.Assert.assertEquals;
+>>>>>>> Add distributed event bus
 import static org.mockito.Mockito.spy;
 
 public class KasperEventBusTest {
@@ -61,7 +65,7 @@ public class KasperEventBusTest {
     @Test
     public void nominal() throws Exception {
         // Given
-        final KasperEventBus eventBus = spy(new KasperEventBus());
+        final KasperEventBus eventBus = spy(new KasperEventBusFactory().build());
         final TestEvent dummyEvent = new TestEvent();
         CurrentContext.set(DefaultContextBuilder.get());
 
@@ -114,7 +118,7 @@ public class KasperEventBusTest {
     @Test
     public void asynchronous() throws InterruptedException {
         // Given
-        final KasperEventBus eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
+        final KasperEventBus eventBus = new KasperEventBusFactory().build();
         final List<Integer> returns = Lists.newLinkedList();
         final Event event = new TestEvent();
 
@@ -146,7 +150,7 @@ public class KasperEventBusTest {
     @Test
     public void listeningSyncError() {
         // Given
-        final KasperEventBus syncEventBus = new KasperEventBus(Policy.SYNCHRONOUS);
+        final KasperEventBus syncEventBus = new KasperEventBusFactory().build();
         final Event event = new TestEvent();
 
         // When

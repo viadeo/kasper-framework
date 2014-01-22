@@ -12,5 +12,6 @@ dependencies {
     compile project(':kasper-core')
 
     // Third perty dependencies
+    compile libraries.AXON_AMQP
     compile libraries.TYPESAFE_CONFIG
 }

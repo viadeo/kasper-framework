@@ -19,6 +19,7 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.domain.EventMessage;
+import org.axonframework.eventhandling.DefaultClusterSelector;
 
 import java.util.Arrays;
 import java.util.List;
@@ -170,6 +171,7 @@ public class KasperPlatformFixture
         private final RecordingPlatform recordingPlatform;
 
         protected SpyEventBus(RecordingPlatform recordingPlatform){
+            super(new DefaultClusterSelector());
             this.recordingPlatform = recordingPlatform;
         }
 

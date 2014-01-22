@@ -12,6 +12,7 @@ import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.viadeo.kasper.client.KasperClient;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.client.platform.Platform;
+import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBusFactory;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
@@ -100,7 +101,8 @@ public abstract class BaseHttpExposerTest {
     protected void buildPlatform(final PlatformConfiguration platformConfiguration,
                                  final HttpExposerPlugin httpExposerPlugin,
                                  final DomainBundle domainBundle) {
-        final Platform.Builder builder = new Platform.Builder(platformConfiguration).addPlugin(httpExposerPlugin);
+        final Platform.Builder builder = new Platform.Builder(platformConfiguration).addPlugin(httpExposerPlugin)
+                .withEventBus(new KasperEventBusFactory().build());
         if (null != domainBundle) {
             builder.addDomainBundle(domainBundle);
         }
