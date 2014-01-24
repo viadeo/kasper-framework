@@ -43,7 +43,6 @@ public class SecuredPlatformRunnerITest {
 
     final private static String SECURITY_TOKEN = "DUMMY_SECRET";
     final private static String USER_ID = "SET_BY_SECURITY_INTERCEPTOR";
-    final private static String CANNOT_DECRYPT_SECURITY_TOKEN_ERROR_MSG = "Can't decrypt security token";
     final private static String INVALID_TOKEN_ERROR_MSG = "Security Token is invalid";
 
     @Inject
