@@ -12,7 +12,8 @@ import com.typesafe.config.ConfigFactory;
 public class KasperEventBusConfiguration {
 
     public static final String CLUSTER_SELECTOR_CONFIG_PATH = "clusterSelector";
-    public static final String TERMINAL_CONFIG_PATH = "terminal";
+    public static final String AMQP_TERMINAL_CONFIG_PATH = "terminal.amqp";
+    public static final String KAFKA_TERMINAL_CONFIG_PATH = "terminal.kafka";
 
     private ClusterSelectorConfiguration clusterSelectorConfiguration;
     private TerminalConfiguration terminalConfiguration;
@@ -22,21 +23,22 @@ public class KasperEventBusConfiguration {
     }
 
     public KasperEventBusConfiguration(final Config config) {
-
         if (config.hasPath(CLUSTER_SELECTOR_CONFIG_PATH)) {
             setClusterSelectorConfiguration(new ClusterSelectorConfiguration(config.getConfig(CLUSTER_SELECTOR_CONFIG_PATH)));
         }
 
-        if (config.hasPath(TERMINAL_CONFIG_PATH)) {
-            setTerminalConfiguration(new TerminalConfiguration(config.getConfig(TERMINAL_CONFIG_PATH)));
+        if (config.hasPath(AMQP_TERMINAL_CONFIG_PATH)) {
+            setTerminalConfiguration(new SpringAmqpTerminalConfiguration(config.getConfig(AMQP_TERMINAL_CONFIG_PATH)));
+        } else if (config.hasPath(KAFKA_TERMINAL_CONFIG_PATH)) {
+            setTerminalConfiguration(new KafkaTerminalConfiguration(config.getConfig(KAFKA_TERMINAL_CONFIG_PATH)));
         }
     }
 
-    public void setClusterSelectorConfiguration(ClusterSelectorConfiguration clusterSelectorConfiguration) {
+    public void setClusterSelectorConfiguration(final ClusterSelectorConfiguration clusterSelectorConfiguration) {
         this.clusterSelectorConfiguration = clusterSelectorConfiguration;
     }
 
-    public void setTerminalConfiguration(TerminalConfiguration terminalConfiguration) {
+    public void setTerminalConfiguration(final TerminalConfiguration terminalConfiguration) {
         this.terminalConfiguration = terminalConfiguration;
     }
 

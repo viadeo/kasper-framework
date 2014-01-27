@@ -14,4 +14,8 @@ dependencies {
     // Third perty dependencies
     compile libraries.AXON_AMQP
     compile libraries.TYPESAFE_CONFIG
+    compile libraries.KAFKA
+    compile libraries.SCALA_LIBRARY
+    compile libraries.ZK_CLIENT
+    compile libraries.METRICS_2_1_2
 }

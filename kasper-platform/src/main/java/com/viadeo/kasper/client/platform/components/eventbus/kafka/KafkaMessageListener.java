@@ -4,6 +4,10 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.components.eventbus.configuration;
+package com.viadeo.kasper.client.platform.components.eventbus.kafka;
 
-public interface TerminalConfiguration { }
+import org.axonframework.domain.EventMessage;
+
+public interface KafkaMessageListener {
+    void messageReceived(final EventMessage eventMessage);
+}

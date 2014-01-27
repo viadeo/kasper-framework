@@ -10,7 +10,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Preconditions;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBusFactory;
+import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBusBuilder;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
@@ -28,7 +28,7 @@ public abstract class AbstractPlatformTests {
         if(platform == null){
             final Platform.Builder platformBuilder = new Platform.Builder()
                     .withConfiguration(ConfigFactory.empty())
-                    .withEventBus(new KasperEventBusFactory().build())
+                    .withEventBus(new KasperEventBusBuilder().build())
                     .withCommandGateway(new KasperCommandGateway(new KasperCommandBus()))
                     .withQueryGateway(new KasperQueryGateway())
                     .withMetricRegistry(new MetricRegistry());

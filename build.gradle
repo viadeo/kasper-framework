@@ -40,6 +40,9 @@ allprojects  {
   group = 'com.viadeo.kasper'
   version = '0.6-SNAPSHOT'
 
+  sourceCompatibility = 1.7
+  targetCompatibility = 1.7
+
   idea {
     module {
       downloadJavadoc = true
@@ -71,9 +74,6 @@ allprojects  {
 
 subprojects {
   apply plugin: 'java'
-
-  sourceCompatibility = 1.7
-  targetCompatibility = 1.7
 
   configurations {
       all*.exclude module: 'slf4j-log4j12'
@@ -206,7 +206,19 @@ subprojects {
                               ],
       GLASSFISH_EXPR_LANG   : 'org.glassfish.web:javax.el:2.2.3',
 
-      TYPESAFE_CONFIG       : 'com.typesafe:config:1.0.2'
+      TYPESAFE_CONFIG       : 'com.typesafe:config:1.0.2',
+
+      KAFKA                 : 'org.apache.kafka:kafka:0.8.1',
+
+      SCALA_LIBRARY         : 'org.scala-lang:scala-library:2.8.0',
+
+      ZK_CLIENT             : 'com.101tec:zkclient:0.3',
+
+      METRICS_2_1_2         : [
+              'com.yammer.metrics:metrics-core:2.1.2',
+              'com.yammer.metrics:metrics-annotation:2.1.2'
+      ]
+
 
   ] // see http://stackoverflow.com/questions/9547170/in-gradle-how-do-i-declare-common-dependencies-in-a-single-place
 

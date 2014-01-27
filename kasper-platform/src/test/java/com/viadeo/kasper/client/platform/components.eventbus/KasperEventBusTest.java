@@ -65,7 +65,7 @@ public class KasperEventBusTest {
     @Test
     public void nominal() throws Exception {
         // Given
-        final KasperEventBus eventBus = spy(new KasperEventBusFactory().build());
+        final KasperEventBus eventBus = spy(new KasperEventBusBuilder().build());
         final TestEvent dummyEvent = new TestEvent();
         CurrentContext.set(DefaultContextBuilder.get());
 
@@ -118,7 +118,7 @@ public class KasperEventBusTest {
     @Test
     public void asynchronous() throws InterruptedException {
         // Given
-        final KasperEventBus eventBus = new KasperEventBusFactory().build();
+        final KasperEventBus eventBus = new KasperEventBusBuilder().build();
         final List<Integer> returns = Lists.newLinkedList();
         final Event event = new TestEvent();
 
@@ -150,7 +150,7 @@ public class KasperEventBusTest {
     @Test
     public void listeningSyncError() {
         // Given
-        final KasperEventBus syncEventBus = new KasperEventBusFactory().build();
+        final KasperEventBus syncEventBus = new KasperEventBusBuilder().build();
         final Event event = new TestEvent();
 
         // When

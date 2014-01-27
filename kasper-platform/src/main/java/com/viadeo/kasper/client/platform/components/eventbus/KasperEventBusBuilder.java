@@ -1,7 +1,16 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.client.platform.components.eventbus.configuration.*;
+import com.viadeo.kasper.client.platform.components.eventbus.kafka.Consumer;
+import com.viadeo.kasper.client.platform.components.eventbus.kafka.KafkaTerminal;
+import com.viadeo.kasper.client.platform.components.eventbus.kafka.Producer;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.axonframework.domain.EventMessage;
@@ -18,36 +27,64 @@ import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 
+import java.util.Properties;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 
-public class KasperEventBusFactory {
+import com.google.common.base.Optional;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBusFactory.class);
+import static com.viadeo.kasper.client.platform.components.eventbus.configuration.KafkaTerminalConfiguration.*;
 
-    private final KasperEventBusConfiguration configuration;
+public class KasperEventBusBuilder {
 
-    public KasperEventBusFactory() {
+    private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBusBuilder.class);
+
+    private Optional<ClusterSelectorConfiguration> optionalClusterSelectorConfiguration;
+    private Optional<TerminalConfiguration> optionalTerminalConfiguration;
+
+    public KasperEventBusBuilder() {
         this(new KasperEventBusConfiguration());
     }
 
-    public KasperEventBusFactory(final KasperEventBusConfiguration configuration) {
-        this.configuration = configuration;
+    public KasperEventBusBuilder(final KasperEventBusConfiguration configuration) {
+        with(configuration.getClusterSelectorConfiguration());
+        with(configuration.getTerminalConfiguration());
     }
 
-    public KasperEventBus build(){
-        final ClusterSelectorConfiguration clusterSelectorConfiguration = configuration.getClusterSelectorConfiguration();
-        final TerminalConfiguration terminalConfiguration = configuration.getTerminalConfiguration();
+    public KasperEventBusBuilder with(final ClusterSelectorConfiguration clusterSelectorConfiguration) {
+        this.optionalClusterSelectorConfiguration = Optional.fromNullable(clusterSelectorConfiguration);
+        return this;
+    }
 
-        final KasperEventBus kasperEventBus;
-        if(null == terminalConfiguration && null == clusterSelectorConfiguration) {
-            kasperEventBus = new KasperEventBus(new DefaultClusterSelector());
-        } else if(null == terminalConfiguration){
-            kasperEventBus = new KasperEventBus(clusterSelector(clusterSelectorConfiguration));
-        } else if(null == clusterSelectorConfiguration){
-            kasperEventBus = new KasperEventBus(new DefaultClusterSelector(), terminal(terminalConfiguration));
+    public KasperEventBusBuilder with(final TerminalConfiguration terminalConfiguration) {
+        this.optionalTerminalConfiguration = Optional.fromNullable(terminalConfiguration);
+        return this;
+    }
+
+    public KasperEventBus build() {
+        final ClusterSelector clusterSelector;
+        KasperEventBus kasperEventBus = null;
+
+        if (optionalClusterSelectorConfiguration.isPresent()) {
+            clusterSelector = clusterSelector(optionalClusterSelectorConfiguration.get());
         } else {
-            kasperEventBus = new KasperEventBus(clusterSelector(clusterSelectorConfiguration), terminal(terminalConfiguration));
+            clusterSelector = new DefaultClusterSelector();
+        }
+
+        if (optionalTerminalConfiguration.isPresent()) {
+            final TerminalConfiguration terminalConfiguration = optionalTerminalConfiguration.get();
+
+            if (SpringAmqpTerminalConfiguration.class.isAssignableFrom(terminalConfiguration.getClass())) {
+                final SpringAmqpTerminalConfiguration springAmqpTerminalConfiguration = (SpringAmqpTerminalConfiguration) terminalConfiguration;
+                kasperEventBus = new KasperEventBus(clusterSelector, amqpTerminal(springAmqpTerminalConfiguration));
+            } else if (KafkaTerminalConfiguration.class.isAssignableFrom(terminalConfiguration.getClass())) {
+                final KafkaTerminalConfiguration kafkaTerminalConfiguration = (KafkaTerminalConfiguration) terminalConfiguration;
+                kasperEventBus = new KasperEventBus(clusterSelector, kafkaTerminal(kafkaTerminalConfiguration));
+            }
+        }
+
+        if (null == kasperEventBus) {
+            kasperEventBus = new KasperEventBus(clusterSelector);
         }
 
         return kasperEventBus;
@@ -90,13 +127,13 @@ public class KasperEventBusFactory {
         );
     }
 
-    private ClusterSelector clusterSelector(final ClusterSelectorConfiguration configuration) {
+    protected ClusterSelector clusterSelector(final ClusterSelectorConfiguration configuration) {
         return new DefaultClusterSelector(
                 configuration.isAsynchronous() ? asynchronousCluster(configuration) : simpleCluster(configuration)
         );
     }
 
-    private CachingConnectionFactory cachingConnectionFactory(final TerminalConfiguration configuration) {
+    private CachingConnectionFactory cachingConnectionFactory(final SpringAmqpTerminalConfiguration configuration) {
         final CachingConnectionFactory connectionFactory = new CachingConnectionFactory(configuration.getHostname(), configuration.getPort());
         connectionFactory.setUsername(configuration.getUsername());
         connectionFactory.setPassword(configuration.getPassword());
@@ -104,12 +141,12 @@ public class KasperEventBusFactory {
         return connectionFactory;
     }
 
-    private Queue queue(final QueueConfiguration configuration){
+    private Queue queue(final QueueConfiguration configuration) {
         return new Queue(configuration.getName(), configuration.getDurable(), false, configuration.getAutoDelete());
     }
 
-    private Exchange exchange(final ExchangeConfiguration configuration){
-        switch (configuration.getType()){
+    private Exchange exchange(final ExchangeConfiguration configuration) {
+        switch (configuration.getType()) {
             case ExchangeTypes.TOPIC:
                 return new TopicExchange(
                         configuration.getName(),
@@ -133,7 +170,33 @@ public class KasperEventBusFactory {
         }
     }
 
-    private EventBusTerminal terminal(final TerminalConfiguration configuration) {
+    protected EventBusTerminal kafkaTerminal(final KafkaTerminalConfiguration configuration) {
+        final String topic = configuration.getTopic();
+
+        final ConsumerConfiguration consumerConfiguration = configuration.getConsumerConfiguration();
+        final ProducerConfiguration producerConfiguration = configuration.getProducerConfiguration();
+
+        final Properties props = new Properties();
+        props.put("serializer.class", "com.viadeo.kasper.client.platform.components.eventbus.kafka.EventMessageSerializer");
+        props.put("key.serializer.class", "kafka.serializer.StringEncoder");
+        props.put("metadata.broker.list", producerConfiguration.getBrokerList());
+        props.put("zookeeper.connect", consumerConfiguration.getZookeeperConnect());
+        props.put("zookeeper.session.timeout.ms", consumerConfiguration.getZookeeperSessionTimeoutInMillis());
+        props.put("zookeeper.sync.time.ms", consumerConfiguration.getZookeeperSyncTimeInMillis());
+        props.put("group.id", consumerConfiguration.getGroupId());
+        props.put("auto.commit.interval.ms", consumerConfiguration.getAutoCommitIntervalInMillis());
+
+        final Producer producer = new Producer(props, topic);
+        final Consumer consumer = new Consumer(props, topic);
+        consumer.consume();
+
+        return new KafkaTerminal(
+                producer,
+                consumer
+        );
+    }
+
+    private EventBusTerminal amqpTerminal(final SpringAmqpTerminalConfiguration configuration) {
         final CachingConnectionFactory connectionFactory = cachingConnectionFactory(configuration);
 
         final JacksonSerializer serializer = new JacksonSerializer(ObjectMapperProvider.INSTANCE.mapper());
