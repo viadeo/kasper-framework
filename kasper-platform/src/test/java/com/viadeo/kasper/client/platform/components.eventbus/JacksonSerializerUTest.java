@@ -7,28 +7,33 @@
 package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.ImmutableMap;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.axonframework.serializer.SerializedObject;
 import org.axonframework.serializer.SerializedType;
 import org.axonframework.serializer.SimpleSerializedObject;
 import org.axonframework.serializer.SimpleSerializedType;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
 
-import java.io.InputStream;
 import java.util.Map;
 
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class JacksonSerializerUTest {
 
-    @Mock
-    ObjectMapper objectMapper;
+    private JacksonSerializer jacksonSerializer;
+
+
+    @Before
+    public void setUp() throws Exception {
+        jacksonSerializer = new JacksonSerializer(ObjectMapperProvider.INSTANCE.mapper());
+    }
 
     @Test
     public void constructor_withObjectMapper_isOk() throws Exception {
@@ -56,6 +61,7 @@ public class JacksonSerializerUTest {
     @Test
     public void canSerializeTo_withValidObject_returnTrue() throws Exception {
         // Given
+        ObjectMapper objectMapper = mock(ObjectMapper.class);
         JacksonSerializer jacksonSerializer = new JacksonSerializer(objectMapper);
         when(objectMapper.canSerialize(Object.class)).thenReturn(true);
 
@@ -69,6 +75,7 @@ public class JacksonSerializerUTest {
     @Test
     public void canSerializeTo_withInvalidObject_returnFalse() throws Exception {
         // Given
+        ObjectMapper objectMapper = mock(ObjectMapper.class);
         JacksonSerializer jacksonSerializer = new JacksonSerializer(objectMapper);
         when(objectMapper.canSerialize(Object.class)).thenReturn(false);
 
@@ -82,7 +89,6 @@ public class JacksonSerializerUTest {
     @Test(expected = NullPointerException.class)
     public void canSerializeTo_withNullAsObject_throwException() throws Exception {
         // Given
-        JacksonSerializer jacksonSerializer = new JacksonSerializer(objectMapper);
 
         // When
         jacksonSerializer.canSerializeTo(null);
@@ -93,7 +99,6 @@ public class JacksonSerializerUTest {
     @Test(expected = NullPointerException.class)
     public void serialize_withNullAsObject_throwException() throws Exception {
         // Given
-        JacksonSerializer jacksonSerializer = new JacksonSerializer(objectMapper);
 
         // When
         jacksonSerializer.serialize(null, Object.class);
@@ -104,7 +109,6 @@ public class JacksonSerializerUTest {
     @Test(expected = NullPointerException.class)
     public void serialize_withNullAsExpectedRepresentation_throwException() throws Exception {
         // Given
-        JacksonSerializer jacksonSerializer = new JacksonSerializer(objectMapper);
 
         // When
         jacksonSerializer.serialize(new Object(), null);
@@ -115,39 +119,25 @@ public class JacksonSerializerUTest {
     @Test
     public void serialize_withValidObject_andItsRepresentation_returnsSerializedObject() throws Exception {
         // Given
-        Object object = new Object();
-        Class<byte[]> expectedRepresentation = byte[].class;
-
-        byte[] expectedData = "toto".getBytes();
-        when(objectMapper.writeValueAsBytes(object)).thenReturn(expectedData);
-
-        JacksonSerializer jacksonSerializer = new JacksonSerializer(objectMapper);
+        ImmutableMap<String, String> input = ImmutableMap.of("foo", "bar");
 
         // When
-        SerializedObject<byte[]> serializedObject = jacksonSerializer.serialize(object, expectedRepresentation);
+        SerializedObject<byte[]> serializedObject = jacksonSerializer.serialize(input, byte[].class);
 
         // Then
         assertNotNull(serializedObject);
-        assertNotNull(serializedObject.getData());
-
-        assertEquals(expectedData, serializedObject.getData());
+        assertEquals("{\"foo\":\"bar\"}", new String(serializedObject.getData()));
         assertEquals(byte[].class, serializedObject.getContentType());
-        assertEquals(jacksonSerializer.typeForClass(object.getClass()), serializedObject.getType());
+        assertEquals(jacksonSerializer.typeForClass(input.getClass()), serializedObject.getType());
     }
 
     @Test
     public void deserialize_withValidObject_returnsDeserializedObject() throws Exception {
         // Given
         String object = "{\"foo\":\"bar\"}";
-        byte[] expectedData = object.getBytes();
-        when(objectMapper.readValue(any(InputStream.class), any(Class.class))).thenReturn(object);
-
-        JacksonSerializer jacksonSerializer = new JacksonSerializer(
-                ObjectMapperProvider.INSTANCE.mapper()
-        );
 
         SerializedObject<byte[]> serializedObject = new SimpleSerializedObject<>(
-                expectedData, byte[].class, new SimpleSerializedType(Map.class.getName(), "0")
+                object.getBytes(), byte[].class, new SimpleSerializedType(Map.class.getName(), "0")
         );
 
         // When
@@ -162,7 +152,6 @@ public class JacksonSerializerUTest {
     @Test
     public void typeForClass_withStringClass_isOk(){
         // Given
-        JacksonSerializer jacksonSerializer = new JacksonSerializer(objectMapper);
         Class expectedClass = String.class;
 
         // When
@@ -177,7 +166,6 @@ public class JacksonSerializerUTest {
     @Test(expected = NullPointerException.class)
     public void typeForClass_withNullAsClass_throwException(){
         // Given
-        JacksonSerializer jacksonSerializer = new JacksonSerializer(objectMapper);
 
         // When
         jacksonSerializer.typeForClass(null);
@@ -188,7 +176,6 @@ public class JacksonSerializerUTest {
     @Test
     public void classForType_withValidSerializedType_isOk(){
         // Given
-        JacksonSerializer jacksonSerializer = new JacksonSerializer(objectMapper);
         SimpleSerializedType serializedType = new SimpleSerializedType(String.class.getName(), "0");
 
         // When
