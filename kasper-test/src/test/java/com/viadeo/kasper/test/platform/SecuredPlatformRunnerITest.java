@@ -65,7 +65,9 @@ public class SecuredPlatformRunnerITest {
 
         @Override
         public void provideIdentity(Context context) {
-            context.setUserId(USER_ID);
+            if (!context.getSecurityToken().isEmpty()) {
+                context.setUserId(USER_ID);
+            }
         }
 
     }
@@ -175,6 +177,16 @@ public class SecuredPlatformRunnerITest {
     }
 
     @Test
+    public void issuingPublicCommand_withSecurityToken_shouldSetSecurityIdentityInContext() throws Exception {
+        // Given
+        final Context authenticatedContext = getAuthenticatedContext();
+        // When
+        final CommandResponse response = sendPublicCommand(authenticatedContext);
+        // Then
+        assertSecurityIdentityProvided(response.isOK(), authenticatedContext.getUserId());
+    }
+
+    @Test
     public void issuingQuery_withNoSecurityToken_shouldResponseKasperReasonWithRequireAuthentication() throws Exception {
         // Given
         final Context unauthenticatedContext = getUnauthenticatedContext();
@@ -188,13 +200,24 @@ public class SecuredPlatformRunnerITest {
     @Test
     public void issuingPublicQuery_withNoSecurityToken_shouldBeOk() throws Exception {
         // Given
+        final Context unAuthenticatedContext = getUnauthenticatedContext();
+        String previousUserId = unAuthenticatedContext.getUserId();
+        // When
+        final QueryResponse<TestResult> response = sendPublicQuery(unAuthenticatedContext);
+        // Then
+        assertPublicRequestGoTroughWithoutAlteringSecurityIdentity(response.getReason(),
+                previousUserId, unAuthenticatedContext.getUserId());
+    }
+
+    @Test
+    public void issuingPublicQuery_withSecurityToken_shouldSetSecurityIdentityInContext() throws Exception {
+        // Given
         final Context authenticatedContext = getAuthenticatedContext();
         String previousUserId = authenticatedContext.getUserId();
         // When
         final QueryResponse<TestResult> response = sendPublicQuery(authenticatedContext);
         // Then
-        assertPublicRequestGoTroughWithoutAlteringSecurityIdentity(response.getReason(),
-                previousUserId, authenticatedContext.getUserId());
+        assertSecurityIdentityProvided(response.isOK(), authenticatedContext.getUserId());
     }
 
     @Test

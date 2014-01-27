@@ -13,6 +13,7 @@ public class DefaultPublicSecurityStrategy implements SecurityStrategy {
     }
 
     public void beforeRequest(final Context context) {
+        securityConfiguration.getIdentityContextProvider().provideIdentity(context);
         // TODO: deal with ids decryption using securityConfiguration.getLegacyIdsCipher
     }
 

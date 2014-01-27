@@ -65,6 +65,6 @@ public class SecurityStrategyUTest {
 
         // Then
         verifyZeroInteractions(tokenValidator);
-        verifyZeroInteractions(identityProvider);
+        verify(identityProvider).provideIdentity(refEq(context));
     }
 }
