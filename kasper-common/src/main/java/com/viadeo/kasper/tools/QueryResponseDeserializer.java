@@ -10,6 +10,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.KasperResponse;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import org.slf4j.Logger;
@@ -19,6 +20,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+
+import static com.viadeo.kasper.KasperResponse.Status;
 
 public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class); 
@@ -37,10 +40,10 @@ public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
 
         if (root.has(ObjectMapperProvider.REASON) && root.get(ObjectMapperProvider.REASON).asBoolean()) {
 
-            QueryResponse.Status status = QueryResponse.Status.ERROR;
+            Status status = Status.ERROR;
             if (root.has(ObjectMapperProvider.STATUS)) {
                 try {
-                    status = QueryResponse.Status.valueOf(root.get(ObjectMapperProvider.STATUS).asText());
+                    status = Status.valueOf(root.get(ObjectMapperProvider.STATUS).asText());
                 } catch (final IllegalArgumentException e) {
                     LOGGER.error("Unable to determine status", e);
                 }

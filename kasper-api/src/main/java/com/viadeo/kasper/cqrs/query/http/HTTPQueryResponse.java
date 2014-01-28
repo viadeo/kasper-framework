@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.http;
 
+import com.viadeo.kasper.HTTPKasperResponse;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
@@ -14,7 +15,7 @@ import javax.ws.rs.core.Response;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class HTTPQueryResponse<RESULT extends QueryResult>  extends QueryResponse<RESULT> {
+public class HTTPQueryResponse<RESULT extends QueryResult> extends QueryResponse<RESULT> implements HTTPKasperResponse {
 
     private final Response.Status httpStatus;
 
