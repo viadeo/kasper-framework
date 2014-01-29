@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform.components.eventbus;
 
+import com.google.common.base.Function;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.client.platform.components.eventbus.configuration.*;
 import com.viadeo.kasper.client.platform.components.eventbus.kafka.Consumer;
@@ -107,13 +108,13 @@ public class KasperEventBusBuilder {
         };
     }
 
-    private Cluster simpleCluster(final ClusterSelectorConfiguration configuration) {
-        return new SimpleCluster(configuration.getName());
+    private Cluster simpleCluster(final String name) {
+        return new SimpleCluster(name);
     }
 
-    private Cluster asynchronousCluster(final ClusterSelectorConfiguration configuration) {
+    private Cluster asynchronousCluster(final String name, final ClusterSelectorConfiguration configuration) {
         return new AsynchronousCluster(
-                configuration.getName(),
+                name,
                 new ThreadPoolExecutor(
                         configuration.getPoolSize(),
                         configuration.getMaximumPoolSize(),
@@ -128,9 +129,22 @@ public class KasperEventBusBuilder {
     }
 
     protected ClusterSelector clusterSelector(final ClusterSelectorConfiguration configuration) {
-        return new DefaultClusterSelector(
-                configuration.isAsynchronous() ? asynchronousCluster(configuration) : simpleCluster(configuration)
-        );
+        return new DomainClusterSelector("com.viadeo.platform",
+                configuration.isAsynchronous() ?
+                        new Function<String, Cluster>() {
+                            @Override
+                            public Cluster apply(final String name) {
+                                return asynchronousCluster(name, configuration);
+                            }
+                        }
+                        :
+                        new Function<String, Cluster>() {
+                            @Override
+                            public Cluster apply(final String name) {
+                                return simpleCluster(name);
+                            }
+                        }
+                );
     }
 
     private CachingConnectionFactory cachingConnectionFactory(final SpringAmqpTerminalConfiguration configuration) {
