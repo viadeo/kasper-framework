@@ -7,6 +7,7 @@
 package com.viadeo.kasper.client.platform;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
@@ -85,8 +86,8 @@ public interface Platform {
         private final List<CommandInterceptorFactory> commandInterceptorFactories;
         private final Map<ExtraComponentKey, Object> extraComponents;
         private final DomainDescriptorFactory domainDescriptorFactory;
-        private final DomainHelper domainHelper;
 
+        private DomainHelper domainHelper;
         private KasperEventBus eventBus;
         private KasperCommandGateway commandGateway;
         private KasperQueryGateway queryGateway;
@@ -134,10 +135,6 @@ public interface Platform {
         public Builder addDomainBundle(final DomainBundle domainBundle, final DomainBundle... domainBundles) {
             this.domainBundles.add(checkNotNull(domainBundle));
             with(this.domainBundles, domainBundles);
-
-            final DomainDescriptor domainDescriptor = domainDescriptorFactory.createFrom(domainBundle);
-            this.domainHelper.add(DomainDescriptorFactory.mapToDomainClassByComponentClass(domainDescriptor));
-
             return this;
         }
 
@@ -205,6 +202,11 @@ public interface Platform {
             }
         }
 
+        @VisibleForTesting
+        protected void setDomainHelper(final DomainHelper domainHelper){
+            this.domainHelper = checkNotNull(domainHelper);
+        }
+
         // --------------------------------------------------------------------
 
         public Platform build() {
@@ -249,7 +251,6 @@ public interface Platform {
 
         protected Collection<DomainDescriptor> configureDomainBundles(final BuilderContext context) {
             final List<DomainDescriptor> domainDescriptors = Lists.newArrayList();
-            initializeKasperMetrics(domainHelper);
 
             for (final DomainBundle bundle : domainBundles) {
                 domainDescriptors.add(configureDomainBundle(context, bundle));
@@ -292,9 +293,10 @@ public interface Platform {
                 }
 
                 eventBus.subscribe(eventListener);
-                final DomainDescriptor domainDescriptor = domainDescriptorFactory.createFrom(bundle);
-                domainHelper.add(DomainDescriptorFactory.mapToDomainClassByComponentClass(domainDescriptor));
             }
+
+            final DomainDescriptor domainDescriptor = domainDescriptorFactory.createFrom(bundle);
+            domainHelper.add(DomainDescriptorFactory.mapToDomainClassByComponentClass(domainDescriptor));
 
             return domainDescriptorFactory.createFrom(bundle);
         }
