@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.codahale.metrics.*;
 import com.codahale.metrics.json.MetricsModule;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.MapperFeature;

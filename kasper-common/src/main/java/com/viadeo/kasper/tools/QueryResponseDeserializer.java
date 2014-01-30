@@ -9,8 +9,8 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.KasperResponse;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import org.slf4j.Logger;
@@ -28,15 +28,31 @@ public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
 
     private final JavaType responseType;
 
+    // ------------------------------------------------------------------------
+
     QueryResponseDeserializer(final JavaType responseType) {
         this.responseType = responseType;
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public QueryResponse deserialize(JsonParser jp, DeserializationContext ctxt)
             throws IOException {
 
-        ObjectNode root = jp.readValueAs(ObjectNode.class);
+        final ObjectNode root = jp.readValueAs(ObjectNode.class);
+
+        if (root.has(ObjectMapperProvider.ID)) {
+            return deserialize_new(jp, root);
+        } else {
+            return deserialize_old(jp, root);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    public QueryResponse deserialize_old(final JsonParser jp, final ObjectNode root)
+            throws IOException {
 
         if (root.has(ObjectMapperProvider.REASON) && root.get(ObjectMapperProvider.REASON).asBoolean()) {
 
@@ -80,5 +96,59 @@ public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
             return QueryResponse.of((QueryResult) ((ObjectMapper) jp.getCodec()).convertValue(root, responseType));
         }
     }
+
+    // ------------------------------------------------------------------------
+
+    public QueryResponse deserialize_new(final JsonParser jp, final ObjectNode root)
+            throws IOException {
+
+        if (root.has(ObjectMapperProvider.REASON) && root.get(ObjectMapperProvider.REASON).asBoolean()) {
+
+            // ID
+            final String id = root.get(ObjectMapperProvider.ID).asText();
+
+            // STATUS
+            Status status = Status.ERROR;
+            if (root.has(ObjectMapperProvider.STATUS)) {
+                try {
+                    status = Status.valueOf(root.get(ObjectMapperProvider.STATUS).asText());
+                } catch (final IllegalArgumentException e) {
+                    LOGGER.error("Unable to determine status", e);
+                }
+            }
+
+            // CODE
+            final Integer code = root.get(ObjectMapperProvider.CODE).asInt(CoreReasonCode.UNKNOWN_REASON.code());
+
+            // LABEL
+            final String label = root.get(ObjectMapperProvider.LABEL).asText();
+
+            // String CODE
+            final String strCode = CoreReasonCode.toString(code, label);
+
+            // MESSAGES
+            final List<String> messages = new ArrayList<String>();
+            for (final JsonNode node : root.get(ObjectMapperProvider.REASONS)) {
+                final String message = node.get(ObjectMapperProvider.MESSAGE).asText();
+                messages.add(message);
+            }
+
+            if (null != id) {
+                try {
+                    return new QueryResponse(status, new KasperReason(UUID.fromString(id), strCode, messages));
+                } catch (final IllegalArgumentException e) {
+                    LOGGER.warn("Error when deserializing reason id", e);
+                    return QueryResponse.error(new KasperReason(strCode, messages));
+                }
+            } else {
+                return new QueryResponse(status, new KasperReason(strCode, messages));
+            }
+
+        } else {
+            // not very efficient but will be fine for now
+            return QueryResponse.of((QueryResult) ((ObjectMapper) jp.getCodec()).convertValue(root, responseType));
+        }
+    }
+
 
 }

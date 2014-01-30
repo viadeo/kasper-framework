@@ -24,7 +24,6 @@ import com.viadeo.kasper.client.platform.plugin.Plugin;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;

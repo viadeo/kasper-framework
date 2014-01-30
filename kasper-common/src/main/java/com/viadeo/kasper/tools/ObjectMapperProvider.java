@@ -34,7 +34,7 @@ public final class ObjectMapperProvider {
     static final String ERRORS = "errors";
     static final String MESSAGE = "message";
     static final String CODE = "code";
-    static final String USERMESSAGE = "userMessage";
+    static final String LABEL = "label";
     static final String STATUS = "status";
 
     public static final ObjectMapperProvider INSTANCE = new ObjectMapperProvider();

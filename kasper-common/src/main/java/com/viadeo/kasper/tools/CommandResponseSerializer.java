@@ -48,7 +48,6 @@ public class CommandResponseSerializer extends JsonSerializer<CommandResponse> {
                 jgen.writeStringField(ObjectMapperProvider.ID, reason.getId().toString());
                 jgen.writeStringField(ObjectMapperProvider.CODE, reason.getCode());
                 jgen.writeStringField(ObjectMapperProvider.MESSAGE, message);
-                jgen.writeNullField(ObjectMapperProvider.USERMESSAGE);
 
                 jgen.writeEndObject();
             }

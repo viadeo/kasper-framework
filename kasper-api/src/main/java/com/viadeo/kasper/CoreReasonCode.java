@@ -61,10 +61,14 @@ public enum CoreReasonCode {
 
     @Override
     public String toString() {
-        return new StringBuffer()
-                    .append(String.format("[%04d]", this.code))
+        return toString(this.code, this.name());
+    }
+
+    public static String toString(final Integer code, final String label) {
+         return new StringBuffer()
+                    .append(String.format("[%04d]", code))
                     .append(" - ")
-                    .append(this.name())
+                    .append(label)
                 .toString();
     }
 

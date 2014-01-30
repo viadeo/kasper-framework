@@ -25,10 +25,6 @@ public class QueryResponseSerializer extends JsonSerializer<QueryResponse> {
             jgen.writeStartObject();
             jgen.writeStringField(ObjectMapperProvider.STATUS, value.getStatus().name());
 
-             /* FIXME - retro-compatibility - TO BE REMOVED */
-            jgen.writeFieldName(ObjectMapperProvider.ERROR);
-            jgen.writeBoolean( ! value.isOK());
-
             // lets write a boolean telling that this is an reason, can be useful
             // for js consumers
             jgen.writeFieldName(ObjectMapperProvider.REASON);
@@ -38,10 +34,6 @@ public class QueryResponseSerializer extends JsonSerializer<QueryResponse> {
 
             jgen.writeFieldName(ObjectMapperProvider.MESSAGE);
             jgen.writeString(reason.getCode());
-
-            /* FIXME - retro-compatibility - TO BE REMOVED */
-            jgen.writeFieldName(ObjectMapperProvider.ERRORS);
-            this.writeReason(reason, jgen);
 
             jgen.writeFieldName(ObjectMapperProvider.REASONS);
             this.writeReason(reason, jgen);
@@ -61,7 +53,6 @@ public class QueryResponseSerializer extends JsonSerializer<QueryResponse> {
             jgen.writeStringField(ObjectMapperProvider.ID, reason.getId().toString());
             jgen.writeStringField(ObjectMapperProvider.CODE, reason.getCode());
             jgen.writeStringField(ObjectMapperProvider.MESSAGE, message);
-            jgen.writeNullField(ObjectMapperProvider.USERMESSAGE);
 
             jgen.writeEndObject();
         }

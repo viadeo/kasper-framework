@@ -9,10 +9,13 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperRelationID;
+import com.viadeo.kasper.KasperResponse;
 import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
 import com.viadeo.kasper.cqrs.query.MapQueryResult;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.impl.DefaultKasperRelationId;
@@ -81,6 +84,19 @@ public class SerDeserTests {
 
     private <T> T serDeserTest(final T object, Class<T> clazz) throws IOException {
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(object);
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
+        final T actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), clazz);
+        return actualResponse;
+    }
+
+    private <T> String deserSerTest(final String json, Class<T> clazz) throws IOException {
+        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
+        final T actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), clazz);
+        final String new_json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(actualResponse);
+        return new_json;
+    }
+
+    private <T> T deserTest(final String json, Class<T> clazz) throws IOException {
         final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
         final T actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), clazz);
         return actualResponse;
@@ -238,6 +254,83 @@ public class SerDeserTests {
 
         // Then
         assertEquals(actualResponse, map);
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static final String QUERY_RESPONSE_NORMAL = "{\"field\":\"test\"}";
+
+    public static final String QUERY_RESPONSE_OLD =
+            "{"
+          +         "\"status\":\"ERROR\","
+          +         "\"reason\":true,"
+          +         "\"message\":\"[0000] - UNKNOWN_REASON\","
+          +         "\"reasons\":[{"
+          +             "\"id\":\"8701c6ae-242e-4e80-92e9-522dc1ba999b\","
+          +             "\"code\":\"[0000] - UNKNOWN_REASON\","
+          +             "\"message\":\"ERROR Submiting query[getMemberContactFacets] to Kasper platform.\""
+          +         "},{"
+          +             "\"id\":\"8701c6ae-242e-4e80-92e9-522dc1ba999b\","
+          +             "\"code\":\"[0000] - UNKNOWN_REASON\","
+          +             "\"message\":\"Failed to execute phase [query]\""
+          +         "}]"
+          + "}"
+    ;
+
+    public static final String UUID = "8701c6ae-242e-4e80-92e9-522dc1ba999b";
+    public static final String MESG_1 = "ERROR Submiting query[getMemberContactFacets] to Kasper platform.";
+    public static final String MESG_2 = "Failed to execute phase [query]";
+    public static final String QUERY_RESPONSE_NEW =
+            "{"
+          +         "\"id\":\"" + UUID + "\","
+          +         "\"status\":\"ERROR\","
+          +         "\"code\":\"0000\","
+          +         "\"label\":\"UNKNOWN_REASON\","
+          +         "\"reason\":true,"
+          +         "\"reasons\":[{"
+          +             "\"message\":\"" + MESG_1 + "\""
+          +         "},{"
+          +             "\"message\":\"" + MESG_2 + "\""
+          +         "}]"
+          + "}"
+    ;
+
+    @Test
+    public void test_query_deserialize_normal() throws IOException {
+        // Given
+        // When
+        final String result_json = deserSerTest(QUERY_RESPONSE_NORMAL, NoSettersBean.class);
+
+        // Then
+        assertEquals(QUERY_RESPONSE_NORMAL, result_json);
+    }
+
+    @Test
+    public void test_query_deserialize_old() throws IOException {
+        // Given
+        // When
+        final String result_json = deserSerTest(QUERY_RESPONSE_OLD, QueryResponse.class);
+
+        // Then
+        assertEquals(QUERY_RESPONSE_OLD, result_json);
+    }
+
+    @Test
+    public void test_query_deserialize_new() throws IOException {
+        // Given
+        // When
+        final QueryResponse<?> response = deserTest(QUERY_RESPONSE_NEW, QueryResponse.class);
+
+        // Then
+        assertEquals(UUID, response.getReason().getId().toString());
+        assertEquals(KasperResponse.Status.ERROR, response.getStatus());
+        assertEquals(
+                CoreReasonCode.UNKNOWN_REASON.toString(),
+                response.getReason().getCode()
+        );
+        assertEquals(2, response.getReason().getMessages().size());
+        assertEquals(MESG_1, response.getReason().getMessages().toArray()[0]);
+        assertEquals(MESG_2, response.getReason().getMessages().toArray()[1]);
     }
 
 }

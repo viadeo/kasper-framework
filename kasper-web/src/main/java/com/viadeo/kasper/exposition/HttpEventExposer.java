@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
-import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -17,7 +16,6 @@ import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exposition.alias.AliasRegistry;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.slf4j.Logger;
