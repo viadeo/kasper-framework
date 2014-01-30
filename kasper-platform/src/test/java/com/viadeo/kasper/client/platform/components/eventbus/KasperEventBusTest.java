@@ -8,6 +8,8 @@ package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
+import com.viadeo.axonframework.eventhandling.cluster.ClassnameDynamicClusterSelector;
+import com.viadeo.kasper.client.platform.components.eventbus.cluster.AsynchronousClusterFactory;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
@@ -29,8 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus.Policy;
-import static junit.framework.Assert.*;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.spy;
 
 public class KasperEventBusTest {
@@ -61,7 +62,7 @@ public class KasperEventBusTest {
     @Test
     public void nominal() throws Exception {
         // Given
-        final KasperEventBus eventBus = spy(new KasperEventBus());
+        final KasperEventBus eventBus = spy(new KasperEventBusBuilder().build());
         final TestEvent dummyEvent = new TestEvent();
         CurrentContext.set(DefaultContextBuilder.get());
 
@@ -114,7 +115,14 @@ public class KasperEventBusTest {
     @Test
     public void asynchronous() throws InterruptedException {
         // Given
-        final KasperEventBus eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
+        final KasperEventBus eventBus = new KasperEventBusBuilder()
+                .with(
+                        new ClassnameDynamicClusterSelector(
+                                "com.viadeo.kasper.client.platform.components",
+                                new AsynchronousClusterFactory()
+                        )
+                )
+                .build();
         final List<Integer> returns = Lists.newLinkedList();
         final Event event = new TestEvent();
 
@@ -146,7 +154,7 @@ public class KasperEventBusTest {
     @Test
     public void listeningSyncError() {
         // Given
-        final KasperEventBus syncEventBus = new KasperEventBus(Policy.SYNCHRONOUS);
+        final KasperEventBus syncEventBus = new KasperEventBusBuilder().build();
         final Event event = new TestEvent();
 
         // When
