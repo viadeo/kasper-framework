@@ -20,6 +20,7 @@ import com.viadeo.kasper.client.platform.domain.descriptor.*;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.core.resolvers.DomainHelper;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.RepositoryManager;
 import com.viadeo.kasper.cqrs.command.impl.DefaultRepositoryManager;
@@ -646,6 +647,26 @@ public class PlatformBuilderUTest {
         // Then
         assertNotNull(platform);
         verify(commandGateway).register(refEq(commandInterceptorFactory));
+    }
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void configureDomainBundle_withBundle_shouldAddDescriptorsToDomainHelper() {
+        // Given
+        final DomainHelper domainHelper = mock(DomainHelper.class);
+
+        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration());
+        builder.setDomainHelper(domainHelper);
+
+        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain()).build();
+        final Platform.BuilderContext builderContext = mock(Platform.BuilderContext.class);
+
+        // When
+        final DomainDescriptor descriptor = builder.configureDomainBundle(builderContext, domainBundle);
+
+        // Then
+        assertNotNull(descriptor);
+        verify(domainHelper).add(anyMap());
     }
 
     private DomainDescriptorFactory createMockedDomainDescriptorFactory() {

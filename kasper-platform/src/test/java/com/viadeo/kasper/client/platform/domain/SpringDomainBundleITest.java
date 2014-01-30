@@ -16,8 +16,8 @@ import org.junit.Test;
 
 import java.util.List;
 
-import static com.viadeo.kasper.client.platform.domain.MyCustomDomainBox.MyCustomDomain;
-import static com.viadeo.kasper.client.platform.domain.MyCustomDomainBox.MyCustomDomainSpringConfiguration;
+import static com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox.MyCustomDomain;
+import static com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox.MyCustomDomainSpringConfiguration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
