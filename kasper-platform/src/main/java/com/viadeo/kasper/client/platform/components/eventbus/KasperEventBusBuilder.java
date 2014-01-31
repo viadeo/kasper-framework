@@ -7,11 +7,10 @@
 package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.client.platform.components.eventbus.configuration.*;
-import com.viadeo.kasper.client.platform.components.eventbus.kafka.Consumer;
 import com.viadeo.kasper.client.platform.components.eventbus.kafka.KafkaTerminal;
-import com.viadeo.kasper.client.platform.components.eventbus.kafka.Producer;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.axonframework.domain.EventMessage;
@@ -28,17 +27,17 @@ import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
 
-import java.util.Properties;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
-
-import com.google.common.base.Optional;
-
-import static com.viadeo.kasper.client.platform.components.eventbus.configuration.KafkaTerminalConfiguration.*;
+import java.util.concurrent.TimeUnit;
 
 public class KasperEventBusBuilder {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBusBuilder.class);
+
+    public static ClusterSelectorConfiguration getDefaultClusterSelectorConfiguration(final String prefix) {
+        return new ClusterSelectorConfiguration(prefix, 60L, TimeUnit.MINUTES, 10, 100, Boolean.TRUE);
+    }
 
     private Optional<ClusterSelectorConfiguration> optionalClusterSelectorConfiguration;
     private Optional<TerminalConfiguration> optionalTerminalConfiguration;
@@ -129,7 +128,7 @@ public class KasperEventBusBuilder {
     }
 
     protected ClusterSelector clusterSelector(final ClusterSelectorConfiguration configuration) {
-        return new DomainClusterSelector("com.viadeo.platform",
+        return new DomainClusterSelector(configuration.getPrefix(),
                 configuration.isAsynchronous() ?
                         new Function<String, Cluster>() {
                             @Override
@@ -185,29 +184,7 @@ public class KasperEventBusBuilder {
     }
 
     protected EventBusTerminal kafkaTerminal(final KafkaTerminalConfiguration configuration) {
-        final String topic = configuration.getTopic();
-
-        final ConsumerConfiguration consumerConfiguration = configuration.getConsumerConfiguration();
-        final ProducerConfiguration producerConfiguration = configuration.getProducerConfiguration();
-
-        final Properties props = new Properties();
-        props.put("serializer.class", "com.viadeo.kasper.client.platform.components.eventbus.kafka.EventMessageSerializer");
-        props.put("key.serializer.class", "kafka.serializer.StringEncoder");
-        props.put("metadata.broker.list", producerConfiguration.getBrokerList());
-        props.put("zookeeper.connect", consumerConfiguration.getZookeeperConnect());
-        props.put("zookeeper.session.timeout.ms", consumerConfiguration.getZookeeperSessionTimeoutInMillis());
-        props.put("zookeeper.sync.time.ms", consumerConfiguration.getZookeeperSyncTimeInMillis());
-        props.put("group.id", consumerConfiguration.getGroupId());
-        props.put("auto.commit.interval.ms", consumerConfiguration.getAutoCommitIntervalInMillis());
-
-        final Producer producer = new Producer(props, topic);
-        final Consumer consumer = new Consumer(props, topic);
-        consumer.consume();
-
-        return new KafkaTerminal(
-                producer,
-                consumer
-        );
+        return new KafkaTerminal(configuration.getConsumerConfiguration(), configuration.getProducerConfiguration());
     }
 
     private EventBusTerminal amqpTerminal(final SpringAmqpTerminalConfiguration configuration) {

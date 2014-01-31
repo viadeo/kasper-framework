@@ -1,16 +1,21 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform.components.eventbus;
 
-import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.ConnectionFactory;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.components.eventbus.configuration.KasperEventBusConfiguration;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.IEvent;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.amqp.core.ExchangeTypes;
 
@@ -25,18 +30,16 @@ import static org.mockito.Mockito.verify;
 
 public class KasperEventBusITest {
 
-    private static final Boolean BUS_IS_ASYNC = true;
-
-    public static CountDownLatch COUNT_DOWN_LATCH;
+    public static final long TIMEOUT = 5000L;
 
     public static final KasperEventBusConfiguration CONFIGURATION_USING_AMQP = new KasperEventBusConfiguration(ConfigFactory.parseMap(
             ImmutableMap.<String, Object>builder()
-                    .put("clusterSelector.name", "kasper")
+                    .put("clusterSelector.prefix", "com.viadeo")
                     .put("clusterSelector.timeUnit", "MINUTES")
                     .put("clusterSelector.pool.size", 10)
                     .put("clusterSelector.pool.maxSize", 100)
                     .put("clusterSelector.keepAliveTime", 60L)
-                    .put("clusterSelector.asynchronous", BUS_IS_ASYNC)
+                    .put("clusterSelector.asynchronous", Boolean.TRUE)
                     .put("terminal.amqp.hostname", "mq01.cmurer.paris.apvo")
                     .put("terminal.amqp.port", ConnectionFactory.DEFAULT_AMQP_PORT)
                     .put("terminal.amqp.username", "integ")
@@ -53,12 +56,12 @@ public class KasperEventBusITest {
 
     public static final KasperEventBusConfiguration CONFIGURATION_USING_KAFKA = new KasperEventBusConfiguration(ConfigFactory.parseMap(
             ImmutableMap.<String, Object>builder()
-                    .put("clusterSelector.name", "kasper")
+                    .put("clusterSelector.prefix", "com.viadeo.kasper.client.platform.components")
                     .put("clusterSelector.timeUnit", "MINUTES")
                     .put("clusterSelector.pool.size", 10)
                     .put("clusterSelector.pool.maxSize", 100)
                     .put("clusterSelector.keepAliveTime", 60L)
-                    .put("clusterSelector.asynchronous", BUS_IS_ASYNC)
+                    .put("clusterSelector.asynchronous", Boolean.TRUE)
                     .put("terminal.kafka.topic", "sampleTopic")
                     .put("terminal.kafka.producer.metadata.broker.list", "localhost:9092")
                     .put("terminal.kafka.consumer.zookeeper.connect", "localhost:2181")
@@ -85,13 +88,17 @@ public class KasperEventBusITest {
         }
     }
 
-    public KasperEventBusITest() {
-        KasperMetrics.setMetricRegistry(new MetricRegistry());
-    }
+    @Rule
+    public final MetricsRule metricsRule = new MetricsRule();
+
+    @Rule
+    public final EventBusRule eventBusUsingKafkaRule = new EventBusRule(CONFIGURATION_USING_KAFKA);
+
+    public CountDownLatch countDownLatch;
 
     @Before
     public void setUp(){
-        COUNT_DOWN_LATCH = new CountDownLatch(1);
+        countDownLatch = new CountDownLatch(1);
     }
 
     @Test
@@ -106,7 +113,7 @@ public class KasperEventBusITest {
             public void handle(TestEvent event) {
                 assertNotNull(event);
                 assertEquals(expectedMessage, event.getMessage());
-                COUNT_DOWN_LATCH.countDown();
+                countDownLatch.countDown();
             }
         });
 
@@ -115,7 +122,7 @@ public class KasperEventBusITest {
 
         // When
         eventBus.publish(event);
-        COUNT_DOWN_LATCH.await(3000L, TimeUnit.MILLISECONDS);
+        countDownLatch.await(TIMEOUT, TimeUnit.MILLISECONDS);
 
         // Then
         verify(eventListener).handle(any(TestEvent.class));
@@ -133,16 +140,15 @@ public class KasperEventBusITest {
             public void handle(TestEvent event) {
                 assertNotNull(event);
                 assertEquals(expectedMessage, event.getMessage());
-                COUNT_DOWN_LATCH.countDown();
+                countDownLatch.countDown();
             }
         });
 
-        final KasperEventBus eventBus = new KasperEventBusBuilder(CONFIGURATION_USING_KAFKA).build();
-        eventBus.subscribe(eventListener);
+        eventBusUsingKafkaRule.subscribe(eventListener);
 
         // When
-        eventBus.publish(event);
-        COUNT_DOWN_LATCH.await(3000L, TimeUnit.MILLISECONDS);
+        eventBusUsingKafkaRule.publish(event);
+        countDownLatch.await(TIMEOUT, TimeUnit.MILLISECONDS);
 
         // Then
         verify(eventListener).handle(any(TestEvent.class));

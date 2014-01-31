@@ -21,7 +21,7 @@ public class ClusterSelectorConfiguration {
         return timeUnitOptional.get();
     }
 
-    private final String name;
+    private final String prefix;
     private final Integer maximumPoolSize;
     private final Long keepAliveTime;
     private final TimeUnit timeUnit;
@@ -30,7 +30,7 @@ public class ClusterSelectorConfiguration {
 
     public ClusterSelectorConfiguration(final Config config) {
         this(
-                config.getString("name"),
+                config.getString("prefix"),
                 config.getLong("keepAliveTime"),
                 toTimeUnit(config.getString("timeUnit")),
                 config.getInt("pool.size"),
@@ -40,14 +40,14 @@ public class ClusterSelectorConfiguration {
     }
 
     public ClusterSelectorConfiguration(
-            final String name,
+            final String prefix,
             final Long keepAliveTime,
             final TimeUnit timeUnit,
             final Integer poolSize,
             final Integer maximumPoolSize,
             final Boolean asynchronous
     ) {
-        this.name = name;
+        this.prefix = prefix;
         this.maximumPoolSize = maximumPoolSize;
         this.keepAliveTime = keepAliveTime;
         this.timeUnit = timeUnit;
@@ -55,8 +55,8 @@ public class ClusterSelectorConfiguration {
         this.asynchronous = asynchronous;
     }
 
-    public String getName() {
-        return name;
+    public String getPrefix() {
+        return prefix;
     }
 
     public Integer getMaximumPoolSize() {

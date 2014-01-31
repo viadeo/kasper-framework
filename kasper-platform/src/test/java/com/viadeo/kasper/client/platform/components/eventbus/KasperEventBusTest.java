@@ -8,6 +8,7 @@ package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.client.platform.components.eventbus.configuration.KasperEventBusConfiguration;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
@@ -18,6 +19,7 @@ import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
@@ -118,7 +120,12 @@ public class KasperEventBusTest {
     @Test
     public void asynchronous() throws InterruptedException {
         // Given
-        final KasperEventBus eventBus = new KasperEventBusBuilder().build();
+        final KasperEventBusConfiguration eventBusConfiguration = new KasperEventBusConfiguration();
+        eventBusConfiguration.setClusterSelectorConfiguration(
+                KasperEventBusBuilder.getDefaultClusterSelectorConfiguration("com.viadeo.kasper.client.platform.components")
+        );
+
+        final KasperEventBus eventBus = new KasperEventBusBuilder(eventBusConfiguration).build();
         final List<Integer> returns = Lists.newLinkedList();
         final Event event = new TestEvent();
 

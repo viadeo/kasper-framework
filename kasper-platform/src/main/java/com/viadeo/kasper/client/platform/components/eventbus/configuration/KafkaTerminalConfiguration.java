@@ -8,28 +8,28 @@ package com.viadeo.kasper.client.platform.components.eventbus.configuration;
 
 import com.typesafe.config.Config;
 
+import java.util.Properties;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class KafkaTerminalConfiguration implements TerminalConfiguration {
 
     private final ConsumerConfiguration consumerConfiguration;
     private final ProducerConfiguration producerConfiguration;
-    private final String topic;
 
     public KafkaTerminalConfiguration(final Config config) {
         this(
-                config.getString("topic"),
                 new ConsumerConfiguration(config.getConfig("consumer")),
                 new ProducerConfiguration(config.getConfig("producer"))
         );
     }
 
     public KafkaTerminalConfiguration(
-            final String topic,
             final ConsumerConfiguration consumerConfiguration,
             final ProducerConfiguration producerConfiguration
     ) {
-        this.topic = topic;
-        this.consumerConfiguration = consumerConfiguration;
-        this.producerConfiguration = producerConfiguration;
+        this.consumerConfiguration = checkNotNull(consumerConfiguration);
+        this.producerConfiguration = checkNotNull(producerConfiguration);
     }
 
     public ProducerConfiguration getProducerConfiguration() {
@@ -40,17 +40,11 @@ public class KafkaTerminalConfiguration implements TerminalConfiguration {
         return consumerConfiguration;
     }
 
-    public String getTopic() {
-        return topic;
-    }
-
-
     public static class ConsumerConfiguration {
 
         private final String zookeeperConnect;
         private final String zookeeperSessionTimeoutInMillis;
         private final String zookeeperSyncTimeInMillis;
-        private final String groupId;
         private final String autoCommitIntervalInMillis;
 
         public ConsumerConfiguration(final Config config) {
@@ -58,7 +52,6 @@ public class KafkaTerminalConfiguration implements TerminalConfiguration {
                     config.getString("zookeeper.connect"),
                     config.getString("zookeeper.session.timeout.ms"),
                     config.getString("zookeeper.sync.time.ms"),
-                    config.getString("group.id"),
                     config.getString("auto.commit.interval.ms")
             );
         }
@@ -67,13 +60,11 @@ public class KafkaTerminalConfiguration implements TerminalConfiguration {
                 final String zookeeperConnect,
                 final String zookeeperSessionTimeoutInMillis,
                 final String zookeeperSyncTimeInMillis,
-                final String groupId,
                 final String autoCommitIntervalInMillis
         ) {
             this.zookeeperConnect = zookeeperConnect;
             this.zookeeperSessionTimeoutInMillis = zookeeperSessionTimeoutInMillis;
             this.zookeeperSyncTimeInMillis = zookeeperSyncTimeInMillis;
-            this.groupId = groupId;
             this.autoCommitIntervalInMillis = autoCommitIntervalInMillis;
         }
 
@@ -89,12 +80,17 @@ public class KafkaTerminalConfiguration implements TerminalConfiguration {
             return zookeeperSyncTimeInMillis;
         }
 
-        public String getGroupId() {
-            return groupId;
-        }
-
         public String getAutoCommitIntervalInMillis() {
             return autoCommitIntervalInMillis;
+        }
+
+        public Properties toProperties(){
+            final Properties props = new Properties();
+            props.put("zookeeper.connect", getZookeeperConnect());
+            props.put("zookeeper.session.timeout.ms", getZookeeperSessionTimeoutInMillis());
+            props.put("zookeeper.sync.time.ms", getZookeeperSyncTimeInMillis());
+            props.put("auto.commit.interval.ms", getAutoCommitIntervalInMillis());
+            return props;
         }
     }
 
@@ -112,6 +108,12 @@ public class KafkaTerminalConfiguration implements TerminalConfiguration {
 
         public String getBrokerList() {
             return brokerList;
+        }
+
+        public Properties toProperties() {
+            final Properties props = new Properties();
+            props.put("metadata.broker.list", getBrokerList());
+            return props;
         }
     }
 }
