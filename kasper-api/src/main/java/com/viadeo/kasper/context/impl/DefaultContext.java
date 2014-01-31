@@ -62,6 +62,20 @@ public class DefaultContext extends AbstractContext {
         this.ipAddress = DEFAULT_IP_ADDRESS;
     }
 
+    public DefaultContext(final Map<String, String> contextAsMap) {
+        super();
+        this.userId = contextAsMap.get("userId");
+        this.userLang = contextAsMap.get("userLang");
+        this.userCountry = contextAsMap.get("userCountry");
+        this.requestCorrelationId = contextAsMap.get("requestCorrelationId");
+        this.funnelCorrelationId = contextAsMap.get("funnelCorrelationId");
+        this.sessionCorrelationId = contextAsMap.get("sessionCorrelationId");
+        this.applicationId = contextAsMap.get("applicationId");
+        this.securityToken = contextAsMap.get("securityToken");
+        this.funnelName = contextAsMap.get("funnelName");
+        this.funnelVersion = contextAsMap.get("funnelVersion");
+    }
+
     // ------------------------------------------------------------------------
 
     @Override

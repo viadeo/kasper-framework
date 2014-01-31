@@ -8,7 +8,10 @@ package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.ImmutableMap;
+import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
+import org.axonframework.domain.MetaData;
 import org.axonframework.serializer.SerializedObject;
 import org.axonframework.serializer.SerializedType;
 import org.axonframework.serializer.SimpleSerializedObject;
@@ -184,6 +187,51 @@ public class JacksonSerializerUTest {
         // Then
         assertNotNull(actualClass);
         assertEquals(serializedType.getName(), actualClass.getName());
+    }
+
+    @Test
+    public void deserialize_withMetaData_isOk(){
+        // Given
+        final JacksonSerializer jacksonSerializer = new JacksonSerializer(ObjectMapperProvider.INSTANCE.mapper());
+
+        final MetaData metaData = new MetaData(ImmutableMap.<String,String>builder().put("foo", "bar").build());
+
+        final SerializedObject<byte[]> serializedObject = jacksonSerializer.serialize(metaData, byte[].class);
+
+        // When
+        final MetaData actualMetaData = jacksonSerializer.deserialize(serializedObject);
+
+        // Then
+        assertNotNull(actualMetaData);
+        assertEquals(metaData, actualMetaData);
+    }
+
+    @Test
+    public void deserialize_withMetaData_containingContext_isOk(){
+        // Given
+        final JacksonSerializer jacksonSerializer = new JacksonSerializer(ObjectMapperProvider.INSTANCE.mapper());
+
+        final Context context = new DefaultContext();
+        context.setApplicationId("TEST");
+
+        final MetaData metaData = new MetaData(
+                ImmutableMap.<String,Object>builder()
+                        .put("foo", "bar")
+                        .put(Context.METANAME, context)
+                        .build()
+        );
+
+        final SerializedObject<byte[]> serializedObject = jacksonSerializer.serialize(metaData, byte[].class);
+
+        // When
+        final MetaData actualMetaData = jacksonSerializer.deserialize(serializedObject);
+
+        // Then
+        assertNotNull(actualMetaData);
+
+        final Context actualContext = (Context) actualMetaData.get(Context.METANAME);
+        assertNotNull(actualContext);
+        assertEquals(context, actualContext);
     }
 
 }

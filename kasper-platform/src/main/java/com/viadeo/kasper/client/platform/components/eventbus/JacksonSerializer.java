@@ -7,7 +7,9 @@
 package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.base.Throwables;
+import org.axonframework.domain.MetaData;
 import org.axonframework.serializer.*;
 
 import java.io.IOException;
@@ -23,6 +25,11 @@ public class JacksonSerializer implements Serializer {
     public JacksonSerializer(final ObjectMapper objectMapper) {
         this.objectMapper = checkNotNull(objectMapper);
         this.converterFactory = new ChainingConverterFactory();
+
+        final SimpleModule module = new SimpleModule();
+        module.addDeserializer(MetaData.class, new MetaDataDeserializer());
+
+        objectMapper.registerModule(module);
     }
 
     @Override
