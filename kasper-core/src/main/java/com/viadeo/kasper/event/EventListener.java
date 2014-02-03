@@ -114,15 +114,13 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
         final Timer.Context timer = getMetricRegistry().timer(timerHandleTimeName).time();
 
         /* Ensure a context is set */
-        if ( ! CurrentContext.value().isPresent()) {
-            final Context messageContext = message.getContext();
-            if (null != messageContext) {
-                CurrentContext.set(messageContext);
-            } else {
-                CurrentContext.set(DefaultContextBuilder.get());
-            }
+        final Context messageContext = message.getContext();
+        if (null != messageContext) {
+            CurrentContext.set(messageContext);
+        } else {
+            /* Reset the current context in thread */
+            CurrentContext.set(DefaultContextBuilder.get());
         }
-
 
         /* Handle event */
         try {
