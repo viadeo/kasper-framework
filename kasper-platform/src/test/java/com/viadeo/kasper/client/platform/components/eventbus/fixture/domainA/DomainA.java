@@ -20,6 +20,25 @@ public class DomainA {
 
     public static class EventC extends Event {
         private static final long serialVersionUID = 8982171461950633502L;
+        private static int COUNTER = 0;
+
+        private int id;
+
+        public EventC() {
+            this(COUNTER++);
+        }
+
+        public EventC(int id) {
+            this.id = id;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public void setId(int id) {
+            this.id = id;
+        }
     }
 
     public static class EventListenerA extends AbstractTestEventListener<EventA> {

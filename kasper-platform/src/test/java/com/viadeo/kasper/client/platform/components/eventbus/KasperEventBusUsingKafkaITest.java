@@ -7,6 +7,7 @@
 package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Queues;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.components.eventbus.configuration.KasperEventBusConfiguration;
@@ -18,6 +19,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
@@ -74,6 +76,30 @@ public class KasperEventBusUsingKafkaITest {
 
         // Then
         verify(eventListenerCOfDomainA).handle(any(DomainA.EventC.class));
+    }
+
+    @Test
+    public void an_event_listener_should_receive_an_ordered_sequence_of_events_after_publication() throws InterruptedException {
+        // Given
+        final List<DomainA.EventC> events = Lists.newArrayList();
+        events.add(new DomainA.EventC());
+        events.add(new DomainA.EventC());
+        events.add(new DomainA.EventC());
+
+        final CountDownLatch countDownLatch = new CountDownLatch(events.size());
+
+        final DomainA.EventListenerC eventListenerCOfDomainA = prepareEventListenerCOfDomainA(countDownLatch, events.toArray(new DomainA.EventC[events.size()]));
+
+        eventBusRuleA.subscribe(eventListenerCOfDomainA);
+
+        // When
+        for (final DomainA.EventC event : events) {
+            eventBusRuleA.publish(event);
+        }
+        countDownLatch.await(TIMEOUT, TimeUnit.MILLISECONDS);
+
+        // Then
+        verify(eventListenerCOfDomainA, times(events.size())).handle(any(DomainA.EventC.class));
     }
 
     @Test
