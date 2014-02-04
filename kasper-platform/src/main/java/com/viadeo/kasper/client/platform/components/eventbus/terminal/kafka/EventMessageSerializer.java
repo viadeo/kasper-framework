@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.components.eventbus.kafka;
+package com.viadeo.kasper.client.platform.components.eventbus.terminal.kafka;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.viadeo.kasper.client.platform.components.eventbus.JacksonSerializer;
@@ -36,7 +36,7 @@ public class EventMessageSerializer implements Encoder<EventMessage>, Decoder<Ev
         this(ObjectMapperProvider.INSTANCE.mapper());
     }
 
-    public EventMessageSerializer(ObjectMapper mapper){
+    public EventMessageSerializer(final ObjectMapper mapper){
         this.serializer = new JacksonSerializer(mapper);
     }
 

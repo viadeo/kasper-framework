@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.components.eventbus;
+package com.viadeo.kasper.client.platform.components.eventbus.cluster;
 
 import com.google.common.base.Function;
 import org.axonframework.eventhandling.AbstractClusterSelector;
@@ -34,7 +34,6 @@ public class DomainClusterSelector extends AbstractClusterSelector {
 
     @Override
     protected Cluster doSelectCluster(EventListener eventListener, Class<?> listenerType) {
-
         final String packageName = listenerType.getPackage().getName();
         final Matcher matcher = pattern.matcher(packageName);
         checkArgument(matcher.matches(), "Unable to match domain name from package <%s> using regex <%s>", packageName, pattern);

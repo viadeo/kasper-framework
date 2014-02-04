@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.components.eventbus.kafka;
+package com.viadeo.kasper.client.platform.components.eventbus.terminal.kafka;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -25,18 +25,6 @@ import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.*;
 
 public class KafkaTerminalUTest {
-    /*
-        $ git clone http://git-wip-us.apache.org/repos/asf/kafka.git kafka
-        $ cd kafka
-        $ sbt update
-        $ sbt package
-        $  mvn install:install-file
-            -Dpackaging=jar
-            -DgroupId=org.apache.kafka
-            -DartifactId=kafka
-            -Dversion=0.8.1
-            -Dfile=./core/target/scala-2.8.0/kafka_2.8.0-0.8.1.jar
-    */
 
     @Test(expected = NullPointerException.class)
     @SuppressWarnings("unchecked")

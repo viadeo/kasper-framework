@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.components.eventbus.kafka;
+package com.viadeo.kasper.client.platform.components.eventbus.terminal.kafka;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -26,21 +26,12 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.client.platform.components.eventbus.configuration.KafkaTerminalConfiguration.ConsumerConfiguration;
-import static com.viadeo.kasper.client.platform.components.eventbus.configuration.KafkaTerminalConfiguration.ProducerConfiguration;
 
 public class KafkaTerminal implements EventBusTerminal {
 
     private final Map<String, ConsumerConnector> consumerByCategory;
     private final Producer<String,EventMessage> producer;
     private final ConsumerFactory consumerFactory;
-
-    public KafkaTerminal(
-            final ConsumerConfiguration consumerConfiguration,
-            final ProducerConfiguration producerConfiguration
-    ) {
-        this(new ConsumerFactory(consumerConfiguration), new ProducerFactory(producerConfiguration));
-    }
 
     public KafkaTerminal(
             final ConsumerFactory consumerFactory,

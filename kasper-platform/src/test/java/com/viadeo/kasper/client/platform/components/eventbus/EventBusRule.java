@@ -7,11 +7,17 @@
 package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.client.platform.components.eventbus.cluster.AsynchronousClusterFactory;
+import com.viadeo.kasper.client.platform.components.eventbus.cluster.ClusterSelectorFactory;
+import com.viadeo.kasper.client.platform.components.eventbus.cluster.DomainClusterSelectorFactory;
 import com.viadeo.kasper.client.platform.components.eventbus.configuration.KafkaTerminalConfiguration;
 import com.viadeo.kasper.client.platform.components.eventbus.configuration.KasperEventBusConfiguration;
-import com.viadeo.kasper.client.platform.components.eventbus.kafka.KafkaTerminal;
+import com.viadeo.kasper.client.platform.components.eventbus.terminal.kafka.KafkaTerminal;
+import com.viadeo.kasper.client.platform.components.eventbus.terminal.kafka.KafkaTerminalFactory;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.IEvent;
+import kafka.consumer.ConsumerConfig;
+import kafka.producer.ProducerConfig;
 import org.axonframework.eventhandling.ClusterSelector;
 import org.junit.rules.MethodRule;
 import org.junit.runners.model.FrameworkMethod;
@@ -25,12 +31,30 @@ public class EventBusRule implements MethodRule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventBusRule.class);
 
-    private final KasperEventBusConfiguration eventBusConfiguration;
+    private final KafkaTerminalFactory terminalFactory;
+    private final ClusterSelectorFactory clusterSelectorFactory;
 
     private EventBusWrapper eventBusWrapper;
 
-    public EventBusRule(final KasperEventBusConfiguration eventBusConfiguration) {
-        this.eventBusConfiguration = eventBusConfiguration;
+    public EventBusRule(final KasperEventBusConfiguration eventBusConfiguration){
+        this(
+                new KafkaTerminalFactory(
+                        new ConsumerConfig(((KafkaTerminalConfiguration)eventBusConfiguration.getTerminalConfiguration()).getConsumerConfiguration().toProperties()),
+                        new ProducerConfig(((KafkaTerminalConfiguration)eventBusConfiguration.getTerminalConfiguration()).getProducerConfiguration().toProperties())
+                ),
+                new DomainClusterSelectorFactory(
+                        eventBusConfiguration.getClusterSelectorConfiguration().getPrefix(),
+                        new AsynchronousClusterFactory()
+                )
+        );
+    }
+
+    public EventBusRule(
+            final KafkaTerminalFactory terminalFactory,
+            final ClusterSelectorFactory clusterSelectorFactory
+    ) {
+        this.clusterSelectorFactory = clusterSelectorFactory;
+        this.terminalFactory = terminalFactory;
     }
 
     @Override
@@ -38,7 +62,10 @@ public class EventBusRule implements MethodRule {
         return new Statement() {
             @Override
             public void evaluate() throws Throwable {
-                eventBusWrapper = new EventBusWrapper(createClusterSelector(), createTerminal());
+                eventBusWrapper = new EventBusWrapper(
+                        clusterSelectorFactory.createClusterSelector(),
+                        terminalFactory.createEventBusTerminal()
+                );
                 try {
                     base.evaluate();
                 } finally {
@@ -46,16 +73,6 @@ public class EventBusRule implements MethodRule {
                 }
             }
         };
-    }
-
-    private KafkaTerminal createTerminal() {
-        final KasperEventBusBuilder eventBusBuilder = new KasperEventBusBuilder();
-        return (KafkaTerminal) eventBusBuilder.kafkaTerminal((KafkaTerminalConfiguration) eventBusConfiguration.getTerminalConfiguration());
-    }
-
-    private ClusterSelector createClusterSelector() {
-        final KasperEventBusBuilder eventBusBuilder = new KasperEventBusBuilder();
-        return eventBusBuilder.clusterSelector(eventBusConfiguration.getClusterSelectorConfiguration());
     }
 
     private void shutdown() {

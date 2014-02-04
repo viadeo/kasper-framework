@@ -4,10 +4,10 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.components.eventbus.kafka;
+package com.viadeo.kasper.client.platform.components.eventbus.cluster;
 
-import org.axonframework.domain.EventMessage;
+import org.axonframework.eventhandling.Cluster;
 
-public interface KafkaMessageListener {
-    void messageReceived(final EventMessage eventMessage);
+public interface ClusterFactory {
+    Cluster createCluster(final String name);
 }

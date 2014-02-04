@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.components.eventbus;
+package com.viadeo.kasper.client.platform.components.eventbus.cluster;
 
 import com.google.common.base.Function;
 import com.viadeo.kasper.client.platform.components.eventbus.fixture.domainA.DomainA;

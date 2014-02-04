@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.components.eventbus.kafka;
+package com.viadeo.kasper.client.platform.components.eventbus.terminal.kafka;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
-import static com.viadeo.kasper.client.platform.components.eventbus.configuration.KafkaTerminalConfiguration.ConsumerConfiguration;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Matchers.any;
@@ -52,8 +51,7 @@ public class ConsumerFactoryUTest {
     @Test(expected = NullPointerException.class)
     public void createConnector_withNullAsCategory_throwException() throws Exception {
         // Given
-        final ConsumerConfiguration configuration = createDefaultConsumerConfiguration();
-        final ConsumerFactory consumerFactory = new ConsumerFactory(configuration);
+        final ConsumerFactory consumerFactory = new ConsumerFactory(createDefaultConsumerConfig());
 
         // When
         consumerFactory.createConnector(null);
@@ -67,8 +65,7 @@ public class ConsumerFactoryUTest {
         mockStatic(Consumer.class);
         when(Consumer.createJavaConsumerConnector(any(ConsumerConfig.class))).thenReturn(mock(ConsumerConnector.class));
 
-        final ConsumerConfiguration configuration = createDefaultConsumerConfiguration();
-        final ConsumerFactory consumerFactory = new ConsumerFactory(configuration);
+        final ConsumerFactory consumerFactory = new ConsumerFactory(createDefaultConsumerConfig());
         final String category = "tourist";
 
         // When
@@ -81,8 +78,7 @@ public class ConsumerFactoryUTest {
     @Test(expected = NullPointerException.class)
     public void getPropertiesFor_withNullAsCategory_throwException() {
         // Given
-        final ConsumerConfiguration configuration = createDefaultConsumerConfiguration();
-        final ConsumerFactory consumerFactory = new ConsumerFactory(configuration);
+        final ConsumerFactory consumerFactory = new ConsumerFactory(createDefaultConsumerConfig());
 
         // When
         consumerFactory.getPropertiesFor(null);
@@ -93,8 +89,7 @@ public class ConsumerFactoryUTest {
     @Test
     public void getPropertiesFor_withCategory_isOk() {
         // Given
-        final ConsumerConfiguration configuration = createDefaultConsumerConfiguration();
-        final ConsumerFactory consumerFactory = new ConsumerFactory(configuration);
+        final ConsumerFactory consumerFactory = new ConsumerFactory(createDefaultConsumerConfig());
         final String category = "tourist";
 
         // When
@@ -131,7 +126,7 @@ public class ConsumerFactoryUTest {
                 )
         ).thenReturn(streamsByTopic);
 
-        final ConsumerFactory consumerFactory = new ConsumerFactory(createDefaultConsumerConfiguration());
+        final ConsumerFactory consumerFactory = new ConsumerFactory(createDefaultConsumerConfig());
 
         // When
         final Map<String,List<KafkaStream<byte[],EventMessage>>> streams = consumerFactory.createStreams(nbThreads, consumerConnector, topic);
@@ -141,8 +136,14 @@ public class ConsumerFactoryUTest {
         assertEquals(1, streams.size());
     }
 
-    public static ConsumerConfiguration createDefaultConsumerConfiguration() {
-        return new ConsumerConfiguration("localhost:2181", "400", "200", "1000");
+    public static ConsumerConfig createDefaultConsumerConfig() {
+        final Properties properties = new Properties();
+        properties.put("group.id", "");
+        properties.put("zookeeper.connect", "localhost:2181");
+        properties.put("zookeeper.session.timeout.ms", "400");
+        properties.put("zookeeper.sync.time.ms", "200");
+        properties.put("auto.commit.interval.ms", "1000");
+        return new ConsumerConfig(properties);
     }
 
 }

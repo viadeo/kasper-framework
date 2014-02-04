@@ -11,7 +11,11 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.ConnectionFactory;
 import com.typesafe.config.ConfigFactory;
+import com.viadeo.kasper.client.platform.components.eventbus.cluster.AsynchronousClusterFactory;
+import com.viadeo.kasper.client.platform.components.eventbus.cluster.DomainClusterSelectorFactory;
 import com.viadeo.kasper.client.platform.components.eventbus.configuration.KasperEventBusConfiguration;
+import com.viadeo.kasper.client.platform.components.eventbus.configuration.SpringAmqpTerminalConfiguration;
+import com.viadeo.kasper.client.platform.components.eventbus.terminal.amqp.SpringAmqpTerminalFactory;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.IEvent;
 import org.junit.Before;
@@ -32,26 +36,20 @@ public class KasperEventBusITest {
 
     public static final long TIMEOUT = 5000L;
 
-    public static final KasperEventBusConfiguration CONFIGURATION_USING_AMQP = new KasperEventBusConfiguration(ConfigFactory.parseMap(
+    public static final SpringAmqpTerminalConfiguration AMQP_TERMINAL_CONFIGURATION = new SpringAmqpTerminalConfiguration(ConfigFactory.parseMap(
             ImmutableMap.<String, Object>builder()
-                    .put("clusterSelector.prefix", "com.viadeo")
-                    .put("clusterSelector.timeUnit", "MINUTES")
-                    .put("clusterSelector.pool.size", 10)
-                    .put("clusterSelector.pool.maxSize", 100)
-                    .put("clusterSelector.keepAliveTime", 60L)
-                    .put("clusterSelector.asynchronous", Boolean.TRUE)
-                    .put("terminal.amqp.hostname", "mq01.cmurer.paris.apvo")
-                    .put("terminal.amqp.port", ConnectionFactory.DEFAULT_AMQP_PORT)
-                    .put("terminal.amqp.username", "integ")
-                    .put("terminal.amqp.password", "integ")
-                    .put("terminal.amqp.vhost", "integ")
-                    .put("terminal.amqp.exchange.name", "kasper")
-                    .put("terminal.amqp.exchange.type", ExchangeTypes.TOPIC)
-                    .put("terminal.amqp.exchange.durable", Boolean.TRUE)
-                    .put("terminal.amqp.exchange.autoDelete", Boolean.FALSE)
-                    .put("terminal.amqp.queue.name", "kasper")
-                    .put("terminal.amqp.queue.durable", Boolean.TRUE)
-                    .put("terminal.amqp.queue.autoDelete", Boolean.FALSE)
+                    .put("hostname", "mq01.cmurer.paris.apvo")
+                    .put("port", ConnectionFactory.DEFAULT_AMQP_PORT)
+                    .put("username", "integ")
+                    .put("password", "integ")
+                    .put("vhost", "integ")
+                    .put("exchange.name", "kasper")
+                    .put("exchange.type", ExchangeTypes.TOPIC)
+                    .put("exchange.durable", Boolean.TRUE)
+                    .put("exchange.autoDelete", Boolean.FALSE)
+                    .put("queue.name", "kasper")
+                    .put("queue.durable", Boolean.TRUE)
+                    .put("queue.autoDelete", Boolean.FALSE)
                     .build()));
 
     public static final KasperEventBusConfiguration CONFIGURATION_USING_KAFKA = new KasperEventBusConfiguration(ConfigFactory.parseMap(
@@ -117,7 +115,16 @@ public class KasperEventBusITest {
             }
         });
 
-        final KasperEventBus eventBus = new KasperEventBusBuilder(CONFIGURATION_USING_AMQP).build();
+        final DomainClusterSelectorFactory clusterSelectorFactory = new DomainClusterSelectorFactory(
+                "com.viadeo",
+                new AsynchronousClusterFactory()
+        );
+
+        final KasperEventBus eventBus = new KasperEventBusBuilder()
+                .with(clusterSelectorFactory.createClusterSelector())
+                .with(new SpringAmqpTerminalFactory(AMQP_TERMINAL_CONFIGURATION).createEventBusTerminal())
+                .build();
+
         eventBus.subscribe(eventListener);
 
         // When

@@ -86,6 +86,7 @@ public class KafkaTerminalConfiguration implements TerminalConfiguration {
 
         public Properties toProperties(){
             final Properties props = new Properties();
+            props.put("group.id", "");
             props.put("zookeeper.connect", getZookeeperConnect());
             props.put("zookeeper.session.timeout.ms", getZookeeperSessionTimeoutInMillis());
             props.put("zookeeper.sync.time.ms", getZookeeperSyncTimeInMillis());

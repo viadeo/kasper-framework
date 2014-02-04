@@ -4,10 +4,9 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.client.platform.components.eventbus.kafka;
+package com.viadeo.kasper.client.platform.components.eventbus.terminal.kafka;
 
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.client.platform.components.eventbus.configuration.KafkaTerminalConfiguration;
 import kafka.consumer.Consumer;
 import kafka.consumer.ConsumerConfig;
 import kafka.consumer.KafkaStream;
@@ -25,12 +24,12 @@ import static com.google.common.base.Preconditions.checkState;
 
 public class ConsumerFactory {
 
-    private final KafkaTerminalConfiguration.ConsumerConfiguration configuration;
     private final DefaultDecoder keyDecoder;
     private final EventMessageSerializer valueDecoder;
+    private final ConsumerConfig baseConfig;
 
-    public ConsumerFactory(final KafkaTerminalConfiguration.ConsumerConfiguration configuration) {
-        this.configuration = checkNotNull(configuration);
+    public ConsumerFactory(final ConsumerConfig baseConfig) {
+        this.baseConfig = checkNotNull(baseConfig);
         this.keyDecoder = new DefaultDecoder(null);
         this.valueDecoder = new EventMessageSerializer();
     }
@@ -72,7 +71,12 @@ public class ConsumerFactory {
     }
 
     protected Properties getPropertiesFor(final String category) {
-        final Properties properties = configuration.toProperties();
+        final Properties properties = new Properties();
+
+        for (final Object key : baseConfig.props().props().keySet()) {
+            properties.put(key, baseConfig.props().props().get(key));
+        }
+
         properties.put("group.id", checkNotNull(category));
         return properties;
     }
