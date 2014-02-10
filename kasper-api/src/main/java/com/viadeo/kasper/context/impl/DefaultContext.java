@@ -34,7 +34,7 @@ public class DefaultContext extends AbstractContext {
     private static final String SECURITY_TOKEN_SHORTNAME = "tok";
     private static final String FUNNEL_NAME_SHORTNAME = "fname";
     private static final String FUNNEL_VERS_SHORTNAME = "fvers";
-    private static final String IP_ADDRESS_SHORTNAME = "ipadd";
+    private static final String IP_ADDRESS_SHORTNAME = "ip";
 
     private String userId;
     private String userLang;
@@ -184,12 +184,12 @@ public class DefaultContext extends AbstractContext {
     }
 
     @Override
-    public String getIpAddress(){
+    public String getIpAddress() {
         return ipAddress;
     }
 
     @Override
-    public Context setIpAddress(final String ipAddress){
+    public Context setIpAddress(final String ipAddress) {
         this.ipAddress = checkNotNull(ipAddress);
         return this;
     }
