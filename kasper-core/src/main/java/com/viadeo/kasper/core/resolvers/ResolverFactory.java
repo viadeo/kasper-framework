@@ -76,6 +76,10 @@ public class ResolverFactory {
 
     public Optional<Resolver> getResolverFromClass(final Class clazz) {
 
+        if (clazz == EventListener.class) {
+            return Optional.absent();
+        }
+
         if (cache.containsKey(clazz)) {
             return cache.get(clazz);
         }
