@@ -34,6 +34,7 @@ public class DefaultContext extends AbstractContext {
     private static final String SECURITY_TOKEN_SHORTNAME = "tok";
     private static final String FUNNEL_NAME_SHORTNAME = "fname";
     private static final String FUNNEL_VERS_SHORTNAME = "fvers";
+    private static final String IP_ADDRESS_SHORTNAME = "ip";
 
     private String userId;
     private String userLang;
@@ -50,6 +51,8 @@ public class DefaultContext extends AbstractContext {
     private String funnelName;
     private String funnelVersion;
 
+    private String ipAddress;
+
     // ------------------------------------------------------------------------
 
     public DefaultContext() {
@@ -65,6 +68,7 @@ public class DefaultContext extends AbstractContext {
         this.securityToken = DEFAULT_SECURITY_TOKEN;
         this.funnelName = DEFAULT_FUNNEL_NAME;
         this.funnelVersion = DEFAULT_FUNNEL_VERSION;
+        this.ipAddress = DEFAULT_IP_ADDRESS;
     }
 
     // ------------------------------------------------------------------------
@@ -179,6 +183,17 @@ public class DefaultContext extends AbstractContext {
         return this.sessionCorrelationId;
     }
 
+    @Override
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
+    @Override
+    public Context setIpAddress(final String ipAddress) {
+        this.ipAddress = checkNotNull(ipAddress);
+        return this;
+    }
+
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked") // must be ensured by client
@@ -199,6 +214,8 @@ public class DefaultContext extends AbstractContext {
 
         newContext.funnelName = this.funnelName;
         newContext.funnelVersion = this.funnelVersion;
+
+        newContext.ipAddress = this.ipAddress;
 
         return (C) newContext;
     }
@@ -224,6 +241,7 @@ public class DefaultContext extends AbstractContext {
         retMap.put(SECURITY_TOKEN_SHORTNAME, safeStringObject(this.securityToken));
         retMap.put(FUNNEL_NAME_SHORTNAME, safeStringObject(this.funnelName));
         retMap.put(FUNNEL_VERS_SHORTNAME, safeStringObject(this.funnelVersion));
+        retMap.put(IP_ADDRESS_SHORTNAME, safeStringObject(this.ipAddress));
 
         return retMap;
     }
@@ -261,6 +279,7 @@ public class DefaultContext extends AbstractContext {
                 && Objects.equal(this.securityToken, other.securityToken)
                 && Objects.equal(this.funnelName, other.funnelName)
                 && Objects.equal(this.funnelVersion, other.funnelVersion)
+                && Objects.equal(this.ipAddress, other.ipAddress)
                 ;
     }
 
@@ -269,7 +288,7 @@ public class DefaultContext extends AbstractContext {
         return Objects.hashCode( super.hashCode(),
                 this.sessionCorrelationId, this.funnelCorrelationId, this.requestCorrelationId,
                 this.applicationId, this.funnelName, this.funnelVersion,
-                this.userId, this.userLang, this.userCountry, this.securityToken);
+                this.userId, this.userLang, this.userCountry, this.securityToken, this.ipAddress);
     }
 
     @Override
@@ -286,6 +305,7 @@ public class DefaultContext extends AbstractContext {
                 .addValue(this.securityToken)
                 .addValue(this.funnelName)
                 .addValue(this.funnelVersion)
+                .addValue(this.ipAddress)
                 .toString();
     }
 

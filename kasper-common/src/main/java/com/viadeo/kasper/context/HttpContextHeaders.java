@@ -25,4 +25,6 @@ public final class HttpContextHeaders {
     public static final String HEADER_FUNNEL_NAME = "X-KASPER-FUNNEL-NAME";
     public static final String HEADER_FUNNEL_VERSION= "X-KASPER-FUNNEL-VERSION";
 
+    public static final String HEADER_REQUEST_IP_ADDRESS = "X-Forwarded-For";
+
 }
