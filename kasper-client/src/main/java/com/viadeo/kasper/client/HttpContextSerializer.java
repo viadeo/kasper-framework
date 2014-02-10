@@ -31,6 +31,7 @@ public class HttpContextSerializer {
             setHeader(builder, HEADER_SECURITY_TOKEN, context.getSecurityToken());
             setHeader(builder, HEADER_FUNNEL_NAME, context.getFunnelName());
             setHeader(builder, HEADER_FUNNEL_VERSION, context.getFunnelVersion());
+            setHeader(builder, HEADER_REQUEST_IP_ADDRESS, context.getIpAddress());
     }
 
 }
