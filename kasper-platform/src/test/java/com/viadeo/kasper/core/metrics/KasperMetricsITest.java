@@ -130,6 +130,50 @@ public class KasperMetricsITest {
     }
 
     @Test
+    public void name_fromMyCustomCommand_withDomainTypeAsStyle_shouldBeOk() {
+        // Given
+        buildPlatformWith(new MetricRegistry());
+
+        // When
+        final String name = KasperMetrics.name(
+                MetricNameStyle.DOMAIN_TYPE,
+                MyCustomDomainBox.MyCustomCommand.class,
+                "bip"
+        );
+
+        // Then
+        assertEquals("mycustomdomain.command.bip", name);
+    }
+
+    @Test
+    public void name_fromMyCustomCommand_withDomainTypeComponentAsStyle_shouldBeOk() {
+        // Given
+        buildPlatformWith(new MetricRegistry());
+
+        // When
+        final String name = KasperMetrics.name(
+                MetricNameStyle.DOMAIN_TYPE_COMPONENT,
+                MyCustomDomainBox.MyCustomCommand.class,
+                "bip"
+        );
+
+        // Then
+        assertEquals("mycustomdomain.command.mycustomcommand.bip", name);
+    }
+
+    @Test
+    public void name_fromMyCustomCommand_withNoneAsStyle_shouldBeOk() {
+        // Given
+        buildPlatformWith(new MetricRegistry());
+
+        // When
+        final String name = KasperMetrics.name(MetricNameStyle.NONE, MyCustomDomainBox.MyCustomCommand.class, "bip");
+
+        // Then
+        assertEquals("com.viadeo.kasper.client.platform.domain.sample.mycustomdomainbox$mycustomcommand.bip", name);
+    }
+
+    @Test
     public void name_fromMyCustomQuery_shouldBeOk() {
         // Given
         buildPlatformWith(new MetricRegistry());

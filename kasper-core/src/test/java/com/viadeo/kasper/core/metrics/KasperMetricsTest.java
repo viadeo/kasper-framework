@@ -21,7 +21,9 @@ import static org.mockito.Mockito.*;
 public class KasperMetricsTest {
 
     @XKasperUnregistered
-    private static class TestCommand implements Command { }
+    private static class TestCommand implements Command {
+        private static final long serialVersionUID = -6923557995485418425L;
+    }
 
     // ------------------------------------------------------------------------
 
@@ -63,7 +65,7 @@ public class KasperMetricsTest {
 
         // When
         kasperMetrics._clearCache();
-        final String path = kasperMetrics.pathForKasperComponent(TestCommand.class);
+        final String path = kasperMetrics.pathForKasperComponent(MetricNameStyle.DOMAIN_TYPE_COMPONENT, TestCommand.class);
 
         // Then
         assertEquals(TestCommand.class.getName().toLowerCase(), path);
@@ -89,7 +91,7 @@ public class KasperMetricsTest {
 
         // When
         kasperMetrics._clearCache();
-        final String path = kasperMetrics.pathForKasperComponent(TestCommand.class);
+        final String path = kasperMetrics.pathForKasperComponent(MetricNameStyle.DOMAIN_TYPE_COMPONENT, TestCommand.class);
 
         // Then
         assertEquals(("Test.Command." + TestCommand.class.getSimpleName()).toLowerCase(), path);

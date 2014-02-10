@@ -33,6 +33,7 @@ public final class KasperMetrics {
     public static void setNamePrefix(final String prefix) { instance()._setNamePrefix(prefix); }
     public static String name(final String name, final String...names) { return instance()._name(name, names); }
     public static String name(final Class clazz, final String...names) { return instance()._name(clazz, names); }
+    public static String name(final MetricNameStyle style, final Class clazz, final String...names) { return instance()._name(style, clazz, names); }
     public static void setResolverFactory(final ResolverFactory resolverFactory) { instance()._setResolverFactory(resolverFactory); }
     public static void unsetResolverFactory() { instance()._unsetResolverFactory(); }
     public static void clearCache() { instance()._clearCache(); }
@@ -42,7 +43,7 @@ public final class KasperMetrics {
     // ------------------------------------------------------------------------
 
     private String namePrefix = "";
-    private ConcurrentMap<Class, String> pathCache = Maps.newConcurrentMap();
+    private ConcurrentMap<MetricNameKey, String> pathCache = Maps.newConcurrentMap();
     private ResolverFactory resolverFactory;
     private MetricRegistry metricRegistry;
 
@@ -69,32 +70,45 @@ public final class KasperMetrics {
     }
 
     public String _name(final Class clazz, final String...names) {
-        final String prefix = namePrefix.isEmpty() ? "" : namePrefix + ".";
-        return prefix + MetricRegistry.name(pathForKasperComponent(clazz), names);
+        return this._name(MetricNameStyle.DOMAIN_TYPE_COMPONENT, clazz, names);
     }
 
-    @SuppressWarnings("unchecked")
-    protected String pathForKasperComponent(final Class clazz) {
+    public String _name(final MetricNameStyle style, final Class clazz, final String...names) {
+        final String prefix = namePrefix.isEmpty() ? "" : namePrefix + ".";
+        return prefix + MetricRegistry.name(pathForKasperComponent(style, clazz), names);
+    }
 
-        if (pathCache.containsKey(clazz)) {
-            return pathCache.get(clazz);
+
+    @SuppressWarnings("unchecked")
+    protected String pathForKasperComponent(final MetricNameStyle style, final Class clazz) {
+        final MetricNameKey key = new MetricNameKey(style, clazz);
+
+        if (pathCache.containsKey(key)) {
+            return pathCache.get(key);
         }
 
-        String componentPath = clazz.getName().toLowerCase();
+        String path = clazz.getName().toLowerCase();
 
-        if (null != resolverFactory) {
-            final String name = clazz.getSimpleName();
-
+        if (null != resolverFactory && style != MetricNameStyle.NONE) {
             final Optional<Resolver> resolver = resolverFactory.getResolverFromClass(clazz);
+
             if (resolver.isPresent()) {
                 final String domainName = resolver.get().getDomainLabel(clazz);
                 final String type = resolver.get().getTypeName();
-                componentPath = String.format("%s.%s.%s", domainName, type, name).toLowerCase();
-                pathCache.put(clazz, componentPath);
+                final String name = clazz.getSimpleName();
+
+                switch (style) {
+                    case DOMAIN_TYPE_COMPONENT:
+                        path = String.format("%s.%s.%s", domainName, type, name).toLowerCase();
+                        break;
+                    case DOMAIN_TYPE:
+                        path = String.format("%s.%s", domainName, type).toLowerCase();
+                        break;
+                }
             }
         }
 
-        return componentPath;
+        return path;
     }
 
     public void _setResolverFactory(final ResolverFactory resolverFactory) {
