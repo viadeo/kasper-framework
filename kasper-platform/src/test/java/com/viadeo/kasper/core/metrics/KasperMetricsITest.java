@@ -11,6 +11,7 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox;
 import com.viadeo.kasper.core.resolvers.CommandResolver;
+import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
 import org.junit.Test;
 
@@ -59,7 +60,19 @@ public class KasperMetricsITest {
     }
 
     @Test
-    public void name_fromCommandHandler_shouldBeOk() {
+    public void name_fromEventListenerClass_shouldBeOk() {
+        // Given
+        buildPlatformWith(new MetricRegistry());
+
+        // When
+        final String name = KasperMetrics.name(EventListener.class, "bip");
+
+        // Then
+        assertEquals((EventListener.class.getName() + ".bip").toLowerCase(), name);
+    }
+
+    @Test
+    public void name_fromMyCustomCommandHandler_shouldBeOk() {
         // Given
         buildPlatformWith(new MetricRegistry());
 
@@ -71,7 +84,7 @@ public class KasperMetricsITest {
     }
 
     @Test
-    public void name_fromQueryHandler_shouldBeOk() {
+    public void name_fromMyCustomQueryHandler_shouldBeOk() {
         // Given
         buildPlatformWith(new MetricRegistry());
 
