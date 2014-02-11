@@ -36,9 +36,9 @@ public abstract class CommandHandler<C extends Command>
 
     private static final Logger LOGGER = LoggerFactory.getLogger(CommandHandler.class);
 
-    private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(CommandGateway.class, "requests-time");
-    private static final String GLOBAL_METER_REQUESTS_NAME = name(CommandGateway.class, "requests");
-    private static final String GLOBAL_METER_ERRORS_NAME = name(CommandGateway.class, "errors");
+    public static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(CommandGateway.class, "requests-time");
+    public static final String GLOBAL_METER_REQUESTS_NAME = name(CommandGateway.class, "requests");
+    public static final String GLOBAL_METER_ERRORS_NAME = name(CommandGateway.class, "errors");
 
     /**
      * Generic parameter position for the handled command

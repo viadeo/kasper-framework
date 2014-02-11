@@ -10,7 +10,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox;
-import com.viadeo.kasper.core.resolvers.CommandResolver;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
 import org.junit.Test;
@@ -29,7 +28,6 @@ public class KasperMetricsITest {
 
         // clear caches in order to ensure test integrity
         KasperMetrics.clearCache();
-        new CommandResolver().clearCache();
     }
 
     // ------------------------------------------------------------------------
