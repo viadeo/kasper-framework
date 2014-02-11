@@ -17,11 +17,15 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Map;
 
+import com.google.common.base.Optional;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class HttpExposer extends HttpServlet {
 	private static final long serialVersionUID = 8448984922303895424L;
 	protected static final Logger LOGGER = LoggerFactory.getLogger(HttpExposer.class);
+
+    private Optional<String> serverName = Optional.absent();
 
     // ------------------------------------------------------------------------
 
@@ -70,13 +74,18 @@ public abstract class HttpExposer extends HttpServlet {
     }
 
     protected String serverName(){
-        String serverName;
-        try {
-            serverName = InetAddress.getLocalHost().getHostName();
-        } catch (UnknownHostException e) {
-            serverName = "unknown";
+        if(serverName.isPresent()){
+            return serverName.get();
         }
-        return serverName;
+
+        String fqdn;
+        try {
+            fqdn = InetAddress.getLocalHost().getCanonicalHostName();
+            serverName = Optional.of(fqdn);
+        } catch (UnknownHostException e) {
+            fqdn = "unknown";
+        }
+        return fqdn;
     }
 
 }

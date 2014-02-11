@@ -173,7 +173,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     @Test
     public void testXKasperServerNameInHeader() throws MalformedURLException, URISyntaxException, UnknownHostException {
         // Given
-        final String expectedServerName = InetAddress.getLocalHost().getHostName();
+        final String expectedServerName = InetAddress.getLocalHost().getCanonicalHostName();
         final AccountCreatedEvent event = new AccountCreatedEvent();
 
         // When

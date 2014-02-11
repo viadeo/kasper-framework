@@ -299,7 +299,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
     @Test
     public void testXKasperServerNameInHeader() throws MalformedURLException, URISyntaxException, UnknownHostException {
         // Given
-        final String expectedServerName = InetAddress.getLocalHost().getHostName();
+        final String expectedServerName = InetAddress.getLocalHost().getCanonicalHostName();
         final String commandPath = NEED_VALIDATION_2_ALIAS;
         final NeedValidationWithAlias needValidationWithAlias = new NeedValidationWithAlias();
 
