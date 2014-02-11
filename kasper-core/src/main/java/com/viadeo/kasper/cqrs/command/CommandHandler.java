@@ -11,6 +11,7 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
+import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
@@ -86,9 +87,14 @@ public abstract class CommandHandler<C extends Command>
         final String meterErrorsName = name(this.commandClass, "errors");
         final String meterRequestsName = name(this.commandClass, "requests");
 
+        final String domainTimerRequestsTimeName = name(MetricNameStyle.DOMAIN_TYPE, this.commandClass, "requests-time");
+        final String domainMeterErrorsName = name(MetricNameStyle.DOMAIN_TYPE, this.commandClass, "errors");
+        final String domainMeterRequestsName = name(MetricNameStyle.DOMAIN_TYPE, this.commandClass, "requests");
+
         /* Start timer */
         final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
         final Timer.Context timer = getMetricRegistry().timer(timerRequestsTimeName).time();
+        final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerRequestsTimeName).time();
 
         CommandResponse ret = null;
         Exception exception = null;
@@ -127,6 +133,7 @@ public abstract class CommandHandler<C extends Command>
         } finally {
             classTimer.close();
             timer.close();
+            domainTimer.close();
 
             /* rollback uow on failure */
             if (isError && uow.isStarted()) {
@@ -146,10 +153,12 @@ public abstract class CommandHandler<C extends Command>
         /* Monitor the request calls */
         getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
         getMetricRegistry().meter(meterRequestsName).mark();
+        getMetricRegistry().meter(domainMeterRequestsName).mark();
 
         if (null != exception) {
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
             getMetricRegistry().meter(meterErrorsName).mark();
+            getMetricRegistry().meter(domainMeterErrorsName).mark();
         }
 
         if (null != exception) {

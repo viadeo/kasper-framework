@@ -11,6 +11,7 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.context.CurrentContext;
+import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.domain.GenericEventMessage;
@@ -43,6 +44,9 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
     private final String meterErrorsName;
     private final String meterHandlesName;
     private final String histoHandleTimesName;
+    private final String domainMeterErrorsName;
+    private final String domainMeterHandlesName;
+    private final String domainTimerHandleTimesName;
 
     private EventBus eventBus;
 
@@ -65,6 +69,10 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
         this.histoHandleTimesName = name(this.getClass(), "handle-times");
         this.meterHandlesName = name(this.getClass(), "handles");
         this.meterErrorsName = name(this.getClass(), "errors");
+
+        this.domainTimerHandleTimesName = name(MetricNameStyle.DOMAIN_TYPE, this.getClass(), "handle-time");
+        this.domainMeterHandlesName = name(MetricNameStyle.DOMAIN_TYPE, this.getClass(), "handles");
+        this.domainMeterErrorsName = name(MetricNameStyle.DOMAIN_TYPE, this.getClass(), "errors");
 	}
 	
 	// ------------------------------------------------------------------------
@@ -112,6 +120,7 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 
         /* Start timer */
         final Timer.Context timer = getMetricRegistry().timer(timerHandleTimeName).time();
+        final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerHandleTimesName).time();
 
         /* Ensure a context is set */
         final Context messageContext = message.getContext();
@@ -132,9 +141,11 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
         } catch (final RuntimeException e) {
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
             getMetricRegistry().meter(meterErrorsName).mark();
+            getMetricRegistry().meter(domainMeterErrorsName).mark();
             throw e;
         } finally {
             /* Stop timer and record a tick */
+            domainTimer.close();
             final long time = timer.stop();
 
             getMetricRegistry().histogram(GLOBAL_HISTO_HANDLE_TIMES_NAME).update(time);
@@ -142,6 +153,7 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 
             getMetricRegistry().histogram(histoHandleTimesName).update(time);
             getMetricRegistry().meter(meterHandlesName).mark();
+            getMetricRegistry().meter(domainMeterHandlesName).mark();
         }
 	}
 	

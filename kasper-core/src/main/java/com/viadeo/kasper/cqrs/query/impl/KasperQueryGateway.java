@@ -15,6 +15,7 @@ import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
+import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptorFactory;
@@ -69,9 +70,20 @@ public class KasperQueryGateway implements QueryGateway {
 
         final Class<? extends Query> queryClass = query.getClass();
 
+
+        final String timerRequestsTimeName = name(queryClass, "requests-time");
+        final String histoRequestsTimeName = name(queryClass, "requests-times");
+        final String meterErrorsName = name(queryClass, "errors");
+        final String meterRequestsName = name(queryClass, "requests");
+
+        final String domainTimerRequestsTimeName = name(MetricNameStyle.DOMAIN_TYPE, queryClass, "requests-time");
+        final String domainMeterErrorsName = name(MetricNameStyle.DOMAIN_TYPE, queryClass, "errors");
+        final String domainMeterRequestsName = name(MetricNameStyle.DOMAIN_TYPE, queryClass, "requests");
+
         /* Start request timer */
         final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
-        final Timer.Context timer = getMetricRegistry().timer(name(queryClass, "requests-time")).time();
+        final Timer.Context timer = getMetricRegistry().timer(timerRequestsTimeName).time();
+        final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerRequestsTimeName).time();
 
         /* Sets current thread context */
         CurrentContext.set(context);
@@ -101,16 +113,20 @@ public class KasperQueryGateway implements QueryGateway {
 
         /* Monitor the request calls */
         timer.stop();
+        domainTimer.stop();
         final long time = classTimer.stop();
+
         getMetricRegistry().histogram(GLOBAL_HISTO_REQUESTS_TIMES_NAME).update(time);
         getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
 
-        getMetricRegistry().histogram(name(queryClass, "requests-times")).update(time);
-        getMetricRegistry().meter(name(queryClass, "requests")).mark();
+        getMetricRegistry().histogram(histoRequestsTimeName).update(time);
+        getMetricRegistry().meter(meterRequestsName).mark();
+        getMetricRegistry().meter(domainMeterRequestsName).mark();
 
         if (null != exception) {
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
-            getMetricRegistry().meter(name(queryClass, "errors")).mark();
+            getMetricRegistry().meter(meterErrorsName).mark();
+            getMetricRegistry().meter(domainMeterErrorsName).mark();
         }
 
         if (null != exception) {

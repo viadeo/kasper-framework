@@ -49,6 +49,9 @@ public class PlatformBuilderITest {
         final Meter requestsNameMeter = registerSpyMeter("mycustomdomain.command.mycustomcommand.requests");
         final Timer requestsNameTimer = registerSpyTimer("mycustomdomain.command.mycustomcommand.requests-time");
 
+        final Meter domainRequestsNameMeter = registerSpyMeter("mycustomdomain.command.requests");
+        final Timer domainRequestsNameTimer = registerSpyTimer("mycustomdomain.command.requests-time");
+
         reset(metricRegistry);
 
         // When
@@ -60,6 +63,9 @@ public class PlatformBuilderITest {
 
         verifyTimerInteraction("mycustomdomain.command.mycustomcommand.requests-time", requestsNameTimer);
         verifyMeterInteraction("mycustomdomain.command.mycustomcommand.requests", requestsNameMeter);
+
+        verifyTimerInteraction("mycustomdomain.command.requests-time", domainRequestsNameTimer);
+        verifyMeterInteraction("mycustomdomain.command.requests", domainRequestsNameMeter);
 
         verifyNoMoreInteractions(metricRegistry);
     }
@@ -74,6 +80,10 @@ public class PlatformBuilderITest {
         final Timer requestsNameTimer = registerSpyTimer("mycustomdomain.command.mycustomcommand.requests-time");
         final Meter requestsNameMeter = registerSpyMeter("mycustomdomain.command.mycustomcommand.requests");
         final Meter errorsNameMeter = registerSpyMeter("mycustomdomain.command.mycustomcommand.errors");
+
+        final Timer domainRequestsNameTimer = registerSpyTimer("mycustomdomain.command.requests-time");
+        final Meter domainRequestsNameMeter = registerSpyMeter("mycustomdomain.command.requests");
+        final Meter domainErrorsNameTimer = registerSpyMeter("mycustomdomain.command.errors");
 
         reset(metricRegistry);
 
@@ -93,6 +103,10 @@ public class PlatformBuilderITest {
         verifyMeterInteraction("mycustomdomain.command.mycustomcommand.requests", requestsNameMeter);
         verifyMeterInteraction("mycustomdomain.command.mycustomcommand.errors", errorsNameMeter);
 
+        verifyTimerInteraction("mycustomdomain.command.requests-time", domainRequestsNameTimer);
+        verifyMeterInteraction("mycustomdomain.command.requests", domainRequestsNameMeter);
+        verifyMeterInteraction("mycustomdomain.command.errors", domainErrorsNameTimer);
+
         verifyNoMoreInteractions(metricRegistry);
     }
 
@@ -109,6 +123,9 @@ public class PlatformBuilderITest {
         final Histogram requestsTimesHisto = registerSpyHisto("mycustomdomain.query.mycustomquery.requests-times");
         final Meter requestsMeter = registerSpyMeter("mycustomdomain.query.mycustomquery.requests");
 
+        final Timer domainRequestsTimeTimer = registerSpyTimer("mycustomdomain.query.requests-time");
+        final Meter domainRequestsMeter = registerSpyMeter("mycustomdomain.query.requests");
+
         reset(metricRegistry);
 
         // When
@@ -124,6 +141,9 @@ public class PlatformBuilderITest {
         verifyTimerInteraction("mycustomdomain.query.mycustomquery.requests-time", requestsTimeTimer);
         verifyHistogramInteraction("mycustomdomain.query.mycustomquery.requests-times", requestsTimesHisto);
         verifyMeterInteraction("mycustomdomain.query.mycustomquery.requests", requestsMeter);
+
+        verifyTimerInteraction("mycustomdomain.query.requests-time", domainRequestsTimeTimer);
+        verifyMeterInteraction("mycustomdomain.query.requests", domainRequestsMeter);
 
         verifyNoMoreInteractions(metricRegistry);
     }
@@ -142,6 +162,10 @@ public class PlatformBuilderITest {
         final Histogram requestsTimesHisto = registerSpyHisto("mycustomdomain.query.mycustomquery.requests-times");
         final Meter requestsMeter = registerSpyMeter("mycustomdomain.query.mycustomquery.requests");
         final Meter errorsMeter = registerSpyMeter("mycustomdomain.query.mycustomquery.errors");
+
+        final Timer domainRequestsTimeTimer = registerSpyTimer("mycustomdomain.query.requests-time");
+        final Meter domainRequestsMeter = registerSpyMeter("mycustomdomain.query.requests");
+        final Meter domainErrorsMeter = registerSpyMeter("mycustomdomain.query.errors");
 
         reset(metricRegistry);
 
@@ -164,6 +188,10 @@ public class PlatformBuilderITest {
         verifyHistogramInteraction("mycustomdomain.query.mycustomquery.requests-times", requestsTimesHisto);
         verifyMeterInteraction("mycustomdomain.query.mycustomquery.requests", requestsMeter);
         verifyMeterInteraction("mycustomdomain.query.mycustomquery.errors", errorsMeter);
+
+        verifyTimerInteraction("mycustomdomain.query.requests-time", domainRequestsTimeTimer);
+        verifyMeterInteraction("mycustomdomain.query.requests", domainRequestsMeter);
+        verifyMeterInteraction("mycustomdomain.query.errors", domainErrorsMeter);
 
         verifyNoMoreInteractions(metricRegistry);
     }
