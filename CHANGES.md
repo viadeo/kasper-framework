@@ -2,6 +2,7 @@
 
 ### Snapshot 0.4-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.4-SNAPSHOT~~))###
 
+* [Improvement 174](https://github.com/viadeo/kasper-framework/issues/174) Add the fully qualified domain name of the answering server as HTTP header by the exposition entries points : `X-KASPER-SERVER-NAME`
 * [Bug 172](https://github.com/viadeo/kasper-framework/issues/172) Fix on the global metric name related to `EventListener` component
 
 
