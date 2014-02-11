@@ -2,6 +2,8 @@
 
 ### Snapshot 0.4-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.4-SNAPSHOT~~))###
 
+* [Bug 172](https://github.com/viadeo/kasper-framework/issues/172) Fix on the global metric name related to `EventListener` component
+
 
 ### Version 0.3.8 (02/03/2014, [Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.3.8~~))###
 
