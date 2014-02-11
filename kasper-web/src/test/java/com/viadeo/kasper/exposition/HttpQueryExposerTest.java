@@ -15,6 +15,7 @@ import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.exposition.alias.XKasperAlias;

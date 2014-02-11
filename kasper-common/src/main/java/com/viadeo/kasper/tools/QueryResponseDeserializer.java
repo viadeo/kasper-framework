@@ -37,7 +37,7 @@ public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
     // ------------------------------------------------------------------------
 
     @Override
-    public QueryResponse deserialize(JsonParser jp, DeserializationContext ctxt)
+    public QueryResponse deserialize(final JsonParser jp, final DeserializationContext ctxt)
             throws IOException {
 
         final ObjectNode root = jp.readValueAs(ObjectNode.class);

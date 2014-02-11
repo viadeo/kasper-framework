@@ -28,20 +28,15 @@ public class CommandResponseSerializer extends JsonSerializer<CommandResponse> {
         jgen.writeFieldName(ObjectMapperProvider.REASON);
         jgen.writeBoolean( ! value.isOK());
 
-         /* FIXME - retro-compatibility - TO BE REMOVED */
-        jgen.writeFieldName(ObjectMapperProvider.ERRORS);
-        this.writeReasons(value, jgen);
+        KasperReason reason = value.getReason();
+        if (value.hasReason()) {
+            jgen.writeFieldName(ObjectMapperProvider.MESSAGE);
+            jgen.writeString(reason.getCode());
+        }
 
         jgen.writeFieldName(ObjectMapperProvider.REASONS);
-        this.writeReasons(value, jgen);
-
-        jgen.writeEndObject();
-    }
-
-    private void writeReasons(final CommandResponse value, final JsonGenerator jgen) throws IOException {
         jgen.writeStartArray();
-        if (!value.isOK()) {
-            final KasperReason reason = value.getReason();
+        if (! value.isOK()) {
             for (String message : reason.getMessages()) {
                 jgen.writeStartObject();
 
@@ -53,6 +48,8 @@ public class CommandResponseSerializer extends JsonSerializer<CommandResponse> {
             }
         }
         jgen.writeEndArray();
+
+        jgen.writeEndObject();
     }
 
 }

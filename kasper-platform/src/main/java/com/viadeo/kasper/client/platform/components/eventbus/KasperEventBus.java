@@ -15,6 +15,8 @@ import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
+import org.axonframework.eventhandling.*;
+import org.axonframework.eventhandling.async.*;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.NoTransactionManager;
 import org.slf4j.Logger;

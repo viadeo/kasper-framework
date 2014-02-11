@@ -36,27 +36,23 @@ public class QueryResponseSerializer extends JsonSerializer<QueryResponse> {
             jgen.writeString(reason.getCode());
 
             jgen.writeFieldName(ObjectMapperProvider.REASONS);
-            this.writeReason(reason, jgen);
+            jgen.writeStartArray();
+            for (String message : reason.getMessages()) {
+                jgen.writeStartObject();
+
+                jgen.writeStringField(ObjectMapperProvider.ID, reason.getId().toString());
+                jgen.writeStringField(ObjectMapperProvider.CODE, reason.getCode());
+                jgen.writeStringField(ObjectMapperProvider.MESSAGE, message);
+
+                jgen.writeEndObject();
+            }
+            jgen.writeEndArray();
 
             jgen.writeEndObject();
 
         } else {
             jgen.writeObject(value.getResult());
         }
-    }
-
-    private void writeReason(final KasperReason reason, final JsonGenerator jgen) throws IOException {
-        jgen.writeStartArray();
-        for (String message : reason.getMessages()) {
-            jgen.writeStartObject();
-
-            jgen.writeStringField(ObjectMapperProvider.ID, reason.getId().toString());
-            jgen.writeStringField(ObjectMapperProvider.CODE, reason.getCode());
-            jgen.writeStringField(ObjectMapperProvider.MESSAGE, message);
-
-            jgen.writeEndObject();
-        }
-        jgen.writeEndArray();
     }
 
 }

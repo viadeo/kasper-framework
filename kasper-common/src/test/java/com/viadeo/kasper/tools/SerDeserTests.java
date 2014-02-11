@@ -13,6 +13,7 @@ import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperRelationID;
 import com.viadeo.kasper.KasperResponse;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
 import com.viadeo.kasper.cqrs.query.MapQueryResult;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
@@ -277,20 +278,20 @@ public class SerDeserTests {
           + "}"
     ;
 
-    public static final String UUID = "8701c6ae-242e-4e80-92e9-522dc1ba999b";
-    public static final String MESG_1 = "ERROR Submiting query[getMemberContactFacets] to Kasper platform.";
-    public static final String MESG_2 = "Failed to execute phase [query]";
+    public static final String QUERY_UUID = "8701c6ae-242e-4e80-92e9-522dc1ba999b";
+    public static final String QUERY_MESG_1 = "ERROR Submiting query[getMemberContactFacets] to Kasper platform.";
+    public static final String QUERY_MESG_2 = "Failed to execute phase [query]";
     public static final String QUERY_RESPONSE_NEW =
             "{"
-          +         "\"id\":\"" + UUID + "\","
+          +         "\"id\":\"" + QUERY_UUID + "\","
           +         "\"status\":\"ERROR\","
           +         "\"code\":\"0000\","
           +         "\"label\":\"UNKNOWN_REASON\","
           +         "\"reason\":true,"
           +         "\"reasons\":[{"
-          +             "\"message\":\"" + MESG_1 + "\""
+          +             "\"message\":\"" + QUERY_MESG_1 + "\""
           +         "},{"
-          +             "\"message\":\"" + MESG_2 + "\""
+          +             "\"message\":\"" + QUERY_MESG_2 + "\""
           +         "}]"
           + "}"
     ;
@@ -322,15 +323,99 @@ public class SerDeserTests {
         final QueryResponse<?> response = deserTest(QUERY_RESPONSE_NEW, QueryResponse.class);
 
         // Then
-        assertEquals(UUID, response.getReason().getId().toString());
+        assertEquals(QUERY_UUID, response.getReason().getId().toString());
         assertEquals(KasperResponse.Status.ERROR, response.getStatus());
         assertEquals(
                 CoreReasonCode.UNKNOWN_REASON.toString(),
                 response.getReason().getCode()
         );
         assertEquals(2, response.getReason().getMessages().size());
-        assertEquals(MESG_1, response.getReason().getMessages().toArray()[0]);
-        assertEquals(MESG_2, response.getReason().getMessages().toArray()[1]);
+        assertEquals(QUERY_MESG_1, response.getReason().getMessages().toArray()[0]);
+        assertEquals(QUERY_MESG_2, response.getReason().getMessages().toArray()[1]);
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static final String COMMAND_RESPONSE_NORMAL = "{\"status\":\"OK\",\"reason\":false,\"reasons\":[]}";
+
+    public static final String COMMAND_RESPONSE_OLD =
+            "{"
+                    +         "\"status\":\"ERROR\","
+                    +         "\"reason\":true,"
+                    +         "\"message\":\"[0000] - UNKNOWN_REASON\","
+                    +         "\"reasons\":[{"
+                    +             "\"id\":\"8701c6ae-242e-4e80-92e9-522dc1ba999b\","
+                    +             "\"code\":\"[0000] - UNKNOWN_REASON\","
+                    +             "\"message\":\"ERROR Submiting query[getMemberContactFacets] to Kasper platform.\""
+                    +         "},{"
+                    +             "\"id\":\"8701c6ae-242e-4e80-92e9-522dc1ba999b\","
+                    +             "\"code\":\"[0000] - UNKNOWN_REASON\","
+                    +             "\"message\":\"Failed to execute phase [query]\""
+                    +         "}]"
+                    + "}"
+            ;
+
+    public static final String COMMAND_UUID = "6de93ba2-46ee-4f68-820e-a745a30c7599";
+    public static final String COMMAND_MESG_1 = "ERROR Submiting command to Kasper platform.";
+    public static final String COMMAND_MESG_2 = "Failed to execute phase [command]";
+    public static final String COMMAND_RESPONSE_NEW =
+            "{"
+                    +         "\"id\":\"" + COMMAND_UUID + "\","
+                    +         "\"status\":\"ERROR\","
+                    +         "\"code\":\"0000\","
+                    +         "\"label\":\"UNKNOWN_REASON\","
+                    +         "\"reason\":true,"
+                    +         "\"reasons\":[{"
+                    +             "\"message\":\"" + COMMAND_MESG_1 + "\""
+                    +         "},{"
+                    +             "\"message\":\"" + COMMAND_MESG_2 + "\""
+                    +         "}]"
+                    + "}"
+            ;
+
+    @Test
+    public void test_command_deserialize_normal() throws IOException {
+        // Given
+        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
+                CommandResponse.ok()
+        );
+
+        // Then
+        assertEquals(COMMAND_RESPONSE_NORMAL, json);
+
+        // When
+        final String result_json = deserSerTest(COMMAND_RESPONSE_NORMAL, CommandResponse.class);
+
+        // Then
+        assertEquals(COMMAND_RESPONSE_NORMAL, result_json);
+    }
+
+    @Test
+    public void test_command_deserialize_old() throws IOException {
+        // Given
+        // When
+        final String result_json = deserSerTest(COMMAND_RESPONSE_OLD, CommandResponse.class);
+
+        // Then
+        assertEquals(COMMAND_RESPONSE_OLD, result_json);
+    }
+
+    @Test
+    public void test_command_deserialize_new() throws IOException {
+        // Given
+        // When
+        final CommandResponse response = deserTest(COMMAND_RESPONSE_NEW, CommandResponse.class);
+
+        // Then
+        assertEquals(COMMAND_UUID, response.getReason().getId().toString());
+        assertEquals(KasperResponse.Status.ERROR, response.getStatus());
+        assertEquals(
+                CoreReasonCode.UNKNOWN_REASON.toString(),
+                response.getReason().getCode()
+        );
+        assertEquals(2, response.getReason().getMessages().size());
+        assertEquals(COMMAND_MESG_1, response.getReason().getMessages().toArray()[0]);
+        assertEquals(COMMAND_MESG_2, response.getReason().getMessages().toArray()[1]);
     }
 
 }
