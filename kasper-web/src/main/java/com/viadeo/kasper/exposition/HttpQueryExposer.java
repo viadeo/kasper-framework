@@ -18,6 +18,7 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -182,6 +183,8 @@ public class HttpQueryExposer extends HttpExposer {
         /* Create a kasper correlation id */
         final UUID kasperCorrelationUUID = UUID.randomUUID();
         resp.addHeader("kasperCorrelationId", kasperCorrelationUUID.toString());
+
+        resp.addHeader(HttpContextHeaders.HEADER_SERVER_NAME, serverName());
 
         /* extract context from request */
         final Context context = contextDeserializer.deserialize(req, kasperCorrelationUUID);

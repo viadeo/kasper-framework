@@ -13,6 +13,7 @@ import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
@@ -24,9 +25,7 @@ import org.junit.runners.Parameterized;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -305,4 +304,21 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
     }
 
+    @Test
+    public void testXKasperServerNameInHeader() throws MalformedURLException, URISyntaxException, UnknownHostException {
+        // Given
+        final String expectedServerName = InetAddress.getLocalHost().getHostName();
+        final NeedValidationWithAlias query = new NeedValidationWithAlias();
+
+        // When
+        final ClientResponse response = httpClient()
+                .resource(new URL(new URL(url()), query.getClass().getSimpleName().replace("Query", "")).toURI())
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .get(ClientResponse.class);
+
+        // Then
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        assertEquals(expectedServerName, response.getHeaders().getFirst(HttpContextHeaders.HEADER_SERVER_NAME));
+    }
 }

@@ -13,6 +13,7 @@ import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
@@ -33,9 +34,7 @@ import org.junit.rules.ExpectedException;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
@@ -171,4 +170,21 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
         assertEquals(Response.Status.ACCEPTED.getStatusCode(), response.getStatus());
     }
 
+    @Test
+    public void testXKasperServerNameInHeader() throws MalformedURLException, URISyntaxException, UnknownHostException {
+        // Given
+        final String expectedServerName = InetAddress.getLocalHost().getHostName();
+        final AccountCreatedEvent event = new AccountCreatedEvent();
+
+        // When
+        final ClientResponse response = httpClient()
+                .resource(new URL(new URL(url()), event.getClass().getSimpleName().replace("Event", "")).toURI())
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .put(ClientResponse.class, event);
+
+        // Then
+        assertEquals(Response.Status.ACCEPTED.getStatusCode(), response.getStatus());
+        assertEquals(expectedServerName, response.getHeaders().getFirst(HttpContextHeaders.HEADER_SERVER_NAME));
+    }
 }

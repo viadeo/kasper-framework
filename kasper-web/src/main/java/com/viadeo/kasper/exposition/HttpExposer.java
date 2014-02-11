@@ -13,6 +13,8 @@ import org.springframework.util.StringUtils;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import java.beans.Introspector;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -65,6 +67,16 @@ public abstract class HttpExposer extends HttpServlet {
         }
 
         return sb.toString();
+    }
+
+    protected String serverName(){
+        String serverName;
+        try {
+            serverName = InetAddress.getLocalHost().getHostName();
+        } catch (UnknownHostException e) {
+            serverName = "unknown";
+        }
+        return serverName;
     }
 
 }
