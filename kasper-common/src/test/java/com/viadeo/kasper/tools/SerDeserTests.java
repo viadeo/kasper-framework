@@ -346,11 +346,11 @@ public class SerDeserTests {
                     +         "\"reasons\":[{"
                     +             "\"id\":\"8701c6ae-242e-4e80-92e9-522dc1ba999b\","
                     +             "\"code\":\"[0000] - UNKNOWN_REASON\","
-                    +             "\"message\":\"ERROR Submiting query[getMemberContactFacets] to Kasper platform.\""
+                    +             "\"message\":\"ERROR Submiting command to Kasper platform.\""
                     +         "},{"
                     +             "\"id\":\"8701c6ae-242e-4e80-92e9-522dc1ba999b\","
                     +             "\"code\":\"[0000] - UNKNOWN_REASON\","
-                    +             "\"message\":\"Failed to execute phase [query]\""
+                    +             "\"message\":\"Failed to execute phase [command]\""
                     +         "}]"
                     + "}"
             ;

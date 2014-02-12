@@ -22,7 +22,8 @@ public abstract class KasperResponse implements Serializable, Immutable {
     public static enum Status {
         OK,         /** All is ok */
         REFUSED,    /** Refused by some intermediate validation mechanisms */
-        ERROR       /** Error in handling or domain business */
+        ERROR,      /** Error in handling or domain business */
+        ACCEPTED    /** The command or the query has been accepted but answer will be made later */
     }
 
     /**
