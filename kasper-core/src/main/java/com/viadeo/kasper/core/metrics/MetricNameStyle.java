@@ -9,5 +9,6 @@ package com.viadeo.kasper.core.metrics;
 public enum MetricNameStyle {
     NONE,
     DOMAIN_TYPE,
-    DOMAIN_TYPE_COMPONENT
+    DOMAIN_TYPE_COMPONENT,
+    CLIENT_TYPE
 }

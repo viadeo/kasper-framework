@@ -79,7 +79,8 @@ public abstract class CommandHandler<C extends Command>
     @Override
     public final Object handle(final CommandMessage<C> message, final UnitOfWork uow) throws Throwable {
         final KasperCommandMessage<C> kmessage = new KasperCommandMessage<>(message);
-        CurrentContext.set(kmessage.getContext());
+        final Context context = kmessage.getContext();
+        CurrentContext.set(context);
 
         CommandHandler.LOGGER.debug("Handle command " + commandClass.getSimpleName());
 
@@ -154,11 +155,13 @@ public abstract class CommandHandler<C extends Command>
         getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
         getMetricRegistry().meter(meterRequestsName).mark();
         getMetricRegistry().meter(domainMeterRequestsName).mark();
+        getMetricRegistry().meter(name(MetricNameStyle.CLIENT_TYPE, context, commandClass, "requests")).mark();
 
         if (null != exception) {
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
             getMetricRegistry().meter(meterErrorsName).mark();
             getMetricRegistry().meter(domainMeterErrorsName).mark();
+            getMetricRegistry().meter(name(MetricNameStyle.CLIENT_TYPE, context, commandClass, "errors")).mark();
         }
 
         if (null != exception) {

@@ -122,11 +122,13 @@ public class KasperQueryGateway implements QueryGateway {
         getMetricRegistry().histogram(histoRequestsTimeName).update(time);
         getMetricRegistry().meter(meterRequestsName).mark();
         getMetricRegistry().meter(domainMeterRequestsName).mark();
+        getMetricRegistry().meter(name(MetricNameStyle.CLIENT_TYPE, context, queryClass, "requests")).mark();
 
         if (null != exception) {
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
             getMetricRegistry().meter(meterErrorsName).mark();
             getMetricRegistry().meter(domainMeterErrorsName).mark();
+            getMetricRegistry().meter(name(MetricNameStyle.CLIENT_TYPE, context, queryClass, "errors")).mark();
         }
 
         if (null != exception) {

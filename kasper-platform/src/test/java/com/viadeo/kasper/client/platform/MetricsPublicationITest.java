@@ -12,6 +12,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -22,7 +23,7 @@ import org.junit.Test;
 
 import static org.mockito.Mockito.*;
 
-public class PlatformBuilderITest {
+public class MetricsPublicationITest {
 
     private Platform platform;
     private MetricRegistry metricRegistry;
@@ -156,6 +157,46 @@ public class PlatformBuilderITest {
     }
 
     @Test
+    public void checkMetricsPublication_onClientPerType_fromSuccessfulCommand_shouldPublishMetrics() throws Exception {
+        // Given
+        final Meter requestMeter = registerSpyMeter("client.myconsumer.command.requests");
+
+        reset(metricRegistry);
+
+        final Context context = DefaultContextBuilder.get();
+        context.setApplicationId("myconsumer");
+
+        // When
+        platform.getCommandGateway().sendCommand(new MyCustomDomainBox.MyCustomCommand(), context);
+
+        // Then
+        verifyMeterInteraction("client.myconsumer.command.requests", requestMeter);
+    }
+
+    @Test
+    public void checkMetricsPublication_onClientPerType_fromFailedCommand_shouldPublishMetrics() throws Exception {
+        // Given
+        final Meter requestsMeter = registerSpyMeter("client.myconsumer.command.requests");
+        final Meter errorsMeter = registerSpyMeter("client.myconsumer.command.errors");
+
+        reset(metricRegistry);
+
+        final Context context = DefaultContextBuilder.get();
+        context.setApplicationId("myconsumer");
+
+        // When
+        try {
+            platform.getCommandGateway().sendCommand(new MyCustomDomainBox.MyCustomCommand(false), context);
+        } catch (RuntimeException e) {
+            // nothing
+        }
+
+        // Then
+        verifyMeterInteraction("client.myconsumer.command.requests", requestsMeter);
+        verifyMeterInteraction("client.myconsumer.command.errors", errorsMeter);
+    }
+
+    @Test
     public void checkMetricsPublication_onOverall_fromSuccessfulQuery_shouldPublishMetrics() throws Exception {
         // Given
         final Timer globalInterceptorRequestsTimeTimer = registerSpyTimer(QueryHandlerInterceptor.GLOBAL_TIMER_INTERCEPTOR_REQUESTS_TIME_NAME);
@@ -284,6 +325,46 @@ public class PlatformBuilderITest {
         verifyTimerInteraction("mycustomdomain.query.requests-time", domainRequestsTimeTimer);
         verifyMeterInteraction("mycustomdomain.query.requests", domainRequestsMeter);
         verifyMeterInteraction("mycustomdomain.query.errors", domainErrorsMeter);
+    }
+
+    @Test
+    public void checkMetricsPublication_onClientPerType_fromSuccessfulQuery_shouldPublishMetrics() throws Exception {
+        // Given
+        final Meter requestMeter = registerSpyMeter("client.myconsumer.query.requests");
+
+        reset(metricRegistry);
+
+        final Context context = DefaultContextBuilder.get();
+        context.setApplicationId("myconsumer");
+
+        // When
+        platform.getQueryGateway().retrieve(new MyCustomDomainBox.MyCustomQuery(), context);
+
+        // Then
+        verifyMeterInteraction("client.myconsumer.query.requests", requestMeter);
+    }
+
+    @Test
+    public void checkMetricsPublication_onClientPerType_fromFailedQuery_shouldPublishMetrics() throws Exception {
+        // Given
+        final Meter requestsMeter = registerSpyMeter("client.myconsumer.query.requests");
+        final Meter errorsMeter = registerSpyMeter("client.myconsumer.query.errors");
+
+        reset(metricRegistry);
+
+        final Context context = DefaultContextBuilder.get();
+        context.setApplicationId("myconsumer");
+
+        // When
+        try {
+            platform.getQueryGateway().retrieve(new MyCustomDomainBox.MyCustomQuery(false), context);
+        } catch (RuntimeException e) {
+            // nothing
+        }
+
+        // Then
+        verifyMeterInteraction("client.myconsumer.query.requests", requestsMeter);
+        verifyMeterInteraction("client.myconsumer.query.errors", errorsMeter);
     }
 
     private Histogram registerSpyHisto(final String name) {
