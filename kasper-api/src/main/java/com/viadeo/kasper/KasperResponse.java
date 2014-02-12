@@ -14,7 +14,7 @@ import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class KasperResponse implements Serializable, Immutable {
+public class KasperResponse implements Serializable, Immutable {
 
     /**
      * Accepted values for command response statuses

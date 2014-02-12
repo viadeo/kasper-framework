@@ -11,6 +11,8 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.KasperResponse;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import org.slf4j.Logger;
@@ -23,7 +25,7 @@ import java.util.UUID;
 
 import static com.viadeo.kasper.KasperResponse.Status;
 
-public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
+public class QueryResponseDeserializer extends KasperResponseDeserializer<QueryResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class); 
 
     private final JavaType responseType;
@@ -104,45 +106,8 @@ public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
 
         if (root.has(ObjectMapperProvider.REASON) && root.get(ObjectMapperProvider.REASON).asBoolean()) {
 
-            // ID
-            final String id = root.get(ObjectMapperProvider.ID).asText();
-
-            // STATUS
-            Status status = Status.ERROR;
-            if (root.has(ObjectMapperProvider.STATUS)) {
-                try {
-                    status = Status.valueOf(root.get(ObjectMapperProvider.STATUS).asText());
-                } catch (final IllegalArgumentException e) {
-                    LOGGER.error("Unable to determine status", e);
-                }
-            }
-
-            // CODE
-            final Integer code = root.get(ObjectMapperProvider.CODE).asInt(CoreReasonCode.UNKNOWN_REASON.code());
-
-            // LABEL
-            final String label = root.get(ObjectMapperProvider.LABEL).asText();
-
-            // String CODE
-            final String strCode = CoreReasonCode.toString(code, label);
-
-            // MESSAGES
-            final List<String> messages = new ArrayList<String>();
-            for (final JsonNode node : root.get(ObjectMapperProvider.REASONS)) {
-                final String message = node.get(ObjectMapperProvider.MESSAGE).asText();
-                messages.add(message);
-            }
-
-            if (null != id) {
-                try {
-                    return new QueryResponse(status, new KasperReason(UUID.fromString(id), strCode, messages));
-                } catch (final IllegalArgumentException e) {
-                    LOGGER.warn("Error when deserializing reason id", e);
-                    return QueryResponse.error(new KasperReason(strCode, messages));
-                }
-            } else {
-                return new QueryResponse(status, new KasperReason(strCode, messages));
-            }
+            final KasperResponse kasperResponse = super.deserialize(root);
+            return new QueryResponse(kasperResponse);
 
         } else {
             // not very efficient but will be fine for now

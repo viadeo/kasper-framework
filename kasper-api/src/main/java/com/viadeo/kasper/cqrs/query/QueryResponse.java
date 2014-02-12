@@ -50,6 +50,16 @@ public class QueryResponse<RESULT extends QueryResult> extends KasperResponse {
 
     // ------------------------------------------------------------------------
 
+    public QueryResponse(final KasperResponse response) {
+        super(response);
+        this.result = null;
+    }
+
+    public QueryResponse(final KasperResponse response, final RESULT result) {
+        super(response);
+        this.result = checkNotNull(result);
+    }
+
     public QueryResponse(final QueryResponse<RESULT> response) {
         super(response);
         this.result = response.result;

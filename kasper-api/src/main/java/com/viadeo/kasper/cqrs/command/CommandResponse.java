@@ -77,6 +77,15 @@ public class CommandResponse extends KasperResponse {
 
     // ------------------------------------------------------------------------
 
+    public CommandResponse(final KasperResponse response, final String securityToken) {
+        super(response);
+        this.securityToken = checkNotNull(securityToken);
+    }
+
+    public CommandResponse(final KasperResponse response) {
+        super(response);
+    }
+
     public CommandResponse(final CommandResponse response) {
         super(response);
 
