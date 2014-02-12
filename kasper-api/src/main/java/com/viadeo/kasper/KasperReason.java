@@ -22,8 +22,11 @@ public final class KasperReason implements Serializable, Immutable {
     private static final long serialVersionUID = 7839349411722371919L;
 
     private final UUID id;
+
     private final String code;
     private final List<String> messages;
+
+    private CoreReasonCode reasonCode = null;
 
     // ------------------------------------------------------------------------
 
@@ -136,14 +139,17 @@ public final class KasperReason implements Serializable, Immutable {
 
     public KasperReason(final CoreReasonCode code, final String message) {
         this(checkNotNull(code).toString(), checkNotNull(message));
+        this.reasonCode = code;
     }
 
     public KasperReason(final CoreReasonCode code, final String...messages) {
         this(checkNotNull(code).toString(), checkNotNull(messages));
+        this.reasonCode = code;
     }
 
     public KasperReason(final CoreReasonCode code, final Collection<String> messages) {
         this(checkNotNull(code).toString(), checkNotNull(messages));
+        this.reasonCode = code;
     }
 
     // ------------------------------------------------------------------------
@@ -154,6 +160,22 @@ public final class KasperReason implements Serializable, Immutable {
 
     public String getCode() {
         return code;
+    }
+
+    public Integer getReasonCode() {
+        if (null != this.reasonCode) {
+            return this.reasonCode.code();
+        } else {
+            return CoreReasonCode.UNKNOWN_REASON.code();
+        }
+    }
+
+    public String getLabel() {
+        if (null != reasonCode) {
+            return reasonCode.name();
+        } else {
+            return code;
+        }
     }
 
     public Collection<String> getMessages() {

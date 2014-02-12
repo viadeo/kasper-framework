@@ -9,6 +9,7 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperRelationID;
@@ -21,14 +22,47 @@ import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.impl.DefaultKasperRelationId;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(value = Parameterized.class)
 public class SerDeserTests {
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        Object[][] data = new Object[][] {
+                { true },
+                { false }
+        };
+        return Arrays.asList(data);
+    }
+
+    // ------------------------------------------------------------------------
+
+    private final Boolean useNewSerialization;
+    private final ObjectMapperProvider omProvider;
+
+    public SerDeserTests(final Boolean useNewSerialization) {
+        omProvider = new ObjectMapperProvider();
+
+        if ( useNewSerialization) {
+           omProvider.mapper().registerModule(
+               new SimpleModule()
+                   .addSerializer(CommandResponse.class, new CommandResponseNewSerializer())
+                   .addSerializer(QueryResponse.class, new QueryResponseNewSerializer())
+           );
+        }
+
+        this.useNewSerialization = useNewSerialization;
+    }
 
     // -- test beans ----------------------------------------------------------
 
@@ -84,21 +118,21 @@ public class SerDeserTests {
     // ------------------------------------------------------------------------
 
     private <T> T serDeserTest(final T object, Class<T> clazz) throws IOException {
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(object);
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
+        final String json = omProvider.objectWriter().writeValueAsString(object);
+        final ObjectReader objectReader = omProvider.objectReader();
         final T actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), clazz);
         return actualResponse;
     }
 
     private <T> String deserSerTest(final String json, Class<T> clazz) throws IOException {
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
+        final ObjectReader objectReader = omProvider.objectReader();
         final T actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), clazz);
-        final String new_json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(actualResponse);
+        final String new_json = omProvider.objectWriter().writeValueAsString(actualResponse);
         return new_json;
     }
 
     private <T> T deserTest(final String json, Class<T> clazz) throws IOException {
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
+        final ObjectReader objectReader = omProvider.objectReader();
         final T actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), clazz);
         return actualResponse;
     }
@@ -308,12 +342,14 @@ public class SerDeserTests {
 
     @Test
     public void test_query_deserialize_old() throws IOException {
-        // Given
-        // When
-        final String result_json = deserSerTest(QUERY_RESPONSE_OLD, QueryResponse.class);
+        if ( ! useNewSerialization) {
+            // Given
+            // When
+            final String result_json = deserSerTest(QUERY_RESPONSE_OLD, QueryResponse.class);
 
-        // Then
-        assertEquals(QUERY_RESPONSE_OLD, result_json);
+            // Then
+            assertEquals(QUERY_RESPONSE_OLD, result_json);
+        }
     }
 
     @Test
@@ -376,7 +412,7 @@ public class SerDeserTests {
     @Test
     public void test_command_deserialize_normal() throws IOException {
         // Given
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
+        final String json = omProvider.objectWriter().writeValueAsString(
                 CommandResponse.ok()
         );
 
@@ -392,12 +428,14 @@ public class SerDeserTests {
 
     @Test
     public void test_command_deserialize_old() throws IOException {
-        // Given
-        // When
-        final String result_json = deserSerTest(COMMAND_RESPONSE_OLD, CommandResponse.class);
+        if ( ! useNewSerialization) {
+            // Given
+            // When
+            final String result_json = deserSerTest(COMMAND_RESPONSE_OLD, CommandResponse.class);
 
-        // Then
-        assertEquals(COMMAND_RESPONSE_OLD, result_json);
+            // Then
+            assertEquals(COMMAND_RESPONSE_OLD, result_json);
+        }
     }
 
     @Test

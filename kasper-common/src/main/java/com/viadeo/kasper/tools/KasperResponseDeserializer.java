@@ -31,7 +31,12 @@ public abstract class KasperResponseDeserializer<R extends KasperResponse> exten
             throws IOException {
 
         // ID
-        final String id = root.get(ObjectMapperProvider.ID).asText();
+        final String id;
+        if (root.has(ObjectMapperProvider.ID)) {
+            id = root.get(ObjectMapperProvider.ID).asText();
+        } else {
+            id = null;
+        }
 
         // STATUS
         Status status = Status.ERROR;
@@ -44,10 +49,20 @@ public abstract class KasperResponseDeserializer<R extends KasperResponse> exten
         }
 
         // CODE
-        final Integer code = root.get(ObjectMapperProvider.CODE).asInt(CoreReasonCode.UNKNOWN_REASON.code());
+        final Integer code;
+        if (root.has(ObjectMapperProvider.CODE)) {
+            code = root.get(ObjectMapperProvider.CODE).asInt(CoreReasonCode.UNKNOWN_REASON.code());
+        } else {
+            code = 0;
+        }
 
         // LABEL
-        final String label = root.get(ObjectMapperProvider.LABEL).asText();
+        final String label;
+        if (root.has(ObjectMapperProvider.LABEL)) {
+            label = root.get(ObjectMapperProvider.LABEL).asText();
+        } else {
+            label = "";
+        }
 
         // String CODE
         final String strCode = CoreReasonCode.toString(code, label);

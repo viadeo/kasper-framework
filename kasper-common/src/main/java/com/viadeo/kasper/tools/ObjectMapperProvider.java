@@ -43,7 +43,7 @@ public final class ObjectMapperProvider {
 
     // ------------------------------------------------------------------------
 
-    private ObjectMapperProvider() {
+    public ObjectMapperProvider() {
         mapper = new ObjectMapper();
 
         /* Generic features */

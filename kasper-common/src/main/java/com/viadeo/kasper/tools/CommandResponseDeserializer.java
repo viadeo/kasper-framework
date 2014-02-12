@@ -54,8 +54,6 @@ public final class CommandResponseDeserializer extends KasperResponseDeserialize
     public CommandResponse deserialize_old(final ObjectNode root) throws IOException {
         Status status = Status.ERROR;
 
-        // TODO: add Security Token
-
         if (root.has(ObjectMapperProvider.STATUS)) {
             try {
                 status = Status.valueOf(root.get(ObjectMapperProvider.STATUS).asText());
