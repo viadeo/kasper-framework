@@ -41,16 +41,10 @@ public class PlatformBuilderITest {
     }
 
     @Test
-    public void checkMetricPublication_fromSuccessfulCommand_shouldPublishMetrics() throws Exception {
+    public void checkMetricsPublication_onOverall_fromSuccessfulCommand_shouldPublishMetrics() throws Exception {
         // Given
         final Meter globalRequestsNameMeter = registerSpyMeter(CommandHandler.GLOBAL_METER_REQUESTS_NAME);
         final Timer globalRequestsNameTimer = registerSpyTimer(CommandHandler.GLOBAL_TIMER_REQUESTS_TIME_NAME);
-
-        final Meter requestsNameMeter = registerSpyMeter("mycustomdomain.command.mycustomcommand.requests");
-        final Timer requestsNameTimer = registerSpyTimer("mycustomdomain.command.mycustomcommand.requests-time");
-
-        final Meter domainRequestsNameMeter = registerSpyMeter("mycustomdomain.command.requests");
-        final Timer domainRequestsNameTimer = registerSpyTimer("mycustomdomain.command.requests-time");
 
         reset(metricRegistry);
 
@@ -60,30 +54,14 @@ public class PlatformBuilderITest {
         // Then
         verifyTimerInteraction(CommandHandler.GLOBAL_TIMER_REQUESTS_TIME_NAME, globalRequestsNameTimer);
         verifyMeterInteraction(CommandHandler.GLOBAL_METER_REQUESTS_NAME, globalRequestsNameMeter);
-
-        verifyTimerInteraction("mycustomdomain.command.mycustomcommand.requests-time", requestsNameTimer);
-        verifyMeterInteraction("mycustomdomain.command.mycustomcommand.requests", requestsNameMeter);
-
-        verifyTimerInteraction("mycustomdomain.command.requests-time", domainRequestsNameTimer);
-        verifyMeterInteraction("mycustomdomain.command.requests", domainRequestsNameMeter);
-
-        verifyNoMoreInteractions(metricRegistry);
     }
 
     @Test
-    public void checkMetricPublication_fromFailedCommand_shouldPublishMetrics() throws Exception {
+    public void checkMetricsPublication_onOverall_fromFailedCommand_shouldPublishMetrics() throws Exception {
         // Given
-        final Timer globalRequestsNameTimer = registerSpyTimer(CommandHandler.GLOBAL_TIMER_REQUESTS_TIME_NAME);
         final Meter globalRequestsNameMeter = registerSpyMeter(CommandHandler.GLOBAL_METER_REQUESTS_NAME);
+        final Timer globalRequestsNameTimer = registerSpyTimer(CommandHandler.GLOBAL_TIMER_REQUESTS_TIME_NAME);
         final Meter globalErrorsNameMeter = registerSpyMeter(CommandHandler.GLOBAL_METER_ERRORS_NAME);
-
-        final Timer requestsNameTimer = registerSpyTimer("mycustomdomain.command.mycustomcommand.requests-time");
-        final Meter requestsNameMeter = registerSpyMeter("mycustomdomain.command.mycustomcommand.requests");
-        final Meter errorsNameMeter = registerSpyMeter("mycustomdomain.command.mycustomcommand.errors");
-
-        final Timer domainRequestsNameTimer = registerSpyTimer("mycustomdomain.command.requests-time");
-        final Meter domainRequestsNameMeter = registerSpyMeter("mycustomdomain.command.requests");
-        final Meter domainErrorsNameTimer = registerSpyMeter("mycustomdomain.command.errors");
 
         reset(metricRegistry);
 
@@ -98,33 +76,92 @@ public class PlatformBuilderITest {
         verifyTimerInteraction(CommandHandler.GLOBAL_TIMER_REQUESTS_TIME_NAME, globalRequestsNameTimer);
         verifyMeterInteraction(CommandHandler.GLOBAL_METER_REQUESTS_NAME, globalRequestsNameMeter);
         verifyMeterInteraction(CommandHandler.GLOBAL_METER_ERRORS_NAME, globalErrorsNameMeter);
-
-        verifyTimerInteraction("mycustomdomain.command.mycustomcommand.requests-time", requestsNameTimer);
-        verifyMeterInteraction("mycustomdomain.command.mycustomcommand.requests", requestsNameMeter);
-        verifyMeterInteraction("mycustomdomain.command.mycustomcommand.errors", errorsNameMeter);
-
-        verifyTimerInteraction("mycustomdomain.command.requests-time", domainRequestsNameTimer);
-        verifyMeterInteraction("mycustomdomain.command.requests", domainRequestsNameMeter);
-        verifyMeterInteraction("mycustomdomain.command.errors", domainErrorsNameTimer);
-
-        verifyNoMoreInteractions(metricRegistry);
     }
 
     @Test
-    public void checkMetricPublication_fromSuccessfulQuery_shouldPublishMetrics() throws Exception {
+    public void checkMetricsPublication_onDomainPerTypeAndComponent_fromSuccessfulCommand_shouldPublishMetrics() throws Exception {
+        // Given
+        final Meter requestsNameMeter = registerSpyMeter("mycustomdomain.command.mycustomcommand.requests");
+        final Timer requestsNameTimer = registerSpyTimer("mycustomdomain.command.mycustomcommand.requests-time");
+
+        reset(metricRegistry);
+
+        // When
+        platform.getCommandGateway().sendCommand(new MyCustomDomainBox.MyCustomCommand(), DefaultContextBuilder.get());
+
+        // Then
+        verifyTimerInteraction("mycustomdomain.command.mycustomcommand.requests-time", requestsNameTimer);
+        verifyMeterInteraction("mycustomdomain.command.mycustomcommand.requests", requestsNameMeter);
+
+    }
+
+    @Test
+    public void checkMetricsPublication_onDomainPerTypeAndComponent_fromFailedCommand_shouldPublishMetrics() throws Exception {
+        // Given
+        final Timer requestsNameTimer = registerSpyTimer("mycustomdomain.command.mycustomcommand.requests-time");
+        final Meter requestsNameMeter = registerSpyMeter("mycustomdomain.command.mycustomcommand.requests");
+        final Meter errorsNameMeter = registerSpyMeter("mycustomdomain.command.mycustomcommand.errors");
+
+        reset(metricRegistry);
+
+        // When
+        try {
+            platform.getCommandGateway().sendCommand(new MyCustomDomainBox.MyCustomCommand(false), DefaultContextBuilder.get());
+        } catch (RuntimeException e) {
+            // nothing
+        }
+
+        // Then
+        verifyTimerInteraction("mycustomdomain.command.mycustomcommand.requests-time", requestsNameTimer);
+        verifyMeterInteraction("mycustomdomain.command.mycustomcommand.requests", requestsNameMeter);
+        verifyMeterInteraction("mycustomdomain.command.mycustomcommand.errors", errorsNameMeter);
+    }
+
+    @Test
+    public void checkMetricsPublication_onDomainPerType_fromSuccessfulCommand_shouldPublishMetrics() throws Exception {
+        // Given
+        final Meter domainRequestsNameMeter = registerSpyMeter("mycustomdomain.command.requests");
+        final Timer domainRequestsNameTimer = registerSpyTimer("mycustomdomain.command.requests-time");
+
+        reset(metricRegistry);
+
+        // When
+        platform.getCommandGateway().sendCommand(new MyCustomDomainBox.MyCustomCommand(), DefaultContextBuilder.get());
+
+        // Then
+        verifyTimerInteraction("mycustomdomain.command.requests-time", domainRequestsNameTimer);
+        verifyMeterInteraction("mycustomdomain.command.requests", domainRequestsNameMeter);
+    }
+
+    @Test
+    public void checkMetricsPublication_onDomainPerType_fromFailedCommand_shouldPublishMetrics() throws Exception {
+        // Given
+        final Timer domainRequestsNameTimer = registerSpyTimer("mycustomdomain.command.requests-time");
+        final Meter domainRequestsNameMeter = registerSpyMeter("mycustomdomain.command.requests");
+        final Meter domainErrorsNameTimer = registerSpyMeter("mycustomdomain.command.errors");
+
+        reset(metricRegistry);
+
+        // When
+        try {
+            platform.getCommandGateway().sendCommand(new MyCustomDomainBox.MyCustomCommand(false), DefaultContextBuilder.get());
+        } catch (RuntimeException e) {
+            // nothing
+        }
+
+        // Then
+        verifyTimerInteraction("mycustomdomain.command.requests-time", domainRequestsNameTimer);
+        verifyMeterInteraction("mycustomdomain.command.requests", domainRequestsNameMeter);
+        verifyMeterInteraction("mycustomdomain.command.errors", domainErrorsNameTimer);
+    }
+
+    @Test
+    public void checkMetricsPublication_onOverall_fromSuccessfulQuery_shouldPublishMetrics() throws Exception {
         // Given
         final Timer globalInterceptorRequestsTimeTimer = registerSpyTimer(QueryHandlerInterceptor.GLOBAL_TIMER_INTERCEPTOR_REQUESTS_TIME_NAME);
         final Timer globalQGRequestsTimeTimer = registerSpyTimer(KasperQueryGateway.GLOBAL_TIMER_REQUESTS_TIME_NAME);
         final Histogram globalQGRequestsTimesHisto = registerSpyHisto(KasperQueryGateway.GLOBAL_HISTO_REQUESTS_TIMES_NAME);
         final Meter globalRequestsMeter = registerSpyMeter(KasperQueryGateway.GLOBAL_METER_REQUESTS_NAME);
-
-        final Timer interceptorRequestsTimeTimer = registerSpyTimer("mycustomdomain.query.mycustomquery.interceptor-requests-time");
-        final Timer requestsTimeTimer = registerSpyTimer("mycustomdomain.query.mycustomquery.requests-time");
-        final Histogram requestsTimesHisto = registerSpyHisto("mycustomdomain.query.mycustomquery.requests-times");
-        final Meter requestsMeter = registerSpyMeter("mycustomdomain.query.mycustomquery.requests");
-
-        final Timer domainRequestsTimeTimer = registerSpyTimer("mycustomdomain.query.requests-time");
-        final Meter domainRequestsMeter = registerSpyMeter("mycustomdomain.query.requests");
 
         reset(metricRegistry);
 
@@ -136,36 +173,16 @@ public class PlatformBuilderITest {
         verifyTimerInteraction(KasperQueryGateway.GLOBAL_TIMER_REQUESTS_TIME_NAME, globalQGRequestsTimeTimer);
         verifyHistogramInteraction(KasperQueryGateway.GLOBAL_HISTO_REQUESTS_TIMES_NAME, globalQGRequestsTimesHisto);
         verifyMeterInteraction(KasperQueryGateway.GLOBAL_METER_REQUESTS_NAME, globalRequestsMeter);
-
-        verifyTimerInteraction("mycustomdomain.query.mycustomquery.interceptor-requests-time", interceptorRequestsTimeTimer);
-        verifyTimerInteraction("mycustomdomain.query.mycustomquery.requests-time", requestsTimeTimer);
-        verifyHistogramInteraction("mycustomdomain.query.mycustomquery.requests-times", requestsTimesHisto);
-        verifyMeterInteraction("mycustomdomain.query.mycustomquery.requests", requestsMeter);
-
-        verifyTimerInteraction("mycustomdomain.query.requests-time", domainRequestsTimeTimer);
-        verifyMeterInteraction("mycustomdomain.query.requests", domainRequestsMeter);
-
-        verifyNoMoreInteractions(metricRegistry);
     }
 
     @Test
-    public void checkMetricPublication_fromFailedQuery_shouldPublishMetrics() throws Exception {
+    public void checkMetricsPublication_onOverall_fromFailedQuery_shouldPublishMetrics() throws Exception {
         // Given
         final Timer globalInterceptorRequestsTimeTimer = registerSpyTimer(QueryHandlerInterceptor.GLOBAL_TIMER_INTERCEPTOR_REQUESTS_TIME_NAME);
         final Timer globalQGRequestsTimeTimer = registerSpyTimer(KasperQueryGateway.GLOBAL_TIMER_REQUESTS_TIME_NAME);
         final Histogram globalQGRequestsTimesHisto = registerSpyHisto(KasperQueryGateway.GLOBAL_HISTO_REQUESTS_TIMES_NAME);
         final Meter globalRequestsMeter = registerSpyMeter(KasperQueryGateway.GLOBAL_METER_REQUESTS_NAME);
         final Meter globalErrorsMeter = registerSpyMeter(KasperQueryGateway.GLOBAL_METER_ERRORS_NAME);
-
-        final Timer interceptorRequestsTimeTimer = registerSpyTimer("mycustomdomain.query.mycustomquery.interceptor-requests-time");
-        final Timer requestsTimeTimer = registerSpyTimer("mycustomdomain.query.mycustomquery.requests-time");
-        final Histogram requestsTimesHisto = registerSpyHisto("mycustomdomain.query.mycustomquery.requests-times");
-        final Meter requestsMeter = registerSpyMeter("mycustomdomain.query.mycustomquery.requests");
-        final Meter errorsMeter = registerSpyMeter("mycustomdomain.query.mycustomquery.errors");
-
-        final Timer domainRequestsTimeTimer = registerSpyTimer("mycustomdomain.query.requests-time");
-        final Meter domainRequestsMeter = registerSpyMeter("mycustomdomain.query.requests");
-        final Meter domainErrorsMeter = registerSpyMeter("mycustomdomain.query.errors");
 
         reset(metricRegistry);
 
@@ -182,18 +199,91 @@ public class PlatformBuilderITest {
         verifyHistogramInteraction(KasperQueryGateway.GLOBAL_HISTO_REQUESTS_TIMES_NAME, globalQGRequestsTimesHisto);
         verifyMeterInteraction(KasperQueryGateway.GLOBAL_METER_REQUESTS_NAME, globalRequestsMeter);
         verifyMeterInteraction(KasperQueryGateway.GLOBAL_METER_ERRORS_NAME, globalErrorsMeter);
+    }
 
+    @Test
+    public void checkMetricsPublication_onDomainPerTypeAndComponent_fromSuccessfulQuery_shouldPublishMetrics() throws Exception {
+        // Given
+        final Timer interceptorRequestsTimeTimer = registerSpyTimer("mycustomdomain.query.mycustomquery.interceptor-requests-time");
+        final Timer requestsTimeTimer = registerSpyTimer("mycustomdomain.query.mycustomquery.requests-time");
+        final Histogram requestsTimesHisto = registerSpyHisto("mycustomdomain.query.mycustomquery.requests-times");
+        final Meter requestsMeter = registerSpyMeter("mycustomdomain.query.mycustomquery.requests");
+
+        reset(metricRegistry);
+
+        // When
+        platform.getQueryGateway().retrieve(new MyCustomDomainBox.MyCustomQuery(), DefaultContextBuilder.get());
+
+        // Then
+        verifyTimerInteraction("mycustomdomain.query.mycustomquery.interceptor-requests-time", interceptorRequestsTimeTimer);
+        verifyTimerInteraction("mycustomdomain.query.mycustomquery.requests-time", requestsTimeTimer);
+        verifyHistogramInteraction("mycustomdomain.query.mycustomquery.requests-times", requestsTimesHisto);
+        verifyMeterInteraction("mycustomdomain.query.mycustomquery.requests", requestsMeter);
+
+    }
+
+    @Test
+    public void checkMetricsPublication_onDomainPerTypeAndComponent_fromFailedQuery_shouldPublishMetrics() throws Exception {
+        // Given
+        final Timer interceptorRequestsTimeTimer = registerSpyTimer("mycustomdomain.query.mycustomquery.interceptor-requests-time");
+        final Timer requestsTimeTimer = registerSpyTimer("mycustomdomain.query.mycustomquery.requests-time");
+        final Histogram requestsTimesHisto = registerSpyHisto("mycustomdomain.query.mycustomquery.requests-times");
+        final Meter requestsMeter = registerSpyMeter("mycustomdomain.query.mycustomquery.requests");
+        final Meter errorsMeter = registerSpyMeter("mycustomdomain.query.mycustomquery.errors");
+
+        reset(metricRegistry);
+
+        // When
+        try {
+            platform.getQueryGateway().retrieve(new MyCustomDomainBox.MyCustomQuery(false), DefaultContextBuilder.get());
+        } catch (RuntimeException e) {
+            // nothing
+        }
+
+        // Then
         verifyTimerInteraction("mycustomdomain.query.mycustomquery.interceptor-requests-time", interceptorRequestsTimeTimer);
         verifyTimerInteraction("mycustomdomain.query.mycustomquery.requests-time", requestsTimeTimer);
         verifyHistogramInteraction("mycustomdomain.query.mycustomquery.requests-times", requestsTimesHisto);
         verifyMeterInteraction("mycustomdomain.query.mycustomquery.requests", requestsMeter);
         verifyMeterInteraction("mycustomdomain.query.mycustomquery.errors", errorsMeter);
+    }
 
+    @Test
+    public void checkMetricsPublication_onDomainPerType_fromSuccessfulQuery_shouldPublishMetrics() throws Exception {
+        // Given
+        final Timer domainRequestsTimeTimer = registerSpyTimer("mycustomdomain.query.requests-time");
+        final Meter domainRequestsMeter = registerSpyMeter("mycustomdomain.query.requests");
+
+        reset(metricRegistry);
+
+        // When
+        platform.getQueryGateway().retrieve(new MyCustomDomainBox.MyCustomQuery(), DefaultContextBuilder.get());
+
+        // Then
+        verifyTimerInteraction("mycustomdomain.query.requests-time", domainRequestsTimeTimer);
+        verifyMeterInteraction("mycustomdomain.query.requests", domainRequestsMeter);
+    }
+
+    @Test
+    public void checkMetricsPublication_onDomainPerType_fromFailedQuery_shouldPublishMetrics() throws Exception {
+        // Given
+        final Timer domainRequestsTimeTimer = registerSpyTimer("mycustomdomain.query.requests-time");
+        final Meter domainRequestsMeter = registerSpyMeter("mycustomdomain.query.requests");
+        final Meter domainErrorsMeter = registerSpyMeter("mycustomdomain.query.errors");
+
+        reset(metricRegistry);
+
+        // When
+        try {
+            platform.getQueryGateway().retrieve(new MyCustomDomainBox.MyCustomQuery(false), DefaultContextBuilder.get());
+        } catch (RuntimeException e) {
+            // nothing
+        }
+
+        // Then
         verifyTimerInteraction("mycustomdomain.query.requests-time", domainRequestsTimeTimer);
         verifyMeterInteraction("mycustomdomain.query.requests", domainRequestsMeter);
         verifyMeterInteraction("mycustomdomain.query.errors", domainErrorsMeter);
-
-        verifyNoMoreInteractions(metricRegistry);
     }
 
     private Histogram registerSpyHisto(final String name) {
