@@ -73,7 +73,7 @@ public class QueryFactoryBuilder {
                 .getSupertype(BeanAdapter.class)
                 .resolveType(BeanAdapter.class.getTypeParameters()[0]);
 
-        beanAdapters.putIfAbsent(adapterForType.getType(), beanAdapter);
+        beanAdapters.putIfAbsent(adapterForType.getRawType(), beanAdapter);
 
         return this;
 	}
