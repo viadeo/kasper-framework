@@ -15,6 +15,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exposition.alias.AliasRegistry;
@@ -168,6 +169,8 @@ public class HttpEventExposer extends HttpExposer {
         /* Create a request correlation id */
         final UUID kasperCorrelationUUID = UUID.randomUUID();
         resp.addHeader("kasperCorrelationId", kasperCorrelationUUID.toString());
+
+        resp.addHeader(HttpContextHeaders.HEADER_SERVER_NAME, serverName());
 
         /* Log starting request */
         REQUEST_LOGGER.info("Processing HTTP Event '{}' '{}'", req.getMethod(), getFullRequestURI(req));

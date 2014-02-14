@@ -271,7 +271,7 @@ The following HTTP headers can be set to set the queries and commands context :
 * X-KASPER-FUNNEL-NAME (String) : the funnel name declared by the application during this request
 * X-KASPER-FUNNEL-VERSION (String) : the funnel version (declination) declared by the application during this request
 * X-Forwarded-For (String) : the client REQUEST ip address
-
+* X-KASPER-SERVER-NAME (String) : the fully qualified domain name of the answering server
 
 **Note:** the security token header can be sent back at any time by the platform in the HTTP response, the client has to detect this header in order to
 set back this information in its context/session.

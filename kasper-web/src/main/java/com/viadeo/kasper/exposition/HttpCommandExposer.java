@@ -152,6 +152,8 @@ public class HttpCommandExposer extends HttpExposer {
         final UUID kasperCorrelationUUID = UUID.randomUUID();
         resp.addHeader("kasperCorrelationId", kasperCorrelationUUID.toString());
 
+        resp.addHeader(HttpContextHeaders.HEADER_SERVER_NAME, serverName());
+
         /* extract context from request */
         final Context context = contextDeserializer.deserialize(req,kasperCorrelationUUID);
         MDC.setContextMap(context.asMap());
