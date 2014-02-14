@@ -106,6 +106,10 @@ public abstract class CommandHandler<C extends Command>
                 }
             }
 
+            if ( ! ret.isOK()) {
+                isError = true;
+            }
+
         } catch (final ConflictingAggregateVersionException e) {
             LOGGER.error("Error command [{}]", commandClass, e);
             isError = true;

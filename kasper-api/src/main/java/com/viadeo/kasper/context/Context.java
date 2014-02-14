@@ -43,6 +43,8 @@ public interface Context extends Serializable  {
     String DEFAULT_FUNNEL_NAME = "";
     String DEFAULT_FUNNEL_VERSION = "";
 
+    String DEFAULT_IP_ADDRESS = "";
+
     // ------------------------------------------------------------------------
 
 	/**
@@ -173,6 +175,20 @@ public interface Context extends Serializable  {
      * @return the current funnel version
      */
     String getFunnelVersion();
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Set the ip address of the request
+     *
+     * @param ipAddress the correlation id
+     */
+    Context setIpAddress(String ipAddress);
+
+    /**
+     * @return the application request ip address
+     */
+    String getIpAddress();
 
     // ------------------------------------------------------------------------
 

@@ -38,6 +38,7 @@ public class HttpContextDeserializer {
         final String headerSecurityToken = req.getHeader(HEADER_SECURITY_TOKEN);
         final String headerFunnelName = req.getHeader(HEADER_FUNNEL_NAME);
         final String headerFunnelVersion = req.getHeader(HEADER_FUNNEL_VERSION);
+        final String headerIpAddress = req.getHeader(HEADER_REQUEST_IP_ADDRESS);
 
         // --------------------------------------------------------------------
 
@@ -85,6 +86,10 @@ public class HttpContextDeserializer {
 
         if (null != headerFunnelVersion) {
             context.setFunnelVersion(headerFunnelVersion);
+        }
+
+        if (null != headerIpAddress) {
+            context.setIpAddress(headerIpAddress);
         }
 
         return context;

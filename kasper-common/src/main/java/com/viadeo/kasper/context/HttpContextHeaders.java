@@ -16,6 +16,8 @@ public final class HttpContextHeaders {
 
     public static final String HEADER_USER_ID = "X-KASPER-UID";
 
+    public static final String HEADER_SERVER_NAME = "X-KASPER-SERVER-NAME";
+
     public static final String HEADER_USER_LANG = "X-KASPER-LANG";
     public static final String HEADER_USER_COUNTRY = "X-KASPER-COUNTRY";
 
@@ -24,5 +26,7 @@ public final class HttpContextHeaders {
 
     public static final String HEADER_FUNNEL_NAME = "X-KASPER-FUNNEL-NAME";
     public static final String HEADER_FUNNEL_VERSION= "X-KASPER-FUNNEL-VERSION";
+
+    public static final String HEADER_REQUEST_IP_ADDRESS = "X-Forwarded-For";
 
 }

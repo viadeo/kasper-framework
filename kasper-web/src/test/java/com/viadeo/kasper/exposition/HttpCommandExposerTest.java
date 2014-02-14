@@ -13,6 +13,7 @@ import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
@@ -36,15 +37,14 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
 
 public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
@@ -294,6 +294,25 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
         // Then
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testXKasperServerNameInHeader() throws MalformedURLException, URISyntaxException, UnknownHostException {
+        // Given
+        final String expectedServerName = InetAddress.getLocalHost().getCanonicalHostName();
+        final String commandPath = NEED_VALIDATION_2_ALIAS;
+        final NeedValidationWithAlias needValidationWithAlias = new NeedValidationWithAlias();
+
+        // When
+        final ClientResponse response = httpClient()
+                .resource(new URL(new URL(url()), commandPath).toURI())
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .put(ClientResponse.class, needValidationWithAlias);
+
+        // Then
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        assertEquals(expectedServerName, response.getHeaders().getFirst(HttpContextHeaders.HEADER_SERVER_NAME));
     }
 
     // ------------------------------------------------------------------------
