@@ -40,8 +40,7 @@ public class KasperResponse implements Serializable, Immutable {
     }
 
     public KasperResponse(final KasperResponse response) {
-        this.status = response.status;
-        this.reason = response.reason;
+        this(response.status, response.reason);
     }
 
     public KasperResponse(final Status status, final KasperReason reason) {
@@ -98,7 +97,7 @@ public class KasperResponse implements Serializable, Immutable {
     }
 
     public HTTPKasperResponse asHttp(){
-        if (HTTPKasperResponse.class.isAssignableFrom(this.getClass())) {
+        if (TransportMode.HTTP.equals(getTransportMode()) {
             return (HTTPKasperResponse) this;
         }
         throw new KasperException("Not an HTTP response");

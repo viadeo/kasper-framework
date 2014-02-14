@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper;
 
+import static com.google.common.base.Preconditions.checkState;
+
 public enum CoreReasonCode {
 
     /* Unknown reason */
@@ -27,6 +29,8 @@ public enum CoreReasonCode {
     INTERNAL_COMPONENT_TIMEOUT(3001),
     INTERNAL_COMPONENT_ERROR(3002);
 
+    private static final String CODE_FORMAT = "%04d";
+
     // ------------------------------------------------------------------------
 
     private int code;
@@ -35,6 +39,7 @@ public enum CoreReasonCode {
     // ------------------------------------------------------------------------
 
     CoreReasonCode(final int code) {
+        checkState(code < 10000, "Code must be high than 9999");
         this.code = code;
         this.reason = new KasperReason(String.valueOf(this.code), this.name());
     }
@@ -66,7 +71,7 @@ public enum CoreReasonCode {
 
     public static String toString(final Integer code, final String label) {
          return new StringBuffer()
-                    .append(String.format("[%04d]", code))
+                    .append(String.format("["+CODE_FORMAT+"]", code))
                     .append(" - ")
                     .append(label)
                 .toString();
