@@ -34,7 +34,6 @@ public class KasperQueryGateway implements QueryGateway {
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperQueryGateway.class);
 
     private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryGateway.class, "requests-time");
-    private static final String GLOBAL_HISTO_REQUESTS_TIMES_NAME = name(QueryGateway.class, "requests-times");
     private static final String GLOBAL_METER_REQUESTS_NAME = name(QueryGateway.class, "requests");
     private static final String GLOBAL_METER_ERRORS_NAME = name(QueryGateway.class, "errors");
 
@@ -102,10 +101,8 @@ public class KasperQueryGateway implements QueryGateway {
         /* Monitor the request calls */
         timer.stop();
         final long time = classTimer.stop();
-        getMetricRegistry().histogram(GLOBAL_HISTO_REQUESTS_TIMES_NAME).update(time);
         getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
 
-        getMetricRegistry().histogram(name(queryClass, "requests-times")).update(time);
         getMetricRegistry().meter(name(queryClass, "requests")).mark();
 
         if (null != exception) {
