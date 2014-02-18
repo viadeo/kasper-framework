@@ -97,7 +97,7 @@ public class KasperResponse implements Serializable, Immutable {
     }
 
     public HTTPKasperResponse asHttp(){
-        if (TransportMode.HTTP.equals(getTransportMode()) {
+        if (TransportMode.HTTP.equals(getTransportMode())) {
             return (HTTPKasperResponse) this;
         }
         throw new KasperException("Not an HTTP response");
