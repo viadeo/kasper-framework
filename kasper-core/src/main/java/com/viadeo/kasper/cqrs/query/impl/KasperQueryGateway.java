@@ -25,6 +25,7 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.nameForDomain;
 
 /**
  * The Kasper gateway base implementation
@@ -71,6 +72,7 @@ public class KasperQueryGateway implements QueryGateway {
         /* Start request timer */
         final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
         final Timer.Context timer = getMetricRegistry().timer(name(queryClass, "requests-time")).time();
+        final Timer.Context timerDomain = getMetricRegistry().timer(name(queryClass, "requests-time")).time();
 
         /* Sets current thread context */
         CurrentContext.set(context);
@@ -82,6 +84,7 @@ public class KasperQueryGateway implements QueryGateway {
 
         if (!optionalRequestChain.isPresent()) {
             timer.close();
+            timerDomain.close();
             classTimer.close();
             throw new KasperException("Unable to find the handler implementing query class " + queryClass);
         }
@@ -100,14 +103,18 @@ public class KasperQueryGateway implements QueryGateway {
 
         /* Monitor the request calls */
         timer.stop();
+        timerDomain.stop();
+
         final long time = classTimer.stop();
         getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
 
         getMetricRegistry().meter(name(queryClass, "requests")).mark();
+        getMetricRegistry().meter(nameForDomain(queryClass, "requests")).mark();
 
         if (null != exception) {
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
             getMetricRegistry().meter(name(queryClass, "errors")).mark();
+            getMetricRegistry().meter(nameForDomain(queryClass, "errors")).mark();
         }
 
         if (null != exception) {

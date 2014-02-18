@@ -19,19 +19,21 @@ import org.axonframework.unitofwork.DefaultUnitOfWork;
 import org.axonframework.unitofwork.TransactionManager;
 import org.joda.time.DateTime;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.nameForDomain;
 
 /**
  * The Kasper unit of work
  */
 public class KasperUnitOfWork extends DefaultUnitOfWork {
 
-    private final Map<EventBus, List<EventMessage<?>>> eventsToBePublished = new HashMap<EventBus, List<EventMessage<?>>>();
+    private final Map<EventBus, List<EventMessage<?>>> eventsToBePublished = new HashMap<>();
+
+    private static final String GLOBAL_METER_EVENTS_NAME = name(KasperUnitOfWork.class, "committed");
 
     // ------------------------------------------------------------------------
 
@@ -127,6 +129,34 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
         }
 
         super.publishEvents();
+    }
+
+    @Override
+    protected void notifyListenersAfterCommit() {
+
+        super.notifyListenersAfterCommit();
+
+        /*
+         * Publish metrics
+         */
+        int nbCommittedEvents = 0;
+        while ( ! eventsToBePublished.isEmpty()) {
+            final Iterator<Map.Entry<EventBus, List<EventMessage<?>>>> iterator = eventsToBePublished.entrySet().iterator();
+            while (iterator.hasNext()) {
+                final Map.Entry<EventBus, List<EventMessage<?>>> entry = iterator.next();
+                final List<EventMessage<?>> messageList = entry.getValue();
+                for (final EventMessage message : messageList) {
+                    final Event event = (Event) message.getPayload();
+                    nbCommittedEvents++;
+                    getMetricRegistry().meter(name(event.getClass(), "committed")).mark();
+                    getMetricRegistry().meter(nameForDomain(event.getClass(), "committed")).mark();
+                }
+
+                iterator.remove();
+            }
+        }
+
+        getMetricRegistry().meter(GLOBAL_METER_EVENTS_NAME).mark(nbCommittedEvents);
     }
 
 }
