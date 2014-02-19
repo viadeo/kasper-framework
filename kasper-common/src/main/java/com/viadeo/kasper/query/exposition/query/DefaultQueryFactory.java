@@ -263,8 +263,21 @@ public class DefaultQueryFactory implements QueryFactory {
 
         @SuppressWarnings("unchecked")
         // type safety guaranteed by the lib
-        final BeanAdapter<Object> beanAdapter = (BeanAdapter<Object>) beanAdapters.get(property
-                .getTypeToken().getType());
+        BeanAdapter<Object> beanAdapter = (BeanAdapter<Object>) beanAdapters.get(
+                property.getTypeToken().getType()
+        );
+
+        // If didn't found an exact match, looking for a bean adapter of a super type.
+        if (null == beanAdapter) {
+            final TypeToken propertyTypeToken = property.getTypeToken();
+            for (final Type knownType : beanAdapters.keySet()) {
+                if (TypeToken.of(knownType).isAssignableFrom(propertyTypeToken)) {
+                    beanAdapter = beanAdapters.get(knownType);
+                    beanAdapters.put(propertyTypeToken.getType(), beanAdapter);
+                    break;
+                }
+            }
+        }
 
         if (null == beanAdapter) {
             handleName = true;
