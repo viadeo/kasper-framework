@@ -52,7 +52,11 @@ public class CommandResponse implements Serializable, Immutable {
     }
 
     public static CommandResponse error(final CoreReasonCode code, final String reason) {
-        return error(new KasperReason(checkNotNull(code).toString(), reason));
+        return error(new KasperReason(checkNotNull(code), reason));
+    }
+
+    public static CommandResponse error(final CoreReasonCode code) {
+        return error(new KasperReason(checkNotNull(code)));
     }
 
     // ------------------------------------------------------------------------
@@ -67,6 +71,10 @@ public class CommandResponse implements Serializable, Immutable {
 
     public static CommandResponse refused(final CoreReasonCode code, final String reason) {
         return refused(new KasperReason(code, reason));
+    }
+
+    public static CommandResponse refused(final CoreReasonCode code) {
+        return refused(new KasperReason(code));
     }
 
     // ------------------------------------------------------------------------

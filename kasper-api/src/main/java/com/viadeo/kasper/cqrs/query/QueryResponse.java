@@ -7,6 +7,7 @@
 package com.viadeo.kasper.cqrs.query;
 
 import com.google.common.base.Objects;
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.annotation.Immutable;
 import com.viadeo.kasper.cqrs.TransportMode;
@@ -57,6 +58,14 @@ public class QueryResponse<RESULT extends QueryResult> implements Serializable, 
 
     public static <R extends QueryResult> QueryResponse<R> refused(final KasperReason reason) {
         return new QueryResponse<R>(Status.REFUSED, checkNotNull(reason));
+    }
+
+    public static <R extends QueryResult> QueryResponse<R> error(final CoreReasonCode code) {
+        return new QueryResponse<R>(new KasperReason(code));
+    }
+
+    public static <R extends QueryResult> QueryResponse<R> refused(final CoreReasonCode code) {
+        return new QueryResponse<R>(Status.REFUSED, new KasperReason(code));
     }
 
     public static <R extends QueryResult> QueryResponse<R> of(final R result) {
