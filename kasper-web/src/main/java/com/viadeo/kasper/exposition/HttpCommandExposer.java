@@ -192,6 +192,9 @@ public class HttpCommandExposer extends HttpExposer {
             parser = reader.getFactory().createJsonParser(req.getInputStream());
             final Command command = reader.readValue(parser, commandClass);
 
+            /* Log the command object */
+            REQUEST_LOGGER.info("Processing Command '{}'", command.toString());
+
             /* send now that command to the platform and wait for the result */
             final Timer.Context commandHandleTime = getMetricRegistry().timer(name(command.getClass(), "requests-handle-time")).time();
             final Timer.Context classHandleTime = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_HANDLE_TIME_NAME).time();
