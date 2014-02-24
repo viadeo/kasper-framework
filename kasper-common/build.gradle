@@ -23,7 +23,8 @@ dependencies {
     compile libraries.JACKSON_GUAVA_TYPES
     compile libraries.JACKSON_JODA_TYPES
     compile libraries.PARANAMER
-    
+    compile libraries.HAMCREST
+
     tools "com.googlecode.jarjar:jarjar:1.3"
 }
 

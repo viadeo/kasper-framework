@@ -4,9 +4,8 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.test.matchers;
+package com.viadeo.kasper.tools;
 
-import org.axonframework.test.matchers.MatcherExecutionException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
@@ -129,7 +128,7 @@ public class KasperMatcher extends BaseMatcher<Object> {
                 }
 
             } catch (final IllegalAccessException e) {
-                throw new MatcherExecutionException("Could not confirm object equality due to an exception", e);
+                throw new RuntimeException("Could not confirm object equality due to an exception", e);
             }
         }
         

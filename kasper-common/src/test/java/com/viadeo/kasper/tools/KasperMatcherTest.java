@@ -4,10 +4,10 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.test.matchers;
+package com.viadeo.kasper.tools;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
 import com.viadeo.kasper.cqrs.query.IndexedEntity;
 import com.viadeo.kasper.cqrs.query.QueryResult;
@@ -17,16 +17,16 @@ import org.hamcrest.StringDescription;
 import org.joda.time.DateTime;
 import org.junit.Test;
 
+import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.test.matchers.KasperMatcher.anyDate;
-import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
+import static com.viadeo.kasper.tools.KasperMatcher.anyDate;
+import static com.viadeo.kasper.tools.KasperMatcher.equalTo;
 import static org.junit.Assert.*;
 
 public class KasperMatcherTest {
 
-    @XKasperUnregistered
     public class HelloMessageResult extends IndexedEntity implements QueryResult {
 
         public static final String ENTITY_NAME = "Hello";
@@ -50,7 +50,6 @@ public class KasperMatcherTest {
 
     }
 
-    @XKasperUnregistered
     public class HelloMessagesResult extends CollectionQueryResult<HelloMessageResult> { }
 
     private static final KasperID HELLO_ID = DefaultKasperId.random();
