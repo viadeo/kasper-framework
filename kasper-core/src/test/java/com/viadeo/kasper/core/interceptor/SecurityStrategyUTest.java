@@ -11,7 +11,9 @@ import com.viadeo.kasper.security.DefaultPublicSecurityStrategy;
 import com.viadeo.kasper.security.DefaultSecurityStrategy;
 import com.viadeo.kasper.security.SecurityConfiguration;
 import com.viadeo.kasper.security.SecurityStrategy;
+import com.viadeo.kasper.security.callback.ApplicationIdValidator;
 import com.viadeo.kasper.security.callback.IdentityContextProvider;
+import com.viadeo.kasper.security.callback.IpAddressValidator;
 import com.viadeo.kasper.security.callback.SecurityTokenValidator;
 import org.junit.Before;
 import org.junit.Test;
@@ -29,6 +31,12 @@ public class SecurityStrategyUTest {
     @Mock
     IdentityContextProvider identityProvider;
 
+    @Mock
+    ApplicationIdValidator applicationIdValidator;
+
+    @Mock
+    IpAddressValidator ipAddressValidator;
+
     SecurityConfiguration securityConfiguration;
 
     @Before
@@ -37,6 +45,8 @@ public class SecurityStrategyUTest {
         securityConfiguration = new SecurityConfiguration.Builder().
                 withSecurityTokenValidator(tokenValidator).
                 withIdentityProvider(identityProvider).
+                withApplicationIdValidator(applicationIdValidator).
+                withIpAddressValidator(ipAddressValidator).
                 build();
     }
 
@@ -52,6 +62,8 @@ public class SecurityStrategyUTest {
         // Then
         verify(tokenValidator).validate(refEq(context.getSecurityToken()));
         verify(identityProvider).provideIdentity(refEq(context));
+        verify(applicationIdValidator).validate(context.getApplicationId());
+        verify(ipAddressValidator).validate(context.getIpAddress());
     }
 
     @Test
@@ -66,5 +78,7 @@ public class SecurityStrategyUTest {
         // Then
         verifyZeroInteractions(tokenValidator);
         verify(identityProvider).provideIdentity(refEq(context));
+        verify(applicationIdValidator).validate(context.getApplicationId());
+        verify(ipAddressValidator).validate(context.getIpAddress());
     }
 }

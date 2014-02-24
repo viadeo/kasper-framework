@@ -6,9 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.security;
 
-import com.viadeo.kasper.security.callback.IdentityContextProvider;
-import com.viadeo.kasper.security.callback.LegacyIdsCipher;
-import com.viadeo.kasper.security.callback.SecurityTokenValidator;
+import com.viadeo.kasper.security.callback.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -17,16 +15,22 @@ class KasperSecurityConfiguration implements SecurityConfiguration {
     private final SecurityTokenValidator securityTokenValidator;
     private final IdentityContextProvider identityContextProviders;
     private final LegacyIdsCipher legacyIdsCipher;
+    private final ApplicationIdValidator applicationIdValidator;
+    private final IpAddressValidator ipAddressValidator;
 
 
     // ------------------------------------------------------------------------
 
     public KasperSecurityConfiguration(final SecurityTokenValidator securityTokenValidator,
                                        final IdentityContextProvider identityContextProviders,
-                                       final LegacyIdsCipher legacyIdsCipher) {
+                                       final LegacyIdsCipher legacyIdsCipher,
+                                       final ApplicationIdValidator applicationIdValidator,
+                                       final IpAddressValidator ipAddressValidator) {
         this.securityTokenValidator = checkNotNull(securityTokenValidator);
         this.identityContextProviders = checkNotNull(identityContextProviders);
         this.legacyIdsCipher = checkNotNull(legacyIdsCipher);
+        this.applicationIdValidator = checkNotNull(applicationIdValidator);
+        this.ipAddressValidator = checkNotNull(ipAddressValidator);
     }
 
     @Override
@@ -44,4 +48,13 @@ class KasperSecurityConfiguration implements SecurityConfiguration {
         return legacyIdsCipher;
     }
 
+    @Override
+    public ApplicationIdValidator getApplicationIdValidator() {
+        return applicationIdValidator;
+    }
+
+    @Override
+    public IpAddressValidator getIpAddressValidator() {
+        return ipAddressValidator;
+    }
 }

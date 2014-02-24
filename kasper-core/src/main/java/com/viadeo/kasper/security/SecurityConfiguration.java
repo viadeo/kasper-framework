@@ -7,9 +7,7 @@
 package com.viadeo.kasper.security;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.security.callback.IdentityContextProvider;
-import com.viadeo.kasper.security.callback.LegacyIdsCipher;
-import com.viadeo.kasper.security.callback.SecurityTokenValidator;
+import com.viadeo.kasper.security.callback.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -20,14 +18,22 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public interface SecurityConfiguration {
 
     SecurityTokenValidator getSecurityTokenValidator();
+
     IdentityContextProvider getIdentityContextProvider();
+
     LegacyIdsCipher getLegacyIdsCipher();
+
+    ApplicationIdValidator getApplicationIdValidator();
+
+    IpAddressValidator getIpAddressValidator();
 
 
     class Builder {
         private SecurityTokenValidator securityTokenValidator = new DefautSecurityTokenValidator();
         private IdentityContextProvider identityContextProvider = new DefaultIdentityContextProvider();
         private LegacyIdsCipher legacyIdsCipher = new DefaultLegacyIdsCipher();
+        private ApplicationIdValidator applicationIdValidator = new DefaultApplicationIdValidator();
+        private IpAddressValidator ipAddressValidator = new DefaultIpAddressValidator();
 
         public Builder() {
         }
@@ -50,11 +56,25 @@ public interface SecurityConfiguration {
             return this;
         }
 
+        public Builder withApplicationIdValidator(final ApplicationIdValidator applicationIdValidator) {
+            checkNotNull(applicationIdValidator);
+            this.applicationIdValidator = applicationIdValidator;
+            return this;
+        }
+
+        public Builder withIpAddressValidator(final IpAddressValidator ipAddressValidator) {
+            checkNotNull(ipAddressValidator);
+            this.ipAddressValidator = ipAddressValidator;
+            return this;
+        }
+
         public SecurityConfiguration build() {
             SecurityConfiguration securityConfiguration = new KasperSecurityConfiguration(
                     securityTokenValidator,
                     identityContextProvider,
-                    legacyIdsCipher
+                    legacyIdsCipher,
+                    applicationIdValidator,
+                    ipAddressValidator
             );
             return securityConfiguration;
         }
@@ -84,6 +104,20 @@ public interface SecurityConfiguration {
         @Override
         public int decrypt(int id) {
             return id;
+        }
+    }
+
+    class DefaultApplicationIdValidator implements ApplicationIdValidator {
+
+        @Override
+        public void validate(String applicationId) throws KasperMissingApplicationIdException, KasperInvalidApplicationIdException {
+        }
+    }
+
+    class DefaultIpAddressValidator implements IpAddressValidator {
+
+        @Override
+        public void validate(String ipAddress) throws KasperMissingIpAddressException, KasperInvalidIpAddressException {
         }
     }
 }
