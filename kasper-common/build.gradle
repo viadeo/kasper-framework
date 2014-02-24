@@ -22,6 +22,7 @@ dependencies {
     compile libraries.JACKSON_CORE
     compile libraries.JACKSON_GUAVA_TYPES
     compile libraries.JACKSON_JODA_TYPES
+    compile libraries.JACKSON_PARANAMER
     compile libraries.PARANAMER
     compile libraries.HAMCREST
 

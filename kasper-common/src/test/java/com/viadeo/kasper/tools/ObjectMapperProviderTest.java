@@ -8,11 +8,13 @@ package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
+import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import org.joda.money.CurrencyUnit;
@@ -31,12 +33,12 @@ public class ObjectMapperProviderTest {
     final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
 
     static class SomeResult implements QueryResult {
+        private static final long serialVersionUID = 7036268990439270899L;
+
         private String str;
 
-        public SomeResult() {
-            
-        }
-        
+        public SomeResult() { }
+
         public SomeResult(String str) {
             this.str = str;
         }
@@ -51,6 +53,27 @@ public class ObjectMapperProviderTest {
     }
 
     static class SomeCollectionResponse extends CollectionQueryResult<SomeResult> {
+        private static final long serialVersionUID = 7698126469953546332L;
+    }
+
+    public static class ImmutableQuery implements Query {
+        private static final long serialVersionUID = 2139044505564060435L;
+
+        private final String name;
+        private final Integer value;
+
+        public ImmutableQuery(String name, Integer value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Integer getValue() {
+            return value;
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -216,6 +239,33 @@ public class ObjectMapperProviderTest {
 
         // When
         final Money actual = ObjectMapperProvider.INSTANCE.mapper().readValue(number, Money.class);
+    }
+
+    @Test
+    public void serializeImmutableClass() throws Exception {
+        // Given
+        final ImmutableQuery immutableObject = new ImmutableQuery("foobar", 42);
+
+        // When
+        String json = ObjectMapperProvider.INSTANCE.mapper().writeValueAsString(immutableObject);
+
+        // Then
+        assertEquals("{\"name\":\"foobar\",\"value\":42}", json);
+
+    }
+
+    @Test
+    public void deserializeImmutableClass() throws Exception {
+        // Given
+        final ObjectMapper mapper = ObjectMapperProvider.INSTANCE.mapper();
+
+        // When
+        ImmutableQuery actual = mapper.readValue("{\"name\":\"foobar\",\"value\":42}", ImmutableQuery.class);
+
+        // Then
+        assertNotNull(actual);
+        assertEquals("foobar", actual.getName());
+        assertEquals((Integer)42, actual.getValue());
     }
 
 }
