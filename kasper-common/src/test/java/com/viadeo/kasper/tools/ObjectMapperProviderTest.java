@@ -208,6 +208,20 @@ public class ObjectMapperProviderTest {
     }
 
     @Test
+    public void serDeserDateTime() throws IOException {
+        // Given
+        final ObjectMapper mapper = ObjectMapperProvider.INSTANCE.mapper();
+        final DateTime expectedDate = DateTime.now();
+
+        // When
+        final String json = mapper.writeValueAsString(expectedDate);
+        final DateTime actualDate = mapper.reader(DateTime.class).readValue(json);
+
+        // Then
+        assertTrue(expectedDate.isEqual(actualDate));
+    }
+
+    @Test
     public void serializeMoneyToISO4217() throws IOException {
         // Given
         final Money money = Money.of(CurrencyUnit.EUR, new BigDecimal("19.99"));

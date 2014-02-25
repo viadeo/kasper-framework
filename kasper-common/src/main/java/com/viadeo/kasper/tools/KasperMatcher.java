@@ -9,7 +9,7 @@ package com.viadeo.kasper.tools;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
-import org.joda.time.DateTime;
+import org.joda.time.*;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -79,6 +79,11 @@ public class KasperMatcher extends BaseMatcher<Object> {
         if (DateTime.class.isAssignableFrom(actual.getClass())
                 && (expected == anyDate())) {
             return record(done, expected, actual, true);
+        }
+
+        if (DateTime.class.isAssignableFrom(expected.getClass()) &&
+                DateTime.class.isAssignableFrom(actual.getClass()) ) {
+            return ((DateTime)expected).isEqual((DateTime) actual);
         }
 
         if (isBaseJavaClass(expected.getClass())) {
@@ -256,7 +261,7 @@ public class KasperMatcher extends BaseMatcher<Object> {
     }
     
     // ------------------------------------------------------------------------
-    
+
     private static final DateTime ANYDATE = new DateTime();
     
     /**

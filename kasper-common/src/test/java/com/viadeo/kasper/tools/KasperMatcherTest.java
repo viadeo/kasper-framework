@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.tools;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
 import com.viadeo.kasper.cqrs.query.IndexedEntity;
@@ -15,9 +14,9 @@ import com.viadeo.kasper.impl.DefaultKasperId;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.joda.time.DateTime;
+import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
-import java.io.IOException;
 import java.util.ArrayList;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -195,6 +194,21 @@ public class KasperMatcherTest {
             System.out.println(description);
             fail();
         }
+    }
+
+    @Test
+    public void testDateTime() {
+        // Given
+        final DateTime now = DateTime.now();
+        DateTime a = new DateTime(now.getMillis(), DateTimeZone.forOffsetHours(1));
+        DateTime b = new DateTime(now.getMillis(), DateTimeZone.UTC);
+
+        // When
+        final boolean matches = KasperMatcher.equalTo(a).matches(b);
+
+        // Then
+        assertTrue(matches);
+        assertFalse(a.equals(b));
     }
 
 }
