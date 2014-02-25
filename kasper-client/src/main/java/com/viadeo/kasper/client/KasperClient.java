@@ -349,7 +349,6 @@ public class KasperClient {
                 throw new KasperException("event submission failed with status <" + status.getReasonPhrase() + ">");
             }
         } catch (final Exception e) {
-            e.printStackTrace();
             throw new KasperException("Unable to send event : " + event.getClass().getName(), e);
         }
 
