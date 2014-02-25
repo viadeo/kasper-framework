@@ -10,23 +10,25 @@ import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class CollectionQueryResult<RES extends QueryResult> implements Iterable<RES>, QueryResult  {
 
+    private static final long serialVersionUID = -3864225412367930495L;
+
     /** Generic parameter position for Data Transfer Object */
     int PARAMETER_RESULT_POSITION = 0;
 
-	private ArrayList<RES> list;
+	private final List<RES> list;
 
     // ------------------------------------------------------------------------
 
     protected CollectionQueryResult() {
-        /* Jackson */
+        this(Lists.<RES>newArrayList());
     }
 
 	protected CollectionQueryResult(final Collection<RES> list) {
@@ -43,53 +45,57 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
     // ------------------------------------------------------------------------
 
 	public int getCount() {
-        if (null == list) {
-            return 0;
-        }
 		return this.list.size();
 	}
 
     public boolean isEmpty() {
-        if (null == list) {
-            return true;
-        }
         return this.list.isEmpty();
     }
 
 	public Collection<RES> getList() {
-		final ImmutableList.Builder<RES> builder = new ImmutableList.Builder<RES>();
-        if (null != list) {
-            builder.addAll(this.list);
-        }
-        return builder.build();
+        return ImmutableList.copyOf(this.list);
 	}
 
+    /**
+     * This method is clearly a weakness of immutability, we keep it only to ensure retro-compatibility of the api.
+     * @param list the list to be set
+     * @deprecated deprecated in order to keep retro-compatibility before to be deleted.
+     */
+    @Deprecated
     public void setList(final Collection<RES> list) {
-        if (null == this.list) {
-            this.list = Lists.newArrayList(checkNotNull(list));
-        } else {
-            throw new UnsupportedOperationException("CollectionQueryResult is immutable");
-        }
+        checkNotNull(list);
+        this.list.clear();
+        this.list.addAll(Lists.newArrayList(list));
     }
 
+    /**
+     * This method is clearly a weakness of immutability, we keep it only to ensure retro-compatibility of the api.
+     * @param iterator the iterator to be set
+     * @deprecated in order to keep retro-compatibility before to be deleted.
+     */
+    @Deprecated
     public void setListAsIterator(final Iterator<RES> iterator) {
         checkNotNull(iterator);
-        if (null == this.list) {
-            this.list = new ArrayList<RES>();
-            while (iterator.hasNext()) {
-                this.list.add(iterator.next());
-            }
-        } else {
-            throw new UnsupportedOperationException("CollectionQueryResult is immutable");
-        }
+        this.list.clear();
+        this.list.addAll(Lists.newArrayList(iterator));
     }
 
+    /**
+     * @deprecated in order to keep retro-compatibility before to be deleted.
+     * @see {@link #setList(java.util.Collection)}
+     */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public <P extends CollectionQueryResult> P withList(final Collection<RES> list) {
         this.setList(checkNotNull(list));
         return (P) this;
     }
 
+    /**
+     * @deprecated in order to keep retro-compatibility before to be deleted.
+     * @see {@link #setListAsIterator(java.util.Iterator)}
+     */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public <P extends CollectionQueryResult> P withListAsIterator(final Iterator<RES> iterator) {
         this.setListAsIterator(checkNotNull(iterator));

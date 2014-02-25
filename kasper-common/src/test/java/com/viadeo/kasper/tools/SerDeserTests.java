@@ -195,6 +195,18 @@ public class SerDeserTests {
     // ------------------------------------------------------------------------
 
     @Test
+    public void test_EmptyCollectionResult() throws IOException {
+        // Given
+        final TestCollectionResult collect = new TestCollectionResult();
+
+        // When
+        final TestCollectionResult actualResponse = serDeserTest(collect, TestCollectionResult.class);
+
+        // Then
+        assertEquals(actualResponse, collect);
+    }
+
+    @Test
     public void test_CollectionResultSingle() throws IOException {
         // Given
         final TestResult result = new TestResult("42");
@@ -242,6 +254,18 @@ public class SerDeserTests {
 
         // Then
         assertEquals(actualResponse, collect);
+    }
+
+    @Test
+    public void test_EmptyMapResult() throws IOException {
+        // Given
+        final TestMapResult map = new TestMapResult();
+
+        // When
+        final TestMapResult actualResponse = serDeserTest(map, TestMapResult.class);
+
+        // Then
+        assertEquals(actualResponse, map);
     }
 
     @Test
