@@ -53,8 +53,8 @@ public class KasperParanamerUTest {
     public void extractParameterNames_fromImmutableObject_usingCorrectlyJsonProperty_returnNames() {
         // Given
         final KasperParanamer kasperParanamer = new KasperParanamer();
-        final Class<KasperImmutabilityModuleITest.ImmutableObjectUsingJacksonAnnotation> declaringClass =
-                KasperImmutabilityModuleITest.ImmutableObjectUsingJacksonAnnotation.class;
+        final Class<KasperImmutabilityParanamerModuleITest.ImmutableObjectUsingJacksonAnnotation> declaringClass =
+                KasperImmutabilityParanamerModuleITest.ImmutableObjectUsingJacksonAnnotation.class;
 
         // When
         final String[] strings = kasperParanamer.extractParameterNames(declaringClass.getConstructors()[0]);
@@ -67,8 +67,8 @@ public class KasperParanamerUTest {
     public void extractParameterNames_fromImmutableObject_usingBadlyJsonProperty_returnNames() {
         // Given
         final KasperParanamer kasperParanamer = new KasperParanamer();
-        final Class<KasperImmutabilityModuleITest.ImmutableObjectUsingBadlyJacksonAnnotation> declaringClass =
-                KasperImmutabilityModuleITest.ImmutableObjectUsingBadlyJacksonAnnotation.class;
+        final Class<KasperImmutabilityParanamerModuleITest.ImmutableObjectUsingBadlyJacksonAnnotation> declaringClass =
+                KasperImmutabilityParanamerModuleITest.ImmutableObjectUsingBadlyJacksonAnnotation.class;
 
         // When
         kasperParanamer.extractParameterNames(declaringClass.getConstructors()[0]);

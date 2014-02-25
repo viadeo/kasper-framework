@@ -91,7 +91,7 @@ public class KasperParanamer implements Paranamer {
         if (declaringClass.getDeclaredConstructors().length <= 1) {
             try {
                 return delegate.lookupParameterNames(accessibleObject, true);
-            } catch (ParameterNamesNotFoundException e) {
+            } catch (final ParameterNamesNotFoundException e) {
                 return fallback.lookupParameterNames(accessibleObject, true);
             }
         } else if (null == constructor.getAnnotation(JsonCreator.class)) {

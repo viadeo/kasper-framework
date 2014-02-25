@@ -11,11 +11,11 @@ import com.fasterxml.jackson.module.paranamer.shaded.*;
 
 import java.lang.reflect.AccessibleObject;
 
-public class KasperImmutabilityModule extends ParanamerModule {
+public class KasperImmutabilityParanamerModule extends ParanamerModule {
 
     private static final long serialVersionUID = 2291876538816364449L;
 
-    public KasperImmutabilityModule() {
+    public KasperImmutabilityParanamerModule() {
         super(new CachingParanamer(new KasperParanamer()));
     }
 }

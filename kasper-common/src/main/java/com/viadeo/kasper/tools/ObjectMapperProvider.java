@@ -76,7 +76,7 @@ public final class ObjectMapperProvider {
         kasperClientModule.setDeserializers(new CommandQueryResponseDeserializerAdapter());
 
         mapper.registerModule(kasperClientModule);
-        mapper.registerModule(new KasperImmutabilityModule());
+        mapper.registerModule(new KasperImmutabilityParanamerModule());
 
         /* Third-party modules */
         mapper.registerModule(new GuavaModule());

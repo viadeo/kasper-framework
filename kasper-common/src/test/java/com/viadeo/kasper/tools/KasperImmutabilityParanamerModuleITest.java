@@ -15,14 +15,14 @@ import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
 
-public class KasperImmutabilityModuleITest {
+public class KasperImmutabilityParanamerModuleITest {
 
     private ObjectMapper mapper;
 
     @Before
     public void setUp() {
         mapper = new ObjectMapper();
-        mapper.registerModule(new KasperImmutabilityModule());
+        mapper.registerModule(new KasperImmutabilityParanamerModule());
     }
 
     @Test
