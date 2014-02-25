@@ -27,8 +27,8 @@ public abstract class EntityCreatedEvent<D extends Domain> extends Event impleme
 
 	// ------------------------------------------------------------------------
 
-    protected EntityCreatedEvent(final KasperID id) {
-        this.entityId = checkNotNull(id);
+    protected EntityCreatedEvent(final KasperID entityId) {
+        this.entityId = checkNotNull(entityId);
     }
 
 	// ------------------------------------------------------------------------
