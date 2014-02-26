@@ -15,6 +15,7 @@ import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
+import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptorFactory;
@@ -33,10 +34,9 @@ public class KasperQueryGateway implements QueryGateway {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperQueryGateway.class);
 
-    private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryGateway.class, "requests-time");
-    private static final String GLOBAL_HISTO_REQUESTS_TIMES_NAME = name(QueryGateway.class, "requests-times");
-    private static final String GLOBAL_METER_REQUESTS_NAME = name(QueryGateway.class, "requests");
-    private static final String GLOBAL_METER_ERRORS_NAME = name(QueryGateway.class, "errors");
+    public static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryGateway.class, "requests-time");
+    public static final String GLOBAL_METER_REQUESTS_NAME = name(QueryGateway.class, "requests");
+    public static final String GLOBAL_METER_ERRORS_NAME = name(QueryGateway.class, "errors");
 
     private final QueryHandlersLocator queryHandlersLocator;
     private final InterceptorChainRegistry<Query, QueryResponse<QueryResult>> interceptorChainRegistry;
@@ -69,9 +69,19 @@ public class KasperQueryGateway implements QueryGateway {
 
         final Class<? extends Query> queryClass = query.getClass();
 
+
+        final String timerRequestsTimeName = name(queryClass, "requests-time");
+        final String meterErrorsName = name(queryClass, "errors");
+        final String meterRequestsName = name(queryClass, "requests");
+
+        final String domainTimerRequestsTimeName = name(MetricNameStyle.DOMAIN_TYPE, queryClass, "requests-time");
+        final String domainMeterErrorsName = name(MetricNameStyle.DOMAIN_TYPE, queryClass, "errors");
+        final String domainMeterRequestsName = name(MetricNameStyle.DOMAIN_TYPE, queryClass, "requests");
+
         /* Start request timer */
         final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
-        final Timer.Context timer = getMetricRegistry().timer(name(queryClass, "requests-time")).time();
+        final Timer.Context timer = getMetricRegistry().timer(timerRequestsTimeName).time();
+        final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerRequestsTimeName).time();
 
         /* Sets current thread context */
         CurrentContext.set(context);
@@ -81,8 +91,9 @@ public class KasperQueryGateway implements QueryGateway {
         final Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> optionalRequestChain =
                 getInterceptorChain(queryClass);
 
-        if (!optionalRequestChain.isPresent()) {
+        if ( ! optionalRequestChain.isPresent()) {
             timer.close();
+            domainTimer.close();
             classTimer.close();
             throw new KasperException("Unable to find the handler implementing query class " + queryClass);
         }
@@ -101,16 +112,21 @@ public class KasperQueryGateway implements QueryGateway {
 
         /* Monitor the request calls */
         timer.stop();
+        domainTimer.stop();
+
         final long time = classTimer.stop();
-        getMetricRegistry().histogram(GLOBAL_HISTO_REQUESTS_TIMES_NAME).update(time);
+
         getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
 
-        getMetricRegistry().histogram(name(queryClass, "requests-times")).update(time);
-        getMetricRegistry().meter(name(queryClass, "requests")).mark();
+        getMetricRegistry().meter(meterRequestsName).mark();
+        getMetricRegistry().meter(domainMeterRequestsName).mark();
+        getMetricRegistry().meter(name(MetricNameStyle.CLIENT_TYPE, context, queryClass, "requests")).mark();
 
         if (null != exception) {
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
-            getMetricRegistry().meter(name(queryClass, "errors")).mark();
+            getMetricRegistry().meter(meterErrorsName).mark();
+            getMetricRegistry().meter(domainMeterErrorsName).mark();
+            getMetricRegistry().meter(name(MetricNameStyle.CLIENT_TYPE, context, queryClass, "errors")).mark();
         }
 
         if (null != exception) {

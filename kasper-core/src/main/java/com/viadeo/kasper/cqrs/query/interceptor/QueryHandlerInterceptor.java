@@ -21,7 +21,8 @@ public class QueryHandlerInterceptor<QUERY extends Query, RESULT extends QueryRe
         implements QueryInterceptor<QUERY, RESULT> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(QueryHandlerInterceptor.class);
-    private static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryHandlerInterceptor.class, "requests-time");
+
+    public static final String GLOBAL_TIMER_INTERCEPTOR_REQUESTS_TIME_NAME = name(QueryHandlerInterceptor.class, "interceptor-requests-time");
 
     private final QueryHandler<QUERY, RESULT> queryHandler;
 
@@ -41,8 +42,8 @@ public class QueryHandlerInterceptor<QUERY extends Query, RESULT extends QueryRe
         Exception exception = null;
         QueryResponse<RESULT> ret = null;
 
-        final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
-        final Timer.Context timer = getMetricRegistry().timer(name(query.getClass(), "requests-time")).time();
+        final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_INTERCEPTOR_REQUESTS_TIME_NAME).time();
+        final Timer.Context timer = getMetricRegistry().timer(name(query.getClass(), "interceptor-requests-time")).time();
 
         final QueryMessage<QUERY> message = new QueryMessage<>(context, query);
 
