@@ -91,8 +91,9 @@ public class KasperQueryGateway implements QueryGateway {
         final Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> optionalRequestChain =
                 getInterceptorChain(queryClass);
 
-        if (!optionalRequestChain.isPresent()) {
+        if ( ! optionalRequestChain.isPresent()) {
             timer.close();
+            domainTimer.close();
             classTimer.close();
             throw new KasperException("Unable to find the handler implementing query class " + queryClass);
         }
@@ -112,6 +113,7 @@ public class KasperQueryGateway implements QueryGateway {
         /* Monitor the request calls */
         timer.stop();
         domainTimer.stop();
+
         final long time = classTimer.stop();
 
         getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();

@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform;
 
-import com.codahale.metrics.Histogram;
 import com.codahale.metrics.Meter;
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;

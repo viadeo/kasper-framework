@@ -6,14 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.query.exposition;
 
-import com.viadeo.kasper.query.exposition.query.*;
+import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
 import org.junit.Test;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Type;
-import java.util.Map;
-
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 public class QueryFactoryBuilderTest {
