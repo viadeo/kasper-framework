@@ -201,7 +201,6 @@ public class MetricsPublicationITest {
         // Given
         final Timer globalInterceptorRequestsTimeTimer = registerSpyTimer(QueryHandlerInterceptor.GLOBAL_TIMER_INTERCEPTOR_REQUESTS_TIME_NAME);
         final Timer globalQGRequestsTimeTimer = registerSpyTimer(KasperQueryGateway.GLOBAL_TIMER_REQUESTS_TIME_NAME);
-        final Histogram globalQGRequestsTimesHisto = registerSpyHisto(KasperQueryGateway.GLOBAL_HISTO_REQUESTS_TIMES_NAME);
         final Meter globalRequestsMeter = registerSpyMeter(KasperQueryGateway.GLOBAL_METER_REQUESTS_NAME);
 
         reset(metricRegistry);
@@ -212,7 +211,6 @@ public class MetricsPublicationITest {
         // Then
         verifyTimerInteraction(QueryHandlerInterceptor.GLOBAL_TIMER_INTERCEPTOR_REQUESTS_TIME_NAME, globalInterceptorRequestsTimeTimer);
         verifyTimerInteraction(KasperQueryGateway.GLOBAL_TIMER_REQUESTS_TIME_NAME, globalQGRequestsTimeTimer);
-        verifyHistogramInteraction(KasperQueryGateway.GLOBAL_HISTO_REQUESTS_TIMES_NAME, globalQGRequestsTimesHisto);
         verifyMeterInteraction(KasperQueryGateway.GLOBAL_METER_REQUESTS_NAME, globalRequestsMeter);
     }
 
@@ -221,7 +219,6 @@ public class MetricsPublicationITest {
         // Given
         final Timer globalInterceptorRequestsTimeTimer = registerSpyTimer(QueryHandlerInterceptor.GLOBAL_TIMER_INTERCEPTOR_REQUESTS_TIME_NAME);
         final Timer globalQGRequestsTimeTimer = registerSpyTimer(KasperQueryGateway.GLOBAL_TIMER_REQUESTS_TIME_NAME);
-        final Histogram globalQGRequestsTimesHisto = registerSpyHisto(KasperQueryGateway.GLOBAL_HISTO_REQUESTS_TIMES_NAME);
         final Meter globalRequestsMeter = registerSpyMeter(KasperQueryGateway.GLOBAL_METER_REQUESTS_NAME);
         final Meter globalErrorsMeter = registerSpyMeter(KasperQueryGateway.GLOBAL_METER_ERRORS_NAME);
 
@@ -237,7 +234,6 @@ public class MetricsPublicationITest {
         // Then
         verifyTimerInteraction(QueryHandlerInterceptor.GLOBAL_TIMER_INTERCEPTOR_REQUESTS_TIME_NAME, globalInterceptorRequestsTimeTimer);
         verifyTimerInteraction(KasperQueryGateway.GLOBAL_TIMER_REQUESTS_TIME_NAME, globalQGRequestsTimeTimer);
-        verifyHistogramInteraction(KasperQueryGateway.GLOBAL_HISTO_REQUESTS_TIMES_NAME, globalQGRequestsTimesHisto);
         verifyMeterInteraction(KasperQueryGateway.GLOBAL_METER_REQUESTS_NAME, globalRequestsMeter);
         verifyMeterInteraction(KasperQueryGateway.GLOBAL_METER_ERRORS_NAME, globalErrorsMeter);
     }
@@ -247,7 +243,6 @@ public class MetricsPublicationITest {
         // Given
         final Timer interceptorRequestsTimeTimer = registerSpyTimer("mycustomdomain.query.mycustomquery.interceptor-requests-time");
         final Timer requestsTimeTimer = registerSpyTimer("mycustomdomain.query.mycustomquery.requests-time");
-        final Histogram requestsTimesHisto = registerSpyHisto("mycustomdomain.query.mycustomquery.requests-times");
         final Meter requestsMeter = registerSpyMeter("mycustomdomain.query.mycustomquery.requests");
 
         reset(metricRegistry);
@@ -258,7 +253,6 @@ public class MetricsPublicationITest {
         // Then
         verifyTimerInteraction("mycustomdomain.query.mycustomquery.interceptor-requests-time", interceptorRequestsTimeTimer);
         verifyTimerInteraction("mycustomdomain.query.mycustomquery.requests-time", requestsTimeTimer);
-        verifyHistogramInteraction("mycustomdomain.query.mycustomquery.requests-times", requestsTimesHisto);
         verifyMeterInteraction("mycustomdomain.query.mycustomquery.requests", requestsMeter);
 
     }
@@ -268,7 +262,6 @@ public class MetricsPublicationITest {
         // Given
         final Timer interceptorRequestsTimeTimer = registerSpyTimer("mycustomdomain.query.mycustomquery.interceptor-requests-time");
         final Timer requestsTimeTimer = registerSpyTimer("mycustomdomain.query.mycustomquery.requests-time");
-        final Histogram requestsTimesHisto = registerSpyHisto("mycustomdomain.query.mycustomquery.requests-times");
         final Meter requestsMeter = registerSpyMeter("mycustomdomain.query.mycustomquery.requests");
         final Meter errorsMeter = registerSpyMeter("mycustomdomain.query.mycustomquery.errors");
 
@@ -284,7 +277,6 @@ public class MetricsPublicationITest {
         // Then
         verifyTimerInteraction("mycustomdomain.query.mycustomquery.interceptor-requests-time", interceptorRequestsTimeTimer);
         verifyTimerInteraction("mycustomdomain.query.mycustomquery.requests-time", requestsTimeTimer);
-        verifyHistogramInteraction("mycustomdomain.query.mycustomquery.requests-times", requestsTimesHisto);
         verifyMeterInteraction("mycustomdomain.query.mycustomquery.requests", requestsMeter);
         verifyMeterInteraction("mycustomdomain.query.mycustomquery.errors", errorsMeter);
     }
@@ -367,11 +359,6 @@ public class MetricsPublicationITest {
         verifyMeterInteraction("client.myconsumer.query.errors", errorsMeter);
     }
 
-    private Histogram registerSpyHisto(final String name) {
-        final Histogram metered = mock(Histogram.class);
-        return metricRegistry.register(name, metered);
-    }
-
     private Timer registerSpyTimer(final String name) {
         final Timer.Context context = mock(Timer.Context.class);
         final Timer metered = mock(Timer.class);
@@ -382,12 +369,6 @@ public class MetricsPublicationITest {
     private Meter registerSpyMeter(final String name) {
         final Meter meter = mock(Meter.class);
         return metricRegistry.register(name, meter);
-    }
-
-    private void verifyHistogramInteraction(final String name, final Histogram metered) {
-        verify(metricRegistry, times(1)).histogram(name);
-        verify(metered, times(1)).update(anyLong());
-        verifyNoMoreInteractions(metered);
     }
 
     private void verifyTimerInteraction(final String name, final Timer metered) {

@@ -35,7 +35,6 @@ public class KasperQueryGateway implements QueryGateway {
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperQueryGateway.class);
 
     public static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryGateway.class, "requests-time");
-    public static final String GLOBAL_HISTO_REQUESTS_TIMES_NAME = name(QueryGateway.class, "requests-times");
     public static final String GLOBAL_METER_REQUESTS_NAME = name(QueryGateway.class, "requests");
     public static final String GLOBAL_METER_ERRORS_NAME = name(QueryGateway.class, "errors");
 
@@ -72,7 +71,6 @@ public class KasperQueryGateway implements QueryGateway {
 
 
         final String timerRequestsTimeName = name(queryClass, "requests-time");
-        final String histoRequestsTimeName = name(queryClass, "requests-times");
         final String meterErrorsName = name(queryClass, "errors");
         final String meterRequestsName = name(queryClass, "requests");
 
@@ -116,10 +114,8 @@ public class KasperQueryGateway implements QueryGateway {
         domainTimer.stop();
         final long time = classTimer.stop();
 
-        getMetricRegistry().histogram(GLOBAL_HISTO_REQUESTS_TIMES_NAME).update(time);
         getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
 
-        getMetricRegistry().histogram(histoRequestsTimeName).update(time);
         getMetricRegistry().meter(meterRequestsName).mark();
         getMetricRegistry().meter(domainMeterRequestsName).mark();
         getMetricRegistry().meter(name(MetricNameStyle.CLIENT_TYPE, context, queryClass, "requests")).mark();
