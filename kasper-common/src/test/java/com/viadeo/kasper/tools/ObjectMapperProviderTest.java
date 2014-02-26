@@ -65,7 +65,7 @@ public class ObjectMapperProviderTest {
                 expected);
 
         final QueryResponse<SomeResult> actual = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), new TypeReference<QueryResponse<SomeResult>>() {});
+                .createParser(json), new TypeReference<QueryResponse<SomeResult>>() {});
         
         assertTrue(actual.isOK());
         assertNull(actual.getReason());
@@ -82,7 +82,7 @@ public class ObjectMapperProviderTest {
                 expected);
         @SuppressWarnings("unchecked")
         final QueryResponse actual = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), QueryResponse.class);
+                .createParser(json), QueryResponse.class);
 
         // Then
         assertFalse(actual.isOK());
@@ -106,7 +106,7 @@ public class ObjectMapperProviderTest {
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
                 expectedResponse);
         final CommandResponse actualResponse = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), CommandResponse.class);
+                .createParser(json), CommandResponse.class);
 
         // Then
         assertEquals(expectedResponse.getStatus(), actualResponse.getStatus());
@@ -127,7 +127,7 @@ public class ObjectMapperProviderTest {
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
                 expectedResponse);
         final CommandResponse actualResponse = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), CommandResponse.class);
+                .createParser(json), CommandResponse.class);
 
         // Then
         assertEquals(expectedResponse.getStatus(), actualResponse.getStatus());
@@ -152,7 +152,7 @@ public class ObjectMapperProviderTest {
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(response);
         final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
         final SomeCollectionResponse actual = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), SomeCollectionResponse.class);
+                .createParser(json), SomeCollectionResponse.class);
 
         // Then
         assertEquals(response.getCount(), actual.getCount());

@@ -122,7 +122,7 @@ public class HttpMetricsExposer extends HttpExposer {
         mapper.enable(MapperFeature.AUTO_DETECT_FIELDS);
         mapper.registerModule(new MetricsModule(this.rateUnit, this.durationUnit, false));
         final ObjectWriter writer = mapper.writer();
-        final JsonGenerator generator = writer.getJsonFactory().createJsonGenerator(resp.getOutputStream());
+        final JsonGenerator generator = writer.getFactory().createGenerator(resp.getOutputStream());
         resp.setContentType(MediaType.APPLICATION_JSON + "; charset=utf-8");
         resp.setStatus(Response.Status.OK.getStatusCode());
         writer.writeValue(generator, output);

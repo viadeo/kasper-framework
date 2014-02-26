@@ -130,12 +130,13 @@ subprojects {
   ext.libraries = [
 
       // Third party dependencies ----------------------------------------------
-      JACKSON_DATABIND      : 'com.fasterxml.jackson.core:jackson-databind:2.1.4',
-      JACKSON_ANNOTATIONS   : 'com.fasterxml.jackson.core:jackson-annotations:2.1.4',
-      JACKSON_CORE          : 'com.fasterxml.jackson.core:jackson-core:2.1.4',
-      JACKSON_JSON          : 'com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.1.2',
-      JACKSON_GUAVA_TYPES   : 'com.fasterxml.jackson.datatype:jackson-datatype-guava:2.1.2',
-      JACKSON_JODA_TYPES   : 'com.fasterxml.jackson.datatype:jackson-datatype-joda:2.1.2',
+      JACKSON_DATABIND      : dependencies.create("com.fasterxml.jackson.core:jackson-databind:2.3.0"),
+      JACKSON_ANNOTATIONS   : dependencies.create("com.fasterxml.jackson.core:jackson-annotations:2.3.0"),
+      JACKSON_CORE          : dependencies.create("com.fasterxml.jackson.core:jackson-core:2.3.0"),
+      JACKSON_PARANAMER     : dependencies.create("com.fasterxml.jackson.module:jackson-module-paranamer:2.3.0"),
+      JACKSON_JSON          : dependencies.create("com.fasterxml.jackson.jaxrs:jackson-jaxrs-json-provider:2.1.2"),
+      JACKSON_GUAVA_TYPES   : dependencies.create("com.fasterxml.jackson.datatype:jackson-datatype-guava:2.1.2"),
+      JACKSON_JODA_TYPES    : dependencies.create("com.fasterxml.jackson.datatype:jackson-datatype-joda:2.1.2"),
 
       JERSEY_SERVER         : 'com.sun.jersey:jersey-server:1.16',
       JERSEY_CLIENT         : 'com.sun.jersey:jersey-client:1.16',
