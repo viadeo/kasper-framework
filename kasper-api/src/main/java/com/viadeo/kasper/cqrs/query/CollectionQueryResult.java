@@ -82,7 +82,7 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
 
     /**
      * @deprecated in order to keep retro-compatibility before to be deleted.
-     * @see {@link #setList(java.util.Collection)}
+     * @see #setList(java.util.Collection)
      */
     @Deprecated
     @SuppressWarnings("unchecked")
@@ -93,7 +93,7 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
 
     /**
      * @deprecated in order to keep retro-compatibility before to be deleted.
-     * @see {@link #setListAsIterator(java.util.Iterator)}
+     * @see #setListAsIterator(java.util.Iterator)
      */
     @Deprecated
     @SuppressWarnings("unchecked")

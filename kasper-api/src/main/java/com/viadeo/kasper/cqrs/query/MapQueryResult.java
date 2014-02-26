@@ -66,7 +66,7 @@ public abstract class MapQueryResult<T extends QueryResult> implements Iterable<
 
     /**
      * @deprecated deprecated in order to keep retro-compatibility before to be deleted
-     * @see {@link #setMap(java.util.Map)}
+     * @see #setMap(java.util.Map)
      */
     @Deprecated
     @SuppressWarnings("unchecked")
