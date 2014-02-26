@@ -59,10 +59,6 @@ The following table lists all metrics directly provided by the framework :
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
 | Command gateway | Timer     | com.viadeo.kasper.cqrs.command.CommandGateway.**requests-time**      | Time to handle the command (all)                            |
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
-| Command gateway | Histogram | <Command Class>.**requests-times**                                   | Distribution of request handling time for this command      |
-+-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
-| Command gateway | Histogram | com.viadeo.kasper.cqrs.command.CommandGateway.**requests-times**     | Distribution of request handling time for all commands      |
-+-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
 | Command gateway | Meter     | <Command Class>.**requests**                                         | Rate of requests for this command                           |
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
 | Command gateway | Meter     | com.viadeo.kasper.cqrs.command.CommandGateway.**requests**           | Rate of requests for all commands                           |
@@ -75,13 +71,9 @@ The following table lists all metrics directly provided by the framework :
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
 | Query gateway   | Timer     | com.viadeo.kasper.cqrs.query.QueryGateway.**requests-time**          | Time to handle the query (all)                              |
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
-| Query gateway   | Timer     | <Query Class>.**requests-response-adapters-time**                     | Time to adapter the query adapters                            |
+| Query gateway   | Timer     | <Query Class>.**requests-response-adapters-time**                    | Time to adapter the query adapters                          |
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
-| Query gateway   | Timer     | <Query Class>.**requests-query-adapters-time**                        | Time to adapter the query response                           |
-+-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
-| Query gateway   | Histogram | <Query Class>.**requests-times**                                     | Distribution of request handling time for this query        |
-+-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
-| Query gateway   | Histogram | com.viadeo.kasper.cqrs.query.QueryGateway.**requests-times**         | Distribution of request handling time for all queries       |
+| Query gateway   | Timer     | <Query Class>.**requests-query-adapters-time**                       | Time to adapter the query response                          |
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+
 | Query gateway   | Meter     | <Query Class>.**requests**                                           | Rate of requests for this query                             |
 +-----------------+-----------+----------------------------------------------------------------------+-------------------------------------------------------------+

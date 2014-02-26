@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.nameForDomain;
 
 /**
  * @param <C> Command
@@ -82,13 +83,10 @@ public abstract class CommandHandler<C extends Command>
 
         CommandHandler.LOGGER.debug("Handle command " + commandClass.getSimpleName());
 
-        final String timerRequestsTimeName = name(this.commandClass, "requests-time");
-        final String meterErrorsName = name(this.commandClass, "errors");
-        final String meterRequestsName = name(this.commandClass, "requests");
-
         /* Start timer */
         final Timer.Context classTimer = getMetricRegistry().timer(GLOBAL_TIMER_REQUESTS_TIME_NAME).time();
-        final Timer.Context timer = getMetricRegistry().timer(timerRequestsTimeName).time();
+        final Timer.Context timer = getMetricRegistry().timer(name(this.commandClass, "requests-time")).time();
+        final Timer.Context timerDomain = getMetricRegistry().timer(nameForDomain(this.commandClass, "requests-time")).time();
 
         CommandResponse ret = null;
         Exception exception = null;
@@ -127,6 +125,7 @@ public abstract class CommandHandler<C extends Command>
         } finally {
             classTimer.close();
             timer.close();
+            timerDomain.close();;
 
             /* rollback uow on failure */
             if (isError && uow.isStarted()) {
@@ -145,11 +144,13 @@ public abstract class CommandHandler<C extends Command>
 
         /* Monitor the request calls */
         getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
-        getMetricRegistry().meter(meterRequestsName).mark();
+        getMetricRegistry().meter(name(this.commandClass, "requests")).mark();
+        getMetricRegistry().meter(nameForDomain(this.commandClass, "requests")).mark();
 
         if (null != exception) {
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
-            getMetricRegistry().meter(meterErrorsName).mark();
+            getMetricRegistry().meter(name(this.commandClass, "errors")).mark();
+            getMetricRegistry().meter(nameForDomain(this.commandClass, "errors")).mark();
         }
 
         if (null != exception) {

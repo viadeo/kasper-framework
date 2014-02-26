@@ -33,6 +33,7 @@ public final class KasperMetrics {
     public static void setNamePrefix(final String prefix) { instance()._setNamePrefix(prefix); }
     public static String name(final String name, final String...names) { return instance()._name(name, names); }
     public static String name(final Class clazz, final String...names) { return instance()._name(clazz, names); }
+    public static String nameForDomain(final Class clazz, final String...names) { return instance()._nameForDomain(clazz, names); }
     public static void setResolverFactory(final ResolverFactory resolverFactory) { instance()._setResolverFactory(resolverFactory); }
     public static void unsetResolverFactory() { instance()._unsetResolverFactory(); }
     public static void clearCache() { instance()._clearCache(); }
@@ -73,8 +74,21 @@ public final class KasperMetrics {
         return prefix + MetricRegistry.name(pathForKasperComponent(clazz), names);
     }
 
-    @SuppressWarnings("unchecked")
+    public String _nameForDomain(final Class clazz, final String...names) {
+        final String prefix = namePrefix.isEmpty() ? "" : namePrefix + ".";
+        return prefix + MetricRegistry.name(pathForKasperComponentDomain(clazz), names);
+    }
+
     protected String pathForKasperComponent(final Class clazz) {
+        return pathForKasperComponent(clazz, true);
+    }
+
+    protected String pathForKasperComponentDomain(final Class clazz) {
+        return pathForKasperComponent(clazz, false);
+    }
+
+    @SuppressWarnings("unchecked")
+    protected String pathForKasperComponent(final Class clazz, final boolean withComponentName) {
 
         if (pathCache.containsKey(clazz)) {
             return pathCache.get(clazz);
@@ -89,7 +103,11 @@ public final class KasperMetrics {
             if (resolver.isPresent()) {
                 final String domainName = resolver.get().getDomainLabel(clazz);
                 final String type = resolver.get().getTypeName();
-                componentPath = String.format("%s.%s.%s", domainName, type, name).toLowerCase();
+                if (withComponentName) {
+                    componentPath = String.format("%s.%s.%s", domainName, type, name).toLowerCase();
+                } else {
+                    componentPath = String.format("%s.%s", domainName, type).toLowerCase();
+                }
                 pathCache.put(clazz, componentPath);
             }
         }
