@@ -10,7 +10,8 @@ import org.junit.Test;
 
 import java.util.Date;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 public class KasperParanamerUTest {
 
@@ -49,41 +50,4 @@ public class KasperParanamerUTest {
         // Then throws an exception
     }
 
-    @Test
-    public void extractParameterNames_fromImmutableObject_usingCorrectlyJsonProperty_returnNames() {
-        // Given
-        final KasperParanamer kasperParanamer = new KasperParanamer();
-        final Class<KasperImmutabilityParanamerModuleITest.ImmutableObjectUsingJacksonAnnotation> declaringClass =
-                KasperImmutabilityParanamerModuleITest.ImmutableObjectUsingJacksonAnnotation.class;
-
-        // When
-        final String[] strings = kasperParanamer.extractParameterNames(declaringClass.getConstructors()[0]);
-
-        // Then
-        assertArrayEquals(new String[]{"label", "value"}, strings);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void extractParameterNames_fromImmutableObject_usingBadlyJsonProperty_returnNames() {
-        // Given
-        final KasperParanamer kasperParanamer = new KasperParanamer();
-        final Class<KasperImmutabilityParanamerModuleITest.ImmutableObjectUsingBadlyJacksonAnnotation> declaringClass =
-                KasperImmutabilityParanamerModuleITest.ImmutableObjectUsingBadlyJacksonAnnotation.class;
-
-        // When
-        kasperParanamer.extractParameterNames(declaringClass.getConstructors()[0]);
-
-        // Then throw exception
-    }
-
-    @Test(expected = NullPointerException.class)
-    public void extractParameterNames_witNull_throwException() {
-        // Given
-        final KasperParanamer kasperParanamer = new KasperParanamer();
-
-        // When
-        kasperParanamer.extractParameterNames(null);
-
-        // Then throws an exception
-    }
 }

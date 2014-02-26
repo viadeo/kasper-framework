@@ -7,19 +7,16 @@
 package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.module.paranamer.shaded.BytecodeReadingParanamer;
 import com.fasterxml.jackson.module.paranamer.shaded.DefaultParanamer;
 import com.fasterxml.jackson.module.paranamer.shaded.ParameterNamesNotFoundException;
 import com.fasterxml.jackson.module.paranamer.shaded.Paranamer;
-import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 
 import java.beans.BeanInfo;
 import java.beans.IntrospectionException;
 import java.beans.Introspector;
 import java.beans.PropertyDescriptor;
-import java.lang.annotation.Annotation;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -94,50 +91,9 @@ public class KasperParanamer implements Paranamer {
             } catch (final ParameterNamesNotFoundException e) {
                 return fallback.lookupParameterNames(accessibleObject, true);
             }
-        } else if (null == constructor.getAnnotation(JsonCreator.class)) {
-            return EMPTY_NAMES;
         }
 
-        return extractParameterNames(constructor);
-    }
-
-    /**
-     * Extract parameter names from JsonProperty annotation.
-     *
-     * @param constructor the constructor
-     * @return the list of parameter names
-     */
-    protected String[] extractParameterNames(final Constructor constructor) {
-        checkNotNull(constructor);
-        final Class[] parameterTypes = constructor.getParameterTypes();
-        final Annotation[][] parameterAnnotations = constructor.getParameterAnnotations();
-
-        final String[] parameterNames = new String[parameterTypes.length];
-
-        for (int i = 0; i < parameterTypes.length; i++) {
-            Optional<JsonProperty> optionalAnnotation = Optional.absent();
-
-            for (Annotation annotation : parameterAnnotations[i]) {
-                if (JsonProperty.class.isInstance(annotation)) {
-                    optionalAnnotation = Optional.of((JsonProperty) annotation);
-                    break;
-                }
-            }
-
-            if (optionalAnnotation.isPresent()) {
-                parameterNames[i] = optionalAnnotation.get().value();
-            } else {
-                final String message = String.format(
-                        "One or more @JsonProperty annotations are missing on the constructor with this parameters '%s' of the class '%s'",
-                        Lists.newArrayList(parameterTypes),
-                        constructor.getDeclaringClass()
-                );
-
-                throw new ParameterNamesNotFoundException(message);
-            }
-        }
-
-        return parameterNames;
+        return EMPTY_NAMES;
     }
 
     /**

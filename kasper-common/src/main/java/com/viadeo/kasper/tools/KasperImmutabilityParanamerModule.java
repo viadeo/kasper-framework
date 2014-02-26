@@ -7,9 +7,7 @@
 package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.module.paranamer.ParanamerModule;
-import com.fasterxml.jackson.module.paranamer.shaded.*;
-
-import java.lang.reflect.AccessibleObject;
+import com.fasterxml.jackson.module.paranamer.shaded.CachingParanamer;
 
 public class KasperImmutabilityParanamerModule extends ParanamerModule {
 

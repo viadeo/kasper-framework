@@ -9,7 +9,7 @@ package com.viadeo.kasper.tools;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
-import org.joda.time.*;
+import org.joda.time.DateTime;
 
 import java.lang.reflect.Field;
 import java.util.*;
