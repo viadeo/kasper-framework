@@ -15,10 +15,12 @@ import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.tools.ObjectMapperProvider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
@@ -28,17 +30,17 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class HttpMetricsExposer extends HttpExposer {
+public class HttpMetricsExposer extends HttpServlet {
+
     private static final long serialVersionUID = 8444284924203895624L;
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(HttpMetricsExposer.class);
 
     private static final class KasperMetricsFilter implements MetricFilter {
         private final String prefix = KasperMetrics.name("com.viadeo.kasper");
         @Override
         public boolean matches(final String name, final Metric metric) {
-            if (name.startsWith(prefix)) {
-                return true;
-            }
-            return false;
+            return name.startsWith(prefix);
         }
     }
 
@@ -61,10 +63,6 @@ public class HttpMetricsExposer extends HttpExposer {
     private final TimeUnit durationUnit;
 
     // ------------------------------------------------------------------------
-
-    public HttpMetricsExposer(final MetricRegistry metrics, final TimeUnit rateUnit, final TimeUnit durationUnit) {
-        this(metrics, ObjectMapperProvider.defaults().mapper(), rateUnit, durationUnit);
-    }
 
     public HttpMetricsExposer(final MetricRegistry metrics, final ObjectMapper mapper, final TimeUnit rateUnit, final TimeUnit durationUnit) {
         this.mapper = checkNotNull(mapper);

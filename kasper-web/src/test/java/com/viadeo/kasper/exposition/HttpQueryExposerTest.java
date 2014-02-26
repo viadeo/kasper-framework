@@ -7,6 +7,7 @@
 package com.viadeo.kasper.exposition;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.ClientResponse;
 import com.viadeo.kasper.CoreReasonCode;
@@ -19,6 +20,7 @@ import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.exposition.alias.XKasperAlias;
+import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -299,6 +301,26 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
                 .accept(MediaType.APPLICATION_JSON_TYPE)
                 .type(MediaType.APPLICATION_JSON_TYPE)
                 .get(ClientResponse.class);
+
+        // Then
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testPostQuery() throws MalformedURLException, URISyntaxException, JsonProcessingException {
+        // Given
+        final SomeQuery query = new SomeQuery();
+        query.doThrowSomeException = false;
+
+        final ObjectWriter objectWriter = ObjectMapperProvider.INSTANCE.mapper().writer();
+        final String requestEntity = objectWriter.writeValueAsString(query);
+
+        // When
+        final ClientResponse response = httpClient()
+                .resource(new URL(new URL(url()), "some").toURI())
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .post(ClientResponse.class, requestEntity);
 
         // Then
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());

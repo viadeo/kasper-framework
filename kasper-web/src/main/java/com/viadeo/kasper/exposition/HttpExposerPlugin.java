@@ -9,10 +9,12 @@ package com.viadeo.kasper.exposition;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
 
+import javax.servlet.http.HttpServlet;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-public abstract class HttpExposerPlugin<EXPOSER extends HttpExposer> implements Plugin {
+public abstract class HttpExposerPlugin<EXPOSER extends HttpServlet> implements Plugin {
 
     private final HttpContextDeserializer contextDeserializer;
     private final ObjectMapper mapper;
