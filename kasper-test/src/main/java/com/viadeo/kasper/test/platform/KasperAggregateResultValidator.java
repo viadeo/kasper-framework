@@ -17,7 +17,7 @@ import org.hamcrest.Matcher;
 import javax.validation.ConstraintViolation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
+import static com.viadeo.kasper.tools.KasperMatcher.equalTo;
 import static org.axonframework.test.matchers.Matchers.*;
 
 public class KasperAggregateResultValidator

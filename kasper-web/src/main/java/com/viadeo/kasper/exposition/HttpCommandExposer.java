@@ -189,7 +189,7 @@ public class HttpCommandExposer extends HttpExposer {
             final ObjectReader reader = mapper.reader();
 
             /* parse the input stream to that command, no utility method for input stream+type?? */
-            parser = reader.getFactory().createJsonParser(req.getInputStream());
+            parser = reader.getFactory().createParser(req.getInputStream());
             final Command command = reader.readValue(parser, commandClass);
 
             /* send now that command to the platform and wait for the result */
@@ -279,7 +279,7 @@ public class HttpCommandExposer extends HttpExposer {
         try {
 
             /* try writing the response */
-            generator = writer.getJsonFactory().createJsonGenerator(resp.getOutputStream());
+            generator = writer.getFactory().createGenerator(resp.getOutputStream());
             resp.setStatus(status);
             writer.writeValue(generator, response);
 

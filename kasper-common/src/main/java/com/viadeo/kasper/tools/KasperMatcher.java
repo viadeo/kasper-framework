@@ -4,9 +4,8 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.test.matchers;
+package com.viadeo.kasper.tools;
 
-import org.axonframework.test.matchers.MatcherExecutionException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
@@ -82,6 +81,11 @@ public class KasperMatcher extends BaseMatcher<Object> {
             return record(done, expected, actual, true);
         }
 
+        if (DateTime.class.isAssignableFrom(expected.getClass()) &&
+                DateTime.class.isAssignableFrom(actual.getClass()) ) {
+            return ((DateTime)expected).isEqual((DateTime) actual);
+        }
+
         if (isBaseJavaClass(expected.getClass())) {
             return record(done, expected, actual, expected.equals(actual));
         }
@@ -129,7 +133,7 @@ public class KasperMatcher extends BaseMatcher<Object> {
                 }
 
             } catch (final IllegalAccessException e) {
-                throw new MatcherExecutionException("Could not confirm object equality due to an exception", e);
+                throw new RuntimeException("Could not confirm object equality due to an exception", e);
             }
         }
         
@@ -257,7 +261,7 @@ public class KasperMatcher extends BaseMatcher<Object> {
     }
     
     // ------------------------------------------------------------------------
-    
+
     private static final DateTime ANYDATE = new DateTime();
     
     /**

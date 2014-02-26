@@ -17,12 +17,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class MapQueryResult<T extends QueryResult> implements Iterable<Map.Entry<String,T>>, QueryResult  {
 
-	private Map<String,T> map;
+    private static final long serialVersionUID = -3955605974595645008L;
+
+    private final Map<String,T> map;
 
     // ------------------------------------------------------------------------
 
     protected MapQueryResult() {
-        /* Jackson */
+        this(Maps.<String,T>newHashMap());
     }
 
 	protected MapQueryResult(final Map<String,T> map) {
@@ -39,35 +41,34 @@ public abstract class MapQueryResult<T extends QueryResult> implements Iterable<
     // ------------------------------------------------------------------------
 
 	public int getCount() {
-        if (null == map) {
-            return 0;
-        }
         return this.map.size();
 	}
+
     public boolean isEmpty() {
-        if (null == map) {
-            return true;
-        }
         return this.map.isEmpty();
     }
 
 	public Map<String,T> getMap() {
-        final ImmutableMap.Builder<String,T> builder = new ImmutableMap.Builder<String,T>();
-        if (null != map) {
-            builder.putAll(this.map);
-        }
-        return builder.build();
+        return ImmutableMap.copyOf(this.map);
 	}
 
+    /**
+     * This method is clearly a weakness of immutability, we keep it only to ensure retro-compatibility of the api.
+     * @param map the map to be set
+     * @deprecated deprecated in order to keep retro-compatibility before to be deleted.
+     */
+    @Deprecated
     public void setMap(final Map<String,T> map) {
-        if (null == this.map) {
-            this.map = Maps.newHashMap(checkNotNull(map));
-        } else {
-            throw new UnsupportedOperationException("MapQueryResult is immutable");
-        }
-        this.map= checkNotNull(map);
+        checkNotNull(map);
+        this.map.clear();
+        this.map.putAll(Maps.newHashMap(map));
     }
 
+    /**
+     * @deprecated deprecated in order to keep retro-compatibility before to be deleted
+     * @see #setMap(java.util.Map)
+     */
+    @Deprecated
     @SuppressWarnings("unchecked")
     public <P extends MapQueryResult> P withMap(final Map<String,T> map) {
         this.setMap(checkNotNull(map));
