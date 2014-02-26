@@ -9,22 +9,60 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.module.SimpleModule;
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperRelationID;
+import com.viadeo.kasper.KasperResponse;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
 import com.viadeo.kasper.cqrs.query.MapQueryResult;
+import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.impl.DefaultKasperRelationId;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
+@RunWith(value = Parameterized.class)
 public class SerDeserTests {
+
+    @Parameterized.Parameters
+    public static Collection<Object[]> data() {
+        Object[][] data = new Object[][] {
+                { true },
+                { false }
+        };
+        return Arrays.asList(data);
+    }
+
+    // ------------------------------------------------------------------------
+
+    private final Boolean useNewSerialization;
+    private final ObjectMapperProvider omProvider;
+
+    public SerDeserTests(final Boolean useNewSerialization) {
+        omProvider = new ObjectMapperProvider();
+
+        if ( useNewSerialization) {
+           omProvider.mapper().registerModule(
+               new SimpleModule()
+                   .addSerializer(CommandResponse.class, new CommandResponseNewSerializer())
+                   .addSerializer(QueryResponse.class, new QueryResponseNewSerializer())
+           );
+        }
+
+        this.useNewSerialization = useNewSerialization;
+    }
 
     // -- test beans ----------------------------------------------------------
 
@@ -80,8 +118,21 @@ public class SerDeserTests {
     // ------------------------------------------------------------------------
 
     private <T> T serDeserTest(final T object, Class<T> clazz) throws IOException {
-        final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(object);
-        final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
+        final String json = omProvider.objectWriter().writeValueAsString(object);
+        final ObjectReader objectReader = omProvider.objectReader();
+        final T actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), clazz);
+        return actualResponse;
+    }
+
+    private <T> String deserSerTest(final String json, Class<T> clazz) throws IOException {
+        final ObjectReader objectReader = omProvider.objectReader();
+        final T actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), clazz);
+        final String new_json = omProvider.objectWriter().writeValueAsString(actualResponse);
+        return new_json;
+    }
+
+    private <T> T deserTest(final String json, Class<T> clazz) throws IOException {
+        final ObjectReader objectReader = omProvider.objectReader();
         final T actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), clazz);
         return actualResponse;
     }
@@ -238,6 +289,171 @@ public class SerDeserTests {
 
         // Then
         assertEquals(actualResponse, map);
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static final String QUERY_RESPONSE_NORMAL = "{\"field\":\"test\"}";
+
+    public static final String QUERY_RESPONSE_OLD =
+            "{"
+          +         "\"status\":\"ERROR\","
+          +         "\"reason\":true,"
+          +         "\"message\":\"[0000] - UNKNOWN_REASON\","
+          +         "\"reasons\":[{"
+          +             "\"id\":\"8701c6ae-242e-4e80-92e9-522dc1ba999b\","
+          +             "\"code\":\"[0000] - UNKNOWN_REASON\","
+          +             "\"message\":\"ERROR Submiting query[getMemberContactFacets] to Kasper platform.\""
+          +         "},{"
+          +             "\"id\":\"8701c6ae-242e-4e80-92e9-522dc1ba999b\","
+          +             "\"code\":\"[0000] - UNKNOWN_REASON\","
+          +             "\"message\":\"Failed to execute phase [query]\""
+          +         "}]"
+          + "}"
+    ;
+
+    public static final String QUERY_UUID = "8701c6ae-242e-4e80-92e9-522dc1ba999b";
+    public static final String QUERY_MESG_1 = "ERROR Submiting query[getMemberContactFacets] to Kasper platform.";
+    public static final String QUERY_MESG_2 = "Failed to execute phase [query]";
+    public static final String QUERY_RESPONSE_NEW =
+            "{"
+          +         "\"id\":\"" + QUERY_UUID + "\","
+          +         "\"status\":\"ERROR\","
+          +         "\"code\":\"0000\","
+          +         "\"label\":\"UNKNOWN_REASON\","
+          +         "\"reason\":true,"
+          +         "\"reasons\":[{"
+          +             "\"message\":\"" + QUERY_MESG_1 + "\""
+          +         "},{"
+          +             "\"message\":\"" + QUERY_MESG_2 + "\""
+          +         "}]"
+          + "}"
+    ;
+
+    @Test
+    public void test_query_deserialize_normal() throws IOException {
+        // Given
+        // When
+        final String result_json = deserSerTest(QUERY_RESPONSE_NORMAL, NoSettersBean.class);
+
+        // Then
+        assertEquals(QUERY_RESPONSE_NORMAL, result_json);
+    }
+
+    @Test
+    public void test_query_deserialize_old() throws IOException {
+        if ( ! useNewSerialization) {
+            // Given
+            // When
+            final String result_json = deserSerTest(QUERY_RESPONSE_OLD, QueryResponse.class);
+
+            // Then
+            assertEquals(QUERY_RESPONSE_OLD, result_json);
+        }
+    }
+
+    @Test
+    public void test_query_deserialize_new() throws IOException {
+        // Given
+        // When
+        final QueryResponse<?> response = deserTest(QUERY_RESPONSE_NEW, QueryResponse.class);
+
+        // Then
+        assertEquals(QUERY_UUID, response.getReason().getId().toString());
+        assertEquals(KasperResponse.Status.ERROR, response.getStatus());
+        assertEquals(
+                CoreReasonCode.UNKNOWN_REASON.toString(),
+                response.getReason().getCode()
+        );
+        assertEquals(2, response.getReason().getMessages().size());
+        assertEquals(QUERY_MESG_1, response.getReason().getMessages().toArray()[0]);
+        assertEquals(QUERY_MESG_2, response.getReason().getMessages().toArray()[1]);
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static final String COMMAND_RESPONSE_NORMAL = "{\"status\":\"OK\",\"reason\":false,\"reasons\":[]}";
+
+    public static final String COMMAND_RESPONSE_OLD =
+            "{"
+                    +         "\"status\":\"ERROR\","
+                    +         "\"reason\":true,"
+                    +         "\"message\":\"[0000] - UNKNOWN_REASON\","
+                    +         "\"reasons\":[{"
+                    +             "\"id\":\"8701c6ae-242e-4e80-92e9-522dc1ba999b\","
+                    +             "\"code\":\"[0000] - UNKNOWN_REASON\","
+                    +             "\"message\":\"ERROR Submiting command to Kasper platform.\""
+                    +         "},{"
+                    +             "\"id\":\"8701c6ae-242e-4e80-92e9-522dc1ba999b\","
+                    +             "\"code\":\"[0000] - UNKNOWN_REASON\","
+                    +             "\"message\":\"Failed to execute phase [command]\""
+                    +         "}]"
+                    + "}"
+            ;
+
+    public static final String COMMAND_UUID = "6de93ba2-46ee-4f68-820e-a745a30c7599";
+    public static final String COMMAND_MESG_1 = "ERROR Submiting command to Kasper platform.";
+    public static final String COMMAND_MESG_2 = "Failed to execute phase [command]";
+    public static final String COMMAND_RESPONSE_NEW =
+            "{"
+                    +         "\"id\":\"" + COMMAND_UUID + "\","
+                    +         "\"status\":\"ERROR\","
+                    +         "\"code\":\"0000\","
+                    +         "\"label\":\"UNKNOWN_REASON\","
+                    +         "\"reason\":true,"
+                    +         "\"reasons\":[{"
+                    +             "\"message\":\"" + COMMAND_MESG_1 + "\""
+                    +         "},{"
+                    +             "\"message\":\"" + COMMAND_MESG_2 + "\""
+                    +         "}]"
+                    + "}"
+            ;
+
+    @Test
+    public void test_command_deserialize_normal() throws IOException {
+        // Given
+        final String json = omProvider.objectWriter().writeValueAsString(
+                CommandResponse.ok()
+        );
+
+        // Then
+        assertEquals(COMMAND_RESPONSE_NORMAL, json);
+
+        // When
+        final String result_json = deserSerTest(COMMAND_RESPONSE_NORMAL, CommandResponse.class);
+
+        // Then
+        assertEquals(COMMAND_RESPONSE_NORMAL, result_json);
+    }
+
+    @Test
+    public void test_command_deserialize_old() throws IOException {
+        if ( ! useNewSerialization) {
+            // Given
+            // When
+            final String result_json = deserSerTest(COMMAND_RESPONSE_OLD, CommandResponse.class);
+
+            // Then
+            assertEquals(COMMAND_RESPONSE_OLD, result_json);
+        }
+    }
+
+    @Test
+    public void test_command_deserialize_new() throws IOException {
+        // Given
+        // When
+        final CommandResponse response = deserTest(COMMAND_RESPONSE_NEW, CommandResponse.class);
+
+        // Then
+        assertEquals(COMMAND_UUID, response.getReason().getId().toString());
+        assertEquals(KasperResponse.Status.ERROR, response.getStatus());
+        assertEquals(
+                CoreReasonCode.UNKNOWN_REASON.toString(),
+                response.getReason().getCode()
+        );
+        assertEquals(2, response.getReason().getMessages().size());
+        assertEquals(COMMAND_MESG_1, response.getReason().getMessages().toArray()[0]);
+        assertEquals(COMMAND_MESG_2, response.getReason().getMessages().toArray()[1]);
     }
 
 }

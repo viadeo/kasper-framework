@@ -6,38 +6,19 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.annotation.Immutable;
-import com.viadeo.kasper.cqrs.TransportMode;
-import com.viadeo.kasper.cqrs.command.http.HTTPCommandResponse;
-import com.viadeo.kasper.exception.KasperException;
-
-import java.io.Serializable;
+import com.viadeo.kasper.KasperResponse;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Base Kasper command response implementation
  */
-public class CommandResponse implements Serializable, Immutable {
+public class CommandResponse extends KasperResponse {
     private static final long serialVersionUID = -938831661655150085L;
-
-    /**
-     * Accepted values for command response statuses
-     */
-    public static enum Status {
-        OK,         /** All is ok */
-        REFUSED,    /** Refused by some intermediate validation mechanisms */
-        ERROR       /** Just reason in command handling or domain business */
-    }
-
-    /**
-     * The current command status
-     */
-    private final Status status;
-    private final KasperReason reason;
 
     private String securityToken;
 
@@ -96,9 +77,17 @@ public class CommandResponse implements Serializable, Immutable {
 
     // ------------------------------------------------------------------------
 
+    public CommandResponse(final KasperResponse response, final String securityToken) {
+        super(response);
+        this.securityToken = checkNotNull(securityToken);
+    }
+
+    public CommandResponse(final KasperResponse response) {
+        super(response);
+    }
+
     public CommandResponse(final CommandResponse response) {
-        this.status = response.status;
-        this.reason = response.reason;
+        super(response);
 
         if (response.getSecurityToken().isPresent()) {
             this.securityToken = response.getSecurityToken().get();
@@ -106,63 +95,7 @@ public class CommandResponse implements Serializable, Immutable {
     }
 
     public CommandResponse(final Status status, final KasperReason reason) {
-        this.status = checkNotNull(status);
-        
-        if (!status.equals(Status.OK) && (null == reason)) {
-            throw new IllegalStateException("Please provide a reason to the command response");
-        }
-
-        if (status.equals(Status.OK) && (null != reason)) {
-            throw new IllegalStateException("Invalid command response OK provided with an reason");
-        }
-        
-        this.reason = reason;
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * @return the current command response execution status
-     */
-    public Status getStatus() {
-        return this.status;
-    }
-
-    /**
-     * @return true if the current status is OK
-     */
-    public boolean isOK() {
-        return (this.status.equals(Status.OK));
-    }
-
-    /**
-     * @return a list of reasons or empty if command succeeded.
-     */
-    public KasperReason getReason() {
-        return reason;
-    }
-
-    /**
-     * @return true if this command has answered with a reason
-     */
-    public boolean hasReason() {
-        return this.status != Status.OK;
-    }
-
-    // ------------------------------------------------------------------------
-
-    public TransportMode getTransportMode() {
-        if (HTTPCommandResponse.class.isAssignableFrom(this.getClass())) {
-            return TransportMode.HTTP;
-        }
-        return TransportMode.UNKNOWN;
-    }
-
-    public HTTPCommandResponse asHttp(){
-        if (HTTPCommandResponse.class.isAssignableFrom(this.getClass())) {
-            return (HTTPCommandResponse) this;
-        }
-        throw new KasperException("Not an HTTP command response");
+        super(status, reason);
     }
 
     // ------------------------------------------------------------------------
@@ -179,21 +112,43 @@ public class CommandResponse implements Serializable, Immutable {
 
         final CommandResponse other = (CommandResponse) obj;
 
-        return com.google.common.base.Objects.equal(this.status, other.status)
-               && com.google.common.base.Objects.equal(this.reason, other.reason);
+        if ( ! super.equals(obj)) {
+            return false;
+        }
+
+        if (this.getSecurityToken().isPresent() != other.getSecurityToken().isPresent()) {
+            return false;
+        }
+
+        if ( ! this.getSecurityToken().isPresent()) {
+            return true;
+        }
+
+        if ( ! this.getSecurityToken().get().equals(other.getSecurityToken().get())) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        return com.google.common.base.Objects.hashCode(status, reason);
+        int hashCode = super.hashCode();
+        if (this.getSecurityToken().isPresent()) {
+            hashCode += com.google.common.base.Objects.hashCode(this.getSecurityToken().get());
+        }
+        return hashCode;
     }
 
     @Override
     public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .addValue(this.status)
-                .addValue(this.reason)
-                .toString();
+        final Objects.ToStringHelper helper = com.google.common.base.Objects.toStringHelper(this)
+                           .addValue(super.toString());
+        if (this.getSecurityToken().isPresent()) {
+            helper.addValue(this.getSecurityToken().get());
+        }
+
+        return helper.toString();
     }
 
 }

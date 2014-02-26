@@ -9,7 +9,10 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.KasperResponse;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import org.slf4j.Logger;
@@ -20,27 +23,45 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
+import static com.viadeo.kasper.KasperResponse.Status;
+
+public class QueryResponseDeserializer extends KasperResponseDeserializer<QueryResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class); 
 
     private final JavaType responseType;
+
+    // ------------------------------------------------------------------------
 
     QueryResponseDeserializer(final JavaType responseType) {
         this.responseType = responseType;
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public QueryResponse deserialize(JsonParser jp, DeserializationContext ctxt)
+    public QueryResponse deserialize(final JsonParser jp, final DeserializationContext ctxt)
             throws IOException {
 
-        ObjectNode root = jp.readValueAs(ObjectNode.class);
+        final ObjectNode root = jp.readValueAs(ObjectNode.class);
+
+        if (root.has(ObjectMapperProvider.ID)) {
+            return deserialize_new(jp, root);
+        } else {
+            return deserialize_old(jp, root);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    public QueryResponse deserialize_old(final JsonParser jp, final ObjectNode root)
+            throws IOException {
 
         if (root.has(ObjectMapperProvider.REASON) && root.get(ObjectMapperProvider.REASON).asBoolean()) {
 
-            QueryResponse.Status status = QueryResponse.Status.ERROR;
+            Status status = Status.ERROR;
             if (root.has(ObjectMapperProvider.STATUS)) {
                 try {
-                    status = QueryResponse.Status.valueOf(root.get(ObjectMapperProvider.STATUS).asText());
+                    status = Status.valueOf(root.get(ObjectMapperProvider.STATUS).asText());
                 } catch (final IllegalArgumentException e) {
                     LOGGER.error("Unable to determine status", e);
                 }
@@ -77,5 +98,22 @@ public class QueryResponseDeserializer extends JsonDeserializer<QueryResponse> {
             return QueryResponse.of((QueryResult) ((ObjectMapper) jp.getCodec()).convertValue(root, responseType));
         }
     }
+
+    // ------------------------------------------------------------------------
+
+    public QueryResponse deserialize_new(final JsonParser jp, final ObjectNode root)
+            throws IOException {
+
+        if (root.has(ObjectMapperProvider.REASON) && root.get(ObjectMapperProvider.REASON).asBoolean()) {
+
+            final KasperResponse kasperResponse = super.deserialize(root);
+            return new QueryResponse(kasperResponse);
+
+        } else {
+            // not very efficient but will be fine for now
+            return QueryResponse.of((QueryResult) ((ObjectMapper) jp.getCodec()).convertValue(root, responseType));
+        }
+    }
+
 
 }

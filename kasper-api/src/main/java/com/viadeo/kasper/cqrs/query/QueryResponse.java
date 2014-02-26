@@ -9,12 +9,7 @@ package com.viadeo.kasper.cqrs.query;
 import com.google.common.base.Objects;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.annotation.Immutable;
-import com.viadeo.kasper.cqrs.TransportMode;
-import com.viadeo.kasper.cqrs.query.http.HTTPQueryResponse;
-import com.viadeo.kasper.exception.KasperException;
-
-import java.io.Serializable;
+import com.viadeo.kasper.KasperResponse;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -26,29 +21,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Can be used to store some properties of a root entity which can be later the
  * base entity of a Kasper CQRS domain entity command.
  */
-public class QueryResponse<RESULT extends QueryResult> implements Serializable, Immutable {
+public class QueryResponse<RESULT extends QueryResult> extends KasperResponse {
     private static final long serialVersionUID = -6543664128786160837L;
 
-    /**
-     * Accepted values for query response statuses
-     * 
-     * OK       All is ok
-     * REFUSED  Refused by some intermediate validation mechanisms
-     * ERROR    Just reason in command handling or domain business
-     * 
-     */
-    public static enum Status {
-        OK,
-        REFUSED,
-        ERROR
-    }
-
-    /**
-     * The current command status
-     */
-    private final Status status;
     private final RESULT result;
-    private final KasperReason reason;
 
     // ------------------------------------------------------------------------
 
@@ -74,92 +50,72 @@ public class QueryResponse<RESULT extends QueryResult> implements Serializable, 
 
     // ------------------------------------------------------------------------
 
+    public QueryResponse(final KasperResponse response) {
+        super(response);
+        this.result = null;
+    }
+
+    public QueryResponse(final KasperResponse response, final RESULT result) {
+        super(response);
+        this.result = checkNotNull(result);
+    }
+
     public QueryResponse(final QueryResponse<RESULT> response) {
-        this.status = Status.OK;
+        super(response);
         this.result = response.result;
-        this.reason = response.reason;
     }
 
     public QueryResponse(final RESULT result) {
-        this.status = Status.OK;
+        super();
         this.result = checkNotNull(result);
-        this.reason = null;
     }
     
     public QueryResponse(final KasperReason reason) {
-        this.status= Status.ERROR;
-        this.result = null;
-        this.reason = checkNotNull(reason);
+        this(Status.ERROR, checkNotNull(reason));
     }
 
     public QueryResponse(final Status status, final KasperReason reason) {
-        this.status = status;
+        super(status, reason);
         this.result = null;
-        this.reason = checkNotNull(reason);
     }
 
     // ------------------------------------------------------------------------
 
-    public Status getStatus() {
-        return this.status;
-    }
-
-    public KasperReason getReason() {
-        return reason;
-    }
-    
     public RESULT getResult() {
         return result;
     }
-    
-    public boolean isOK() {
-        return null == reason;
-    }
 
     // ------------------------------------------------------------------------
-
-    public TransportMode getTransportMode() {
-         if (HTTPQueryResponse.class.isAssignableFrom(this.getClass())) {
-             return TransportMode.HTTP;
-        }
-        return TransportMode.UNKNOWN;
-    }
-
-    public HTTPQueryResponse asHttp() {
-        if (HTTPQueryResponse.class.isAssignableFrom(this.getClass())) {
-            return (HTTPQueryResponse) this;
-        }
-        throw new KasperException("Not an HTTP query response");
-    }
-
-    // ------------------------------------------------------------------------
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(status) + Objects.hashCode(result) + Objects.hashCode(reason);
-    }
 
     @Override
     public boolean equals(final Object obj) {
-        if (this == checkNotNull(obj)) {
-            return true;
+        if (obj == null) {
+            return false;
         }
-        if ( ! getClass().equals(obj.getClass())) {
+
+        if (getClass() != obj.getClass()) {
             return false;
         }
 
         final QueryResponse other = (QueryResponse) obj;
-        return Objects.equal(other.status, this.status)
-                && Objects.equal(other.result, this.result)
-                && Objects.equal(other.reason, this.reason);
+
+        if ( ! super.equals(obj)) {
+            return false;
+        }
+
+        return Objects.equal(this.result, other.result);
+    }
+
+    @Override
+    public int hashCode() {
+        return super.hashCode() + com.google.common.base.Objects.hashCode(this.result);
     }
 
     @Override
     public String toString() {
-        return Objects.toStringHelper(this)
-                .add("status", this.status)
-                .add("result", this.result)
-                .add("reason", this.reason)
+        return com.google.common.base.Objects.toStringHelper(this)
+                .addValue(super.toString())
+                .addValue(this.result)
                 .toString();
     }
 

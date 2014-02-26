@@ -15,7 +15,7 @@ import org.axonframework.test.AxonAssertionError;
 import java.util.Arrays;
 import java.util.Iterator;
 
-import static com.viadeo.kasper.cqrs.command.CommandResponse.Status.*;
+import static com.viadeo.kasper.KasperResponse.Status.*;
 import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
 
 /**
