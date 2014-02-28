@@ -81,16 +81,35 @@ public class KasperEventBus extends ClusteringEventBus {
      * Return a default cluster selector
      */
     public static ClusterSelector getCluster(final Policy busPolicy) {
-        return getCluster(busPolicy, getDefaultErrorHandler());
+        return getCluster(busPolicy, new ProcessorDownLatch());
+    }
+
+    /*
+    * Return a default cluster selector
+    */
+    public static ClusterSelector getCluster(final Policy busPolicy, final ProcessorDownLatch processorDownLatch) {
+        return getCluster(busPolicy, getDefaultErrorHandler(), processorDownLatch);
     }
 
     /*
      * Return a default cluster selector using the specified error handler
      * FIXME: eventually manage with a correct transaction manager
      */
-    public static ClusterSelector getCluster(final Policy busPolicy, final ErrorHandler errorHandler) {
+    public static ClusterSelector getCluster(
+            final Policy busPolicy,
+            final ErrorHandler errorHandler,
+            final ProcessorDownLatch processorDownLatch
+    ) {
 
         if (Policy.ASYNCHRONOUS.equals(busPolicy)) {
+            Runtime.getRuntime().addShutdownHook(new Thread() {
+                @Override
+                public void run() {
+                    LOGGER.info("Start shutdown hook : Event processing");
+                    processorDownLatch.await();
+                }
+            });
+
             return new DefaultClusterSelector(
                 new AsynchronousCluster(
                     KASPER_CLUSTER_NAME,
@@ -104,7 +123,16 @@ public class KasperEventBus extends ClusteringEventBus {
                     new DefaultUnitOfWorkFactory(new NoTransactionManager()),
                     new SequentialPolicy(),
                     errorHandler
-                )
+                ) {
+                    @Override
+                    protected EventProcessor newProcessingScheduler(EventProcessor.ShutdownCallback shutDownCallback) {
+                        final EventProcessor eventProcessor = super.newProcessingScheduler(
+                                new KasperShutdownCallback(processorDownLatch, shutDownCallback)
+                        );
+                        processorDownLatch.process(eventProcessor);
+                        return eventProcessor;
+                    }
+                }
             );
         }
 
@@ -153,7 +181,7 @@ public class KasperEventBus extends ClusteringEventBus {
      * Build an asynchronous Kasper event bus with the specified error handler
      */
     public KasperEventBus(final ErrorHandler errorHandler) {
-        super(getCluster(Policy.ASYNCHRONOUS, errorHandler));
+        super(getCluster(Policy.ASYNCHRONOUS, errorHandler, new ProcessorDownLatch()));
         this.currentPolicy = Policy.ASYNCHRONOUS;
     }
 
