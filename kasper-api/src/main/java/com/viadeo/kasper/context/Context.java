@@ -11,6 +11,7 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.impl.DefaultKasperId;
 
 import java.io.Serializable;
+import java.util.Locale;
 import java.util.Map;
 import java.util.UUID;
 
@@ -94,12 +95,17 @@ public interface Context extends Serializable  {
     // ------------------------------------------------------------------------
 
 	/**
-	 * @return the user default language (ISO 639-1)
+	 * @return the user default language (preferred: ISO 639-1)
 	 */
 	String getUserLang();
 
+    /**
+     * @return the user default language as locale
+     */
+    Locale getUserLangAsLocale();
+
 	/**
-	 * @param lang user default language (ISO 639-1)
+	 * @param lang user default language (preferred: ISO 639-1)
 	 */
 	Context setUserLang(String lang);
 
