@@ -20,7 +20,6 @@
     - `<domain>.eventlistener.<name>.committed`
     - `<domain>.eventlistener.committed`
 
-
 ### Version 0.3.9 (02/14/2014, [Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.3.9~~))###
 
 * [Improvement 174](https://github.com/viadeo/kasper-framework/issues/174) Add the fully qualified domain name of the answering server as HTTP header by the exposition entries points : `X-KASPER-SERVER-NAME`
