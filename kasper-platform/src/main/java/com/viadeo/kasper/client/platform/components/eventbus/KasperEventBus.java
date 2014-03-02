@@ -24,6 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -62,32 +63,33 @@ public class KasperEventBus extends ClusteringEventBus {
      */
     public static ErrorHandler getDefaultErrorHandler() {
         return new DefaultErrorHandler(RetryPolicy.proceed()) {
-                        @Override
-                        public RetryPolicy handleError(final Throwable exception,
-                                                       final EventMessage eventMessage,
-                                                       final EventListener eventListener) {
-                            /* TODO: store the error, generate error event */
-                            LOGGER.error(String.format("Error %s occured during processing of event %s in listener %s ",
-                                        exception.getMessage(),
-                                        eventMessage.getPayload().getClass().getName(),
-                                        eventListener.getClass().getName()
-                            ));
-                            return super.handleError(exception, eventMessage, eventListener);
-                        }
-                   };
+            @Override
+            public RetryPolicy handleError(final Throwable exception,
+                                           final EventMessage eventMessage,
+                                           final EventListener eventListener) {
+                /* TODO: store the error, generate error event */
+                LOGGER.error(String.format(
+                    "Error %s occured during processing of event %s in listener %s ",
+                    exception.getMessage(),
+                    eventMessage.getPayload().getClass().getName(),
+                    eventListener.getClass().getName()
+                ));
+                return super.handleError(exception, eventMessage, eventListener);
+            }
+        };
     }
 
     /*
      * Return a default cluster selector
      */
     public static ClusterSelector getCluster(final Policy busPolicy) {
-        return getCluster(busPolicy, new ProcessorDownLatch());
+        return getCluster(busPolicy, new KasperProcessorDownLatch());
     }
 
     /*
     * Return a default cluster selector
     */
-    public static ClusterSelector getCluster(final Policy busPolicy, final ProcessorDownLatch processorDownLatch) {
+    public static ClusterSelector getCluster(final Policy busPolicy, final KasperProcessorDownLatch processorDownLatch) {
         return getCluster(busPolicy, getDefaultErrorHandler(), processorDownLatch);
     }
 
@@ -98,8 +100,7 @@ public class KasperEventBus extends ClusteringEventBus {
     public static ClusterSelector getCluster(
             final Policy busPolicy,
             final ErrorHandler errorHandler,
-            final ProcessorDownLatch processorDownLatch
-    ) {
+            final KasperProcessorDownLatch processorDownLatch) {
 
         if (Policy.ASYNCHRONOUS.equals(busPolicy)) {
             Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -110,15 +111,17 @@ public class KasperEventBus extends ClusteringEventBus {
                 }
             });
 
+            final BlockingQueue<Runnable> busQueue = new LinkedBlockingQueue<Runnable>();
+
             return new DefaultClusterSelector(
                 new AsynchronousCluster(
                     KASPER_CLUSTER_NAME,
                     new ThreadPoolExecutor(
-                            CORE_POOL_SIZE,
-                            MAXIMUM_POOL_SIZE,
-                            KEEP_ALIVE_TIME,
-                            TIME_UNIT,
-                            new LinkedBlockingQueue<Runnable>()
+                        CORE_POOL_SIZE,
+                        MAXIMUM_POOL_SIZE,
+                        KEEP_ALIVE_TIME,
+                        TIME_UNIT,
+                        busQueue
                     ),
                     new DefaultUnitOfWorkFactory(new NoTransactionManager()),
                     new SequentialPolicy(),
@@ -127,7 +130,7 @@ public class KasperEventBus extends ClusteringEventBus {
                     @Override
                     protected EventProcessor newProcessingScheduler(EventProcessor.ShutdownCallback shutDownCallback) {
                         final EventProcessor eventProcessor = super.newProcessingScheduler(
-                                new KasperShutdownCallback(processorDownLatch, shutDownCallback)
+                            new KasperShutdownCallback(processorDownLatch, shutDownCallback)
                         );
                         processorDownLatch.process(eventProcessor);
                         return eventProcessor;
@@ -181,7 +184,7 @@ public class KasperEventBus extends ClusteringEventBus {
      * Build an asynchronous Kasper event bus with the specified error handler
      */
     public KasperEventBus(final ErrorHandler errorHandler) {
-        super(getCluster(Policy.ASYNCHRONOUS, errorHandler, new ProcessorDownLatch()));
+        super(getCluster(Policy.ASYNCHRONOUS, errorHandler, new KasperProcessorDownLatch()));
         this.currentPolicy = Policy.ASYNCHRONOUS;
     }
 
@@ -228,12 +231,12 @@ public class KasperEventBus extends ClusteringEventBus {
 
     public void publishEvent(final Context context, final IEvent event) {
         this.publish(
-                new GenericEventMessage<>(
-                        checkNotNull(event),
-                        new HashMap<String, Object>() {{
-                            this.put(Context.METANAME, context);
-                        }}
-                )
+            new GenericEventMessage<>(
+                checkNotNull(event),
+                new HashMap<String, Object>() {{
+                    this.put(Context.METANAME, context);
+                }}
+            )
         );
     }
 

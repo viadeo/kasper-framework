@@ -19,15 +19,19 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
-public class ProcessorDownLatchUTest {
+public class KasperProcessorDownLatchUTest {
 
     private ExecutorService executor = Executors.newSingleThreadExecutor();
-    private ProcessorDownLatch processorDownLatch;
+    private KasperProcessorDownLatch processorDownLatch;
+
+    // ------------------------------------------------------------------------
 
     @Before
     public void setUp(){
-        processorDownLatch = new ProcessorDownLatch();
+        processorDownLatch = new KasperProcessorDownLatch();
     }
+
+    // ------------------------------------------------------------------------
 
     @Test(expected = NullPointerException.class)
     public void process_withNullAsEventProcessor_throwException() {
@@ -204,4 +208,5 @@ public class ProcessorDownLatchUTest {
         verify(eventProcessorA).run();
         verify(eventProcessorB).run();
     }
+
 }

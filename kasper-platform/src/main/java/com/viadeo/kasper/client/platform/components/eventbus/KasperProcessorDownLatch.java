@@ -20,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-public class ProcessorDownLatch {
+public class KasperProcessorDownLatch {
 
     private static final int N_THREADS = 5;
     public static final long TIMEOUT_IN_MILLIS = 1000 * 60;
@@ -32,34 +32,41 @@ public class ProcessorDownLatch {
     private CountDownLatch countDownLatch;
     private boolean awaiting;
 
-    public ProcessorDownLatch() {
+    // ------------------------------------------------------------------------
+
+    public KasperProcessorDownLatch() {
         this(TIMEOUT_IN_MILLIS);
     }
 
-    public ProcessorDownLatch(long timeout) {
+    public KasperProcessorDownLatch(final long timeout) {
+        this.awaiting = false;
         this.timeout = timeout;
         this.eventProcessors = Sets.newHashSet();
         this.executor = Executors.newFixedThreadPool(
-                N_THREADS,
-                new ThreadFactoryBuilder().setNameFormat("event-shutdown-hook-%d").build()
+            N_THREADS,
+            new ThreadFactoryBuilder().setNameFormat("event-shutdown-hook-%d").build()
         );
     }
 
+    // ------------------------------------------------------------------------
+
     public void await() {
-        checkState(!awaiting, "is already in awaiting");
+        checkState( ! awaiting, "is already awaiting");
 
         countDownLatch = new CountDownLatch(runAllProcesses());
         awaiting = true;
 
         try {
             countDownLatch.await(timeout, TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            throw new KasperException(
-                    String.format("Timeout expired : event processing still alive (%s)", getCount()), e);
+        } catch (final InterruptedException e) {
+            throw new KasperException(String.format(
+                    "Timeout expired : event processing still alive (%s)",
+                    getCount()), e
+            );
         }
     }
 
-    private synchronized int runAllProcesses(){
+    private synchronized int runAllProcesses() {
         for (final EventProcessor eventProcessor : eventProcessors) {
             executor.submit(eventProcessor);
         }
@@ -69,15 +76,17 @@ public class ProcessorDownLatch {
 
     public synchronized void process(final EventProcessor eventProcessor){
         checkNotNull(eventProcessor);
-        if(awaiting) {
-            throw new KasperException("Application shutdown : unable to create new processing scheduler!");
+        if (awaiting) {
+            throw new KasperException(
+                    "Application shutdown : unable to create new processing scheduler!"
+            );
         }
         this.eventProcessors.add(eventProcessor);
     }
 
     public synchronized void processDown(final EventProcessor eventProcessor){
         this.eventProcessors.remove(checkNotNull(eventProcessor));
-        if (countDownLatch != null) {
+        if (null != countDownLatch) {
             this.countDownLatch.countDown();
         }
     }
@@ -85,4 +94,5 @@ public class ProcessorDownLatch {
     public int getCount(){
         return this.eventProcessors.size();
     }
+
 }
