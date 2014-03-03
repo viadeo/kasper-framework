@@ -7,7 +7,10 @@
 package com.viadeo.kasper.security;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.security.callback.*;
+import com.viadeo.kasper.security.callback.ApplicationIdValidator;
+import com.viadeo.kasper.security.callback.IdentityContextProvider;
+import com.viadeo.kasper.security.callback.IpAddressValidator;
+import com.viadeo.kasper.security.callback.SecurityTokenValidator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
