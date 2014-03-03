@@ -24,7 +24,7 @@ import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.security.KasperInvalidSecurityTokenException;
 import com.viadeo.kasper.security.KasperMissingSecurityTokenException;
 import com.viadeo.kasper.security.SecurityConfiguration;
-import com.viadeo.kasper.security.annotation.Public;
+import com.viadeo.kasper.security.annotation.XKasperPublic;
 import com.viadeo.kasper.security.callback.IdentityContextProvider;
 import com.viadeo.kasper.security.callback.SecurityTokenValidator;
 import org.junit.Test;
@@ -87,7 +87,7 @@ public class SecuredPlatformRunnerITest {
     private static class TestQuery implements Query {
     }
 
-    @Public
+    @XKasperPublic
     private static class TestPublicQuery implements Query {
     }
 
@@ -95,7 +95,7 @@ public class SecuredPlatformRunnerITest {
     private static class TestCommand implements Command {
     }
 
-    @Public
+    @XKasperPublic
     @XKasperCommand
     private static class TestPublicCommand implements Command {
     }

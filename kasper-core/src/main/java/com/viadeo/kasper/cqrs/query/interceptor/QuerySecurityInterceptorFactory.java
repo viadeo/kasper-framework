@@ -20,7 +20,7 @@ import com.viadeo.kasper.security.DefaultPublicSecurityStrategy;
 import com.viadeo.kasper.security.DefaultSecurityStrategy;
 import com.viadeo.kasper.security.SecurityConfiguration;
 import com.viadeo.kasper.security.SecurityStrategy;
-import com.viadeo.kasper.security.annotation.Public;
+import com.viadeo.kasper.security.annotation.XKasperPublic;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -36,7 +36,7 @@ public class QuerySecurityInterceptorFactory extends QueryInterceptorFactory {
     @Override
     public Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> create(final TypeToken<?> type) {
         final Class<? extends Query> queryClass = extractQueryClassFromTypeToken(type);
-        final boolean isPublicQuery = queryClass.isAnnotationPresent(Public.class);
+        final boolean isPublicQuery = queryClass.isAnnotationPresent(XKasperPublic.class);
         final SecurityStrategy securityStrategy = isPublicQuery ?
                 new DefaultPublicSecurityStrategy(securityConfiguration) :
                 new DefaultSecurityStrategy(securityConfiguration);

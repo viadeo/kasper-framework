@@ -17,7 +17,7 @@ import com.viadeo.kasper.security.DefaultPublicSecurityStrategy;
 import com.viadeo.kasper.security.DefaultSecurityStrategy;
 import com.viadeo.kasper.security.SecurityConfiguration;
 import com.viadeo.kasper.security.SecurityStrategy;
-import com.viadeo.kasper.security.annotation.Public;
+import com.viadeo.kasper.security.annotation.XKasperPublic;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -33,7 +33,7 @@ public class CommandSecurityInterceptorFactory extends CommandInterceptorFactory
     @Override
     public Optional<InterceptorChain<Command, CommandResponse>> create(final TypeToken<?> type) {
         final Class<?> commandClass = type.getRawType();
-        final boolean isPublicCommand = commandClass.isAnnotationPresent(Public.class);
+        final boolean isPublicCommand = commandClass.isAnnotationPresent(XKasperPublic.class);
         SecurityStrategy securityStrategy = isPublicCommand ?
                 new DefaultPublicSecurityStrategy(securityConfiguration) :
                 new DefaultSecurityStrategy(securityConfiguration);
