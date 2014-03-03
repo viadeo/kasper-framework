@@ -12,11 +12,11 @@ public class KasperMissingIpAddressException extends KasperSecurityException {
 
     private static final long serialVersionUID = -2521256807381853907L;
 
-    public KasperMissingIpAddressException(String message, CoreReasonCode coreReasonCode) {
+    public KasperMissingIpAddressException(final String message, final CoreReasonCode coreReasonCode) {
         super(message, coreReasonCode);
     }
 
-    public KasperMissingIpAddressException(String message, Throwable cause, CoreReasonCode coreReasonCode) {
+    public KasperMissingIpAddressException(final String message, final Throwable cause, final CoreReasonCode coreReasonCode) {
         super(message, cause, coreReasonCode);
     }
 }

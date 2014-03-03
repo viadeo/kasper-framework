@@ -12,11 +12,11 @@ public class KasperMissingSecurityTokenException extends KasperSecurityException
 
     private static final long serialVersionUID = -2521256807381853907L;
 
-    public KasperMissingSecurityTokenException(String message, CoreReasonCode coreReasonCode) {
+    public KasperMissingSecurityTokenException(final String message, final CoreReasonCode coreReasonCode) {
         super(message, coreReasonCode);
     }
 
-    public KasperMissingSecurityTokenException(String message, Throwable cause, CoreReasonCode coreReasonCode) {
+    public KasperMissingSecurityTokenException(final String message, final Throwable cause, final CoreReasonCode coreReasonCode) {
         super(message, cause, coreReasonCode);
     }
 }

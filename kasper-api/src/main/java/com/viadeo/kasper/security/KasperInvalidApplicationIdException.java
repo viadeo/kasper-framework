@@ -12,11 +12,11 @@ public class KasperInvalidApplicationIdException extends KasperSecurityException
 
     private static final long serialVersionUID = -6948187421968186520L;
 
-    public KasperInvalidApplicationIdException(String message, CoreReasonCode coreReasonCode) {
+    public KasperInvalidApplicationIdException(final String message, final CoreReasonCode coreReasonCode) {
         super(message, coreReasonCode);
     }
 
-    public KasperInvalidApplicationIdException(String message, Throwable cause, CoreReasonCode coreReasonCode) {
+    public KasperInvalidApplicationIdException(final String message, final Throwable cause, final CoreReasonCode coreReasonCode) {
         super(message, cause, coreReasonCode);
     }
 
