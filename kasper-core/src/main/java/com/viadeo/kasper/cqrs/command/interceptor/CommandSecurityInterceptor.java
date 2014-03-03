@@ -17,7 +17,7 @@ import com.viadeo.kasper.security.SecurityStrategy;
 public class CommandSecurityInterceptor<C extends Command> implements Interceptor<C, CommandResponse> {
     private SecurityStrategy securityStrategy;
 
-    public CommandSecurityInterceptor(SecurityStrategy securityStrategy) {
+    public CommandSecurityInterceptor(final SecurityStrategy securityStrategy) {
         this.securityStrategy = securityStrategy;
     }
 

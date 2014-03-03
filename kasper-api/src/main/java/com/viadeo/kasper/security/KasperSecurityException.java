@@ -14,22 +14,20 @@ public class KasperSecurityException extends KasperException {
 
     private static final long serialVersionUID = 4329882967999237383L;
 
-    private KasperReason kasperReason;
+    private final KasperReason kasperReason;
 
-    public KasperSecurityException(final String message, CoreReasonCode coreReasonCode) {
+    public KasperSecurityException(final String message, final CoreReasonCode coreReasonCode) {
         super(message);
         kasperReason = new KasperReason(coreReasonCode, message);
     }
 
 
-    public KasperSecurityException(final String message, final Throwable cause, CoreReasonCode coreReasonCode) {
+    public KasperSecurityException(final String message, final Throwable cause, final CoreReasonCode coreReasonCode) {
         super(message, cause);
         kasperReason = new KasperReason(coreReasonCode, message);
     }
 
     public KasperReason getKasperReason() {
-
-
         return kasperReason;
     }
 

@@ -19,7 +19,7 @@ public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult> im
 
     private SecurityStrategy securityStrategy;
 
-    public QuerySecurityInterceptor(SecurityStrategy securityStrategy) {
+    public QuerySecurityInterceptor(final SecurityStrategy securityStrategy) {
         this.securityStrategy = securityStrategy;
     }
 

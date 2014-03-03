@@ -34,7 +34,7 @@ public class CommandSecurityInterceptorFactory extends CommandInterceptorFactory
     public Optional<InterceptorChain<Command, CommandResponse>> create(final TypeToken<?> type) {
         final Class<?> commandClass = type.getRawType();
         final boolean isPublicCommand = commandClass.isAnnotationPresent(XKasperPublic.class);
-        SecurityStrategy securityStrategy = isPublicCommand ?
+        final SecurityStrategy securityStrategy = isPublicCommand ?
                 new DefaultPublicSecurityStrategy(securityConfiguration) :
                 new DefaultSecurityStrategy(securityConfiguration);
         final Interceptor<Command, CommandResponse> interceptor =
