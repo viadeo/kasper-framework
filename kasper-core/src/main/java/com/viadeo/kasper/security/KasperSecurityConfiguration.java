@@ -14,7 +14,6 @@ class KasperSecurityConfiguration implements SecurityConfiguration {
 
     private final SecurityTokenValidator securityTokenValidator;
     private final IdentityContextProvider identityContextProviders;
-    private final LegacyIdsCipher legacyIdsCipher;
     private final ApplicationIdValidator applicationIdValidator;
     private final IpAddressValidator ipAddressValidator;
 
@@ -23,12 +22,10 @@ class KasperSecurityConfiguration implements SecurityConfiguration {
 
     public KasperSecurityConfiguration(final SecurityTokenValidator securityTokenValidator,
                                        final IdentityContextProvider identityContextProviders,
-                                       final LegacyIdsCipher legacyIdsCipher,
                                        final ApplicationIdValidator applicationIdValidator,
                                        final IpAddressValidator ipAddressValidator) {
         this.securityTokenValidator = checkNotNull(securityTokenValidator);
         this.identityContextProviders = checkNotNull(identityContextProviders);
-        this.legacyIdsCipher = checkNotNull(legacyIdsCipher);
         this.applicationIdValidator = checkNotNull(applicationIdValidator);
         this.ipAddressValidator = checkNotNull(ipAddressValidator);
     }
@@ -41,11 +38,6 @@ class KasperSecurityConfiguration implements SecurityConfiguration {
     @Override
     public IdentityContextProvider getIdentityContextProvider() {
         return identityContextProviders;
-    }
-
-    @Override
-    public LegacyIdsCipher getLegacyIdsCipher() {
-        return legacyIdsCipher;
     }
 
     @Override

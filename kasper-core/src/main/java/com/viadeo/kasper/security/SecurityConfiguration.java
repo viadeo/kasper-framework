@@ -21,8 +21,6 @@ public interface SecurityConfiguration {
 
     IdentityContextProvider getIdentityContextProvider();
 
-    LegacyIdsCipher getLegacyIdsCipher();
-
     ApplicationIdValidator getApplicationIdValidator();
 
     IpAddressValidator getIpAddressValidator();
@@ -31,7 +29,6 @@ public interface SecurityConfiguration {
     class Builder {
         private SecurityTokenValidator securityTokenValidator = new DefautSecurityTokenValidator();
         private IdentityContextProvider identityContextProvider = new DefaultIdentityContextProvider();
-        private LegacyIdsCipher legacyIdsCipher = new DefaultLegacyIdsCipher();
         private ApplicationIdValidator applicationIdValidator = new DefaultApplicationIdValidator();
         private IpAddressValidator ipAddressValidator = new DefaultIpAddressValidator();
 
@@ -47,12 +44,6 @@ public interface SecurityConfiguration {
         public Builder withIdentityProvider(final IdentityContextProvider identityContextProvider) {
             checkNotNull(identityContextProvider);
             this.identityContextProvider = identityContextProvider;
-            return this;
-        }
-
-        public Builder withLegacyIdsCipher(final LegacyIdsCipher legacyIdsCipher) {
-            checkNotNull(legacyIdsCipher);
-            this.legacyIdsCipher = legacyIdsCipher;
             return this;
         }
 
@@ -72,7 +63,6 @@ public interface SecurityConfiguration {
             SecurityConfiguration securityConfiguration = new KasperSecurityConfiguration(
                     securityTokenValidator,
                     identityContextProvider,
-                    legacyIdsCipher,
                     applicationIdValidator,
                     ipAddressValidator
             );
@@ -91,19 +81,6 @@ public interface SecurityConfiguration {
 
         @Override
         public void provideIdentity(Context context) throws KasperSecurityException {
-        }
-    }
-
-    class DefaultLegacyIdsCipher implements LegacyIdsCipher {
-
-        @Override
-        public int encrypt(int id) {
-            return id;
-        }
-
-        @Override
-        public int decrypt(int id) {
-            return id;
         }
     }
 
