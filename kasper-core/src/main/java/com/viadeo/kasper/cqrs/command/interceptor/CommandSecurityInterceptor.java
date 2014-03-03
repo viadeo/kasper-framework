@@ -14,11 +14,16 @@ import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.security.KasperSecurityException;
 import com.viadeo.kasper.security.SecurityStrategy;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class CommandSecurityInterceptor<C extends Command> implements Interceptor<C, CommandResponse> {
+
     private SecurityStrategy securityStrategy;
 
+    // ------------------------------------------------------------------------
+
     public CommandSecurityInterceptor(final SecurityStrategy securityStrategy) {
-        this.securityStrategy = securityStrategy;
+        this.securityStrategy = checkNotNull(securityStrategy);
     }
 
     // ------------------------------------------------------------------------
@@ -26,13 +31,16 @@ public class CommandSecurityInterceptor<C extends Command> implements Intercepto
     @Override
     public CommandResponse process(final C input,
                                    final Context context,
-                                   final InterceptorChain<C, CommandResponse> chain) throws Exception {
+                                   final InterceptorChain<C, CommandResponse> chain)
+            throws Exception {
+
         try {
             securityStrategy.beforeRequest(context);
         } catch (final KasperSecurityException e) {
             return CommandResponse.error(e.getKasperReason());
         }
-        CommandResponse commandResponse = chain.next(input, context);
+
+        final CommandResponse commandResponse = chain.next(input, context);
         securityStrategy.afterRequest();
         return commandResponse;
     }

@@ -25,6 +25,7 @@ import com.viadeo.kasper.security.annotation.XKasperPublic;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class QuerySecurityInterceptorFactory extends QueryInterceptorFactory {
+
     private SecurityConfiguration securityConfiguration;
 
     // ------------------------------------------------------------------------
@@ -33,23 +34,31 @@ public class QuerySecurityInterceptorFactory extends QueryInterceptorFactory {
         this.securityConfiguration = checkNotNull(securityConfiguration);
     }
 
+    // ------------------------------------------------------------------------
+
+    @SuppressWarnings("unchecked")
     @Override
     public Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> create(final TypeToken<?> type) {
         final Class<? extends Query> queryClass = extractQueryClassFromTypeToken(type);
-        final boolean isPublicQuery = queryClass.isAnnotationPresent(XKasperPublic.class);
-        final SecurityStrategy securityStrategy = isPublicQuery ?
-                new DefaultPublicSecurityStrategy(securityConfiguration) :
-                new DefaultSecurityStrategy(securityConfiguration);
+
+        final SecurityStrategy securityStrategy;
+        if (queryClass.isAnnotationPresent(XKasperPublic.class)) {
+            securityStrategy = new DefaultPublicSecurityStrategy(securityConfiguration);
+        } else {
+            securityStrategy = new DefaultSecurityStrategy(securityConfiguration);
+        }
+
         final Interceptor<Query, QueryResponse<QueryResult>> interceptor =
-                new QuerySecurityInterceptor(securityStrategy);
+                new QuerySecurityInterceptor<>(securityStrategy);
         return Optional.of(InterceptorChain.makeChain(interceptor));
     }
 
+    @SuppressWarnings("unchecked")
     private Class<? extends Query> extractQueryClassFromTypeToken(final TypeToken<?> type) {
         final Class<?> rawType = checkNotNull(type).getRawType();
-        final Class<? extends Query> queryClass =
-                new QueryHandlerResolver().getQueryClass((Class<? extends QueryHandler>) rawType);
-        return queryClass;
+        return new QueryHandlerResolver().getQueryClass(
+                (Class<? extends QueryHandler>) rawType
+        );
     }
 
 }

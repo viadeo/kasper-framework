@@ -45,64 +45,63 @@ public class SecuredPlatformRunnerITest {
     final private static String USER_ID = "SET_BY_SECURITY_INTERCEPTOR";
     final private static String INVALID_TOKEN_ERROR_MSG = "Security Token is invalid";
 
+    // ------------------------------------------------------------------------
+
     @Inject
     private CommandGateway commandGateway;
 
     @Inject
     private QueryGateway queryGateway;
 
-    static private class RejectEmptyTokenValidator implements SecurityTokenValidator {
+    // ------------------------------------------------------------------------
 
+    static private class RejectEmptyTokenValidator implements SecurityTokenValidator {
         @Override
-        public void validate(String securityToken) throws KasperMissingSecurityTokenException, KasperInvalidSecurityTokenException {
+        public void validate(String securityToken)
+                throws KasperMissingSecurityTokenException,
+                       KasperInvalidSecurityTokenException {
             if ("".equals(securityToken)) {
-                throw new KasperInvalidSecurityTokenException(INVALID_TOKEN_ERROR_MSG, CoreReasonCode.REQUIRE_AUTHENTICATION);
+                throw new KasperInvalidSecurityTokenException(
+                        INVALID_TOKEN_ERROR_MSG,
+                        CoreReasonCode.REQUIRE_AUTHENTICATION
+                );
             }
         }
     }
 
     static private class IdentityProvider implements IdentityContextProvider {
-
         @Override
-        public void provideIdentity(Context context) {
-            if (!context.getSecurityToken().isEmpty()) {
+        public void provideIdentity(final Context context) {
+            if ( ! context.getSecurityToken().isEmpty()) {
                 context.setUserId(USER_ID);
             }
         }
-
     }
 
     static final class SecuredKasperPlatformConfiguration extends KasperPlatformConfiguration {
         SecuredKasperPlatformConfiguration() {
-            super(new SecurityConfiguration.Builder().
-                    withIdentityProvider(new IdentityProvider()).
-                    withSecurityTokenValidator(new RejectEmptyTokenValidator()).
-                    build());
+            super(new SecurityConfiguration.Builder()
+                    .withIdentityProvider(new IdentityProvider())
+                    .withSecurityTokenValidator(new RejectEmptyTokenValidator())
+                    .build());
         }
     }
 
-    private static class SecuredDomain implements Domain {
-    }
+    private static class SecuredDomain implements Domain { }
 
-    private static class TestQuery implements Query {
-    }
+    private static class TestQuery implements Query { }
 
     @XKasperPublic
-    private static class TestPublicQuery implements Query {
-    }
+    private static class TestPublicQuery implements Query { }
 
     @XKasperCommand
-    private static class TestCommand implements Command {
-    }
+    private static class TestCommand implements Command { }
 
     @XKasperPublic
     @XKasperCommand
-    private static class TestPublicCommand implements Command {
-    }
+    private static class TestPublicCommand implements Command { }
 
-
-    private static class TestResult implements QueryResult {
-    }
+    private static class TestResult implements QueryResult { }
 
     @XKasperQueryHandler(domain = SecuredDomain.class)
     private static class TestQueryHandler extends QueryHandler<TestQuery, TestResult> {
@@ -121,7 +120,7 @@ public class SecuredPlatformRunnerITest {
     @XKasperCommandHandler(domain = SecuredDomain.class)
     private static class TestCommandHandler extends CommandHandler<TestCommand> {
         public CommandResponse handle(final TestCommand command) {
-            Context context = getContext();
+            final Context context = getContext();
             return CommandResponse.ok();
         }
     }
@@ -132,7 +131,6 @@ public class SecuredPlatformRunnerITest {
             return CommandResponse.ok();
         }
     }
-
 
     static final class SecuredDomainBundle extends DefaultDomainBundle {
         SecuredDomainBundle() {
@@ -153,35 +151,45 @@ public class SecuredPlatformRunnerITest {
 
     }
 
+    // ------------------------------------------------------------------------
+
     @Test
     public void issuingCommand_withNoSecurityToken_shouldResponseKasperReasonWithRequireAuthentication() throws Exception {
         // Given
         final Context unauthenticatedContext = getUnauthenticatedContext();
+
         // When
         final CommandResponse response = sendCommand(unauthenticatedContext);
+
         // Then
         assertAuthenticationRequired(response.getReason());
     }
-
 
     @Test
     public void issuingPublicCommand_withNoSecurityToken_shouldBeOk() throws Exception {
         // Given
         final Context unauthenticatedContext = getUnauthenticatedContext();
         String previousUserId = unauthenticatedContext.getUserId();
+
         // When
         final CommandResponse response = sendPublicCommand(unauthenticatedContext);
+
         // Then
-        assertPublicRequestGoTroughWithoutAlteringSecurityIdentity(response.getReason(),
-                previousUserId, unauthenticatedContext.getUserId());
+        assertPublicRequestGoTroughWithoutAlteringSecurityIdentity(
+                response.getReason(),
+                previousUserId,
+                unauthenticatedContext.getUserId()
+        );
     }
 
     @Test
     public void issuingPublicCommand_withSecurityToken_shouldSetSecurityIdentityInContext() throws Exception {
         // Given
         final Context authenticatedContext = getAuthenticatedContext();
+
         // When
         final CommandResponse response = sendPublicCommand(authenticatedContext);
+
         // Then
         assertSecurityIdentityProvided(response.isOK(), authenticatedContext.getUserId());
     }
@@ -190,23 +198,32 @@ public class SecuredPlatformRunnerITest {
     public void issuingQuery_withNoSecurityToken_shouldResponseKasperReasonWithRequireAuthentication() throws Exception {
         // Given
         final Context unauthenticatedContext = getUnauthenticatedContext();
+
         // When
-        final QueryResponse<TestResult> response = queryGateway.retrieve(new TestQuery(), unauthenticatedContext);
+        final QueryResponse<TestResult> response = queryGateway.retrieve(
+                new TestQuery(),
+                unauthenticatedContext
+        );
+
         // Then
         assertAuthenticationRequired(response.getReason());
     }
-
 
     @Test
     public void issuingPublicQuery_withNoSecurityToken_shouldBeOk() throws Exception {
         // Given
         final Context unAuthenticatedContext = getUnauthenticatedContext();
-        String previousUserId = unAuthenticatedContext.getUserId();
+        final String previousUserId = unAuthenticatedContext.getUserId();
+
         // When
         final QueryResponse<TestResult> response = sendPublicQuery(unAuthenticatedContext);
+
         // Then
-        assertPublicRequestGoTroughWithoutAlteringSecurityIdentity(response.getReason(),
-                previousUserId, unAuthenticatedContext.getUserId());
+        assertPublicRequestGoTroughWithoutAlteringSecurityIdentity(
+                response.getReason(),
+                previousUserId,
+                unAuthenticatedContext.getUserId()
+        );
     }
 
     @Test
@@ -214,8 +231,10 @@ public class SecuredPlatformRunnerITest {
         // Given
         final Context authenticatedContext = getAuthenticatedContext();
         String previousUserId = authenticatedContext.getUserId();
+
         // When
         final QueryResponse<TestResult> response = sendPublicQuery(authenticatedContext);
+
         // Then
         assertSecurityIdentityProvided(response.isOK(), authenticatedContext.getUserId());
     }
@@ -224,8 +243,10 @@ public class SecuredPlatformRunnerITest {
     public void issuingCommand_withSecurityToken_shouldSetSecurityIdentityInContext() throws Exception {
         // Given
         final Context authenticatedContext = getAuthenticatedContext();
+
         // When
         final CommandResponse response = sendCommand(authenticatedContext);
+
         // Then
         assertSecurityIdentityProvided(response.isOK(), authenticatedContext.getUserId());
     }
@@ -234,11 +255,15 @@ public class SecuredPlatformRunnerITest {
     public void issuingQuery_withSecurityToken_shouldSetSecurityIdentityInContext() throws Exception {
         // Given
         final Context authenticatedContext = getAuthenticatedContext();
+
         // When
         final QueryResponse<TestResult> response = sendQuery(authenticatedContext);
+
         // Then
         assertSecurityIdentityProvided(response.isOK(), authenticatedContext.getUserId());
     }
+
+    // ------------------------------------------------------------------------
 
     private CommandResponse sendCommand(final Context context) throws Exception {
         return commandGateway.sendCommandAndWaitForAResponse(new TestCommand(), context);
@@ -256,7 +281,6 @@ public class SecuredPlatformRunnerITest {
         return queryGateway.retrieve(new TestPublicQuery(), context);
     }
 
-
     private Context getUnauthenticatedContext() {
         return new DefaultContext();
     }
@@ -269,8 +293,11 @@ public class SecuredPlatformRunnerITest {
 
     private void assertAuthenticationRequired(KasperReason kasperReason) {
         assertNotNull(kasperReason);
-        assertEquals("Security Interceptor didn't set correct Kasper Reason",
-                new KasperReason(CoreReasonCode.REQUIRE_AUTHENTICATION, INVALID_TOKEN_ERROR_MSG), kasperReason);
+        assertEquals(
+                "Security Interceptor didn't set correct Kasper Reason",
+                new KasperReason(CoreReasonCode.REQUIRE_AUTHENTICATION, INVALID_TOKEN_ERROR_MSG),
+                kasperReason
+        );
     }
 
     private void assertSecurityIdentityProvided(boolean responseIsOK, String actualUserId) {
@@ -278,11 +305,19 @@ public class SecuredPlatformRunnerITest {
         assertEquals("Security Interceptor didn't set correct UserId", USER_ID, actualUserId);
     }
 
-    private void assertPublicRequestGoTroughWithoutAlteringSecurityIdentity(KasperReason kasperReason,
-                                                                            String previousUserId,
-                                                                            String actualUserId) {
-        assertNull("Security Interceptor didn't let go a request on a public command", kasperReason);
-        assertEquals("Security Interceptor shouldn't change user Id on public request", previousUserId, actualUserId);
+    private void assertPublicRequestGoTroughWithoutAlteringSecurityIdentity(final KasperReason kasperReason,
+                                                                            final String previousUserId,
+                                                                            final String actualUserId) {
+        assertNull(
+                "Security Interceptor didn't let go a request on a public command",
+                kasperReason
+        );
+
+        assertEquals(
+                "Security Interceptor shouldn't change user Id on public request",
+                previousUserId,
+                actualUserId
+        );
     }
 
 }

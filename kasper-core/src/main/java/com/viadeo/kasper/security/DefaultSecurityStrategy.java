@@ -11,6 +11,7 @@ import com.viadeo.kasper.context.Context;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DefaultSecurityStrategy implements SecurityStrategy {
+
     private final SecurityConfiguration securityConfiguration;
 
     // ------------------------------------------------------------------------
@@ -19,7 +20,10 @@ public class DefaultSecurityStrategy implements SecurityStrategy {
         this.securityConfiguration = checkNotNull(securityConfiguration);
     }
 
+    // ------------------------------------------------------------------------
+
     public void beforeRequest(final Context context) {
+        checkNotNull(context);
         securityConfiguration.getSecurityTokenValidator().validate(context.getSecurityToken());
         securityConfiguration.getIdentityContextProvider().provideIdentity(context);
         securityConfiguration.getApplicationIdValidator().validate(context.getApplicationId());
@@ -27,6 +31,7 @@ public class DefaultSecurityStrategy implements SecurityStrategy {
     }
 
     public void afterRequest() {
+        /* do nothing */
     }
 
 }

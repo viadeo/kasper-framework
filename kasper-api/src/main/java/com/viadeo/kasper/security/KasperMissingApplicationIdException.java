@@ -19,4 +19,5 @@ public class KasperMissingApplicationIdException extends KasperSecurityException
     public KasperMissingApplicationIdException(final String message, final Throwable cause, final CoreReasonCode coreReasonCode) {
         super(message, cause, coreReasonCode);
     }
+
 }

@@ -17,7 +17,6 @@ class KasperSecurityConfiguration implements SecurityConfiguration {
     private final ApplicationIdValidator applicationIdValidator;
     private final IpAddressValidator ipAddressValidator;
 
-
     // ------------------------------------------------------------------------
 
     public KasperSecurityConfiguration(final SecurityTokenValidator securityTokenValidator,
@@ -29,6 +28,8 @@ class KasperSecurityConfiguration implements SecurityConfiguration {
         this.applicationIdValidator = checkNotNull(applicationIdValidator);
         this.ipAddressValidator = checkNotNull(ipAddressValidator);
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public SecurityTokenValidator getSecurityTokenValidator() {
@@ -49,4 +50,5 @@ class KasperSecurityConfiguration implements SecurityConfiguration {
     public IpAddressValidator getIpAddressValidator() {
         return ipAddressValidator;
     }
+
 }

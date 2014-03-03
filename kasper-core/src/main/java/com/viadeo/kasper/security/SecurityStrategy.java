@@ -16,7 +16,9 @@ import com.viadeo.kasper.context.Context;
  * of a security token, for example) in an order defined by the strategy itself.
  */
 public interface SecurityStrategy {
+
     void beforeRequest(final Context context);
 
     void afterRequest();
+
 }

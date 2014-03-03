@@ -19,4 +19,5 @@ public class KasperMissingSecurityTokenException extends KasperSecurityException
     public KasperMissingSecurityTokenException(final String message, final Throwable cause, final CoreReasonCode coreReasonCode) {
         super(message, cause, coreReasonCode);
     }
+
 }

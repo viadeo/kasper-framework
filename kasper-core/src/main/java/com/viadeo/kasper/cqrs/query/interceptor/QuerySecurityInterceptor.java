@@ -15,12 +15,17 @@ import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.security.KasperSecurityException;
 import com.viadeo.kasper.security.SecurityStrategy;
 
-public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult> implements Interceptor<Q, QueryResponse<R>> {
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult>
+        implements Interceptor<Q, QueryResponse<R>> {
 
     private SecurityStrategy securityStrategy;
 
+    // ------------------------------------------------------------------------
+
     public QuerySecurityInterceptor(final SecurityStrategy securityStrategy) {
-        this.securityStrategy = securityStrategy;
+        this.securityStrategy = checkNotNull(securityStrategy);
     }
 
     // ------------------------------------------------------------------------
@@ -28,13 +33,16 @@ public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult> im
     @Override
     public QueryResponse<R> process(final Q input,
                                     final Context context,
-                                    final InterceptorChain<Q, QueryResponse<R>> chain) throws Exception {
+                                    final InterceptorChain<Q, QueryResponse<R>> chain)
+            throws Exception {
+
         try {
             securityStrategy.beforeRequest(context);
         } catch (KasperSecurityException e) {
             return QueryResponse.error(e.getKasperReason());
         }
-        QueryResponse<R> queryResponse = chain.next(input, context);
+
+        final QueryResponse<R> queryResponse = chain.next(input, context);
         securityStrategy.afterRequest();
         return queryResponse;
     }

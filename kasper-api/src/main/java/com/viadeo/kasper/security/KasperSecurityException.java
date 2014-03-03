@@ -16,11 +16,12 @@ public class KasperSecurityException extends KasperException {
 
     private final KasperReason kasperReason;
 
+    // ------------------------------------------------------------------------
+
     public KasperSecurityException(final String message, final CoreReasonCode coreReasonCode) {
         super(message);
         kasperReason = new KasperReason(coreReasonCode, message);
     }
-
 
     public KasperSecurityException(final String message, final Throwable cause, final CoreReasonCode coreReasonCode) {
         super(message, cause);

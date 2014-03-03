@@ -39,19 +39,25 @@ public class SecurityStrategyUTest {
 
     SecurityConfiguration securityConfiguration;
 
+    // ------------------------------------------------------------------------
+
     @Before
     public void setup() {
         initMocks(this);
-        securityConfiguration = new SecurityConfiguration.Builder().
-                withSecurityTokenValidator(tokenValidator).
-                withIdentityProvider(identityProvider).
-                withApplicationIdValidator(applicationIdValidator).
-                withIpAddressValidator(ipAddressValidator).
-                build();
+        securityConfiguration = new SecurityConfiguration.Builder()
+                .withSecurityTokenValidator(tokenValidator)
+                .withIdentityProvider(identityProvider)
+                .withApplicationIdValidator(applicationIdValidator)
+                .withIpAddressValidator(ipAddressValidator)
+                .build();
     }
 
+    // ------------------------------------------------------------------------
+
     @Test
-    public void applySecurityBeforeRequest_onNonPublicRequest_shouldInvokeAuthenticationCallbacks() throws Exception {
+    public void applySecurityBeforeRequest_onNonPublicRequest_shouldInvokeAuthenticationCallbacks()
+            throws Exception {
+
         // Given
         final SecurityStrategy securityStrategy = new DefaultSecurityStrategy(securityConfiguration);
         final Context context = mock(Context.class);
@@ -67,7 +73,9 @@ public class SecurityStrategyUTest {
     }
 
     @Test
-    public void applySecurityBeforeRequest_onPublicRequest_shouldNotInvokeAuthenticationCallbacks() throws Exception {
+    public void applySecurityBeforeRequest_onPublicRequest_shouldNotInvokeAuthenticationCallbacks()
+            throws Exception {
+
         // Given
         final SecurityStrategy securityStrategy = new DefaultPublicSecurityStrategy(securityConfiguration);
         final Context context = mock(Context.class);
@@ -81,4 +89,5 @@ public class SecurityStrategyUTest {
         verify(applicationIdValidator).validate(context.getApplicationId());
         verify(ipAddressValidator).validate(context.getIpAddress());
     }
+
 }

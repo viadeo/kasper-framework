@@ -19,4 +19,5 @@ public class KasperMissingIpAddressException extends KasperSecurityException {
     public KasperMissingIpAddressException(final String message, final Throwable cause, final CoreReasonCode coreReasonCode) {
         super(message, cause, coreReasonCode);
     }
+
 }
