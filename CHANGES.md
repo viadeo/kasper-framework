@@ -1,6 +1,7 @@
 # Kasper Releases #
 
 ### Snapshot 0.4-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.4-SNAPSHOT~~))###
+* [Improvement 184](https://github.com/viadeo/kasper-framework/issues/184) Add `getUserLangAsLocal` method in `Context` class
 * [Improvement 181](https://github.com/viadeo/kasper-framework/issues/181) Manage natively immutable object :warning: Jackson dependencies was updated to 2.3.0 version
 * [Improvement 177](https://github.com/viadeo/kasper-framework/issues/177) Introduce the new Kasper responses format
 * [Improvement 170](https://github.com/viadeo/kasper-framework/issues/170) Add new metrics :
