@@ -10,7 +10,7 @@ import com.viadeo.kasper.CoreReasonCode;
 
 public class KasperInvalidIpAddressException extends KasperSecurityException {
 
-    private static final long serialVersionUID = -6948187421968186520L;
+    private static final long serialVersionUID = -6948187421968186542L;
 
     public KasperInvalidIpAddressException(final String message, final CoreReasonCode coreReasonCode) {
         super(message, coreReasonCode);

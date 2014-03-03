@@ -10,7 +10,7 @@ import com.viadeo.kasper.CoreReasonCode;
 
 public class KasperInvalidApplicationIdException extends KasperSecurityException {
 
-    private static final long serialVersionUID = -6948187421968186520L;
+    private static final long serialVersionUID = -6948184221968186520L;
 
     public KasperInvalidApplicationIdException(final String message, final CoreReasonCode coreReasonCode) {
         super(message, coreReasonCode);
