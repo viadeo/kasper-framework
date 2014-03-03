@@ -221,6 +221,8 @@ public interface Platform {
 
             registerInterceptors();
 
+            registerShutdownHook();
+
             initializeKasperMetrics(domainHelper);
 
             final Collection<DomainDescriptor> domainDescriptors = configureDomainBundles(context);
@@ -230,6 +232,13 @@ public interface Platform {
             initializePlugins(platform, domainDescriptors);
 
             return platform;
+        }
+
+        private void registerShutdownHook() {
+            if (eventBus.getShutdownHook().isPresent()) {
+                Runtime.getRuntime().addShutdownHook(new Thread(eventBus.getShutdownHook().get()));
+                LOGGER.info("Registered shutdown hook : Event Processing");
+            }
         }
 
         protected void registerInterceptors() {
