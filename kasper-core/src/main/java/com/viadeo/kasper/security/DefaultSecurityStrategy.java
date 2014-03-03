@@ -24,11 +24,9 @@ public class DefaultSecurityStrategy implements SecurityStrategy {
         securityConfiguration.getIdentityContextProvider().provideIdentity(context);
         securityConfiguration.getApplicationIdValidator().validate(context.getApplicationId());
         securityConfiguration.getIpAddressValidator().validate(context.getIpAddress());
-        // TODO: deal with ids decryption using securityConfiguration.getLegacyIdsCipher
     }
 
     public void afterRequest() {
-        // TODO: deal with ids encryption using securityConfiguration.getLegacyIdsCipher
     }
 
 }
