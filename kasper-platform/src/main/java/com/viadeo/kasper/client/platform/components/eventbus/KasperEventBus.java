@@ -106,8 +106,9 @@ public class KasperEventBus extends ClusteringEventBus {
             Runtime.getRuntime().addShutdownHook(new Thread() {
                 @Override
                 public void run() {
-                    LOGGER.info("Start shutdown hook : Event processing");
+                    LOGGER.info("Starting shutdown : Event Processing");
                     processorDownLatch.await();
+                    LOGGER.info("Shutdown complete : Event Processing");
                 }
             });
 

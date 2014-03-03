@@ -10,6 +10,8 @@ import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.eventhandling.async.EventProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.Set;
 import java.util.concurrent.CountDownLatch;
@@ -22,6 +24,8 @@ import static com.google.common.base.Preconditions.checkState;
 
 public class KasperProcessorDownLatch {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(KasperProcessorDownLatch.class);
+
     private static final int N_THREADS = 5;
     public static final long TIMEOUT_IN_MILLIS = 1000 * 60;
 
@@ -31,6 +35,7 @@ public class KasperProcessorDownLatch {
 
     private CountDownLatch countDownLatch;
     private boolean awaiting;
+    private int nbProcessors;
 
     // ------------------------------------------------------------------------
 
@@ -53,20 +58,31 @@ public class KasperProcessorDownLatch {
     public void await() {
         checkState( ! awaiting, "is already awaiting");
 
-        countDownLatch = new CountDownLatch(runAllProcesses());
+        nbProcessors = runAllProcessors();
+
+        LOGGER.info("Starting all scheduled event processor : {}", nbProcessors);
+        
+        countDownLatch = new CountDownLatch(nbProcessors);
         awaiting = true;
 
+        final boolean succeed;
+
         try {
-            countDownLatch.await(timeout, TimeUnit.MILLISECONDS);
+            succeed = countDownLatch.await(timeout, TimeUnit.MILLISECONDS);
         } catch (final InterruptedException e) {
-            throw new KasperException(String.format(
-                    "Timeout expired : event processing still alive (%s)",
-                    getCount()), e
-            );
+            throw new KasperException(e);
+        }
+
+        if(succeed) {
+            LOGGER.info("All event processors were finished : {}", nbProcessors);
+        } else {
+            final String message = String.format("Timeout expired : event processors still alive (%s)", getCount());
+            LOGGER.error(message);
+            throw new KasperException(message);
         }
     }
 
-    private synchronized int runAllProcesses() {
+    private synchronized int runAllProcessors() {
         for (final EventProcessor eventProcessor : eventProcessors) {
             executor.submit(eventProcessor);
         }
@@ -77,9 +93,9 @@ public class KasperProcessorDownLatch {
     public synchronized void process(final EventProcessor eventProcessor){
         checkNotNull(eventProcessor);
         if (awaiting) {
-            throw new KasperException(
-                    "Application shutdown : unable to create new processing scheduler!"
-            );
+            final String message = "Reject event processing : the application is awaiting to shutdown";
+            LOGGER.warn(message);
+            throw new KasperException(message);
         }
         this.eventProcessors.add(eventProcessor);
     }
@@ -88,6 +104,7 @@ public class KasperProcessorDownLatch {
         this.eventProcessors.remove(checkNotNull(eventProcessor));
         if (null != countDownLatch) {
             this.countDownLatch.countDown();
+            LOGGER.info("Event process complete ({}/{})", countDownLatch.getCount(), nbProcessors);
         }
     }
 
