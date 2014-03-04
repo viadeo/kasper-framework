@@ -21,11 +21,11 @@ import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.security.KasperInvalidSecurityTokenException;
-import com.viadeo.kasper.security.KasperMissingSecurityTokenException;
-import com.viadeo.kasper.security.SecurityConfiguration;
+import com.viadeo.kasper.security.*;
 import com.viadeo.kasper.security.annotation.XKasperPublic;
+import com.viadeo.kasper.security.callback.ApplicationIdValidator;
 import com.viadeo.kasper.security.callback.IdentityContextProvider;
+import com.viadeo.kasper.security.callback.IpAddressValidator;
 import com.viadeo.kasper.security.callback.SecurityTokenValidator;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -42,8 +42,12 @@ import static org.junit.Assert.*;
 public class SecuredPlatformRunnerITest {
 
     final private static String SECURITY_TOKEN = "DUMMY_SECRET";
+    final private static String APPLICATION_ID = "APPLICATION_ID";
+    final private static String IP_ADDRESS = "IP_ADDRESS";
     final private static String USER_ID = "SET_BY_SECURITY_INTERCEPTOR";
     final private static String INVALID_TOKEN_ERROR_MSG = "Security Token is invalid";
+    final private static String INVALID_APPLICATION_ID_ERROR_MSG = "ApplicationId is invalid";
+    final private static String INVALID_IP_ADDRESS_ERROR_MSG = "ip address is invalid";
 
     // ------------------------------------------------------------------------
 
@@ -69,6 +73,35 @@ public class SecuredPlatformRunnerITest {
         }
     }
 
+    static private class RejectEmptyApplicationIdValidator implements ApplicationIdValidator {
+        @Override
+        public void validate(String applicationId)
+                throws KasperMissingApplicationIdException,
+                KasperInvalidApplicationIdException {
+            if (null == applicationId || "".equals(applicationId)) {
+                throw new KasperInvalidApplicationIdException(
+                        INVALID_APPLICATION_ID_ERROR_MSG,
+                        CoreReasonCode.INVALID_INPUT
+                );
+            }
+        }
+    }
+
+    static private class RejectEmptyIpAddressValidator implements IpAddressValidator {
+        @Override
+        public void validate(String ipAddress)
+                throws KasperMissingIpAddressException,
+                KasperInvalidIpAddressException {
+            if (null == ipAddress || "".equals(ipAddress)) {
+                throw new KasperInvalidIpAddressException(
+                        INVALID_IP_ADDRESS_ERROR_MSG,
+                        CoreReasonCode.INVALID_INPUT
+                );
+            }
+        }
+    }
+
+
     static private class IdentityProvider implements IdentityContextProvider {
         @Override
         public void provideIdentity(final Context context) {
@@ -83,6 +116,8 @@ public class SecuredPlatformRunnerITest {
             super(new SecurityConfiguration.Builder()
                     .withIdentityProvider(new IdentityProvider())
                     .withSecurityTokenValidator(new RejectEmptyTokenValidator())
+                    .withApplicationIdValidator(new RejectEmptyApplicationIdValidator())
+                    .withIpAddressValidator(new RejectEmptyIpAddressValidator())
                     .build());
         }
     }
@@ -156,7 +191,7 @@ public class SecuredPlatformRunnerITest {
     @Test
     public void issuingCommand_withNoSecurityToken_shouldResponseKasperReasonWithRequireAuthentication() throws Exception {
         // Given
-        final Context unauthenticatedContext = getUnauthenticatedContext();
+        final Context unauthenticatedContext = getContext(no_flag);
 
         // When
         final CommandResponse response = sendCommand(unauthenticatedContext);
@@ -166,9 +201,33 @@ public class SecuredPlatformRunnerITest {
     }
 
     @Test
+    public void issuingCommand_withNoApplicationId_shouldResponseKasperReasonWithRequireApplicationId() throws Exception {
+        // Given
+        final Context authenticatedContext = getContext(flag_withSecurityToken);
+
+        // When
+        final CommandResponse response = sendCommand(authenticatedContext);
+
+        // Then
+        assertApplicationIdRequired(response.getReason());
+    }
+
+    @Test
+    public void issuingCommand_withNoIpAddress_shouldResponseKasperReasonWithRequireIpAddress() throws Exception {
+        // Given
+        final Context authenticatedContext = getContext(flag_withSecurityToken + flag_withApplicationId);
+
+        // When
+        final CommandResponse response = sendCommand(authenticatedContext);
+
+        // Then
+        assertIpAddressRequired(response.getReason());
+    }
+
+    @Test
     public void issuingPublicCommand_withNoSecurityToken_shouldBeOk() throws Exception {
         // Given
-        final Context unauthenticatedContext = getUnauthenticatedContext();
+        final Context unauthenticatedContext = getContext(flag_withApplicationId + flag_withIpAddress);
         String previousUserId = unauthenticatedContext.getUserId();
 
         // When
@@ -183,9 +242,37 @@ public class SecuredPlatformRunnerITest {
     }
 
     @Test
+    public void issuingPublicCommand_withNoApplicationId_shouldResponseKasperReasonWithRequireApplicationId() throws Exception {
+        // Given
+        final Context authenticatedContext = getContext(flag_withSecurityToken);
+
+        // When
+        final CommandResponse response = sendPublicCommand(authenticatedContext);
+
+        // Then
+        assertApplicationIdRequired(
+                response.getReason()
+        );
+    }
+
+    @Test
+    public void issuingPublicCommand_withNoIpAddress_shouldResponseKasperReasonWithRequireIpAddress() throws Exception {
+        // Given
+        final Context authenticatedContext = getContext(flag_withSecurityToken + flag_withApplicationId);
+
+        // When
+        final CommandResponse response = sendPublicCommand(authenticatedContext);
+
+        // Then
+        assertIpAddressRequired(
+                response.getReason()
+        );
+    }
+
+    @Test
     public void issuingPublicCommand_withSecurityToken_shouldSetSecurityIdentityInContext() throws Exception {
         // Given
-        final Context authenticatedContext = getAuthenticatedContext();
+        final Context authenticatedContext = getContext(flag_withSecurityToken + flag_withApplicationId + flag_withIpAddress);
 
         // When
         final CommandResponse response = sendPublicCommand(authenticatedContext);
@@ -197,7 +284,7 @@ public class SecuredPlatformRunnerITest {
     @Test
     public void issuingQuery_withNoSecurityToken_shouldResponseKasperReasonWithRequireAuthentication() throws Exception {
         // Given
-        final Context unauthenticatedContext = getUnauthenticatedContext();
+        final Context unauthenticatedContext = getContext(no_flag);
 
         // When
         final QueryResponse<TestResult> response = queryGateway.retrieve(
@@ -212,7 +299,7 @@ public class SecuredPlatformRunnerITest {
     @Test
     public void issuingPublicQuery_withNoSecurityToken_shouldBeOk() throws Exception {
         // Given
-        final Context unAuthenticatedContext = getUnauthenticatedContext();
+        final Context unAuthenticatedContext = getContext(flag_withApplicationId + flag_withIpAddress);
         final String previousUserId = unAuthenticatedContext.getUserId();
 
         // When
@@ -227,9 +314,33 @@ public class SecuredPlatformRunnerITest {
     }
 
     @Test
+    public void issuingPublicQuery_withNoApplicationId_shouldResponseKasperReasonWithRequireApplicationId() throws Exception {
+        // Given
+        final Context authenticatedContext = getContext(flag_withSecurityToken);
+
+        // When
+        final QueryResponse<TestResult> response = sendPublicQuery(authenticatedContext);
+
+        // Then
+        assertApplicationIdRequired(response.getReason());
+    }
+
+    @Test
+    public void issuingPublicQuery_withNoIpAddress_shouldResponseKasperReasonWithRequireIpAddress() throws Exception {
+        // Given
+        final Context authenticatedContext = getContext(flag_withSecurityToken + flag_withApplicationId);
+
+        // When
+        final QueryResponse<TestResult> response = sendPublicQuery(authenticatedContext);
+
+        // Then
+        assertIpAddressRequired(response.getReason());
+    }
+
+    @Test
     public void issuingPublicQuery_withSecurityToken_shouldSetSecurityIdentityInContext() throws Exception {
         // Given
-        final Context authenticatedContext = getAuthenticatedContext();
+        final Context authenticatedContext = getContext(flag_withSecurityToken + flag_withApplicationId + flag_withIpAddress);
         String previousUserId = authenticatedContext.getUserId();
 
         // When
@@ -242,7 +353,7 @@ public class SecuredPlatformRunnerITest {
     @Test
     public void issuingCommand_withSecurityToken_shouldSetSecurityIdentityInContext() throws Exception {
         // Given
-        final Context authenticatedContext = getAuthenticatedContext();
+        final Context authenticatedContext = getContext(flag_withSecurityToken + flag_withApplicationId + flag_withIpAddress);
 
         // When
         final CommandResponse response = sendCommand(authenticatedContext);
@@ -254,7 +365,7 @@ public class SecuredPlatformRunnerITest {
     @Test
     public void issuingQuery_withSecurityToken_shouldSetSecurityIdentityInContext() throws Exception {
         // Given
-        final Context authenticatedContext = getAuthenticatedContext();
+        final Context authenticatedContext = getContext(flag_withSecurityToken + flag_withApplicationId + flag_withIpAddress);
 
         // When
         final QueryResponse<TestResult> response = sendQuery(authenticatedContext);
@@ -281,13 +392,22 @@ public class SecuredPlatformRunnerITest {
         return queryGateway.retrieve(new TestPublicQuery(), context);
     }
 
-    private Context getUnauthenticatedContext() {
-        return new DefaultContext();
-    }
+    private static final int no_flag = 0;
+    private static final int flag_withSecurityToken = 0x0001;
+    private static final int flag_withApplicationId = 0x0002;
+    private static final int flag_withIpAddress = 0x0004;
 
-    private Context getAuthenticatedContext() {
+    private Context getContext(final int flags) {
         final Context context = new DefaultContext();
-        context.setSecurityToken(SECURITY_TOKEN);
+        if((flags & flag_withSecurityToken) > 0){
+            context.setSecurityToken(SECURITY_TOKEN);
+        }
+        if((flags & flag_withApplicationId) > 0){
+            context.setApplicationId(APPLICATION_ID);
+        }
+        if((flags & flag_withIpAddress) > 0){
+            context.setIpAddress(IP_ADDRESS);
+        }
         return context;
     }
 
@@ -296,6 +416,24 @@ public class SecuredPlatformRunnerITest {
         assertEquals(
                 "Security Interceptor didn't set correct Kasper Reason",
                 new KasperReason(CoreReasonCode.REQUIRE_AUTHENTICATION, INVALID_TOKEN_ERROR_MSG),
+                kasperReason
+        );
+    }
+
+    private void assertApplicationIdRequired(KasperReason kasperReason) {
+        assertNotNull(kasperReason);
+        assertEquals(
+                "Application Id Required",
+                new KasperReason(CoreReasonCode.INVALID_INPUT, INVALID_APPLICATION_ID_ERROR_MSG),
+                kasperReason
+        );
+    }
+
+    private void assertIpAddressRequired(KasperReason kasperReason) {
+        assertNotNull(kasperReason);
+        assertEquals(
+                "IpAddress Required",
+                new KasperReason(CoreReasonCode.INVALID_INPUT, INVALID_IP_ADDRESS_ERROR_MSG),
                 kasperReason
         );
     }
