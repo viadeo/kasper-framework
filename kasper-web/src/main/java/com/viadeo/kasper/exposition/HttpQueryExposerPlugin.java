@@ -68,6 +68,7 @@ public class HttpQueryExposerPlugin extends HttpExposerPlugin<HttpQueryExposer> 
         initialize(
             new HttpQueryExposer(
                 platform.getQueryGateway(),
+                platform.getMeta(),
                 exposureDescriptors,
                 new QueryFactoryBuilder().create(),
                 getContextDeserializer(),

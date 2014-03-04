@@ -7,6 +7,8 @@
 package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.client.platform.Meta;
+import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.Event;
@@ -45,7 +47,11 @@ public class HttpEventExposerUTest {
         final ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
 
-        final HttpEventExposer eventExposer = new HttpEventExposer(mock(KasperEventBus.class), descriptors);
+        final Platform platform = mock(Platform.class);
+        when(platform.getEventBus()).thenReturn(mock(KasperEventBus.class));
+        when(platform.getMeta()).thenReturn(mock(Meta.class));
+
+        final HttpEventExposer eventExposer = new HttpEventExposer(platform, descriptors);
 
         // When
         eventExposer.init(servletConfig);

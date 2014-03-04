@@ -53,6 +53,7 @@ public class HttpEventExposerPlugin extends HttpExposerPlugin<HttpEventExposer> 
         initialize(
             new HttpEventExposer(
                 platform.getEventBus(),
+                platform.getMeta(),
                 Lists.newArrayList(exposureDescriptors),
                 getContextDeserializer(),
                 getMapper()

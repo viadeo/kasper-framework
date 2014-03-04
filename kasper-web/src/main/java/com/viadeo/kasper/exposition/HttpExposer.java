@@ -11,8 +11,11 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.viadeo.event.logfilter.mdc.ApplicationMDC;
+import com.viadeo.event.logfilter.mdc.AuthenticationMDC;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperResponse;
+import com.viadeo.kasper.client.platform.Meta;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.exposition.alias.AliasRegistry;
@@ -51,10 +54,12 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
     private final AliasRegistry aliasRegistry;
     private final Logger requestLogger;
     private final MetricNames metricNames;
+    private final Meta meta;
 
     private Optional<String> serverName = Optional.absent();
 
-    protected HttpExposer(final HttpContextDeserializer contextDeserializer) {
+    protected HttpExposer(final HttpContextDeserializer contextDeserializer, final Meta meta) {
+        this.meta = meta;
         this.metricNames = new MetricNames(getClass());
         this.contextDeserializer = checkNotNull(contextDeserializer);
         this.aliasRegistry = new AliasRegistry();
@@ -227,7 +232,15 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final UUID kasperCorrelationUUID
     ) throws IOException {
         final Context context = contextDeserializer.deserialize(httpRequest, kasperCorrelationUUID);
-        MDC.setContextMap(context.asMap());
+
+        MDC.put("appId", context.getApplicationId());
+        MDC.put("appServer", serverName());
+        MDC.put("appVersion", meta.getVersion());
+        MDC.put("appBuildingDate", meta.getBuildingDate().toString());
+        MDC.put("appDeploymentDate", meta.getDeploymentDate().toString());
+
+        MDC.put(AuthenticationMDC.AUTH_TOKEN, context.getSecurityToken());
+
         return context;
     }
 
@@ -249,6 +262,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
         /* 3) Resolve the input class*/
         final Class<INPUT> inputClass = getInputClass(requestName);
+
+        MDC.put(ApplicationMDC.APP_ROUTE, inputClass.getName());
 
         /* 4) Extract to a known input */
         return httpRequestToObject.map(httpRequest, inputClass);

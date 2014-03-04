@@ -7,6 +7,8 @@
 package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.client.platform.Meta;
+import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -44,7 +46,11 @@ public class HttpQueryExposerUTest {
         final ServletConfig servletConfig = mock(ServletConfig.class);
         when(servletConfig.getServletContext()).thenReturn(servletContext);
 
-        final HttpQueryExposer queryExposer = new HttpQueryExposer(mock(QueryGateway.class), descriptors);
+        final Platform platform = mock(Platform.class);
+        when(platform.getQueryGateway()).thenReturn(mock(QueryGateway.class));
+        when(platform.getMeta()).thenReturn(mock(Meta.class));
+
+        final HttpQueryExposer queryExposer = new HttpQueryExposer(platform, descriptors);
 
         // When
         queryExposer.init(servletConfig);

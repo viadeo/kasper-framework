@@ -10,6 +10,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.client.platform.Meta;
+import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -46,10 +48,11 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
 
     // ------------------------------------------------------------------------
 
-    public HttpCommandExposer(final CommandGateway commandGateway,
+    public HttpCommandExposer(final Platform platform,
                               final List<ExposureDescriptor<Command,CommandHandler>> descriptors) {
         this(
-                commandGateway,
+                platform.getCommandGateway(),
+                platform.getMeta(),
                 descriptors,
                 new HttpContextDeserializer(),
                 ObjectMapperProvider.INSTANCE.mapper()
@@ -57,10 +60,11 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
     }
     
     public HttpCommandExposer(final CommandGateway commandGateway,
+                              final Meta meta,
                               final List<ExposureDescriptor<Command,CommandHandler>> descriptors,
                               final HttpContextDeserializer contextDeserializer,
                               final ObjectMapper mapper) {
-        super(contextDeserializer);
+        super(contextDeserializer, meta);
         this.commandGateway = checkNotNull(commandGateway);
         this.descriptors = checkNotNull(descriptors);
 

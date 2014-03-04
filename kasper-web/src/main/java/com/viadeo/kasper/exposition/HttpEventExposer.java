@@ -13,6 +13,8 @@ import com.google.common.collect.Sets;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.KasperResponse;
+import com.viadeo.kasper.client.platform.Meta;
+import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
@@ -58,9 +60,10 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
 
     // ------------------------------------------------------------------------
 
-    public HttpEventExposer(final KasperEventBus eventBus, final List<ExposureDescriptor<Event, EventListener>> descriptors) {
+    public HttpEventExposer(final Platform platform, final List<ExposureDescriptor<Event, EventListener>> descriptors) {
         this(
-                eventBus,
+                platform.getEventBus(),
+                platform.getMeta(),
                 descriptors,
                 new HttpContextDeserializer(),
                 ObjectMapperProvider.INSTANCE.mapper()
@@ -69,10 +72,11 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
 
 
     public HttpEventExposer(final KasperEventBus eventBus,
+                            final Meta meta,
                             final List<ExposureDescriptor<Event, EventListener>> descriptors,
                             final HttpContextDeserializer contextDeserializer,
                             final ObjectMapper mapper) {
-        super(contextDeserializer);
+        super(contextDeserializer, meta);
         this.eventBus = checkNotNull(eventBus);
         this.descriptors = checkNotNull(descriptors);
 

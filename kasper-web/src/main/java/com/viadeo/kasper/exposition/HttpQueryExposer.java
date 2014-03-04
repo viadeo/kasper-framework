@@ -11,6 +11,8 @@ import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.client.platform.Meta;
+import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
@@ -45,9 +47,10 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
 
     // ------------------------------------------------------------------------
 
-    public HttpQueryExposer(final QueryGateway queryGateway, final List<ExposureDescriptor<Query,QueryHandler>> descriptors) {
+    public HttpQueryExposer(final Platform platform, final List<ExposureDescriptor<Query,QueryHandler>> descriptors) {
         this(
-                queryGateway,
+                platform.getQueryGateway(),
+                platform.getMeta(),
                 descriptors,
                 new QueryFactoryBuilder().create(),
                 new HttpContextDeserializer(),
@@ -56,11 +59,12 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
     }
 
     public HttpQueryExposer(final QueryGateway queryGateway,
+                            final Meta meta,
                             final List<ExposureDescriptor<Query,QueryHandler>> descriptors,
                             final QueryFactory queryAdapterFactory,
                             final HttpContextDeserializer contextDeserializer,
                             final ObjectMapper mapper) {
-        super(contextDeserializer);
+        super(contextDeserializer, meta);
         this.queryGateway = checkNotNull(queryGateway);
         this.descriptors = checkNotNull(descriptors);
 
