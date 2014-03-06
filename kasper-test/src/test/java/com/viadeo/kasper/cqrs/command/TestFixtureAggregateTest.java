@@ -40,7 +40,7 @@ public class TestFixtureAggregateTest {
     public static Collection repositories() {
         return Arrays.asList(new Object[][] {
             { new TestRepository() },
-           /* { new TestEventRepository() }*/
+            { new TestEventRepository() }
         });
     }
 
