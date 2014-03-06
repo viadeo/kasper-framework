@@ -13,14 +13,14 @@ import static org.junit.Assert.fail;
 
 public class QueryFactoryBuilderTest {
 
-	@Test
-	public void testTypeAdapterServiceLoading() {
-		for (final TypeAdapter adapter : new QueryFactoryBuilder().loadServices(TypeAdapter.class)) {
-			if (MyTestAdapter.class.equals(adapter.getClass())) {
-				return;
+    @Test
+    public void testTypeAdapterServiceLoading() {
+        for (final TypeAdapter adapter : new QueryFactoryBuilder().loadServices(TypeAdapter.class)) {
+            if (MyTestAdapter.class.equals(adapter.getClass())) {
+                return;
             }
         }
-		fail();
-	}
+        fail();
+    }
 
 }

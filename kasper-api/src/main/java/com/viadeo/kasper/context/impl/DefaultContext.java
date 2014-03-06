@@ -11,6 +11,7 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -109,6 +110,11 @@ public class DefaultContext extends AbstractContext {
     @Override
     public String getUserLang() {
         return this.userLang;
+    }
+
+    @Override
+    public Locale getUserLangAsLocale() {
+        return Locale.forLanguageTag(this.userLang);
     }
 
     @Override

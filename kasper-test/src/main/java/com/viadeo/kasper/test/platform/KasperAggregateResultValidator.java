@@ -9,6 +9,7 @@ package com.viadeo.kasper.test.platform;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.tools.KasperMatcher;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.AxonAssertionError;
 import org.axonframework.test.ResultValidator;
@@ -17,7 +18,7 @@ import org.hamcrest.Matcher;
 import javax.validation.ConstraintViolation;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
+import static com.viadeo.kasper.tools.KasperMatcher.equalTo;
 import static org.axonframework.test.matchers.Matchers.*;
 
 public class KasperAggregateResultValidator
@@ -84,8 +85,16 @@ public class KasperAggregateResultValidator
 
     @Override
     public KasperAggregateResultValidator expectReturnOK() {
+        return expectReturnOK(KasperMatcher.anySecurityToken());
+    }
+
+    public KasperAggregateResultValidator expectReturnOK(final String securityToken) {
+        checkNotNull(securityToken);
         checkValidation();
-        validator.expectReturnValue(CommandResponse.ok());
+        validator.expectReturnValue(
+                CommandResponse.ok()
+                        .withSecurityToken(securityToken)
+        );
         return this;
     }
 

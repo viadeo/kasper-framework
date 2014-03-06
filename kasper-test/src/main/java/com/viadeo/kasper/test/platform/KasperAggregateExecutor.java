@@ -47,7 +47,9 @@ public class KasperAggregateExecutor implements KasperFixtureCommandExecutor<Kas
             LOGGER.warn("No implementation found for BEAN VALIDATION - JSR 303", ve);
         }
 
-        return new KasperAggregateResultValidator(executor.when(command, metaContext));
+        return new KasperAggregateResultValidator(
+                new KasperResultValidator(executor.when(command, metaContext))
+        );
     }
 
 }

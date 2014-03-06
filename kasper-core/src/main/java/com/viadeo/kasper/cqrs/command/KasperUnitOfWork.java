@@ -9,6 +9,7 @@ package com.viadeo.kasper.cqrs.command;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.impl.UnitOfWorkEvent;
@@ -19,19 +20,20 @@ import org.axonframework.unitofwork.DefaultUnitOfWork;
 import org.axonframework.unitofwork.TransactionManager;
 import org.joda.time.DateTime;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /**
  * The Kasper unit of work
  */
 public class KasperUnitOfWork extends DefaultUnitOfWork {
 
-    private final Map<EventBus, List<EventMessage<?>>> eventsToBePublished = new HashMap<EventBus, List<EventMessage<?>>>();
+    private final Map<EventBus, List<EventMessage<?>>> eventsToBePublished = new HashMap<>();
+
+    private static final String GLOBAL_METER_EVENTS_NAME = name(KasperUnitOfWork.class, "committed");
 
     // ------------------------------------------------------------------------
 
@@ -127,6 +129,34 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
         }
 
         super.publishEvents();
+    }
+
+    @Override
+    protected void notifyListenersAfterCommit() {
+
+        super.notifyListenersAfterCommit();
+
+        /*
+         * Publish metrics
+         */
+        int nbCommittedEvents = 0;
+        while ( ! eventsToBePublished.isEmpty()) {
+            final Iterator<Map.Entry<EventBus, List<EventMessage<?>>>> iterator = eventsToBePublished.entrySet().iterator();
+            while (iterator.hasNext()) {
+                final Map.Entry<EventBus, List<EventMessage<?>>> entry = iterator.next();
+                final List<EventMessage<?>> messageList = entry.getValue();
+                for (final EventMessage message : messageList) {
+                    final Event event = (Event) message.getPayload();
+                    nbCommittedEvents++;
+                    getMetricRegistry().meter(name(event.getClass(), "committed")).mark();
+                    getMetricRegistry().meter(name(MetricNameStyle.DOMAIN_TYPE, event.getClass(), "committed")).mark();
+                }
+
+                iterator.remove();
+            }
+        }
+
+        getMetricRegistry().meter(GLOBAL_METER_EVENTS_NAME).mark(nbCommittedEvents);
     }
 
 }

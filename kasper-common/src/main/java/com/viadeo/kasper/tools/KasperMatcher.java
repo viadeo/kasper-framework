@@ -4,9 +4,8 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.test.matchers;
+package com.viadeo.kasper.tools;
 
-import org.axonframework.test.matchers.MatcherExecutionException;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
@@ -57,6 +56,10 @@ public class KasperMatcher extends BaseMatcher<Object> {
     private boolean matches(final Object expected, final Object actual, final List<Long> done) {
         boolean match;
 
+        if (expected == anySecurityToken()) {
+            return true;
+        }
+
         if ((null == expected) && (null != actual)) {
             return false;
         }
@@ -80,6 +83,11 @@ public class KasperMatcher extends BaseMatcher<Object> {
         if (DateTime.class.isAssignableFrom(actual.getClass())
                 && (expected == anyDate())) {
             return record(done, expected, actual, true);
+        }
+
+        if (DateTime.class.isAssignableFrom(expected.getClass()) &&
+                DateTime.class.isAssignableFrom(actual.getClass()) ) {
+            return ((DateTime)expected).isEqual((DateTime) actual);
         }
 
         if (isBaseJavaClass(expected.getClass())) {
@@ -129,7 +137,7 @@ public class KasperMatcher extends BaseMatcher<Object> {
                 }
 
             } catch (final IllegalAccessException e) {
-                throw new MatcherExecutionException("Could not confirm object equality due to an exception", e);
+                throw new RuntimeException("Could not confirm object equality due to an exception", e);
             }
         }
         
@@ -257,7 +265,7 @@ public class KasperMatcher extends BaseMatcher<Object> {
     }
     
     // ------------------------------------------------------------------------
-    
+
     private static final DateTime ANYDATE = new DateTime();
     
     /**
@@ -266,7 +274,18 @@ public class KasperMatcher extends BaseMatcher<Object> {
     public static DateTime anyDate() {
     	return ANYDATE;
     }
-    
+
+
+    private static final String SECURITY_TOKEN = "";
+
+    /**
+     * Any security token or null
+     * @return empty String ("")
+     */
+    public static String anySecurityToken() {
+        return SECURITY_TOKEN;
+    }
+
     // ------------------------------------------------------------------------
     
     @Factory

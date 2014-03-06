@@ -12,8 +12,8 @@ import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import org.axonframework.test.AxonAssertionError;
 
-import static com.viadeo.kasper.cqrs.query.QueryResponse.Status.*;
-import static com.viadeo.kasper.test.matchers.KasperMatcher.equalTo;
+import static com.viadeo.kasper.KasperResponse.Status.*;
+import static com.viadeo.kasper.tools.KasperMatcher.equalTo;
 
 /**
  * FIXME: add better debugging information

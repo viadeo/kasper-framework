@@ -14,6 +14,7 @@ import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.query.exposition.FeatureConfiguration;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.adapters.TypeAdapterFactory;
+import com.viadeo.kasper.query.exposition.query.BeanAdapter;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
 import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
 import com.viadeo.kasper.query.exposition.query.VisibilityFilter;
@@ -81,6 +82,11 @@ public class KasperClientBuilder {
 
     public KasperClientBuilder use(final TypeAdapter adapter) {
         qFactoryBuilder.use(checkNotNull(adapter));
+        return this;
+    }
+
+    public KasperClientBuilder use(final BeanAdapter beanAdapter) {
+        qFactoryBuilder.use(checkNotNull(beanAdapter));
         return this;
     }
 

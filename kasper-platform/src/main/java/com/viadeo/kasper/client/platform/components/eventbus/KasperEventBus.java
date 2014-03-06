@@ -29,8 +29,6 @@ import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
-import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 /*
  * Default Kasper event bus based on Axon's Cluster
@@ -42,7 +40,6 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 public class KasperEventBus extends ClusteringEventBus {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBus.class);
-    private static final String GLOBAL_METER_EVENTS_NAME = name(KasperEventBus.class, "events");
     private static final String KASPER_CLUSTER_NAME = "kasper";
 
     /* FIXME: make it configurable */
@@ -170,8 +167,6 @@ public class KasperEventBus extends ClusteringEventBus {
 
     @Override
     public void publish(final EventMessage... messages) {
-        getMetricRegistry().meter(GLOBAL_METER_EVENTS_NAME).mark();
-
         final EventMessage[] newMessages;
 
         /* Add the context to messages if required */

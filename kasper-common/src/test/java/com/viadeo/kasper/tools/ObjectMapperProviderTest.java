@@ -8,11 +8,13 @@ package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
+import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import org.joda.money.CurrencyUnit;
@@ -31,12 +33,12 @@ public class ObjectMapperProviderTest {
     final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
 
     static class SomeResult implements QueryResult {
+        private static final long serialVersionUID = 7036268990439270899L;
+
         private String str;
 
-        public SomeResult() {
-            
-        }
-        
+        public SomeResult() { }
+
         public SomeResult(String str) {
             this.str = str;
         }
@@ -51,6 +53,27 @@ public class ObjectMapperProviderTest {
     }
 
     static class SomeCollectionResponse extends CollectionQueryResult<SomeResult> {
+        private static final long serialVersionUID = 7698126469953546332L;
+    }
+
+    public static class ImmutableQuery implements Query {
+        private static final long serialVersionUID = 2139044505564060435L;
+
+        private final String name;
+        private final Integer value;
+
+        public ImmutableQuery(String name, Integer value) {
+            this.name = name;
+            this.value = value;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public Integer getValue() {
+            return value;
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -65,7 +88,7 @@ public class ObjectMapperProviderTest {
                 expected);
 
         final QueryResponse<SomeResult> actual = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), new TypeReference<QueryResponse<SomeResult>>() {});
+                .createParser(json), new TypeReference<QueryResponse<SomeResult>>() {});
         
         assertTrue(actual.isOK());
         assertNull(actual.getReason());
@@ -82,7 +105,7 @@ public class ObjectMapperProviderTest {
                 expected);
         @SuppressWarnings("unchecked")
         final QueryResponse actual = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), QueryResponse.class);
+                .createParser(json), QueryResponse.class);
 
         // Then
         assertFalse(actual.isOK());
@@ -106,7 +129,7 @@ public class ObjectMapperProviderTest {
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
                 expectedResponse);
         final CommandResponse actualResponse = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), CommandResponse.class);
+                .createParser(json), CommandResponse.class);
 
         // Then
         assertEquals(expectedResponse.getStatus(), actualResponse.getStatus());
@@ -127,7 +150,7 @@ public class ObjectMapperProviderTest {
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
                 expectedResponse);
         final CommandResponse actualResponse = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), CommandResponse.class);
+                .createParser(json), CommandResponse.class);
 
         // Then
         assertEquals(expectedResponse.getStatus(), actualResponse.getStatus());
@@ -152,7 +175,7 @@ public class ObjectMapperProviderTest {
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(response);
         final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
         final SomeCollectionResponse actual = objectReader.readValue(objectReader.getFactory()
-                .createJsonParser(json), SomeCollectionResponse.class);
+                .createParser(json), SomeCollectionResponse.class);
 
         // Then
         assertEquals(response.getCount(), actual.getCount());
@@ -182,6 +205,20 @@ public class ObjectMapperProviderTest {
         // Then
         final DateTime expectedDateTime = new DateTime(2013, 8, 6, 7, 35, 0, 123, DateTimeZone.UTC);
         assertEquals(expectedDateTime, actual);
+    }
+
+    @Test
+    public void serDeserDateTime() throws IOException {
+        // Given
+        final ObjectMapper mapper = ObjectMapperProvider.INSTANCE.mapper();
+        final DateTime expectedDate = DateTime.now();
+
+        // When
+        final String json = mapper.writeValueAsString(expectedDate);
+        final DateTime actualDate = mapper.reader(DateTime.class).readValue(json);
+
+        // Then
+        assertTrue(expectedDate.isEqual(actualDate));
     }
 
     @Test
@@ -216,6 +253,33 @@ public class ObjectMapperProviderTest {
 
         // When
         final Money actual = ObjectMapperProvider.INSTANCE.mapper().readValue(number, Money.class);
+    }
+
+    @Test
+    public void serializeImmutableClass() throws Exception {
+        // Given
+        final ImmutableQuery immutableObject = new ImmutableQuery("foobar", 42);
+
+        // When
+        String json = ObjectMapperProvider.INSTANCE.mapper().writeValueAsString(immutableObject);
+
+        // Then
+        assertEquals("{\"name\":\"foobar\",\"value\":42}", json);
+
+    }
+
+    @Test
+    public void deserializeImmutableClass() throws Exception {
+        // Given
+        final ObjectMapper mapper = ObjectMapperProvider.INSTANCE.mapper();
+
+        // When
+        ImmutableQuery actual = mapper.readValue("{\"name\":\"foobar\",\"value\":42}", ImmutableQuery.class);
+
+        // Then
+        assertNotNull(actual);
+        assertEquals("foobar", actual.getName());
+        assertEquals((Integer)42, actual.getValue());
     }
 
 }

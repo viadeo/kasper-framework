@@ -1,7 +1,26 @@
 # Kasper Releases #
 
 ### Snapshot 0.4-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.4-SNAPSHOT~~))###
-
+* [Improvement X] Add a domain owner field in XKasperDomain annotation
+* [Improvement 184](https://github.com/viadeo/kasper-framework/issues/184) Add `getUserLangAsLocal` method in `Context` class
+* [Improvement 181](https://github.com/viadeo/kasper-framework/issues/181) Manage natively immutable object :warning: Jackson dependencies was updated to 2.3.0 version
+* [Improvement 177](https://github.com/viadeo/kasper-framework/issues/177) Introduce the new Kasper responses format
+* [Improvement 170](https://github.com/viadeo/kasper-framework/issues/170) Add new metrics :
+  + Add three new metrics for each side of a domain
+    - `<domain>.<command|query>.requests-time`
+    - `<domain>.<command|query>.requests`
+    - `<domain>.<command|query>.errors`
+  + Add two new metrics per side of a client
+    - `client.<applicationId>.<command|query>.requests`
+    - `client.<applicationId>.<command|query>.errors`
+* [Improvement 179](https://github.com/viadeo/kasper-framework/pull/179) Update metrics :
+  + Delete metrics :
+    - `kasper.cqrs.query.impl.KasperQueryGateway.requests-times`
+    - `<domain>.query.<name>.request-times`
+  + Add metrics :
+    - `kasper.cqrs.command.KasperUnitOfWork.commited`
+    - `<domain>.eventlistener.<name>.committed`
+    - `<domain>.eventlistener.committed`
 
 ### Version 0.3.9 (02/14/2014, [Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.3.9~~))###
 

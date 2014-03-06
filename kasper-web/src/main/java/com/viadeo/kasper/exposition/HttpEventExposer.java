@@ -193,7 +193,7 @@ public class HttpEventExposer extends HttpExposer {
             final ObjectReader reader = mapper.reader();
 
             /* parse the input stream to that event, no utility method for inputstream+type?? */
-            parser = reader.getFactory().createJsonParser(req.getInputStream());
+            parser = reader.getFactory().createParser(req.getInputStream());
             final Event event = reader.readValue(parser, eventClass);
 
             /* extract context from request */

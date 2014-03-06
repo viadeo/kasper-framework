@@ -8,6 +8,7 @@ package com.viadeo.kasper.core.metrics;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.resolvers.CommandResolver;
 import com.viadeo.kasper.core.resolvers.Resolver;
@@ -21,7 +22,9 @@ import static org.mockito.Mockito.*;
 public class KasperMetricsTest {
 
     @XKasperUnregistered
-    private static class TestCommand implements Command { }
+    private static class TestCommand implements Command {
+        private static final long serialVersionUID = -6923557995485418425L;
+    }
 
     // ------------------------------------------------------------------------
 
@@ -63,7 +66,7 @@ public class KasperMetricsTest {
 
         // When
         kasperMetrics._clearCache();
-        final String path = kasperMetrics.pathForKasperComponent(TestCommand.class);
+        final String path = kasperMetrics.pathForKasperComponent(MetricNameStyle.DOMAIN_TYPE_COMPONENT, mock(Context.class), TestCommand.class);
 
         // Then
         assertEquals(TestCommand.class.getName().toLowerCase(), path);
@@ -89,7 +92,7 @@ public class KasperMetricsTest {
 
         // When
         kasperMetrics._clearCache();
-        final String path = kasperMetrics.pathForKasperComponent(TestCommand.class);
+        final String path = kasperMetrics.pathForKasperComponent(MetricNameStyle.DOMAIN_TYPE_COMPONENT, mock(Context.class), TestCommand.class);
 
         // Then
         assertEquals(("Test.Command." + TestCommand.class.getSimpleName()).toLowerCase(), path);
