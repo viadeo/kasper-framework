@@ -21,6 +21,7 @@ import java.util.ArrayList;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.tools.KasperMatcher.anyDate;
+import static com.viadeo.kasper.tools.KasperMatcher.anySecurityToken;
 import static com.viadeo.kasper.tools.KasperMatcher.equalTo;
 import static org.junit.Assert.*;
 
@@ -209,6 +210,19 @@ public class KasperMatcherTest {
         // Then
         assertTrue(matches);
         assertFalse(a.equals(b));
+    }
+
+    @Test
+    public void testAnySecurityToken() {
+        // Given
+        final String value = "foobar";
+
+        // When
+        final boolean matches = equalTo(anySecurityToken()).matches(value);
+
+        // Then
+        assertTrue(matches);
+        assertFalse(anySecurityToken().equals(value));
     }
 
 }

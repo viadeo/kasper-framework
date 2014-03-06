@@ -56,6 +56,10 @@ public class KasperMatcher extends BaseMatcher<Object> {
     private boolean matches(final Object expected, final Object actual, final List<Long> done) {
         boolean match;
 
+        if (expected == anySecurityToken()) {
+            return true;
+        }
+
         if ((null == expected) && (null != actual)) {
             return false;
         }
@@ -270,7 +274,18 @@ public class KasperMatcher extends BaseMatcher<Object> {
     public static DateTime anyDate() {
     	return ANYDATE;
     }
-    
+
+
+    private static final String SECURITY_TOKEN = "";
+
+    /**
+     * Any security token or null
+     * @return empty String ("")
+     */
+    public static String anySecurityToken() {
+        return SECURITY_TOKEN;
+    }
+
     // ------------------------------------------------------------------------
     
     @Factory
