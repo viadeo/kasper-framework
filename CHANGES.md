@@ -21,6 +21,14 @@
     - `kasper.cqrs.command.KasperUnitOfWork.commited`
     - `<domain>.eventlistener.<name>.committed`
     - `<domain>.eventlistener.committed`
+* [Improvement 186](https://github.com/viadeo/kasper-framework/pull/186) Add SecurityConfiguration to KasperPlatformConfiguration :
+    + Add Query/Command Interceptors :
+    - `kasper.security.callback.ApplicationIdValidator`
+    - `kasper.security.callback.IdentityContextProvider`
+    - `kasper.security.callback.IpAddressValidator`
+    - `kasper.security.callback.SecurityTokenValidator`
+    + Add Public/Private resources security strategies:
+    - `kasper.security.annotation.XKasperPublic`
 
 ### Version 0.3.9 (02/14/2014, [Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.3.9~~))###
 

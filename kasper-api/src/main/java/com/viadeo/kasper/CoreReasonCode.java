@@ -24,6 +24,7 @@ public enum CoreReasonCode {
     /* Security reasons */
     REQUIRE_AUTHENTICATION(2001),
     REQUIRE_AUTHORIZATION(2002),
+    INVALID_AUTHENTICATION(2003),
 
     /* Internal reasons */
     INTERNAL_COMPONENT_TIMEOUT(3001),

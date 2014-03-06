@@ -11,7 +11,6 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.KasperResponse;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
 
 import java.io.IOException;
 

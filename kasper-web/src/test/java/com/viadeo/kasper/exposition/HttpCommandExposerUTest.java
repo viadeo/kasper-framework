@@ -22,7 +22,7 @@ import static org.mockito.Mockito.when;
 public class HttpCommandExposerUTest {
 
     public static class ACommand implements Command {
-        private static final long serialVersionUID = -4789744274328803972L;
+        private static final long serialVersionUID = -4289744274328803942L;
     }
 
     public static class CommandHandlerA extends CommandHandler<ACommand> { }

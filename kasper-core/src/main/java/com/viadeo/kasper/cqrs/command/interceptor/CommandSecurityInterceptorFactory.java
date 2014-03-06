@@ -13,12 +13,19 @@ import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.security.DefaultPublicSecurityStrategy;
+import com.viadeo.kasper.security.DefaultSecurityStrategy;
 import com.viadeo.kasper.security.SecurityConfiguration;
+import com.viadeo.kasper.security.SecurityStrategy;
+import com.viadeo.kasper.security.annotation.XKasperPublic;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CommandSecurityInterceptorFactory extends CommandInterceptorFactory {
+
     private SecurityConfiguration securityConfiguration;
+
+    // ------------------------------------------------------------------------
 
     public CommandSecurityInterceptorFactory(final SecurityConfiguration securityConfiguration) {
         this.securityConfiguration = checkNotNull(securityConfiguration);
@@ -26,10 +33,21 @@ public class CommandSecurityInterceptorFactory extends CommandInterceptorFactory
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     @Override
     public Optional<InterceptorChain<Command, CommandResponse>> create(final TypeToken<?> type) {
+        final Class<?> commandClass = type.getRawType();
+
+        final SecurityStrategy securityStrategy;
+        if (commandClass.isAnnotationPresent(XKasperPublic.class)) {
+            securityStrategy = new DefaultPublicSecurityStrategy(securityConfiguration);
+        } else {
+            securityStrategy = new DefaultSecurityStrategy(securityConfiguration);
+        }
+
         final Interceptor<Command, CommandResponse> interceptor =
-            new CommandSecurityInterceptor<>(securityConfiguration);
+                new CommandSecurityInterceptor<>(securityStrategy);
+
         return Optional.of(InterceptorChain.makeChain(interceptor));
     }
 

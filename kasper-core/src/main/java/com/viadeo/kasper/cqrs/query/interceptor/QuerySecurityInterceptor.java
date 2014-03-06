@@ -6,23 +6,26 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.interceptor;
 
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.interceptor.BaseSecurityInterceptor;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.exception.KasperSecurityException;
-import com.viadeo.kasper.security.SecurityConfiguration;
+import com.viadeo.kasper.security.KasperSecurityException;
+import com.viadeo.kasper.security.SecurityStrategy;
 
-public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult> extends BaseSecurityInterceptor
+import static com.google.common.base.Preconditions.checkNotNull;
+
+public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult>
         implements Interceptor<Q, QueryResponse<R>> {
 
-    public QuerySecurityInterceptor(SecurityConfiguration securityConfiguration) {
-        super(securityConfiguration);
+    private SecurityStrategy securityStrategy;
+
+    // ------------------------------------------------------------------------
+
+    public QuerySecurityInterceptor(final SecurityStrategy securityStrategy) {
+        this.securityStrategy = checkNotNull(securityStrategy);
     }
 
     // ------------------------------------------------------------------------
@@ -30,17 +33,18 @@ public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult> ex
     @Override
     public QueryResponse<R> process(final Q input,
                                     final Context context,
-                                    final InterceptorChain<Q, QueryResponse<R>> chain) throws Exception {
+                                    final InterceptorChain<Q, QueryResponse<R>> chain)
+            throws Exception {
+
         try {
-            addSecurityIdentity(context);
+            securityStrategy.beforeRequest(context);
         } catch (KasperSecurityException e) {
-            return QueryResponse.error(
-                    new KasperReason(
-                            CoreReasonCode.INVALID_INPUT.name(),
-                            e.getMessage()
-                    ));
+            return QueryResponse.error(e.getKasperReason());
         }
-        return chain.next(input, context);
+
+        final QueryResponse<R> queryResponse = chain.next(input, context);
+        securityStrategy.afterRequest();
+        return queryResponse;
     }
 
 }
