@@ -1,6 +1,9 @@
 # Kasper Releases #
 
-### Snapshot 0.4-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.4-SNAPSHOT~~))###
+### Snapshot 0.5-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.5-SNAPSHOT~~))###
+
+
+### Snapshot 0.4 (03/06/2014, [Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.4~~))###
 * [Improvement X] Add a domain owner field in XKasperDomain annotation
 * [Improvement 184](https://github.com/viadeo/kasper-framework/issues/184) Add `getUserLangAsLocal` method in `Context` class
 * [Improvement 181](https://github.com/viadeo/kasper-framework/issues/181) Manage natively immutable object :warning: Jackson dependencies was updated to 2.3.0 version
@@ -29,6 +32,7 @@
     - `kasper.security.callback.SecurityTokenValidator`
     + Add Public/Private resources security strategies:
     - `kasper.security.annotation.XKasperPublic`
+
 
 ### Version 0.3.9 (02/14/2014, [Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.3.9~~))###
 
