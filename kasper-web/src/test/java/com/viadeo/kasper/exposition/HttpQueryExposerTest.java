@@ -19,7 +19,7 @@ import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.exposition.alias.XKasperAlias;
+import com.viadeo.kasper.annotation.XKasperAlias;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.junit.Test;
 import org.junit.runner.RunWith;

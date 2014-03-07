@@ -28,7 +28,7 @@ import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.exposition.alias.XKasperAlias;
+import com.viadeo.kasper.annotation.XKasperAlias;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
