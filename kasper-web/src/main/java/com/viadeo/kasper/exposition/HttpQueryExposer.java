@@ -152,7 +152,7 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
                 .getRawType();
 
         final String queryPath = queryToPath(queryClass);
-        final List<String> aliases = AliasRegistry.aliasesFrom(descriptor.getHandler());
+        final List<String> aliases = AliasRegistry.aliasesFrom(queryClass);
         final String queryName = queryClass.getSimpleName();
 
         LOGGER.info("-> Exposing query[{}] at path[/{}]", queryName,

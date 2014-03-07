@@ -94,7 +94,7 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
         final Set<Class<? extends Event>> eventClasses = Sets.newHashSet();
 
         for (final ExposureDescriptor<Event, EventListener> descriptor : descriptors) {
-            for (final String alias : AliasRegistry.aliasesFrom(descriptor.getHandler())) {
+            for (final String alias : AliasRegistry.aliasesFrom(descriptor.getInput())) {
                 aliasesByEventClasses.add(descriptor.getInput(), alias);
             }
             eventClasses.add(descriptor.getInput());

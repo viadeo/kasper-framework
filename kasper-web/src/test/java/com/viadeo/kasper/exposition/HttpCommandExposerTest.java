@@ -116,12 +116,12 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
     @XKasperCommandHandler(domain = AccountDomain.class)
     public static class NeedValidationCommandHandler extends CommandHandler<NeedValidationCommand> { }
 
+    @XKasperAlias(values = {NEED_VALIDATION_2_ALIAS})
     public static class NeedValidationWithAlias implements Command {
         private static final long serialVersionUID = -8083928873466120009L;
     }
 
     @XKasperCommandHandler(domain = AccountDomain.class)
-    @XKasperAlias(values = {NEED_VALIDATION_2_ALIAS})
     public static class NeedValidationWithAliasCommandHandler extends CommandHandler<NeedValidationWithAlias> {
 
         @Override

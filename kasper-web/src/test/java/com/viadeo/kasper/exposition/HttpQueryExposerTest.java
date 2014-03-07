@@ -144,12 +144,12 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
     public static final String NEED_VALIDATION_2_ALIAS = "needvalidation2";
 
+    @XKasperAlias(values = {NEED_VALIDATION_2_ALIAS})
     public static class NeedValidationWithAlias implements Query {
         private static final long serialVersionUID = -8083928873466120009L;
     }
 
     @XKasperQueryHandler(domain = AccountDomain.class)
-    @XKasperAlias(values = {NEED_VALIDATION_2_ALIAS})
     public static class NeedValidationWithAliasQueryHandler extends QueryHandler<NeedValidationWithAlias, SomeResponse> {
         @Override
         public QueryResponse<SomeResponse> retrieve(NeedValidationWithAlias query) throws Exception {

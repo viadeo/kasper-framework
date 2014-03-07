@@ -76,12 +76,12 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     public static final String NEED_VALIDATION_2_ALIAS = "needvalidation2";
 
     @XKasperUnregistered
+    @XKasperAlias(values = {NEED_VALIDATION_2_ALIAS})
     public static class NeedValidationEvent extends Event {
         private static final long serialVersionUID = -8918994635071831597L;
     }
 
     @XKasperEventListener(domain = TestDomain.class)
-    @XKasperAlias(values = {NEED_VALIDATION_2_ALIAS})
     public static class NeedValidationEventListener extends EventListener<NeedValidationEvent> {
 
         @Override

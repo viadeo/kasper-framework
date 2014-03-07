@@ -163,7 +163,7 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
                 .getRawType();
 
         final String commandPath = commandToPath(commandClass);
-        final List<String> aliases = AliasRegistry.aliasesFrom(descriptor.getHandler());
+        final List<String> aliases = AliasRegistry.aliasesFrom(commandClass);
         final String commandName = commandClass.getSimpleName();
 
         LOGGER.info("-> Exposing command[{}] at path[/{}]",
