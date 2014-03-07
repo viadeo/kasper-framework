@@ -11,8 +11,6 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.viadeo.event.logfilter.mdc.ApplicationMDC;
-import com.viadeo.event.logfilter.mdc.AuthenticationMDC;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperResponse;
 import com.viadeo.kasper.client.platform.Meta;
@@ -239,7 +237,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         MDC.put("appBuildingDate", meta.getBuildingDate().toString());
         MDC.put("appDeploymentDate", meta.getDeploymentDate().toString());
 
-        MDC.put(AuthenticationMDC.AUTH_TOKEN, context.getSecurityToken());
+        MDC.put("authToken", context.getSecurityToken());
 
         return context;
     }
@@ -263,7 +261,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         /* 3) Resolve the input class*/
         final Class<INPUT> inputClass = getInputClass(requestName);
 
-        MDC.put(ApplicationMDC.APP_ROUTE, inputClass.getName());
+        MDC.put("appRoute", inputClass.getName());
 
         /* 4) Extract to a known input */
         return httpRequestToObject.map(httpRequest, inputClass);
