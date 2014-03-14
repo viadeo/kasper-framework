@@ -20,6 +20,7 @@ public enum CoreReasonCode {
     CONFLICT(1004),
     INVALID_ID(1005),
     NOT_FOUND(1006),
+    UNSUPPORTED_MEDIA_TYPE(1007),
 
     /* Security reasons */
     REQUIRE_AUTHENTICATION(2001),

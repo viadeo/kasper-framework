@@ -13,6 +13,7 @@ import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
@@ -38,6 +39,8 @@ import java.net.*;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -136,7 +139,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
         client().emit(DefaultContextBuilder.get(), event);
 
         // Then
-        verify(eventBus).publish(event);
+        verify(eventBus).publishEvent(any(Context.class), refEq(event));
     }
 
     @Test

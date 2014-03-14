@@ -6,25 +6,326 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
+import com.codahale.metrics.Timer;
+import com.fasterxml.jackson.core.JsonGenerationException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperResponse;
+import com.viadeo.kasper.client.platform.Meta;
+import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.HttpContextHeaders;
+import com.viadeo.kasper.exposition.alias.AliasRegistry;
+import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.util.StringUtils;
+import org.slf4j.MDC;
+import org.springframework.http.MediaType;
+import sun.reflect.generics.reflectiveObjects.ParameterizedTypeImpl;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.ConstraintViolation;
+import javax.ws.rs.core.Response;
 import java.beans.Introspector;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
+import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
-public abstract class HttpExposer extends HttpServlet {
+public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extends HttpServlet {
+
 	private static final long serialVersionUID = 8448984922303895424L;
-	protected static final Logger LOGGER = LoggerFactory.getLogger(HttpExposer.class);
+
+    protected static final Logger LOGGER = LoggerFactory.getLogger(HttpExposer.class);
+
+    private final HttpContextDeserializer contextDeserializer;
+    private final AliasRegistry aliasRegistry;
+    private final Logger requestLogger;
+    private final MetricNames metricNames;
+    private final Meta meta;
 
     private Optional<String> serverName = Optional.absent();
+
+    protected HttpExposer(final HttpContextDeserializer contextDeserializer, final Meta meta) {
+        this.meta = meta;
+        this.metricNames = new MetricNames(getClass());
+        this.contextDeserializer = checkNotNull(contextDeserializer);
+        this.aliasRegistry = new AliasRegistry();
+        this.serverName = Optional.absent();
+        this.requestLogger = LoggerFactory.getLogger(getClass());
+    }
+
+    protected abstract RESPONSE createErrorResponse(final CoreReasonCode code, final List<String> reasons);
+
+    protected abstract boolean isManageable(final String requestName);
+
+    protected abstract <T extends INPUT> Class<T> getInputClass(final String inputName);
+
+    protected void checkMediaType(final HttpServletRequest httpRequest) throws HttpExposerException {
+        // nothing
+    }
+
+    public final void handleRequest(
+            final HttpServletRequestToObject requestToObject,
+            final ObjectToHttpServletResponse objectToHttpResponse,
+            final HttpServletRequest httpRequest,
+            final HttpServletResponse httpResponse
+    ) throws IOException {
+        final Timer.Context timer = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
+
+        try {
+            this.doHandleRequest(requestToObject, objectToHttpResponse, httpRequest, httpResponse);
+        } finally {
+            timer.stop();
+            getMetricRegistry().meter(metricNames.getRequestsName()).mark();
+        }
+    }
+
+    protected void doHandleRequest(
+            final HttpServletRequestToObject requestToObject,
+            final ObjectToHttpServletResponse objectToHttpResponse,
+            final HttpServletRequest httpRequest,
+            final HttpServletResponse httpResponse
+    ) throws IOException {
+
+        INPUT input = null;
+        RESPONSE response;
+
+        /* 0) Create a request correlation id */
+        final UUID kasperCorrelationUUID = UUID.randomUUID();
+
+        try {
+
+            /* 1) Check that we support the requested media type*/
+            checkMediaType(httpRequest);
+
+            /* 2) Extract the context from request */
+            final Context context = extractContext(httpRequest, kasperCorrelationUUID);
+
+            /* 3) Extract the input from request */
+            input = extractInput(httpRequest, requestToObject);
+
+            /* 4) Handle the request */
+            response = handle(input, context);
+
+        } catch (HttpExposerException exposerException) {
+            sendError(
+                    httpResponse,
+                    objectToHttpResponse,
+                    createErrorResponse(exposerException.getCoreReasonCode(), Lists.newArrayList(exposerException.getMessage())),
+                    kasperCorrelationUUID,
+                    exposerException,
+                    Optional.fromNullable(input)
+            );
+            return;
+
+        } catch (final JSR303ViolationException validationException) {
+            final List<String> errorMessages = new ArrayList<>();
+            for (final ConstraintViolation<Object> violation : validationException.getViolations()) {
+                errorMessages.add(violation.getPropertyPath() + " : " + violation.getMessage());
+            }
+
+            sendError(
+                    httpResponse,
+                    objectToHttpResponse,
+                    createErrorResponse(CoreReasonCode.INVALID_INPUT, errorMessages),
+                    kasperCorrelationUUID,
+                    validationException,
+                    Optional.fromNullable(input)
+            );
+            return;
+
+        } catch (final IOException e) {
+            sendError(
+                    httpResponse,
+                    objectToHttpResponse,
+                    createErrorResponse(
+                            CoreReasonCode.INVALID_INPUT,
+                            Lists.newArrayList((null == e.getMessage()) ? "Unknown" : e.getMessage())
+                    ),
+                    kasperCorrelationUUID,
+                    e,
+                    Optional.fromNullable(input)
+            );
+            return;
+
+        } catch (final Throwable th) {
+            sendError(
+                    httpResponse,
+                    objectToHttpResponse,
+                    createErrorResponse(
+                            CoreReasonCode.UNKNOWN_REASON,
+                            Lists.newArrayList((null == th.getMessage()) ? "Unknown" : th.getMessage())
+                    ),
+                    kasperCorrelationUUID,
+                    th,
+                    Optional.fromNullable(input)
+            );
+            return;
+        }
+
+        try {
+
+            /* 5) Respond to the request */
+            sendResponse(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
+
+            final String inputName = input.getClass().getSimpleName();
+            requestLogger.info("Request processed in {} [{}] : {}", getInputTypeName(), inputName);
+
+        } catch (final JsonGenerationException | JsonMappingException e) {
+            sendError(
+                    httpResponse,
+                    objectToHttpResponse,
+                    createErrorResponse(CoreReasonCode.UNKNOWN_REASON, Lists.newArrayList(String.format(
+                            "Error outputting response to JSON for command [%s] and response [%s]error = %s",
+                            input.getClass().getSimpleName(),
+                            response,
+                            e
+                    ))),
+                    kasperCorrelationUUID,
+                    e,
+                    Optional.fromNullable(input)
+            );
+        }
+    }
+
+    public final RESPONSE handle(final INPUT input, final Context context) throws Exception {
+        final Timer.Context inputHandleTime = getMetricRegistry().timer(name(input.getClass(), "requests-handle-time")).time();
+        final Timer.Context globalInputHandleTime = getMetricRegistry().timer(metricNames.getRequestsHandleTimeName()).time();
+
+        try {
+            return doHandle(input, context);
+        } finally {
+            inputHandleTime.stop();
+            globalInputHandleTime.stop();
+        }
+    }
+
+    public abstract RESPONSE doHandle(final INPUT input, final Context context) throws Exception;
+
+    protected void flushBuffer(final HttpServletResponse httpResponse){
+        /*
+         * must be last call to ensure that everything is sent to the client
+         *(even if an error occurred)
+         */
+        try {
+            httpResponse.flushBuffer();
+        } catch (final IOException e) {
+            requestLogger.warn("Error when trying to flush output buffer", e);
+        }
+    }
+
+    protected Context extractContext(
+            final HttpServletRequest httpRequest,
+            final UUID kasperCorrelationUUID
+    ) throws IOException {
+        final Context context = contextDeserializer.deserialize(httpRequest, kasperCorrelationUUID);
+
+        MDC.put("appId", context.getApplicationId());
+        MDC.put("appServer", serverName());
+        MDC.put("appVersion", meta.getVersion());
+        MDC.put("appBuildingDate", meta.getBuildingDate().toString());
+        MDC.put("appDeploymentDate", meta.getDeploymentDate().toString());
+
+        MDC.put("authToken", context.getSecurityToken());
+
+        return context;
+    }
+
+    protected INPUT extractInput(
+            final HttpServletRequest httpRequest,
+            final HttpServletRequestToObject httpRequestToObject
+    ) throws HttpExposerException, IOException {
+
+        /* 1) Resolve the input name */
+        final String requestName = aliasRegistry.resolve(resourceName(httpRequest.getRequestURI()));
+
+        /* 2) Check that the request is manageable*/
+        if(!isManageable(requestName)){
+            throw new HttpExposerException(
+                    CoreReasonCode.NOT_FOUND,
+                    getInputTypeName() + "[" + requestName + "] not found."
+            );
+        }
+
+        /* 3) Resolve the input class*/
+        final Class<INPUT> inputClass = getInputClass(requestName);
+
+        MDC.put("appRoute", inputClass.getName());
+
+        /* 4) Extract to a known input */
+        return httpRequestToObject.map(httpRequest, inputClass);
+    }
+
+    protected String getInputTypeName() {
+        ParameterizedTypeImpl parameterizedType = (ParameterizedTypeImpl) getClass().getGenericSuperclass();
+        final Class inputClass = (Class)parameterizedType.getActualTypeArguments()[0];
+        return inputClass.getSimpleName();
+    }
+
+    protected Response.Status getStatusFrom(final RESPONSE response) {
+        final Response.Status status;
+
+        if ( ! response.isOK()) {
+            if (null == response.getReason()) {
+                status = Response.Status.INTERNAL_SERVER_ERROR;
+            } else {
+                status = Response.Status.fromStatusCode(CoreReasonHttpCodes.toStatus(response.getReason().getCode()));
+            }
+        } else {
+            status = Response.Status.OK;
+        }
+
+        return status;
+    }
+
+    protected void sendResponse(
+            final HttpServletResponse httpResponse,
+            final ObjectToHttpServletResponse objectToHttpResponse,
+            final RESPONSE response,
+            final UUID kasperCorrelationUUID
+    ) throws IOException {
+        httpResponse.setContentType(MediaType.APPLICATION_JSON_VALUE + "; charset=UTF-8");
+        httpResponse.addHeader("kasperCorrelationId", kasperCorrelationUUID.toString());
+        httpResponse.addHeader(HttpContextHeaders.HEADER_SERVER_NAME, serverName());
+
+        objectToHttpResponse.map(httpResponse, response, getStatusFrom(response));
+
+        flushBuffer(httpResponse);
+    }
+
+    protected void sendError(
+            final HttpServletResponse httpResponse,
+            final ObjectToHttpServletResponse objectToHttpResponse,
+            final RESPONSE response,
+            final UUID kasperCorrelationUUID,
+            final Throwable throwable,
+            final Optional<INPUT> input
+    ) throws IOException {
+        try {
+            sendResponse(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
+        } finally {
+            getMetricRegistry().meter(metricNames.getErrorsName()).mark();
+
+            if (input.isPresent()) {
+                final String inputName = input.get().getClass().getSimpleName();
+                requestLogger.error("Error in {} [{}] : {}", getInputTypeName(), inputName, response.getReason(),
+                        throwable);
+            } else {
+                requestLogger.error("Error in {} : {}", getInputTypeName(), response.getReason(), throwable);
+            }
+        }
+    }
 
     // ------------------------------------------------------------------------
 
@@ -59,19 +360,6 @@ public abstract class HttpExposer extends HttpServlet {
 
     // ------------------------------------------------------------------------
 
-    protected String getFullRequestURI(final HttpServletRequest req){
-        final StringBuilder sb = new StringBuilder();
-        sb.append(req.getRequestURI());
-
-        final String queryString = req.getQueryString();
-        if (StringUtils.hasText(queryString)){
-            sb.append("?");
-            sb.append(queryString);
-        }
-
-        return sb.toString();
-    }
-
     protected String serverName(){
         if(serverName.isPresent()){
             return serverName.get();
@@ -87,4 +375,65 @@ public abstract class HttpExposer extends HttpServlet {
         return fqdn;
     }
 
+    // ------------------------------------------------------------------------
+
+    public AliasRegistry getAliasRegistry() {
+        return aliasRegistry;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static class HttpExposerException extends Exception {
+
+        private static final long serialVersionUID = -4342775377554279973L;
+
+        private final CoreReasonCode coreReasonCode;
+        private final String message;
+
+        public HttpExposerException(final CoreReasonCode coreReasonCode, final String message){
+            this.coreReasonCode = coreReasonCode;
+            this.message = message;
+        }
+
+        public CoreReasonCode getCoreReasonCode() {
+            return coreReasonCode;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static class MetricNames {
+
+        private final String errorsName;
+        private final String requestsName;
+        private final String requestsTimeName;
+        private final String requestsHandleTimeName;
+
+        public MetricNames(final Class clazz) {
+            this.errorsName =  name(clazz, "requests-time");
+            this.requestsName = name(clazz, "requests-handle-time");
+            this.requestsTimeName = name(clazz, "requests");
+            this.requestsHandleTimeName = name(clazz, "errors");
+        }
+
+        public String getErrorsName() {
+            return errorsName;
+        }
+
+        public String getRequestsName() {
+            return requestsName;
+        }
+
+        public String getRequestsTimeName() {
+            return requestsTimeName;
+        }
+
+        public String getRequestsHandleTimeName() {
+            return requestsHandleTimeName;
+        }
+    }
 }
