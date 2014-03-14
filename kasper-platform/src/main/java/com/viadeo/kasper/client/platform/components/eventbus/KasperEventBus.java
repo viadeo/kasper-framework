@@ -8,6 +8,7 @@
 package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -54,6 +56,7 @@ public class KasperEventBus extends ClusteringEventBus {
     private static final Policy DEFAULT_POLICY = Policy.SYNCHRONOUS;
 
     private final Policy currentPolicy;
+    private final Optional<KasperProcessorDownLatch> optionalProcessorDownLatch;
 
     // ------------------------------------------------------------------------
 
@@ -62,49 +65,57 @@ public class KasperEventBus extends ClusteringEventBus {
      */
     public static ErrorHandler getDefaultErrorHandler() {
         return new DefaultErrorHandler(RetryPolicy.proceed()) {
-                        @Override
-                        public RetryPolicy handleError(final Throwable exception,
-                                                       final EventMessage eventMessage,
-                                                       final EventListener eventListener) {
-                            /* TODO: store the error, generate error event */
-                            LOGGER.error(String.format("Error %s occured during processing of event %s in listener %s ",
-                                        exception.getMessage(),
-                                        eventMessage.getPayload().getClass().getName(),
-                                        eventListener.getClass().getName()
-                            ));
-                            return super.handleError(exception, eventMessage, eventListener);
-                        }
-                   };
-    }
-
-    /*
-     * Return a default cluster selector
-     */
-    public static ClusterSelector getCluster(final Policy busPolicy) {
-        return getCluster(busPolicy, getDefaultErrorHandler());
+            @Override
+            public RetryPolicy handleError(final Throwable exception,
+                                           final EventMessage eventMessage,
+                                           final EventListener eventListener) {
+                /* TODO: store the error, generate error event */
+                LOGGER.error(String.format(
+                    "Error %s occured during processing of event %s in listener %s ",
+                    exception.getMessage(),
+                    eventMessage.getPayload().getClass().getName(),
+                    eventListener.getClass().getName()
+                ));
+                return super.handleError(exception, eventMessage, eventListener);
+            }
+        };
     }
 
     /*
      * Return a default cluster selector using the specified error handler
      * FIXME: eventually manage with a correct transaction manager
      */
-    public static ClusterSelector getCluster(final Policy busPolicy, final ErrorHandler errorHandler) {
+    public static ClusterSelector getCluster(
+            final Policy busPolicy,
+            final ErrorHandler errorHandler,
+            final KasperProcessorDownLatch processorDownLatch) {
 
         if (Policy.ASYNCHRONOUS.equals(busPolicy)) {
+            final BlockingQueue<Runnable> busQueue = new LinkedBlockingQueue<Runnable>();
+
             return new DefaultClusterSelector(
                 new AsynchronousCluster(
                     KASPER_CLUSTER_NAME,
                     new ThreadPoolExecutor(
-                            CORE_POOL_SIZE,
-                            MAXIMUM_POOL_SIZE,
-                            KEEP_ALIVE_TIME,
-                            TIME_UNIT,
-                            new LinkedBlockingQueue<Runnable>()
+                        CORE_POOL_SIZE,
+                        MAXIMUM_POOL_SIZE,
+                        KEEP_ALIVE_TIME,
+                        TIME_UNIT,
+                        busQueue
                     ),
                     new DefaultUnitOfWorkFactory(new NoTransactionManager()),
                     new SequentialPolicy(),
                     errorHandler
-                )
+                ) {
+                    @Override
+                    protected EventProcessor newProcessingScheduler(EventProcessor.ShutdownCallback shutDownCallback) {
+                        final EventProcessor eventProcessor = super.newProcessingScheduler(
+                            new KasperShutdownCallback(processorDownLatch, shutDownCallback)
+                        );
+                        processorDownLatch.process(eventProcessor);
+                        return eventProcessor;
+                    }
+                }
             );
         }
 
@@ -121,16 +132,14 @@ public class KasperEventBus extends ClusteringEventBus {
      * Build a default synchronous event bus
      */
     public KasperEventBus() {
-        super(getCluster(DEFAULT_POLICY));
-        this.currentPolicy = DEFAULT_POLICY;
+        this(DEFAULT_POLICY);
     }
 
     /*
      * Build a Kasper event bus using the specified policy
      */
     public KasperEventBus(final Policy busPolicy) {
-        super(getCluster(checkNotNull(busPolicy)));
-        this.currentPolicy = busPolicy;
+        this(busPolicy, new KasperProcessorDownLatch());
     }
 
     /*
@@ -139,6 +148,7 @@ public class KasperEventBus extends ClusteringEventBus {
     public KasperEventBus(final ClusterSelector axonClusterSelector) {
         super(checkNotNull(axonClusterSelector));
         this.currentPolicy = Policy.USER;
+        this.optionalProcessorDownLatch = Optional.absent();
     }
 
     /*
@@ -147,14 +157,28 @@ public class KasperEventBus extends ClusteringEventBus {
     public KasperEventBus(final Cluster cluster) {
         super(new DefaultClusterSelector(checkNotNull(cluster)));
         this.currentPolicy = Policy.USER;
+        this.optionalProcessorDownLatch = Optional.absent();
     }
 
     /*
      * Build an asynchronous Kasper event bus with the specified error handler
      */
     public KasperEventBus(final ErrorHandler errorHandler) {
-        super(getCluster(Policy.ASYNCHRONOUS, errorHandler));
-        this.currentPolicy = Policy.ASYNCHRONOUS;
+        this(Policy.ASYNCHRONOUS, errorHandler, new KasperProcessorDownLatch());
+    }
+
+    public KasperEventBus(final Policy busPolicy, final KasperProcessorDownLatch processorDownLatch) {
+        this(busPolicy, getDefaultErrorHandler(), processorDownLatch);
+    }
+
+    public KasperEventBus(
+            final Policy busPolicy,
+            final ErrorHandler errorHandler,
+            final KasperProcessorDownLatch processorDownLatch
+    ) {
+        super(getCluster(checkNotNull(busPolicy), checkNotNull(errorHandler), checkNotNull(processorDownLatch)));
+        this.currentPolicy = busPolicy;
+        this.optionalProcessorDownLatch = Optional.of(processorDownLatch);
     }
 
     // ------------------------------------------------------------------------
@@ -200,13 +224,29 @@ public class KasperEventBus extends ClusteringEventBus {
 
     public void publishEvent(final Context context, final IEvent event) {
         this.publish(
-                new GenericEventMessage<>(
-                        checkNotNull(event),
-                        new HashMap<String, Object>() {{
-                            this.put(Context.METANAME, context);
-                        }}
-                )
+            new GenericEventMessage<>(
+                checkNotNull(event),
+                new HashMap<String, Object>() {{
+                    this.put(Context.METANAME, context);
+                }}
+            )
         );
+    }
+
+    public Optional<Runnable> getShutdownHook(){
+        if(optionalProcessorDownLatch.isPresent()) {
+            return Optional.<Runnable>of(new Runnable() {
+                @Override
+                public void run() {
+                    LOGGER.info("Starting shutdown : Event Processing");
+                    System.out.println("Starting shutdown : Event Processing");
+                    optionalProcessorDownLatch.get().await();
+                    LOGGER.info("Shutdown complete : Event Processing");
+                    System.out.println("Shutdown complete : Event Processing");
+                }
+            });
+        }
+        return Optional.absent();
     }
 
 }
