@@ -309,12 +309,15 @@ public class KasperClient {
                 response.withSecurityToken(headers.getFirst(HEADER_SECURITY_TOKEN));
             }
 
-            return new HTTPCommandResponse(Response.Status.fromStatusCode(clientResponse.getStatus()), response);
+            return new HTTPCommandResponse(
+                    safeStatusFromCode(clientResponse.getStatus()),
+                    response
+            );
 
         } else {
 
             return new HTTPCommandResponse(
-                    Response.Status.fromStatusCode(clientResponse.getStatus()),
+                    safeStatusFromCode(clientResponse.getStatus()),
                     CommandResponse.Status.ERROR,
                     new KasperReason(
                             CoreReasonCode.UNKNOWN_REASON,
@@ -540,12 +543,15 @@ public class KasperClient {
                                             );
 
             final QueryResponse<P> response = clientResponse.getEntity(new GenericType<QueryResponse<P>>(mappedType.getType()));
-            return new HTTPQueryResponse<P>(Response.Status.fromStatusCode(clientResponse.getStatus()), response);
+            return new HTTPQueryResponse<P>(
+                    safeStatusFromCode(clientResponse.getStatus()),
+                    response
+            );
 
         } else {
 
             return new HTTPQueryResponse<P>(
-                    Response.Status.fromStatusCode(clientResponse.getStatus()),
+                    safeStatusFromCode(clientResponse.getStatus()),
                     new KasperReason(
                             CoreReasonCode.UNKNOWN_REASON,
                             "Response from platform uses an unsupported type: " + clientResponse.getType())
@@ -644,6 +650,15 @@ public class KasperClient {
 
     private KasperException cannotConstructURI(final Class clazz, final Exception e) {
         return new KasperException("Could not construct resource url for " + clazz, e);
+    }
+
+    private Response.Status safeStatusFromCode(final int code) {
+        final Response.Status status = Response.Status.fromStatusCode(code);
+        if (null == status) {
+            return Response.Status.INTERNAL_SERVER_ERROR;
+        } else {
+            return status;
+        }
     }
 
 }
