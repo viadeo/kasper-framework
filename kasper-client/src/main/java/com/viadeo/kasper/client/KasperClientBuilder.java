@@ -234,9 +234,11 @@ public class KasperClientBuilder {
             client = Client.create(cfg);
         }
 
+        /*
         if (numberOfRetries > 0) {
             client.addFilter(new RetryFilter(numberOfRetries));
         }
+        */
 
         return new KasperClient(queryFactory, client, commandBaseLocation, queryBaseLocation, eventBaseLocation, contextSerializer, flags);
     }
