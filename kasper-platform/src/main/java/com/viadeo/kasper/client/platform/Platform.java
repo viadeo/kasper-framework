@@ -251,7 +251,8 @@ public interface Platform {
         }
 
         private void registerShutdownHook() {
-            if (eventBus.getShutdownHook().isPresent()) {
+            if ((null != eventBus.getShutdownHook()) /* for mocks... */
+                && eventBus.getShutdownHook().isPresent()) {
                 Runtime.getRuntime().addShutdownHook(new Thread(eventBus.getShutdownHook().get()));
                 LOGGER.info("Registered shutdown hook : Event Processing");
             }

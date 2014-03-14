@@ -1,7 +1,16 @@
 # Kasper Releases #
 
 ### Snapshot 0.5-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.5-SNAPSHOT~~))###
-
+* [Pull 128](https://github.com/viadeo/kasper-framework/pull/128) Emerge a common exposure base in order to manage properly the deserialization with jackson of a query in case of a POST.
+* [Improvement 185](https://github.com/viadeo/kasper-framework/pull/185) Add shutdown hook in order to flush published events in bus
+* [Improvement 186](https://github.com/viadeo/kasper-framework/pull/186) Add SecurityConfiguration to KasperPlatformConfiguration :
+    + Add Query/Command Interceptors :
+    - `kasper.security.callback.ApplicationIdValidator`
+    - `kasper.security.callback.IdentityContextProvider`
+    - `kasper.security.callback.IpAddressValidator`
+    - `kasper.security.callback.SecurityTokenValidator`
+    + Add Public/Private resources security strategies:
+    - `kasper.security.annotation.XKasperPublic`
 
 ### Snapshot 0.4 (03/06/2014, [Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.4~~))###
 * [Improvement X] Add a domain owner field in XKasperDomain annotation
@@ -24,15 +33,6 @@
     - `kasper.cqrs.command.KasperUnitOfWork.commited`
     - `<domain>.eventlistener.<name>.committed`
     - `<domain>.eventlistener.committed`
-* [Improvement 186](https://github.com/viadeo/kasper-framework/pull/186) Add SecurityConfiguration to KasperPlatformConfiguration :
-    + Add Query/Command Interceptors :
-    - `kasper.security.callback.ApplicationIdValidator`
-    - `kasper.security.callback.IdentityContextProvider`
-    - `kasper.security.callback.IpAddressValidator`
-    - `kasper.security.callback.SecurityTokenValidator`
-    + Add Public/Private resources security strategies:
-    - `kasper.security.annotation.XKasperPublic`
-
 
 ### Version 0.3.9 (02/14/2014, [Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.3.9~~))###
 

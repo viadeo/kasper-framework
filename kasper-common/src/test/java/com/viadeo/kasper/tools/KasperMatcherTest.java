@@ -20,9 +20,7 @@ import org.junit.Test;
 import java.util.ArrayList;
 
 import static com.google.common.base.Preconditions.checkNotNull;
-import static com.viadeo.kasper.tools.KasperMatcher.anyDate;
-import static com.viadeo.kasper.tools.KasperMatcher.anySecurityToken;
-import static com.viadeo.kasper.tools.KasperMatcher.equalTo;
+import static com.viadeo.kasper.tools.KasperMatcher.*;
 import static org.junit.Assert.*;
 
 public class KasperMatcherTest {
