@@ -13,7 +13,7 @@ import com.viadeo.kasper.security.callback.SecurityTokenValidator;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-class KasperSecurityConfiguration implements SecurityConfiguration {
+public class KasperSecurityConfiguration implements SecurityConfiguration {
 
     private final SecurityTokenValidator securityTokenValidator;
     private final IdentityContextProvider identityContextProviders;
