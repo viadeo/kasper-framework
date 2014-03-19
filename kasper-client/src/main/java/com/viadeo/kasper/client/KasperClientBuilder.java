@@ -36,7 +36,9 @@ public class KasperClientBuilder {
 
     private final QueryFactoryBuilder qFactoryBuilder = new QueryFactoryBuilder();
 
+    private boolean addedRetryFilter = false;
     private int numberOfRetries = 3;
+
     private Client client;
     private ObjectMapper mapper;
     private URL commandBaseLocation;
@@ -234,7 +236,8 @@ public class KasperClientBuilder {
             client = Client.create(cfg);
         }
 
-        if (numberOfRetries > 0) {
+        if ((numberOfRetries > 0) && (! addedRetryFilter)) {
+            addedRetryFilter = true;
             client.addFilter(new RetryFilter(numberOfRetries));
         }
 
