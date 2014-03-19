@@ -7,10 +7,6 @@
 package com.viadeo.kasper.client;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
-import com.google.common.base.Function;
-import com.google.common.collect.ImmutableSetMultimap;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
@@ -135,13 +131,8 @@ public class KasperClientQueryTest extends JerseyTest {
         @POST
         @Produces(MediaType.APPLICATION_JSON)
         @Consumes(MediaType.APPLICATION_JSON)
-        public MemberResult getPostMember(ImmutableSetMultimap<String, String> query) {
-            return new MemberResult(query.get("memberName").iterator().next(), Lists.newArrayList(Iterables.transform(query.get("ids"), new Function<String, Integer>() {
-                @Override
-                public Integer apply(String input) {
-                    return Integer.parseInt(input);
-                }
-            })));
+        public MemberResult getPostMember(GetMemberQuery query) {
+            return new MemberResult(query.getMemberName(), query.getIds());
         }
     }
     

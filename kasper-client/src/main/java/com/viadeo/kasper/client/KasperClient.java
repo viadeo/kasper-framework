@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.client;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.SetMultimap;
 import com.google.common.reflect.TypeParameter;
@@ -29,6 +31,7 @@ import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.exception.KasperQueryAdapterException;
 import com.viadeo.kasper.query.exposition.query.QueryBuilder;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
+import com.viadeo.kasper.tools.ObjectMapperProvider;
 
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
@@ -306,12 +309,15 @@ public class KasperClient {
                 response.withSecurityToken(headers.getFirst(HEADER_SECURITY_TOKEN));
             }
 
-            return new HTTPCommandResponse(Response.Status.fromStatusCode(clientResponse.getStatus()), response);
+            return new HTTPCommandResponse(
+                    safeStatusFromCode(clientResponse.getStatus()),
+                    response
+            );
 
         } else {
 
             return new HTTPCommandResponse(
-                    Response.Status.fromStatusCode(clientResponse.getStatus()),
+                    safeStatusFromCode(clientResponse.getStatus()),
                     CommandResponse.Status.ERROR,
                     new KasperReason(
                             CoreReasonCode.UNKNOWN_REASON,
@@ -397,9 +403,13 @@ public class KasperClient {
         checkNotNull(mapTo);
         checkNotNull(context);
 
-        final WebResource.Builder builder = client
-                .resource(resolveQueryPath(query.getClass()))
-                .queryParams(prepareQueryParams(query))
+        WebResource webResource = client.resource(resolveQueryPath(query.getClass()));
+
+        if ( ! flags.usePostForQueries()) {
+            webResource = webResource.queryParams(prepareQueryParams(query));
+        }
+
+        final WebResource.Builder builder = webResource
                 .accept(MediaType.APPLICATION_JSON_TYPE)
                 .type(MediaType.APPLICATION_JSON_TYPE);
 
@@ -407,7 +417,7 @@ public class KasperClient {
 
         final ClientResponse response;
         if (flags.usePostForQueries()) {
-            response = builder.post(ClientResponse.class, queryToSetMap(query));
+            response = builder.post(ClientResponse.class, queryToJson(query));
         } else {
             response = builder.get(ClientResponse.class);
         }
@@ -435,9 +445,13 @@ public class KasperClient {
         checkNotNull(mapTo);
         checkNotNull(context);
 
-        final AsyncWebResource.Builder builder = client
-                .asyncResource(resolveQueryPath(query.getClass()))
-                .queryParams(prepareQueryParams(query))
+        AsyncWebResource asyncWebResource = client.asyncResource(resolveQueryPath(query.getClass()));
+
+        if ( ! flags.usePostForQueries()) {
+            asyncWebResource = asyncWebResource.queryParams(prepareQueryParams(query));
+        }
+
+        final AsyncWebResource.Builder builder = asyncWebResource
                 .accept(MediaType.APPLICATION_JSON_TYPE)
                 .type(MediaType.APPLICATION_JSON_TYPE);
 
@@ -446,7 +460,7 @@ public class KasperClient {
         final Future<ClientResponse> futureResponse;
 
         if (flags.usePostForQueries()) {
-            futureResponse = builder.post(ClientResponse.class, queryToSetMap(query));
+            futureResponse = builder.post(ClientResponse.class, queryToJson(query));
         } else {
             futureResponse = builder.get(ClientResponse.class);
         }
@@ -477,8 +491,13 @@ public class KasperClient {
         checkNotNull(context);
         checkNotNull(callback);
 
-        final AsyncWebResource.Builder builder = client.asyncResource(resolveQueryPath(query.getClass()))
-                .queryParams(prepareQueryParams(query))
+        AsyncWebResource asyncWebResource = client.asyncResource(resolveQueryPath(query.getClass()));
+
+        if ( ! flags.usePostForQueries()) {
+            asyncWebResource = asyncWebResource.queryParams(prepareQueryParams(query));
+        }
+
+        final AsyncWebResource.Builder builder = asyncWebResource
                 .accept(MediaType.APPLICATION_JSON_TYPE)
                 .type(MediaType.APPLICATION_JSON_TYPE);
 
@@ -487,7 +506,7 @@ public class KasperClient {
         final TypeListener<ClientResponse> typeListener = createTypeListener(query, mapTo, callback);
 
         if (flags.usePostForQueries()) {
-            builder.post(typeListener, queryToSetMap(query));
+            builder.post(typeListener, query);
         } else {
             builder.get(typeListener);
         }
@@ -524,12 +543,15 @@ public class KasperClient {
                                             );
 
             final QueryResponse<P> response = clientResponse.getEntity(new GenericType<QueryResponse<P>>(mappedType.getType()));
-            return new HTTPQueryResponse<P>(Response.Status.fromStatusCode(clientResponse.getStatus()), response);
+            return new HTTPQueryResponse<P>(
+                    safeStatusFromCode(clientResponse.getStatus()),
+                    response
+            );
 
         } else {
 
             return new HTTPQueryResponse<P>(
-                    Response.Status.fromStatusCode(clientResponse.getStatus()),
+                    safeStatusFromCode(clientResponse.getStatus()),
                     new KasperReason(
                             CoreReasonCode.UNKNOWN_REASON,
                             "Response from platform uses an unsupported type: " + clientResponse.getType())
@@ -551,6 +573,19 @@ public class KasperClient {
         }
 
         return map;
+    }
+
+    private String queryToJson(final Query query){
+        final ObjectWriter objectWriter = ObjectMapperProvider.INSTANCE.objectWriter();
+        final String queryToJson;
+
+        try {
+            queryToJson = objectWriter.writeValueAsString(query);
+        } catch (final JsonProcessingException e) {
+            throw new KasperException(String.format("ERROR generating query string for [%s]", query.getClass()), e);
+        }
+
+        return queryToJson;
     }
 
     private SetMultimap<String, String> queryToSetMap(final Query query) {
@@ -615,6 +650,15 @@ public class KasperClient {
 
     private KasperException cannotConstructURI(final Class clazz, final Exception e) {
         return new KasperException("Could not construct resource url for " + clazz, e);
+    }
+
+    private Response.Status safeStatusFromCode(final int code) {
+        final Response.Status status = Response.Status.fromStatusCode(code);
+        if (null == status) {
+            return Response.Status.INTERNAL_SERVER_ERROR;
+        } else {
+            return status;
+        }
     }
 
 }

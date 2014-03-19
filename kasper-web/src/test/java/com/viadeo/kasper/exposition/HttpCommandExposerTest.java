@@ -51,7 +51,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
     public static final String NEED_VALIDATION_2_ALIAS = "needvalidation2";
 
     public static class CreateAccountCommand implements Command {
-        private static final long serialVersionUID = 674842094873929150L;
+        private static final long serialVersionUID = 424842094873929150L;
 
         private String name;
         private boolean throwException;

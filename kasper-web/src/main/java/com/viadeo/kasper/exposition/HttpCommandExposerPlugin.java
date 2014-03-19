@@ -63,6 +63,7 @@ public class HttpCommandExposerPlugin extends HttpExposerPlugin<HttpCommandExpos
         initialize(
             new HttpCommandExposer(
                 platform.getCommandGateway(),
+                platform.getMeta(),
                 exposureDescriptors,
                 getContextDeserializer(),
                 getMapper()

@@ -65,5 +65,6 @@ And encourages you to use some software patterns in your developments :
     Context
     Helpers
     Testing
+    Security
 
 

@@ -37,6 +37,7 @@ import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.QueryEventListener;
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,11 @@ public interface Platform {
      */
     KasperEventBus getEventBus();
 
+    /**
+     * @return the meta information of the platform
+     */
+    Meta getMeta();
+
     // ========================================================================
 
     /**
@@ -94,6 +100,7 @@ public interface Platform {
         private Config configuration;
         private RepositoryManager repositoryManager;
         private MetricRegistry metricRegistry;
+        private Meta meta;
 
         // --------------------------------------------------------------------
 
@@ -164,6 +171,11 @@ public interface Platform {
             return this;
         }
 
+        public Builder withMeta(final Meta meta){
+            this.meta = checkNotNull(meta);
+            return this;
+        }
+
         public Builder withConfiguration(final Config configuration) {
             this.configuration = checkNotNull(configuration);
             return this;
@@ -217,19 +229,33 @@ public interface Platform {
             checkState(null != repositoryManager, "the repository manager cannot be null");
             checkState(null != metricRegistry, "the metric registry cannot be null");
 
+            this.meta = Objects.firstNonNull(meta, new Meta("unknown", DateTime.now(), DateTime.now()));
+
             final BuilderContext context = new BuilderContext(configuration, eventBus, commandGateway, queryGateway, metricRegistry, extraComponents);
 
             registerInterceptors();
+
+            registerShutdownHook();
 
             initializeKasperMetrics(domainHelper);
 
             final Collection<DomainDescriptor> domainDescriptors = configureDomainBundles(context);
 
-            final KasperPlatform platform = new KasperPlatform(commandGateway, queryGateway, eventBus);
+            final KasperPlatform platform = new KasperPlatform(commandGateway, queryGateway, eventBus, meta);
 
             initializePlugins(platform, domainDescriptors);
 
+            LOGGER.info("Platform is ready (version:'{}', date:'{}')", meta.getVersion(), meta.getBuildingDate());
+
             return platform;
+        }
+
+        private void registerShutdownHook() {
+            if ((null != eventBus.getShutdownHook()) /* for mocks... */
+                && eventBus.getShutdownHook().isPresent()) {
+                Runtime.getRuntime().addShutdownHook(new Thread(eventBus.getShutdownHook().get()));
+                LOGGER.info("Registered shutdown hook : Event Processing");
+            }
         }
 
         protected void registerInterceptors() {
@@ -239,12 +265,12 @@ public interface Platform {
             }
 
             for (final QueryInterceptorFactory interceptorFactory : queryInterceptorFactories) {
-                LOGGER.info("Registering query interceptor factory : {}", interceptorFactory.getClass().getSimpleName());
+                LOGGER.debug("Registering query interceptor factory : {}", interceptorFactory.getClass().getSimpleName());
                 queryGateway.register(interceptorFactory);
             }
 
             for (final CommandInterceptorFactory interceptorFactory : commandInterceptorFactories) {
-                LOGGER.info("Registering command interceptor factory : {}", interceptorFactory.getClass().getSimpleName());
+                LOGGER.debug("Registering command interceptor factory : {}", interceptorFactory.getClass().getSimpleName());
                 commandGateway.register(interceptorFactory);
             }
         }
@@ -260,7 +286,7 @@ public interface Platform {
         }
 
         protected DomainDescriptor configureDomainBundle(final BuilderContext context, final DomainBundle bundle) {
-            LOGGER.info("Configuring bundle : {}", bundle.getName());
+            LOGGER.debug("Configuring bundle : {}", bundle.getName());
 
             bundle.configure(context);
 
@@ -305,7 +331,7 @@ public interface Platform {
             final DomainDescriptor[] domainDescriptorArray = domainDescriptors.toArray(new DomainDescriptor[domainDescriptors.size()]);
 
             for (final Plugin plugin : kasperPlugins) {
-                LOGGER.info("Initializing plugin : {}" + plugin.getClass().getSimpleName());
+                LOGGER.debug("Initializing plugin : {}", plugin.getClass().getSimpleName());
                 plugin.initialize(platform, metricRegistry, domainDescriptorArray);
             }
         }
