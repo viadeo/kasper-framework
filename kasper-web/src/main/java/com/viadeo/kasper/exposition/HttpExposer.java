@@ -414,10 +414,10 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         private final String requestsHandleTimeName;
 
         public MetricNames(final Class clazz) {
-            this.errorsName =  name(clazz, "requests-time");
-            this.requestsName = name(clazz, "requests-handle-time");
-            this.requestsTimeName = name(clazz, "requests");
-            this.requestsHandleTimeName = name(clazz, "errors");
+            this.errorsName =  name(clazz, "errors");
+            this.requestsName = name(clazz, "requests");
+            this.requestsTimeName = name(clazz, "requests-time");
+            this.requestsHandleTimeName = name(clazz, "requests-handle-time");
         }
 
         public String getErrorsName() {
