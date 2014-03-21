@@ -138,15 +138,4 @@ public class KasperReasonBuilderTest {
         assertEquals("bar", reason.getMessages().toArray()[1]);
     }
 
-    /*
-
-    public static Builder from(final CoreReasonCode code, final Collection<String> messages) {
-        return from(code.string(), (String[]) messages.toArray());
-    }
-
-    public static Builder from(final CoreReasonCode code, final String...messages) {
-        return from(code.string(), messages);
-    }
-    */
-
 }

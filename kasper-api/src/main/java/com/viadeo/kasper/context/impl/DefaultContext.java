@@ -37,6 +37,8 @@ public class DefaultContext extends AbstractContext {
     private static final String FUNNEL_VERS_SHORTNAME = "fvers";
     private static final String IP_ADDRESS_SHORTNAME = "ip";
 
+    // ------------------------------------------------------------------------
+
     private String userId;
     private String userLang;
     private String userCountry;
@@ -135,7 +137,7 @@ public class DefaultContext extends AbstractContext {
     }
 
     @Override
-    public Context setRequestCorrelationId(String requestCorrelationId) {
+    public Context setRequestCorrelationId(final String requestCorrelationId) {
         this.requestCorrelationId = checkNotNull(requestCorrelationId);
         return this;
     }
@@ -179,7 +181,7 @@ public class DefaultContext extends AbstractContext {
     }
 
     @Override
-    public Context setSessionCorrelationId(String sessionCorrelationId) {
+    public Context setSessionCorrelationId(final String sessionCorrelationId) {
         this.sessionCorrelationId = checkNotNull(sessionCorrelationId);
         return this;
     }
@@ -255,7 +257,7 @@ public class DefaultContext extends AbstractContext {
     @Override
     public Map<String, ?> asMetaDataMap() {
         return new HashMap<String, Object>() {{
-                this.put(METANAME, this);
+            this.put(METANAME, this);
         }};
     }
 
@@ -292,9 +294,18 @@ public class DefaultContext extends AbstractContext {
     @Override
     public int hashCode() {
         return Objects.hashCode( super.hashCode(),
-                this.sessionCorrelationId, this.funnelCorrelationId, this.requestCorrelationId,
-                this.applicationId, this.funnelName, this.funnelVersion,
-                this.userId, this.userLang, this.userCountry, this.securityToken, this.ipAddress);
+                this.sessionCorrelationId,
+                this.funnelCorrelationId,
+                this.requestCorrelationId,
+                this.applicationId,
+                this.funnelName,
+                this.funnelVersion,
+                this.userId,
+                this.userLang,
+                this.userCountry,
+                this.securityToken,
+                this.ipAddress
+        );
     }
 
     @Override

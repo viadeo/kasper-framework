@@ -75,12 +75,14 @@ public abstract class IndexedEntity implements Serializable {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj == null) {
+        if (null == obj) {
             return false;
         }
+
         if (getClass() != obj.getClass()) {
             return false;
         }
+
         final IndexedEntity other = (IndexedEntity) obj;
 
         return com.google.common.base.Objects.equal(this.id, other.id)

@@ -97,7 +97,7 @@ public class ErrorEvent extends Event {
         if (this == checkNotNull(obj)) {
             return true;
         }
-        if (!getClass().equals(obj.getClass())) {
+        if ( ! getClass().equals(obj.getClass())) {
             return false;
         }
 

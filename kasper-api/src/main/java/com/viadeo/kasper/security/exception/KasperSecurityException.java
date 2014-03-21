@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.security;
+package com.viadeo.kasper.security.exception;
 
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;

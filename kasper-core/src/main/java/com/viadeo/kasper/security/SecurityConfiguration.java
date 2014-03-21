@@ -11,6 +11,7 @@ import com.viadeo.kasper.security.callback.ApplicationIdValidator;
 import com.viadeo.kasper.security.callback.IdentityContextProvider;
 import com.viadeo.kasper.security.callback.IpAddressValidator;
 import com.viadeo.kasper.security.callback.SecurityTokenValidator;
+import com.viadeo.kasper.security.exception.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -81,7 +82,7 @@ public interface SecurityConfiguration {
         @Override
         public void validate(String securityToken)
                 throws KasperMissingSecurityTokenException,
-                       KasperInvalidSecurityTokenException {
+                KasperInvalidSecurityTokenException {
             /* do nothing */
         }
     }
@@ -101,7 +102,7 @@ public interface SecurityConfiguration {
         @Override
         public void validate(String applicationId)
                 throws KasperMissingApplicationIdException,
-                       KasperInvalidApplicationIdException {
+                KasperInvalidApplicationIdException {
             /* do nothing */
         }
     }
@@ -112,7 +113,7 @@ public interface SecurityConfiguration {
         @Override
         public void validate(String ipAddress)
                 throws KasperMissingIpAddressException,
-                       KasperInvalidIpAddressException {
+                KasperInvalidIpAddressException {
             /* do nothing */
         }
     }

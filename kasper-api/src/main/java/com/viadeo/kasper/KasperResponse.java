@@ -40,7 +40,7 @@ public class KasperResponse implements Serializable, Immutable {
     }
 
     public KasperResponse(final KasperResponse response) {
-        this(response.status, response.reason);
+        this(checkNotNull(response).status, response.reason);
     }
 
     public KasperResponse(final Status status, final KasperReason reason) {

@@ -17,7 +17,6 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class CollectionQueryResult<RES extends QueryResult> implements Iterable<RES>, QueryResult  {
-
     private static final long serialVersionUID = -3864225412367930495L;
 
     /** Generic parameter position for Data Transfer Object */

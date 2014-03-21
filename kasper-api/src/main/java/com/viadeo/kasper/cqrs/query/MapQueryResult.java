@@ -16,7 +16,6 @@ import java.util.Map;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class MapQueryResult<T extends QueryResult> implements Iterable<Map.Entry<String,T>>, QueryResult  {
-
     private static final long serialVersionUID = -3955605974595645008L;
 
     private final Map<String,T> map;
@@ -84,7 +83,9 @@ public abstract class MapQueryResult<T extends QueryResult> implements Iterable<
 
         final MapQueryResult that = (MapQueryResult) o;
 
-        if (!map.equals(that.map)) return false;
+        if ( ! map.equals(that.map)) {
+            return false;
+        }
 
         return true;
     }

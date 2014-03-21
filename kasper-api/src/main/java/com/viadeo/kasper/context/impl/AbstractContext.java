@@ -19,6 +19,8 @@ import java.util.Collections;
 import java.util.Map;
 import java.util.UUID;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Abstract implementation of the Context
  *
@@ -53,7 +55,7 @@ public abstract class AbstractContext implements Context {
      * @param kasperCorrelationId the Kasper correlation id be used for this action
      */
     public void setKasperCorrelationId(final KasperID kasperCorrelationId) {
-        this.kasperCorrelationId = kasperCorrelationId;
+        this.kasperCorrelationId = checkNotNull(kasperCorrelationId);
     }
 
     /**
@@ -86,12 +88,13 @@ public abstract class AbstractContext implements Context {
 		if (null == this.properties) {
 			this.properties = Maps.newHashMap();
 		}
-		this.properties.put(key, value);
+		this.properties.put(checkNotNull(key), value);
         return this;
 	}
 
 	@Override
 	public Optional<Serializable> getProperty(final String key) {
+        checkNotNull(key);
 		final Optional<Serializable> ret;
 		if (null == this.properties) {
 			ret = Optional.absent();
@@ -103,6 +106,7 @@ public abstract class AbstractContext implements Context {
 
 	@Override
 	public boolean hasProperty(final String key) {
+        checkNotNull(key);
         return (null != this.properties) && this.properties.containsKey(key);
 	}
 
@@ -171,6 +175,7 @@ public abstract class AbstractContext implements Context {
 
     @Override
     public Map<String, String> asMap(final Map<String, String> retMap) {
+        checkNotNull(retMap);
         retMap.put(KASPER_CID_SHORTNAME, safeStringObject(this.kasperCorrelationId));
         retMap.put(SEQ_INC_SHORTNAME, safeStringObject(this.sequenceIncrement));
 
@@ -186,7 +191,7 @@ public abstract class AbstractContext implements Context {
     // ------------------------------------------------------------------------
 
     @Override
-    public boolean equals(Object obj)
+    public boolean equals(final Object obj)
     {
         if (null == obj) {
             return false;
@@ -233,8 +238,7 @@ public abstract class AbstractContext implements Context {
     }
 
     @Override
-    public String toString()
-    {
+    public String toString() {
         return Objects.toStringHelper(this)
                 .addValue(this.kasperCorrelationId)
                 .addValue(this.sequenceIncrement)

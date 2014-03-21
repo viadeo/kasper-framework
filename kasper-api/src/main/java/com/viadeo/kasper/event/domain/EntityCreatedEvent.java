@@ -49,7 +49,7 @@ public abstract class EntityCreatedEvent<D extends Domain> extends Event impleme
         if (this == checkNotNull(obj)) {
             return true;
         }
-        if (!getClass().equals(obj.getClass())) {
+        if ( ! getClass().equals(obj.getClass())) {
             return false;
         }
 

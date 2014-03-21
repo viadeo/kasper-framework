@@ -69,7 +69,7 @@ public abstract class Event implements IEvent {
         if (this == checkNotNull(obj)) {
             return true;
         }
-        if (!getClass().equals(obj.getClass())) {
+        if ( ! getClass().equals(obj.getClass())) {
             return false;
         }
 

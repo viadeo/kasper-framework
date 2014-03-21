@@ -52,7 +52,7 @@ public final class KasperReason implements Serializable, Immutable {
         public static Builder from(final String code, final String...messages) {
             final Builder builder = new Builder();
             builder.code = checkNotNull(code);
-            builder.messages = Lists.newArrayList(messages);
+            builder.messages = Lists.newArrayList(checkNotNull(messages));
             return builder;
         }
 
@@ -62,7 +62,7 @@ public final class KasperReason implements Serializable, Immutable {
         }
 
         public static Builder from(final CoreReasonCode code, final Collection<String> messages) {
-            return from(code.string(), messages.toArray(new String[0]));
+            return from(code.string(), checkNotNull(messages).toArray(new String[0]));
         }
 
         public static Builder from(final CoreReasonCode code, final String...messages) {

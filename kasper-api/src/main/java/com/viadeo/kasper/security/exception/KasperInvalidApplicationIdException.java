@@ -4,19 +4,19 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.security;
+package com.viadeo.kasper.security.exception;
 
 import com.viadeo.kasper.CoreReasonCode;
 
-public class KasperMissingApplicationIdException extends KasperSecurityException {
+public class KasperInvalidApplicationIdException extends KasperSecurityException {
 
-    private static final long serialVersionUID = -2421256807381423907L;
+    private static final long serialVersionUID = -6948184221968186520L;
 
-    public KasperMissingApplicationIdException(final String message, final CoreReasonCode coreReasonCode) {
+    public KasperInvalidApplicationIdException(final String message, final CoreReasonCode coreReasonCode) {
         super(message, coreReasonCode);
     }
 
-    public KasperMissingApplicationIdException(final String message, final Throwable cause, final CoreReasonCode coreReasonCode) {
+    public KasperInvalidApplicationIdException(final String message, final Throwable cause, final CoreReasonCode coreReasonCode) {
         super(message, cause, coreReasonCode);
     }
 
