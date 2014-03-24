@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.impl;
 
-import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
 
 import java.io.Serializable;

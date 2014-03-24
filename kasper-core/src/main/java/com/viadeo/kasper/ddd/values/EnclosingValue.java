@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.values;
 
-import com.google.common.base.Preconditions;
-
 import java.io.Serializable;
 
 import static com.google.common.base.Preconditions.checkNotNull;

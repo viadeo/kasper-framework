@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.ddd.specification.impl;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.ddd.specification.ISpecification;
 import com.viadeo.kasper.ddd.specification.SpecificationErrorMessage;

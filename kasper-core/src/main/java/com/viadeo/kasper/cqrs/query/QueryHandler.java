@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
-import com.google.common.base.Preconditions;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;

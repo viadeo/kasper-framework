@@ -7,7 +7,6 @@
 package com.viadeo.kasper.ddd.specification;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
