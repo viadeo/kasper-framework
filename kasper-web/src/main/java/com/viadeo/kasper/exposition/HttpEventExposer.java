@@ -133,7 +133,7 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
 
     @Override
     protected KasperResponse createErrorResponse(final CoreReasonCode code, final List<String> reasons) {
-        return new KasperResponse(KasperResponse.Status.OK, new KasperReason(code, reasons));
+        return new KasperResponse(KasperResponse.Status.ERROR, new KasperReason(code, reasons));
     }
 
     @Override
