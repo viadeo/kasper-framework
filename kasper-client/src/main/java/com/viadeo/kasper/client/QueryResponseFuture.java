@@ -16,6 +16,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 class QueryResponseFuture<P extends QueryResult> extends ResponseFuture<QueryResponse<P>> {
 
     private final TypeToken<P> mapTo;
@@ -23,11 +25,13 @@ class QueryResponseFuture<P extends QueryResult> extends ResponseFuture<QueryRes
 
     // ------------------------------------------------------------------------
 
-    public QueryResponseFuture(final KasperClient kasperClient, final Future<ClientResponse> futureResponse, final TypeToken<P> mapTo) {
+    public QueryResponseFuture(final KasperClient kasperClient,
+                               final Future<ClientResponse> futureResponse,
+                               final TypeToken<P> mapTo) {
         super(futureResponse);
 
-        this.kasperClient = kasperClient;
-        this.mapTo = mapTo;
+        this.kasperClient = checkNotNull(kasperClient);
+        this.mapTo = checkNotNull(mapTo);
     }
 
     // ------------------------------------------------------------------------

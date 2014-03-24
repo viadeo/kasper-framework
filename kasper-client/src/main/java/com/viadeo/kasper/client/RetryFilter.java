@@ -44,8 +44,8 @@ public class RetryFilter extends ClientFilter {
                 final Throwable cause = e.getCause();
                 if (cause instanceof ConnectException) {
                     LOGGER.info(
-                            "exception <{}> ({}), retry {}  more time(s)",
-                            e.getMessage(), cr.getURI(), numberOfRetries - i
+                        "exception <{}> ({}), retry {}  more time(s)",
+                        e.getMessage(), cr.getURI(), numberOfRetries - i
                     );
                 } else {
                     throw Throwables.propagate(e);

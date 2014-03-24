@@ -218,7 +218,7 @@ public class KasperClientBuilder {
             queryBaseLocation = createURL(DEFAULT_QUERY_URL);
         }
 
-        if (null == queryBaseLocation) {
+        if (null == eventBaseLocation) {
             eventBaseLocation = createURL(DEFAULT_EVENT_URL);
         }
 
@@ -236,12 +236,21 @@ public class KasperClientBuilder {
             client = Client.create(cfg);
         }
 
-        if ((numberOfRetries > 0) && (! addedRetryFilter)) {
+        if ((numberOfRetries > 0) && ( ! addedRetryFilter)) {
             addedRetryFilter = true;
             client.addFilter(new RetryFilter(numberOfRetries));
         }
 
-        return new KasperClient(queryFactory, client, commandBaseLocation, queryBaseLocation, eventBaseLocation, contextSerializer, flags);
+        return new KasperClient(
+                queryFactory,
+                client,
+                commandBaseLocation,
+                queryBaseLocation,
+                eventBaseLocation,
+                contextSerializer,
+                flags
+        );
+
     }
 
     // ------------------------------------------------------------------------

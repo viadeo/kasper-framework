@@ -272,4 +272,5 @@ public class KasperClientCommandTest extends JerseyTest {
         Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
         Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }
+
 }

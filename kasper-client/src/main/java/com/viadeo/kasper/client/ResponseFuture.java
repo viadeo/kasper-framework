@@ -10,6 +10,8 @@ import com.sun.jersey.api.client.ClientResponse;
 
 import java.util.concurrent.Future;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 abstract class ResponseFuture<T> implements Future<T> {
 
     private final Future<ClientResponse> futureResponse;
@@ -17,7 +19,7 @@ abstract class ResponseFuture<T> implements Future<T> {
     // ------------------------------------------------------------------------
 
     public ResponseFuture(final Future<ClientResponse> futureResponse) {
-        this.futureResponse = futureResponse;
+        this.futureResponse = checkNotNull(futureResponse);
     }
 
     protected Future<ClientResponse> futureResponse() {
