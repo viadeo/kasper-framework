@@ -96,7 +96,7 @@ public class SerDeserTests {
             this.field = field;
         }
 
-        public KasperRelationID getField(){
+        public KasperRelationID getField() {
             return this.field;
         }
     }
@@ -211,9 +211,9 @@ public class SerDeserTests {
         // Given
         final TestResult result = new TestResult("42");
         final TestCollectionResult collect = new TestCollectionResult().withList(
-                new ArrayList<TestResult>() {{
-                    this.add(result);
-                }}
+            new ArrayList<TestResult>() {{
+                this.add(result);
+            }}
         );
 
         // When
@@ -229,10 +229,10 @@ public class SerDeserTests {
         final TestResult result = new TestResult("42");
         final TestResult result2 = new TestResult("24");
         final TestCollectionResult collect = new TestCollectionResult().withList(
-                new ArrayList<TestResult>() {{
-                    this.add(result);
-                    this.add(result2);
-                }}
+            new ArrayList<TestResult>() {{
+                this.add(result);
+                this.add(result2);
+            }}
         );
 
         // When
@@ -246,7 +246,7 @@ public class SerDeserTests {
     public void test_CollectionResultEmpty_1() throws IOException {
         // Given
         final TestCollectionResult collect = new TestCollectionResult().withList(
-                new ArrayList<TestResult>()
+            new ArrayList<TestResult>()
         );
 
         // When
@@ -305,7 +305,7 @@ public class SerDeserTests {
     public void test_MapResultEmpty() throws IOException {
         // Given
         final TestMapResult map = new TestMapResult().withMap(
-                new HashMap<String, TestResult>()
+            new HashMap<String, TestResult>()
         );
 
         // When
@@ -437,7 +437,7 @@ public class SerDeserTests {
     public void test_command_deserialize_normal() throws IOException {
         // Given
         final String json = omProvider.objectWriter().writeValueAsString(
-                CommandResponse.ok()
+            CommandResponse.ok()
         );
 
         // Then
@@ -472,8 +472,8 @@ public class SerDeserTests {
         assertEquals(COMMAND_UUID, response.getReason().getId().toString());
         assertEquals(KasperResponse.Status.ERROR, response.getStatus());
         assertEquals(
-                CoreReasonCode.UNKNOWN_REASON.toString(),
-                response.getReason().getCode()
+            CoreReasonCode.UNKNOWN_REASON.toString(),
+            response.getReason().getCode()
         );
         assertEquals(2, response.getReason().getMessages().size());
         assertEquals(COMMAND_MESG_1, response.getReason().getMessages().toArray()[0]);

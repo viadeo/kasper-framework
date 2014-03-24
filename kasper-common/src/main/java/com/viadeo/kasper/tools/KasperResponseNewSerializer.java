@@ -47,7 +47,7 @@ public abstract class KasperResponseNewSerializer<R extends KasperResponse> exte
 
         jgen.writeFieldName(ObjectMapperProvider.REASONS);
         jgen.writeStartArray();
-        if (! value.isOK()) {
+        if ( ! value.isOK()) {
             for (String message : reason.getMessages()) {
                 jgen.writeStartObject();
                 jgen.writeStringField(ObjectMapperProvider.MESSAGE, message);

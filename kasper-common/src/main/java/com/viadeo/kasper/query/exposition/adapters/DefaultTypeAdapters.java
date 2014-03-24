@@ -24,8 +24,7 @@ public final class DefaultTypeAdapters {
 
     static final Integer PARSER_ARRAY_STARTING_SIZE = 10;
 
-	private DefaultTypeAdapters() { /* singleton */
-	}
+	private DefaultTypeAdapters() { /* singleton */ }
 
 	// ------------------------------------------------------------------------
 
@@ -135,7 +134,7 @@ public final class DefaultTypeAdapters {
 
 		@Override
 		public Date adapt(final QueryParser parser) {
-			return parse(parser).toDate();
+			return parseDate(parser).toDate();
 		}
 	};
 
@@ -149,11 +148,11 @@ public final class DefaultTypeAdapters {
 
 		@Override
 		public DateTime adapt(final QueryParser parser) {
-			return parse(parser);
+			return parseDate(parser);
 		}
 	};
 	
-	private static DateTime parse(final QueryParser parser) {
+	private static DateTime parseDate(final QueryParser parser) {
 	    try {
 	        return new DateTime(parser.longValue());
 	    } catch (final NumberFormatException nfe) {
@@ -172,11 +171,15 @@ public final class DefaultTypeAdapters {
 
 			if (rawClass.isArray()) {
 				final TypeAdapter elementAdapter = adapterFactory
-						.create(TypeToken.of(rawClass.getComponentType()));
+						.create(
+                            TypeToken.of(rawClass.getComponentType())
+                        );
 
 				@SuppressWarnings({ "unchecked" })
 				final TypeAdapter<Object> adapter = new ArrayAdapter(
-						(TypeAdapter<Object>) elementAdapter, rawClass.getComponentType());
+						(TypeAdapter<Object>) elementAdapter,
+                        rawClass.getComponentType()
+                );
 				return Optional.fromNullable(adapter);
 			}
 
@@ -196,7 +199,10 @@ public final class DefaultTypeAdapters {
 			if (Collection.class.isAssignableFrom(rawClass)) {
 
 				final Class elementType = ReflectionGenericsResolver
-						.getParameterTypeFromClass(typeToken.getType(),	Collection.class, 0).get();
+						.getParameterTypeFromClass(
+                            typeToken.getType(),
+                            Collection.class, 0
+                        ).get();
 				final TypeAdapter elementAdapter = adapterFactory.create(TypeToken.of(elementType));
 
 				@SuppressWarnings({ "unchecked", "rawtypes" })

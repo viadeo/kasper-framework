@@ -33,6 +33,8 @@ public class KasperParanamer implements Paranamer {
     private final Paranamer delegate;
     private final Paranamer fallback;
 
+    // ------------------------------------------------------------------------
+
     public KasperParanamer() {
         this(new BytecodeReadingParanamer(), new DefaultParanamer());
     }
@@ -42,8 +44,11 @@ public class KasperParanamer implements Paranamer {
         this.fallback = checkNotNull(fallback);
     }
 
+    // ------------------------------------------------------------------------
+
     protected boolean isImmutable(final Class declaringClass) {
         try {
+
             final List<Method> writeMethods = Lists.newArrayList();
             final BeanInfo beanInfo = Introspector.getBeanInfo(declaringClass);
 
@@ -69,17 +74,17 @@ public class KasperParanamer implements Paranamer {
     @Override
     public String[] lookupParameterNames(
             final AccessibleObject accessibleObject,
-            final boolean throwExceptionIfMissing
-    ) {
+            final boolean throwExceptionIfMissing)
+    {
 
-        if (!Constructor.class.isAssignableFrom(accessibleObject.getClass())) {
+        if ( ! Constructor.class.isAssignableFrom(accessibleObject.getClass())) {
             return EMPTY_NAMES;
         }
 
         final Constructor constructor = (Constructor) accessibleObject;
         final Class declaringClass = constructor.getDeclaringClass();
 
-        if (!isImmutable(declaringClass)) {
+        if ( ! isImmutable(declaringClass)) {
             return delegate.lookupParameterNames(accessibleObject, throwExceptionIfMissing);
         }
 
@@ -110,12 +115,12 @@ public class KasperParanamer implements Paranamer {
         }
 
         Constructor annotatedConstructor = null;
-        for (Constructor constructor : declaredConstructors) {
+        for (final Constructor constructor : declaredConstructors) {
             if (null != constructor.getAnnotation(JsonCreator.class)) {
                 if (null != annotatedConstructor) {
                     final String message = String.format(
-                            "Only one constructor should be annotated with @JsonCreator annotation for the class '%s'",
-                            declaringClass
+                        "Only one constructor should be annotated with @JsonCreator annotation for the class '%s'",
+                        declaringClass
                     );
                     throw new RuntimeException(message);
                 }
@@ -124,4 +129,5 @@ public class KasperParanamer implements Paranamer {
             }
         }
     }
+
 }

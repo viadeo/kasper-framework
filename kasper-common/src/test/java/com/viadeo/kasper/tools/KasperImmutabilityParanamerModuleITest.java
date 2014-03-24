@@ -19,6 +19,8 @@ public class KasperImmutabilityParanamerModuleITest {
 
     private ObjectMapper mapper;
 
+    // ------------------------------------------------------------------------
+
     @Before
     public void setUp() {
         mapper = new ObjectMapper();
@@ -31,9 +33,8 @@ public class KasperImmutabilityParanamerModuleITest {
         final MutableObject mutableObject = new MutableObject("foobar", 42);
 
         // When
-        String json = mapper.writeValueAsString(mutableObject);
-
-        MutableObject actualMutableObject = mapper.readValue(json, MutableObject.class);
+        final String json = mapper.writeValueAsString(mutableObject);
+        final MutableObject actualMutableObject = mapper.readValue(json, MutableObject.class);
 
         // Then
         assertTrue(KasperMatcher.equalTo(mutableObject).matches(actualMutableObject));
@@ -45,9 +46,8 @@ public class KasperImmutabilityParanamerModuleITest {
         final ImmutableObject immutableObject = new ImmutableObject("foobar", 42);
 
         // When
-        String json = mapper.writeValueAsString(immutableObject);
-
-        ImmutableObject actualImmutableObject = mapper.readValue(json, ImmutableObject.class);
+        final String json = mapper.writeValueAsString(immutableObject);
+        final ImmutableObject actualImmutableObject = mapper.readValue(json, ImmutableObject.class);
 
         // Then
         assertTrue(KasperMatcher.equalTo(immutableObject).matches(actualImmutableObject));
@@ -59,9 +59,9 @@ public class KasperImmutabilityParanamerModuleITest {
         final ImmutableObjectContainingAnother immutableObject = new ImmutableObjectContainingAnother("foobar", 42, new ImmutableObject2("foobar", 42));
 
         // When
-        String json = mapper.writeValueAsString(immutableObject);
-
-        ImmutableObjectContainingAnother actualImmutableObject = mapper.readValue(json, ImmutableObjectContainingAnother.class);
+        final String json = mapper.writeValueAsString(immutableObject);
+        final ImmutableObjectContainingAnother actualImmutableObject =
+                mapper.readValue(json, ImmutableObjectContainingAnother.class);
 
         // Then
         assertTrue(KasperMatcher.equalTo(immutableObject).matches(actualImmutableObject));
@@ -74,9 +74,8 @@ public class KasperImmutabilityParanamerModuleITest {
                 new ImmutableObjectUsingJacksonAnnotation("foobar", 42);
 
         // When
-        String json = mapper.writeValueAsString(immutableObject);
-
-        ImmutableObjectUsingJacksonAnnotation actualImmutableObject = mapper.readValue(
+        final String json = mapper.writeValueAsString(immutableObject);
+        final ImmutableObjectUsingJacksonAnnotation actualImmutableObject = mapper.readValue(
                 json,
                 ImmutableObjectUsingJacksonAnnotation.class
         );
@@ -92,9 +91,9 @@ public class KasperImmutabilityParanamerModuleITest {
                 new ImmutableObjectWithSeveralConstructors("foobar", 42);
 
         // When
-        String json = mapper.writeValueAsString(immutableObject);
-
-        ImmutableObjectWithSeveralConstructors actualImmutableObject = mapper.readValue(json, ImmutableObjectWithSeveralConstructors.class);
+        final String json = mapper.writeValueAsString(immutableObject);
+        final ImmutableObjectWithSeveralConstructors actualImmutableObject =
+                mapper.readValue(json, ImmutableObjectWithSeveralConstructors.class);
 
         // Then
         assertTrue(KasperMatcher.equalTo(immutableObject).matches(actualImmutableObject));
@@ -107,9 +106,9 @@ public class KasperImmutabilityParanamerModuleITest {
                 new ImmutableObjectUsingJacksonAnnotationWithSeveralConstructors("foobar", 42);
 
         // When
-        String json = mapper.writeValueAsString(immutableObject);
-
-        ImmutableObjectUsingJacksonAnnotationWithSeveralConstructors actualImmutableObject = mapper.readValue(json, ImmutableObjectUsingJacksonAnnotationWithSeveralConstructors.class);
+        final String json = mapper.writeValueAsString(immutableObject);
+        final ImmutableObjectUsingJacksonAnnotationWithSeveralConstructors actualImmutableObject =
+                mapper.readValue(json, ImmutableObjectUsingJacksonAnnotationWithSeveralConstructors.class);
 
         // Then
         assertTrue(KasperMatcher.equalTo(immutableObject).matches(actualImmutableObject));
@@ -121,9 +120,8 @@ public class KasperImmutabilityParanamerModuleITest {
         final ImmutableObjectWithSeveralConstructors2 immutableObject = new ImmutableObjectWithSeveralConstructors2("foobar", 42);
 
         // When
-        String json = mapper.writeValueAsString(immutableObject);
-
-        ImmutableObjectWithSeveralConstructors2 actualImmutableObject = mapper.readValue(
+        final String json = mapper.writeValueAsString(immutableObject);
+        final ImmutableObjectWithSeveralConstructors2 actualImmutableObject = mapper.readValue(
                 json,
                 ImmutableObjectWithSeveralConstructors2.class
         );
@@ -140,8 +138,7 @@ public class KasperImmutabilityParanamerModuleITest {
                 new ImmutableObjectUsingTwoJsonCreatorAnnotations("foobar", 42);
 
         // When
-        String json = mapper.writeValueAsString(immutableObject);
-
+        final String json = mapper.writeValueAsString(immutableObject);
         mapper.readValue(json, ImmutableObjectWithSeveralConstructors2.class);
 
         // Then throws exception
@@ -166,6 +163,7 @@ public class KasperImmutabilityParanamerModuleITest {
         public Integer getValue() {
             return value;
         }
+
     }
 
     public static class ImmutableObject2 {
@@ -255,6 +253,7 @@ public class KasperImmutabilityParanamerModuleITest {
         public Integer getValue() {
             return value;
         }
+
     }
 
     public static class ImmutableObjectWithSeveralConstructors {
@@ -411,4 +410,5 @@ public class KasperImmutabilityParanamerModuleITest {
             this.value = value;
         }
     }
+
 }

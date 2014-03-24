@@ -7,13 +7,14 @@ import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.query.QueryBuilder;
 import com.viadeo.kasper.query.exposition.query.QueryParser;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Allows to not worry about null values in TypeAdapters. It is used by wrapping
  * it around a typeadapter. Actually it is done by default for every typeadapter
  * (default and custom ones).
  * 
- * @param <T>
- *            the type of objects this adapter is dealing with.
+ * @param <T> the type of objects this adapter is dealing with.
  */
 public class NullSafeTypeAdapter<T> implements TypeAdapter<T> {
 
@@ -22,7 +23,7 @@ public class NullSafeTypeAdapter<T> implements TypeAdapter<T> {
     // ------------------------------------------------------------------------
 
 	public NullSafeTypeAdapter(final TypeAdapter<T> decoratedAdapter) {
-		this.decoratedAdapter = decoratedAdapter;
+		this.decoratedAdapter = checkNotNull(decoratedAdapter);
 	}
 
 	public static <T> NullSafeTypeAdapter<T> nullSafe(final TypeAdapter<T> adapter) {

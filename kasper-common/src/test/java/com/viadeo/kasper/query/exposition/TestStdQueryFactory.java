@@ -128,7 +128,10 @@ public class TestStdQueryFactory {
         final Iterator<DateTime> itDateTime = key1Values.iterator();
         final Iterator<String> itKey1 = builderValues.iterator();
         while (itDateTime.hasNext()) {
-            assertEquals(String.valueOf(itDateTime.next().getMillis()), itKey1.next());
+            assertEquals(
+                    String.valueOf(itDateTime.next().getMillis()),
+                    itKey1.next()
+            );
         }
     }
 
@@ -141,7 +144,8 @@ public class TestStdQueryFactory {
                 ImmutableMap.<Type, TypeAdapter>of(int.class, DefaultTypeAdapters.INT_ADAPTER),
                 ImmutableMap.<Type, BeanAdapter>of(),
                 new ArrayList<TypeAdapterFactory>(),
-                VisibilityFilter.PACKAGE_PUBLIC).create(TypeToken.of(SomeQueryWithUnsortedFields.class));
+                VisibilityFilter.PACKAGE_PUBLIC).create(TypeToken.of(SomeQueryWithUnsortedFields.class)
+        );
 
         // When
         adapter.adapt(new SomeQueryWithUnsortedFields(), builder);
@@ -149,8 +153,10 @@ public class TestStdQueryFactory {
         // Then
         // We want to test order is deterministic. Testing 20 times.
         for (int i = 0; i < 20; ++i) {
-            assertEquals(new URI("http://test.com/test?aaa=2&bbb=1").toASCIIString()
-                    , builder.build(new URI("http://test.com/test")).toASCIIString());
+            assertEquals(
+                    new URI("http://test.com/test?aaa=2&bbb=1").toASCIIString(),
+                    builder.build(new URI("http://test.com/test")).toASCIIString()
+            );
         }
     }
 
@@ -217,7 +223,8 @@ public class TestStdQueryFactory {
                 adaptersMap,
                 ImmutableMap.<Type, BeanAdapter>of(),
                 factories,
-                VisibilityFilter.PACKAGE_PUBLIC);
+                VisibilityFilter.PACKAGE_PUBLIC
+        );
     }
 
     private TypeAdapter<SomeQuery> create() {

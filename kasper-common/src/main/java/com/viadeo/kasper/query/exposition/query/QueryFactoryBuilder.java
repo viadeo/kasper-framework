@@ -56,7 +56,8 @@ public class QueryFactoryBuilder {
 				.resolveType(TypeAdapter.class.getTypeParameters()[0]);
 
 		adapters.putIfAbsent(adapterForType.getType(), new NullSafeTypeAdapter<Object>(
-				(TypeAdapter<Object>) adapter));
+				(TypeAdapter<Object>) adapter)
+        );
 
 		return this;
 	}
@@ -140,8 +141,10 @@ public class QueryFactoryBuilder {
 
 	@VisibleForTesting
     public <T> List<T> loadServices(final Class<T> serviceClass) {
-	    final ServiceLoader<T> serviceLoader =
-                ServiceLoader.load(serviceClass, serviceClass.getClassLoader());
+	    final ServiceLoader<T> serviceLoader = ServiceLoader.load(
+                serviceClass,
+                serviceClass.getClassLoader()
+        );
 
         return Lists.newArrayList(serviceLoader.iterator());
 	}

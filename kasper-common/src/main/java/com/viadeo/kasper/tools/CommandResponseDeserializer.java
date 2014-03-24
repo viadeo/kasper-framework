@@ -70,18 +70,22 @@ public final class CommandResponseDeserializer extends KasperResponseDeserialize
         }
 
         if (null != id) {
+
             try {
                 return new CommandResponse(status, new KasperReason(UUID.fromString(id), globalCode, messages));
             } catch (final IllegalArgumentException e) {
                 LOGGER.warn("Error when deserializing reason id", e);
                 return CommandResponse.error(new KasperReason(globalCode, messages));
             }
+
         } else {
+
             KasperReason reason = null;
-            if (! status.equals(Status.OK)) {
+            if ( ! status.equals(Status.OK)) {
                 reason = new KasperReason(globalCode, messages);
             }
             return new CommandResponse(status, reason);
+
         }
 
     }

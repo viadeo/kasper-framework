@@ -21,7 +21,10 @@ import java.util.*;
 import static org.junit.Assert.*;
 
 public class TestStdQueryFactoryDeser {
+
     private DefaultQueryFactory factory;
+
+    // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
     @Before
@@ -42,7 +45,8 @@ public class TestStdQueryFactoryDeser {
         final DateTime actual = DefaultTypeAdapters.DATETIME_ADAPTER.adapt(
                 new QueryParser(Multimaps.forMap(
                         ImmutableMap.of("now", "" + now.getMillis())
-                )).begin("now"));
+                )
+            ).begin("now"));
 
         assertEquals(now, actual);
     }
@@ -54,7 +58,8 @@ public class TestStdQueryFactoryDeser {
         final DateTime actual = DefaultTypeAdapters.DATETIME_ADAPTER.adapt(
                 new QueryParser(Multimaps.forMap(
                         ImmutableMap.of("now", now.toString())
-                )).begin("now"));
+                )
+            ).begin("now"));
 
         assertEquals(now, actual);
     }
@@ -65,11 +70,13 @@ public class TestStdQueryFactoryDeser {
         // Given
         final TypeAdapter<SimpleQuery> adapter = factory.create(TypeToken.of(SimpleQuery.class));
         final SetMultimap<String, String> given = LinkedHashMultimap
-                .create(new ImmutableSetMultimap.Builder<String, String>()
-                        .put("name", "foo")
-                        .put("age", "1")
-                        .putAll("list", Arrays.asList("bar", "barfoo", "foobar"))
-                        .build());
+                .create(
+                        new ImmutableSetMultimap.Builder<String, String>()
+                            .put("name", "foo")
+                            .put("age", "1")
+                            .putAll("list", Arrays.asList("bar", "barfoo", "foobar"))
+                            .build()
+                );
 
         // When
         final SimpleQuery query = adapter.adapt(new QueryParser(given));
@@ -85,12 +92,14 @@ public class TestStdQueryFactoryDeser {
 
         // Given
         final SetMultimap<String, String> given = LinkedHashMultimap
-                .create(new ImmutableSetMultimap.Builder<String, String>()
-                        .put("field", "someValue")
-                        .put("name", "foo")
-                        .put("age", "1")
-                        .putAll("list", Arrays.asList("bar", "barfoo", "foobar"))
-                        .build());
+                .create(
+                        new ImmutableSetMultimap.Builder<String, String>()
+                            .put("field", "someValue")
+                            .put("name", "foo")
+                            .put("age", "1")
+                            .putAll("list", Arrays.asList("bar", "barfoo", "foobar"))
+                            .build()
+                );
 
         final TypeAdapter<ComposedQuery> adapter = factory
                 .create(TypeToken.of(ComposedQuery.class));
@@ -117,8 +126,7 @@ public class TestStdQueryFactoryDeser {
                         .put("field", "someValue")
                         .put("name", "foo")
                         .build()
-        )
-        ));
+        )));
 
         // Then
         assertEquals("foo", query.name);
@@ -139,8 +147,7 @@ public class TestStdQueryFactoryDeser {
                 new ImmutableSetMultimap.Builder<String, String>()
                         .put("list_foo", "bar")
                         .build()
-        )
-        ));
+        )));
 
         // Then
         assertNotNull(q.list);
@@ -185,15 +192,15 @@ public class TestStdQueryFactoryDeser {
     public static class SomeBeanAdapter implements BeanAdapter<List<SomeBean>> {
 
         @Override
-        public void adapt(List<SomeBean> value, QueryBuilder builder, BeanProperty property) {
+        public void adapt(final List<SomeBean> value, final QueryBuilder builder, final BeanProperty property) {
             throw new UnsupportedOperationException();
         }
 
         @Override
-        public List<SomeBean> adapt(QueryParser parser, BeanProperty property) {
+        public List<SomeBean> adapt(final QueryParser parser, final BeanProperty property) {
             final String prefix = property.getName() + "_";
             final List<SomeBean> list = new ArrayList<SomeBean>();
-            for (String name : parser.names()) {
+            for (final String name : parser.names()) {
                 if (name.startsWith(prefix)) {
                     parser.begin(name);
                     list.add(new SomeBean(name.replace(prefix, ""), parser.value()));
@@ -213,7 +220,7 @@ public class TestStdQueryFactoryDeser {
             return list;
         }
 
-        public void setList(List<SomeBean> list) {
+        public void setList(final List<SomeBean> list) {
             this.list = list;
         }
     }
@@ -222,7 +229,7 @@ public class TestStdQueryFactoryDeser {
         private String key;
         private String value;
 
-        public SomeBean(String key, String value) {
+        public SomeBean(final String key, final String value) {
             this.key = key;
             this.value = value;
         }
@@ -231,7 +238,7 @@ public class TestStdQueryFactoryDeser {
             return key;
         }
 
-        public void setKey(String key) {
+        public void setKey(final String key) {
             this.key = key;
         }
 
@@ -239,7 +246,7 @@ public class TestStdQueryFactoryDeser {
             return value;
         }
 
-        public void setValue(String value) {
+        public void setValue(final String value) {
             this.value = value;
         }
     }

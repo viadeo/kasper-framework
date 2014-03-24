@@ -47,20 +47,12 @@ public final class ReflectionGenericsResolver {
 			                                                          final Integer nbParameter) {
 		// Boot recursive process with an empty bindings maps
 		return getParameterTypeFromClass(
-                runtimeType, targetType, nbParameter, new HashMap<Type, Type>());
-
+                runtimeType,
+                targetType,
+                nbParameter,
+                new HashMap<Type, Type>()
+        );
 	}
-
-    /*
-    public static Optional<? extends Class> getParameterTypeFromClass(final Object runtimeObject,
-                                                                      final Type targetType,
-                                                                      final Integer nbParameter) {
-        // Boot recursive process with an empty bindings maps
-        return getParameterTypeFromClass(
-                runtimeObject.getClass(), targetType, nbParameter, new HashMap<Type, Type>());
-
-    }
-    */
 
     /**
      * Can be used to analyze a field, taking into account the generic parameters of its declaring class
@@ -80,8 +72,11 @@ public final class ReflectionGenericsResolver {
 
 		// Boot recursive process with an empty bindings maps
 		return getParameterTypeFromClass(
-                runtimeField.getGenericType(), targetType, nbParameter, bindings);
-
+                runtimeField.getGenericType(),
+                targetType,
+                nbParameter,
+                bindings
+        );
 	}
 
      /**
@@ -111,8 +106,11 @@ public final class ReflectionGenericsResolver {
 
 		// Boot recursive process with an empty bindings maps
 		return getParameterTypeFromClass(
-                runtimeField.getGenericType(), targetType, nbParameter, bindings);
-
+                runtimeField.getGenericType(),
+                targetType,
+                nbParameter,
+                bindings
+        );
 	}
 
 	// ========================================================================
@@ -158,9 +156,9 @@ public final class ReflectionGenericsResolver {
 
 			int i = 0;
 			for (final Type rawType : rawTypes) {
-				if (!getClass(rawType).isPresent()) {
+				if ( ! getClass(rawType).isPresent()) {
 					Type bindType = paramTypes[i];
-					if (!getClass(bindType).isPresent()) {
+					if ( ! getClass(bindType).isPresent()) {
 						bindType = bindings.get(bindType);
 					}
 					bindings.put(rawType, bindType);
@@ -192,11 +190,11 @@ public final class ReflectionGenericsResolver {
 		final Optional<Class> runtimeClass = getClass(runtimeType);
 		final Optional<Class> targetClass = getClass(targetType);
 
-		if (!runtimeClass.isPresent() || !targetClass.isPresent()) {
+		if ( ! runtimeClass.isPresent() || !targetClass.isPresent()) {
 			return Optional.absent();
 		}
 
-		if (!targetClass.get().isAssignableFrom(runtimeClass.get())) {
+		if ( ! targetClass.get().isAssignableFrom(runtimeClass.get())) {
 			return Optional.absent();
 		}
 
@@ -211,12 +209,13 @@ public final class ReflectionGenericsResolver {
 
 		for (final Type type : currentTypes) {
 			if (getClass(type).equals(targetClass) && ParameterizedType.class.isAssignableFrom(type.getClass())) {
+
 				final ParameterizedType pt = (ParameterizedType) type;
 				final Type[] parameters = pt.getActualTypeArguments();
 				final Type parameter = parameters[nbParameter];
 
 				Optional<Class> retClass = getClass(parameter);
-				if (!retClass.isPresent()) {
+				if ( ! retClass.isPresent()) {
 					retClass = getClass(bindings.get(parameter));
 				}
 
@@ -236,13 +235,14 @@ public final class ReflectionGenericsResolver {
 			if (null != proposalType) {
 				fillBindingsFromClass(proposalType, bindings);
 
-				final Optional<Class> retClass =
-						getParameterTypeFromClass(proposalType, targetType, nbParameter, bindings);
+				final Optional<Class> retClass = getParameterTypeFromClass(
+                        proposalType, targetType,
+                        nbParameter, bindings
+                );
 
 				if (retClass.isPresent()) {
 					return retClass;
 				}
-
 			}
 		}
 

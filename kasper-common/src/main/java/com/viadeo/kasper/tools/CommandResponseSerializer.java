@@ -28,7 +28,7 @@ public class CommandResponseSerializer extends JsonSerializer<CommandResponse> {
         jgen.writeFieldName(ObjectMapperProvider.REASON);
         jgen.writeBoolean( ! value.isOK());
 
-        KasperReason reason = value.getReason();
+        final KasperReason reason = value.getReason();
         if (value.hasReason()) {
             jgen.writeFieldName(ObjectMapperProvider.MESSAGE);
             jgen.writeString(reason.getCode());
@@ -36,8 +36,9 @@ public class CommandResponseSerializer extends JsonSerializer<CommandResponse> {
 
         jgen.writeFieldName(ObjectMapperProvider.REASONS);
         jgen.writeStartArray();
-        if (! value.isOK()) {
-            for (String message : reason.getMessages()) {
+
+        if ( ! value.isOK()) {
+            for (final String message : reason.getMessages()) {
                 jgen.writeStartObject();
 
                 jgen.writeStringField(ObjectMapperProvider.ID, reason.getId().toString());
@@ -47,8 +48,8 @@ public class CommandResponseSerializer extends JsonSerializer<CommandResponse> {
                 jgen.writeEndObject();
             }
         }
-        jgen.writeEndArray();
 
+        jgen.writeEndArray();
         jgen.writeEndObject();
     }
 

@@ -20,7 +20,7 @@ public class QueryResponseSerializer extends JsonSerializer<QueryResponse> {
     @Override
     public void serialize(QueryResponse value, JsonGenerator jgen, SerializerProvider provider)
             throws IOException {
-        if (!value.isOK()) {
+        if ( ! value.isOK()) {
 
             jgen.writeStartObject();
             jgen.writeStringField(ObjectMapperProvider.STATUS, value.getStatus().name());
@@ -37,7 +37,7 @@ public class QueryResponseSerializer extends JsonSerializer<QueryResponse> {
 
             jgen.writeFieldName(ObjectMapperProvider.REASONS);
             jgen.writeStartArray();
-            for (String message : reason.getMessages()) {
+            for (final String message : reason.getMessages()) {
                 jgen.writeStartObject();
 
                 jgen.writeStringField(ObjectMapperProvider.ID, reason.getId().toString());
