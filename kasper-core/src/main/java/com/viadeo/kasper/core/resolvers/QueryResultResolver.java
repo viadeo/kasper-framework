@@ -7,18 +7,24 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
+import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryResult;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.Collection;
+import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class QueryResultResolver extends AbstractResolver<QueryResult> {
+
+    private static ConcurrentMap<Class, Class> cacheElements = Maps.newConcurrentMap();
 
     private QueryHandlersLocator queryHandlersLocator;
     private QueryHandlerResolver queryHandlerResolver;
@@ -31,6 +37,27 @@ public class QueryResultResolver extends AbstractResolver<QueryResult> {
     }
 
     // ------------------------------------------------------------------------
+
+    public Class<? extends QueryResult> getElementClass(final Class<? extends CollectionQueryResult> clazz) {
+
+        if (cacheElements.containsKey(clazz)) {
+            return cacheElements.get(clazz);
+        }
+
+        @SuppressWarnings("unchecked") // Safe
+        final Optional<Class<? extends QueryResult>> elementClass =
+                (Optional<Class<? extends QueryResult>>)
+                        ReflectionGenericsResolver.getParameterTypeFromClass(
+                                clazz, CollectionQueryResult.class, CollectionQueryResult.PARAMETER_RESULT_POSITION);
+
+        if (!elementClass.isPresent()) {
+            throw new KasperException("Unable to find command type for handler " + clazz.getClass());
+        }
+
+        cacheElements.put(clazz, elementClass.get());
+
+        return elementClass.get();
+    }
 
     @Override
     @SuppressWarnings("unchecked")

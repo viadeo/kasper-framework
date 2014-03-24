@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResult;
@@ -94,6 +95,19 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
 
         queryResult.setLabel(resolver.getLabel(referenceClass));
         queryResult.setDescription(resolver.getDescription(referenceClass));
+
+        if(CollectionQueryResult.class.isAssignableFrom(referenceClass)) {
+            final DocumentedDomain documentedDomain = queryResult.getDomain().getFullDocumentedElement();
+            final Class<? extends QueryResult> elementClass = resolver.getElementClass(queryResult.getReferenceClass());
+
+            if(null != elementClass) {
+                final Optional<DocumentedQueryResult> documentedQuery = documentedDomain.getQueryResult(elementClass);
+
+                if(documentedQuery.isPresent()){
+                    queryResult.setElement(documentedQuery.get());
+                }
+            }
+        }
     }
 
     @Override

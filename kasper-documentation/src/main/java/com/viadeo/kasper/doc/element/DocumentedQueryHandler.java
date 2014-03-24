@@ -49,6 +49,8 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
 
         private static final LinkedMultiValueMap<Class, LightDocumentedElement> HANDLERS_BY_QUERY_RESULTS = new LinkedMultiValueMap<>();
 
+        private DocumentedQueryResult element;
+
         public DocumentedQueryResult(final DocumentedDomain domain,
                                      final DocumentedQueryHandler queryHandler,
                                      final Class queryResultClass) {
@@ -70,6 +72,17 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
         @Override
         public void accept(DocumentedElementVisitor visitor) {
             visitor.visit(this);
+        }
+
+        public LightDocumentedElement<DocumentedQueryResult> getElement() {
+            if(null == element) {
+                return null;
+            }
+            return element.getLightDocumentedElement();
+        }
+
+        public void setElement(DocumentedQueryResult element) {
+            this.element = element;
         }
     }
 
