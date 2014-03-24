@@ -9,6 +9,8 @@ package com.viadeo.kasper.ddd.specification.impl;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.ddd.specification.ISpecification;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  *
  * @param <T> The Object class
@@ -24,8 +26,7 @@ public class NotSpecification<T> extends Specification<T> {
 
 	public NotSpecification(final ISpecification<T> spec) {
 		super();
-		
-		this.spec = Preconditions.checkNotNull(spec);
+		this.spec = checkNotNull(spec);
 	}
 
 	// ----------------------------------------------------------------------
@@ -35,7 +36,7 @@ public class NotSpecification<T> extends Specification<T> {
 	 */
 	@Override
 	public boolean isSatisfiedBy(final T entity) {
-		return !this.spec.isSatisfiedBy(Preconditions.checkNotNull(entity));
+		return ! this.spec.isSatisfiedBy(checkNotNull(entity));
 	}
 
 }

@@ -9,6 +9,8 @@ package com.viadeo.kasper.cqrs.query;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.context.Context;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * The kasper query message base implementation
  *
@@ -23,8 +25,8 @@ public class QueryMessage<Q extends Query> {
 	// -----------------------------------------------------------------------
 
 	public QueryMessage(final Context context, final Q query) {
-		this.context = Preconditions.checkNotNull(context);
-		this.query = Preconditions.checkNotNull(query);
+		this.context = checkNotNull(context);
+		this.query = checkNotNull(query);
 	}
 
 	// -----------------------------------------------------------------------

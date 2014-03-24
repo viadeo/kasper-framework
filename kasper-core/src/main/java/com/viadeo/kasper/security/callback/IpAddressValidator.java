@@ -14,7 +14,7 @@ import com.viadeo.kasper.security.exception.KasperMissingIpAddressException;
  */
 public interface IpAddressValidator {
 
-    void validate(final String ipAddress)
+    void validate(String ipAddress)
             throws KasperMissingIpAddressException,
                    KasperInvalidIpAddressException;
 

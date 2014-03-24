@@ -14,7 +14,7 @@ import com.viadeo.kasper.security.exception.KasperMissingSecurityTokenException;
  */
 public interface SecurityTokenValidator {
 
-    void validate(final String securityToken)
+    void validate(String securityToken)
             throws KasperMissingSecurityTokenException,
                    KasperInvalidSecurityTokenException;
 

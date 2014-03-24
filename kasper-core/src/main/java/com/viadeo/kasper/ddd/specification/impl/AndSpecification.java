@@ -10,6 +10,8 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.ddd.specification.ISpecification;
 import com.viadeo.kasper.ddd.specification.SpecificationErrorMessage;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  *
  * @param <T> Object class
@@ -30,7 +32,7 @@ public class AndSpecification<T> extends AbstractCompositeSpecification<T> {
 	 */
 	@Override
 	public boolean isSatisfiedBy(final T object) {
-		Preconditions.checkNotNull(object);
+		checkNotNull(object);
 		return this.spec1.isSatisfiedBy(object) && this.spec2.isSatisfiedBy(object);
 	}
 
@@ -53,10 +55,10 @@ public class AndSpecification<T> extends AbstractCompositeSpecification<T> {
 		}
 		
 		final StringBuffer sb = new StringBuffer();
-		if (!isSatisfied1) {
+		if ( ! isSatisfied1) {
 			sb.append(errorMessage1.getMessage()).append("\n");
 		}
-		if (!isSatisfied2) {
+		if ( ! isSatisfied2) {
 			sb.append(errorMessage2.getMessage());
 		}
 		errorMessage.setMessage(sb.toString());

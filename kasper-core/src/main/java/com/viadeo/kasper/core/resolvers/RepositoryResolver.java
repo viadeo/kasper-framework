@@ -25,7 +25,7 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
     public RepositoryResolver() { }
 
     public RepositoryResolver(final EntityResolver entityResolver) {
-        this.entityResolver = entityResolver;
+        this.entityResolver = checkNotNull(entityResolver);
     }
 
     // ------------------------------------------------------------------------
@@ -41,12 +41,13 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends IRepository> clazz) {
 
-        if (DOMAINS_CACHE.containsKey(clazz)) {
+        if (DOMAINS_CACHE.containsKey(checkNotNull(clazz))) {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
         final Class<? extends AggregateRoot> agr = this.getStoredEntityClass(clazz);
         final Optional<Class<? extends Domain>> domain = this.entityResolver.getDomainClass(agr);
+
         if (domain.isPresent()) {
             DOMAINS_CACHE.put(clazz, domain.get());
             return domain;
@@ -58,24 +59,29 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
     // ------------------------------------------------------------------------
 
     @Override
-    public String getDescription(Class<? extends IRepository> clazz) {
-        final XKasperRepository annotation = clazz.getAnnotation(XKasperRepository.class);
+    public String getDescription(final Class<? extends IRepository> clazz) {
+        final XKasperRepository annotation =
+                checkNotNull(clazz).getAnnotation(XKasperRepository.class);
 
         String description = "";
+
         if (null != annotation) {
             description = annotation.description();
         }
+
         if (description.isEmpty()) {
-            description = String.format("The repository for %s aggregates",
-                    entityResolver.getLabel(this.getStoredEntityClass(clazz)));
+            description = String.format(
+                    "The repository for %s aggregates",
+                    entityResolver.getLabel(this.getStoredEntityClass(clazz))
+            );
         }
 
         return description;
     }
 
     @Override
-    public String getLabel(Class<? extends IRepository> clazz) {
-        return clazz.getSimpleName().replace("Repository", "");
+    public String getLabel(final Class<? extends IRepository> clazz) {
+        return checkNotNull(clazz).getSimpleName().replace("Repository", "");
     }
 
     // ------------------------------------------------------------------------
@@ -85,9 +91,12 @@ public class RepositoryResolver extends AbstractResolver<IRepository> {
         final Optional<Class<? extends AggregateRoot>> agr =
                 (Optional<Class<? extends AggregateRoot>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
-                               clazz, IRepository.class, IRepository.ENTITY_PARAMETER_POSITION);
+                                clazz,
+                                IRepository.class,
+                                IRepository.ENTITY_PARAMETER_POSITION
+                        );
 
-        if (!agr.isPresent()) {
+        if ( ! agr.isPresent()) {
             throw new KasperException("Unable to find aggregate type for repository " + clazz.getClass());
         }
 

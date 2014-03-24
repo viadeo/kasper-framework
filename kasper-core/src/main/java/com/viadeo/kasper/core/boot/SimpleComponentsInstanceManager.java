@@ -40,7 +40,7 @@ public class SimpleComponentsInstanceManager implements ComponentsInstanceManage
         } else {
             try {
                 objInstance = clazz.newInstance();
-            } catch (final InstantiationException|IllegalAccessException e) {
+            } catch (final InstantiationException | IllegalAccessException e) {
                 throw new KasperException(String.format(ERROR_INSTANCE, clazz), e);
             }
             this.instances.put(clazz, objInstance);
@@ -55,13 +55,11 @@ public class SimpleComponentsInstanceManager implements ComponentsInstanceManage
      */
     @Override
     public void recordInstance(final Class clazz, final Object objInstance) {
-
         if (this.instances.containsKey(clazz) || this.instances.containsKey(objInstance.getClass())) {
             throw new KasperException(String.format(ALREADY_REGISTERED, clazz));
         } else {
             this.instances.put(clazz, objInstance);
         }
-
     }
 
 }

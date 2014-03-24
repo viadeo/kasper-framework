@@ -44,6 +44,7 @@ public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult>
 
         final QueryResponse<R> queryResponse = chain.next(input, context);
         securityStrategy.afterRequest();
+
         return queryResponse;
     }
 

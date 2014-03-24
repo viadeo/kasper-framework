@@ -10,6 +10,8 @@ import com.viadeo.kasper.ddd.AggregateRoot;
 import org.axonframework.eventsourcing.EventSourcingRepository;
 import org.axonframework.eventstore.EventStore;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Decored axon event sourced repository
  *
@@ -26,8 +28,8 @@ class AxonEventSourcedRepository<AGR extends AggregateRoot>
     AxonEventSourcedRepository(final RepositoryFacade<AGR> repositoryFacade,
                                final Class<AGR> aggregateType,
                                final EventStore eventStore) {
-        super(aggregateType, eventStore);
-        this.repositoryFacade = repositoryFacade;
+        super(checkNotNull(aggregateType), checkNotNull(eventStore));
+        this.repositoryFacade = checkNotNull(repositoryFacade);
     }
 
     @Override

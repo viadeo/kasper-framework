@@ -14,6 +14,8 @@ import com.viadeo.kasper.ddd.specification.annotation.XKasperSpecification;
 
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  *
  * @param <T> The object class
@@ -33,13 +35,13 @@ public abstract class Specification<T> implements ISpecification<T> {
 	 * @see EntitySpecification#isSatisfiedBy(Object)
 	 */
 	@Override
-	public abstract boolean isSatisfiedBy(T entity);
+	public abstract boolean isSatisfiedBy(final T entity);
 
 	public boolean isSatisfiedBy(final T entity, final SpecificationErrorMessage errorMessage) {
-		Preconditions.checkNotNull(errorMessage);
-		final boolean isSatisfied = this.isSatisfiedBy(Preconditions.checkNotNull(entity));
+		checkNotNull(errorMessage);
+		final boolean isSatisfied = this.isSatisfiedBy(checkNotNull(entity));
 		
-		if (!isSatisfied) {
+		if ( ! isSatisfied) {
 			final String message = getErrorMessage(entity);
 			errorMessage.setMessage(message);
 		}
@@ -57,7 +59,7 @@ public abstract class Specification<T> implements ISpecification<T> {
 		final XKasperSpecification annotation;
 		String errorMessage;
 		
-		if (!Specification.ANNOTATIONS.containsKey(this.getClass())) {
+		if ( ! Specification.ANNOTATIONS.containsKey(this.getClass())) {
 			annotation = this.getClass().getAnnotation(XKasperSpecification.class);
             if (null != annotation) {
 			    Specification.ANNOTATIONS.put(this.getClass(), annotation);
@@ -67,10 +69,10 @@ public abstract class Specification<T> implements ISpecification<T> {
 		}
 		
 		if (null != annotation) {			 
-			if (!annotation.errorMessage().isEmpty()) {
+			if ( ! annotation.errorMessage().isEmpty()) {
 				errorMessage = annotation.errorMessage();				
 			} else {
-				if (!annotation.description().isEmpty()) {
+				if ( ! annotation.description().isEmpty()) {
 					errorMessage = "Specification not met : " + annotation.description();
 				} else {
 					errorMessage = getDefaultErrorMessage(entity);
@@ -91,12 +93,12 @@ public abstract class Specification<T> implements ISpecification<T> {
 
 	@Override
 	public ISpecification<T> and(final ISpecification<T> specification) {
-		return new AndSpecification<>(this, Preconditions.checkNotNull(specification));
+		return new AndSpecification<>(this, checkNotNull(specification));
 	}
 
 	@Override
 	public ISpecification<T> or(final ISpecification<T> specification) {
-		return new OrSpecification<>(this, Preconditions.checkNotNull(specification));
+		return new OrSpecification<>(this, checkNotNull(specification));
 	}
 
 	@Override

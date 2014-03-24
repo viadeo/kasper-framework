@@ -9,6 +9,8 @@ package com.viadeo.kasper.ddd.specification;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * A basic implementation 
  *
@@ -32,7 +34,7 @@ public class SpecificationErrorMessage {
 	 * @see com.viadeo.kasper.ddd.specification.SpecificationErrorMessage#setMessage(java.lang.String)
 	 */
 	public void setMessage(final String message) {
-		this.message = Preconditions.checkNotNull(message);
+		this.message = checkNotNull(message);
 	}
 	
 }

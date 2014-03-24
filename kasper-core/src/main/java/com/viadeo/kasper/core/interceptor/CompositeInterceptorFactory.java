@@ -26,7 +26,7 @@ public class CompositeInterceptorFactory<INPUT, OUTPUT> implements InterceptorFa
 
     @Override
     public Optional<InterceptorChain<INPUT, OUTPUT>> create(final TypeToken<?> type) {
-        return create(type, null);
+        return create(checkNotNull(type), null);
     }
 
     public Optional<InterceptorChain<INPUT, OUTPUT>> create(final TypeToken<?> type,

@@ -39,6 +39,7 @@ public class DomainHelper {
     }
 
     public Class<? extends Domain> getDomainClassOf(final Class componentClass){
+        checkNotNull(componentClass);
         LOGGER.info("getDomainClassOf {}, {}", componentClass, domainClassByComponentClasses);
         return domainClassByComponentClasses.get(componentClass);
     }

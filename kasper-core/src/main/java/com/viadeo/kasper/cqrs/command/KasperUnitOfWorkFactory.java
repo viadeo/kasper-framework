@@ -10,9 +10,13 @@ import org.axonframework.unitofwork.TransactionManager;
 import org.axonframework.unitofwork.UnitOfWork;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class KasperUnitOfWorkFactory implements UnitOfWorkFactory {
 
     private final TransactionManager transactionManager;
+
+    // ------------------------------------------------------------------------
 
     /**
      * Initializes the Unit of Work Factory to create Unit of Work that are not bound to any transaction.
@@ -24,7 +28,7 @@ public class KasperUnitOfWorkFactory implements UnitOfWorkFactory {
     // ------------------------------------------------------------------------
 
     public KasperUnitOfWorkFactory(final TransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
+        this.transactionManager = checkNotNull(transactionManager);
     }
 
     @Override

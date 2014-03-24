@@ -16,6 +16,8 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Base implementation for a components instance manager based on the current Spring context
  */
@@ -66,7 +68,7 @@ public class SpringComponentsInstanceManager implements ComponentsInstanceManage
 
             LOGGER.debug("Not found in bean context {}", clazz.getSimpleName());
 
-            if (!this.beansMustExists) {
+            if ( ! this.beansMustExists) {
                 LOGGER.debug("Create a new instance {}", clazz.getSimpleName());
                 final ConfigurableBeanFactory cfb = (ConfigurableBeanFactory) this.context.getAutowireCapableBeanFactory();
                 objInstance = ((AutowireCapableBeanFactory) cfb).createBean(clazz);
@@ -106,7 +108,7 @@ public class SpringComponentsInstanceManager implements ComponentsInstanceManage
             try {
 
                 /* Try with the real class of the instance */
-                if (!clazz.equals(objInstance.getClass())) {
+                if ( ! clazz.equals(objInstance.getClass())) {
                     context.getBean(objInstance.getClass());
                     throw new KasperException(String.format(ALREADY_REGISTERED, objInstance.getClass()));
                 } else {
@@ -125,7 +127,7 @@ public class SpringComponentsInstanceManager implements ComponentsInstanceManage
 
     @Override
     public void setApplicationContext(final ApplicationContext context) {
-        this.context = context;
+        this.context = checkNotNull(context);
     }
 
     public void setBeansMustExists(final boolean flag) {

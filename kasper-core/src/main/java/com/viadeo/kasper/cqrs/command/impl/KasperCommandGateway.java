@@ -43,131 +43,6 @@ public class KasperCommandGateway implements CommandGateway {
 
     // ------------------------------------------------------------------------
 
-    public KasperCommandGateway(final KasperCommandBus commandBus) {
-        this(
-                 new CommandGatewayFactoryBean<CommandGateway>(),
-                 commandBus,
-                 new DefaultDomainLocator(new CommandHandlerResolver()),
-                 new InterceptorChainRegistry<Command, CommandResponse>()
-        );
-    }
-
-    public KasperCommandGateway(final KasperCommandBus commandBus,
-                                final CommandDispatchInterceptor... commandDispatchInterceptors) {
-        this(
-                new CommandGatewayFactoryBean<CommandGateway>(),
-                commandBus,
-                new DefaultDomainLocator(new CommandHandlerResolver()),
-                new InterceptorChainRegistry<Command, CommandResponse>(),
-                commandDispatchInterceptors
-        );
-    }
-
-    protected KasperCommandGateway(final CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean,
-                                   final KasperCommandBus commandBus,
-                                   final DomainLocator domainLocator,
-                                   final InterceptorChainRegistry<Command, CommandResponse> interceptorChainRegistry,
-                                   final CommandDispatchInterceptor... commandDispatchInterceptors) {
-
-        this.commandBus = checkNotNull(commandBus);
-        this.domainLocator = checkNotNull(domainLocator);
-        this.interceptorChainRegistry = checkNotNull(interceptorChainRegistry);
-
-        checkNotNull(commandGatewayFactoryBean);
-        checkNotNull(commandDispatchInterceptors);
-
-        commandGatewayFactoryBean.setCommandBus(commandBus);
-        commandGatewayFactoryBean.setGatewayInterface(CommandGateway.class);
-        commandGatewayFactoryBean.setCommandDispatchInterceptors(Lists.newArrayList(commandDispatchInterceptors));
-
-        this.commandBus.setHandlerInterceptors(Lists.<CommandHandlerInterceptor>newArrayList(
-                new KasperCommandInterceptor(interceptorChainRegistry)
-        ));
-
-        try {
-            commandGatewayFactoryBean.afterPropertiesSet();
-        } catch (final Exception e) {
-            throw new KasperException("Unable to bind Axon Command Gateway", e);
-        }
-
-        try {
-            this.commandGateway = checkNotNull(commandGatewayFactoryBean.getObject());
-        } catch (final Exception e) {
-            throw new KasperException("Unable to initialize the Command Gateway", e);
-        }
-    }
-
-    // ------------------------------------------------------------------------
-
-    @Override
-    public void sendCommand(final Command command, @MetaData(Context.METANAME) final Context context) throws Exception {
-        commandGateway.sendCommand(command, context);
-    }
-
-    @Override
-    public Future<CommandResponse> sendCommandForFuture(final Command command, @MetaData(Context.METANAME) final Context context) throws Exception {
-        return commandGateway.sendCommandForFuture(command, context);
-    }
-
-    @Override
-    public CommandResponse sendCommandAndWaitForAResponse(final Command command, @MetaData(Context.METANAME) final Context context) throws Exception {
-        return commandGateway.sendCommandAndWaitForAResponse(command, context);
-    }
-
-    @Override
-    public CommandResponse sendCommandAndWaitForAResponseWithException(final Command command, @MetaData(Context.METANAME) final Context context) throws Exception {
-        return commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
-    }
-
-    @Override
-    public void sendCommandAndWait(final Command command, @MetaData(Context.METANAME) final Context context, final long timeout, final TimeUnit unit) throws Exception {
-        commandGateway.sendCommandAndWait(command, context, timeout, unit);
-    }
-
-    @Override
-    public void sendCommandAndWaitForever(final Command command, @MetaData(Context.METANAME) final Context context) throws Exception {
-        commandGateway.sendCommandAndWaitForever(command, context);
-    }
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Register a command handler to the gateway
-     *
-     * @param commandHandler the command handler to be registered
-     */
-    public void register(final CommandHandler commandHandler) {
-        domainLocator.registerHandler(checkNotNull(commandHandler));
-
-        final Class commandClass = commandHandler.getCommandClass();
-
-        //- Dynamic type command class and command handler for Axon -------
-        final AxonCommandCastor<Command> castor = new AxonCommandCastor<>(
-                commandClass,
-            commandHandler
-        );
-
-        commandBus.subscribe(castor.getBeanClass().getName(), castor.getContainerClass());
-
-        commandHandler.setCommandGateway(this);
-
-        // create immediately the interceptor chain instead of lazy mode
-        interceptorChainRegistry.create(commandClass, new CommandHandlerInterceptorFactory());
-    }
-
-    /**
-     * Register an interceptor factory to the gateway
-     *
-     * @param interceptorFactory the query interceptor factory to register
-     */
-    public void register(final CommandInterceptorFactory interceptorFactory) {
-        checkNotNull(interceptorFactory);
-
-        LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
-
-        interceptorChainRegistry.register(interceptorFactory);
-    }
-
     /**
      *
      * Convenient class for Axon command bus subscription proper dynamic typing
@@ -192,6 +67,184 @@ public class KasperCommandGateway implements CommandGateway {
         public org.axonframework.commandhandling.CommandHandler getContainerClass() {
             return this.handler;
         }
+    }
+
+    // ------------------------------------------------------------------------
+
+    public KasperCommandGateway(final KasperCommandBus commandBus) {
+        this(
+             new CommandGatewayFactoryBean<CommandGateway>(),
+             checkNotNull(commandBus),
+             new DefaultDomainLocator(new CommandHandlerResolver()),
+             new InterceptorChainRegistry<Command, CommandResponse>()
+        );
+    }
+
+    public KasperCommandGateway(final KasperCommandBus commandBus,
+                                final CommandDispatchInterceptor... commandDispatchInterceptors) {
+        this(
+            new CommandGatewayFactoryBean<CommandGateway>(),
+            checkNotNull(commandBus),
+            new DefaultDomainLocator(new CommandHandlerResolver()),
+            new InterceptorChainRegistry<Command, CommandResponse>(),
+            checkNotNull(commandDispatchInterceptors)
+        );
+    }
+
+    protected KasperCommandGateway(final CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean,
+                                   final KasperCommandBus commandBus,
+                                   final DomainLocator domainLocator,
+                                   final InterceptorChainRegistry<Command, CommandResponse> interceptorChainRegistry,
+                                   final CommandDispatchInterceptor... commandDispatchInterceptors) {
+
+        this.commandBus = checkNotNull(commandBus);
+        this.domainLocator = checkNotNull(domainLocator);
+        this.interceptorChainRegistry = checkNotNull(interceptorChainRegistry);
+
+        checkNotNull(commandGatewayFactoryBean);
+        checkNotNull(commandDispatchInterceptors);
+
+        commandGatewayFactoryBean.setCommandBus(commandBus);
+        commandGatewayFactoryBean.setGatewayInterface(CommandGateway.class);
+        commandGatewayFactoryBean.setCommandDispatchInterceptors(Lists.newArrayList(commandDispatchInterceptors));
+
+        this.commandBus.setHandlerInterceptors(Lists.<CommandHandlerInterceptor>newArrayList(
+            new KasperCommandInterceptor(interceptorChainRegistry)
+        ));
+
+        try {
+            commandGatewayFactoryBean.afterPropertiesSet();
+        } catch (final Exception e) {
+            throw new KasperException("Unable to bind Axon Command Gateway", e);
+        }
+
+        try {
+            this.commandGateway = checkNotNull(commandGatewayFactoryBean.getObject());
+        } catch (final Exception e) {
+            throw new KasperException("Unable to initialize the Command Gateway", e);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public void sendCommand(
+                final Command command,
+                @MetaData(Context.METANAME)
+                final Context context) throws Exception {
+
+        commandGateway.sendCommand(
+                checkNotNull(command),
+                checkNotNull(context)
+        );
+    }
+
+    @Override
+    public Future<CommandResponse> sendCommandForFuture(
+                final Command command,
+                @MetaData(Context.METANAME)
+                final Context context) throws Exception {
+
+        return commandGateway.sendCommandForFuture(
+                checkNotNull(command),
+                checkNotNull(context)
+        );
+    }
+
+    @Override
+    public CommandResponse sendCommandAndWaitForAResponse(
+                final Command command,
+                @MetaData(Context.METANAME)
+                final Context context) throws Exception {
+
+        return commandGateway.sendCommandAndWaitForAResponse(
+                checkNotNull(command),
+                checkNotNull(context)
+        );
+    }
+
+    @Override
+    public CommandResponse sendCommandAndWaitForAResponseWithException(
+                final Command command,
+                @MetaData(Context.METANAME)
+                final Context context) throws Exception {
+        return commandGateway.sendCommandAndWaitForAResponseWithException(
+                checkNotNull(command),
+                checkNotNull(context)
+        );
+    }
+
+    @Override
+    public void sendCommandAndWait(
+                final Command command,
+                @MetaData(Context.METANAME)
+                final Context context,
+                final long timeout,
+                final TimeUnit unit) throws Exception {
+
+        commandGateway.sendCommandAndWait(
+                checkNotNull(command),
+                checkNotNull(context),
+                timeout,
+                checkNotNull(unit)
+        );
+    }
+
+    @Override
+    public void sendCommandAndWaitForever(
+                final Command command,
+                @MetaData(Context.METANAME)
+                final Context context) throws Exception {
+
+        commandGateway.sendCommandAndWaitForever(
+                checkNotNull(command),
+                checkNotNull(context)
+        );
+    }
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Register a command handler to the gateway
+     *
+     * @param commandHandler the command handler to be registered
+     */
+    public void register(final CommandHandler commandHandler) {
+
+        domainLocator.registerHandler(checkNotNull(commandHandler));
+
+        final Class commandClass = commandHandler.getCommandClass();
+
+        //- Dynamic type command class and command handler for Axon -------
+        final AxonCommandCastor<Command> castor = new AxonCommandCastor<>(
+            commandClass,
+            commandHandler
+        );
+
+        commandBus.subscribe(
+                castor.getBeanClass().getName(),
+                castor.getContainerClass()
+        );
+
+        commandHandler.setCommandGateway(this);
+
+        // create immediately the interceptor chain instead of lazy mode
+        interceptorChainRegistry.create(
+                commandClass,
+                new CommandHandlerInterceptorFactory()
+        );
+    }
+
+    /**
+     * Register an interceptor factory to the gateway
+     *
+     * @param interceptorFactory the query interceptor factory to register
+     */
+    public void register(final CommandInterceptorFactory interceptorFactory) {
+        checkNotNull(interceptorFactory);
+        LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
+
+        interceptorChainRegistry.register(interceptorFactory);
     }
 
 }

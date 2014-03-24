@@ -15,18 +15,23 @@ import com.viadeo.kasper.cqrs.command.CommandResponse;
 
 import javax.validation.ValidatorFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class CommandValidationInterceptor<C extends Command>
         extends BaseValidationInterceptor<C>
         implements Interceptor<C, CommandResponse> {
 
     public CommandValidationInterceptor(final ValidatorFactory validatorFactory) {
-        super(validatorFactory);
+        super(checkNotNull(validatorFactory));
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public CommandResponse process(final C c, final Context context, final InterceptorChain<C, CommandResponse> chain) throws Exception {
+    public CommandResponse process(
+            final C c,
+            final Context context,
+            final InterceptorChain<C, CommandResponse> chain) throws Exception {
         validate(c);
         return chain.next(c, context);
     }

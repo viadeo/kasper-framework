@@ -48,13 +48,16 @@ public class KasperQueryGateway implements QueryGateway {
     }
 
     public KasperQueryGateway(final QueryHandlersLocator queryHandlersLocator) {
-        this(queryHandlersLocator, new InterceptorChainRegistry<Query, QueryResponse<QueryResult>>());
+        this(
+            checkNotNull(queryHandlersLocator),
+            new InterceptorChainRegistry<Query, QueryResponse<QueryResult>>()
+        );
     }
 
     public KasperQueryGateway(final QueryHandlersLocator queryHandlersLocator,
                               final InterceptorChainRegistry<Query, QueryResponse<QueryResult>> interceptorChainRegistry) {
         this.queryHandlersLocator = checkNotNull(queryHandlersLocator);
-        this.interceptorChainRegistry = interceptorChainRegistry;
+        this.interceptorChainRegistry = checkNotNull(interceptorChainRegistry);
     }
 
     // ------------------------------------------------------------------------
@@ -68,7 +71,6 @@ public class KasperQueryGateway implements QueryGateway {
         checkNotNull(query);
 
         final Class<? extends Query> queryClass = query.getClass();
-
 
         final String timerRequestsTimeName = name(queryClass, "requests-time");
         final String meterErrorsName = name(queryClass, "errors");
@@ -148,7 +150,11 @@ public class KasperQueryGateway implements QueryGateway {
      */
     @Deprecated
     public void register(final String name, final  QueryHandlerAdapter adapter, final boolean global) {
-        queryHandlersLocator.registerAdapter(name, adapter, global);
+        queryHandlersLocator.registerAdapter(
+            checkNotNull(name),
+            checkNotNull(adapter),
+            checkNotNull(global)
+        );
     }
 
     /**
@@ -158,7 +164,6 @@ public class KasperQueryGateway implements QueryGateway {
      */
     public void register(final QueryInterceptorFactory interceptorFactory) {
         checkNotNull(interceptorFactory);
-
         LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
 
         interceptorChainRegistry.register(interceptorFactory);
@@ -193,8 +198,11 @@ public class KasperQueryGateway implements QueryGateway {
         interceptorChainRegistry.create(queryHandlerClass, new QueryHandlerInterceptorFactory(queryHandler));
     }
 
-    protected Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> getInterceptorChain(final Class<? extends Query> queryClass) {
-        final Optional<QueryHandler<Query, QueryResult>> queryHandlerOptional = queryHandlersLocator.getHandlerFromQueryClass(queryClass);
+    protected Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> getInterceptorChain(
+            final Class<? extends Query> queryClass
+    ) {
+        final Optional<QueryHandler<Query, QueryResult>> queryHandlerOptional =
+                queryHandlersLocator.getHandlerFromQueryClass(queryClass);
 
         if ( ! queryHandlerOptional.isPresent()) {
             return Optional.absent();

@@ -16,12 +16,14 @@ import com.viadeo.kasper.cqrs.query.QueryResult;
 
 import javax.validation.ValidatorFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class QueryValidationInterceptor<Q extends Query, R extends QueryResult>
         extends BaseValidationInterceptor<Q>
         implements Interceptor<Q, QueryResponse<R>> {
 
     public QueryValidationInterceptor(final ValidatorFactory validatorFactory) {
-        super(validatorFactory);
+        super(checkNotNull(validatorFactory));
     }
 
     // ------------------------------------------------------------------------

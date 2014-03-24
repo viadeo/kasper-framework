@@ -13,8 +13,8 @@ import org.axonframework.eventhandling.EventBus;
  * Used to limit the allowed axon repository decorated by Kasper repositories
  */
 interface DecoratedAxonRepository<AGR extends AggregateRoot>  extends org.axonframework.repository.Repository<AGR> {
-    // Used to limit the allowed axon repository decorated by Kasper repositories
 
+    // Used to limit the allowed axon repository decorated by Kasper repositories
     void setEventBus(EventBus eventBus);
 
     RepositoryFacade<AGR> getRepositoryFacade();

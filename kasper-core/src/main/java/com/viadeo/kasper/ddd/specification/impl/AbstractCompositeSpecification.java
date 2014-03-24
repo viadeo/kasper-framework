@@ -10,6 +10,8 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.ddd.specification.ISpecification;
 import com.viadeo.kasper.ddd.specification.SpecificationErrorMessage;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * @param <T> the object
  */
@@ -21,8 +23,8 @@ public abstract class AbstractCompositeSpecification<T> extends Specification<T>
 	// ----------------------------------------------------------------------
 
 	public AbstractCompositeSpecification(final ISpecification<T> spec1, final ISpecification<T> spec2) {
-		this.spec1 = Preconditions.checkNotNull(spec1);
-		this.spec2 = Preconditions.checkNotNull(spec2);
+		this.spec1 = checkNotNull(spec1);
+		this.spec2 = checkNotNull(spec2);
 	}
 	
 	// ----------------------------------------------------------------------

@@ -12,6 +12,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.ValidatorFactory;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public abstract class BaseValidationInterceptor<E> {
 
     private final ValidatorFactory validatorFactory;
@@ -19,12 +21,13 @@ public abstract class BaseValidationInterceptor<E> {
     // ------------------------------------------------------------------------
 
     public BaseValidationInterceptor(final ValidatorFactory validatorFactory) {
-        this.validatorFactory = validatorFactory;
+        this.validatorFactory = checkNotNull(validatorFactory);
     }
 
     // ------------------------------------------------------------------------
 
     public void validate(final E obj) {
+        checkNotNull(obj);
         final Set<ConstraintViolation<Object>> violations = validatorFactory.getValidator().validate((Object) obj);
 
         if ( ! violations.isEmpty()) {

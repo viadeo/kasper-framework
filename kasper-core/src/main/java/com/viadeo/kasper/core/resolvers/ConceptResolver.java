@@ -11,6 +11,8 @@ import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class ConceptResolver extends AbstractResolver<Concept> {
 
     @Override
@@ -23,7 +25,7 @@ public class ConceptResolver extends AbstractResolver<Concept> {
     @Override
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Concept> clazz) {
 
-        if (DOMAINS_CACHE.containsKey(clazz)) {
+        if (DOMAINS_CACHE.containsKey(checkNotNull(clazz))) {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
@@ -42,12 +44,15 @@ public class ConceptResolver extends AbstractResolver<Concept> {
 
     @Override
     public String getDescription(Class<? extends Concept> conceptClazz) {
-        final XKasperConcept annotation = conceptClazz.getAnnotation(XKasperConcept.class);
+        final XKasperConcept annotation =
+                checkNotNull(conceptClazz).getAnnotation(XKasperConcept.class);
 
         String description = "";
+
         if (null != annotation) {
             description = annotation.description();
         }
+
         if (description.isEmpty()) {
             description = String.format("The %s concept", this.getLabel(conceptClazz));
         }
@@ -59,12 +64,15 @@ public class ConceptResolver extends AbstractResolver<Concept> {
 
     @Override
     public String getLabel(Class<? extends Concept> conceptClazz) {
-        final XKasperConcept annotation = conceptClazz.getAnnotation(XKasperConcept.class);
+        final XKasperConcept annotation =
+                checkNotNull(conceptClazz).getAnnotation(XKasperConcept.class);
 
         String label = "";
+
         if (null != annotation) {
             label = annotation.label().replaceAll(" ", "");
         }
+
         if (label.isEmpty()) {
             label = String.format(conceptClazz.getSimpleName().replaceAll("Concept", ""));
         }

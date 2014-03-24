@@ -18,6 +18,8 @@ import com.viadeo.kasper.exception.KasperException;
 
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class DefaultRepositoryManager implements RepositoryManager {
 
     private final Map<Class, Repository> repositoryByAggregateClass;
@@ -32,9 +34,12 @@ public class DefaultRepositoryManager implements RepositoryManager {
 
     @Override
     public void register(final Repository repository) {
-        Preconditions.checkNotNull(repository);
+        checkNotNull(repository);
         if ( ! repository.isInitialized()) {
-            throw new KasperException("The repository isn't initialized : " + repository.getClass().getName());
+            throw new KasperException(
+                    "The repository isn't initialized : "
+                            + repository.getClass().getName()
+            );
         }
         repositoryByAggregateClass.put(repository.getAggregateClass(), repository);
     }
@@ -42,12 +47,14 @@ public class DefaultRepositoryManager implements RepositoryManager {
     @SuppressWarnings("unchecked")
     @Override
     public <E extends AggregateRoot> Optional<ClientRepository<E>> getEntityRepository(final Class<E> aggregateClass) {
-        Preconditions.checkNotNull(aggregateClass);
+        checkNotNull(aggregateClass);
         final IRepository<E> repository = repositoryByAggregateClass.get(aggregateClass);
-        if(null == repository) {
+
+        if (null == repository) {
             return Optional.absent();
         }
-        return Optional.of(new ClientRepository<E>(repository));
+
+        return Optional.of(new ClientRepository<>(repository));
     }
 
     public boolean isRegistered(final Repository repository){

@@ -17,34 +17,45 @@ import org.axonframework.commandhandling.GenericCommandMessage;
 
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class CommandHandlerInterceptor implements Interceptor<Command, CommandResponse> {
 
     private final ThreadLocal<org.axonframework.commandhandling.InterceptorChain> axonInterceptorChain;
+
+    // ------------------------------------------------------------------------
 
     public CommandHandlerInterceptor() {
         this.axonInterceptorChain = new ThreadLocal<>();
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public CommandResponse process(Command command, Context context, InterceptorChain<Command, CommandResponse> chain) throws Exception {
+    public CommandResponse process(final Command command,
+                                   final Context context,
+                                   final InterceptorChain<Command, CommandResponse> chain) throws Exception {
+
         final Map<String, Object> metaData = Maps.newHashMap();
         metaData.put(Context.METANAME, context);
 
-        final GenericCommandMessage newCommandMessage = new GenericCommandMessage<>(command).withMetaData(metaData);
+        final GenericCommandMessage newCommandMessage =
+                new GenericCommandMessage<>(command).withMetaData(metaData);
 
         try {
             org.axonframework.commandhandling.InterceptorChain interceptorChain = axonInterceptorChain.get();
             return CommandResponse.class.cast(interceptorChain.proceed(newCommandMessage));
-        } catch (Throwable throwable) {
+        } catch (final Throwable throwable) {
             throw new KasperException(throwable);
         }
     }
 
-    public void set(org.axonframework.commandhandling.InterceptorChain axonInterceptorChain) {
-        this.axonInterceptorChain.set(axonInterceptorChain);
+    public void set(final org.axonframework.commandhandling.InterceptorChain axonInterceptorChain) {
+        this.axonInterceptorChain.set(checkNotNull(axonInterceptorChain));
     }
 
     public void remove() {
         this.axonInterceptorChain.remove();
     }
+
 }

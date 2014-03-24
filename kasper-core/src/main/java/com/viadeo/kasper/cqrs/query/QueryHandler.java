@@ -16,6 +16,7 @@ import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 /**
  *
@@ -68,7 +69,7 @@ public abstract class QueryHandler<Q extends Query, RESULT extends QueryResult> 
      */
     public void publish(final IEvent event) {
         checkNotNull(event, "The specified event must be non null");
-        Preconditions.checkState(eventBus != null, "Unable to publish the specified event : the event bus is null");
+        checkState(eventBus != null, "Unable to publish the specified event : the event bus is null");
         final EventMessage eventMessage = GenericEventMessage.asEventMessage(event);
         this.eventBus.publish(eventMessage);
     }

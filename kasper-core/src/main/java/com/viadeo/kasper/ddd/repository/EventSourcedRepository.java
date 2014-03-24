@@ -53,9 +53,9 @@ public abstract class EventSourcedRepository<AGR extends AggregateRoot> extends 
         }
 
         final AxonEventSourcedRepository<AGR> axonRepository = new AxonEventSourcedRepository<>(
-                new MetricsRepositoryFacade<>(this),
-                entityType,
-                this.getEventStore().get()
+            new MetricsRepositoryFacade<>(this),
+            entityType,
+            this.getEventStore().get()
         );
 
         /* keep a local copy of the axon repository for final delegation */

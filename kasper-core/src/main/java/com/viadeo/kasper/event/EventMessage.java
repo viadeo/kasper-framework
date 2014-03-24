@@ -13,6 +13,8 @@ import com.viadeo.kasper.ddd.AggregateRoot;
 import org.axonframework.domain.DomainEventMessage;
 import org.joda.time.DateTime;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  *
  * Decorator for Axon Event messages
@@ -30,7 +32,7 @@ public class EventMessage<E extends IEvent> {
 	// ------------------------------------------------------------------------
 
 	public EventMessage(final org.axonframework.domain.EventMessage<E> eventMessage) {
-		this.axonMessage = eventMessage;
+		this.axonMessage = checkNotNull(eventMessage);
 	}
 
 	// ------------------------------------------------------------------------

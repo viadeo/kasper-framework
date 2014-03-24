@@ -12,6 +12,8 @@ import com.viadeo.kasper.context.impl.AbstractContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * UnitOfWork decorator to handle context
  *
@@ -32,7 +34,7 @@ public final class CurrentContext {
 	// ------------------------------------------------------------------------
 	
 	public static void set(final Context context) {
-        LOGGER.debug("Set current thread context {}", context);
+        LOGGER.debug("Set current thread context {}", checkNotNull(context));
 
         // Sets the Kasper correlation id if it has not been set before -------
         if (AbstractContext.class.isAssignableFrom(context.getClass())) {

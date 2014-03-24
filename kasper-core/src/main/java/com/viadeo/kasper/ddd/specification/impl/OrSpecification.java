@@ -10,6 +10,8 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.ddd.specification.ISpecification;
 import com.viadeo.kasper.ddd.specification.SpecificationErrorMessage;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  *
  * @param <T> The Object class
@@ -27,19 +29,19 @@ public class OrSpecification<T> extends AbstractCompositeSpecification<T> {
 
 	@Override
 	public boolean isSatisfiedBy(final T entity) {
-		Preconditions.checkNotNull(entity);
+		checkNotNull(entity);
 		return this.spec1.isSatisfiedBy(entity) || this.spec2.isSatisfiedBy(entity);
 	}
 
 	// ----------------------------------------------------------------------
 	
 	@Override
-	public boolean isSatisfiedBy(final T entity, final com.viadeo.kasper.ddd.specification.SpecificationErrorMessage errorMessage) {
+	public boolean isSatisfiedBy(final T entity, final SpecificationErrorMessage errorMessage) {
 		
-		final com.viadeo.kasper.ddd.specification.SpecificationErrorMessage errorMessage1 = new SpecificationErrorMessage();
+		final SpecificationErrorMessage errorMessage1 = new SpecificationErrorMessage();
 		final boolean isSatisfied1 = this.spec1.isSatisfiedBy(entity, errorMessage1);
 
-		final com.viadeo.kasper.ddd.specification.SpecificationErrorMessage errorMessage2 = new SpecificationErrorMessage();
+		final SpecificationErrorMessage errorMessage2 = new SpecificationErrorMessage();
 		final boolean isSatisfied2 = this.spec2.isSatisfiedBy(entity, errorMessage2);
 
 		if (isSatisfied1 || isSatisfied2) {
@@ -47,10 +49,10 @@ public class OrSpecification<T> extends AbstractCompositeSpecification<T> {
 		}
 		
 		final StringBuffer sb = new StringBuffer();
-		if (!isSatisfied1) {
+		if ( ! isSatisfied1) {
 			sb.append(errorMessage1.getMessage()).append("\n");
 		}
-		if (!isSatisfied2) {
+		if ( ! isSatisfied2) {
 			sb.append(errorMessage2.getMessage());
 		}
 		errorMessage.setMessage(sb.toString());

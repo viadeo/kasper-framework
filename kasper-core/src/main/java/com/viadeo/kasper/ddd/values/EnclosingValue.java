@@ -10,6 +10,8 @@ import com.google.common.base.Preconditions;
 
 import java.io.Serializable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  *
  * A base value used to enclose a classical type, ex : PersonName extends KasperEnclosingValue<String
@@ -27,8 +29,7 @@ public abstract class EnclosingValue<RESULT extends Serializable>
 	
 	public EnclosingValue(final RESULT value) {
 		super();
-		
-		this.value = Preconditions.checkNotNull(value);
+		this.value = checkNotNull(value);
 	}
 	
 	public RESULT getValue() {
@@ -42,7 +43,7 @@ public abstract class EnclosingValue<RESULT extends Serializable>
 	 */
 	@Override
 	public boolean equals(final Object otherValue) {
-		if (this == Preconditions.checkNotNull(otherValue)) {
+		if (this == checkNotNull(otherValue)) {
 			return true;
 		}
 		if (this.getClass().isInstance(otherValue)) {

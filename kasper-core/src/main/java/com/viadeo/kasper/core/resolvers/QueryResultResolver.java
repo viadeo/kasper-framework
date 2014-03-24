@@ -35,18 +35,22 @@ public class QueryResultResolver extends AbstractResolver<QueryResult> {
     @Override
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends QueryResult> clazz) {
-        if (DOMAINS_CACHE.containsKey(clazz)) {
+
+        if (DOMAINS_CACHE.containsKey(checkNotNull(clazz))) {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
         Optional<Class<? extends Domain>> result = Optional.absent();
 
         if (null != queryHandlersLocator) {
-            final Collection<QueryHandler> queryHandlers = this.queryHandlersLocator.getHandlersFromQueryResultClass(clazz);
+            final Collection<QueryHandler> queryHandlers =
+                    this.queryHandlersLocator.getHandlersFromQueryResultClass(clazz);
 
-            for (QueryHandler queryHandler : queryHandlers) {
+            for (final QueryHandler queryHandler : queryHandlers) {
+
                 final Optional<Class<? extends Domain>> domain =
                         this.queryHandlerResolver.getDomainClass(queryHandler.getClass());
+
                 if (domain.isPresent()) {
                     if (result.isPresent()) {
                         throw new KasperException("More than one domain found");
@@ -69,13 +73,16 @@ public class QueryResultResolver extends AbstractResolver<QueryResult> {
     // ------------------------------------------------------------------------
 
     @Override
-    public String getDescription(Class<? extends QueryResult> clazz) {
-        final XKasperQueryResult annotation = clazz.getAnnotation(XKasperQueryResult.class);
+    public String getDescription(final Class<? extends QueryResult> clazz) {
+        final XKasperQueryResult annotation =
+                checkNotNull(clazz).getAnnotation(XKasperQueryResult.class);
 
         String description = "";
+
         if (null != annotation) {
             description = annotation.description();
         }
+
         if (description.isEmpty()) {
             description = String.format("The %s query answer", this.getLabel(clazz));
         }
@@ -84,8 +91,8 @@ public class QueryResultResolver extends AbstractResolver<QueryResult> {
     }
 
     @Override
-    public String getLabel(Class<? extends QueryResult> clazz) {
-        return clazz.getSimpleName()
+    public String getLabel(final Class<? extends QueryResult> clazz) {
+        return checkNotNull(clazz).getSimpleName()
                 .replace("Result", "")
                 .replace("QueryResult", "");
     }

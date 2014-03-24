@@ -34,12 +34,13 @@ public class QueryResolver extends AbstractResolver<Query> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Query> clazz) {
 
-        if (DOMAINS_CACHE.containsKey(clazz)) {
+        if (DOMAINS_CACHE.containsKey(checkNotNull(clazz))) {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
         if (null != queryHandlersLocator) {
-            final Optional<QueryHandler<Query, QueryResult>> handler = this.queryHandlersLocator.getHandlerFromQueryClass(clazz);
+            final Optional<QueryHandler<Query, QueryResult>> handler =
+                    this.queryHandlersLocator.getHandlerFromQueryClass(clazz);
 
             if (handler.isPresent()) {
                 final Optional<Class<? extends Domain>> domain =
@@ -50,23 +51,27 @@ public class QueryResolver extends AbstractResolver<Query> {
                     return domain;
                 }
             }
+
         } else {
             return domainResolver.getDomainClassOf(clazz);
         }
 
-    return Optional.absent();
+        return Optional.absent();
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public String getDescription(Class<? extends Query> clazz) {
-        final XKasperQuery annotation = clazz.getAnnotation(XKasperQuery.class);
+    public String getDescription(final Class<? extends Query> clazz) {
+        final XKasperQuery annotation =
+                checkNotNull(clazz).getAnnotation(XKasperQuery.class);
 
         String description = "";
+
         if (null != annotation) {
             description = annotation.description();
         }
+
         if (description.isEmpty()) {
             description = String.format("The %s query", this.getLabel(clazz));
         }
@@ -75,8 +80,8 @@ public class QueryResolver extends AbstractResolver<Query> {
     }
 
     @Override
-    public String getLabel(Class<? extends Query> clazz) {
-        return clazz.getSimpleName().replace("Query", "");
+    public String getLabel(final Class<? extends Query> clazz) {
+        return checkNotNull(clazz).getSimpleName().replace("Query", "");
     }
 
     // ------------------------------------------------------------------------

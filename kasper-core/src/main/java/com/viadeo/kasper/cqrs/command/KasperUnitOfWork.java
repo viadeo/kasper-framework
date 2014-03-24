@@ -42,7 +42,7 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
     }
 
     public KasperUnitOfWork(final TransactionManager<?> transactionManager) {
-        super(transactionManager);
+        super(checkNotNull(transactionManager));
     }
 
     public static KasperUnitOfWork startAndGet() {
@@ -51,8 +51,8 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
         return uow;
     }
 
-    public static KasperUnitOfWork startAndGet(TransactionManager<?> transactionManager) {
-        final KasperUnitOfWork uow = new KasperUnitOfWork(transactionManager);
+    public static KasperUnitOfWork startAndGet(final TransactionManager<?> transactionManager) {
+        final KasperUnitOfWork uow = new KasperUnitOfWork(checkNotNull(transactionManager));
         uow.start();
         return uow;
     }
@@ -64,16 +64,19 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
      */
     @Override
     public void registerForPublication(final EventMessage<?> message, final EventBus eventBus) {
+
         super.registerForPublication(checkNotNull(message), checkNotNull(eventBus));
 
         if ( ! UnitOfWorkEvent.class.isAssignableFrom(message.getPayloadType())) {
             final List<EventMessage<?>> events;
+
             if (eventsToBePublished.containsKey(eventBus)) {
                 events = eventsToBePublished.get(eventBus);
             } else {
                 events = Lists.newArrayList();
                 eventsToBePublished.put(eventBus, events);
             }
+
             events.add(message);
         }
     }
@@ -110,10 +113,10 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
 
                 final UnitOfWorkEvent uowEvent = new UnitOfWorkEvent(events);
                 final GenericEventMessage uowMessage = new GenericEventMessage(
-                        uowEventId,
-                        DateTime.now(),
-                        uowEvent,
-                        context.get().asMetaDataMap()
+                    uowEventId,
+                    DateTime.now(),
+                    uowEvent,
+                    context.get().asMetaDataMap()
                 );
 
                 this.registerForPublication(uowMessage, entry.getKey());
@@ -145,11 +148,18 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
             while (iterator.hasNext()) {
                 final Map.Entry<EventBus, List<EventMessage<?>>> entry = iterator.next();
                 final List<EventMessage<?>> messageList = entry.getValue();
+
                 for (final EventMessage message : messageList) {
                     final Event event = (Event) message.getPayload();
                     nbCommittedEvents++;
-                    getMetricRegistry().meter(name(event.getClass(), "committed")).mark();
-                    getMetricRegistry().meter(name(MetricNameStyle.DOMAIN_TYPE, event.getClass(), "committed")).mark();
+
+                    getMetricRegistry().meter(
+                        name(event.getClass(), "committed")
+                    ).mark();
+
+                    getMetricRegistry().meter(
+                        name(MetricNameStyle.DOMAIN_TYPE, event.getClass(), "committed")
+                    ).mark();
                 }
 
                 iterator.remove();

@@ -14,6 +14,8 @@ import com.viadeo.kasper.event.domain.DomainEvent;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class EventResolver extends AbstractResolver<IEvent> {
 
     @Override
@@ -27,7 +29,7 @@ public class EventResolver extends AbstractResolver<IEvent> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends IEvent> clazz) {
 
-        if (DOMAINS_CACHE.containsKey(clazz)) {
+        if (DOMAINS_CACHE.containsKey(checkNotNull(clazz))) {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
@@ -60,14 +62,15 @@ public class EventResolver extends AbstractResolver<IEvent> {
 
     @Override
     public String getLabel(final Class<? extends IEvent> clazz) {
-        return clazz.getSimpleName().replace("Event", "");
+        return checkNotNull(clazz).getSimpleName().replace("Event", "");
     }
 
     // ------------------------------------------------------------------------
 
     @Override
     public String getDescription(final Class<? extends IEvent> eventClazz) {
-        final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
+        final XKasperEvent annotation =
+                checkNotNull(eventClazz).getAnnotation(XKasperEvent.class);
 
         String description = "";
 
@@ -85,7 +88,8 @@ public class EventResolver extends AbstractResolver<IEvent> {
     // ------------------------------------------------------------------------
 
     public String getAction(final Class<? extends IEvent> eventClazz) {
-        final XKasperEvent annotation = eventClazz.getAnnotation(XKasperEvent.class);
+        final XKasperEvent annotation =
+                checkNotNull(eventClazz).getAnnotation(XKasperEvent.class);
 
         String action = "";
         if (null != annotation) {

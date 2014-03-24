@@ -58,7 +58,7 @@ public class DefaultDomainLocator implements DomainLocator {
 
     public DefaultDomainLocator(final CommandHandlerResolver commandHandlerResolver) {
         this();
-        this.commandHandlerResolver = commandHandlerResolver;
+        this.commandHandlerResolver = checkNotNull(commandHandlerResolver);
     }
 
     // ------------------------------------------------------------------------
@@ -66,6 +66,7 @@ public class DefaultDomainLocator implements DomainLocator {
     @Override
     @SuppressWarnings("unchecked")
     public void registerHandler(final CommandHandler commandHandler) {
+        checkNotNull(commandHandler);
         final Class<? extends Command> commandClass =
                 commandHandlerResolver.getCommandClass(commandHandler.getClass());
         handlers.put(commandHandler, commandClass);
@@ -78,7 +79,8 @@ public class DefaultDomainLocator implements DomainLocator {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<CommandHandler> getHandlerForCommandClass(Class<? extends Command> commandClass) {
+    public Optional<CommandHandler> getHandlerForCommandClass(final Class<? extends Command> commandClass) {
+        checkNotNull(commandClass);
         for (final CommandHandler commandHandler : handlers.keySet()) {
             final Class<? extends Command> command = handlers.get(commandHandler);
             if (command.equals(commandClass)) {
@@ -94,9 +96,8 @@ public class DefaultDomainLocator implements DomainLocator {
     @Override
     @SuppressWarnings("unchecked")
     public <D extends Domain> Set<? extends Entity> getDomainEntities(final D domain) {
+        // FIXME: not implemented
         checkNotNull(domain);
-        // TODO Auto-generated method stub
-
         return Collections.EMPTY_SET;
     }
 
@@ -106,9 +107,8 @@ public class DefaultDomainLocator implements DomainLocator {
     @Override
     @SuppressWarnings("unchecked")
     public <D extends Domain> Set<? extends Entity> getDomainEntities(final Class<D> domain) {
+        // FIXME: not implemented
         checkNotNull(domain);
-        // TODO Auto-generated method stub
-
         return Collections.EMPTY_SET;
     }
 
@@ -117,8 +117,8 @@ public class DefaultDomainLocator implements DomainLocator {
      */
     @Override
     public <D extends Domain> Optional<D> getEntityDomain(final Entity entity) {
+        // FIXME: not implemented
         checkNotNull(entity);
-        // TODO Auto-generated method stub
         throw new KasperException("Entity has no registered domain : " + entity.getClass().getName());
     }
 
@@ -131,8 +131,10 @@ public class DefaultDomainLocator implements DomainLocator {
         checkNotNull(prefix);
 
         if (name.isEmpty() || prefix.isEmpty()) {
-            throw new KasperException("Domain name and prefix must not be empty for domain"
-                    + domain.getClass().getSimpleName());
+            throw new KasperException(
+                    "Domain name and prefix must not be empty for domain"
+                    + domain.getClass().getSimpleName()
+            );
         }
 
         final Map<String, String> domainData = new HashMap<>();

@@ -14,7 +14,7 @@ import com.viadeo.kasper.security.exception.KasperMissingApplicationIdException;
  */
 public interface ApplicationIdValidator {
 
-    void validate(final String applicationId)
+    void validate(String applicationId)
             throws KasperMissingApplicationIdException,
                    KasperInvalidApplicationIdException;
 
