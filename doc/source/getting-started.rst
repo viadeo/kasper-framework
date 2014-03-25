@@ -62,7 +62,7 @@ ex: minimal modules strategy : api/command/query
         * *mycompany-mydomain-query*
         * *mycompany-mydomain-command*
         * kasper-platform (the Kasper platform, with resources discovery, binding mechanisms, ...)
-        * kasper-web (web bindings, helpers, auto-exposition)
+        * kasper-exposition (web bindings, helpers, auto-exposition)
         * kasper-documentation (auto-documentation)
 
 TODO: domain bootstrap helpers, webapp configuration,..

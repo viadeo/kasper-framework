@@ -12,7 +12,7 @@ KASPER - Kasper is the treasure keeper
 * **kasper-documentation**          : Automated documentation
 * **kasper-platform**               : The Kasper platform
 * **kasper-test**                   : Functional/Integration end to end testing
-* **kasper-web**                    : Web exposition and helpers
+* **kasper-exposition**             : Web exposition and helpers
 * **kasper-hadoop**                 : Query indexes management with Hadoop
 * **doc**                           : Kasper developers documentation (cf README)
 * **tools**                         : Some Kasper developer tools
