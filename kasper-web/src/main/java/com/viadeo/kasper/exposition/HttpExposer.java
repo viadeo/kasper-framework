@@ -231,13 +231,11 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
     ) throws IOException {
         final Context context = contextDeserializer.deserialize(httpRequest, kasperCorrelationUUID);
 
-        MDC.put("appId", context.getApplicationId());
+        MDC.setContextMap(context.asMetaDataMap());
         MDC.put("appServer", serverName());
         MDC.put("appVersion", meta.getVersion());
         MDC.put("appBuildingDate", meta.getBuildingDate().toString());
         MDC.put("appDeploymentDate", meta.getDeploymentDate().toString());
-
-        MDC.put("authToken", context.getSecurityToken());
 
         return context;
     }

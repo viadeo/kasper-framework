@@ -48,6 +48,20 @@ public interface Context extends Serializable  {
 
     // ------------------------------------------------------------------------
 
+    String UID_SHORTNAME = "userId";
+    String ULANG_SHORTNAME = "userLang";
+    String UCOUNTRY_SHORTNAME = "userCountry";
+    String APPLICATION_ID_SHORTNAME = "appId";
+    String REQUEST_CID_SHORTNAME = "corrRequestId";
+    String FUNNEL_CID_SHORTNAME = "corrFunnelId";
+    String SESSION_CID_SHORTNAME = "corrSessionId";
+    String SECURITY_TOKEN_SHORTNAME = "authToken";
+    String FUNNEL_NAME_SHORTNAME = "funnelName";
+    String FUNNEL_VERS_SHORTNAME = "funnelVersion";
+    String IP_ADDRESS_SHORTNAME = "ipAddress";
+
+    // ------------------------------------------------------------------------
+
 	/**
 	 * The name of the context key when stored in meta data maps
 	 */
