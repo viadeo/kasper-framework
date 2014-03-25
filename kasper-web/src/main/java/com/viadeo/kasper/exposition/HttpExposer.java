@@ -231,13 +231,10 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
     ) throws IOException {
         final Context context = contextDeserializer.deserialize(httpRequest, kasperCorrelationUUID);
 
-        MDC.put("appId", context.getApplicationId());
         MDC.put("appServer", serverName());
         MDC.put("appVersion", meta.getVersion());
         MDC.put("appBuildingDate", meta.getBuildingDate().toString());
         MDC.put("appDeploymentDate", meta.getDeploymentDate().toString());
-
-        MDC.put("authToken", context.getSecurityToken());
 
         return context;
     }
@@ -251,7 +248,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         final String requestName = aliasRegistry.resolve(resourceName(httpRequest.getRequestURI()));
 
         /* 2) Check that the request is manageable*/
-        if(!isManageable(requestName)){
+        if( ! isManageable(requestName)){
             throw new HttpExposerException(
                     CoreReasonCode.NOT_FOUND,
                     getInputTypeName() + "[" + requestName + "] not found."
@@ -260,7 +257,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
         /* 3) Resolve the input class*/
         final Class<INPUT> inputClass = getInputClass(requestName);
-
         MDC.put("appRoute", inputClass.getName());
 
         /* 4) Extract to a known input */

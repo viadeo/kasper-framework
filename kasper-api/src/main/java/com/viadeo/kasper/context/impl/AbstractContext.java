@@ -174,8 +174,15 @@ public abstract class AbstractContext implements Context {
     }
 
     @Override
-    public Map<String, String> asMap(final Map<String, String> retMap) {
-        checkNotNull(retMap);
+    public Map<String, String> asMap(final Map<String, String> origMap) {
+
+        final Map<String, String> retMap;
+        if (null == origMap) {
+            retMap = Maps.newHashMap();
+        } else {
+            retMap = origMap;
+        }
+
         retMap.put(KASPER_CID_SHORTNAME, safeStringObject(this.kasperCorrelationId));
         retMap.put(SEQ_INC_SHORTNAME, safeStringObject(this.sequenceIncrement));
 

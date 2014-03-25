@@ -26,6 +26,7 @@ import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.axonframework.common.annotation.MetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
@@ -128,53 +129,67 @@ public class KasperCommandGateway implements CommandGateway {
     // ------------------------------------------------------------------------
 
     @Override
+    @SuppressWarnings("unchecked")
     public void sendCommand(
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
+        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+
         commandGateway.sendCommand(
                 checkNotNull(command),
-                checkNotNull(context)
+                context
         );
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Future<CommandResponse> sendCommandForFuture(
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
+        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+
         return commandGateway.sendCommandForFuture(
                 checkNotNull(command),
-                checkNotNull(context)
+                context
         );
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public CommandResponse sendCommandAndWaitForAResponse(
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
+        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+
         return commandGateway.sendCommandAndWaitForAResponse(
                 checkNotNull(command),
-                checkNotNull(context)
+                context
         );
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public CommandResponse sendCommandAndWaitForAResponseWithException(
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
+
+        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+
         return commandGateway.sendCommandAndWaitForAResponseWithException(
                 checkNotNull(command),
-                checkNotNull(context)
+                context
         );
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void sendCommandAndWait(
                 final Command command,
                 @MetaData(Context.METANAME)
@@ -182,23 +197,28 @@ public class KasperCommandGateway implements CommandGateway {
                 final long timeout,
                 final TimeUnit unit) throws Exception {
 
+        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+
         commandGateway.sendCommandAndWait(
                 checkNotNull(command),
-                checkNotNull(context),
+                context,
                 timeout,
                 checkNotNull(unit)
         );
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public void sendCommandAndWaitForever(
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
+        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+
         commandGateway.sendCommandAndWaitForever(
                 checkNotNull(command),
-                checkNotNull(context)
+                context
         );
     }
 

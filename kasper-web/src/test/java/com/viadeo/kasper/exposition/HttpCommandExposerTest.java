@@ -12,6 +12,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.KasperResponse.Status;
+import com.viadeo.kasper.annotation.XKasperAlias;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.HttpContextHeaders;
@@ -26,7 +27,6 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.annotation.XKasperAlias;
 import lombok.Data;
 import org.junit.Test;
 

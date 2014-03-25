@@ -25,18 +25,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class DefaultContext extends AbstractContext {
     private static final long serialVersionUID = -2357451589032314740L;
 
-    private static final String UID_SHORTNAME = "uid";
-    private static final String ULAND_SHORTNAME = "lang";
-    private static final String UCOUNTRY_SHORTNAME = "cntry";
-    private static final String APPLICATION_ID_SHORTNAME = "appid";
-    private static final String REQUEST_CID_SHORTNAME = "rcid";
-    private static final String FUNNEL_CID_SHORTNAME = "fcid";
-    private static final String SESSION_CID_SHORTNAME = "scid";
-    private static final String SECURITY_TOKEN_SHORTNAME = "tok";
-    private static final String FUNNEL_NAME_SHORTNAME = "fname";
-    private static final String FUNNEL_VERS_SHORTNAME = "fvers";
-    private static final String IP_ADDRESS_SHORTNAME = "ip";
-
     // ------------------------------------------------------------------------
 
     private String userId;
@@ -236,11 +224,11 @@ public class DefaultContext extends AbstractContext {
     }
 
     @Override
-    public Map<String, String> asMap(final Map<String, String> retMap) {
-        super.asMap(retMap);
+    public Map<String, String> asMap(final Map<String, String> origMap) {
+        final Map<String, String> retMap = super.asMap(origMap);
 
         retMap.put(UID_SHORTNAME, safeStringObject(this.userId));
-        retMap.put(ULAND_SHORTNAME, safeStringObject(this.userLang));
+        retMap.put(ULANG_SHORTNAME, safeStringObject(this.userLang));
         retMap.put(UCOUNTRY_SHORTNAME, safeStringObject(this.userCountry));
         retMap.put(REQUEST_CID_SHORTNAME, safeStringObject(this.requestCorrelationId));
         retMap.put(FUNNEL_CID_SHORTNAME, safeStringObject(this.funnelCorrelationId));
