@@ -8,17 +8,22 @@ package com.viadeo.kasper.doc.nodes.validation;
 
 import com.viadeo.kasper.doc.nodes.DocumentedProperty;
 
-import javax.validation.constraints.NotNull;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 
-public class NotNullVisitor extends ValidatedBeanPropertyVisitor {
+import static com.google.common.base.Preconditions.checkNotNull;
 
-    public void process(final Field field, final DocumentedProperty property) {
-        final Annotation notNullAnnotation = field.getAnnotation(NotNull.class);
-        if (null != notNullAnnotation) {
-            property.setMandatory(true);
-        }
+public class PropertyValidationProcessor {
+
+    private final PropertyValidator validator;
+
+    public PropertyValidationProcessor(final PropertyValidator validator) {
+        this.validator = checkNotNull(validator);
     }
 
+    public void process(final Field field, final DocumentedProperty documentedProperty) {
+        for (final Annotation annotation : field.getDeclaredAnnotations()) {
+            validator.validate(annotation, documentedProperty);
+        }
+    }
 }
