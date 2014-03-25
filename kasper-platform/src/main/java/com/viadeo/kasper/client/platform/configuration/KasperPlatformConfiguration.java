@@ -63,22 +63,21 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         this.configuration = ConfigFactory.empty();
 
         UnitOfWorkFactory uowFactory = new DefaultUnitOfWorkFactory();
-
         KasperCommandBus commandBus = new KasperCommandBus();
         commandBus.setUnitOfWorkFactory(uowFactory);
 
         this.commandGateway = new KasperCommandGateway(commandBus);
 
         this.commandInterceptorFactories = Lists.<CommandInterceptorFactory>newArrayList(
-                new CommandSecurityInterceptorFactory(securityConfiguration),
-                new CommandValidationInterceptorFactory()
+            new CommandSecurityInterceptorFactory(securityConfiguration),
+            new CommandValidationInterceptorFactory()
         );
 
         this.queryInterceptorFactories =  Lists.newArrayList(
-                new QuerySecurityInterceptorFactory(securityConfiguration),
-                new CacheInterceptorFactory(),
-                new QueryValidationInterceptorFactory(),
-                new QueryFilterInterceptorFactory()
+            new QuerySecurityInterceptorFactory(securityConfiguration),
+            new CacheInterceptorFactory(),
+            new QueryValidationInterceptorFactory(),
+            new QueryFilterInterceptorFactory()
         );
     }
 

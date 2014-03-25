@@ -55,4 +55,5 @@ public class KasperPlatform implements Platform {
     public Meta getMeta() {
         return meta;
     }
+
 }

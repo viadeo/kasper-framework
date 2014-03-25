@@ -42,7 +42,7 @@ public class MyCustomDomainBox {
     public static class MyCustomCommandHandler extends CommandHandler<MyCustomCommand> {
         @Override
         public CommandResponse handle(MyCustomCommand command) throws Exception {
-            if (!command.isSuccessful()) {
+            if ( ! command.isSuccessful()) {
                 throw new RuntimeException("I must failed!");
             }
             return CommandResponse.ok();
@@ -53,7 +53,7 @@ public class MyCustomDomainBox {
     public static class MyCustomQueryHandler extends QueryHandler<MyCustomQuery, MyCustomQueryResult> {
         @Override
         public QueryResponse<MyCustomQueryResult> retrieve(MyCustomQuery query) throws Exception {
-            if (!query.isSuccessful()) {
+            if ( ! query.isSuccessful()) {
                 throw new RuntimeException("I must failed!");
             }
             return QueryResponse.of(new MyCustomQueryResult());

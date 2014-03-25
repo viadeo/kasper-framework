@@ -673,12 +673,12 @@ public class PlatformBuilderUTest {
         final DomainDescriptorFactory domainDescriptorFactory = mock(DomainDescriptorFactory.class);
         when(domainDescriptorFactory.createFrom(any(DomainBundle.class))).thenReturn(
                 new DomainDescriptor(
-                        "FakeDomain",
-                        Domain.class,
-                        Lists.<QueryHandlerDescriptor>newArrayList(),
-                        Lists.<CommandHandlerDescriptor>newArrayList(),
-                        Lists.<RepositoryDescriptor>newArrayList(),
-                        Lists.<EventListenerDescriptor>newArrayList()
+                    "FakeDomain",
+                    Domain.class,
+                    Lists.<QueryHandlerDescriptor>newArrayList(),
+                    Lists.<CommandHandlerDescriptor>newArrayList(),
+                    Lists.<RepositoryDescriptor>newArrayList(),
+                    Lists.<EventListenerDescriptor>newArrayList()
                 )
         );
         return domainDescriptorFactory;

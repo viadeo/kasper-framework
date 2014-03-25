@@ -37,6 +37,8 @@ public class DiscoveryDomainHelper {
         return (COMP) constructor.newInstance(initargs);
     }
 
+    // ------------------------------------------------------------------------
+
     @SuppressWarnings("unchecked")
     public static <COMP> Collection<Class<COMP>> findComponents(final String basePackage,
                                                                 final Class<COMP> componentClazz)
@@ -56,8 +58,11 @@ public class DiscoveryDomainHelper {
         return componentClasses;
     }
 
+    // ------------------------------------------------------------------------
+
     public static Domain findCandidateDomain(final String basePackage) throws KasperException {
         try {
+
             final Collection<Class<Domain>> candidateDomains = findComponents(basePackage, Domain.class);
 
             if ( (null == candidateDomains) || (0 == candidateDomains.size()) ) {

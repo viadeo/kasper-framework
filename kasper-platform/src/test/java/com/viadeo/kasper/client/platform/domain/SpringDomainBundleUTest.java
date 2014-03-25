@@ -50,12 +50,12 @@ public class SpringDomainBundleUTest {
     @BeforeClass
     public static void setup() {
         platformBuilderContext = new Platform.BuilderContext(
-                mock(Config.class),
-                mock(KasperEventBus.class),
-                mock(CommandGateway.class),
-                mock(QueryGateway.class),
-                mock(MetricRegistry.class),
-                Maps.<Platform.ExtraComponentKey, Object>newHashMap()
+            mock(Config.class),
+            mock(KasperEventBus.class),
+            mock(CommandGateway.class),
+            mock(QueryGateway.class),
+            mock(MetricRegistry.class),
+            Maps.<Platform.ExtraComponentKey, Object>newHashMap()
         );
     }
 
@@ -63,8 +63,8 @@ public class SpringDomainBundleUTest {
     public void configure_shouldBeOk() {
         // Given
         final SpringDomainBundle springDomainBundle = new SpringDomainBundle(
-                new MyCustomDomainBox.MyCustomDomain(),
-                Lists.<Class>newArrayList()
+            new MyCustomDomainBox.MyCustomDomain(),
+            Lists.<Class>newArrayList()
         );
 
         // When
@@ -77,8 +77,8 @@ public class SpringDomainBundleUTest {
     public void configure_withConfiguration_shouldBeAccessibleThroughDomainContext() {
         // Given
         final SpringDomainBundle springDomainBundle = new SpringDomainBundle(
-                new MyCustomDomainBox.MyCustomDomain(),
-                Lists.<Class>newArrayList(FakeConfiguration.class)
+            new MyCustomDomainBox.MyCustomDomain(),
+            Lists.<Class>newArrayList(FakeConfiguration.class)
         );
 
         // When
@@ -97,9 +97,9 @@ public class SpringDomainBundleUTest {
         final String beanName = "hihihi";
         final MyCustomDomainBox.MyCustomEventListener expectedEventListener = new MyCustomDomainBox.MyCustomEventListener();
         final SpringDomainBundle springDomainBundle = new SpringDomainBundle(
-                new MyCustomDomainBox.MyCustomDomain(),
-                Lists.<Class>newArrayList(),
-                new SpringDomainBundle.BeanDescriptor(beanName, expectedEventListener)
+            new MyCustomDomainBox.MyCustomDomain(),
+            Lists.<Class>newArrayList(),
+            new SpringDomainBundle.BeanDescriptor(beanName, expectedEventListener)
         );
 
         // When
@@ -119,9 +119,9 @@ public class SpringDomainBundleUTest {
         // Given
         final DateFormatter dateFormatter = new DateFormatter();
         final SpringDomainBundle springDomainBundle = new SpringDomainBundle(
-                new MyCustomDomainBox.MyCustomDomain(),
-                Lists.<Class>newArrayList(),
-                new SpringDomainBundle.BeanDescriptor(DefaultFormatter.class, dateFormatter)
+            new MyCustomDomainBox.MyCustomDomain(),
+            Lists.<Class>newArrayList(),
+            new SpringDomainBundle.BeanDescriptor(DefaultFormatter.class, dateFormatter)
         );
 
         // When
@@ -143,8 +143,8 @@ public class SpringDomainBundleUTest {
     public void configure_withComponentsDefinedInTheBuilderContext_shouldBeAccessibleThroughDomainContext() {
         // Given
         final SpringDomainBundle springDomainBundle = new SpringDomainBundle(
-                new MyCustomDomainBox.MyCustomDomain(),
-                Lists.<Class>newArrayList()
+            new MyCustomDomainBox.MyCustomDomain(),
+            Lists.<Class>newArrayList()
         );
 
         final ExecutorService workers = Executors.newFixedThreadPool(2);
@@ -155,8 +155,8 @@ public class SpringDomainBundleUTest {
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
         final Platform.BuilderContext builderContext = new Platform.BuilderContext(
-                platformConfiguration,
-                extraComponents
+            platformConfiguration,
+            extraComponents
         );
 
         // When

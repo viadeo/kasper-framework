@@ -74,9 +74,9 @@ public class SpringDomainBundle extends DefaultDomainBundle {
                               final Class springConfigurations,
                               final BeanDescriptor... beans) {
         this(
-                checkNotNull(domain),
-                Lists.newArrayList(checkNotNull(springConfigurations)),
-                checkNotNull(beans)
+            checkNotNull(domain),
+            Lists.newArrayList(checkNotNull(springConfigurations)),
+            checkNotNull(beans)
         );
     }
 
@@ -84,12 +84,12 @@ public class SpringDomainBundle extends DefaultDomainBundle {
                               final List<Class> springConfigurations,
                               final BeanDescriptor... beans) {
         super(
-                checkNotNull(domain),
-                new DomainResolver().getLabel(domain.getClass())
+            checkNotNull(domain),
+            new DomainResolver().getLabel(domain.getClass())
         );
         this.applicationContext = initialize(
-                checkNotNull(springConfigurations),
-                checkNotNull(beans)
+            checkNotNull(springConfigurations),
+            checkNotNull(beans)
         );
 
     }

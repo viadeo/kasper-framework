@@ -138,9 +138,9 @@ public class KasperMetricsITest {
 
         // When
         final String name = KasperMetrics.name(
-                MetricNameStyle.DOMAIN_TYPE,
-                MyCustomDomainBox.MyCustomCommand.class,
-                "bip"
+            MetricNameStyle.DOMAIN_TYPE,
+            MyCustomDomainBox.MyCustomCommand.class,
+            "bip"
         );
 
         // Then
@@ -154,9 +154,9 @@ public class KasperMetricsITest {
 
         // When
         final String name = KasperMetrics.name(
-                MetricNameStyle.DOMAIN_TYPE_COMPONENT,
-                MyCustomDomainBox.MyCustomCommand.class,
-                "bip"
+            MetricNameStyle.DOMAIN_TYPE_COMPONENT,
+            MyCustomDomainBox.MyCustomCommand.class,
+            "bip"
         );
 
         // Then
@@ -291,4 +291,5 @@ public class KasperMetricsITest {
         // Then
         assertEquals("client.unknown.command.bip", name);
     }
+    
 }

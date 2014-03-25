@@ -201,11 +201,11 @@ public class KasperProcessorDownLatchUTest {
 
         public MockEventProcessor(final KasperProcessorDownLatch processorDownLatch, final long timeout) {
             super(
-                    mock(Executor.class),
-                    new KasperShutdownCallback(processorDownLatch, mock(EventProcessor.ShutdownCallback.class)),
-                    mock(ErrorHandler.class),
-                    mock(UnitOfWorkFactory.class),
-                    Lists.<EventListener>newArrayList()
+                mock(Executor.class),
+                new KasperShutdownCallback(processorDownLatch, mock(EventProcessor.ShutdownCallback.class)),
+                mock(ErrorHandler.class),
+                mock(UnitOfWorkFactory.class),
+                Lists.<EventListener>newArrayList()
             );
             this.timeout = timeout;
         }

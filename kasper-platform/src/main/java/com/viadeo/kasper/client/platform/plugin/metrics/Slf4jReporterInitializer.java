@@ -34,12 +34,12 @@ public class Slf4jReporterInitializer implements ReporterInitializer {
     public void initialize(final MetricRegistry metricRegistry) {
         if (logger.isTraceEnabled()) {
             final Slf4jReporter reporter = Slf4jReporter
-                    .forRegistry(KasperMetrics.getMetricRegistry())
-                    .outputTo(logger)
-                    .markWith(MarkerFactory.getMarker("TRACE"))
-                    .convertDurationsTo(TimeUnit.MILLISECONDS)
-                    .convertRatesTo(TimeUnit.SECONDS)
-                    .build();
+                .forRegistry(KasperMetrics.getMetricRegistry())
+                .outputTo(logger)
+                .markWith(MarkerFactory.getMarker("TRACE"))
+                .convertDurationsTo(TimeUnit.MILLISECONDS)
+                .convertRatesTo(TimeUnit.SECONDS)
+                .build();
 
             reporter.start(DEFAULT_METRICS_TIMEOUT_SECONDS, TimeUnit.SECONDS);
         }

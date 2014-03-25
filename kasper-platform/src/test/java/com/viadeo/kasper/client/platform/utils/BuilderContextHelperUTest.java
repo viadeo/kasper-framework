@@ -43,12 +43,12 @@ public class BuilderContextHelperUTest {
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
         final Platform.BuilderContext builderContext = new Platform.BuilderContext(
-                platformConfiguration.configuration(),
-                platformConfiguration.eventBus(),
-                platformConfiguration.commandGateway(),
-                platformConfiguration.queryGateway(),
-                platformConfiguration.metricRegistry(),
-                Maps.<Platform.ExtraComponentKey, Object>newHashMap()
+            platformConfiguration.configuration(),
+            platformConfiguration.eventBus(),
+            platformConfiguration.commandGateway(),
+            platformConfiguration.queryGateway(),
+            platformConfiguration.metricRegistry(),
+            Maps.<Platform.ExtraComponentKey, Object>newHashMap()
         );
 
         // When
@@ -75,12 +75,12 @@ public class BuilderContextHelperUTest {
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
         final Platform.BuilderContext builderContext = new Platform.BuilderContext(
-                platformConfiguration.configuration(),
-                platformConfiguration.eventBus(),
-                platformConfiguration.commandGateway(),
-                platformConfiguration.queryGateway(),
-                platformConfiguration.metricRegistry(),
-                extraComponents
+            platformConfiguration.configuration(),
+            platformConfiguration.eventBus(),
+            platformConfiguration.commandGateway(),
+            platformConfiguration.queryGateway(),
+            platformConfiguration.metricRegistry(),
+            extraComponents
         );
 
         // When
@@ -108,12 +108,12 @@ public class BuilderContextHelperUTest {
         final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
         final Platform.BuilderContext builderContext = new Platform.BuilderContext(
-                platformConfiguration.configuration(),
-                platformConfiguration.eventBus(),
-                platformConfiguration.commandGateway(),
-                platformConfiguration.queryGateway(),
-                platformConfiguration.metricRegistry(),
-                extraComponents
+            platformConfiguration.configuration(),
+            platformConfiguration.eventBus(),
+            platformConfiguration.commandGateway(),
+            platformConfiguration.queryGateway(),
+            platformConfiguration.metricRegistry(),
+            extraComponents
         );
 
         // When

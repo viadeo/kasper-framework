@@ -43,8 +43,8 @@ public class SpringDomainBundleITest {
         final SpyPlugin spy = new SpyPlugin();
 
         final SpringDomainBundle domainBundle = new SpringDomainBundle(
-                new MyCustomDomain(),
-                MyCustomDomainSpringConfiguration.class
+            new MyCustomDomain(),
+            MyCustomDomainSpringConfiguration.class
         );
 
         final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())

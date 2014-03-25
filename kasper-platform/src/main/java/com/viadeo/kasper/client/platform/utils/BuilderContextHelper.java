@@ -18,8 +18,7 @@ import static com.viadeo.kasper.client.platform.Platform.BuilderContext;
 
 public final class BuilderContextHelper {
 
-    private BuilderContextHelper() {
-    }
+    private BuilderContextHelper() { }
 
     public static ApplicationContext createApplicationContextFrom(final BuilderContext builderContext) {
         checkNotNull(builderContext);
@@ -27,11 +26,31 @@ public final class BuilderContextHelper {
         final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 
         final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
-        beanFactory.registerSingleton(builderContext.getConfiguration().getClass().getSimpleName(), builderContext.getConfiguration());
-        beanFactory.registerSingleton(builderContext.getEventBus().getClass().getSimpleName(), builderContext.getEventBus());
-        beanFactory.registerSingleton(builderContext.getCommandGateway().getClass().getSimpleName(), builderContext.getCommandGateway());
-        beanFactory.registerSingleton(builderContext.getQueryGateway().getClass().getSimpleName(), builderContext.getQueryGateway());
-        beanFactory.registerSingleton(builderContext.getMetricRegistry().getClass().getSimpleName(), builderContext.getMetricRegistry());
+
+        beanFactory.registerSingleton(
+                builderContext.getConfiguration().getClass().getSimpleName(),
+                builderContext.getConfiguration()
+        );
+
+        beanFactory.registerSingleton(
+                builderContext.getEventBus().getClass().getSimpleName(),
+                builderContext.getEventBus()
+        );
+
+        beanFactory.registerSingleton(
+                builderContext.getCommandGateway().getClass().getSimpleName(),
+                builderContext.getCommandGateway()
+        );
+
+        beanFactory.registerSingleton(
+                builderContext.getQueryGateway().getClass().getSimpleName(),
+                builderContext.getQueryGateway()
+        );
+
+        beanFactory.registerSingleton(
+                builderContext.getMetricRegistry().getClass().getSimpleName(),
+                builderContext.getMetricRegistry()
+        );
 
         for (final Map.Entry<Platform.ExtraComponentKey, Object> entry : builderContext.getExtraComponents().entrySet()) {
             beanFactory.registerSingleton(entry.getKey().getName(), entry.getValue());
@@ -41,4 +60,5 @@ public final class BuilderContextHelper {
 
         return applicationContext;
     }
+
 }

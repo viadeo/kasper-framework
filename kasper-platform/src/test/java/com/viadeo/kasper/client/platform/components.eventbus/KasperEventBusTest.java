@@ -31,7 +31,9 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus.Policy;
-import static org.junit.Assert.assertEquals;
+import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNotNull;
+import static junit.framework.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
 
 public class KasperEventBusTest {
@@ -72,9 +74,9 @@ public class KasperEventBusTest {
         // Then
         Mockito.verify(eventBus).publishToSuper(captor.capture());
         final GenericEventMessage<Event> value = captor.getValue();
-        Assert.assertEquals(dummyEvent, value.getPayload());
-        Assert.assertTrue(value.getMetaData().containsKey(Context.METANAME));
-        Assert.assertNotNull(((AbstractContext) value.getMetaData().get(Context.METANAME)).getKasperCorrelationId());
+        assertEquals(dummyEvent, value.getPayload());
+        assertTrue(value.getMetaData().containsKey(Context.METANAME));
+        assertNotNull(((AbstractContext) value.getMetaData().get(Context.METANAME)).getKasperCorrelationId());
     }
 
     // ------------------------------------------------------------------------
