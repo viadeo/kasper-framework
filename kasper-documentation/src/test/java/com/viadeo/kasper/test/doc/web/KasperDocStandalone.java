@@ -23,6 +23,7 @@ import com.viadeo.kasper.test.root.events.MemberCreatedEvent;
 import com.viadeo.kasper.test.root.handlers.AddConnectionToMemberHandler;
 import com.viadeo.kasper.test.root.listeners.MemberCreatedEventListener;
 import com.viadeo.kasper.test.root.queries.GetAllMemberQueryHandler;
+import com.viadeo.kasper.test.root.queries.GetMemberQueryHandler;
 import com.viadeo.kasper.test.root.queries.GetMembersQueryHandler;
 import com.viadeo.kasper.test.root.repositories.MemberConnectionsRepository;
 import com.viadeo.kasper.test.root.repositories.MemberRepository;
@@ -47,7 +48,11 @@ public class KasperDocStandalone {
                         new QueryHandlerDescriptor(
                                 GetAllMemberQueryHandler.class,
                                 GetAllMemberQueryHandler.GetAllMemberQuery.class,
-                                GetAllMemberQueryHandler.AllMemberResult.class)
+                                GetAllMemberQueryHandler.AllMemberResult.class),
+                        new QueryHandlerDescriptor(
+                                GetMemberQueryHandler.class,
+                                GetMemberQueryHandler.GetMemberQuery.class,
+                                GetAllMemberQueryHandler.MemberResult.class)
                 ),
                 ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(
                         AddConnectionToMemberHandler.class,

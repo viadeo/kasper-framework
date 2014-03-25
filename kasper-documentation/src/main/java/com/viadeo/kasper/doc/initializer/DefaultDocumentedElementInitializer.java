@@ -102,10 +102,17 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
 
             if(null != elementClass) {
                 final Optional<DocumentedQueryResult> documentedQuery = documentedDomain.getQueryResult(elementClass);
+                final DocumentedQueryResult element;
 
                 if(documentedQuery.isPresent()){
-                    queryResult.setElement(documentedQuery.get());
+                    element = documentedQuery.get();
+                } else {
+                    element = new DocumentedQueryResult(documentedDomain, null, elementClass);
+                    visit(element);
+                    documentedDomain.addQueryResult(element);
                 }
+
+                queryResult.setElement(element);
             }
         }
     }

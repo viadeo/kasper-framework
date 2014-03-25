@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.doc.element.DocumentedCommandHandler.DocumentedCommand;
 import static com.viadeo.kasper.doc.element.DocumentedEventListener.DocumentedEvent;
 import static com.viadeo.kasper.doc.element.DocumentedQueryHandler.DocumentedQuery;
@@ -62,7 +63,7 @@ public class DocumentedDomain extends AbstractElement {
             queries.add(documentedQueryHandler.getQuery().getFullDocumentedElement());
 
             final LightDocumentedElement<DocumentedQueryResult> queryResult = documentedQueryHandler.getQueryResult();
-            queryResults.put(queryResult.getReferenceClass(), queryResult.getFullDocumentedElement());
+            addQueryResult(queryResult.getFullDocumentedElement());
         }
 
         for (final CommandHandlerDescriptor descriptor : domainDescriptor.getCommandHandlerDescriptors()) {
@@ -162,6 +163,11 @@ public class DocumentedDomain extends AbstractElement {
     @JsonIgnore
     public Optional<DocumentedQueryResult> getQueryResult(Class queryResultClass) {
         return Optional.fromNullable(queryResults.get(queryResultClass));
+    }
+
+    public void addQueryResult(DocumentedQueryResult queryResult) {
+        checkNotNull(queryResult);
+        queryResults.put(queryResult.getReferenceClass(), queryResult);
     }
 
     public Collection<DocumentedCommand> getCommands() {

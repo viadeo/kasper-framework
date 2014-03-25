@@ -56,7 +56,9 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
                                      final Class queryResultClass) {
             super(domain, DocumentedElementType.QUERY_RESULT, queryResultClass);
 
-            HANDLERS_BY_QUERY_RESULTS.add(queryResultClass, queryHandler.getLightDocumentedElement());
+            if(null != queryHandler) {
+                HANDLERS_BY_QUERY_RESULTS.add(queryResultClass, queryHandler.getLightDocumentedElement());
+            }
         }
 
         public List<LightDocumentedElement> getQueryHandlers() {
