@@ -2,6 +2,7 @@
 
 ### Snapshot 0.6-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6-SNAPSHOT~~))###
 * [Pull 191](https://github.com/viadeo/kasper-framework/pull/191) enrich MDC, normalize hierarcy of default security strategy
+* [Pull 131](https://github.com/viadeo/kasper-framework/pull/131) Use `XKasperAlias` on input object instead of the related handler.
 
 
 ### Version 0.5.1 (03/20/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.5.1~~))###
