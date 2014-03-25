@@ -17,7 +17,6 @@ import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.EventMessage;
-import junit.framework.Assert;
 import org.axonframework.domain.GenericEventMessage;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,9 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus.Policy;
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static junit.framework.Assert.assertTrue;
+import static junit.framework.Assert.*;
 import static org.mockito.Mockito.spy;
 
 public class KasperEventBusTest {

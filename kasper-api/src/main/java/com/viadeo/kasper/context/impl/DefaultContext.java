@@ -224,8 +224,8 @@ public class DefaultContext extends AbstractContext {
     }
 
     @Override
-    public Map<String, String> asMap(final Map<String, String> retMap) {
-        super.asMap(retMap);
+    public Map<String, String> asMap(final Map<String, String> origMap) {
+        final Map<String, String> retMap = super.asMap(origMap);
 
         retMap.put(UID_SHORTNAME, safeStringObject(this.userId));
         retMap.put(ULANG_SHORTNAME, safeStringObject(this.userLang));

@@ -8,6 +8,7 @@ package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.ClientResponse;
+import com.viadeo.kasper.annotation.XKasperAlias;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
@@ -28,7 +29,6 @@ import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.annotation.XKasperAlias;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;

@@ -22,6 +22,7 @@ import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptorFactory;
 import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
@@ -86,6 +87,7 @@ public class KasperQueryGateway implements QueryGateway {
         final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerRequestsTimeName).time();
 
         /* Sets current thread context */
+        MDC.setContextMap(context.asMap(MDC.getCopyOfContextMap()));
         CurrentContext.set(context);
 
         // Search for associated handler --------------------------------------
