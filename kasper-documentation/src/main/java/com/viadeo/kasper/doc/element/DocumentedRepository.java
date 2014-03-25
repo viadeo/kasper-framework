@@ -22,7 +22,9 @@ public class DocumentedRepository extends AbstractDomainElement {
 
     private final DocumentedAggregate documentedAggregate;
 
-     public abstract static class DocumentedAggregate extends AbstractPropertyDomainElement {
+    // ------------------------------------------------------------------------
+
+    public abstract static class DocumentedAggregate extends AbstractPropertyDomainElement {
 
         private final Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents;
 
@@ -45,6 +47,8 @@ public class DocumentedRepository extends AbstractDomainElement {
             }
         }
     }
+
+    // ------------------------------------------------------------------------
 
     public static class DocumentedConcept extends DocumentedAggregate {
 
@@ -107,6 +111,8 @@ public class DocumentedRepository extends AbstractDomainElement {
             visitor.visit(this);
         }
     }
+
+    // ------------------------------------------------------------------------
 
     public static class DocumentedRelation extends DocumentedAggregate {
 
@@ -184,9 +190,9 @@ public class DocumentedRepository extends AbstractDomainElement {
 
     public DocumentedRepository(final DocumentedDomain documentedDomain, final RepositoryDescriptor repositoryDescriptor) {
         super(
-                checkNotNull(documentedDomain),
-                DocumentedElementType.REPOSITORY,
-                checkNotNull(repositoryDescriptor).getReferenceClass()
+            checkNotNull(documentedDomain),
+            DocumentedElementType.REPOSITORY,
+            checkNotNull(repositoryDescriptor).getReferenceClass()
         );
 
         final AggregateDescriptor aggregateDescriptor = repositoryDescriptor.getAggregateDescriptor();

@@ -15,7 +15,11 @@ import javax.ws.rs.ext.Provider;
 
 @Provider
 public class ObjectMapperKasperResolver implements ContextResolver<ObjectMapper> {
+
     private final ObjectMapper mapper;
+
+    // ------------------------------------------------------------------------
+
     public ObjectMapperKasperResolver() {
         mapper = new ObjectMapper();
         mapper.configure(SerializationFeature.WRITE_EMPTY_JSON_ARRAYS, true);
@@ -24,7 +28,9 @@ public class ObjectMapperKasperResolver implements ContextResolver<ObjectMapper>
         mapper.configure(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS, true);
         mapper.configure(MapperFeature.USE_ANNOTATIONS, true);
     }
-    
+
+    // ------------------------------------------------------------------------
+
     @Override
     public ObjectMapper getContext(Class type) {
         return mapper;

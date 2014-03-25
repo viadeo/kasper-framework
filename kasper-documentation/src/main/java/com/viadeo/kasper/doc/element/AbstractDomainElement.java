@@ -12,10 +12,14 @@ public abstract class AbstractDomainElement extends AbstractElement {
 
     private final DocumentedDomain domain;
 
+    // ------------------------------------------------------------------------
+
     public AbstractDomainElement(final DocumentedDomain domain, final DocumentedElementType type, final Class referenceClass) {
         super(checkNotNull(type), checkNotNull(referenceClass));
         this.domain = checkNotNull(domain);
     }
+
+    // ------------------------------------------------------------------------
 
     public LightDocumentedElement<DocumentedDomain> getDomain() {
         return domain.getLightDocumentedElement();

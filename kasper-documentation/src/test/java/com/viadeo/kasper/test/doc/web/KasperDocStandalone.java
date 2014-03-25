@@ -36,31 +36,31 @@ public class KasperDocStandalone {
         final String baseUri = "http://localhost:9988/";
 
         final DomainDescriptor domainDescriptor = new DomainDescriptor(
-                Facebook.NAME,
-                Facebook.class,
-                ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(
-                        GetMembersQueryHandler.class,
-                        GetMembersQueryHandler.GetMembersQuery.class,
-                        GetMembersQueryHandler.MembersResult.class)
+            Facebook.NAME,
+            Facebook.class,
+            ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(
+                GetMembersQueryHandler.class,
+                GetMembersQueryHandler.GetMembersQuery.class,
+                GetMembersQueryHandler.MembersResult.class)
+            ),
+            ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(
+                AddConnectionToMemberHandler.class,
+                AddConnectionToMemberCommand.class)
+            ),
+            ImmutableList.<RepositoryDescriptor>of(
+                new RepositoryDescriptor(
+                    MemberRepository.class,
+                    DomainDescriptorFactory.toAggregateDescriptor(Member.class)
                 ),
-                ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(
-                        AddConnectionToMemberHandler.class,
-                        AddConnectionToMemberCommand.class)
-                ),
-                ImmutableList.<RepositoryDescriptor>of(
-                    new RepositoryDescriptor(
-                            MemberRepository.class,
-                            DomainDescriptorFactory.toAggregateDescriptor(Member.class)
-                    ),
-                    new RepositoryDescriptor(
-                            MemberConnectionsRepository.class,
-                            DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class)
-                    )
-                ),
-                ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(
-                        MemberCreatedEventListener.class,
-                        MemberCreatedEvent.class)
+                new RepositoryDescriptor(
+                    MemberConnectionsRepository.class,
+                    DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class)
                 )
+            ),
+            ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(
+                MemberCreatedEventListener.class,
+                MemberCreatedEvent.class)
+            )
         );
 
         final DocumentedPlatform documentedPlatform = new DocumentedPlatform();

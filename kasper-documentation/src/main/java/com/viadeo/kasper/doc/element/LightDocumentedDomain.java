@@ -26,12 +26,13 @@ public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDoma
     private final Collection<LightDocumentedElement> relations;
     private final Collection<LightDocumentedElement> repositories;
 
-    private static final Function<AbstractElement, LightDocumentedElement> LIGHTER = new Function<AbstractElement, LightDocumentedElement>() {
-        @Override
-        public LightDocumentedElement apply(AbstractElement input) {
-            return checkNotNull(input).getLightDocumentedElement();
-        }
-    };
+    private static final Function<AbstractElement, LightDocumentedElement> LIGHTER =
+            new Function<AbstractElement, LightDocumentedElement>() {
+                @Override
+                public LightDocumentedElement apply(final AbstractElement input) {
+                    return checkNotNull(input).getLightDocumentedElement();
+                }
+            };
 
     // ------------------------------------------------------------------------
 

@@ -29,6 +29,8 @@ public abstract class AbstractElement implements WithType {
         this.label = referenceClass.getSimpleName();
     }
 
+    // ------------------------------------------------------------------------
+
     public void setDescription(final String description) {
         this.description = description;
     }

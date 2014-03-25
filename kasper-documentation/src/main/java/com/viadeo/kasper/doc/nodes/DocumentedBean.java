@@ -41,7 +41,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 		for (final Field field : properties) {
 			field.setAccessible(true);
 
-			if (!Modifier.isTransient(field.getModifiers()) && !Modifier.isStatic(field.getModifiers())) {
+			if ( (! Modifier.isTransient(field.getModifiers())) && (! Modifier.isStatic(field.getModifiers()))) {
 				final String name = field.getName();
 
                 if (null != field.getAnnotation(Transient.class)) {
@@ -67,9 +67,11 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 							ReflectionGenericsResolver.getParameterTypeFromClass(
 									field, componentClazz, Collection.class, 0);
 					
-					if (!optType.isPresent()) {
-						LOGGER.warn(String.format("Unable to find collection enclosed type for field %s in class %s",
-                                name, componentClazz.getSimpleName()));
+					if ( ! optType.isPresent()) {
+						LOGGER.warn(String.format(
+                                "Unable to find collection enclosed type for field %s in class %s",
+                                name, componentClazz.getSimpleName())
+                        );
 						type = "unknown";
 					} else {
 						type = optType.get().getSimpleName();
@@ -81,11 +83,14 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 					@SuppressWarnings("unchecked")
 					final Optional<Class> optType = (Optional<Class>)
 							ReflectionGenericsResolver.getParameterTypeFromClass(
-									field, componentClazz, Map.class, 1);
+									field, componentClazz, Map.class, 1
+                            );
 					
  					if (!optType.isPresent()) {
-						LOGGER.warn(String.format("Unable to find map enclosed type for field %s in class %s",
-								name, componentClazz.getSimpleName()));
+						LOGGER.warn(String.format(
+                                "Unable to find map enclosed type for field %s in class %s",
+								name, componentClazz.getSimpleName()
+                        ));
 						type = "unknown";
 					} else {
 						type = optType.get().getSimpleName();
@@ -97,7 +102,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 					isList = false;
 				}
 
-                if (!name.startsWith("this$")) {
+                if ( ! name.startsWith("this$")) {
                     final DocumentedProperty documentedProperty = new DocumentedProperty(name, type, isList);
                     validationProcessor.process(field, documentedProperty);
                     this.add(documentedProperty);
@@ -113,7 +118,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         final Class typeClass = extractClassFromType(type);
         Collections.addAll(fields, typeClass.getDeclaredFields());
 
-	    if (typeClass.getSuperclass() != null) {
+	    if (null != typeClass.getSuperclass()) {
 	        getAllFields(fields, typeClass.getGenericSuperclass());
 	    }
 

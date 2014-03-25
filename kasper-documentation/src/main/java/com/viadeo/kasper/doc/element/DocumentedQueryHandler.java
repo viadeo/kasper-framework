@@ -82,8 +82,18 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
                 DocumentedElementType.QUERY_HANDLER,
                 queryHandlerDescriptor.getReferenceClass()
         );
-        this.documentedQuery = new DocumentedQuery(documentedDomain, this, queryHandlerDescriptor.getQueryClass());
-        this.documentedQueryResult = new DocumentedQueryResult(documentedDomain, this, queryHandlerDescriptor.getQueryResultClass());
+
+        this.documentedQuery = new DocumentedQuery(
+                documentedDomain,
+                this,
+                queryHandlerDescriptor.getQueryClass()
+        );
+
+        this.documentedQueryResult = new DocumentedQueryResult(
+                documentedDomain,
+                this,
+                queryHandlerDescriptor.getQueryResultClass()
+        );
     }
 
     // ------------------------------------------------------------------------

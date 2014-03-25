@@ -109,6 +109,7 @@ public class KasperDocResource {
     public Object getEntity(@PathParam("domainName") final String domainName,
                             @PathParam("type") final String type,
                             @PathParam("entityName") final String entityName) {
+
         if (null == domainName) {
             return new RetUnexistent(DocumentedElementType.DOMAIN.getType(), DEFAULT_UNSPECIFIED);
         }

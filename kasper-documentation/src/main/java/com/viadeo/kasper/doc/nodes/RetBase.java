@@ -59,7 +59,9 @@ public abstract class RetBase implements Serializable {
 		final ByteArrayOutputStream os = new ByteArrayOutputStream();
 
 		try {
+
 			mapper.writeValue(os, this);
+
 		} catch (final JsonGenerationException e) {
             LOGGER.error("", e);
 			return "";
