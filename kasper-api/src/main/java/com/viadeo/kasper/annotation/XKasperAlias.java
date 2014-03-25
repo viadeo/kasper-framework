@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.exposition.alias;
+package com.viadeo.kasper.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

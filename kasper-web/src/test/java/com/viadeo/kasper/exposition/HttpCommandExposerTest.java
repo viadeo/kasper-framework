@@ -26,7 +26,7 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.exposition.alias.XKasperAlias;
+import com.viadeo.kasper.annotation.XKasperAlias;
 import lombok.Data;
 import org.junit.Test;
 
@@ -116,12 +116,12 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
     @XKasperCommandHandler(domain = AccountDomain.class)
     public static class NeedValidationCommandHandler extends CommandHandler<NeedValidationCommand> { }
 
+    @XKasperAlias(values = {NEED_VALIDATION_2_ALIAS})
     public static class NeedValidationWithAlias implements Command {
         private static final long serialVersionUID = -8083928873466120009L;
     }
 
     @XKasperCommandHandler(domain = AccountDomain.class)
-    @XKasperAlias(values = {NEED_VALIDATION_2_ALIAS})
     public static class NeedValidationWithAliasCommandHandler extends CommandHandler<NeedValidationWithAlias> {
 
         @Override
