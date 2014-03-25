@@ -291,5 +291,5 @@ public class KasperMetricsITest {
         // Then
         assertEquals("client.unknown.command.bip", name);
     }
-    
+
 }
