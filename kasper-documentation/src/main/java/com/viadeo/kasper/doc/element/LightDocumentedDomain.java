@@ -100,4 +100,8 @@ public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDoma
         return documentedElement.getLabel();
     }
 
+    public String getOwner() {
+        return documentedElement.getOwner();
+    }
+
 }

@@ -52,6 +52,7 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
         domain.setPrefix(resolver.getPrefix(referenceClass));
         domain.setLabel(resolver.getDomainLabel(referenceClass));
         domain.setDescription(resolver.getDescription(referenceClass));
+        domain.setOwner(resolver.getDomainOwner(referenceClass));
 
         final Class parentClass = domain.getReferenceClass().getSuperclass();
         final Optional<DocumentedDomain> parentDomain = documentedPlatform.getDomain(parentClass);

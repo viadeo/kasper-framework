@@ -137,4 +137,17 @@ public class DomainResolver implements Resolver<Domain> {
         cacheDomains.clear();
     }
 
+    public String getDomainOwner(Class<? extends Domain> clazz) {
+        final String owner;
+
+        final XKasperDomain domainAnnotation = checkNotNull(clazz).getAnnotation(XKasperDomain.class);
+
+        if ((null != domainAnnotation) && (!domainAnnotation.owner().isEmpty())) {
+            owner = domainAnnotation.owner();
+        } else {
+            owner = "unknown";
+        }
+
+        return owner;
+    }
 }

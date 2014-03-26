@@ -23,6 +23,15 @@
 
 	<a href="../kasper/doc{{node.url}}" target="_blank">[json]</a><h1>{{node.label}}</h1>
 	<small>{{node.description}}</small>
+	{{#if node.owner}}
+	<hr/>
+    <div>
+        Owner :
+        {{#if node.owner}}
+        <a href="mailto:{{node.owner}}">{{node.owner}}</a>
+        {{/if}}
+    </div>
+	{{/if}}
 </div>
 
 {{#if node.properties}}
