@@ -46,6 +46,10 @@ public class DomainResolver implements Resolver<Domain> {
             domainName = domainAnnotation.label().replaceAll(" ", "");
         }
 
+        if (null == domainName) {
+            domainName = clazz.getSimpleName().replace("Domain", "");
+        }
+
         domainName = domainName.replaceAll(" ", "");
 
         cacheDomains.put(clazz, domainName);
@@ -138,7 +142,7 @@ public class DomainResolver implements Resolver<Domain> {
 
         final XKasperDomain domainAnnotation = checkNotNull(clazz).getAnnotation(XKasperDomain.class);
 
-        if ((null != domainAnnotation) && ( ! domainAnnotation.owner().isEmpty())) {
+        if ((null != domainAnnotation) && (!domainAnnotation.owner().isEmpty())) {
             owner = domainAnnotation.owner();
         } else {
             owner = "unknown";

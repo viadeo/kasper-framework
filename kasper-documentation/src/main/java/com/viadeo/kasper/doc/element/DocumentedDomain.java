@@ -213,5 +213,4 @@ public class DocumentedDomain extends AbstractElement {
     public void setOwner(String owner) {
         this.owner = owner;
     }
-
 }
