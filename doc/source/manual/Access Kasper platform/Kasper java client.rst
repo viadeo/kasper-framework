@@ -11,7 +11,7 @@ asynchronous calls and more.
 
 They share some common code in order to ensure that the way in which the communication is done is symmetric
 (ex: what can be serialized can also be deserialized). For example all the databinding part for query is
-shared between kasper-client and kasper-web.
+shared between kasper-client and kasper-exposition.
 
 .. seealso:: 
    
