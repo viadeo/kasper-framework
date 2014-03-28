@@ -13,6 +13,8 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.exposition.http.HttpExposerError;
+import com.viadeo.kasper.exposition.http.HttpQueryExposer;
 import org.junit.Test;
 
 import javax.servlet.ServletConfig;

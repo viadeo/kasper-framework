@@ -12,6 +12,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.exposition.http.HttpMetricsExposerPlugin;
 import org.apache.commons.io.IOUtils;
 import org.junit.Test;
 

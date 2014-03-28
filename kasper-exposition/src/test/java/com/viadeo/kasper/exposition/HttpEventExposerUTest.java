@@ -14,6 +14,7 @@ import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.QueryEventListener;
+import com.viadeo.kasper.exposition.http.HttpEventExposer;
 import org.junit.Test;
 
 import javax.servlet.ServletConfig;

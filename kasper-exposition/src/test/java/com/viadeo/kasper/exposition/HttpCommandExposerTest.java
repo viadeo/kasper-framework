@@ -27,6 +27,7 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.exposition.http.HttpCommandExposerPlugin;
 import lombok.Data;
 import org.junit.Test;
 

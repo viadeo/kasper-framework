@@ -12,6 +12,8 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.exposition.http.HttpCommandExposer;
+import com.viadeo.kasper.exposition.http.HttpExposerError;
 import org.junit.Test;
 
 import javax.servlet.ServletConfig;

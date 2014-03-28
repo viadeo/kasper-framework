@@ -21,6 +21,7 @@ import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.exposition.http.HttpQueryExposerPlugin;
 import org.junit.Test;
 
 import java.util.Locale;
