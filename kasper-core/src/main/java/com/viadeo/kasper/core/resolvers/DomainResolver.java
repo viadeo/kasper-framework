@@ -7,10 +7,14 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.annotation.XKasperAlias;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
+import com.viadeo.kasper.security.annotation.XKasperPublic;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -149,5 +153,32 @@ public class DomainResolver implements Resolver<Domain> {
         }
 
         return owner;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public boolean isPublic(final Class<? extends Domain> clazz) {
+        final XKasperPublic annotation = checkNotNull(clazz).getAnnotation(XKasperPublic.class);
+        return null != annotation;
+    }
+
+    @Override
+    public boolean isDeprecated(final Class<? extends Domain> clazz) {
+        final Deprecated annotation = checkNotNull(clazz).getAnnotation(Deprecated.class);
+        return null != annotation;
+    }
+
+    @Override
+    public Optional<List<String>> getAliases(final Class<? extends Domain> clazz) {
+        final XKasperAlias annotation = checkNotNull(clazz).getAnnotation(XKasperAlias.class);
+        final List<String> aliases;
+
+        if(null != annotation){
+            aliases = Lists.newArrayList(annotation.values());
+        }else{
+            aliases = null;
+        }
+        return Optional.fromNullable(aliases);
     }
 }
