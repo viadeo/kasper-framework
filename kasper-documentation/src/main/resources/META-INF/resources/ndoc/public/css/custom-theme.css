@@ -1,0 +1,163 @@
+@font-face{
+    font-family:'WebSymbolsRegular';
+    src:url('../fonts/WebSymbols-Regular.eot');
+    src:url('../fonts/WebSymbols-Regular.eot?#iefix') format('embedded-opentype'),
+        url('../fonts/WebSymbols-Regular.svg#squarespace-ui-font') format('svg'),
+        url('../fonts/WebSymbols-Regular.woff') format('woff'),
+        url('../fonts/WebSymbols-Regular.ttf') format('truetype');
+    font-weight:normal;
+    font-style:normal;
+}
+
+@font-face{
+    font-family:'CircleCaps';
+    src:url('../fonts/CircleCaps.eot');
+    src:url('../fonts/CircleCaps.eot?#iefix') format('embedded-opentype'),
+    url('../fonts/CircleCaps.svg#squarespace-ui-font') format('svg'),
+    url('../fonts/CircleCaps.woff') format('woff'),
+    url('../fonts/CircleCaps.ttf') format('truetype');
+    font-weight:normal;
+    font-style:normal;
+}
+
+footer {
+    padding-top: 20px;
+    border: 1px solid transparent;
+}
+
+h3 small {
+    font-size: 10px;
+}
+
+h3 small span.glyphicon:before {
+    margin-right: 2px;
+}
+
+#search-container {
+    margin: 8px 0;
+}
+
+.ui-autocomplete {
+    max-height: 100px;
+    overflow-y: auto;
+    /* prevent horizontal scrollbar */
+    overflow-x: hidden;
+  }
+  
+/* IE 6 doesn't support max-height
+* we use height instead, but this forces the menu to always be this tall
+*/
+* html .ui-autocomplete {
+height: 100px;
+}
+
+.nav a {
+    outline: none;
+}
+
+.glyphicon:before {
+    margin-right: 10px;
+}
+
+.main-container {
+    margin-top: 70px;
+}
+
+.clear {
+    clear: both;
+    height: 0; overflow: hidden;
+}
+
+#brand {
+    float: left;
+    display: block;
+
+    color: black;
+    background: transparent url("../assets/kasper-logo.gif") no-repeat left center;
+    background-size: auto 40px;
+
+    padding-left: 100px;
+    vertical-align: middle;
+    text-align: left;
+    font-weight: bolder;
+
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+h2.panel-heading, h3.panel-heading {
+    margin: 0;
+}
+
+h2.block-content {
+    color: black;
+    /* background-color: rgb(160, 160, 160); */
+    background-color: #e6e6e6;   
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    margin: 0;
+    margin-top: 1px;
+    margin-bottom: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+}
+
+h3.block-content {
+    color: black;
+    background-color: #e6e6e6;   
+    text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
+    margin: 1px 0;
+
+}
+
+.panel-body dl {
+    border-top: 1px solid #e6e6e6;
+    padding-top: 4px;
+    padding-bottom: 4px;
+    margin: 0;
+
+}
+
+.panel-body dt {
+    float: left;
+    text-align: left; 
+}
+
+/** BOX TEXT **/
+
+.box {
+    position: relative;
+    display: block;
+    height: 50px;
+    overflow: hidden;
+}
+.box .text {
+    overflow: hidden;
+}
+
+.box .text:after {
+    content: ' ';
+    position: absolute;
+    display: block;
+    width: 100%;
+    height: 10px;
+    bottom: 0;
+    left: 0;
+    background: white;
+}
+
+.box .text:before {
+    content: '...';
+    text-align: right;
+    position: absolute;
+    display: block;
+    width: 40px;
+    height: 20px;
+    bottom: 10px;
+    right: 0px;
+    background: -moz-linear-gradient(left,  rgba(255,255,255,0) 0%, rgba(255,255,255,1) 38%, rgba(255,255,255,1) 99%);
+    background: -webkit-gradient(linear, left top, right top, color-stop(0%,rgba(255,255,255,0)), color-stop(38%,rgba(255,255,255,1)), color-stop(99%,rgba(255,255,255,1)));
+    background: -webkit-linear-gradient(left,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 38%,rgba(255,255,255,1) 99%);
+    background: -o-linear-gradient(left,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 38%,rgba(255,255,255,1) 99%);
+    background: -ms-linear-gradient(left,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 38%,rgba(255,255,255,1) 99%);
+    background: linear-gradient(to right,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 38%,rgba(255,255,255,1) 99%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00e0e0e0', endColorstr='#e0e0e0',GradientType=1 );
+}

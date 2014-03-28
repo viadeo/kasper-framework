@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Kasper Auto Documentation</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="shortcut icon" href="public/assets/ico/favicon.ico">
+    <!-- Bootstrap core CSS -->
+    <link href="public/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="public/css/custom-theme.css" rel="stylesheet">
+    <!-- JQuery UI -->
+    <link href="public/css/jquery-ui-1.10.4.custom.min.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="app/js/handlebars.js"></script>
+    <script src="app/js/jquery.searchable.js"></script>
+    <script src="app/js/jquery-ui-1.10.4.custom.min.js"></script>
+    <script>
+      $.widget( "custom.catcomplete", $.ui.autocomplete, {
+        _renderMenu: function( ul, items ) {
+          var that = this,
+            currentCategory = "";
+          $.each( items, function( index, item ) {
+            if ( item.category != currentCategory ) {
+              ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
+              currentCategory = item.category;
+            }
+            that._renderItemData( ul, item );
+          });
+        }
+      });
+    </script>
+    <script>
+
+        var DOMAIN_TEMPLATE_KEY = "domain-template-key";
+
+        var cache_templates = {};
+        var nodes = {};
+
+        /* Search */
+        function initializeHomeSearch() {
+          console.log("initialize home search!");
+
+          $( '#searchable-domain-box' ).searchable({
+              searchField: '#search-domain-box',
+              selector: '.domain-box',
+              childSelector: '.domain-box-selector',
+              show: function( elem ) {
+                  elem.slideDown(100);
+              },
+              hide: function( elem ) {
+                  elem.slideUp( 100 );
+              }
+          });
+        }
+
+        function initializeGlobalSearch(data) {
+          console.log("initialize global search!");
+
+          $( "#search" ).autocomplete({
+              source: data,
+              select: function( event, ui ) {
+                $("#search").val(ui.item.label);
+                $("#search_type").val(ui.item.type);
+                return false;
+              }
+            }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+              var type = '';
+              if(item.type == "domain") {
+                type = '<span class="glyphicon glyphicon-unchecked"></span>';
+              }
+              return $( "<li>" )
+                .append( '<a>' + type + item.label + '/' + item.type + '</a>' )
+                .appendTo( ul );
+            };
+
+            $("#search").keyup(function (e) {
+                if (e.keyCode == 13) {
+                    // Do something
+                    var type = $("#search_type").get(0).value;
+
+                    console.log("search", type, this.value);
+
+                    if(type == "domain") {
+                      go_dyn(cache_templates[DOMAIN_TEMPLATE_KEY], nodes[this.value]);
+                    }
+                }
+            });
+
+        }
+        /* Search End */
+
+        /* Nav */
+        function go_home() {
+          console.log("go home!");
+
+          $("#contents > div").hide();
+          $(".nav > li").removeClass("active")
+          $("#contents_home").show();
+          $("#home").parent().addClass("active")
+        }
+
+        function go_about() {
+          console.log("go about!");
+
+          $("#contents > div").hide();
+          $(".nav > li").removeClass("active")
+          $("#contents_about").fadeIn("slow");
+          $("#about").parent().addClass("active")
+        }
+
+        function go_contact() {
+          console.log("go contact!");
+
+          $("#contents > div").hide();
+          $(".nav > li").removeClass("active")
+          $("#contents_contact").fadeIn("slow");
+          $("#contact").parent().addClass("active")
+        }
+
+        function go_dyn(template, node) {
+          console.log("go dyn", node);
+
+          $("#contents_dyn").empty();
+          $(".nav > li").removeClass("active")
+
+          $("#contents_dyn").append(template({ node: node }));  
+          $("#contents > div").hide();
+          $("#contents_dyn").fadeIn("slow");
+          
+          $("#home-from-" + node.name).click(function() {
+            go_home();
+          })
+        }
+
+        function initialize_nav() {
+          console.log("initialize navigation!");
+
+          $("#contents > div").hide();
+          $("#contents_home").show();
+
+          $('#home, .home, #brand').click(function() {
+            go_home();
+          })
+
+          $('#about').click(function() {
+            go_about();
+          })
+
+          $('#contact').click(function() {
+            go_contact();
+          })
+        }
+        /* Nav End */
+
+        /* Data */
+        
+
+        $(document).ready(function() {
+            
+            initialize_nav();
+
+            $.get("http://localhost:9988/kasper/doc/domains")
+              .done(function(data) {
+
+                if (data.list) {
+                  var domainData = [];
+
+                  /* Populate the home page */
+                  $.each(data.list, function(n, domain) {
+
+                    /* compute data */
+                    var raw = {
+                      "type":"domain",
+                      "label":domain.name
+                    };
+                    domainData.push(raw);
+                    //domainData.concat(commandData).concat(queryData).concat(eventData)
+
+                    /* reference node*/
+                    nodes[domain.name] = domain;
+
+                    $.get("app/templates/domain-card.hbars")
+                      .done( function(source) {
+                        cache_templates[DOMAIN_TEMPLATE_KEY] = Handlebars.compile(source);
+                      });
+
+                    $.get("app/templates/domain-box.hbars")
+                      .done( function(source) {
+                        $("#contents_home .page").append(Handlebars.compile(source)({ node: domain }))
+
+                        $("#domain-" + domain.name + "-btn").click(function(){
+                          
+                          var domain_card_template = cache_templates[DOMAIN_TEMPLATE_KEY];
+                          
+                          if(typeof domain_card_template === 'undefined'){
+                            console.log("no template in cache");
+
+                            $.get("app/templates/domain-card.hbars")
+                              .done( function(source) {
+                                cache_templates[DOMAIN_TEMPLATE_KEY] = Handlebars.compile(source);
+
+                                go_dyn(cache_templates[DOMAIN_TEMPLATE_KEY], domain);
+                              });
+
+                          } else {
+                            go_dyn(domain_card_template, domain);
+                          }
+                        });
+
+                        if(n == data.list.length - 1) {
+                          initializeHomeSearch();  
+                          initializeGlobalSearch(domainData);
+                        }
+                      })
+                      .fail(function() {
+                        alert("fail");
+                      });
+                  });
+                }
+              })
+              .fail(function() {
+                alert("fail");
+              });            
+        });
+        /* Data End*/
+
+    </script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <header class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a id="brand" class="navbar-brand" href="#" alt="kasper">autodoc</a>
+        </div>
+
+        <div class="navbar-collapse collapse">
+
+          <!-- <form class="navbar-form navbar-right" role="search"> -->
+            <div id="search-container" class="nav navbar-nav navbar-right col-md-3">
+              <div class="input-group">
+                <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+                <input id="search" class="form-control"/>
+                <input id="search_type" type="hidden"/>
+              </div>
+            </div>
+          <!-- </form> -->
+
+          <ul class="nav navbar-nav navbar-left">
+            <li class="active"><a id="home" href="#">Home</a></li>
+            <li><a id="about" href="#about">About</a></li>
+            <li><a id="contact" href="#contact">Contact</a></li>
+          </ul>
+          
+        </div>
+      </div>
+    </header>
+
+    <div class="main-container">
+
+      <div id="contents">
+
+        <!-- Home page-->
+        <div id="contents_home" class="hero-unit">
+          <div class="container">
+            <ol class="breadcrumb">
+              <li class="active">Home</li>
+            </ol>
+          </div>
+
+          <div class="container panel">
+            <div class="input-group panel-body">
+              <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+              <input class="form-control" id="search-domain-box" type="text" placeholder="">
+            </div>
+
+            <div class="container page" id="searchable-domain-box">
+              <div class="domain-box"></div>
+            </div>
+
+          </div>          
+        </div>
+
+        <!-- About page -->
+        <div id="contents_about" class="hero-unit" style="display: none;">
+          <div class="container">
+            <ol class="breadcrumb">
+              <li><a class="home" href="#home">Home</a></li>
+              <li class="active">About</li>
+            </ol>
+          </div>
+          <div class="container page">
+            <div class="panel panel-default">
+              <h2 class="panel-heading"><span class="glyphicon glyphicon-align-justify"></span>About</h2>
+              <div class="panel-body">
+                ...
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact page -->
+        <div id="contents_contact" class="hero-unit">
+          <div class="container">
+            <ol class="breadcrumb">
+              <li><a class="home" href="#home">Home</a></li>
+              <li class="active">Contact</li>
+            </ol>
+          </div>
+          <div class="container page">
+            <div class="panel panel-default">
+              <h2 class="panel-heading"><span class="glyphicon glyphicon-envelope"></span>Contact</h2>
+              <div class="panel-body">
+                About general Kasper purposes : Viadeo architecture team &lt;<a href="mailto: architecture@viadeoteam.com">architecture@viadeoteam.com</a>&gt;
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic page -->
+        <div id="contents_dyn" class="hero-unit"></div>
+
+      </div>
+
+    <footer class="navbar-default">
+      <div class="container">
+        <ul class="list-unstyled list-inline text-center">
+          <li>Currently vx.x.x</li>
+          <li>·</li>
+          <li><a href="https://github.com/viadeo/kasper-framework">GitHub</a></li>
+          <li>·</li>
+          <li><a href="https://github.com/viadeo/kasper-framework/issues?state=open">Issues</a></li>
+          <li>·</li>
+          <li><a href="https://github.com/viadeo/kasper-framework/releases">Releases</a></li>
+          <li>·</li>
+          <li><a href="https://github.com/viadeo/kasper-framework/blob/master/CHANGES.md">Changes</a></li>
+        </ul>
+      </div>
+    </footer>
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    
+  </body>
+</html>

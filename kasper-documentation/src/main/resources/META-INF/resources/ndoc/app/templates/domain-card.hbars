@@ -1,0 +1,76 @@
+<div class="container">
+  <ol class="breadcrumb">
+    <li><a id="home-from-{{node.name}}" href="#home">Home</a></li>
+    <li class="active">{{node.name}}</li>
+  </ol>
+</div>
+
+<div class="container">
+  <div class="panel panel-default">
+      <h2 class="panel-heading"><span class="glyphicon glyphicon-unchecked"></span>{{node.name}}</h2>
+      <div class="panel-body">
+        <p class="text-justify">{{node.description}}</p>
+        <dl class="block-content dl-horizontal">
+            <dt>Owner</dt>
+            <dd>Platon platon@viadeoteam.com</platon></dd>
+        </dl>
+        <dl class="block-content dl-horizontal">
+            <dt>Since</dt>
+            <dd>12/05/2014</dd>
+        </dl>
+        <dl class="block-content dl-horizontal">
+            <dt>Parent</dt>
+            <dd>Phasellus</dd>
+        </dl>   
+      </div>     
+  </div>  
+
+  {{#if node.commands}}
+    <div class="panel panel-default">
+      <h3 class="panel-heading"><span class="glyphicon glyphicon-log-in"></span>Commands</h3>
+      <div class="panel-body">
+        <div class="list-group">
+          {{#each node.commands}}
+            <a href="#" class="list-group-item">
+              <h4 class="list-group-item-heading">{{this.label}}</h4>
+              <p class="list-group-item-text">{{this.description}}</p>
+            </a>
+          {{/each}}
+        </div>  
+      </div>
+    </div>  
+  {{/if}}
+
+  {{#if node.queries}}
+    <div class="panel panel-default">
+      <h3 class="panel-heading"><span class="glyphicon glyphicon-log-out"></span>Queries</h3>
+      <div class="panel-body">
+        <div class="list-group">
+          {{#each node.commands}}
+            <a href="#" class="list-group-item">
+              <h4 class="list-group-item-heading">{{this.label}}</h4>
+              <p class="list-group-item-text">{{this.description}}</p>
+            </a>
+          {{/each}}
+        </div>  
+      </div>
+    </div> 
+  {{/if}}   
+
+  {{#if node.events}}
+    <div class="panel panel-default">
+      <h3 class="panel-heading"><span class="glyphicon glyphicon-new-window"></span>Events</h3>
+      <div class="panel-body">
+        <div class="list-group">
+          {{#each node.events}}
+            <a href="#" class="list-group-item">
+              <h4 class="list-group-item-heading">{{this.label}}</h4>
+              <p class="list-group-item-text">{{this.description}}</p>
+            </a>
+          {{/each}}
+        </div>  
+      </div>
+    </div>       
+  {{/if}}   
+
+      </div>
