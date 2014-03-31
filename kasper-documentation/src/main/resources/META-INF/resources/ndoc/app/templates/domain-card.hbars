@@ -8,7 +8,7 @@
 
 <div class="container">
   <div class="panel panel-default">
-      <h2 class="panel-heading"><span class="glyphicon glyphicon-unchecked"></span>{{node.name}}</h2>
+      <h2 class="panel-heading"><span class="glyphicon glyphicon-unchecked"/>{{node.name}}</h2>
       <div class="panel-body">
         <p class="text-justify">{{node.description}}</p>
         <dl class="block-content dl-horizontal">

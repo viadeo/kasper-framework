@@ -20,6 +20,10 @@
     font-style:normal;
 }
 
+.no-border {
+    border: none;
+}
+
 footer {
     padding-top: 20px;
     border: 1px solid transparent;
@@ -105,7 +109,10 @@ h3.block-content {
     background-color: #e6e6e6;   
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
     margin: 1px 0;
+}
 
+.panel-body p {
+    margin-bottom: 20px;
 }
 
 .panel-body dl {
@@ -113,12 +120,15 @@ h3.block-content {
     padding-top: 4px;
     padding-bottom: 4px;
     margin: 0;
-
 }
 
 .panel-body dt {
     float: left;
     text-align: left; 
+}
+
+.panel-body dl.no-border {
+    border: none;
 }
 
 /** BOX TEXT **/

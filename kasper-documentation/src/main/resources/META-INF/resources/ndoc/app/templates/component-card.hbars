@@ -1,20 +1,77 @@
 
-<div class="container">
-  <div class="panel panel-default">
-    <h3 class="panel-heading">
-    {{#ifCond title "Commands"}}<span class="glyphicon glyphicon-log-in"></span>{{/ifCond}}{{#ifCond title "Queries"}}<span class="glyphicon glyphicon-log-out"></span>{{/ifCond}}{{#ifCond title "Events"}}<span class="glyphicon glyphicon-log-new-window"></span>{{/ifCond}}{{title}}
-    </h3>
-    <div class="panel-body">
-      <div class="list-group">
+<div class="panel panel-default">
+  <h3 class="panel-heading">
+  {{#ifCond title "Commands"}}<span class="glyphicon glyphicon-log-in"/>{{/ifCond}}{{#ifCond title "Queries"}}<span class="glyphicon glyphicon-log-out"/>{{/ifCond}}{{#ifCond title "Events"}}<span class="glyphicon glyphicon-new-window"/>{{/ifCond}}{{title}}
+  </h3>
+  <div class="panel-body">
+    <div class="list-group">
 
-        {{#each data}}
-          <a id="component-{{this.label}}" class="list-group-item">
-            <h4 class="list-group-item-heading">{{this.label}}</h4>
-            <p class="list-group-item-text">{{this.description}}</p>
-          </a>
-        {{/each}}
+      {{#each data.list}}
+        <a id="component-{{this.label}}" class="list-group-item">
+          <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-asterisk"/>{{this.label}}</h4>
+          <dl class="block-content">
+            <dd>
+              <p>{{this.description}}</p>
+            </dd>
+          </dl>
+          {{#if this.properties}}
+          <dl class="block-content dl-horizontal">
+            <dt>Fields</dt>
+            <dd/>
+          </dl>
+          <dl class="block-content dl-horizontal no-border">
+            <dt/>
+            <dd>
+              <table class="table table-striped">
+                <thead><tr><th>Name</th><th>Type</th><th>Constraints</th></tr></thead>
+                <tbody>
+                  {{#each this.properties}}
+                    <tr>
+                        <td>{{this.name}}</td>
+                        <td>{{this.type}}</td>
+                        <td>{{#if this.constraints}}{{#each this.constraints}}{{this.message}},&nbsp;{{/each}}{{else}}-{{/if}}</td>
+                    </tr>
+                  {{/each}}
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          {{/if}}
+          {{#if this.queryHandler}}
+          <dl class="block-content dl-horizontal">
+            <dt>Handler</dt>
+            <dd>
+              <p>{{this.queryHandler.name}}</p>
+            </dd>
+          </dl>
+          {{/if}}
+          {{#if this.commandHandler}}
+          <dl class="block-content dl-horizontal">
+            <dt>Handler</dt>
+            <dd>
+              <p>{{this.commandHandler.name}}</p>
+            </dd>
+          </dl>
+          {{/if}}
+          {{#if this.eventListeners}}
+          <dl class="block-content dl-horizontal">
+            <dt>Handlers</dt>
+            <dd>
+              <p>{{#each this.eventListeners}}{{this.name}}&nbsp;{{/each}}</p>
+            </dd>
+          </dl>
+          {{/if}}
+          {{#if this.action}}
+          <dl class="block-content dl-horizontal">
+            <dt>Action</dt>
+            <dd>
+              <p>{{this.action}}</p>
+            </dd>
+          </dl>
+          {{/if}}
+        </a>
+      {{/each}}
 
-      </div>
     </div>
-  </div>  
+  </div>
 </div>

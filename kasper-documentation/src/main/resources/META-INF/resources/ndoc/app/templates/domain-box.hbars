@@ -1,7 +1,7 @@
 <div class="domain-box col-md-4">
   <div class="panel panel-default">
     <h3 class="panel-heading">
-      <span class="glyphicon glyphicon-unchecked"></span>
+      <span class="glyphicon glyphicon-unchecked"/>
       <span class="domain-box-selector">{{node.name}}</span>
       <small class="pull-right">
           <span class="glyphicon glyphicon-log-in">{{#if node.commands}}{{node.commands.length}}{{else}}0{{/if}}</span>

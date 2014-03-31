@@ -99,10 +99,10 @@
 
                 console.log("search", type, this.value, domain);
 
-                go_dyn(cache_templates[DOMAIN_TEMPLATE_KEY], cache_templates[COMPONENT_TEMPLATE_KEY], nodes[domain]);
-                
                 if(type != "domain") {
-                  scrollToAnchor("component-" + this.value);
+                  go_dyn(cache_templates[DOMAIN_TEMPLATE_KEY], cache_templates[COMPONENT_TEMPLATE_KEY], nodes[domain], "component-" + this.value);
+                } else {
+                  go_dyn(cache_templates[DOMAIN_TEMPLATE_KEY], cache_templates[COMPONENT_TEMPLATE_KEY], nodes[domain]);
                 }
               }
             });
@@ -138,27 +138,51 @@
           $("#contact").parent().addClass("active")
         }
 
-        function go_dyn(template, component_template, node) {
-          console.log("go dyn, template:", template);
-          console.log("go dyn, component_template:", component_template);
-          console.log("go dyn, node:", node);
-          console.log("go dyn", node.name);
-          console.log("go dyn components", component_urls_per_domain[node.name]);
+        function go_dyn(template, component_template, domain, hash) {
+          console.log("go dyn", domain.name);
+          var expectedLoad = 3;
+          var actualLoad = 0;
+          var f = function() { if(hash) { scrollToAnchor(hash); } };
 
           $("#contents_dyn").empty();
           $(".nav > li").removeClass("active")
 
-          $("#contents_dyn").append(template({ node: node }));
-          $("#contents_dyn").append(component_template({ data: node.commands, title: "Commands" }));
-          $("#contents_dyn").append(component_template({ data: node.queries, title: "Queries" }));
-          $("#contents_dyn").append(component_template({ data: node.events, title: "Events" }));
+          $("#contents_dyn").append(template({ node: domain }));
+          $("#contents_dyn").append('<div id="commands-container" class="container"></div>');
+          $("#contents_dyn").append('<div id="queries-container" class="container"></div>');
+          $("#contents_dyn").append('<div id="events-container" class="container"></div>');
+
+          $.get("http://localhost:9988/kasper/doc/domain/" + domain.name + "/commands")
+            .done(function(data) {
+              $("#commands-container").append(component_template({ data: data, title:"Commands" }));
+              execute(expectedLoad, ++actualLoad, f);
+            });
+
+          $.get("http://localhost:9988/kasper/doc/domain/" + domain.name + "/queries")
+            .done(function(data) {
+              $("#queries-container").append(component_template({ data: data, title:"Queries" }));
+              execute(expectedLoad, ++actualLoad, f);
+            });
+
+          $.get("http://localhost:9988/kasper/doc/domain/" + domain.name + "/events")
+            .done(function(data) {
+              $("#events-container").append(component_template({ data: data, title:"Events" }));
+              execute(expectedLoad, ++actualLoad, f);
+            });
 
           $("#contents > div").hide();
           $("#contents_dyn").fadeIn("slow");
           
-          $("#home-from-" + node.name).click(function() {
+          $("#home-from-" + domain.name).click(function() {
             go_home();
           })
+        }
+
+        function execute(expected, actual, f) {
+          console.log(expected + "><" + actual);
+          if(expected == actual) {
+            f();
+          }
         }
 
         function scrollToAnchor(hash){
@@ -311,7 +335,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a id="brand" class="navbar-brand" href="#" alt="kasper">autodoc</a>
+          <a id="brand" class="navbar-brand" href="#">autodoc</a>
         </div>
 
         <div class="navbar-collapse collapse">
@@ -336,7 +360,6 @@
     </header>
 
     <div class="main-container">
-
       <div id="contents">
 
         <!-- Home page-->
@@ -350,7 +373,7 @@
           <div class="container panel">
             <div class="input-group panel-body">
               <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-              <input class="form-control" id="search-domain-box" type="text" placeholder="">
+              <input class="form-control" id="search-domain-box" type="text" placeholder=""/>
             </div>
 
             <div class="container page" id="searchable-domain-box">
@@ -361,7 +384,7 @@
         </div>
 
         <!-- About page -->
-        <div id="contents_about" class="hero-unit" style="display: none;">
+        <div id="contents_about" class="hero-unit">
           <div class="container">
             <ol class="breadcrumb">
               <li><a class="home" href="#home">Home</a></li>
@@ -401,6 +424,7 @@
         </div>
 
       </div>
+    </div>
 
     <footer class="navbar-default">
       <div class="container">
