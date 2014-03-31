@@ -131,6 +131,11 @@ h3.block-content {
     border: none;
 }
 
+.item:hover {
+    border: 1px solid darkgray;
+    background-color: #f5f5f5;
+}
+
 /** BOX TEXT **/
 
 .box {
