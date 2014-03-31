@@ -226,7 +226,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
         // Then
         assertFalse(actual.isOK());
-        assertEquals(query.aValue, actual.getReason().getCode());
+        assertEquals(query.aValue, actual.getReason().getLabel());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, actual.asHttp().getHTTPStatus());
     }
 
@@ -237,7 +237,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         // Given
         final SomeQuery query = new SomeQuery();
         query.doThrowSomeException = true;
-        query.aValue = CoreReasonCode.NOT_FOUND.toString();
+        query.aValue = CoreReasonCode.NOT_FOUND.name();
 
         // When
         final QueryResponse<SomeResponse> actual = client().query(
@@ -245,7 +245,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
         // Then
         assertFalse(actual.isOK());
-        assertEquals(query.aValue, actual.getReason().getCode());
+        assertEquals(query.aValue, actual.getReason().getLabel());
         assertEquals(Response.Status.NOT_FOUND, actual.asHttp().getHTTPStatus());
     }
 

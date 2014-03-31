@@ -25,7 +25,8 @@ public class KasperReasonBuilderTest {
         final KasperReason reason = builder.build();
 
         // Then
-        assertEquals(CoreReasonCode.UNKNOWN_REASON.string(), reason.getCode());
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.code(), reason.getReasonCode().intValue());
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), reason.getLabel());
         assertEquals(0, reason.getMessages().size());
     }
 
@@ -38,7 +39,8 @@ public class KasperReasonBuilderTest {
         final KasperReason reason = builder.build();
 
         // Then
-        assertEquals(CoreReasonCode.UNKNOWN_REASON.string(), reason.getCode());
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), reason.getLabel());
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.code(), reason.getReasonCode().intValue());
         assertEquals(0, reason.getMessages().size());
     }
 
@@ -54,7 +56,8 @@ public class KasperReasonBuilderTest {
         final KasperReason reason = builder.build();
 
         // Then
-        assertEquals(CoreReasonCode.UNKNOWN_REASON.string(), reason.getCode());
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.code(), reason.getReasonCode().intValue());
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), reason.getLabel());
         assertEquals(1, reason.getMessages().size());
         assertEquals("foo", reason.getMessages().toArray()[0]);
     }
@@ -68,7 +71,8 @@ public class KasperReasonBuilderTest {
         final KasperReason reason = builder.build();
 
         // Then
-        assertEquals(CoreReasonCode.UNKNOWN_REASON.string(), reason.getCode());
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.code(), reason.getReasonCode().intValue());
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), reason.getLabel());
         assertEquals(2, reason.getMessages().size());
         assertEquals("foo", reason.getMessages().toArray()[0]);
         assertEquals("bar", reason.getMessages().toArray()[1]);
@@ -102,7 +106,8 @@ public class KasperReasonBuilderTest {
         final KasperReason reason = builder.build();
 
         // Then
-        assertEquals(CoreReasonCode.UNKNOWN_REASON.string(), reason.getCode());
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.code(), reason.getReasonCode().intValue());
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), reason.getLabel());
         assertEquals(0, reason.getMessages().size());
     }
 

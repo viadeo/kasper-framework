@@ -51,7 +51,7 @@ public final class CoreReasonHttpCodes {
         CoreReasonHttpCodesTranslationTable(final CoreReasonCode code, final Status httpStatus) {
             this.code = code;
             this.httpStatus = httpStatus;
-            STRING_CODES.put(code.toString(), this);
+            STRING_CODES.put(code.name(), this);
         }
 
         // --------------------------------------------------------------------

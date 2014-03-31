@@ -18,8 +18,8 @@ class CommandQueryResponseDeserializerAdapter extends SimpleDeserializers {
 
     @Override
     public JsonDeserializer findBeanDeserializer(final JavaType type,
-                                                    final DeserializationConfig config,
-                                                    final BeanDescription beanDesc)
+                                                 final DeserializationConfig config,
+                                                 final BeanDescription beanDesc)
             throws JsonMappingException {
 
         if (type.hasRawClass(QueryResponse.class)) {
