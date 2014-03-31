@@ -14,7 +14,7 @@ import com.viadeo.kasper.KasperResponse;
 
 import java.io.IOException;
 
-public abstract class KasperResponseNewSerializer<R extends KasperResponse> extends JsonSerializer<R> {
+public abstract class KasperResponseSerializer<R extends KasperResponse> extends JsonSerializer<R> {
 
     @Override
     public void serialize(final R value, final JsonGenerator jgen, final SerializerProvider provider)

@@ -217,7 +217,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
     public void testCommandResponseWithStatusCode() throws Exception {
         // Given valid input
         final CreateAccountCommand command = new CreateAccountCommand();
-        command.code = CoreReasonCode.CONFLICT.toString();
+        command.code = CoreReasonCode.CONFLICT.name();
         command.messages = ImmutableList.of("ignored");
 
         // When

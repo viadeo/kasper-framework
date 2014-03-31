@@ -9,7 +9,6 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectReader;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperRelationID;
@@ -22,47 +21,16 @@ import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.impl.DefaultKasperRelationId;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 
 import static org.junit.Assert.assertEquals;
 
-@RunWith(value = Parameterized.class)
 public class SerDeserTests {
 
-    @Parameterized.Parameters
-    public static Collection<Object[]> data() {
-        Object[][] data = new Object[][] {
-                { true },
-                { false }
-        };
-        return Arrays.asList(data);
-    }
-
-    // ------------------------------------------------------------------------
-
-    private final Boolean useNewSerialization;
-    private final ObjectMapperProvider omProvider;
-
-    public SerDeserTests(final Boolean useNewSerialization) {
-        omProvider = new ObjectMapperProvider();
-
-        if ( useNewSerialization) {
-           omProvider.mapper().registerModule(
-               new SimpleModule()
-                   .addSerializer(CommandResponse.class, new CommandResponseNewSerializer())
-                   .addSerializer(QueryResponse.class, new QueryResponseNewSerializer())
-           );
-        }
-
-        this.useNewSerialization = useNewSerialization;
-    }
+    private final ObjectMapperProvider omProvider = new ObjectMapperProvider();
 
     // -- test beans ----------------------------------------------------------
 
@@ -365,19 +333,7 @@ public class SerDeserTests {
     }
 
     @Test
-    public void test_query_deserialize_old() throws IOException {
-        if ( ! useNewSerialization) {
-            // Given
-            // When
-            final String result_json = deserSerTest(QUERY_RESPONSE_OLD, QueryResponse.class);
-
-            // Then
-            assertEquals(QUERY_RESPONSE_OLD, result_json);
-        }
-    }
-
-    @Test
-    public void test_query_deserialize_new() throws IOException {
+    public void test_query_deserialize() throws IOException {
         // Given
         // When
         final QueryResponse<?> response = deserTest(QUERY_RESPONSE_NEW, QueryResponse.class);
@@ -386,7 +342,7 @@ public class SerDeserTests {
         assertEquals(QUERY_UUID, response.getReason().getId().toString());
         assertEquals(KasperResponse.Status.ERROR, response.getStatus());
         assertEquals(
-                CoreReasonCode.UNKNOWN_REASON.toString(),
+                CoreReasonCode.UNKNOWN_REASON.name(),
                 response.getReason().getCode()
         );
         assertEquals(2, response.getReason().getMessages().size());
@@ -451,19 +407,7 @@ public class SerDeserTests {
     }
 
     @Test
-    public void test_command_deserialize_old() throws IOException {
-        if ( ! useNewSerialization) {
-            // Given
-            // When
-            final String result_json = deserSerTest(COMMAND_RESPONSE_OLD, CommandResponse.class);
-
-            // Then
-            assertEquals(COMMAND_RESPONSE_OLD, result_json);
-        }
-    }
-
-    @Test
-    public void test_command_deserialize_new() throws IOException {
+    public void test_command_deserialize() throws IOException {
         // Given
         // When
         final CommandResponse response = deserTest(COMMAND_RESPONSE_NEW, CommandResponse.class);
@@ -472,7 +416,7 @@ public class SerDeserTests {
         assertEquals(COMMAND_UUID, response.getReason().getId().toString());
         assertEquals(KasperResponse.Status.ERROR, response.getStatus());
         assertEquals(
-            CoreReasonCode.UNKNOWN_REASON.toString(),
+            CoreReasonCode.UNKNOWN_REASON.name(),
             response.getReason().getCode()
         );
         assertEquals(2, response.getReason().getMessages().size());

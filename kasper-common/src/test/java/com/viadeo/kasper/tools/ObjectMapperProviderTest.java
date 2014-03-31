@@ -117,7 +117,7 @@ public class ObjectMapperProviderTest {
 
         // Then
         assertFalse(actual.isOK());
-        assertEquals(expected.getReason().getCode(), actual.getReason().getCode());
+        assertEquals(expected.getReason().getReasonCode(), actual.getReason().getReasonCode());
         assertEquals(
             expected.getReason().getMessages().size(),
             actual.getReason().getMessages().size()

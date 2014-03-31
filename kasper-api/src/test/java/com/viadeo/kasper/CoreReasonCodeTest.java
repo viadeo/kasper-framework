@@ -38,4 +38,41 @@ public class CoreReasonCodeTest {
         assertTrue(code.equals(codeString));
     }
 
+    @Test
+    public void shouldParseKnownCode() {
+        // Given
+        final CoreReasonCode code = CoreReasonCode.CONFLICT;
+
+        // When
+        final CoreReasonCode.ParsedCode parsedCode = CoreReasonCode.parseString(code.toString());
+
+        // Then
+        assertEquals(CoreReasonCode.CONFLICT, parsedCode.reason);
+    }
+
+    @Test
+    public void shouldParseUnknownCode() {
+        // Given
+
+        // When
+        final CoreReasonCode.ParsedCode parsedCode = CoreReasonCode.parseString("[0000] - TEST");
+
+        // Then
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.code(), parsedCode.code);
+        assertEquals("TEST", parsedCode.label);
+    }
+
+    @Test
+    public void shouldParseSimpleCode() {
+        // Given
+
+        // When
+        final CoreReasonCode.ParsedCode parsedCode = CoreReasonCode.parseString("TEST");
+
+        // Then
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.code(), parsedCode.code);
+        assertEquals("TEST", parsedCode.label);
+    }
+
 }
+
