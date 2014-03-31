@@ -7,7 +7,9 @@
 package com.viadeo.kasper.doc.element;
 
 import com.viadeo.kasper.client.platform.domain.descriptor.CommandHandlerDescriptor;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
+import com.viadeo.kasper.doc.nodes.DocumentedBean;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -18,16 +20,22 @@ public class DocumentedCommandHandler extends AbstractDomainElement {
     public static class DocumentedCommand extends AbstractPropertyDomainElement {
 
         private final DocumentedCommandHandler documentedCommandHandler;
+        private final DocumentedBean response;
 
         public DocumentedCommand(final DocumentedDomain domain,
                                  final DocumentedCommandHandler documentedCommandHandler,
                                  final Class commandClass) {
             super(domain, DocumentedElementType.COMMAND, commandClass);
             this.documentedCommandHandler = documentedCommandHandler;
+            this.response = new DocumentedBean(CommandResponse.class);
         }
 
         public LightDocumentedElement<DocumentedCommandHandler> getCommandHandler() {
             return documentedCommandHandler.getLightDocumentedElement();
+        }
+
+        public DocumentedBean getResponse() {
+            return response;
         }
 
         @Override

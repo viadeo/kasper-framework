@@ -79,6 +79,28 @@
             </dd>
           </dl>
           {{/if}}
+          {{#if this.response}}
+          <dl class="block-content dl-horizontal">
+            <dt>Response</dt>
+            <dd/>
+          </dl>
+          <dl class="block-content dl-horizontal no-border">
+            <dt/>
+            <dd>
+              <table class="table table-striped">
+                <thead><tr><th>Name</th><th>Type</th></tr></thead>
+                <tbody>
+                {{#each this.response}}
+                <tr>
+                  <td>{{this.name}}</td>
+                  <td>{{#ifCond this.type "QueryResult"}}{{../../queryHandler.queryResultName}}{{else}}{{this.type}}{{/ifCond}}</td>
+                </tr>
+                {{/each}}
+                </tbody>
+              </table>
+            </dd>
+          </dl>
+          {{/if}}
         </div>
       {{/each}}
     </div>

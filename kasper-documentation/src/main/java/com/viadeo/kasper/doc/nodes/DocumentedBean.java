@@ -100,7 +100,11 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 					isList = true;					
 					
 				} else {
-					type = propClass.getSimpleName();
+                    if(propClass.isEnum()) {
+                        type = propClass.getSimpleName() + Arrays.asList(propClass.getEnumConstants());
+                    } else {
+                        type = propClass.getSimpleName();
+                    }
 					isList = false;
 				}
 

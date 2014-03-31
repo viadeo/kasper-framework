@@ -6,8 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.doc.element;
 
+import com.viadeo.kasper.KasperResponse;
 import com.viadeo.kasper.client.platform.domain.descriptor.EventListenerDescriptor;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
+import com.viadeo.kasper.doc.nodes.DocumentedBean;
 import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.List;
@@ -23,6 +25,7 @@ public class DocumentedEventListener extends AbstractDomainElement {
         private static final LinkedMultiValueMap<Class, LightDocumentedElement> LISTENERS_BY_EVENTS = new LinkedMultiValueMap<>();
 
         private String action;
+        private final DocumentedBean response;
 
         public DocumentedEvent(final DocumentedDomain documentedDomain,
                                final DocumentedEventListener documentedEventListener,
@@ -32,6 +35,7 @@ public class DocumentedEventListener extends AbstractDomainElement {
             if (null != documentedEventListener) {
                 LISTENERS_BY_EVENTS.add(eventClass, documentedEventListener.getLightDocumentedElement());
             }
+            this.response = new DocumentedBean(KasperResponse.class);
         }
 
         public String getAction() {
@@ -45,6 +49,10 @@ public class DocumentedEventListener extends AbstractDomainElement {
         public List<LightDocumentedElement> getEventListeners() {
             final List<LightDocumentedElement> eventListeners = LISTENERS_BY_EVENTS.get(getReferenceClass());
             return eventListeners != null ? eventListeners : null;
+        }
+
+        public DocumentedBean getResponse() {
+            return response;
         }
 
         @Override
