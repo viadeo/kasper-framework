@@ -6,13 +6,20 @@
 // ============================================================================
 package com.viadeo.kasper.doc.element;
 
+import com.google.common.collect.Lists;
+import com.viadeo.kasper.annotation.XKasperAlias;
 import com.viadeo.kasper.doc.nodes.DocumentedBean;
+import com.viadeo.kasper.security.annotation.XKasperPublic;
+
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class AbstractPropertyDomainElement extends AbstractDomainElement {
 
     private final DocumentedBean properties;
+    private final boolean publicAccess;
+    private final List<String> aliases;
 
     // ------------------------------------------------------------------------
 
@@ -21,6 +28,14 @@ public abstract class AbstractPropertyDomainElement extends AbstractDomainElemen
                                          final Class referenceClass){
         super(checkNotNull(domain), checkNotNull(type), checkNotNull(referenceClass));
         this.properties = new DocumentedBean(referenceClass);
+        this.publicAccess = referenceClass.getAnnotation(XKasperPublic.class) != null;
+
+        final XKasperAlias annotation = (XKasperAlias) referenceClass.getAnnotation(XKasperAlias.class);
+        if(annotation != null){
+            this.aliases = Lists.newArrayList(annotation.values());
+        } else {
+            this.aliases = Lists.newArrayList();
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -29,4 +44,11 @@ public abstract class AbstractPropertyDomainElement extends AbstractDomainElemen
         return properties;
     }
 
+    public boolean isPublicAccess() {
+        return publicAccess;
+    }
+
+    public List<String> getAliases() {
+        return aliases;
+    }
 }

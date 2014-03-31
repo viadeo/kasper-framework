@@ -8,10 +8,12 @@
 
       {{#each data.list}}
         <div id="component-{{this.label}}" class="list-group-item item">
-          <h4 class="list-group-item-heading"><span class="glyphicon glyphicon-asterisk"/>{{this.label}}<span class="pull-right"><a href="../kasper/doc{{this.url}}" target="_blank"><small>[json]</small></a></span></h4>
+          <h4 class="list-group-item-heading">
+              {{#ifCond this.publicAccess true}}<span class="glyphicon glyphicon-asterisk"/>{{else}}<span class="glyphicon glyphicon-lock"/>{{/ifCond}}
+              <b>{{this.label}}</b><span class="pull-right"><a href="../kasper/doc{{this.url}}" target="_blank"><small>[json]</small></a></span></h4>
           <dl class="block-content">
             <dd>
-              <p>{{this.description}}</p>
+              <p class="panel-description text-justify">{{this.description}}</p>
             </dd>
           </dl>
           {{#if this.properties}}
@@ -66,6 +68,14 @@
             <dt>Action</dt>
             <dd>
               <p>{{this.action}}</p>
+            </dd>
+          </dl>
+          {{/if}}
+          {{#if this.aliases}}
+          <dl class="block-content dl-horizontal">
+            <dt>Alias</dt>
+            <dd>
+              <p><span class="glyphicon glyphicon-tags"/>{{#each this.aliases}}{{this}}&nsbp;{{/each}}</p>
             </dd>
           </dl>
           {{/if}}

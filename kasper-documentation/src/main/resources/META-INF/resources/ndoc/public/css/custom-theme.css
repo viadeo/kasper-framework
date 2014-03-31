@@ -112,7 +112,7 @@ h3.block-content {
 }
 
 .panel-body p {
-    margin-bottom: 20px;
+    margin: 0;
 }
 
 .panel-body dl {
@@ -129,6 +129,10 @@ h3.block-content {
 
 .panel-body dl.no-border {
     border: none;
+}
+
+.panel-description {
+    margin-bottom: 20px;
 }
 
 .item:hover {
