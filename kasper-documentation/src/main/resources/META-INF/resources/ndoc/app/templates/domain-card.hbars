@@ -11,18 +11,12 @@
       <h2 class="panel-heading"><span class="glyphicon glyphicon-unchecked"/>{{node.name}}</h2>
       <div class="panel-body">
         <p class="text-justify">{{node.description}}</p>
+        {{#if node.owner}}
         <dl class="block-content dl-horizontal">
             <dt>Owner</dt>
-            <dd>Platon platon@viadeoteam.com></dd>
+            <dd><a href="mailto:{{node.owner}}">{{node.owner}}</a></dd>
         </dl>
-        <dl class="block-content dl-horizontal">
-            <dt>Since</dt>
-            <dd>12/05/2014</dd>
-        </dl>
-        <dl class="block-content dl-horizontal">
-            <dt>Parent</dt>
-            <dd>Phasellus</dd>
-        </dl>   
+        {{/if}}
       </div>     
   </div>  
 </div>
