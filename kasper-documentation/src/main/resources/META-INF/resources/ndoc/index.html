@@ -32,25 +32,10 @@
     <script src="app/js/jquery-ui-1.10.4.custom.min.js"></script>
     <script>
       Handlebars.registerHelper('ifCond', function (value1, value2, options) {
-          if(value1 === value2) {
-              return options.fn(this);
-          }
-          return options.inverse(this);
-      });
-    </script>
-    <script>
-      $.widget( "custom.catcomplete", $.ui.autocomplete, {
-        _renderMenu: function( ul, items ) {
-          var that = this,
-            currentCategory = "";
-          $.each( items, function( index, item ) {
-            if ( item.category != currentCategory ) {
-              ul.append( "<li class='ui-autocomplete-category'>" + item.category + "</li>" );
-              currentCategory = item.category;
-            }
-            that._renderItemData( ul, item );
-          });
+        if(value1 === value2) {
+          return options.fn(this);
         }
+        return options.inverse(this);
       });
     </script>
     <script>
