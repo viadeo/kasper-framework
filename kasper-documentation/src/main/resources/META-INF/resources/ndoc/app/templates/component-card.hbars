@@ -1,0 +1,20 @@
+
+<div class="container">
+  <div class="panel panel-default">
+    <h3 class="panel-heading">
+    {{#ifCond title "Commands"}}<span class="glyphicon glyphicon-log-in"></span>{{/ifCond}}{{#ifCond title "Queries"}}<span class="glyphicon glyphicon-log-out"></span>{{/ifCond}}{{#ifCond title "Events"}}<span class="glyphicon glyphicon-log-new-window"></span>{{/ifCond}}{{title}}
+    </h3>
+    <div class="panel-body">
+      <div class="list-group">
+
+        {{#each data}}
+          <a id="component-{{this.label}}" class="list-group-item">
+            <h4 class="list-group-item-heading">{{this.label}}</h4>
+            <p class="list-group-item-text">{{this.description}}</p>
+          </a>
+        {{/each}}
+
+      </div>
+    </div>
+  </div>  
+</div>

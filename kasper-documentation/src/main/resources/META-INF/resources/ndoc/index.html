@@ -31,6 +31,14 @@
     <script src="app/js/jquery.searchable.js"></script>
     <script src="app/js/jquery-ui-1.10.4.custom.min.js"></script>
     <script>
+      Handlebars.registerHelper('ifCond', function (value1, value2, options) {
+          if(value1 === value2) {
+              return options.fn(this);
+          }
+          return options.inverse(this);
+      });
+    </script>
+    <script>
       $.widget( "custom.catcomplete", $.ui.autocomplete, {
         _renderMenu: function( ul, items ) {
           var that = this,
@@ -48,24 +56,26 @@
     <script>
 
         var DOMAIN_TEMPLATE_KEY = "domain-template-key";
+        var COMPONENT_TEMPLATE_KEY = "component-template-key";
 
         var cache_templates = {};
         var nodes = {};
+        var component_urls_per_domain = {};
 
         /* Search */
         function initializeHomeSearch() {
           console.log("initialize home search!");
 
           $( '#searchable-domain-box' ).searchable({
-              searchField: '#search-domain-box',
-              selector: '.domain-box',
-              childSelector: '.domain-box-selector',
-              show: function( elem ) {
-                  elem.slideDown(100);
-              },
-              hide: function( elem ) {
-                  elem.slideUp( 100 );
-              }
+            searchField: '#search-domain-box',
+            selector: '.domain-box',
+            childSelector: '.domain-box-selector',
+            show: function( elem ) {
+                elem.slideDown(100);
+            },
+            hide: function( elem ) {
+                elem.slideUp( 100 );
+            }
           });
         }
 
@@ -77,29 +87,39 @@
               select: function( event, ui ) {
                 $("#search").val(ui.item.label);
                 $("#search_type").val(ui.item.type);
+                $("#search_domain").val(ui.item.domain);
                 return false;
               }
             }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
               var type = '';
               if(item.type == "domain") {
                 type = '<span class="glyphicon glyphicon-unchecked"></span>';
+              } else if(item.type == "command"){
+                type = '<span class="glyphicon glyphicon-log-in"></span>';
+              } else if(item.type == "query"){
+                type = '<span class="glyphicon glyphicon-log-out"></span>';
+              } else if(item.type == "event"){
+                type = '<span class="glyphicon glyphicon-new-window"></span>';
               }
               return $( "<li>" )
-                .append( '<a>' + type + item.label + '/' + item.type + '</a>' )
+                .append( '<a>' + type + item.label + '</a>' )
                 .appendTo( ul );
             };
 
             $("#search").keyup(function (e) {
-                if (e.keyCode == 13) {
-                    // Do something
-                    var type = $("#search_type").get(0).value;
+              if (e.keyCode == 13) {
+                // Do something
+                var type = $("#search_type").get(0).value;
+                var domain = $("#search_domain").get(0).value;
 
-                    console.log("search", type, this.value);
+                console.log("search", type, this.value, domain);
 
-                    if(type == "domain") {
-                      go_dyn(cache_templates[DOMAIN_TEMPLATE_KEY], nodes[this.value]);
-                    }
+                go_dyn(cache_templates[DOMAIN_TEMPLATE_KEY], cache_templates[COMPONENT_TEMPLATE_KEY], nodes[domain]);
+                
+                if(type != "domain") {
+                  scrollToAnchor("component-" + this.value);
                 }
+              }
             });
 
         }
@@ -133,19 +153,33 @@
           $("#contact").parent().addClass("active")
         }
 
-        function go_dyn(template, node) {
-          console.log("go dyn", node);
+        function go_dyn(template, component_template, node) {
+          console.log("go dyn, template:", template);
+          console.log("go dyn, component_template:", component_template);
+          console.log("go dyn, node:", node);
+          console.log("go dyn", node.name);
+          console.log("go dyn components", component_urls_per_domain[node.name]);
 
           $("#contents_dyn").empty();
           $(".nav > li").removeClass("active")
 
-          $("#contents_dyn").append(template({ node: node }));  
+          $("#contents_dyn").append(template({ node: node }));
+          $("#contents_dyn").append(component_template({ data: node.commands, title: "Commands" }));
+          $("#contents_dyn").append(component_template({ data: node.queries, title: "Queries" }));
+          $("#contents_dyn").append(component_template({ data: node.events, title: "Events" }));
+
           $("#contents > div").hide();
           $("#contents_dyn").fadeIn("slow");
           
           $("#home-from-" + node.name).click(function() {
             go_home();
           })
+        }
+
+        function scrollToAnchor(hash){
+          console.log("scroll to : " + hash);
+          var new_position = $('#'+hash).offset();
+          window.scrollTo(new_position.left,new_position.top);
         }
 
         function initialize_nav() {
@@ -169,7 +203,51 @@
         /* Nav End */
 
         /* Data */
-        
+        function get_search_raw(type, label, domain) {
+          return {
+            "type":type,
+            "label":label,
+            "domain":domain
+          };
+        }
+
+        function compute_search_data(domain) {
+          var data = [];
+
+          data.push(get_search_raw("domain", domain.label, domain.name));
+
+          $.each(domain.commands, function(n, command) {
+            data.push(get_search_raw("command", command.label, domain.name));
+          });
+
+          $.each(domain.queries, function(n, query) {
+            data.push(get_search_raw("query", query.label, domain.name));
+          });
+
+          $.each(domain.events, function(n, c_event) {
+            data.push(get_search_raw("event", c_event.label, domain.name));
+          });
+
+          return data;
+        }
+
+        function get_url_per_components(domain) {
+          var url_per_components = {};
+
+          $.each(domain.commands, function(n, command) {
+            url_per_components[command.name] = command.url;
+          });
+
+          $.each(domain.queries, function(n, query) {
+            url_per_components[query.name] = query.url;
+          });
+
+          $.each(domain.events, function(n, event) {
+            url_per_components[event.name] = event.url;
+          });
+
+          return url_per_components;
+        }
 
         $(document).ready(function() {
             
@@ -179,25 +257,33 @@
               .done(function(data) {
 
                 if (data.list) {
-                  var domainData = [];
+                  var searchData = [];
 
                   /* Populate the home page */
                   $.each(data.list, function(n, domain) {
 
-                    /* compute data */
-                    var raw = {
-                      "type":"domain",
-                      "label":domain.name
-                    };
-                    domainData.push(raw);
-                    //domainData.concat(commandData).concat(queryData).concat(eventData)
+                    /* Retrieve search data */
+                    searchData = searchData.concat(compute_search_data(domain));
 
-                    /* reference node*/
+                    /* Reference node*/
+                    component_urls_per_domain[domain.name] = get_url_per_components(domain);
                     nodes[domain.name] = domain;
 
+                    /* Load templates */  
                     $.get("app/templates/domain-card.hbars")
                       .done( function(source) {
                         cache_templates[DOMAIN_TEMPLATE_KEY] = Handlebars.compile(source);
+                      })
+                      .fail(function() {
+                        console.log("failed to load template 'app/templates/domain-card.hbars'");
+                      });
+
+                    $.get("app/templates/component-card.hbars")
+                      .done( function(source) {
+                        cache_templates[COMPONENT_TEMPLATE_KEY] = Handlebars.compile(source);
+                      })
+                      .fail(function() {
+                        console.log("failed to load template 'app/templates/domain-card.hbars'");
                       });
 
                     $.get("app/templates/domain-box.hbars")
@@ -205,37 +291,22 @@
                         $("#contents_home .page").append(Handlebars.compile(source)({ node: domain }))
 
                         $("#domain-" + domain.name + "-btn").click(function(){
-                          
-                          var domain_card_template = cache_templates[DOMAIN_TEMPLATE_KEY];
-                          
-                          if(typeof domain_card_template === 'undefined'){
-                            console.log("no template in cache");
-
-                            $.get("app/templates/domain-card.hbars")
-                              .done( function(source) {
-                                cache_templates[DOMAIN_TEMPLATE_KEY] = Handlebars.compile(source);
-
-                                go_dyn(cache_templates[DOMAIN_TEMPLATE_KEY], domain);
-                              });
-
-                          } else {
-                            go_dyn(domain_card_template, domain);
-                          }
+                          go_dyn(cache_templates[DOMAIN_TEMPLATE_KEY], cache_templates[COMPONENT_TEMPLATE_KEY], domain);
                         });
 
                         if(n == data.list.length - 1) {
                           initializeHomeSearch();  
-                          initializeGlobalSearch(domainData);
+                          initializeGlobalSearch(searchData);
                         }
                       })
                       .fail(function() {
-                        alert("fail");
+                        console.log("failed to load template 'app/templates/domain-box.hbars'");
                       });
                   });
                 }
               })
               .fail(function() {
-                alert("fail");
+                console.log("failed to load data from '/kasper/doc/domains'");
               });            
         });
         /* Data End*/
@@ -260,15 +331,14 @@
 
         <div class="navbar-collapse collapse">
 
-          <!-- <form class="navbar-form navbar-right" role="search"> -->
-            <div id="search-container" class="nav navbar-nav navbar-right col-md-3">
-              <div class="input-group">
-                <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
-                <input id="search" class="form-control"/>
-                <input id="search_type" type="hidden"/>
-              </div>
+          <div id="search-container" class="nav navbar-nav navbar-right col-md-4">
+            <div class="input-group">
+              <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+              <input id="search" class="form-control"/>
+              <input id="search_type" type="hidden"/>
+              <input id="search_domain" type="hidden"/>
             </div>
-          <!-- </form> -->
+          </div>
 
           <ul class="nav navbar-nav navbar-left">
             <li class="active"><a id="home" href="#">Home</a></li>
@@ -342,7 +412,8 @@
         </div>
 
         <!-- Dynamic page -->
-        <div id="contents_dyn" class="hero-unit"></div>
+        <div id="contents_dyn" class="hero-unit">
+        </div>
 
       </div>
 
@@ -361,10 +432,6 @@
         </ul>
       </div>
     </footer>
-
-    <!-- Bootstrap core JavaScript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
     
   </body>
 </html>
