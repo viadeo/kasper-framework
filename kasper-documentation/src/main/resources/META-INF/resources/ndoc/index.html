@@ -42,6 +42,7 @@
 
         var DOMAIN_TEMPLATE_KEY = "domain-template-key";
         var COMPONENT_TEMPLATE_KEY = "component-template-key";
+        var SIDE_BAR_TEMPLATE_KEY = "sidebar-template-key";
 
         var cache_templates = {};
         var nodes = {};
@@ -145,15 +146,20 @@
           console.log("go dyn", domain.name);
           var expectedLoad = 3;
           var actualLoad = 0;
-          var f = function() { if(hash) { scrollToAnchor(hash); } };
+          var f = function() { if(hash) { scrollToAnchor(hash, -60); } };
 
           $("#contents_dyn").empty();
           $(".nav > li").removeClass("active")
 
-          $("#contents_dyn").append(template({ node: domain }));
-          $("#contents_dyn").append('<div id="commands-container" class="container"></div>');
-          $("#contents_dyn").append('<div id="queries-container" class="container"></div>');
-          $("#contents_dyn").append('<div id="events-container" class="container"></div>');
+          $("#contents_dyn").append('<div id="wrapper_contents_dyn" class="col-md-9" role="main"></div>');
+          $("#contents_dyn").append('<div id="sidebar_contents_dyn" class="col-md-3" role="main"></div>');
+
+          $("#wrapper_contents_dyn").append(template({ node: domain }));
+          $("#wrapper_contents_dyn").append('<div id="commands-container" class="row"></div>');
+          $("#wrapper_contents_dyn").append('<div id="queries-container" class="row"></div>');
+          $("#wrapper_contents_dyn").append('<div id="events-container" class="row"></div>');
+
+          $("#sidebar_contents_dyn").append(cache_templates[SIDE_BAR_TEMPLATE_KEY]({ node: domain }));
 
           $.get("http://localhost:9988/kasper/doc/domain/" + domain.name + "/commands")
             .done(function(data) {
@@ -179,6 +185,8 @@
           $("#home-from-" + domain.name).click(function() {
             go_home();
           })
+
+          initialize_content_dyn_nav();
         }
 
         function execute(expected, actual, f) {
@@ -187,10 +195,12 @@
           }
         }
 
-        function scrollToAnchor(hash){
-          console.log("scroll to : " + hash);
+        function scrollToAnchor(hash, offset){
           var new_position = $('#'+hash).offset();
-          window.scrollTo(new_position.left,new_position.top);
+          var new_top_position = new_position.top + offset;
+          console.log("scroll to : " + hash + " at " + new_top_position);
+
+          window.scrollTo(new_position.left, new_top_position);
         }
 
         function initialize_nav() {
@@ -210,6 +220,32 @@
           $('#contact').click(function() {
             go_contact();
           })
+        }
+
+        function initialize_content_dyn_nav() {
+
+          $('.sidebar-contents-dyn a').click(function(event) {
+            if( $(this).parent().hasClass("component-category") ) {
+              event.preventDefault();
+
+              $(".component-category").removeClass("active");
+
+              $(this).parent().addClass("active");
+
+              var anchor = $(this).attr("href");
+              scrollToAnchor(anchor.substring(1, anchor.length), -65);
+
+            } else if( $(this).parent().hasClass("component-item") ) {
+              event.preventDefault();
+              $(this).parent().addClass("active");
+
+              var anchor = $(this).attr("href");
+              scrollToAnchor(anchor.substring(1, anchor.length), -65);
+
+            } else {
+              $(".component-category").removeClass("active");
+            }
+          });
         }
         /* Nav End */
 
@@ -261,7 +297,6 @@
         }
 
         $(document).ready(function() {
-            
             initialize_nav();
 
             $.get("http://localhost:9988/kasper/doc/domains")
@@ -280,7 +315,15 @@
                     component_urls_per_domain[domain.name] = get_url_per_components(domain);
                     nodes[domain.name] = domain;
 
-                    /* Load templates */  
+                    /* Load templates */
+                    $.get("app/templates/sidebar.hbars")
+                        .done( function(source) {
+                          cache_templates[SIDE_BAR_TEMPLATE_KEY] = Handlebars.compile(source);
+                        })
+                        .fail(function() {
+                          console.log("failed to load template 'app/templates/sidebar.hbars'");
+                        });
+
                     $.get("app/templates/domain-card.hbars")
                       .done( function(source) {
                         cache_templates[DOMAIN_TEMPLATE_KEY] = Handlebars.compile(source);
@@ -422,7 +465,7 @@
         </div>
 
         <!-- Dynamic page -->
-        <div id="contents_dyn" class="hero-unit">
+        <div id="contents_dyn" class="hero-unit container">
         </div>
 
       </div>
@@ -431,8 +474,6 @@
     <footer class="navbar-default">
       <div class="container">
         <ul class="list-unstyled list-inline text-center">
-          <li>Currently vx.x.x</li>
-          <li>·</li>
           <li><a href="https://github.com/viadeo/kasper-framework">GitHub</a></li>
           <li>·</li>
           <li><a href="https://github.com/viadeo/kasper-framework/issues?state=open">Issues</a></li>

@@ -180,3 +180,67 @@ p.panel-description {
     background: linear-gradient(to right,  rgba(255,255,255,0) 0%,rgba(255,255,255,1) 38%,rgba(255,255,255,1) 99%);
     filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#00e0e0e0', endColorstr='#e0e0e0',GradientType=1 );
 }
+
+/** SIDE NAV **/
+
+.sidebar-contents-dyn {
+    position: fixed;
+    top: 60px;
+    margin-top: 20px;
+}
+
+.sidebar-contents-dyn .back-to-top {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 20px;
+    margin-top: 20px;
+}
+
+.sidebar-contents-dyn .nav>li>a {
+    display: block;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 4px 20px;
+}
+
+.sidebar-contents-dyn .active ul  {
+    display: block;
+}
+
+.sidebar-contents-dyn ul ul {
+    display: none;
+}
+
+.sidebar-contents-dyn .nav .nav>li>a {
+    padding-top: 1px;
+    padding-bottom: 1px;
+    padding-left: 30px;
+    font-size: 12px;
+    font-weight: 400;
+}
+
+.sidebar-contents-dyn .nav a {
+    color: #777;
+    background-color: transparent;
+}
+
+
+.sidebar-contents-dyn .nav li a {
+    color: #777;
+    margin-left: 2px;
+}
+
+.sidebar-contents-dyn .nav li a:hover {
+    margin-left: 1px;
+    border-left: 1px solid #555;
+    background-color: transparent;
+}
+
+.sidebar-contents-dyn .nav li.active > a {
+    margin-left: 0px;
+    border-left: 2px solid #555;
+    font-weight: bold;
+}
+
+/** SIDE NAV END **/

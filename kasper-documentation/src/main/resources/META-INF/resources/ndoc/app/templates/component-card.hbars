@@ -1,16 +1,15 @@
 
 <div class="panel panel-default">
-  <h3 class="panel-heading">
-  {{#ifCond title "Commands"}}<span class="glyphicon glyphicon-log-in"/>{{/ifCond}}{{#ifCond title "Queries"}}<span class="glyphicon glyphicon-log-out"/>{{/ifCond}}{{#ifCond title "Events"}}<span class="glyphicon glyphicon-new-window"/>{{/ifCond}}{{title}}
-  </h3>
+  {{#ifCond title "Commands"}}<h3 id="commands" class="panel-heading"><span class="glyphicon glyphicon-log-in"/>{{title}}</h3>{{/ifCond}}
+  {{#ifCond title "Queries"}}<h3 id="queries" class="panel-heading"><span class="glyphicon glyphicon-log-out"/>{{title}}</h3>{{/ifCond}}
+  {{#ifCond title "Events"}}<h3 id="events" class="panel-heading"><span class="glyphicon glyphicon-new-window"/>{{title}}</h3>{{/ifCond}}
   <div class="panel-body">
     <div class="list-group">
 
       {{#each data.list}}
         <div id="component-{{this.label}}" class="list-group-item item">
-          <h4 class="list-group-item-heading">
-              {{#ifCond this.publicAccess true}}<span class="glyphicon glyphicon-asterisk"/>{{else}}<span class="glyphicon glyphicon-lock"/>{{/ifCond}}
-              <b>{{this.label}}</b><span class="pull-right"><a href="../kasper/doc{{this.url}}" target="_blank"><small>[json]</small></a></span></h4>
+          <h4 id="{{this.typePlural}}_{{this.label}}" class="list-group-item-heading">
+            {{#ifCond this.publicAccess true}}<span class="glyphicon glyphicon-asterisk"/>{{else}}<span class="glyphicon glyphicon-lock"/>{{/ifCond}}<b>{{this.label}}</b><span class="pull-right"><a href="../kasper/doc{{this.url}}" target="_blank"><small>[json]</small></a></span></h4>
           <dl class="block-content">
             <dd>
               <p class="panel-description text-justify">{{this.description}}</p>

@@ -1,0 +1,45 @@
+<div class="sidebar-contents-dyn hidden-print" role="complementary">
+    <ul class="nav bs-docs-sidenav">
+
+        {{#if node.commands}}
+        <li class="component-category">
+            <a href="#commands">Commands</a>
+            <ul class="nav subnav">
+                {{#each node.commands}}
+                    <li class="component-item">
+                        <a href="#commands_{{this.label}}">{{this.label}}</a>
+                    </li>
+                {{/each}}
+            </ul>
+        </li>
+        {{/if}}
+
+        {{#if node.queries}}
+        <li class="component-category">
+            <a href="#queries">Queries</a>
+            <ul class="nav subnav">
+                {{#each node.queries}}
+                <li class="component-item">
+                    <a href="#queries_{{this.label}}">{{this.label}}</a>
+                </li>
+                {{/each}}
+            </ul>
+        </li>
+        {{/if}}
+
+        {{#if node.events}}
+        <li class="component-category">
+            <a href="#events">Events</a>
+            <ul class="nav subnav">
+                {{#each node.events}}
+                <li class="component-item">
+                    <a href="#events_{{this.label}}">{{this.label}}</a>
+                </li>
+                {{/each}}
+            </ul>
+        </li>
+        {{/if}}
+
+    </ul>
+    <a class="back-to-top" href="#top">Back to top</a>
+</div>
