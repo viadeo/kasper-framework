@@ -1,4 +1,3 @@
-
 <div class="row">
   <ol class="breadcrumb">
     <li><a id="home-from-{{node.name}}" href="#home">Home</a></li>

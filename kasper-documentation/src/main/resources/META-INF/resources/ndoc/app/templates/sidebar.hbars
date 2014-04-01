@@ -40,6 +40,27 @@
         </li>
         {{/if}}
 
+        <li class="component-category">
+            <a href="#domain">Domain</a>
+            <ul class="nav">
+                {{#if node.concepts}}
+                    {{#each node.concepts}}
+                    <li class="component-item">
+                        <a href="#concepts_{{this.label}}">{{this.name}}</a>
+                    </li>
+                    {{/each}}
+                {{/if}}
+                {{#if node.relations}}
+                    {{#each node.relations}}
+                    <li class="component-item">
+                        <a href="#relations_{{this.label}}">{{this.name}}</a>
+                    </li>
+                    {{/each}}
+                {{/if}}
+            </ul>
+        </li>
+
     </ul>
+
     <a class="back-to-top" href="#top">Back to top</a>
 </div>
