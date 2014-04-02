@@ -47,6 +47,10 @@
             <dd>{{this.type}}</dd>
           </dl>
         {{/if}}
+        <dl class="block-content dl-horizontal">
+          <dt>Repository</dt>
+          <dd>{{#if this.repository}}{{this.repository.name}}{{else}}-{{/if}}</dd>
+        </dl>
         {{#if this.sourceEvents}}
           <dl class="block-content dl-horizontal">
             <dt>Source events</dt>
