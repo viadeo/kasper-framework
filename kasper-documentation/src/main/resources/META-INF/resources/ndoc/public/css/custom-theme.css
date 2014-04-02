@@ -111,23 +111,23 @@ h3.block-content {
     margin: 1px 0;
 }
 
-.panel-body p {
+.panel-body p, .section-body p {
     margin: 0;
 }
 
-.panel-body dl {
+.panel-body dl, .section-body dl {
     border-top: 1px solid #e6e6e6;
     padding-top: 4px;
     padding-bottom: 4px;
     margin: 0;
 }
 
-.panel-body dt {
+.panel-body dt, .section-body dt {
     float: left;
     text-align: left; 
 }
 
-.panel-body dl.no-border {
+.panel-body dl.no-border, .section-body dl.no-border {
     border: none;
 }
 
