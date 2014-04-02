@@ -92,15 +92,15 @@
               var type = '';
               if(item.type == "domain") {
                 type = '<span class="glyphicon glyphicon-unchecked"></span>';
-              } else if(item.type == "command"){
+              } else if(item.type == "commands"){
                 type = '<span class="glyphicon glyphicon-log-in"></span>';
-              } else if(item.type == "query"){
+              } else if(item.type == "queries"){
                 type = '<span class="glyphicon glyphicon-log-out"></span>';
-              } else if(item.type == "event"){
+              } else if(item.type == "events"){
                 type = '<span class="glyphicon glyphicon-new-window"></span>';
-              } else if(item.type == "concept"){
+              } else if(item.type == "concepts"){
                 type = '<span class="glyphicon glyphicon-stop"></span>';
-              } else if(item.type == "relation"){
+              } else if(item.type == "relations"){
                 type = '<span class="glyphicon glyphicon-stop"></span>';
               }
               return $( "<li>" )
@@ -117,7 +117,7 @@
                 console.log("search", type, this.value, domain);
 
                 if(type != "domain") {
-                  go_dyn(nodes[domain], "component-" + this.value);
+                  go_dyn(nodes[domain], type + "_" + this.value);
                 } else {
                   go_dyn(nodes[domain]);
                 }
@@ -203,7 +203,12 @@
           ];
 
           var actualLoad = 0;
-          var f = function() { if(hash) { scrollToAnchor(hash, -60); } };
+          var f = function() { 
+            if(hash) { 
+              scrollToAnchor(hash, -60); 
+              $("#" + hash + " a").trigger("click");
+            } 
+          };
 
           panel_contents.forEach(function(panel_content) {
             $.get(panel_content.url)
@@ -218,11 +223,6 @@
           
           $("#home-from-" + domain.name).click(function() {
             go_home();
-          })
-
-          $('[data-spy="scroll"]').each(function () {
-            console.log('refresh');
-            var $spy = $(this).scrollspy('refresh')
           })
 
           initialize_content_dyn_nav();
@@ -307,23 +307,23 @@
           data.push(get_search_raw("domain", domain.label, domain.name));
 
           $.each(domain.commands, function(n, command) {
-            data.push(get_search_raw("command", command.label, domain.name));
+            data.push(get_search_raw("commands", command.label, domain.name));
           });
 
           $.each(domain.queries, function(n, query) {
-            data.push(get_search_raw("query", query.label, domain.name));
+            data.push(get_search_raw("queries", query.label, domain.name));
           });
 
           $.each(domain.events, function(n, c_event) {
-            data.push(get_search_raw("event", c_event.label, domain.name));
+            data.push(get_search_raw("events", c_event.label, domain.name));
           });
 
           $.each(domain.concepts, function(n, concept) {
-            data.push(get_search_raw("concept", concept.label, domain.name));
+            data.push(get_search_raw("concepts", concept.label, domain.name));
           });
 
           $.each(domain.relations, function(n, relation) {
-            data.push(get_search_raw("relation", relation.label, domain.name));
+            data.push(get_search_raw("relations", relation.label, domain.name));
           });
 
           return data;
@@ -528,6 +528,8 @@
 
       </div>
     </div>
+
+
 
     <footer class="navbar-default">
       <div class="container">
