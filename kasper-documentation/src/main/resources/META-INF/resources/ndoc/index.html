@@ -58,7 +58,27 @@
         var nodes = {};
         var component_urls_per_domain = {};
 
-        /* Search */
+        /** VARIOUS **/
+
+        function execute(expected, actual, f) {
+          if(expected == actual) {
+            f();
+          }
+        }
+
+        function scrollToAnchor(hash, offset){
+          var new_position = $('#'+hash).offset();
+          var new_top_position = new_position.top + offset;
+
+          window.scrollTo(new_position.left, new_top_position);
+        }
+
+        function get_anchor(href) {
+          return href.substring(1, href.length);
+        }
+
+        /** SEARCH **/
+
         function initializeHomeSearch() {
           console.log("initialize home search!");
 
@@ -126,42 +146,146 @@
             });
 
         }
-        /* Search End */
 
-        /* Nav */
+        /** NAVIGATION **/
+
         function go_home() {
           console.log("go home!");
 
           $("#contents > div").hide();
-          $(".nav > li").removeClass("active")
+          $(".nav > li").removeClass("active");
           $("#contents_home").show();
-          $("#home").parent().addClass("active")
+          $("#home").parent().addClass("active");
         }
 
         function go_about() {
           console.log("go about!");
 
           $("#contents > div").hide();
-          $(".nav > li").removeClass("active")
+          $(".nav > li").removeClass("active");
           $("#contents_about").fadeIn("slow");
-          $("#about").parent().addClass("active")
+          $("#about").parent().addClass("active");
         }
 
         function go_contact() {
           console.log("go contact!");
 
           $("#contents > div").hide();
-          $(".nav > li").removeClass("active")
+          $(".nav > li").removeClass("active");
           $("#contents_contact").fadeIn("slow");
-          $("#contact").parent().addClass("active")
+          $("#contact").parent().addClass("active");
         }
 
         function go_dyn(domain, hash) {
           console.log("go dyn", domain.name);
 
           $("#contents_dyn").empty();
-          $(".nav > li").removeClass("active")
+          $(".nav > li").removeClass("active");
 
+          load_dyn(domain, hash);
+
+          $("#contents > div").hide();
+          $("#contents_dyn").fadeIn("slow");
+        }
+
+        function initialize_nav() {
+          console.log("initialize navigation!");
+
+          $("#contents > div").hide();
+          $("#contents_home").show();
+
+          $('#home, .home, #brand').click(function() {
+            go_home();
+          });
+
+          $('#about').click(function() {
+            go_about();
+          });
+
+          $('#contact').click(function() {
+            go_contact();
+          });
+        }
+
+        /** TEMPLATES **/
+
+        function load_templates() {
+          function Template(name, url, initializedFunction) {
+            this.name = name;
+            this.url = url;
+            this.initialized = function(source) {
+              console.log("initialized template ", this);
+              if(initializedFunction) {
+                initializedFunction(source);
+              }
+            }
+          }
+
+          var template_descritors = [
+            new Template(SIDE_BAR_TEMPLATE_KEY, "app/templates/sidebar.hbars"),
+            new Template(DOMAIN_TEMPLATE_KEY, "app/templates/domain-card.hbars"),
+            new Template(COMPONENT_TEMPLATE_KEY, "app/templates/component-card.hbars"),
+            new Template(PANEL_CONTENT_TEMPLATE_KEY, "app/templates/component-panel-content.hbars"),
+            new Template(PANEL_TEMPLATE_KEY, "app/templates/component-panel.hbars"),
+            new Template(DOMAIN_TEMPLATE_KEY, "app/templates/domain-card.hbars"),
+            new Template("domain-box-key", "app/templates/domain-box.hbars", function(template) {
+              load_home_page(template);
+            })
+          ];
+
+          template_descritors.forEach(function(template_descritor) {
+            $.get(template_descritor.url)
+                .done( function(source) {
+                  var template= Handlebars.compile(source);
+                  template_descritor.initialized(template);
+                  cache_templates[template_descritor.name] = template;
+                })
+                .fail(function() {
+                  console.log("failed to load template '" + template_descritor.url + "'");
+                });
+          });
+        }
+
+        /** HOME PAGE **/
+
+        function load_home_page(template) {
+          $.get("http://localhost:9988/kasper/doc/domains")
+              .done(function(data) {
+
+                if (data.list) {
+                  var searchData = [];
+
+                  /* Populate the home page */
+                  $.each(data.list, function(n, domain) {
+
+                    /* Retrieve search data */
+                    searchData = searchData.concat(compute_search_data(domain));
+
+                    /* Reference node*/
+                    component_urls_per_domain[domain.name] = get_url_per_components(domain);
+                    nodes[domain.name] = domain;
+
+                    $("#contents_home .page").append(template({ node: domain }))
+
+                    $("#domain-" + domain.name + "-btn").click(function(){
+                      go_dyn(domain);
+                    });
+
+                    if(n == data.list.length - 1) {
+                      initializeHomeSearch();
+                      initializeGlobalSearch(searchData);
+                    }
+                  });
+                }
+              })
+              .fail(function() {
+                console.log("failed to load data from '/kasper/doc/domains'");
+              });
+        }
+
+        /** DYNAMIC PAGE **/
+
+        function load_dyn(domain, hash) {
           $("#contents_dyn").append('<div id="wrapper_contents_dyn" class="col-md-9" role="main"></div>');
           $("#contents_dyn").append('<div id="sidebar_contents_dyn" class="col-md-3" role="main"></div>');
 
@@ -230,55 +354,15 @@
                 execute(panel_contents.length, ++actualLoad, f);
               });
           });
-
-          $("#contents > div").hide();
-          $("#contents_dyn").fadeIn("slow");
           
           $("#home-from-" + domain.name).click(function() {
             go_home();
-          })
+          });
 
           initialize_content_dyn_nav();
         }
 
-        function execute(expected, actual, f) {
-          if(expected == actual) {
-            f();
-          }
-        }
-
-        function scrollToAnchor(hash, offset){
-          var new_position = $('#'+hash).offset();
-          var new_top_position = new_position.top + offset;
-
-          window.scrollTo(new_position.left, new_top_position);
-        }
-
-        function get_anchor(href) {
-          return href.substring(1, href.length);
-        }
-
-        function initialize_nav() {
-          console.log("initialize navigation!");
-
-          $("#contents > div").hide();
-          $("#contents_home").show();
-
-          $('#home, .home, #brand').click(function() {
-            go_home();
-          })
-
-          $('#about').click(function() {
-            go_about();
-          })
-
-          $('#contact').click(function() {
-            go_contact();
-          })
-        }
-
         function initialize_content_dyn_nav() {
-
           $('.sidebar-contents-dyn a').click(function(event) {
             if( $(this).parent().hasClass("component-category") ) {
               event.preventDefault();
@@ -307,9 +391,8 @@
             }
           });
         }
-        /* Nav End */
 
-        /* Data */
+        /** DATA **/
         function get_search_raw(type, label, domain) {
           return {
             "type":type,
@@ -364,81 +447,12 @@
           return url_per_components;
         }
 
-        function load_home_page(template) {
-          $.get("http://localhost:9988/kasper/doc/domains")
-            .done(function(data) {
-
-              if (data.list) {
-                var searchData = [];
-
-                /* Populate the home page */
-                $.each(data.list, function(n, domain) {
-
-                  /* Retrieve search data */
-                  searchData = searchData.concat(compute_search_data(domain));
-
-                  /* Reference node*/
-                  component_urls_per_domain[domain.name] = get_url_per_components(domain);
-                  nodes[domain.name] = domain;
-
-                  $("#contents_home .page").append(template({ node: domain }))
-                  
-                  $("#domain-" + domain.name + "-btn").click(function(){
-                    go_dyn(domain);
-                  });
-
-                  if(n == data.list.length - 1) {
-                    initializeHomeSearch();  
-                    initializeGlobalSearch(searchData);
-                  }
-                });
-              }
-            })
-            .fail(function() {
-              console.log("failed to load data from '/kasper/doc/domains'");
-            });         
-        }
+        /** END **/
 
         $(document).ready(function() {
-            initialize_nav();
-
-            /* Load templates */
-            function Template(name, url, initializedFunction) {
-              this.name = name;
-              this.url = url;
-              this.initialized = function(source) {
-                console.log("initialized template ", this);
-                if(initializedFunction) {
-                  initializedFunction(source);
-                }
-              }
-            }
-
-            var template_descritors = [ 
-              new Template(SIDE_BAR_TEMPLATE_KEY, "app/templates/sidebar.hbars"),
-              new Template(DOMAIN_TEMPLATE_KEY, "app/templates/domain-card.hbars"),
-              new Template(COMPONENT_TEMPLATE_KEY, "app/templates/component-card.hbars"),
-              new Template(PANEL_CONTENT_TEMPLATE_KEY, "app/templates/component-panel-content.hbars"),
-              new Template(PANEL_TEMPLATE_KEY, "app/templates/component-panel.hbars"),
-              new Template(DOMAIN_TEMPLATE_KEY, "app/templates/domain-card.hbars"),
-              new Template("domain-box-key", "app/templates/domain-box.hbars", function(template) {
-                load_home_page(template);
-              })
-            ];
-
-            template_descritors.forEach(function(template_descritor) {
-              $.get(template_descritor.url)
-                .done( function(source) {
-                  var template= Handlebars.compile(source);
-                  template_descritor.initialized(template);
-                  cache_templates[template_descritor.name] = template;
-                })
-                .fail(function() {
-                  console.log("failed to load template '" + template_descritor.url + "'");
-                });
-            });           
+          initialize_nav();
+          load_templates();
         });
-        /* Data End*/
 
     </script>
   </head>
