@@ -1,0 +1,10 @@
+<div class="panel panel-default">
+  {{#ifCond title "Commands"}}<h3 id="commands" class="panel-heading"><span class="glyphicon glyphicon-log-in"/>{{title}}</h3>{{/ifCond}}
+  {{#ifCond title "Queries"}}<h3 id="queries" class="panel-heading"><span class="glyphicon glyphicon-log-out"/>{{title}}</h3>{{/ifCond}}
+  {{#ifCond title "Events"}}<h3 id="events" class="panel-heading"><span class="glyphicon glyphicon-new-window"/>{{title}}</h3>{{/ifCond}}
+  {{#ifCond title "Domain"}}<h3 id="domain" class="panel-heading"><span class="glyphicon glyphicon-th"/>{{title}}</h3>{{/ifCond}}
+  <div class="panel-body">
+    <div class="list-group">
+    </div>
+  </div>
+</div>

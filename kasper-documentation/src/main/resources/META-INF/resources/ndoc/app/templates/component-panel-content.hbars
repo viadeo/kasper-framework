@@ -1,0 +1,83 @@
+{{#each data.list}}
+  <div id="component-{{this.label}}" class="list-group-item item">
+    <h4 id="{{this.typePlural}}_{{this.label}}" class="list-group-item-heading">
+      <span class="glyphicon glyphicon-stop"/>
+      <b>{{this.label}}</b>
+      <span class="pull-right">
+        <a href="../kasper/doc{{this.url}}" target="_blank"><small>[json]</small></a>
+      </span>
+    </h4>
+    <dl class="block-content">
+      <dd>
+        <p class="panel-description text-justify">{{this.description}}</p>
+      </dd>
+    </dl>
+    {{#if this.properties}}
+    <dl class="block-content dl-horizontal">
+      <dt>Fields</dt>
+      <dd/>
+    </dl>
+    <dl class="block-content dl-horizontal no-border">
+      <dt/>
+      <dd>
+        <table class="table table-striped">
+          <thead><tr><th>Name</th><th>Type</th><th>Constraints</th></tr></thead>
+          <tbody>
+            {{#each this.properties}}
+              <tr>
+                  <td>{{this.name}}</td>
+                  <td>{{this.type}}</td>
+                  <td>{{#if this.constraints}}{{#each this.constraints}}{{this.message}},&nbsp;{{/each}}{{else}}-{{/if}}</td>
+              </tr>
+            {{/each}}
+          </tbody>
+        </table>
+      </dd>
+    </dl>
+    {{/if}}
+    {{#if this.type}}
+      <dl class="block-content dl-horizontal">
+        <dt>Type</dt>
+        <dd>{{this.type}}</dd>
+      </dl>
+    {{/if}}
+    {{#if this.sourceEvents}}
+      <dl class="block-content dl-horizontal">
+        <dt>Source events</dt>
+        <dd>
+          {{#each this.sourceEvents}}<a href="#events_{{this.label}}">{{this.label}}</a>,&nbsp;{{/each}}
+        </dd>
+      </dl>
+    {{/if}}
+    {{#if this.sourceRelations}}
+      <dl class="block-content dl-horizontal">
+        <dt>Source relations</dt>
+        <dd>
+          {{#each this.sourceRelations}}<a href="#relations_{{this.label}}">{{this.label}}</a>,&nbsp;{{/each}}
+        </dd>
+      </dl>
+    {{/if}}
+    {{#if this.targetRelations}}
+      <dl class="block-content dl-horizontal">
+        <dt>Target relations</dt>
+        <dd>
+          {{#each this.targetRelations}}<a href="#relations_{{this.label}}">{{this.label}}</a>,&nbsp;{{/each}}
+        </dd>
+      </dl>
+    {{/if}}
+    {{#if this.sourceConcept}}
+      <dl class="block-content dl-horizontal">
+        <dt>Source</dt>
+        <dd><a href="#concepts_{{this.sourceConcept.label}}">{{this.sourceConcept.label}}</a></dd>
+      </dl>
+    {{/if}}
+    {{#if this.targetConcept}}
+      <dl class="block-content dl-horizontal">
+        <dt>Target</dt>
+        <dd>
+          <a href="#concepts_{{this.targetConcept.label}}">{{this.targetConcept.label}}</a>
+        </dd>
+      </dl>
+    {{/if}}
+  </div>
+{{/each}}
