@@ -15,23 +15,38 @@ public class DocumentedProperty {
 	private final String type;
     private final String defaultValues;
     private final Boolean isList;
+    private final Boolean isLinkedConcept;
     private final Set<DocumentedConstraint> constraints;
 
     private Boolean mandatory = false; /** javax.validation.constraints.NotNull */
 	
 	// ------------------------------------------------------------------------
 
-    public DocumentedProperty(final String name, final String type, final Boolean isList, HashSet<DocumentedConstraint> constraints) {
-        this(name, type, null, isList, constraints);
+    public DocumentedProperty(
+            final String name,
+            final String type,
+            final Boolean isList,
+            final Boolean isLinkedConcept,
+            HashSet<DocumentedConstraint> constraints
+    ) {
+        this(name, type, null, isList, isLinkedConcept, constraints);
     }
 
     // ------------------------------------------------------------------------
 
-	public DocumentedProperty(final String name, final String type, final String defaultValues, final Boolean isList, HashSet<DocumentedConstraint> constraints) {
+	public DocumentedProperty(
+            final String name,
+            final String type,
+            final String defaultValues,
+            final Boolean isList,
+            final Boolean isLinkedConcept,
+            HashSet<DocumentedConstraint> constraints
+    ) {
 		this.name = name;
 		this.type = type;
         this.defaultValues = defaultValues;
         this.isList = isList;
+        this.isLinkedConcept = isLinkedConcept;
         this.constraints = constraints;
     }
 	
@@ -52,6 +67,10 @@ public class DocumentedProperty {
     public Boolean isList() {
 		return this.isList;
 	}
+
+    public Boolean getLinkedConcept() {
+        return isLinkedConcept;
+    }
 
     public Boolean isMandatory() {
         return mandatory;

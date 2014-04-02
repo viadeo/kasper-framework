@@ -22,7 +22,7 @@
             </h4>
           </div>
           <p class="panel-description text-justify">
-            {{#ifCond this.deprecated true}}<span class="glyphicon glyphicon-warning-sign"/></span><strong>Deprecated.</strong>{{/ifCond}}{{this.description}}
+            {{#ifCond this.deprecated true}}<span class="glyphicon glyphicon-warning-sign"/></span><strong>Deprecated.</strong>&nbsp;{{/ifCond}}{{this.description}}
           </p>
           <div id="component-{{this.label}}-collapse" class="panel-collapse collapse">
             <div class="panel-body">

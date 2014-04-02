@@ -110,22 +110,23 @@
               /* ensure to be on the navigation bar*/
               ul.css("z-index", "2000");
               ul.id = "search-autocomplete";
-              var type = '';
+              var prefix = '';
+              var suffix = '';
+
               if(item.type == "domain") {
-                type = '<span class="glyphicon glyphicon-unchecked"></span>';
+                prefix = '<span class="glyphicon glyphicon-unchecked"></span>';
               } else if(item.type == "commands"){
-                type = '<span class="glyphicon glyphicon-log-in"></span>';
+                prefix = '<span class="glyphicon glyphicon-log-in"></span>';
               } else if(item.type == "queries"){
-                type = '<span class="glyphicon glyphicon-log-out"></span>';
+                prefix = '<span class="glyphicon glyphicon-log-out"></span>';
               } else if(item.type == "events"){
-                type = '<span class="glyphicon glyphicon-new-window"></span>';
-              } else if(item.type == "concepts"){
-                type = '<span class="glyphicon glyphicon-stop"></span>';
-              } else if(item.type == "relations"){
-                type = '<span class="glyphicon glyphicon-stop"></span>';
+                prefix = '<span class="glyphicon glyphicon-new-window"></span>';
+              } else if(item.type == "concepts" || item.type == "relations"){
+                prefix = '<span class="glyphicon glyphicon-stop"></span>';
+                suffix = ' (' + item.domain + ')';
               }
               return $( "<li>" )
-                .append( '<a>' + type + item.label + '</a>' )
+                .append( '<a>' + prefix + item.label + suffix + '</a>' )
                 .appendTo( ul );
             };
 
@@ -332,7 +333,10 @@
             $('.link').click(function(event) {
               if( $(this).hasClass("in") ) {
                 event.preventDefault();
-                scrollToAnchor(get_anchor($(this).attr("href")), OFFSET_TOP_NAV);
+
+                var anchor = get_anchor($(this).attr("href"));
+                $("#" + anchor + " a").trigger("click");
+                scrollToAnchor(anchor, OFFSET_TOP_NAV);
               } else if( $(this).hasClass("out") ) {
                 event.preventDefault();
                 go_dyn(nodes[$(this).attr("domain")], get_anchor($(this).attr("href")));
@@ -368,6 +372,7 @@
               event.preventDefault();
 
               $(".component-category").removeClass("active");
+              $(".component-item").removeClass("active");
 
               $(this).parent().addClass("active");
 
@@ -419,11 +424,11 @@
           });
 
           $.each(domain.concepts, function(n, concept) {
-            data.push(get_search_raw("concepts", concept.label, domain.name));
+            data.push(get_search_raw("concepts", concept.name, domain.name));
           });
 
           $.each(domain.relations, function(n, relation) {
-            data.push(get_search_raw("relations", relation.label, domain.name));
+            data.push(get_search_raw("relations", relation.name, domain.name));
           });
 
           return data;

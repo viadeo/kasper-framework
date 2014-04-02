@@ -46,14 +46,14 @@
                 {{#if node.concepts}}
                     {{#each node.concepts}}
                     <li class="component-item">
-                        <a href="#concepts_{{this.label}}">{{this.name}}</a>
+                        <a href="#concepts_{{this.name}}">{{this.name}}</a>
                     </li>
                     {{/each}}
                 {{/if}}
                 {{#if node.relations}}
                     {{#each node.relations}}
                     <li class="component-item">
-                        <a href="#relations_{{this.label}}">{{this.name}}</a>
+                        <a href="#relations_{{this.name}}">{{this.name}}</a>
                     </li>
                     {{/each}}
                 {{/if}}

@@ -9,6 +9,8 @@ package com.viadeo.kasper.doc.nodes;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.doc.nodes.validation.DefaultPropertyValidator;
 import com.viadeo.kasper.doc.nodes.validation.PropertyValidationProcessor;
 import com.viadeo.kasper.er.LinkedConcept;
@@ -49,16 +51,13 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                 if (null != field.getAnnotation(Transient.class)) {
                     continue;
                 }
-
-                if (LinkedConcept.class.isAssignableFrom(field.getType())) {
-                    continue;
-                }
 				
 				if (name.contentEquals("serialVersionUID")) {
 					continue;
 				}
 				
 				final Boolean isList;
+                final Boolean isLinkedConcept;
                 final Class propClass = field.getType();
 				final String type;
                 String defaultValues = null;
@@ -80,6 +79,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 						type = optType.get().getSimpleName();
 					}
 					isList = true;
+                    isLinkedConcept = false;
 					
 				} else if (Map.class.isAssignableFrom(propClass)) {
 
@@ -98,23 +98,43 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 					} else {
 						type = optType.get().getSimpleName();
 					}
-					isList = true;					
+					isList = true;
+                    isLinkedConcept = false;
 					
-				} else {
+				} else if (LinkedConcept.class.isAssignableFrom(propClass)) {
+                    @SuppressWarnings("unchecked")
+                    final Optional<Class> optType =
+                            (Optional<Class>)
+                                    ReflectionGenericsResolver.getParameterTypeFromClass(
+                                            field,
+                                            componentClazz,
+                                            LinkedConcept.class,
+                                            LinkedConcept.CONCEPT_PARAMETER_POSITION
+                                    );
+
+                    if (!optType.isPresent()) {
+                        LOGGER.warn(String.format(
+                                "Unable to find map enclosed type for field %s in class %s",
+                                name, componentClazz.getSimpleName()
+                        ));
+                        type = "unknown";
+                    } else {
+                        type = optType.get().getSimpleName();
+                    }
+
+                    isList = false;
+                    isLinkedConcept = true;
+                } else {
                     type = propClass.getSimpleName();
                     if(propClass.isEnum()) {
                         defaultValues = Arrays.asList(propClass.getEnumConstants()).toString();
                     }
 					isList = false;
+                    isLinkedConcept = false;
 				}
 
                 if ( ! name.startsWith("this$")) {
-                    final DocumentedProperty documentedProperty = new DocumentedProperty(
-                            name,
-                            type,
-                            isList,
-                            Sets.<DocumentedConstraint>newHashSet()
-                    );
+                    final DocumentedProperty documentedProperty = new DocumentedProperty(name, type, defaultValues, isList, isLinkedConcept, Sets.<DocumentedConstraint>newHashSet());
                     processor.process(field, documentedProperty);
                     this.add(documentedProperty);
                 }
