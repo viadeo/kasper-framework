@@ -46,6 +46,7 @@
       });
     </script>
     <script>
+        var OFFSET_TOP_NAV = -65;
 
         var DOMAIN_TEMPLATE_KEY = "domain-template-key";
         var COMPONENT_TEMPLATE_KEY = "component-template-key";
@@ -204,9 +205,21 @@
 
           var actualLoad = 0;
           var f = function() { 
+            $('.link').click(function(event) {
+              if( $(this).hasClass("in") ) {
+                event.preventDefault();
+                scrollToAnchor(get_anchor($(this).attr("href")), OFFSET_TOP_NAV);
+              } else if( $(this).hasClass("out") ) {
+                event.preventDefault();
+                go_dyn(nodes[$(this).attr("domain")], get_anchor($(this).attr("href")));
+              } else {
+                console.log("unknow link");
+              }
+            });
+
             if(hash) { 
-              scrollToAnchor(hash, -60); 
               $("#" + hash + " a").trigger("click");
+              scrollToAnchor(hash, -60); 
             } 
           };
 
@@ -235,12 +248,14 @@
         }
 
         function scrollToAnchor(hash, offset){
-          console.log(">" + hash);
           var new_position = $('#'+hash).offset();
           var new_top_position = new_position.top + offset;
-          console.log("scroll to : " + hash + " at " + new_top_position);
 
           window.scrollTo(new_position.left, new_top_position);
+        }
+
+        function get_anchor(href) {
+          return href.substring(1, href.length);
         }
 
         function initialize_nav() {
@@ -272,8 +287,9 @@
 
               $(this).parent().addClass("active");
 
-              var anchor = $(this).attr("href");
-              scrollToAnchor(anchor.substring(1, anchor.length), -65);
+              var anchor = get_anchor($(this).attr("href"));
+              $("#" + anchor + " a").trigger("click");
+              scrollToAnchor(anchor, OFFSET_TOP_NAV);
 
             } else if( $(this).parent().hasClass("component-item") ) {
               event.preventDefault();
@@ -282,8 +298,9 @@
 
               $(this).parent().addClass("active");
 
-              var anchor = $(this).attr("href");
-              scrollToAnchor(anchor.substring(1, anchor.length), -65);
+              var anchor = get_anchor($(this).attr("href"));
+              $("#" + anchor + " a").trigger("click");
+              scrollToAnchor(anchor, OFFSET_TOP_NAV);
 
             } else {
               $(".component-category").removeClass("active");

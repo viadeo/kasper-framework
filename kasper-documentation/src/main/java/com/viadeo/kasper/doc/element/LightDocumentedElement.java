@@ -38,6 +38,13 @@ public class LightDocumentedElement<E extends AbstractElement> implements WithTy
         return documentedElement.getDescription();
     }
 
+    public String getDomainName() {
+        if(documentedElement instanceof AbstractDomainElement) {
+            return ((AbstractDomainElement)documentedElement).getDomain().getName();
+        }
+        return null;
+    }
+
     public String getURL() {
         return documentedElement.getURL();
     }

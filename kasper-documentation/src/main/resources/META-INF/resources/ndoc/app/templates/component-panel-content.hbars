@@ -45,7 +45,13 @@
           <dl class="block-content dl-horizontal">
             <dt>Source events</dt>
             <dd>
-              {{#each this.sourceEvents}}<a href="#events_{{this.label}}">{{this.label}}</a>,&nbsp;{{/each}}
+              {{#each this.sourceEvents}}
+                {{#ifCond ../domain.name this.domainName}}
+                  <a class="link in" href="#events_{{this.label}}">{{this.label}}</a>,&nbsp;
+                {{else}}
+                  <a class="link out" domain="{{this.domainName}}" href="#events_{{this.label}}">{{this.label}}</a>,&nbsp;
+                {{/ifCond}}
+              {{/each}}
             </dd>
           </dl>
         {{/if}}
@@ -53,7 +59,13 @@
           <dl class="block-content dl-horizontal">
             <dt>Source relations</dt>
             <dd>
-              {{#each this.sourceRelations}}<a href="#relations_{{this.label}}">{{this.label}}</a>,&nbsp;{{/each}}
+              {{#each this.sourceEvents}}
+                {{#ifCond ../domain.name this.domainName}}
+                  <a class="link in" href="#relations_{{this.label}}">{{this.label}}</a>,&nbsp;
+                {{else}}
+                  <a class="link out" domain="{{this.domainName}}" href="#relations_{{this.label}}">{{this.label}}</a>,&nbsp;
+                {{/ifCond}}
+              {{/each}}
             </dd>
           </dl>
         {{/if}}
@@ -61,21 +73,29 @@
           <dl class="block-content dl-horizontal">
             <dt>Target relations</dt>
             <dd>
-              {{#each this.targetRelations}}<a href="#relations_{{this.label}}">{{this.label}}</a>,&nbsp;{{/each}}
+              {{#each this.targetRelations}}
+                {{#ifCond ../domain.name this.domainName}}
+                  <a class="link in" href="#relations_{{this.label}}">{{this.label}}</a>,&nbsp;
+                {{else}}
+                  <a class="link out" domain="{{this.domainName}}" href="#relations_{{this.label}}">{{this.label}}</a>,&nbsp;
+                {{/ifCond}}
+              {{/each}}
             </dd>
           </dl>
         {{/if}}
         {{#if this.sourceConcept}}
           <dl class="block-content dl-horizontal">
             <dt>Source</dt>
-            <dd><a href="#concepts_{{this.sourceConcept.label}}">{{this.sourceConcept.label}}</a></dd>
+            <dd>
+              <a class="link in" href="#concepts_{{this.sourceConcept.label}}">{{this.sourceConcept.label}}</a>,&nbsp;
+            </dd>
           </dl>
         {{/if}}
         {{#if this.targetConcept}}
           <dl class="block-content dl-horizontal">
             <dt>Target</dt>
             <dd>
-              <a href="#concepts_{{this.targetConcept.label}}">{{this.targetConcept.label}}</a>
+              <a class="link in" href="#concepts_{{this.targetConcept.label}}">{{this.targetConcept.label}}</a>
             </dd>
           </dl>
         {{/if}}
