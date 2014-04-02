@@ -1,5 +1,9 @@
 {{#each data.list}}
-  <div class="panel panel-default">
+  {{#ifCond this.deprecated true}}
+    <div class="panel panel-warning alert-warning">
+  {{else}}
+    <div class="panel panel-default">
+  {{/ifCond}}    
     <div class="panel-heading">
       <h4 class="panel-title" id="{{this.typePlural}}_{{this.label}}">
         <a data-toggle="collapse" data-parent="#accordion-domain" href="#component-{{this.label}}-collapse">
@@ -9,7 +13,9 @@
         <span class="pull-right"><a href="../kasper/doc{{this.url}}" target="_blank"><small>[json]</small></a></span>
       </h4>
     </div>
-    <p class="panel-description text-justify">{{this.description}}</p>
+    <p class="panel-description text-justify">
+      {{#ifCond this.deprecated true}}<span class="glyphicon glyphicon-warning-sign"/></span><strong>Deprecated.</strong>{{/ifCond}}{{this.description}}
+    </p>
     <div id="component-{{this.label}}-collapse" class="panel-collapse collapse">
       <div class="panel-body">
         {{#if this.properties}}

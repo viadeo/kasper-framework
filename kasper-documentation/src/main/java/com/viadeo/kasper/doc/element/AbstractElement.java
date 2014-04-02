@@ -17,6 +17,7 @@ public abstract class AbstractElement implements WithType {
     private final DocumentedElementType type;
     private final Class referenceClass;
     private final String name;
+    private final boolean deprecated;
 
     private String label;
     private String description;
@@ -27,6 +28,7 @@ public abstract class AbstractElement implements WithType {
     public AbstractElement(final DocumentedElementType type, final Class referenceClass) {
         this.type = checkNotNull(type);
         this.referenceClass = checkNotNull(referenceClass);
+        this.deprecated = referenceClass.getAnnotation(Deprecated.class) != null;
         this.name = referenceClass.getSimpleName();
         this.label = referenceClass.getSimpleName();
         this.lightDocumentedElement = new LightDocumentedElement(this);
@@ -60,6 +62,10 @@ public abstract class AbstractElement implements WithType {
 
     public String getLabel() {
         return label;
+    }
+
+    public boolean isDeprecated() {
+        return deprecated;
     }
 
     public abstract String getURL();
