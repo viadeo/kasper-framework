@@ -220,6 +220,11 @@
             go_home();
           })
 
+          $('[data-spy="scroll"]').each(function () {
+            console.log('refresh');
+            var $spy = $(this).scrollspy('refresh')
+          })
+
           initialize_content_dyn_nav();
         }
 
@@ -518,7 +523,7 @@
         </div>
 
         <!-- Dynamic page -->
-        <div id="contents_dyn" class="hero-unit container">
+        <div id="contents_dyn" class="hero-unit container" data-spy="scroll" data-target=".sidebar-contents-dyn">
         </div>
 
       </div>

@@ -12,7 +12,9 @@
               <a data-toggle="collapse" data-parent="#accordion-{{data.itemType}}" href="#component-{{this.label}}-collapse">
                   {{#ifCond this.publicAccess false}}<span class="glyphicon glyphicon-lock"/>{{/ifCond}}<b>{{this.label}}</b>
               </a>
-              <span class="pull-right"><a href="../kasper/doc{{this.url}}" target="_blank"><small>[json]</small></a></span>
+              <span class="pull-right">
+                  <a href="../kasper/doc{{this.url}}" target="_blank"><small>[json]</small></a>
+              </span>
             </h4>
           </div>
           <p class="panel-description text-justify">{{this.description}}</p>
@@ -27,13 +29,16 @@
                   <dt/>
                   <dd>
                     <table class="table table-striped">
-                      <thead><tr><th>Name</th><th>Type</th><th>Constraints</th></tr></thead>
+                      <thead><tr><th>Name</th><th>Type</th><th>Values</th><th>Constraints</th></tr></thead>
                       <tbody>
                         {{#each this.properties}}
                           <tr>
                               <td>{{this.name}}</td>
                               <td>{{this.type}}</td>
-                              <td>{{#if this.constraints}}{{#each this.constraints}}{{this.message}},&nbsp;{{/each}}{{else}}-{{/if}}</td>
+                              <td>{{#if this.defaultValues}}{{this.defaultValues}}{{else}}-{{/if}}</td>
+                              <td>
+                                <p><small>{{#if this.constraints}}{{#each this.constraints}}{{this.message}},&nbsp;{{/each}}{{else}}-{{/if}}</small></p>
+                              </td>
                           </tr>
                         {{/each}}
                       </tbody>
@@ -90,12 +95,13 @@
                   <dt/>
                   <dd>
                     <table class="table table-striped">
-                      <thead><tr><th>Name</th><th>Type</th></tr></thead>
+                      <thead><tr><th>Name</th><th>Type</th><th>Values</th></tr></thead>
                       <tbody>
                       {{#each this.response}}
                         <tr>
                           <td>{{this.name}}</td>
                           <td>{{#ifCond this.type "QueryResult"}}{{../../queryHandler.queryResultName}}{{else}}{{this.type}}{{/ifCond}}</td>
+                          <td>{{#if this.defaultValues}}{{this.defaultValues}}{{else}}-{{/if}}</td>
                         </tr>
                       {{/each}}
                       </tbody>

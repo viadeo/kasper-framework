@@ -13,17 +13,25 @@ public class DocumentedProperty {
 
 	private final String name;
 	private final String type;
-	private final Boolean isList;
+    private final String defaultValues;
+    private final Boolean isList;
     private final Set<DocumentedConstraint> constraints;
 
     private Boolean mandatory = false; /** javax.validation.constraints.NotNull */
 	
 	// ------------------------------------------------------------------------
-	
-	public DocumentedProperty(final String name, final String type, final Boolean isList, HashSet<DocumentedConstraint> constraints) {
+
+    public DocumentedProperty(final String name, final String type, final Boolean isList, HashSet<DocumentedConstraint> constraints) {
+        this(name, type, null, isList, constraints);
+    }
+
+    // ------------------------------------------------------------------------
+
+	public DocumentedProperty(final String name, final String type, final String defaultValues, final Boolean isList, HashSet<DocumentedConstraint> constraints) {
 		this.name = name;
 		this.type = type;
-		this.isList = isList;
+        this.defaultValues = defaultValues;
+        this.isList = isList;
         this.constraints = constraints;
     }
 	
@@ -36,8 +44,12 @@ public class DocumentedProperty {
 	public String getType() {
 		return this.type;
 	}
-	
-	public Boolean isList() {
+
+    public String getDefaultValues() {
+        return defaultValues;
+    }
+
+    public Boolean isList() {
 		return this.isList;
 	}
 

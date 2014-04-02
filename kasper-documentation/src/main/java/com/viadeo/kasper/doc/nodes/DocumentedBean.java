@@ -61,6 +61,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 				final Boolean isList;
                 final Class propClass = field.getType();
 				final String type;
+                String defaultValues = null;
 
                 if (Collection.class.isAssignableFrom(propClass)) {
 
@@ -100,10 +101,9 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 					isList = true;					
 					
 				} else {
+                    type = propClass.getSimpleName();
                     if(propClass.isEnum()) {
-                        type = propClass.getSimpleName() + Arrays.asList(propClass.getEnumConstants());
-                    } else {
-                        type = propClass.getSimpleName();
+                        defaultValues = Arrays.asList(propClass.getEnumConstants()).toString();
                     }
 					isList = false;
 				}
