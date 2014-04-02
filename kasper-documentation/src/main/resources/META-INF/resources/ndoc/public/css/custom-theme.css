@@ -132,7 +132,12 @@ h3.block-content {
 }
 
 p.panel-description {
-    margin-bottom: 20px;
+    padding: 10px 15px;
+}
+
+.section .panel {
+    border-radius: 0px;
+    margin-bottom: 5px;
 }
 
 .item:hover {

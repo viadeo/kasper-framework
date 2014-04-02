@@ -8,8 +8,8 @@
 <div class="row">
   <div class="panel panel-default">
       <h2 class="panel-heading"><span class="glyphicon glyphicon-unchecked"/>{{node.name}}<span class="pull-right"><a href="../kasper/doc{{node.url}}" target="_blank"><small>[json]</small></a></span></h2>
+      <p class="panel-description text-justify">{{node.description}}</p>
       <div class="panel-body">
-        <p class="panel-description text-justify">{{node.description}}</p>
         {{#if node.owner}}
         <dl class="block-content dl-horizontal">
             <dt>Owner</dt>

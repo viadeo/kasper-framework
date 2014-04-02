@@ -27,6 +27,7 @@
     <![endif]-->
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="public/js/bootstrap.js"></script>
     <script src="app/js/handlebars.js"></script>
     <script src="app/js/jquery.searchable.js"></script>
     <script src="app/js/jquery-ui-1.10.4.custom.min.js"></script>
@@ -163,13 +164,13 @@
           $("#contents_dyn").append('<div id="wrapper_contents_dyn" class="col-md-9" role="main"></div>');
           $("#contents_dyn").append('<div id="sidebar_contents_dyn" class="col-md-3" role="main"></div>');
 
+          $("#sidebar_contents_dyn").append(cache_templates[SIDE_BAR_TEMPLATE_KEY]({ node: domain }));
+
           $("#wrapper_contents_dyn").append(cache_templates[DOMAIN_TEMPLATE_KEY]({ node: domain }));
           $("#wrapper_contents_dyn").append('<div id="commands-container" class="row"></div>');
           $("#wrapper_contents_dyn").append('<div id="queries-container" class="row"></div>');
           $("#wrapper_contents_dyn").append('<div id="events-container" class="row"></div>');
           $("#wrapper_contents_dyn").append('<div id="domain-container" class="row"></div>');
-
-          $("#sidebar_contents_dyn").append(cache_templates[SIDE_BAR_TEMPLATE_KEY]({ node: domain }));
           
           function PanelContent(url, init) {
             this.url = url;
@@ -178,9 +179,9 @@
 
           function appendDomainComponent(data) {
             if( $("#domain-container .panel").length == 0 ) {
-                $("#domain-container").append(cache_templates[PANEL_TEMPLATE_KEY]( {title: "Domain"} ));
-              }
-              $("#domain-container .list-group").append(cache_templates[PANEL_CONTENT_TEMPLATE_KEY]( { data: data} ));
+              $("#domain-container").append(cache_templates[PANEL_TEMPLATE_KEY]( {title: "Domain"} ));
+            }
+            $("#domain-container .list-group").append(cache_templates[PANEL_CONTENT_TEMPLATE_KEY]( { data: data} ));
           }
 
           var panel_contents = [
@@ -229,6 +230,7 @@
         }
 
         function scrollToAnchor(hash, offset){
+          console.log(">" + hash);
           var new_position = $('#'+hash).offset();
           var new_top_position = new_position.top + offset;
           console.log("scroll to : " + hash + " at " + new_top_position);
