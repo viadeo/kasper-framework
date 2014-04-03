@@ -48,9 +48,12 @@ public class QueryResultResolver extends AbstractResolver<QueryResult> {
         final Optional<Class<? extends QueryResult>> elementClass =
                 (Optional<Class<? extends QueryResult>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
-                                clazz, CollectionQueryResult.class, CollectionQueryResult.PARAMETER_RESULT_POSITION);
+                                clazz,
+                                CollectionQueryResult.class,
+                                CollectionQueryResult.PARAMETER_RESULT_POSITION
+                        );
 
-        if (!elementClass.isPresent()) {
+        if ( ! elementClass.isPresent()) {
             throw new KasperException("Unable to find command type for handler " + clazz.getClass());
         }
 
