@@ -94,8 +94,15 @@ height: 100px;
 
 span.level {
     padding-left: 9px;
-    margin-left: 10px;
     background: url("../assets/ico/sub.png") no-repeat left;
+}
+
+span.n1 {
+    margin-left: 10px;
+}
+
+span.n2 {
+    margin-left: 20px;
 }
 
 /** PANEL and SECTION **/

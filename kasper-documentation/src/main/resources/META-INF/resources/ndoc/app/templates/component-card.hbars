@@ -34,16 +34,7 @@
                     <table class="table table-striped">
                       <thead><tr><th>Name</th><th>Type</th><th>Values</th><th>Constraints</th></tr></thead>
                       <tbody>
-                        {{#each this.properties}}
-                          <tr>
-                              <td>{{this.name}}</td>
-                              <td>{{this.type}}</td>
-                              <td>{{#if this.defaultValues}}{{this.defaultValues}}{{else}}-{{/if}}</td>
-                              <td>
-                                <p><small>{{#if this.constraints}}{{#each this.constraints}}{{this.message}},&nbsp;{{/each}}{{else}}-{{/if}}</small></p>
-                              </td>
-                          </tr>
-                        {{/each}}
+                        {{tr this.properties '["name", "type", "defaultValues", "constraints"]' }}
                       </tbody>
                     </table>
                   </dd>
@@ -100,7 +91,7 @@
                     <table class="table table-striped">
                       <thead><tr><th>Name</th><th>Type</th><th>Values</th></tr></thead>
                       <tbody>
-                      {{tr this.response '["name", "type", "defaultValues"]' this.queryHandler.queryResultName }}
+                      {{tr this.response '["name", "type", "defaultValues"]' }}
                       </tbody>
                     </table>
                   </dd>

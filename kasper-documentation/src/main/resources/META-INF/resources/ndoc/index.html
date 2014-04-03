@@ -33,7 +33,6 @@
     <script src="app/js/jquery-ui-1.10.4.custom.min.js"></script>
     <script>
       $.fn.exists = function () {
-        console.log(">" + this, this);
         return this.length !== 0;
       }
     </script>
@@ -46,6 +45,10 @@
       });
 
       Handlebars.registerHelper('flatten', function (list, separator, key) {
+        return new Handlebars.SafeString(flatten(list, separator, key));
+      });
+
+      function flatten (list, separator, key) {
         var flatten_list = "";
 
         for (var i = 0; i < list.length; i++) {
@@ -54,12 +57,13 @@
           } else {
             flatten_list += list[i][key];
           }
-          if( 0 != list.length - 1 ) {
+          if( i != list.length - 1 ) {
             flatten_list += separator;
           }
         }
-        return new Handlebars.SafeString(flatten_list);
-      });
+
+        return flatten_list;
+      }
 
       Handlebars.registerHelper('component_h3_title', function (title) {
         var h3_title = "";
@@ -319,55 +323,66 @@
 
         /** DYNAMIC PAGE **/
 
-      var results = {};
+        var results = {};
 
-      Handlebars.registerHelper('tr', function (list, keysToString, queryResultName) {
-        var keys = jQuery.parseJSON( keysToString );
+        Handlebars.registerHelper('tr', function (list, keysToString) {
+          var keys = jQuery.parseJSON( keysToString );
+          var res = get_tr(0, list, keys, results);
+          return new Handlebars.SafeString(res);
+        });
 
-console.log("tr results", results);
+        function get_tr(level, properties, keys, query_results) {
+          var res = "";
+          var query_result_name = null;
 
-        var res = get_tr(0, list, keys, queryResultName, results);
+          for (var i = 0; i < properties.length; i++) {
+            res += "<tr class=level_" + level + ">";
+            var has_subtype = false;
 
-        return new Handlebars.SafeString(res);
-      });
-
-      function get_tr(level, properties, keys, query_result_name, query_results) {
-        console.log("level " + level, properties);
-        var res = "";
-
-        for (var i = 0; i < properties.length; i++) {
-          res += "<tr class=level_" + level + ">";
-          var has_subtype = false;
-          
-          for (var j = 0; j < keys.length; j++) {
-            var value = properties[i][keys[j]];
-            
-            if( value == "QueryResult" ) {
-              value = query_result_name;
+            if(properties[i]["queryResult"]) {
               has_subtype = true;
-            } else if( value == null ) {
-              value = "-";  
+              query_result_name = properties[i]["type"];
             }
 
-            if( level > 0 && j === 0 ) {
-              res += '<td><span class="level"/>' + value + '</td>';
+            for (var j = 0; j < keys.length; j++) {
+              var key = keys[j];
+              var value = properties[i][key];
 
-            } else {
-              res += '<td>' + value + '</td>';
+              if( value == null ) {
+                value = "-";
+              }
+
+              if(typeof value === 'object') {
+                value = flatten(value, ",&nbsp;", "message");
+              }
+
+              if (properties[i]["linkedConcept"] && key === "type") {
+                var linked_concept = '<a class="link in" href="#concepts_' + value + '">' + value + '</a>';
+                
+                if (value === "unknown") {
+                  linked_concept = "unknown";
+                }
+
+                value = "LinkedConcept(" + linked_concept + ")";
+              }
+
+              if( level > 0 && j === 0 ) {
+                res += '<td><span class="level n' + level + '"/>' + value + '</td>';
+              } else {
+                res += '<td>' + value + '</td>';
+              }
             }
-          };
 
-          res += "</tr>";
+            res += "</tr>";
 
-          if( has_subtype ) {
-            console.log(query_result_name + "->", query_results);
-            var level_up = level + 1;
-            res += get_tr(level_up, query_results[query_result_name].properties, keys, "", query_results);
+            if( has_subtype ) {
+              var level_up = level + 1;
+              res += get_tr(level_up, query_results[query_result_name].properties, keys, query_results);
+            }
           }
+
+          return res;
         }
-        console.log("level " + level + " res", res);
-        return res;
-      }
 
 
         function load_dyn(domain, hash) {
@@ -403,10 +418,7 @@ console.log("tr results", results);
 
                 query_results.list.forEach(function(query_result) {
                   results[query_result.name] = query_result;
-                  console.log("add " + query_result.name);
                 });
-
-                console.log("init", results);
 
                 $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data } ));
               });
