@@ -4,7 +4,10 @@
 * [Pull 191](https://github.com/viadeo/kasper-framework/pull/191) enrich MDC, normalize hierarcy of default security strategy
 * [Pull 131](https://github.com/viadeo/kasper-framework/pull/131) Use `XKasperAlias` on input object instead of the related handler.
 * [Pull 105](https://github.com/viadeo/kasper-framework/pull/105) Rename module from `kviadeo-web` to `kviadeo-expostion`
-
+* [Pull 182](https://github.com/viadeo/kasper-framework/pull/182) Improve documentation : 
+  - provide more information on an element of a collection result
+  - fix the behavior with the tree
+* [Pull 97](https://github.com/viadeo/kasper-framework/pull/97) Provide and display a list of constraints for each property of a bean
 
 ### Version 0.5.1 (03/20/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.5.1~~))###
 * [Bug] bad metrics names are used in http exposers
