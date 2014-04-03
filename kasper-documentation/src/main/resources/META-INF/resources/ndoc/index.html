@@ -230,6 +230,8 @@
 
           $("#contents > div").hide();
           $("#contents_dyn").fadeIn("slow");
+
+          window.location.hash = "#" + domain.name;
         }
 
         function initialize_nav() {
@@ -249,6 +251,29 @@
           $('#contact').click(function() {
             go_contact();
           });
+        }
+
+        function return_to_window_location_hash() {
+          switch(window.location.hash) {
+            case '#':
+              go_home();
+              break;
+            case '#contact':
+              go_contact();
+              break;
+            case '#about':
+              go_about();
+              break;
+            default:
+              if(window.location.hash.length > 1) {
+                var anchor = get_anchor(window.location.hash);
+                console.log("go to " + anchor, nodes);
+
+
+                go_dyn(nodes[anchor]);
+              }
+              break;
+          } 
         }
 
         /** TEMPLATES **/
@@ -318,6 +343,7 @@
                     if(n == data.list.length - 1) {
                       initializeHomeSearch();
                       initializeGlobalSearch(searchData);
+                      return_to_window_location_hash();
                     }
                   });
                 }

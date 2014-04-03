@@ -13,7 +13,7 @@
       <div class="box">
         <div class="text text-justify">{{node.description}}</div>
       </div>
-      <a id="domain-{{node.name}}-btn" href="#" class="pull-right btn btn-default">More →</a>
+      <a id="domain-{{node.name}}-btn" href="#{{node.name}}" class="pull-right btn btn-default">More →</a>
     </div>
   </div>
 </div>
