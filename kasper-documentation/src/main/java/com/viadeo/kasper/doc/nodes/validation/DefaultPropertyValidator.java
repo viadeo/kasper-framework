@@ -90,8 +90,10 @@ public class DefaultPropertyValidator implements PropertyValidator {
         );
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public void validate(Annotation annotation, DocumentedProperty property) {
+    public void validate(final Annotation annotation, final DocumentedProperty property) {
         if (NotNull.class.isAssignableFrom(annotation.getClass())) {
             validate((NotNull) annotation, property);
         } else if (Null.class.isAssignableFrom(annotation.getClass())) {
@@ -120,4 +122,5 @@ public class DefaultPropertyValidator implements PropertyValidator {
             validate((Digits) annotation, property);
         }
     }
+
 }

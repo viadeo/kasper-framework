@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.doc.nodes.validation;
 
 import com.google.common.collect.Sets;
@@ -16,10 +22,14 @@ public class PropertyValidationProcessorUTest {
 
     private PropertyValidationProcessor processor;
 
+    // ------------------------------------------------------------------------
+
     @Before
     public void setUp(){
         processor = new PropertyValidationProcessor(new DefaultPropertyValidator());
     }
+
+    // ------------------------------------------------------------------------
 
     @Test
     public void process_onField_annotatedByAnyJSR303Annotations_indicateProposal() throws NoSuchFieldException {
@@ -67,6 +77,8 @@ public class PropertyValidationProcessorUTest {
         assertEquals(0, documentedProperty.getConstraints().size());
     }
 
+    // ------------------------------------------------------------------------
+
     public static class ObjectWithConstraints {
         @NotNull
         public String fieldAnnotatedByNotNull;
@@ -80,4 +92,5 @@ public class PropertyValidationProcessorUTest {
     public static class ObjectWithoutConstraints {
         public String field;
     }
+
 }

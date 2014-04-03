@@ -13,10 +13,14 @@ public class DocumentedConstraint {
     private final String type;
     private final String message;
 
+    // ------------------------------------------------------------------------
+
     public DocumentedConstraint(final String type, final String message) {
         this.type = checkNotNull(type);
         this.message = checkNotNull(message);
     }
+
+    // ------------------------------------------------------------------------
 
     public String getType() {
         return type;
@@ -30,4 +34,5 @@ public class DocumentedConstraint {
     public String toString() {
         return message;
     }
+
 }

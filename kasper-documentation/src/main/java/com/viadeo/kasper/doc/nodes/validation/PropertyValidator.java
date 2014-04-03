@@ -13,18 +13,19 @@ import java.lang.annotation.Annotation;
 
 public interface PropertyValidator {
 
-    void validate(final NotNull annotation, final DocumentedProperty property);
-    void validate(final Null annotation, final DocumentedProperty property);
-    void validate(final Min annotation, final DocumentedProperty property);
-    void validate(final Max annotation, final DocumentedProperty property);
-    void validate(final Size annotation, final DocumentedProperty property);
-    void validate(final Past annotation, final DocumentedProperty property);
-    void validate(final Future annotation, final DocumentedProperty property);
-    void validate(final Pattern annotation, final DocumentedProperty property);
-    void validate(final AssertFalse annotation, final DocumentedProperty property);
-    void validate(final AssertTrue annotation, final DocumentedProperty property);
-    void validate(final DecimalMax annotation, final DocumentedProperty property);
-    void validate(final DecimalMin annotation, final DocumentedProperty property);
-    void validate(final Digits annotation, final DocumentedProperty property);
+    void validate(NotNull annotation, DocumentedProperty property);
+    void validate(Null annotation, DocumentedProperty property);
+    void validate(Min annotation, DocumentedProperty property);
+    void validate(Max annotation, DocumentedProperty property);
+    void validate(Size annotation, DocumentedProperty property);
+    void validate(Past annotation, DocumentedProperty property);
+    void validate(Future annotation, DocumentedProperty property);
+    void validate(Pattern annotation, DocumentedProperty property);
+    void validate(AssertFalse annotation, DocumentedProperty property);
+    void validate(AssertTrue annotation, DocumentedProperty property);
+    void validate(DecimalMax annotation, DocumentedProperty property);
+    void validate(DecimalMin annotation, DocumentedProperty property);
+    void validate(Digits annotation, DocumentedProperty property);
     void validate(Annotation annotation, DocumentedProperty property);
+
 }

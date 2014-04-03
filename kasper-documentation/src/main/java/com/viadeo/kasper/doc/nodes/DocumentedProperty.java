@@ -56,7 +56,8 @@ public class DocumentedProperty {
     }
 
 
-    public void appendConstraint(String type, String constraint) {
+    public void appendConstraint(final String type, final String constraint) {
         constraints.add(new DocumentedConstraint(type, constraint));
     }
+
 }

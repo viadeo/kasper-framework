@@ -105,7 +105,12 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 				}
 
                 if ( ! name.startsWith("this$")) {
-                    final DocumentedProperty documentedProperty = new DocumentedProperty(name, type, isList, Sets.<DocumentedConstraint>newHashSet());
+                    final DocumentedProperty documentedProperty = new DocumentedProperty(
+                            name,
+                            type,
+                            isList,
+                            Sets.<DocumentedConstraint>newHashSet()
+                    );
                     processor.process(field, documentedProperty);
                     this.add(documentedProperty);
                 }
