@@ -88,6 +88,18 @@ height: 100px;
     text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
 }
 
+.table tr.level_1 td{
+    margin-left: 10px;
+}
+
+span.level {
+    padding-left: 9px;
+    margin-left: 10px;
+    background: url("../assets/ico/sub.png") no-repeat left;
+}
+
+/** PANEL and SECTION **/
+
 h2.panel-heading, h3.panel-heading {
     margin: 0;
 }

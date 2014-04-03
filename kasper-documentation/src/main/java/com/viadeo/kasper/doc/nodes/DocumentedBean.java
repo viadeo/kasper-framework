@@ -55,6 +55,10 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 				if (name.contentEquals("serialVersionUID")) {
 					continue;
 				}
+
+                if (Modifier.isStatic(field.getModifiers())) {
+                    continue;
+                }
 				
 				final Boolean isList;
                 final Boolean isLinkedConcept;

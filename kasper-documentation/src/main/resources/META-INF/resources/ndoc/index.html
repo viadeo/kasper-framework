@@ -44,6 +44,39 @@
         }
         return options.inverse(this);
       });
+
+      Handlebars.registerHelper('flatten', function (list, separator, key) {
+        var flatten_list = "";
+
+        for (var i = 0; i < list.length; i++) {
+          if("toString" == key) {
+            flatten_list += list[i];
+          } else {
+            flatten_list += list[i][key];
+          }
+          if( 0 != list.length - 1 ) {
+            flatten_list += separator;
+          }
+        }
+        return new Handlebars.SafeString(flatten_list);
+      });
+
+      Handlebars.registerHelper('component_h3_title', function (title) {
+        var h3_title = "";
+        if( title == "Commands" ) {
+          h3_title ='<h3 id="commands" class="section-heading"><span class="glyphicon glyphicon-log-in"/>' + title + '</h3>';
+        }
+        if( title == "Queries" ) {
+          h3_title = '<h3 id="queries" class="section-heading"><span class="glyphicon glyphicon-log-out"/>' + title + '</h3>';
+        }
+        if( title == "Events" ) {
+          h3_title = '<h3 id="events" class="section-heading"><span class="glyphicon glyphicon-new-window"/>' + title + '</h3>';
+        }
+        if( title == "Domain" ) {
+          h3_title = '<h3 id="domain" class="section-heading"><span class="glyphicon glyphicon-th"/>' + title + '</h3>';
+        }
+        return new Handlebars.SafeString(h3_title);
+      });
     </script>
     <script>
         var OFFSET_TOP_NAV = -65;
@@ -286,6 +319,57 @@
 
         /** DYNAMIC PAGE **/
 
+      var results = {};
+
+      Handlebars.registerHelper('tr', function (list, keysToString, queryResultName) {
+        var keys = jQuery.parseJSON( keysToString );
+
+console.log("tr results", results);
+
+        var res = get_tr(0, list, keys, queryResultName, results);
+
+        return new Handlebars.SafeString(res);
+      });
+
+      function get_tr(level, properties, keys, query_result_name, query_results) {
+        console.log("level " + level, properties);
+        var res = "";
+
+        for (var i = 0; i < properties.length; i++) {
+          res += "<tr class=level_" + level + ">";
+          var has_subtype = false;
+          
+          for (var j = 0; j < keys.length; j++) {
+            var value = properties[i][keys[j]];
+            
+            if( value == "QueryResult" ) {
+              value = query_result_name;
+              has_subtype = true;
+            } else if( value == null ) {
+              value = "-";  
+            }
+
+            if( level > 0 && j === 0 ) {
+              res += '<td><span class="level"/>' + value + '</td>';
+
+            } else {
+              res += '<td>' + value + '</td>';
+            }
+          };
+
+          res += "</tr>";
+
+          if( has_subtype ) {
+            console.log(query_result_name + "->", query_results);
+            var level_up = level + 1;
+            res += get_tr(level_up, query_results[query_result_name].properties, keys, "", query_results);
+          }
+        }
+        console.log("level " + level + " res", res);
+        return res;
+      }
+
+
         function load_dyn(domain, hash) {
           $("#contents_dyn").append('<div id="wrapper_contents_dyn" class="col-md-9" role="main"></div>');
           $("#contents_dyn").append('<div id="sidebar_contents_dyn" class="col-md-3" role="main"></div>');
@@ -312,13 +396,24 @@
 
           var panel_contents = [
             new PanelContent("http://localhost:9988/kasper/doc/domain/" + domain.name + "/commands", function(data) {
-              $("#commands-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Commands", data: data} ));
+              $("#commands-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Commands", data: data,  result: results } ));
             }),
             new PanelContent("http://localhost:9988/kasper/doc/domain/" + domain.name + "/queries", function(data) {
-              $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data} ));
+              $.get("http://localhost:9988/kasper/doc/domain/" + domain.name + "/queryResults").done(function(query_results) {
+
+                query_results.list.forEach(function(query_result) {
+                  results[query_result.name] = query_result;
+                  console.log("add " + query_result.name);
+                });
+
+                console.log("init", results);
+
+                $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data } ));
+              });
             }),
             new PanelContent("http://localhost:9988/kasper/doc/domain/" + domain.name + "/events", function(data) {
-              $("#events-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Events", data: data} ));
+              var result = {};
+              $("#events-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Events", data: data,  result: result} ));
             }),
             new PanelContent("http://localhost:9988/kasper/doc/domain/" + domain.name + "/concepts", function(data) {
               appendDomainComponent(data);

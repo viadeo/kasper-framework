@@ -20,7 +20,7 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
     private static final long serialVersionUID = -3864225412367930495L;
 
     /** Generic parameter position for Data Transfer Object */
-    public static final int PARAMETER_RESULT_POSITION = 0;
+    public static int PARAMETER_RESULT_POSITION = 0;
 
 	private final List<RES> list;
 

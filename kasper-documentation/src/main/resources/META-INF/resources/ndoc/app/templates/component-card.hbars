@@ -1,8 +1,5 @@
 <div class="section">
-  {{#ifCond title "Commands"}}<h3 id="commands" class="section-heading"><span class="glyphicon glyphicon-log-in"/>{{title}}</h3>{{/ifCond}}
-  {{#ifCond title "Queries"}}<h3 id="queries" class="section-heading"><span class="glyphicon glyphicon-log-out"/>{{title}}</h3>{{/ifCond}}
-  {{#ifCond title "Events"}}<h3 id="events" class="section-heading"><span class="glyphicon glyphicon-new-window"/>{{title}}</h3>{{/ifCond}}
-  {{#ifCond title "Domain"}}<h3 id="domain" class="section-heading"><span class="glyphicon glyphicon-th"/>{{title}}</h3>{{/ifCond}}
+  {{component_h3_title title}}
   <div class="section-body">
     <div class="panel-group" id="accordion-{{data.itemType}}">
       {{#each data.list}}
@@ -72,7 +69,7 @@
                 <dl class="block-content dl-horizontal">
                   <dt>Handlers</dt>
                   <dd>
-                    <p>{{#each this.eventListeners}}{{this.name}}&nbsp;{{/each}}</p>
+                    <p>{{flatten this.eventListeners "&nbsp;" "name"}}</p>
                   </dd>
                 </dl>
               {{/if}}
@@ -88,7 +85,7 @@
                 <dl class="block-content dl-horizontal">
                   <dt>Alias</dt>
                   <dd>
-                    <p><span class="glyphicon glyphicon-tags"/>{{#each this.aliases}}{{this}}&nbsp;{{/each}}</p>
+                    <p><span class="glyphicon glyphicon-tags"/>{{flatten this.aliases "&nbsp;" "toString"}}</p>
                   </dd>
                 </dl>
               {{/if}}
@@ -103,13 +100,7 @@
                     <table class="table table-striped">
                       <thead><tr><th>Name</th><th>Type</th><th>Values</th></tr></thead>
                       <tbody>
-                      {{#each this.response}}
-                        <tr>
-                          <td>{{this.name}}</td>
-                          <td>{{#ifCond this.type "QueryResult"}}{{../../queryHandler.queryResultName}}{{else}}{{this.type}}{{/ifCond}}</td>
-                          <td>{{#if this.defaultValues}}{{this.defaultValues}}{{else}}-{{/if}}</td>
-                        </tr>
-                      {{/each}}
+                      {{tr this.response '["name", "type", "defaultValues"]' this.queryHandler.queryResultName }}
                       </tbody>
                     </table>
                   </dd>
