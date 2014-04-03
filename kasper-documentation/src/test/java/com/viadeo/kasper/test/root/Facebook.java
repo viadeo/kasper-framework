@@ -3,7 +3,12 @@ package com.viadeo.kasper.test.root;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 
-@XKasperDomain(prefix=Facebook.PREFIX, label=Facebook.NAME, description=Facebook.DESCRIPTION)
+@XKasperDomain(
+        prefix=Facebook.PREFIX,
+        label=Facebook.NAME,
+        description=Facebook.DESCRIPTION,
+        owner = "Mark Zuckerberg <mzuckerberg@facebook.com>"
+)
 public class Facebook implements Domain {
 
 	public static final String PREFIX = "fb";

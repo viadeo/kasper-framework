@@ -6,20 +6,25 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class DocumentedProperty {
 
 	private final String name;
 	private final String type;
 	private final Boolean isList;
+    private final Set<DocumentedConstraint> constraints;
 
     private Boolean mandatory = false; /** javax.validation.constraints.NotNull */
 	
 	// ------------------------------------------------------------------------
 	
-	DocumentedProperty(final String name, final String type, final Boolean isList) {
+	public DocumentedProperty(final String name, final String type, final Boolean isList, HashSet<DocumentedConstraint> constraints) {
 		this.name = name;
 		this.type = type;
 		this.isList = isList;
+        this.constraints = constraints;
     }
 	
 	// ------------------------------------------------------------------------
@@ -36,14 +41,23 @@ public class DocumentedProperty {
 		return this.isList;
 	}
 
-    // ------------------------------------------------------------------------
-
     public Boolean isMandatory() {
         return mandatory;
     }
 
+    public Set<DocumentedConstraint> getConstraints() {
+        return constraints;
+    }
+
+    // ------------------------------------------------------------------------
+
     public void setMandatory(final Boolean mandatory) {
         this.mandatory = mandatory;
+    }
+
+
+    public void appendConstraint(final String type, final String constraint) {
+        constraints.add(new DocumentedConstraint(type, constraint));
     }
 
 }

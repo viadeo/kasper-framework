@@ -39,15 +39,11 @@ public class DomainResolver implements Resolver<Domain> {
             return cacheDomains.get(clazz);
         }
 
-        String domainName = null;
+        String domainName = clazz.getSimpleName().replace("Domain", "");
 
         final XKasperDomain domainAnnotation = clazz.getAnnotation(XKasperDomain.class);
-        if ((null != domainAnnotation) && (! domainAnnotation.label().isEmpty())) {
+        if ((null != domainAnnotation) && ( ! domainAnnotation.label().isEmpty())) {
             domainName = domainAnnotation.label().replaceAll(" ", "");
-        }
-
-        if (null == domainName) {
-            domainName = clazz.getSimpleName().replace("Domain", "");
         }
 
         domainName = domainName.replaceAll(" ", "");
@@ -65,7 +61,7 @@ public class DomainResolver implements Resolver<Domain> {
         final XKasperDomain domainAnnotation =
                 checkNotNull(clazz).getAnnotation(XKasperDomain.class);
 
-        if ((null != domainAnnotation) && (! domainAnnotation.description().isEmpty())) {
+        if ((null != domainAnnotation) && ( ! domainAnnotation.description().isEmpty())) {
             description = domainAnnotation.description();
         }
 
@@ -82,7 +78,7 @@ public class DomainResolver implements Resolver<Domain> {
         final XKasperDomain domainAnnotation =
                 checkNotNull(clazz).getAnnotation(XKasperDomain.class);
 
-        if ((null != domainAnnotation) && (! domainAnnotation.prefix().isEmpty())) {
+        if ((null != domainAnnotation) && ( ! domainAnnotation.prefix().isEmpty())) {
             prefix = domainAnnotation.prefix();
         }
 
@@ -137,4 +133,17 @@ public class DomainResolver implements Resolver<Domain> {
         cacheDomains.clear();
     }
 
+    public String getDomainOwner(Class<? extends Domain> clazz) {
+        final String owner;
+
+        final XKasperDomain domainAnnotation = checkNotNull(clazz).getAnnotation(XKasperDomain.class);
+
+        if ((null != domainAnnotation) && ( ! domainAnnotation.owner().isEmpty())) {
+            owner = domainAnnotation.owner();
+        } else {
+            owner = "unknown";
+        }
+
+        return owner;
+    }
 }

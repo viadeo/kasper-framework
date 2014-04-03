@@ -8,11 +8,17 @@ import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryResult;
 import com.viadeo.kasper.test.root.Facebook;
 
+import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
+
 @XKasperQueryHandler(domain=Facebook.class)
 public class GetMembersQueryHandler extends QueryHandler<GetMembersQueryHandler.GetMembersQuery, GetMembersQueryHandler.MembersResult> {
 
 	public static class GetMembersQuery implements Query {
 		private static final long serialVersionUID = -6513893864054353478L;
+
+        @NotNull
+        @Min(3)
 		public String name;
 	}
 	

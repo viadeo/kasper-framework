@@ -39,6 +39,7 @@ public class DocumentedDomain extends AbstractElement {
 
     private String prefix;
     private Optional<DocumentedDomain> parent;
+    private String owner;
 
     // ------------------------------------------------------------------------
 
@@ -190,6 +191,10 @@ public class DocumentedDomain extends AbstractElement {
         return prefix;
     }
 
+    public String getOwner() {
+        return owner;
+    }
+
     @JsonIgnore
     public Optional<DocumentedDomain> getParent(){
        return parent;
@@ -204,4 +209,9 @@ public class DocumentedDomain extends AbstractElement {
     public void setParent(final Optional<DocumentedDomain> parent) {
         this.parent = parent;
     }
+
+    public void setOwner(String owner) {
+        this.owner = owner;
+    }
+
 }
