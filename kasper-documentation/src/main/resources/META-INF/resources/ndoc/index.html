@@ -113,7 +113,7 @@
           var new_position = $('#'+anchor).offset();
           var new_top_position = new_position.top + offset;
 
-          window.scrollTo(new_position.left, new_top_position);
+          $('html, body').animate( { scrollTop:new_top_position }, 'slow');  
         }
 
         function get_anchor(href) {
