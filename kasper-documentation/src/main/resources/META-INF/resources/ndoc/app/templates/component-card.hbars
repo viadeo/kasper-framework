@@ -1,7 +1,7 @@
 <div class="section">
   {{component_h3_title title}}
   <div class="section-body">
-    <div class="panel-group" id="accordion-{{data.itemType}}">
+    <div class="panel-group">
       {{#each data.list}}
         {{#ifCond this.deprecated true}}
           <div class="panel panel-warning alert-warning">
@@ -10,7 +10,7 @@
         {{/ifCond}}        
           <div class="panel-heading">
             <h4 class="panel-title" id="{{this.typePlural}}_{{this.label}}">
-              <a data-toggle="collapse" data-parent="#accordion-{{data.itemType}}" href="#component-{{this.label}}-collapse">
+              <a data-toggle="collapse" href="#component-{{this.label}}-collapse">
                   {{#ifCond this.publicAccess false}}<span class="glyphicon glyphicon-lock"/>{{/ifCond}}<b>{{this.label}}</b>
               </a>
               <span class="pull-right">
