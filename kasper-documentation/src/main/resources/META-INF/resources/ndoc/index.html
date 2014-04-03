@@ -435,15 +435,19 @@
           }
 
           function appendDomainComponent(data) {
-            if( $("#domain-container .panel").length == 0 ) {
-              $("#domain-container").append(cache_templates[PANEL_TEMPLATE_KEY]( {title: "Domain"} ));
+            if (data.list.length > 0) {
+              if( $("#domain-container .panel").length == 0 ) {
+                $("#domain-container").append(cache_templates[PANEL_TEMPLATE_KEY]( {title: "Domain"} ));
+              }
+              $("#domain-container .list-group").append(cache_templates[PANEL_CONTENT_TEMPLATE_KEY]( { data: data} ));
             }
-            $("#domain-container .list-group").append(cache_templates[PANEL_CONTENT_TEMPLATE_KEY]( { data: data} ));
           }
 
           var panel_contents = [
             new PanelContent("http://localhost:9988/kasper/doc/domain/" + domain.name + "/commands", function(data) {
-              $("#commands-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Commands", data: data,  result: results } ));
+              if (data.list.length > 0) {
+                $("#commands-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Commands", data: data,  result: results } ));
+              }
             }),
             new PanelContent("http://localhost:9988/kasper/doc/domain/" + domain.name + "/queries", function(data) {
               $.get("http://localhost:9988/kasper/doc/domain/" + domain.name + "/queryResults").done(function(query_results) {
@@ -452,12 +456,15 @@
                   results[query_result.name] = query_result;
                 });
 
-                $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data } ));
+                if (data.list.length > 0) {
+                  $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data } ));
+                }
               });
             }),
             new PanelContent("http://localhost:9988/kasper/doc/domain/" + domain.name + "/events", function(data) {
-              var result = {};
-              $("#events-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Events", data: data,  result: result} ));
+              if (data.list.length > 0) {
+                $("#events-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Events", data: data} ));
+              }
             }),
             new PanelContent("http://localhost:9988/kasper/doc/domain/" + domain.name + "/concepts", function(data) {
               appendDomainComponent(data);
