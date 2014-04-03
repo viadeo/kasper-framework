@@ -16,8 +16,10 @@ public class DocumentedProperty {
     private final String defaultValues;
     private final Boolean isList;
     private final Boolean isLinkedConcept;
+    private final Boolean isQueryResult;
     private final Set<DocumentedConstraint> constraints;
 
+    private String elemType;
     private Boolean mandatory = false; /** javax.validation.constraints.NotNull */
 	
 	// ------------------------------------------------------------------------
@@ -27,9 +29,10 @@ public class DocumentedProperty {
             final String type,
             final Boolean isList,
             final Boolean isLinkedConcept,
+            final Boolean isQueryResult,
             HashSet<DocumentedConstraint> constraints
     ) {
-        this(name, type, null, isList, isLinkedConcept, constraints);
+        this(name, type, null, isList, isQueryResult, isLinkedConcept, constraints);
     }
 
     // ------------------------------------------------------------------------
@@ -40,6 +43,7 @@ public class DocumentedProperty {
             final String defaultValues,
             final Boolean isList,
             final Boolean isLinkedConcept,
+            final Boolean isQueryResult,
             HashSet<DocumentedConstraint> constraints
     ) {
 		this.name = name;
@@ -47,6 +51,7 @@ public class DocumentedProperty {
         this.defaultValues = defaultValues;
         this.isList = isList;
         this.isLinkedConcept = isLinkedConcept;
+        this.isQueryResult = isQueryResult;
         this.constraints = constraints;
     }
 	
@@ -65,11 +70,15 @@ public class DocumentedProperty {
     }
 
     public Boolean isList() {
-		return this.isList;
+		return isList;
 	}
 
     public Boolean getLinkedConcept() {
         return isLinkedConcept;
+    }
+
+    public Boolean isQueryResult() {
+        return isQueryResult;
     }
 
     public Boolean isMandatory() {
@@ -78,6 +87,10 @@ public class DocumentedProperty {
 
     public Set<DocumentedConstraint> getConstraints() {
         return constraints;
+    }
+
+    public String getElemType() {
+        return elemType;
     }
 
     // ------------------------------------------------------------------------
@@ -89,6 +102,10 @@ public class DocumentedProperty {
 
     public void appendConstraint(final String type, final String constraint) {
         constraints.add(new DocumentedConstraint(type, constraint));
+    }
+
+    public void setElemType(final String elemType){
+        this.elemType = elemType;
     }
 
 }
