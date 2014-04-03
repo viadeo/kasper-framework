@@ -17,6 +17,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.doc.element.DocumentedCommandHandler.DocumentedCommand;
 import static com.viadeo.kasper.doc.element.DocumentedEventListener.DocumentedEvent;
 import static com.viadeo.kasper.doc.element.DocumentedQueryHandler.DocumentedQuery;
@@ -30,7 +31,7 @@ public class DocumentedDomain extends AbstractElement {
     private final List<DocumentedEventListener> documentedEventListeners;
     private final List<DocumentedRepository> documentedRepositories;
     private final List<DocumentedQuery> queries;
-    private final List<DocumentedQueryResult> queryResults;
+    private final Map<Class, DocumentedQueryResult> queryResults;
     private final List<DocumentedConcept> concepts;
     private final List<DocumentedRelation> relations;
     private final List<DocumentedEvent> events;
@@ -50,7 +51,7 @@ public class DocumentedDomain extends AbstractElement {
         documentedEventListeners = Lists.newArrayList();
         documentedRepositories = Lists.newArrayList();
         queries = Lists.newArrayList();
-        queryResults = Lists.newArrayList();
+        queryResults  = Maps.newHashMap();
         commands = Lists.newArrayList();
         events = Lists.newArrayList();
         relations = Lists.newArrayList();
@@ -60,7 +61,9 @@ public class DocumentedDomain extends AbstractElement {
             final DocumentedQueryHandler documentedQueryHandler = new DocumentedQueryHandler(this, descriptor);
             documentedQueryHandlers.add(documentedQueryHandler);
             queries.add(documentedQueryHandler.getQuery().getFullDocumentedElement());
-            queryResults.add(documentedQueryHandler.getQueryResult().getFullDocumentedElement());
+
+            final LightDocumentedElement<DocumentedQueryResult> queryResult = documentedQueryHandler.getQueryResult();
+            addQueryResult(queryResult.getFullDocumentedElement());
         }
 
         for (final CommandHandlerDescriptor descriptor : domainDescriptor.getCommandHandlerDescriptors()) {
@@ -154,7 +157,17 @@ public class DocumentedDomain extends AbstractElement {
     }
 
     public Collection<DocumentedQueryResult> getQueryResults() {
-        return queryResults;
+        return queryResults.values();
+    }
+
+    @JsonIgnore
+    public Optional<DocumentedQueryResult> getQueryResult(Class queryResultClass) {
+        return Optional.fromNullable(queryResults.get(queryResultClass));
+    }
+
+    public void addQueryResult(DocumentedQueryResult queryResult) {
+        checkNotNull(queryResult);
+        queryResults.put(queryResult.getReferenceClass(), queryResult);
     }
 
     public Collection<DocumentedCommand> getCommands() {
@@ -191,5 +204,4 @@ public class DocumentedDomain extends AbstractElement {
     public void setParent(final Optional<DocumentedDomain> parent) {
         this.parent = parent;
     }
-
 }

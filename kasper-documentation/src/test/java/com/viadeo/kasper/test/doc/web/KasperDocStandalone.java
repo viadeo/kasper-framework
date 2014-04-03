@@ -22,6 +22,8 @@ import com.viadeo.kasper.test.root.entities.Member_connectedTo_Member;
 import com.viadeo.kasper.test.root.events.MemberCreatedEvent;
 import com.viadeo.kasper.test.root.handlers.AddConnectionToMemberHandler;
 import com.viadeo.kasper.test.root.listeners.MemberCreatedEventListener;
+import com.viadeo.kasper.test.root.queries.GetAllMemberQueryHandler;
+import com.viadeo.kasper.test.root.queries.GetMemberQueryHandler;
 import com.viadeo.kasper.test.root.queries.GetMembersQueryHandler;
 import com.viadeo.kasper.test.root.repositories.MemberConnectionsRepository;
 import com.viadeo.kasper.test.root.repositories.MemberRepository;
@@ -36,31 +38,40 @@ public class KasperDocStandalone {
         final String baseUri = "http://localhost:9988/";
 
         final DomainDescriptor domainDescriptor = new DomainDescriptor(
-            Facebook.NAME,
-            Facebook.class,
-            ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(
-                GetMembersQueryHandler.class,
-                GetMembersQueryHandler.GetMembersQuery.class,
-                GetMembersQueryHandler.MembersResult.class)
-            ),
-            ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(
-                AddConnectionToMemberHandler.class,
-                AddConnectionToMemberCommand.class)
-            ),
-            ImmutableList.<RepositoryDescriptor>of(
-                new RepositoryDescriptor(
-                    MemberRepository.class,
-                    DomainDescriptorFactory.toAggregateDescriptor(Member.class)
+                Facebook.NAME,
+                Facebook.class,
+                ImmutableList.<QueryHandlerDescriptor>of(
+                        new QueryHandlerDescriptor(
+                                GetMembersQueryHandler.class,
+                                GetMembersQueryHandler.GetMembersQuery.class,
+                                GetMembersQueryHandler.MembersResult.class),
+                        new QueryHandlerDescriptor(
+                                GetAllMemberQueryHandler.class,
+                                GetAllMemberQueryHandler.GetAllMemberQuery.class,
+                                GetAllMemberQueryHandler.AllMemberResult.class),
+                        new QueryHandlerDescriptor(
+                                GetMemberQueryHandler.class,
+                                GetMemberQueryHandler.GetMemberQuery.class,
+                                GetAllMemberQueryHandler.MemberResult.class)
                 ),
-                new RepositoryDescriptor(
-                    MemberConnectionsRepository.class,
-                    DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class)
+                ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(
+                        AddConnectionToMemberHandler.class,
+                        AddConnectionToMemberCommand.class)
+                ),
+                ImmutableList.<RepositoryDescriptor>of(
+                        new RepositoryDescriptor(
+                                MemberRepository.class,
+                                DomainDescriptorFactory.toAggregateDescriptor(Member.class)
+                        ),
+                        new RepositoryDescriptor(
+                                MemberConnectionsRepository.class,
+                                DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class)
+                        )
+                ),
+                ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(
+                        MemberCreatedEventListener.class,
+                        MemberCreatedEvent.class)
                 )
-            ),
-            ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(
-                MemberCreatedEventListener.class,
-                MemberCreatedEvent.class)
-            )
         );
 
         final DocumentedPlatform documentedPlatform = new DocumentedPlatform();

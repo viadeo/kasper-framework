@@ -13,6 +13,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class AbstractElement implements WithType {
 
+    private final LightDocumentedElement lightDocumentedElement;
     private final DocumentedElementType type;
     private final Class referenceClass;
     private final String name;
@@ -22,11 +23,13 @@ public abstract class AbstractElement implements WithType {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     public AbstractElement(final DocumentedElementType type, final Class referenceClass) {
         this.type = checkNotNull(type);
         this.referenceClass = checkNotNull(referenceClass);
         this.name = referenceClass.getSimpleName();
         this.label = referenceClass.getSimpleName();
+        this.lightDocumentedElement = new LightDocumentedElement(this);
     }
 
     // ------------------------------------------------------------------------
@@ -62,7 +65,9 @@ public abstract class AbstractElement implements WithType {
     public abstract String getURL();
 
     @JsonIgnore
-    public abstract LightDocumentedElement getLightDocumentedElement();
+    public LightDocumentedElement getLightDocumentedElement() {
+        return lightDocumentedElement;
+    }
 
     @JsonIgnore
     public Class getReferenceClass() {
