@@ -41,26 +41,25 @@ public abstract class AbstractResolver<T> implements Resolver<T> {
 
     @Override
     public boolean isPublic(final Class<? extends T> clazz) {
-        final XKasperPublic annotation = checkNotNull(clazz).getAnnotation(XKasperPublic.class);
-        return null != annotation;
+        return (null != checkNotNull(clazz).getAnnotation(XKasperPublic.class));
     }
 
     @Override
     public boolean isDeprecated(final Class<? extends T> clazz) {
-        final Deprecated annotation = checkNotNull(clazz).getAnnotation(Deprecated.class);
-        return null != annotation;
+        return (null != checkNotNull(clazz).getAnnotation(Deprecated.class));
     }
 
     @Override
     public Optional<List<String>> getAliases(final Class<? extends T> clazz) {
         final XKasperAlias annotation = checkNotNull(clazz).getAnnotation(XKasperAlias.class);
-        final List<String> aliases;
 
-        if(null != annotation){
+        final List<String> aliases;
+        if (null != annotation) {
             aliases = Lists.newArrayList(annotation.values());
-        }else{
+        } else {
             aliases = null;
         }
+
         return Optional.fromNullable(aliases);
     }
 
@@ -75,7 +74,7 @@ public abstract class AbstractResolver<T> implements Resolver<T> {
     @Override
     public void clearCache() {
         // FIXME: only clear keys related to an assignable class via identification
-        //        of the generic
+        // FIXME: of the generic
         DOMAINS_CACHE.clear();
     }
 

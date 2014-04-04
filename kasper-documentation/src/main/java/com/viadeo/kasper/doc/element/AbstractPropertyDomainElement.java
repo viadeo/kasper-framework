@@ -27,11 +27,12 @@ public abstract class AbstractPropertyDomainElement extends AbstractDomainElemen
                                          final DocumentedElementType type,
                                          final Class referenceClass){
         super(checkNotNull(domain), checkNotNull(type), checkNotNull(referenceClass));
+
         this.properties = new DocumentedBean(referenceClass);
         this.publicAccess = referenceClass.getAnnotation(XKasperPublic.class) != null;
 
         final XKasperAlias annotation = (XKasperAlias) referenceClass.getAnnotation(XKasperAlias.class);
-        if(annotation != null){
+        if (null != annotation) {
             this.aliases = Lists.newArrayList(annotation.values());
         } else {
             this.aliases = Lists.newArrayList();
@@ -51,4 +52,5 @@ public abstract class AbstractPropertyDomainElement extends AbstractDomainElemen
     public List<String> getAliases() {
         return aliases;
     }
+
 }

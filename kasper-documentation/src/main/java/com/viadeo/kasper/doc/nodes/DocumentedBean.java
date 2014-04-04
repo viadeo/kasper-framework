@@ -30,15 +30,18 @@ import java.util.*;
  */
 public class DocumentedBean extends ArrayList<DocumentedProperty> {
 	private static final long serialVersionUID = 4149894288444871301L;
-
 	private static final Logger LOGGER = LoggerFactory.getLogger(DocumentedBean.class);
 
     // ------------------------------------------------------------------------
 
     public interface Extractor {
-        boolean accept(final Field field);
-        Optional<DocumentedProperty> extract(final Field field, final Class clazz);
+
+        boolean accept(Field field);
+        Optional<DocumentedProperty> extract(Field field, Class clazz);
+
     }
+
+    // ------------------------------------------------------------------------
 
     public static abstract class BaseExtractor implements Extractor{
 
@@ -50,16 +53,20 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
         @Override
         public final Optional<DocumentedProperty> extract(final Field field, final Class clazz) {
-            if(accept(field)) {
+            if (accept(field)) {
                 return doExtract(field, clazz);
-            } else if(next == null) {
+            } else if (null == next) {
                 return Optional.absent();
             } else {
                 return next.extract(field, clazz);
             }
         }
+
         public abstract Optional<DocumentedProperty> doExtract(final Field field, final Class clazz);
+
     }
+
+    // ------------------------------------------------------------------------
 
     public static class NoTransient extends BaseExtractor {
 
@@ -69,7 +76,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
         @Override
         public boolean accept(final Field field) {
-            return null != field.getAnnotation(Transient.class) || Modifier.isTransient(field.getModifiers());
+            return (null != field.getAnnotation(Transient.class)) || Modifier.isTransient(field.getModifiers());
         }
 
         @Override
@@ -77,6 +84,8 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
             return Optional.absent();
         }
     }
+
+    // ------------------------------------------------------------------------
 
     public static class NoConstant extends BaseExtractor {
 
@@ -93,7 +102,10 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
             return Optional.absent();
         }
+
     }
+
+    // ------------------------------------------------------------------------
 
     public static class NoThisDollarInFieldName extends BaseExtractor {
 
@@ -110,7 +122,10 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
             return Optional.absent();
         }
+
     }
+
+    // ------------------------------------------------------------------------
 
     public static class FieldExtractor implements Extractor {
 
@@ -133,7 +148,10 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                     )
             );
         }
+
     }
+
+    // ------------------------------------------------------------------------
 
     public static class EnumExtractor extends BaseExtractor {
 
@@ -160,7 +178,10 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                     )
             );
         }
+
     }
+
+    // ------------------------------------------------------------------------
 
     public static class LinkedConceptExtractor extends BaseExtractor {
 
@@ -187,7 +208,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                                     LinkedConcept.CONCEPT_PARAMETER_POSITION
                             );
 
-            if (!optType.isPresent()) {
+            if ( ! optType.isPresent()) {
                 LOGGER.warn(String.format(
                         "Unable to find map enclosed type for field %s in class %s",
                         field.getName(), clazz.getSimpleName()
@@ -209,7 +230,10 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                     )
             );
         }
+
     }
+
+    // ------------------------------------------------------------------------
 
     public static class CollectionExtractor extends BaseExtractor {
 
@@ -267,7 +291,10 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                 );
             }
         }
+
     }
+
+    // ------------------------------------------------------------------------
 
     public static class MapExtractor extends BaseExtractor {
 
@@ -290,7 +317,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                             field, clazz, Map.class, 1
                     );
 
-            if (!optType.isPresent()) {
+            if ( ! optType.isPresent()) {
                 LOGGER.warn(String.format(
                         "Unable to find map enclosed type for field %s in class %s",
                         field.getName(), clazz.getSimpleName()
@@ -312,17 +339,18 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                     )
             );
         }
+
     }
 
     // ------------------------------------------------------------------------
 
     public DocumentedBean(final Class componentClazz) {
         this(componentClazz,
-                new NoThisDollarInFieldName(new NoTransient(new NoConstant(
-                        new CollectionExtractor(new MapExtractor(new LinkedConceptExtractor(new EnumExtractor(
-                                new FieldExtractor()
-                        ))))
-                )))
+            new NoThisDollarInFieldName(new NoTransient(new NoConstant(
+                new CollectionExtractor(new MapExtractor(new LinkedConceptExtractor(new EnumExtractor(
+                    new FieldExtractor()
+                ))))
+            )))
         );
     }
 
@@ -358,7 +386,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
     private static Class extractClassFromType(final Type t) {
         if (t instanceof Class) {
-            return (Class)t;
+            return (Class) t;
         }
         return (Class)((ParameterizedType)t).getRawType();
     }

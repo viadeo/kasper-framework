@@ -23,11 +23,11 @@ public interface Resolver<T> {
 
     String getDescription(Class<? extends T> clazz);
 
-    boolean isPublic(final Class<? extends T> clazz);
+    boolean isPublic(Class<? extends T> clazz);
 
-    boolean isDeprecated(final Class<? extends T> clazz);
+    boolean isDeprecated(Class<? extends T> clazz);
 
-    Optional<List<String>> getAliases(final Class<? extends T> clazz);
+    Optional<List<String>> getAliases(Class<? extends T> clazz);
 
     void clearCache();
 

@@ -210,7 +210,8 @@ public class DocumentedDomain extends AbstractElement {
         this.parent = parent;
     }
 
-    public void setOwner(String owner) {
+    public void setOwner(final String owner) {
         this.owner = owner;
     }
+
 }

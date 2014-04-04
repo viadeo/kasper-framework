@@ -146,7 +146,7 @@ public class DomainResolver implements Resolver<Domain> {
 
         final XKasperDomain domainAnnotation = checkNotNull(clazz).getAnnotation(XKasperDomain.class);
 
-        if ((null != domainAnnotation) && (!domainAnnotation.owner().isEmpty())) {
+        if ((null != domainAnnotation) && ( ! domainAnnotation.owner().isEmpty())) {
             owner = domainAnnotation.owner();
         } else {
             owner = "unknown";
@@ -159,26 +159,26 @@ public class DomainResolver implements Resolver<Domain> {
 
     @Override
     public boolean isPublic(final Class<? extends Domain> clazz) {
-        final XKasperPublic annotation = checkNotNull(clazz).getAnnotation(XKasperPublic.class);
-        return null != annotation;
+        return (null != checkNotNull(clazz).getAnnotation(XKasperPublic.class));
     }
 
     @Override
     public boolean isDeprecated(final Class<? extends Domain> clazz) {
-        final Deprecated annotation = checkNotNull(clazz).getAnnotation(Deprecated.class);
-        return null != annotation;
+        return (null != checkNotNull(clazz).getAnnotation(Deprecated.class));
     }
 
     @Override
     public Optional<List<String>> getAliases(final Class<? extends Domain> clazz) {
         final XKasperAlias annotation = checkNotNull(clazz).getAnnotation(XKasperAlias.class);
-        final List<String> aliases;
 
-        if(null != annotation){
+        final List<String> aliases;
+        if (null != annotation) {
             aliases = Lists.newArrayList(annotation.values());
-        }else{
+        } else {
             aliases = null;
         }
+
         return Optional.fromNullable(aliases);
     }
+
 }

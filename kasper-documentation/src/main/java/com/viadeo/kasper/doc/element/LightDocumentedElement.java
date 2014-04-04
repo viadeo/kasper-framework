@@ -14,6 +14,8 @@ public class LightDocumentedElement<E extends AbstractElement> implements WithTy
 
     protected final E documentedElement;
 
+    // ------------------------------------------------------------------------
+
     public LightDocumentedElement(final E documentedElement) {
         this.documentedElement = checkNotNull(documentedElement);
     }
@@ -30,7 +32,7 @@ public class LightDocumentedElement<E extends AbstractElement> implements WithTy
         return documentedElement.getName();
     }
 
-    public String getLabel(){
+    public String getLabel() {
         return documentedElement.getLabel();
     }
 
@@ -39,8 +41,8 @@ public class LightDocumentedElement<E extends AbstractElement> implements WithTy
     }
 
     public String getDomainName() {
-        if(documentedElement instanceof AbstractDomainElement) {
-            return ((AbstractDomainElement)documentedElement).getDomain().getName();
+        if (documentedElement instanceof AbstractDomainElement) {
+            return ((AbstractDomainElement) documentedElement).getDomain().getName();
         }
         return null;
     }

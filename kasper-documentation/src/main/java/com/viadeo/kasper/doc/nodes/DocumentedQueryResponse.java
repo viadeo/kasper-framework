@@ -39,15 +39,15 @@ public class DocumentedQueryResponse extends DocumentedBean {
         @Override
         public Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
             return Optional.of(
-                    new DocumentedProperty(
-                            field.getName(),
-                            queryResultClass.getSimpleName(),
-                            null,
-                            false,
-                            false,
-                            true,
-                            Sets.<DocumentedConstraint>newHashSet()
-                    )
+                new DocumentedProperty(
+                    field.getName(),
+                    queryResultClass.getSimpleName(),
+                    null,
+                    false,
+                    false,
+                    true,
+                    Sets.<DocumentedConstraint>newHashSet()
+                )
             );
         }
     }
@@ -77,10 +77,7 @@ public class DocumentedQueryResponse extends DocumentedBean {
             final DocumentedProperty documentedProperty = new DocumentedProperty(
                     field.getName(),
                     queryResultClass.getSimpleName(),
-                    null,
-                    false,
-                    false,
-                    true,
+                    null, false, false, true,
                     Sets.<DocumentedConstraint>newHashSet()
             );
             documentedProperty.setElemType(((Class) parameters[0]).getSimpleName());
@@ -93,10 +90,12 @@ public class DocumentedQueryResponse extends DocumentedBean {
 
     public DocumentedQueryResponse(Class queryResultClass) {
         super(QueryResponse.class,
-                new NoThisDollarInFieldName(new NoTransient(new NoConstant(
-                        new CollectionExtractor(new MapExtractor(new LinkedConceptExtractor(new EnumExtractor(
-                                new CollectionQueryResultExtractor(new QueryResultExtractor(new FieldExtractor(), queryResultClass), queryResultClass)
-                        ))))
-                ))));
+            new NoThisDollarInFieldName(new NoTransient(new NoConstant(
+                new CollectionExtractor(new MapExtractor(new LinkedConceptExtractor(new EnumExtractor(
+                    new CollectionQueryResultExtractor(new QueryResultExtractor(new FieldExtractor(), queryResultClass), queryResultClass)
+                ))))
+            )))
+        );
     }
+
 }

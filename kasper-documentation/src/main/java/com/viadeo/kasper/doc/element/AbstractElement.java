@@ -28,7 +28,7 @@ public abstract class AbstractElement implements WithType {
     public AbstractElement(final DocumentedElementType type, final Class referenceClass) {
         this.type = checkNotNull(type);
         this.referenceClass = checkNotNull(referenceClass);
-        this.deprecated = referenceClass.getAnnotation(Deprecated.class) != null;
+        this.deprecated = (null != referenceClass.getAnnotation(Deprecated.class));
         this.name = referenceClass.getSimpleName();
         this.label = referenceClass.getSimpleName();
         this.lightDocumentedElement = new LightDocumentedElement(this);
