@@ -1,0 +1,106 @@
+<div class="section">
+  {{component_h3_title title}}
+  <div class="section-body">
+    <div class="panel-group">
+      {{#each data.list}}
+        {{#ifCond this.deprecated true}}
+          <div class="panel panel-warning alert-warning">
+        {{else}}
+          <div class="panel panel-default">
+        {{/ifCond}}        
+          <div class="panel-heading">
+            <h4 class="panel-title" id="{{this.typePlural}}_{{this.label}}">
+              <a data-toggle="collapse" href="#component-{{this.label}}-collapse">
+                  {{#ifCond this.publicAccess false}}<span class="glyphicon glyphicon-lock"/>{{/ifCond}}<b>{{this.label}}</b>
+              </a>
+              <span class="pull-right">
+                  <a href="../kasper/doc{{this.url}}" target="_blank"><small>[json]</small></a>
+              </span>
+            </h4>
+          </div>
+          <p class="panel-description text-justify">
+            {{#ifCond this.deprecated true}}<span class="glyphicon glyphicon-warning-sign"/></span><strong>Deprecated.</strong>&nbsp;{{/ifCond}}{{this.description}}
+          </p>
+          <div id="component-{{this.label}}-collapse" class="panel-collapse collapse">
+            <div class="panel-body">
+              {{#if this.properties}}
+                <dl class="block-content dl-horizontal">
+                  <dt>Fields</dt>
+                  <dd/>
+                </dl>
+                <dl class="block-content dl-horizontal no-border">
+                  <dt/>
+                  <dd>
+                    <table class="table table-striped">
+                      <thead><tr><th>Name</th><th>Type</th><th>Values</th><th>Constraints</th></tr></thead>
+                      <tbody>
+                        {{tr this.properties '["name", "type", "defaultValues", "constraints"]' }}
+                      </tbody>
+                    </table>
+                  </dd>
+                </dl>
+              {{/if}}
+              {{#if this.queryHandler}}
+                <dl class="block-content dl-horizontal">
+                  <dt>Handler</dt>
+                  <dd>
+                    <p>{{this.queryHandler.name}}</p>
+                  </dd>
+                </dl>
+              {{/if}}
+              {{#if this.commandHandler}}
+                <dl class="block-content dl-horizontal">
+                  <dt>Handler</dt>
+                  <dd>
+                    <p>{{this.commandHandler.name}}</p>
+                  </dd>
+                </dl>
+              {{/if}}
+              {{#if this.eventListeners}}
+                <dl class="block-content dl-horizontal">
+                  <dt>Handlers</dt>
+                  <dd>
+                    <p>{{flatten this.eventListeners "&nbsp;" "name"}}</p>
+                  </dd>
+                </dl>
+              {{/if}}
+              {{#if this.action}}
+                <dl class="block-content dl-horizontal">
+                  <dt>Action</dt>
+                  <dd>
+                    <p>{{this.action}}</p>
+                  </dd>
+                </dl>
+              {{/if}}
+              {{#if this.aliases}}
+                <dl class="block-content dl-horizontal">
+                  <dt>Alias</dt>
+                  <dd>
+                    <p><span class="glyphicon glyphicon-tags"/>{{flatten this.aliases "&nbsp;" "toString"}}</p>
+                  </dd>
+                </dl>
+              {{/if}}
+              {{#if this.response}}
+                <dl class="block-content dl-horizontal">
+                  <dt>Response</dt>
+                  <dd/>
+                </dl>
+                <dl class="block-content dl-horizontal no-border">
+                  <dt/>
+                  <dd>
+                    <table class="table table-striped">
+                      <thead><tr><th>Name</th><th>Type</th><th>Values</th></tr></thead>
+                      <tbody>
+                      {{tr this.response '["name", "type", "defaultValues"]' }}
+                      </tbody>
+                    </table>
+                  </dd>
+                </dl>
+              {{/if}}
+            </div>
+          </div>
+        </div>
+      {{/each}}
+    </div>
+  </div>
+</div>

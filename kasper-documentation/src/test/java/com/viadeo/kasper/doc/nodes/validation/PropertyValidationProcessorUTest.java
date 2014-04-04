@@ -36,7 +36,7 @@ public class PropertyValidationProcessorUTest {
         // Given nothing
         final Field field = ObjectWithConstraints.class.getField("fieldAnnotatedByNotNull");
         final DocumentedProperty documentedProperty = new DocumentedProperty(
-                field.getName(), field.getType().getSimpleName(), false, Sets.<DocumentedConstraint>newHashSet()
+                field.getName(), field.getType().getSimpleName(), false, false, false, Sets.<DocumentedConstraint>newHashSet()
         );
 
         // When
@@ -52,7 +52,7 @@ public class PropertyValidationProcessorUTest {
         // Given nothing
         final Field field = ObjectWithConstraints.class.getField("fieldAnnotatedByTransient");
         final DocumentedProperty documentedProperty = new DocumentedProperty(
-                field.getName(), field.getType().getSimpleName(), false, Sets.<DocumentedConstraint>newHashSet()
+                field.getName(), field.getType().getSimpleName(), false, false, false, Sets.<DocumentedConstraint>newHashSet()
         );
 
         // When
@@ -67,7 +67,7 @@ public class PropertyValidationProcessorUTest {
         // Given nothing
         final Field field = ObjectWithConstraints.class.getField("unannotatedField");
         final DocumentedProperty documentedProperty = new DocumentedProperty(
-                field.getName(), field.getType().getSimpleName(), false, Sets.<DocumentedConstraint>newHashSet()
+                field.getName(), field.getType().getSimpleName(), false, false, false, Sets.<DocumentedConstraint>newHashSet()
         );
 
         // When

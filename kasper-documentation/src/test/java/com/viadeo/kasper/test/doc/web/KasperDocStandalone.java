@@ -7,6 +7,7 @@
 package com.viadeo.kasper.test.doc.web;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Lists;
 import com.sun.jersey.api.container.grizzly2.GrizzlyServerFactory;
 import com.sun.jersey.api.core.PackagesResourceConfig;
 import com.sun.jersey.api.core.ResourceConfig;
@@ -15,6 +16,7 @@ import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
+import com.viadeo.kasper.test.applications.Applications;
 import com.viadeo.kasper.test.root.Facebook;
 import com.viadeo.kasper.test.root.commands.AddConnectionToMemberCommand;
 import com.viadeo.kasper.test.root.entities.Member;
@@ -76,6 +78,15 @@ public class KasperDocStandalone {
 
         final DocumentedPlatform documentedPlatform = new DocumentedPlatform();
         documentedPlatform.registerDomain(Facebook.NAME, domainDescriptor);
+        documentedPlatform.registerDomain(Applications.NAME, new DomainDescriptor(
+                Applications.NAME,
+                Applications.class,
+                Lists.<QueryHandlerDescriptor>newArrayList(),
+                Lists.<CommandHandlerDescriptor>newArrayList(),
+                Lists.<RepositoryDescriptor>newArrayList(),
+                Lists.<EventListenerDescriptor>newArrayList()
+                )
+        );
         documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
 
         final KasperDocResource res = new KasperDocResource(documentedPlatform);
@@ -89,6 +100,7 @@ public class KasperDocStandalone {
         final HttpServer server = GrizzlyServerFactory.createHttpServer(baseUri, rc);
 
         server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("src/main/resources/META-INF/resources/doc/"),"/doc");
+        server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("src/main/resources/META-INF/resources/ndoc/"),"/ndoc");
 
         System.out.println(String.format("Try out %skasper/doc/domains \nAccess UI at %sdoc/index.htm", baseUri, baseUri, baseUri));
 

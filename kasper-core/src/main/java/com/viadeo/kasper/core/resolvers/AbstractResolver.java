@@ -7,9 +7,13 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.annotation.XKasperAlias;
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.security.annotation.XKasperPublic;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -35,6 +39,32 @@ public abstract class AbstractResolver<T> implements Resolver<T> {
 
     // ------------------------------------------------------------------------
 
+    @Override
+    public boolean isPublic(final Class<? extends T> clazz) {
+        return (null != checkNotNull(clazz).getAnnotation(XKasperPublic.class));
+    }
+
+    @Override
+    public boolean isDeprecated(final Class<? extends T> clazz) {
+        return (null != checkNotNull(clazz).getAnnotation(Deprecated.class));
+    }
+
+    @Override
+    public Optional<List<String>> getAliases(final Class<? extends T> clazz) {
+        final XKasperAlias annotation = checkNotNull(clazz).getAnnotation(XKasperAlias.class);
+
+        final List<String> aliases;
+        if (null != annotation) {
+            aliases = Lists.newArrayList(annotation.values());
+        } else {
+            aliases = null;
+        }
+
+        return Optional.fromNullable(aliases);
+    }
+
+    // ------------------------------------------------------------------------
+
     public void setDomainResolver(final DomainResolver domainResolver) {
         this.domainResolver = checkNotNull(domainResolver);
     }
@@ -44,7 +74,7 @@ public abstract class AbstractResolver<T> implements Resolver<T> {
     @Override
     public void clearCache() {
         // FIXME: only clear keys related to an assignable class via identification
-        //        of the generic
+        // FIXME: of the generic
         DOMAINS_CACHE.clear();
     }
 
