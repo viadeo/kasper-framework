@@ -1,25 +1,3 @@
-@font-face{
-    font-family:'WebSymbolsRegular';
-    src:url('../fonts/WebSymbols-Regular.eot');
-    src:url('../fonts/WebSymbols-Regular.eot?#iefix') format('embedded-opentype'),
-        url('../fonts/WebSymbols-Regular.svg#squarespace-ui-font') format('svg'),
-        url('../fonts/WebSymbols-Regular.woff') format('woff'),
-        url('../fonts/WebSymbols-Regular.ttf') format('truetype');
-    font-weight:normal;
-    font-style:normal;
-}
-
-@font-face{
-    font-family:'CircleCaps';
-    src:url('../fonts/CircleCaps.eot');
-    src:url('../fonts/CircleCaps.eot?#iefix') format('embedded-opentype'),
-    url('../fonts/CircleCaps.svg#squarespace-ui-font') format('svg'),
-    url('../fonts/CircleCaps.woff') format('woff'),
-    url('../fonts/CircleCaps.ttf') format('truetype');
-    font-weight:normal;
-    font-style:normal;
-}
-
 .no-border {
     border: none;
 }
