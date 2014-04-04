@@ -167,7 +167,7 @@ public class KasperPlatformCommandResultValidator
         if ((null == response())
                 || (null == ((CommandResponse) response()).getReason())
                 || ! ERROR.equals(((CommandResponse) response()).getStatus())
-                || ! ((CommandResponse) response()).getReason().getCode().contentEquals(code.toString())) {
+                || ! ((CommandResponse) response()).getReason().getCode().contentEquals(code.name())) {
             throw new AxonAssertionError(
                     "Command did not answered the expected error code"
             );
@@ -182,7 +182,7 @@ public class KasperPlatformCommandResultValidator
         if ((null == response())
                 || (null == ((CommandResponse) response()).getReason())
                 || ! REFUSED.equals(((CommandResponse) response()).getStatus())
-                || ! ((CommandResponse) response()).getReason().getCode().contentEquals(code.toString())) {
+                || ! ((CommandResponse) response()).getReason().getCode().contentEquals(code.name())) {
             throw new AxonAssertionError(
                     "Command did not answered the expected error code"
             );

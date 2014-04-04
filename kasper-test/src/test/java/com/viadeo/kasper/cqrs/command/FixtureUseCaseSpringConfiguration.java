@@ -34,6 +34,17 @@ public class FixtureUseCaseSpringConfiguration {
     }
 
     @Bean
+    public TestCoreReasonCodeCommandHandler coreReasonCodeCommandHandler() {
+        return new TestCoreReasonCodeCommandHandler();
+    }
+
+    @Bean
+    public TestCommandHandler commandHandler() {
+        return new TestCommandHandler();
+    }
+
+
+    @Bean
     public TestChangeLastNameCommandHandler changeLastNameCommandHandler() {
         return new TestChangeLastNameCommandHandler();
     }
@@ -41,6 +52,11 @@ public class FixtureUseCaseSpringConfiguration {
     @Bean
     public TestGetSomeDataQueryHandler queryHandler() {
         return new TestGetSomeDataQueryHandler();
+    }
+
+    @Bean
+    public TestCoreReasonCodeQueryHandler coreReasonCodeQueryHandler() {
+        return new TestCoreReasonCodeQueryHandler();
     }
 
 }
