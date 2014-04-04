@@ -260,10 +260,90 @@ public class FixtureUseCase {
         }
     }
 
+    public static class TestCoreReasonCodeQuery implements Query {
+
+        private static final long serialVersionUID = 1881078049619434902L;
+
+        @NotNull
+        private final CoreReasonCode coreReasonCode;
+
+        public TestCoreReasonCodeQuery(CoreReasonCode coreReasonCode) {
+            this.coreReasonCode = coreReasonCode;
+        }
+
+        public CoreReasonCode getCoreReasonCode() {
+            return coreReasonCode;
+        }
+    }
+
+    @XKasperQueryHandler( domain = TestDomain.class )
+    public static class TestCoreReasonCodeQueryHandler extends QueryHandler<TestCoreReasonCodeQuery, TestResult> {
+        public QueryResponse<TestResult> retrieve(final TestCoreReasonCodeQuery query) throws Exception {
+            return QueryResponse.error(query.getCoreReasonCode());
+        }
+    }
+
+    public static class TestCoreReasonCodeCommand implements Command {
+        private static final long serialVersionUID = 2036940809846760347L;
+
+        @NotNull
+        private final CoreReasonCode coreReasonCode;
+
+        public TestCoreReasonCodeCommand(CoreReasonCode coreReasonCode) {
+            this.coreReasonCode = coreReasonCode;
+        }
+
+        public CoreReasonCode getCoreReasonCode() {
+            return coreReasonCode;
+        }
+    }
+
+    @XKasperCommandHandler( domain = TestDomain.class )
+    public static class TestCoreReasonCodeCommandHandler extends CommandHandler<TestCoreReasonCodeCommand> {
+        @Override
+        public CommandResponse handle(TestCoreReasonCodeCommand command) throws Exception {
+            return CommandResponse.error(command.getCoreReasonCode());
+        }
+    }
+
+    public static class TestCommand implements Command {
+        private static final long serialVersionUID = -5960872900042393220L;
+
+        @NotNull
+        private final String type;
+        TestCommand(final String type) {
+            this.type = type;
+        }
+        String getType() {
+            return this.type;
+        }
+    }
+
+    @XKasperCommandHandler( domain = TestDomain.class )
+    public static class TestCommandHandler extends CommandHandler<TestCommand> {
+        @Override
+        public CommandResponse handle(TestCommand command) throws Exception {
+            if (command.getType().contentEquals("REFUSED")) {
+                return CommandResponse.refused(new KasperReason("REFUSED", "Go To Hell"));
+            } else if (command.getType().contentEquals("ERROR")) {
+                return CommandResponse.error(new KasperReason("ERROR", "I'm bad"));
+            }
+            return CommandResponse.ok();
+        }
+    }
+
     public static DomainBundle getDomainBundle() {
         return new DefaultDomainBundle(
-                  Lists.<CommandHandler>newArrayList( new TestCreateCommandHandler(), new TestChangeLastNameCommandHandler())
-                , Lists.<QueryHandler>newArrayList( new TestGetSomeDataQueryHandler())
+                  Lists.<CommandHandler>newArrayList(
+                          new TestCreateCommandHandler(),
+                          new TestChangeLastNameCommandHandler(),
+                          new TestCoreReasonCodeCommandHandler(),
+                          new TestCommandHandler()
+                  )
+                , Lists.<QueryHandler>newArrayList(
+                          new TestGetSomeDataQueryHandler(),
+                          new TestCoreReasonCodeQueryHandler()
+                )
                 , Lists.<Repository>newArrayList(new TestRepository())
                 , Lists.<EventListener>newArrayList()
                 , Lists.<QueryInterceptorFactory>newArrayList()
