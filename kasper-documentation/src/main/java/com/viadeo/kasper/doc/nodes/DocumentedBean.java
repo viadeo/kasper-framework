@@ -373,7 +373,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         }
     }
 	
-	protected static List<Field> getAllFields(final List<Field> fields, final Type type) {
+	public static List<Field> getAllFields(final List<Field> fields, final Type type) {
         final Class typeClass = extractClassFromType(type);
         Collections.addAll(fields, typeClass.getDeclaredFields());
 

@@ -2,7 +2,7 @@
   <div class="panel panel-default">
     <h3 class="panel-heading">
       <span class="glyphicon glyphicon-unchecked"/>
-      <span class="domain-box-selector">{{node.name}}</span>
+      <span class="domain-box-selector">{{node.label}}</span>
       <small class="pull-right">
           <span class="glyphicon glyphicon-log-in">{{#if node.commands}}{{node.commands.length}}{{else}}0{{/if}}</span>
           <span class="glyphicon glyphicon-log-out">{{#if node.queries}}{{node.queries.length}}{{else}}0{{/if}}</span>

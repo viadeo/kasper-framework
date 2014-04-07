@@ -30,7 +30,7 @@ public abstract class AbstractDomainElement extends AbstractElement {
         return String.format(
                 "/%s/%s/%s/%s",
                 domain.getType(),
-                domain.getName(),
+                domain.getLabel(),
                 getType(),
                 getName()
         );
