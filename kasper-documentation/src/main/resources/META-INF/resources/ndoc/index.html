@@ -267,9 +267,6 @@
             default:
               if(window.location.hash.length > 1) {
                 var anchor = get_anchor(window.location.hash);
-                console.log("go to " + anchor, nodes);
-
-
                 go_dyn(nodes[anchor]);
               }
               break;
@@ -318,7 +315,7 @@
         /** HOME PAGE **/
 
         function load_home_page(template) {
-          $.get("http://localhost:9988/kasper/doc/domains")
+          $.get("/kasper/doc/domains")
               .done(function(data) {
 
                 if (data.list) {
@@ -398,6 +395,10 @@
                 value = "LinkedConcept(" + linked_concept + ")";
               }
 
+              if (properties[i]["list"] && key === "type") {
+                value = "List(" + value + ")";
+              }
+
               if( level > 0 && j === 0 ) {
                 res += '<td><span class="level n' + level + '"/>' + value + '</td>';
               } else {
@@ -409,7 +410,11 @@
 
             if( has_subtype ) {
               var level_up = level + 1;
-              res += get_tr(level_up, query_results[query_result_name].properties, keys, query_results);
+              if (typeof query_results[query_result_name] != 'undefined') {
+                res += get_tr(level_up, query_results[query_result_name].properties, keys, query_results);
+              } else {
+                console.log("level: " + level + ", query_result_name: " + query_result_name, query_results[query_result_name]);
+              }
             }
           }
 
@@ -444,13 +449,13 @@
           }
 
           var panel_contents = [
-            new PanelContent("http://localhost:9988/kasper/doc/domain/" + domain.name + "/commands", function(data) {
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/commands", function(data) {
               if (data.list.length > 0) {
                 $("#commands-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Commands", data: data,  result: results } ));
               }
             }),
-            new PanelContent("http://localhost:9988/kasper/doc/domain/" + domain.name + "/queries", function(data) {
-              $.get("http://localhost:9988/kasper/doc/domain/" + domain.name + "/queryResults").done(function(query_results) {
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/queries", function(data) {
+              $.get("/kasper/doc/domain/" + domain.label + "/queryResults").done(function(query_results) {
 
                 query_results.list.forEach(function(query_result) {
                   results[query_result.name] = query_result;
@@ -461,15 +466,15 @@
                 }
               });
             }),
-            new PanelContent("http://localhost:9988/kasper/doc/domain/" + domain.name + "/events", function(data) {
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/events", function(data) {
               if (data.list.length > 0) {
                 $("#events-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Events", data: data} ));
               }
             }),
-            new PanelContent("http://localhost:9988/kasper/doc/domain/" + domain.name + "/concepts", function(data) {
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/concepts", function(data) {
               appendDomainComponent(data);
             }),
-            new PanelContent("http://localhost:9988/kasper/doc/domain/" + domain.name + "/relations", function(data) {
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/relations", function(data) {
               appendDomainComponent(data);
             })
           ];
@@ -488,7 +493,7 @@
                 event.preventDefault();
                 go_dyn(nodes[$(this).attr("domain")], get_anchor($(this).attr("href")));
               } else {
-                console.log("unknow link");
+                scrollToAnchor(hash, -60); 
               }
             });
 
@@ -515,6 +520,7 @@
 
         function initialize_content_dyn_nav() {
           $('.sidebar-contents-dyn a').click(function(event) {
+            console.log("click on link in the sidebar");
             if( $(this).parent().hasClass("component-category") ) {
               event.preventDefault();
 
@@ -538,6 +544,9 @@
               expandPanel(anchor);
               scrollToAnchor(anchor, OFFSET_TOP_NAV);
 
+            } else if( $(this).hasClass("back-to-top") ) {
+              $(".component-category").removeClass("active");
+              scrollToAnchor("top", OFFSET_TOP_NAV);
             } else {
               $(".component-category").removeClass("active");
             }
@@ -645,7 +654,7 @@
       </div>
     </header>
 
-    <div class="main-container">
+    <div id = "top" class="main-container">
       <div id="contents">
 
         <!-- Home page-->

@@ -11,11 +11,19 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
+import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
+import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
+import com.viadeo.kasper.doc.nodes.DocumentedBean;
+import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
+import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.doc.element.DocumentedCommandHandler.DocumentedCommand;
@@ -67,6 +75,9 @@ public class DocumentedDomain extends AbstractElement {
             addQueryResult(queryResult.getFullDocumentedElement());
         }
 
+        // orphan query results; ie without use directly by an handler
+        queryResults.putAll(findOrphanQueryResult(this, queryResults));
+
         for (final CommandHandlerDescriptor descriptor : domainDescriptor.getCommandHandlerDescriptors()) {
             final DocumentedCommandHandler documentedCommandHandler = new DocumentedCommandHandler(this, descriptor);
             documentedCommandHandlers.add(documentedCommandHandler);
@@ -108,11 +119,100 @@ public class DocumentedDomain extends AbstractElement {
         this.events.addAll(events.values());
     }
 
+    public static Map<Class, DocumentedQueryHandler.DocumentedQueryResult> findOrphanQueryResult(
+            final DocumentedDomain domain,
+            final Map<Class, DocumentedQueryHandler.DocumentedQueryResult> resultMap
+    ) {
+        final Map<Class, DocumentedQueryHandler.DocumentedQueryResult> results = Maps.newHashMap();
+        results.putAll(resultMap);
+
+        for (final DocumentedQueryHandler.DocumentedQueryResult documentedQueryResult : resultMap.values()) {
+            final Map<Class, DocumentedQueryHandler.DocumentedQueryResult> orphanQueryResult = findOrphanQueryResult(
+                    domain,
+                    results.keySet(),
+                    documentedQueryResult
+            );
+
+            if( ! orphanQueryResult.isEmpty()) {
+                results.putAll(orphanQueryResult);
+            }
+        }
+
+        return results;
+    }
+
+    @SuppressWarnings("unchecked")
+    private static Map<Class, DocumentedQueryHandler.DocumentedQueryResult> findOrphanQueryResult(
+            final DocumentedDomain domain,
+            final Set<Class> referencedQueryResult,
+            final DocumentedQueryHandler.DocumentedQueryResult documentedQueryResult
+    ) {
+        final Map<Class, DocumentedQueryHandler.DocumentedQueryResult> results = Maps.newHashMap();
+        final Class referenceClazz = documentedQueryResult.getReferenceClass();
+
+        if ( QueryResult.class.isAssignableFrom(referenceClazz) && ! referencedQueryResult.contains(referenceClazz) ) {
+            final DocumentedQueryHandler.DocumentedQueryResult value = new DocumentedQueryHandler.DocumentedQueryResult(domain, null, referenceClazz);
+            results.put(value.getReferenceClass(), value);
+            results.putAll(findOrphanQueryResult(domain, results.keySet(), value));
+
+        } else if(CollectionQueryResult.class.isAssignableFrom(referenceClazz)) {
+            final ParameterizedType genericSuperclass = (ParameterizedType) referenceClazz.getGenericSuperclass();
+            final Type[] parameters = genericSuperclass.getActualTypeArguments();
+            final Class GenericClass = (Class) parameters[0];
+
+            if( ! referencedQueryResult.contains(referenceClazz)) {
+                final DocumentedQueryHandler.DocumentedQueryResult value = new DocumentedQueryHandler.DocumentedQueryResult(domain, null, referenceClazz);
+                results.put(value.getReferenceClass(), value);
+                results.putAll(findOrphanQueryResult(domain, results.keySet(), value));
+            }
+
+            if( ! referencedQueryResult.contains(GenericClass)) {
+                final DocumentedQueryHandler.DocumentedQueryResult value = new DocumentedQueryHandler.DocumentedQueryResult(domain, null, GenericClass);
+                results.put(GenericClass, value);
+                results.putAll(findOrphanQueryResult(domain, results.keySet(), value));
+            }
+        } else {
+            final List<Field> fields = Lists.newArrayList();
+            DocumentedBean.getAllFields(fields, documentedQueryResult.getReferenceClass());
+
+            for (final Field field : fields) {
+                final Class<?> fieldType = field.getType();
+
+                if ( QueryResult.class.isAssignableFrom(fieldType) && ! referencedQueryResult.contains(fieldType) ) {
+                    final DocumentedQueryHandler.DocumentedQueryResult value = new DocumentedQueryHandler.DocumentedQueryResult(domain, null, fieldType);
+                    results.put(value.getReferenceClass(), value);
+                    results.putAll(findOrphanQueryResult(domain, results.keySet(), value));
+
+                } else if(CollectionQueryResult.class.isAssignableFrom(fieldType) && ! referencedQueryResult.contains(fieldType) ) {
+                    final DocumentedQueryHandler.DocumentedQueryResult value = new DocumentedQueryHandler.DocumentedQueryResult(domain, null, fieldType);
+                    results.put(value.getReferenceClass(), value);
+                    results.putAll(findOrphanQueryResult(domain, results.keySet(), value));
+
+                } else if( Collection.class.isAssignableFrom(fieldType) ){
+                    final Optional<Class> optType = (Optional<Class>)
+                            ReflectionGenericsResolver.getParameterTypeFromClass(
+                                    field, referenceClazz, Collection.class, 0);
+
+                    if ( optType.isPresent() ) {
+                        final Class genericFieldType = optType.get();
+                        if (QueryResult.class.isAssignableFrom(genericFieldType) && ! referencedQueryResult.contains(genericFieldType)) {
+                            final DocumentedQueryHandler.DocumentedQueryResult value = new DocumentedQueryHandler.DocumentedQueryResult(domain, null, genericFieldType);
+                            results.put(value.getReferenceClass(), value);
+                            results.putAll(findOrphanQueryResult(domain, results.keySet(), value));
+                        }
+                    }
+                }
+            }
+        }
+
+        return results;
+    }
+
     // ------------------------------------------------------------------------
 
     @Override
     public String getURL() {
-        return String.format("/%s/%s", getType(), getName());
+        return String.format("/%s/%s", getType(), getLabel());
     }
 
     @Override
