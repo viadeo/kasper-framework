@@ -13,7 +13,7 @@
         {{#if node.owner}}
         <dl class="block-content dl-horizontal">
             <dt>Owner</dt>
-            <dd><a href="mailto:{{node.owner}}">{{node.owner}}</a></dd>
+            <dd>{{mail_to node.owner}}</dd>
         </dl>
         {{/if}}
       </div>     

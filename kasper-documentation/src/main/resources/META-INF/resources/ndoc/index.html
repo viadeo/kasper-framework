@@ -44,6 +44,13 @@
         return options.inverse(this);
       });
 
+      Handlebars.registerHelper('mail_to', function (value) {
+        if (value !== "unknown") {
+          return new Handlebars.SafeString('<a href="mailto:' + value + '">' + value + '</a>');
+        }
+        return new Handlebars.SafeString(value);
+      });
+
       Handlebars.registerHelper('flatten', function (list, separator, key) {
         return new Handlebars.SafeString(flatten(list, separator, key));
       });
