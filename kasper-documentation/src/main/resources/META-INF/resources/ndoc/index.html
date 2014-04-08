@@ -103,13 +103,13 @@
           }
         }
 
-        function expandPanel(anchor) {
+        function expand_panel(anchor) {
           if ( $("#" + anchor + " a").hasClass("collapsed") ) {
             $("#" + anchor + " a").trigger("click");
           }
         }
 
-        function scrollToAnchor(anchor, offset) {
+        function scroll_to_anchor(anchor, offset) {
           var new_position = $('#'+anchor).offset();
           var new_top_position = new_position.top + offset;
 
@@ -122,7 +122,7 @@
 
         /** SEARCH **/
 
-        function initializeHomeSearch() {
+        function initialize_home_search() {
           console.log("initialize home search!");
 
           $( '#searchable-domain-box' ).searchable({
@@ -138,7 +138,7 @@
           });
         }
 
-        function initializeGlobalSearch(data) {
+        function initialize_global_search(data) {
           console.log("initialize global search!");
 
           $( "#search" ).autocomplete({
@@ -362,8 +362,8 @@
                     });
 
                     if(n == data.list.length - 1) {
-                      initializeHomeSearch();
-                      initializeGlobalSearch(searchData);
+                      initialize_home_search();
+                      initialize_global_search(searchData);
                       return_to_window_location_hash();
                     }
                   });
@@ -464,7 +464,7 @@
             this.init = init;
           }
 
-          function appendDomainComponent(data) {
+          function append_domain_component(data) {
             if (data.list.length > 0) {
               if( $("#domain-container .panel").length == 0 ) {
                 $("#domain-container").append(cache_templates[PANEL_TEMPLATE_KEY]( {title: "Domain"} ));
@@ -497,10 +497,10 @@
               }
             }),
             new PanelContent("/kasper/doc/domain/" + domain.label + "/concepts", function(data) {
-              appendDomainComponent(data);
+              append_domain_component(data);
             }),
             new PanelContent("/kasper/doc/domain/" + domain.label + "/relations", function(data) {
-              appendDomainComponent(data);
+              append_domain_component(data);
             })
           ];
 
@@ -512,19 +512,19 @@
 
                 var anchor = get_anchor($(this).attr("href"));
                 
-                expandPanel(anchor);
-                scrollToAnchor(anchor, OFFSET_TOP_NAV);
+                expand_panel(anchor);
+                scroll_to_anchor(anchor, OFFSET_TOP_NAV);
               } else if( $(this).hasClass("out") ) {
                 event.preventDefault();
                 go_dyn(nodes[$(this).attr("domain")], get_anchor($(this).attr("href")));
               } else {
-                scrollToAnchor(hash, -60); 
+                scroll_to_anchor(hash, -60); 
               }
             });
 
             if(hash) {
               $("#" + hash + " a").trigger("click");
-              scrollToAnchor(hash, -60);
+              scroll_to_anchor(hash, -60);
             } 
           };
 
@@ -559,8 +559,8 @@
               $(this).parent().addClass("active");
 
               var anchor = get_anchor($(this).attr("href"));
-              expandPanel(anchor);
-              scrollToAnchor(anchor, OFFSET_TOP_NAV);
+              expand_panel(anchor);
+              scroll_to_anchor(anchor, OFFSET_TOP_NAV);
 
             } else if( $(this).parent().hasClass("component-item") ) {
               event.preventDefault();
@@ -570,12 +570,12 @@
               $(this).parent().addClass("active");
 
               var anchor = get_anchor($(this).attr("href"));
-              expandPanel(anchor);
-              scrollToAnchor(anchor, OFFSET_TOP_NAV);
+              expand_panel(anchor);
+              scroll_to_anchor(anchor, OFFSET_TOP_NAV);
 
             } else if( $(this).hasClass("back-to-top") ) {
               $(".component-category").removeClass("active");
-              scrollToAnchor("top", OFFSET_TOP_NAV);
+              scroll_to_anchor("top", OFFSET_TOP_NAV);
             } else {
               $(".component-category").removeClass("active");
             }
