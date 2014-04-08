@@ -402,7 +402,7 @@
               var key = keys[j];
               var value = properties[i][key];
 
-              if( value == null ) {
+              if( value === null ) {
                 value = "-";
               }
 
@@ -435,7 +435,7 @@
 
             if( has_subtype ) {
               var level_up = level + 1;
-              if (typeof query_results[query_result_name] != 'undefined') {
+              if (typeof query_results[query_result_name] !== 'undefined') {
                 res += get_tr(level_up, query_results[query_result_name].properties, keys, query_results);
               } else {
                 console.log("level: " + level + ", query_result_name: " + query_result_name, query_results[query_result_name]);
