@@ -234,6 +234,29 @@
           window.location.hash = "#" + domain.name;
         }
 
+        function show_message(level, message, append) {
+          if ( ! append) {
+            $("#message").empty();
+          }
+
+          switch(level) {
+            case 'success':
+              $("#message").append('<div class="alert alert-success">' + message + '</div>');
+              break;
+            case 'info':
+              $("#message").append('<div class="alert alert-info">' + message + '</div>');
+              break;
+            case 'warn':
+              $("#message").append('<div class="alert alert-warning"><span class="glyphicon glyphicon-warning-sign"></span>' + message + '</div>');
+              break;
+            case 'error':
+              $("#message").append('<div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"></span>' + message + '</div>');
+              break;
+          }
+
+          $(".sidebar-contents-dyn").css("margin-top", "80px");
+        }
+
         function initialize_nav() {
           console.log("initialize navigation!");
 
@@ -307,6 +330,7 @@
                   cache_templates[template_descritor.name] = template;
                 })
                 .fail(function() {
+                  show_message("error", "Service is temporarily not available please try again later", false)
                   console.log("failed to load template '" + template_descritor.url + "'");
                 });
           });
@@ -346,7 +370,8 @@
                 }
               })
               .fail(function() {
-                console.log("failed to load data from '/kasper/doc/domains'");
+                show_message("error", "Service is temporarily not available please try again later", false)
+                console.log("failed to load template '" + template_descritor.url + "'");
               });
         }
 
@@ -508,6 +533,10 @@
               .done(function(data) {
                 panel_content.init(data);
                 execute(panel_contents.length, ++actualLoad, f);
+              })
+              .fail(function(){
+                show_message("error", "Service is temporarily not available please try again later", false)
+                console.log("failed to load components '" + panel_content.url + "'");
               });
           });
           
@@ -655,9 +684,14 @@
     </header>
 
     <div id = "top" class="main-container">
+
+      <!-- Message -->
+      <div id="message" class="container"></div>
+
+      <!-- Content -->
       <div id="contents">
 
-        <!-- Home page-->
+        <!-- Home page -->
         <div id="contents_home" class="hero-unit">
           <div class="container">
             <ol class="breadcrumb">
