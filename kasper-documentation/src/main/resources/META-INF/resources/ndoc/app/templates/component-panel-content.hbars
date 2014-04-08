@@ -6,7 +6,7 @@
   {{/ifCond}}    
     <div class="panel-heading">
       <h4 class="panel-title" id="{{this.typePlural}}_{{this.name}}">
-        <a data-toggle="collapse" data-parent="#accordion-domain" href="#component-{{this.name}}-collapse">
+        <a data-toggle="collapse" data-parent="#accordion-domain" href="#component-{{this.name}}-collapse" class="collapsed">
             <span class="glyphicon glyphicon-stop"/>
             <b>{{this.name}}</b>
         </a>

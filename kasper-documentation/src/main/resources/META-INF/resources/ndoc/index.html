@@ -221,7 +221,7 @@
         }
 
         function go_dyn(domain, hash) {
-          console.log("go dyn", domain.name);
+          console.log("go dyn", domain.label);
 
           $("#contents_dyn").empty();
           $(".nav > li").removeClass("active");
@@ -231,7 +231,7 @@
           $("#contents > div").hide();
           $("#contents_dyn").fadeIn("slow");
 
-          window.location.hash = "#" + domain.name;
+          window.location.hash = "#" + domain.label;
         }
 
         function show_message(level, message, append) {
@@ -353,11 +353,11 @@
 
                     /* Reference node*/
                     component_urls_per_domain[domain.name] = get_url_per_components(domain);
-                    nodes[domain.name] = domain;
+                    nodes[domain.label] = domain;
 
                     $("#contents_home .page").append(template({ node: domain }))
 
-                    $("#domain-" + domain.name + "-btn").click(function(){
+                    $("#domain-" + domain.label + "-btn").click(function(){
                       go_dyn(domain);
                     });
 
@@ -479,17 +479,17 @@
                 $("#commands-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Commands", data: data,  result: results } ));
               }
             }),
-            new PanelContent("/kasper/doc/domain/" + domain.label + "/queries", function(data) {
-              $.get("/kasper/doc/domain/" + domain.label + "/queryResults").done(function(query_results) {
-
-                query_results.list.forEach(function(query_result) {
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/queryResults", function(data) {
+              if (data.list.length > 0) {
+                data.list.forEach(function(query_result) {
                   results[query_result.name] = query_result;
                 });
-
-                if (data.list.length > 0) {
-                  $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data } ));
-                }
-              });
+              }
+            }),
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/queries", function(data) {
+              if (data.list.length > 0) {
+                $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data } ));
+              }
             }),
             new PanelContent("/kasper/doc/domain/" + domain.label + "/events", function(data) {
               if (data.list.length > 0) {
@@ -505,7 +505,7 @@
           ];
 
           var actualLoad = 0;
-          var f = function() { 
+          var f = function() {
             $('.link').click(function(event) {
               if( $(this).hasClass("in") ) {
                 event.preventDefault();
@@ -522,9 +522,9 @@
               }
             });
 
-            if(hash) { 
+            if(hash) {
               $("#" + hash + " a").trigger("click");
-              scrollToAnchor(hash, -60); 
+              scrollToAnchor(hash, -60);
             } 
           };
 
@@ -540,7 +540,7 @@
               });
           });
           
-          $("#home-from-" + domain.name).click(function() {
+          $("#home-from-" + domain.label).click(function() {
             go_home();
           });
 
@@ -594,26 +594,26 @@
         function compute_search_data(domain) {
           var data = [];
 
-          data.push(get_search_raw("domain", domain.label, domain.name));
+          data.push(get_search_raw("domain", domain.label, domain.label));
 
           $.each(domain.commands, function(n, command) {
-            data.push(get_search_raw("commands", command.label, domain.name));
+            data.push(get_search_raw("commands", command.label, domain.label));
           });
 
           $.each(domain.queries, function(n, query) {
-            data.push(get_search_raw("queries", query.label, domain.name));
+            data.push(get_search_raw("queries", query.label, domain.label));
           });
 
           $.each(domain.events, function(n, c_event) {
-            data.push(get_search_raw("events", c_event.label, domain.name));
+            data.push(get_search_raw("events", c_event.label, domain.label));
           });
 
           $.each(domain.concepts, function(n, concept) {
-            data.push(get_search_raw("concepts", concept.name, domain.name));
+            data.push(get_search_raw("concepts", concept.name, domain.label));
           });
 
           $.each(domain.relations, function(n, relation) {
-            data.push(get_search_raw("relations", relation.name, domain.name));
+            data.push(get_search_raw("relations", relation.name, domain.label));
           });
 
           return data;
