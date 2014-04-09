@@ -117,6 +117,14 @@
           }
         }
 
+        function sort_on(property) {
+          return function(value1, value2) {
+            var name1 = value1[property].toLowerCase();
+            var name2 = value2[property].toLowerCase();
+            return name1 < name2 ? -1 : 1;
+          }
+        }
+
         function expand_panel(anchor) {
           if ( $("#" + anchor + " a").hasClass("collapsed") ) {
             $("#" + anchor + " a").trigger("click");
@@ -360,7 +368,7 @@
                   var searchData = [];
 
                   /* Populate the home page */
-                  $.each(data.list, function(n, domain) {
+                  $.each(data.list.sort(sort_on("label")), function(n, domain) {
 
                     /* Retrieve search data */
                     searchData = searchData.concat(compute_search_data(domain));
@@ -483,14 +491,14 @@
               if( $("#domain-container .panel").length == 0 ) {
                 $("#domain-container").append(cache_templates[PANEL_TEMPLATE_KEY]( {title: "Domain"} ));
               }
-              $("#domain-container .list-group").append(cache_templates[PANEL_CONTENT_TEMPLATE_KEY]( { data: data} ));
+              $("#domain-container .list-group").append(cache_templates[PANEL_CONTENT_TEMPLATE_KEY]( { data: data.list.sort(sort_on("label"))} ));
             }
           }
 
           var panel_contents = [
             new PanelContent("/kasper/doc/domain/" + domain.label + "/commands", function(data) {
               if (data.list.length > 0) {
-                $("#commands-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Commands", data: data,  result: results } ));
+                $("#commands-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Commands", data: data.list.sort(sort_on("label")),  result: results } ));
               }
             }),
             new PanelContent("/kasper/doc/domain/" + domain.label + "/queryResults", function(data) {
@@ -502,12 +510,12 @@
             }),
             new PanelContent("/kasper/doc/domain/" + domain.label + "/queries", function(data) {
               if (data.list.length > 0) {
-                $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data } ));
+                $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data.list.sort(sort_on("label")) } ));
               }
             }),
             new PanelContent("/kasper/doc/domain/" + domain.label + "/events", function(data) {
               if (data.list.length > 0) {
-                $("#events-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Events", data: data} ));
+                $("#events-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Events", data: data.list.sort(sort_on("label"))} ));
               }
             }),
             new PanelContent("/kasper/doc/domain/" + domain.label + "/concepts", function(data) {

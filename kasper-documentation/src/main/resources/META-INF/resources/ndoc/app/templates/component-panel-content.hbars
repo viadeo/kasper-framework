@@ -1,4 +1,4 @@
-{{#each data.list}}
+{{#each data}}
   {{#ifCond this.deprecated true}}
     <div class="panel panel-warning alert-warning">
   {{else}}

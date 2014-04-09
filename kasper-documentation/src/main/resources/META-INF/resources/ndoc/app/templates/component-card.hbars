@@ -2,7 +2,7 @@
   {{component_h3_title title}}
   <div class="section-body">
     <div class="panel-group">
-      {{#each data.list}}
+      {{#each data}}
         {{#ifCond this.deprecated true}}
           <div class="panel panel-warning alert-warning">
         {{else}}
