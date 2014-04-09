@@ -1,6 +1,6 @@
 <div class="row">
   <ol class="breadcrumb">
-    <li><a id="home-from-{{node.label}}" href="#home">Home</a></li>
+    <li><a id="home-from-{{node.label}}" href="#">Home</a></li>
     <li class="active">{{node.label}}</li>
   </ol>
 </div>

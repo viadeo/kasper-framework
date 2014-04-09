@@ -51,6 +51,13 @@
         return new Handlebars.SafeString(value);
       });
 
+      Handlebars.registerHelper('limit_text', function (text, limit) {
+        if (text.length <= limit) {
+          return new Handlebars.SafeString(text);
+        }
+        return new Handlebars.SafeString(text.substring(0, limit) + "...");
+      });
+
       Handlebars.registerHelper('flatten', function (list, separator, key) {
         return new Handlebars.SafeString(flatten(list, separator, key));
       });
@@ -362,7 +369,7 @@
                     component_urls_per_domain[domain.name] = get_url_per_components(domain);
                     nodes[domain.label] = domain;
 
-                    $("#contents_home .page").append(template({ node: domain }))
+                    $("#contents_home .page tbody").append(template({ node: domain }))
 
                     $("#domain-" + domain.label + "-btn").click(function(){
                       go_dyn(domain);
@@ -712,9 +719,16 @@
               <input class="form-control" id="search-domain-box" type="text" placeholder=""/>
             </div>
 
-            <div class="container page" id="searchable-domain-box">
-              <div class="domain-box"></div>
-            </div>
+            <table class="container page table table-hover" id="searchable-domain-box">
+              <thead>
+                <tr>
+                  <th class="col-md-3">Name</th>
+                  <th class="col-md-7">Description</th>
+                  <th class="col-md-2">Overview</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
 
           </div>          
         </div>
