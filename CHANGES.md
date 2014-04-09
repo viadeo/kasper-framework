@@ -1,5 +1,8 @@
 # Kasper Releases #
 
+## Snapshot 0.7-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7-SNAPSHOT~~))###
+
+
 ### Snapshot 0.6 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6~~))###
 * [Bug 198](https://github.com/viadeo/kasper-framework/pull/198) Fix issue around the validation of the CoreReasonCode in the fixture
 * [Pull 196](https://github.com/viadeo/kasper-framework/pull/196), [Pull 199](https://github.com/viadeo/kasper-framework/pull/199), [Pull 202](https://github.com/viadeo/kasper-framework/pull/202) New user interface of the auto documentation
