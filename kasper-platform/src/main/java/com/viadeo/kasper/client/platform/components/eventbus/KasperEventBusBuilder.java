@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform.components.eventbus;
 
+import com.google.common.base.Optional;
+
 import org.axonframework.domain.EventMessage;
 import org.axonframework.eventhandling.Cluster;
 import org.axonframework.eventhandling.ClusterSelector;
@@ -19,6 +21,7 @@ public class KasperEventBusBuilder {
 
     private ClusterSelector clusterSelector;
     private EventBusTerminal eventBusTerminal;
+    private KasperProcessorDownLatch processorDownLatch;
 
     public KasperEventBusBuilder with(ClusterSelector clusterSelector) {
         this.clusterSelector = clusterSelector;
@@ -27,6 +30,11 @@ public class KasperEventBusBuilder {
 
     public KasperEventBusBuilder with(EventBusTerminal eventBusTerminal) {
         this.eventBusTerminal = eventBusTerminal;
+        return this;
+    }
+
+    public KasperEventBusBuilder with(KasperProcessorDownLatch processorDownLatch) {
+        this.processorDownLatch = processorDownLatch;
         return this;
     }
 
@@ -39,7 +47,7 @@ public class KasperEventBusBuilder {
             eventBusTerminal = new DefaultEventBusTerminal();
         }
 
-        return new KasperEventBus(clusterSelector, eventBusTerminal);
+        return new KasperEventBus(clusterSelector, eventBusTerminal, Optional.fromNullable(processorDownLatch));
     }
 
     private static class DefaultEventBusTerminal implements EventBusTerminal {

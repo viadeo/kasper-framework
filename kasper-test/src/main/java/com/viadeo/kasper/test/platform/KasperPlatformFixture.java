@@ -7,10 +7,12 @@
 package com.viadeo.kasper.test.platform;
 
 import com.google.common.collect.Lists;
+import com.google.common.base.Optional;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.components.eventbus.KasperProcessorDownLatch;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
@@ -171,7 +173,7 @@ public class KasperPlatformFixture
         private final RecordingPlatform recordingPlatform;
 
         protected SpyEventBus(RecordingPlatform recordingPlatform){
-            super(new DefaultClusterSelector());
+            super(new DefaultClusterSelector(), Optional.<KasperProcessorDownLatch>absent());
             this.recordingPlatform = recordingPlatform;
         }
 

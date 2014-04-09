@@ -8,6 +8,7 @@ package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Maps;
+import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.event.IEvent;
@@ -16,6 +17,8 @@ import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.ClusterSelector;
 import org.axonframework.eventhandling.ClusteringEventBus;
 import org.axonframework.eventhandling.EventBusTerminal;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -33,14 +36,27 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  */
 public class KasperEventBus extends ClusteringEventBus {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBus.class);
+
     private static final String GLOBAL_METER_EVENTS_NAME = name(KasperEventBus.class, "events");
 
-    public KasperEventBus(ClusterSelector clusterSelector) {
+    private final Optional<KasperProcessorDownLatch> optionalProcessorDownLatch;
+
+    public KasperEventBus(
+            final ClusterSelector clusterSelector,
+            final Optional<KasperProcessorDownLatch> optionalProcessorDownLatch
+    ) {
         super(clusterSelector);
+        this.optionalProcessorDownLatch = optionalProcessorDownLatch;
     }
 
-    public KasperEventBus(final ClusterSelector clusterSelector, final EventBusTerminal terminal) {
+    public KasperEventBus(
+            final ClusterSelector clusterSelector,
+            final EventBusTerminal terminal,
+            final Optional<KasperProcessorDownLatch> optionalProcessorDownLatch
+    ) {
         super(clusterSelector, terminal);
+        this.optionalProcessorDownLatch = optionalProcessorDownLatch;
     }
 
     @Override
@@ -87,5 +103,21 @@ public class KasperEventBus extends ClusteringEventBus {
                 }}
             )
         );
+    }
+
+    public Optional<Runnable> getShutdownHook(){
+        if(optionalProcessorDownLatch.isPresent()) {
+            return Optional.<Runnable>of(new Runnable() {
+                @Override
+                public void run() {
+                    LOGGER.info("Starting shutdown : Event Processing");
+                    System.out.println("Starting shutdown : Event Processing");
+                    optionalProcessorDownLatch.get().await();
+                    LOGGER.info("Shutdown complete : Event Processing");
+                    System.out.println("Shutdown complete : Event Processing");
+                }
+            });
+        }
+        return Optional.absent();
     }
 }

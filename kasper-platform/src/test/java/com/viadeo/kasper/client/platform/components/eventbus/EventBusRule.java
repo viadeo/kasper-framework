@@ -97,7 +97,7 @@ public class EventBusRule implements MethodRule {
 
         public EventBusWrapper(final ClusterSelector clusterSelector, final KafkaTerminal terminal) {
             this.terminal = terminal;
-            this.eventBus = new KasperEventBus(clusterSelector, terminal);
+            this.eventBus = new KasperEventBusBuilder().with(clusterSelector).with(terminal).build();
             this.eventListeners = Lists.newArrayList();
         }
 
