@@ -12,7 +12,7 @@
       <div class="panel-body">
         {{#if node.owner}}
         <dl class="block-content dl-horizontal">
-            <dt>Owner</dt>
+            <dt>Referent</dt>
             <dd>{{mail_to node.owner}}</dd>
         </dl>
         {{/if}}
