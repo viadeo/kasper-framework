@@ -111,12 +111,14 @@ public class KasperMatcher extends BaseMatcher<Object> {
         return record(done, expected, actual, match);
     }
 
+    // ------------------------------------------------------------------------
+
     private boolean fieldsMatch(final Class aClass, final Object expected, final Object actual, final List<Long> done) {
 
         boolean match = true;
 
         final Field[] fields = aClass.getDeclaredFields();
-        for (Field field : fields) {
+        for (final Field field : fields) {
 
             if (field.getName().contains("this$")) {
                 continue;
@@ -128,7 +130,7 @@ public class KasperMatcher extends BaseMatcher<Object> {
                 final Object expectedFieldValue = field.get(expected);
                 final Object actualFieldValue = field.get(actual);
 
-                if (! matches(expectedFieldValue, actualFieldValue, done)) {
+                if ( ! matches(expectedFieldValue, actualFieldValue, done)) {
                     failedField = field;
                     failedFieldExpectedValue = expectedFieldValue;
                     failedFieldActualValue = actualFieldValue;

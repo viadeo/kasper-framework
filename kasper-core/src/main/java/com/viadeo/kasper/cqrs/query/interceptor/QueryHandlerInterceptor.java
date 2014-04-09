@@ -14,6 +14,7 @@ import com.viadeo.kasper.cqrs.query.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
@@ -29,7 +30,7 @@ public class QueryHandlerInterceptor<QUERY extends Query, RESULT extends QueryRe
     // ------------------------------------------------------------------------
 
     public QueryHandlerInterceptor(final QueryHandler<QUERY, RESULT> queryHandler) {
-        this.queryHandler = queryHandler;
+        this.queryHandler = checkNotNull(queryHandler);
     }
 
     // ------------------------------------------------------------------------
@@ -37,7 +38,9 @@ public class QueryHandlerInterceptor<QUERY extends Query, RESULT extends QueryRe
     @Override
     public QueryResponse<RESULT> process(final QUERY query,
                                          final Context context,
-                                         final InterceptorChain<QUERY, QueryResponse<RESULT>> chain) throws Exception {
+                                         final InterceptorChain<QUERY, QueryResponse<RESULT>> chain)
+            throws Exception {
+
         /* Call the handler */
         Exception exception = null;
         QueryResponse<RESULT> ret = null;
@@ -48,6 +51,7 @@ public class QueryHandlerInterceptor<QUERY extends Query, RESULT extends QueryRe
         final QueryMessage<QUERY> message = new QueryMessage<>(context, query);
 
         try {
+
             try {
 
                 LOGGER.info("Call handler " + queryHandler.getClass().getSimpleName());
@@ -62,6 +66,7 @@ public class QueryHandlerInterceptor<QUERY extends Query, RESULT extends QueryRe
                     throw e;
                 }
             }
+
         } catch (final RuntimeException e) {
             exception = e;
         } catch (final Exception e) {

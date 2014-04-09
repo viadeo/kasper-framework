@@ -7,11 +7,17 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.annotation.XKasperAlias;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
+import com.viadeo.kasper.security.annotation.XKasperPublic;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentMap;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Tool resolver for domain components
@@ -33,14 +39,14 @@ public class DomainResolver implements Resolver<Domain> {
 
     @Override
     public String getLabel(final Class<? extends Domain> clazz) {
-        if (cacheDomains.containsKey(clazz)) {
+        if (cacheDomains.containsKey(checkNotNull(clazz))) {
             return cacheDomains.get(clazz);
         }
 
-        String domainName = null;
+        String domainName = clazz.getSimpleName().replace("Domain", "");
 
         final XKasperDomain domainAnnotation = clazz.getAnnotation(XKasperDomain.class);
-        if ((null != domainAnnotation) && ! domainAnnotation.label().isEmpty()) {
+        if ((null != domainAnnotation) && ( ! domainAnnotation.label().isEmpty())) {
             domainName = domainAnnotation.label().replaceAll(" ", "");
         }
 
@@ -60,10 +66,13 @@ public class DomainResolver implements Resolver<Domain> {
     public String getDescription(final Class<? extends Domain> clazz) {
         String description = "";
 
-        final XKasperDomain domainAnnotation = clazz.getAnnotation(XKasperDomain.class);
-        if ((null != domainAnnotation) && ! domainAnnotation.description().isEmpty()) {
+        final XKasperDomain domainAnnotation =
+                checkNotNull(clazz).getAnnotation(XKasperDomain.class);
+
+        if ((null != domainAnnotation) && ( ! domainAnnotation.description().isEmpty())) {
             description = domainAnnotation.description();
         }
+
         if (description.isEmpty()) {
             description = String.format("The %s domain", this.getLabel(clazz));
         }
@@ -74,10 +83,13 @@ public class DomainResolver implements Resolver<Domain> {
     public String getPrefix(final Class<? extends Domain> clazz) {
         String prefix = "";
 
-        final XKasperDomain domainAnnotation = clazz.getAnnotation(XKasperDomain.class);
-        if ((null != domainAnnotation) && ! domainAnnotation.prefix().isEmpty()) {
+        final XKasperDomain domainAnnotation =
+                checkNotNull(clazz).getAnnotation(XKasperDomain.class);
+
+        if ((null != domainAnnotation) && ( ! domainAnnotation.prefix().isEmpty())) {
             prefix = domainAnnotation.prefix();
         }
+
         if (prefix.isEmpty()) {
             prefix = "unk";
         }
@@ -90,14 +102,14 @@ public class DomainResolver implements Resolver<Domain> {
     @Override
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Domain> clazz) {
-        return Optional.<Class<? extends Domain>>of(clazz);
+        return Optional.<Class<? extends Domain>>of(checkNotNull(clazz));
     }
 
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClassOf(final Class<?> clazz) {
-        if (Domain.class.isAssignableFrom(clazz)) {
+        if (Domain.class.isAssignableFrom(checkNotNull(clazz))) {
             return getDomainClass((Class<? extends Domain>) clazz);
         } else {
             if (null != domainHelper) {
@@ -112,14 +124,14 @@ public class DomainResolver implements Resolver<Domain> {
     @Override
     @SuppressWarnings("unchecked")
     public String getDomainLabel(final Class<? extends Domain> clazz) {
-        return this.getLabel(clazz);
+        return this.getLabel(checkNotNull(clazz));
     }
 
     // ------------------------------------------------------------------------
 
 
     public void setDomainHelper(final DomainHelper domainHelper) {
-        this.domainHelper = domainHelper;
+        this.domainHelper = checkNotNull(domainHelper);
     }
 
     // ------------------------------------------------------------------------
@@ -127,6 +139,46 @@ public class DomainResolver implements Resolver<Domain> {
     @Override
     public void clearCache() {
         cacheDomains.clear();
+    }
+
+    public String getDomainOwner(Class<? extends Domain> clazz) {
+        final String owner;
+
+        final XKasperDomain domainAnnotation = checkNotNull(clazz).getAnnotation(XKasperDomain.class);
+
+        if ((null != domainAnnotation) && ( ! domainAnnotation.owner().isEmpty())) {
+            owner = domainAnnotation.owner();
+        } else {
+            owner = "unknown";
+        }
+
+        return owner;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public boolean isPublic(final Class<? extends Domain> clazz) {
+        return (null != checkNotNull(clazz).getAnnotation(XKasperPublic.class));
+    }
+
+    @Override
+    public boolean isDeprecated(final Class<? extends Domain> clazz) {
+        return (null != checkNotNull(clazz).getAnnotation(Deprecated.class));
+    }
+
+    @Override
+    public Optional<List<String>> getAliases(final Class<? extends Domain> clazz) {
+        final XKasperAlias annotation = checkNotNull(clazz).getAnnotation(XKasperAlias.class);
+
+        final List<String> aliases;
+        if (null != annotation) {
+            aliases = Lists.newArrayList(annotation.values());
+        } else {
+            aliases = null;
+        }
+
+        return Optional.fromNullable(aliases);
     }
 
 }

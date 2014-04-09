@@ -37,8 +37,8 @@ public class EntityResolver extends AbstractResolver<Entity> {
     public EntityResolver() { }
 
     public EntityResolver(final ConceptResolver conceptResolver, final RelationResolver relationResolver) {
-        this.conceptResolver = conceptResolver;
-        this.relationResolver = relationResolver;
+        this.conceptResolver = checkNotNull(conceptResolver);
+        this.relationResolver = checkNotNull(relationResolver);
     }
 
     // ------------------------------------------------------------------------
@@ -53,12 +53,15 @@ public class EntityResolver extends AbstractResolver<Entity> {
     @Override
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Entity> clazz) {
-        if (Concept.class.isAssignableFrom(clazz)) {
+
+        if (Concept.class.isAssignableFrom(checkNotNull(clazz))) {
             return this.conceptResolver.getDomainClass((Class<? extends Concept>) clazz);
         }
+
         if (Relation.class.isAssignableFrom(clazz)) {
             return this.relationResolver.getDomainClass((Class<? extends Relation>) clazz);
         }
+
         return Optional.absent();
     }
 
@@ -67,24 +70,30 @@ public class EntityResolver extends AbstractResolver<Entity> {
     @Override
     @SuppressWarnings("unchecked")
     public String getDescription(final Class<? extends Entity> clazz) {
-        if (Concept.class.isAssignableFrom(clazz)) {
+
+        if (Concept.class.isAssignableFrom(checkNotNull(clazz))) {
             return conceptResolver.getDescription((Class<? extends Concept>) clazz);
         }
+
         if (Relation.class.isAssignableFrom(clazz)) {
             return relationResolver.getDescription((Class<? extends Relation>) clazz);
         }
+
         return String.format("The %s entity", this.getLabel(clazz));
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public String getLabel(final Class<? extends Entity> clazz) {
-        if (Concept.class.isAssignableFrom(clazz)) {
+
+        if (Concept.class.isAssignableFrom(checkNotNull(clazz))) {
             return conceptResolver.getLabel((Class<? extends Concept>) clazz);
         }
+
         if (Relation.class.isAssignableFrom(clazz)) {
             return relationResolver.getLabel((Class<? extends Relation>) clazz);
         }
+
         return clazz.getSimpleName().replace("Entity", "");
     }
 
@@ -105,7 +114,7 @@ public class EntityResolver extends AbstractResolver<Entity> {
         final List<Class<? extends Event>> listenedSourceEvents = Lists.newArrayList();
 
         final Method[] methods = checkNotNull(clazz).getDeclaredMethods();
-        for (Method method : methods) {
+        for (final Method method : methods) {
             if (null != method.getAnnotation(EventHandler.class)) {
                 final Class[] types = method.getParameterTypes();
                 if ((types.length == 1) && Event.class.isAssignableFrom(types[0])) {
@@ -119,17 +128,20 @@ public class EntityResolver extends AbstractResolver<Entity> {
 
     // ------------------------------------------------------------------------
 
-    public List<Class<? extends Concept>> getComponentConcepts(Class<? extends AggregateRoot> conceptClazz) {
+    public List<Class<? extends Concept>> getComponentConcepts(final Class<? extends AggregateRoot> conceptClazz) {
         final List<Class<? extends Concept>> linkedConcepts = Lists.newArrayList();
 
-        for (final Field field : conceptClazz.getDeclaredFields()) {
+        for (final Field field : checkNotNull(conceptClazz).getDeclaredFields()) {
             if (LinkedConcept.class.isAssignableFrom(field.getType())) {
 
                 @SuppressWarnings("unchecked") // Safe
                 final Optional<Class<? extends Concept>> linkedConceptClazz =
                         (Optional<Class<? extends Concept>>)
                                 ReflectionGenericsResolver.getParameterTypeFromClass(
-                                        field, LinkedConcept.class, LinkedConcept.CONCEPT_PARAMETER_POSITION);
+                                        field,
+                                        LinkedConcept.class,
+                                        LinkedConcept.CONCEPT_PARAMETER_POSITION
+                                );
 
                 if ( ! linkedConceptClazz.isPresent()) {
                     throw new KasperException(String.format(

@@ -85,7 +85,7 @@ public class QueryBuilder {
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
-        if (!names.isEmpty()) {
+        if ( ! names.isEmpty()) {
             actualName = names.pop();
         } else {
             actualName = null;
@@ -189,6 +189,7 @@ public class QueryBuilder {
         if (null == actualName) {
             throwFirstCallBeginWithPropertyName();
         }
+
         for (final Object value : values) {
             map.put(actualName, value.toString());
         }
@@ -217,7 +218,7 @@ public class QueryBuilder {
      * @throws NoSuchElementException if there is no value mapped to this key.
      */
     public String first(final String name) {
-        if (!map.containsKey(name) && (map.get(name).size() > 0)) {
+        if ( ! map.containsKey(name) && (map.get(name).size() > 0)) {
             throw new NoSuchElementException();
         }
         return map.get(name).iterator().next();
@@ -228,7 +229,7 @@ public class QueryBuilder {
      * @throws NoSuchElementException if there is no value mapped to this key.
      */
     public Collection<String> values(final String name) {
-        if (!map.containsKey(name)) {
+        if ( ! map.containsKey(name)) {
             throw new NoSuchElementException();
         }
         return new ImmutableList.Builder<String>().addAll(map.get(name)).build();
@@ -242,10 +243,10 @@ public class QueryBuilder {
      * @param path to use to locate the resource, the query params will be appended correctly.
      * @return a uri pointing to the specified path and with actual query as query string.
      */
-    public URI build(URI path) {
+    public URI build(final URI path) {
         final StringBuilder sb = new StringBuilder();
 
-        for (final Iterator<Entry<String, String>> it = map.entries().iterator(); it.hasNext();) {
+        for (final Iterator<Entry<String, String>> it = map.entries().iterator() ; it.hasNext() ; ) {
             final Entry<String, String> entry = it.next();
             sb.append(entry.getKey()).append('=').append(entry.getValue());
             if (it.hasNext()) {
@@ -255,9 +256,11 @@ public class QueryBuilder {
 
         try {
 
-            return new URI(path.getScheme(), path.getUserInfo(),
-                           path.getHost(), path.getPort(), path.getPath(),
-                           sb.toString(), path.getFragment());
+            return new URI(
+                    path.getScheme(), path.getUserInfo(),
+                    path.getHost(), path.getPort(), path.getPath(),
+                    sb.toString(), path.getFragment()
+            );
 
         } catch (final URISyntaxException e) {
             throw new KasperQueryAdapterException("Could not create query.", e);

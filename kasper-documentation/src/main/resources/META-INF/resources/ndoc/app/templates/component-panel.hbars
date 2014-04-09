@@ -1,0 +1,7 @@
+<div class="section">
+  {{component_h3_title title}}
+  <div class="section-body">
+    <div class="list-group">
+    </div>
+  </div>
+</div>

@@ -107,7 +107,7 @@ public class KasperPlatformQueryResultValidator
          if ((null == response())
                 || (null == ((QueryResponse) response()).getReason())
                 || ! ERROR.equals(((QueryResponse) response()).getStatus())
-                || ! ((QueryResponse) response()).getReason().getCode().contentEquals(code.toString())) {
+                || ! ((QueryResponse) response()).getReason().getCode().contentEquals(code.name())) {
             throw new AxonAssertionError(
                     "Query did not answered the expected error code"
             );
@@ -119,7 +119,7 @@ public class KasperPlatformQueryResultValidator
         if ((null == response())
                 || (null == ((QueryResponse) response()).getReason())
                 || ! REFUSED.equals(((QueryResponse) response()).getStatus())
-                || ! ((QueryResponse) response()).getReason().getCode().contentEquals(code.toString())) {
+                || ! ((QueryResponse) response()).getReason().getCode().contentEquals(code.name())) {
             throw new AxonAssertionError(
                     "Query did not answered the expected error code"
             );

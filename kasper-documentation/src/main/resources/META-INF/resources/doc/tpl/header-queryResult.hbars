@@ -10,4 +10,14 @@
     {{else}}
     <i>nothing declared</i>
     {{/if}}
-</div><!--/span-->
+</div>
+
+{{#if node.element}}
+<div class="row-fluid">
+    <div class="well well-small">
+        <h2>
+            <small>Element :</small>
+            <a class="klink" href="#{{node.element.name}}">{{node.element.label}}</a></h2>
+    </div>
+</div>
+{{/if}}

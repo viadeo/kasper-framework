@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CacheInterceptorFactory extends QueryInterceptorFactory {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(CacheInterceptorFactory.class);
 
     private final CacheManager cacheManager;
@@ -55,7 +54,7 @@ public class CacheInterceptorFactory extends QueryInterceptorFactory {
     }
 
     private CacheInterceptorFactory(final Optional<CacheManager> optCacheManager) {
-        if (optCacheManager.isPresent()) {
+        if (checkNotNull(optCacheManager).isPresent()) {
             this.cacheManager = optCacheManager.get();
         } else {
             this.cacheManager = null;
@@ -74,6 +73,7 @@ public class CacheInterceptorFactory extends QueryInterceptorFactory {
      * Will not be called if cacheManager is null (accept() returns false)
      */
     public Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> create(final TypeToken<?> type) {
+
         if (null == cacheManager) {
             return Optional.absent();
         }
@@ -95,26 +95,27 @@ public class CacheInterceptorFactory extends QueryInterceptorFactory {
             if (annotation.enabled()) {
 
                 final Cache<Serializable, QueryResult> cache =
-                        cacheManager.<Serializable, QueryResult>
-                                createCacheBuilder(queryClass.getName())
+                        cacheManager
+                                .<Serializable, QueryResult>
+                                        createCacheBuilder(queryClass.getName())
                                 .setStoreByValue(false)
                                 .setExpiry(CacheConfiguration.ExpiryType.MODIFIED,
-                                        new CacheConfiguration.Duration(
-                                                TimeUnit.SECONDS,
-                                                annotation.ttl()
-                                        )
+                                    new CacheConfiguration.Duration(
+                                        TimeUnit.SECONDS,
+                                        annotation.ttl()
+                                    )
                                 )
                                 .build();
 
                 final QueryCacheKeyGenerator<Query> keyGenerator = createKeyGenerator(
-                        queryClass,
-                        annotation.keyGenerator()
+                    queryClass,
+                    annotation.keyGenerator()
                 );
 
                 final Interceptor<Query, QueryResponse<QueryResult>> interceptor = new CacheInterceptor(
-                        annotation,
-                        cache,
-                        keyGenerator
+                    annotation,
+                    cache,
+                    keyGenerator
                 );
 
                 return Optional.of(InterceptorChain.makeChain(interceptor));
@@ -137,16 +138,16 @@ public class CacheInterceptorFactory extends QueryInterceptorFactory {
                     .of(keyGenClass)
                     .getSupertype(QueryCacheKeyGenerator.class)
                     .resolveType(
-                            QueryCacheKeyGenerator.class.getTypeParameters()[0]
+                        QueryCacheKeyGenerator.class.getTypeParameters()[0]
                     );
 
             if ( ! typeOfQuery.getRawType().isAssignableFrom(queryClass)) {
                 throw new IllegalStateException(
-                        String.format("Type %s in %s is not assignable from %s",
-                                typeOfQuery.getRawType().getName(),
-                                keyGenClass.getName(),
-                                queryClass.getName()
-                        )
+                    String.format("Type %s in %s is not assignable from %s",
+                        typeOfQuery.getRawType().getName(),
+                        keyGenClass.getName(),
+                        queryClass.getName()
+                    )
                 );
             }
 

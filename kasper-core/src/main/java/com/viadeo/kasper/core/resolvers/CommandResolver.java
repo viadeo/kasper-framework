@@ -31,7 +31,7 @@ public class CommandResolver extends AbstractResolver<Command> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Command> clazz) {
 
-        if ( ! Command.class.isAssignableFrom(clazz)) {
+        if ( ! Command.class.isAssignableFrom(checkNotNull(clazz))) {
             return Optional.absent();
         }
 
@@ -61,7 +61,8 @@ public class CommandResolver extends AbstractResolver<Command> {
 
     @Override
     public String getDescription(Class<? extends Command> commandClazz) {
- 		final XKasperCommand annotation = commandClazz.getAnnotation(XKasperCommand.class);
+ 		final XKasperCommand annotation =
+                checkNotNull(commandClazz).getAnnotation(XKasperCommand.class);
 
 		// Get description ----------------------------------------------------
 		String description = "";
@@ -78,7 +79,7 @@ public class CommandResolver extends AbstractResolver<Command> {
     }
 
     public String getLabel(Class<? extends Command> commandClass) {
-        return commandClass.getSimpleName().replace("Command", "");
+        return checkNotNull(commandClass).getSimpleName().replace("Command", "");
     }
 
     // ------------------------------------------------------------------------

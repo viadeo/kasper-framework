@@ -17,6 +17,9 @@ public class CommandHandlerInterceptorFactory extends CommandInterceptorFactory 
 
     @Override
     public Optional<InterceptorChain<Command, CommandResponse>> create(final TypeToken<?> type) {
-        return Optional.of(new com.viadeo.kasper.core.interceptor.InterceptorChain<>(new CommandHandlerInterceptor(/*axonInterceptorChain*/)));
+        return Optional.of(new com.viadeo.kasper.core.interceptor.InterceptorChain<>(
+                new CommandHandlerInterceptor( /* axonInterceptorChain */ ))
+        );
     }
+
 }

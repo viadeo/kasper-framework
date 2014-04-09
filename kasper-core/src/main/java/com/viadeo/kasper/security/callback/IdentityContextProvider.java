@@ -7,7 +7,7 @@
 package com.viadeo.kasper.security.callback;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.security.KasperSecurityException;
+import com.viadeo.kasper.security.exception.KasperSecurityException;
 
 /**
  * Capability to provide identity elements to the execution Context.

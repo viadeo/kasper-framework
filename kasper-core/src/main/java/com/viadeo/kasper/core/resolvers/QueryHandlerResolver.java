@@ -18,6 +18,8 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.concurrent.ConcurrentMap;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
 
     private static final ConcurrentMap<Class, Class> QUERY_CACHE = Maps.newConcurrentMap();
@@ -25,13 +27,13 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
 
     // ------------------------------------------------------------------------
 
-    public QueryHandlerResolver(){
+    public QueryHandlerResolver() {
         super();
     }
 
     public QueryHandlerResolver(final DomainResolver domainResolver) {
         this();
-        setDomainResolver(domainResolver);
+        setDomainResolver(checkNotNull(domainResolver));
     }
 
     // ------------------------------------------------------------------------
@@ -47,7 +49,7 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends QueryHandler> clazz) {
 
-        if (DOMAINS_CACHE.containsKey(clazz)) {
+        if (DOMAINS_CACHE.containsKey(checkNotNull(clazz))) {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
@@ -65,12 +67,15 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
     // ------------------------------------------------------------------------
 
     public String getDescription(Class<? extends QueryHandler> clazz) {
-        final XKasperQueryHandler annotation = clazz.getAnnotation(XKasperQueryHandler.class);
+        final XKasperQueryHandler annotation =
+                checkNotNull(clazz).getAnnotation(XKasperQueryHandler.class);
 
         String description = "";
+
         if (null != annotation) {
             description = annotation.description();
         }
+
         if (description.isEmpty()) {
             description = String.format("The %s query handler", this.getLabel(clazz));
         }
@@ -79,8 +84,8 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
     }
 
     @Override
-    public String getLabel(Class<? extends QueryHandler> clazz) {
-        return clazz.getSimpleName()
+    public String getLabel(final Class<? extends QueryHandler> clazz) {
+        return checkNotNull(clazz).getSimpleName()
                 .replace("QueryHandler", "")
                 .replace("Handler", "");
     }
@@ -88,7 +93,8 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
     // ------------------------------------------------------------------------
 
     public Class<? extends Query> getQueryClass(final Class<? extends QueryHandler> clazz) {
-        if (QUERY_CACHE.containsKey(clazz)) {
+
+        if (QUERY_CACHE.containsKey(checkNotNull(clazz))) {
             return QUERY_CACHE.get(clazz);
         }
 
@@ -96,9 +102,12 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
         final Optional<Class<? extends Query>> queryClazz =
                 (Optional<Class<? extends Query>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
-                                clazz, QueryHandler.class, QueryHandler.PARAMETER_QUERY_POSITION);
+                                clazz,
+                                QueryHandler.class,
+                                QueryHandler.PARAMETER_QUERY_POSITION
+                        );
 
-        if (!queryClazz.isPresent()) {
+        if ( ! queryClazz.isPresent()) {
             throw new KasperException("Unable to find query type for query handler " + clazz.getClass());
         }
 
@@ -109,7 +118,8 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
     // ------------------------------------------------------------------------
 
     public Class<? extends QueryResult> getQueryResultClass(final Class<? extends QueryHandler> clazz) {
-        if (RESULT_CACHE.containsKey(clazz)) {
+
+        if (RESULT_CACHE.containsKey(checkNotNull(clazz))) {
             return RESULT_CACHE.get(clazz);
         }
 
@@ -117,9 +127,12 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
         final Optional<Class<? extends QueryResult>> queryResultClazz =
                 (Optional<Class<? extends QueryResult>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
-                                clazz, QueryHandler.class, QueryHandler.PARAMETER_RESULT_POSITION);
+                                clazz,
+                                QueryHandler.class,
+                                QueryHandler.PARAMETER_RESULT_POSITION
+                        );
 
-        if (!queryResultClazz.isPresent()) {
+        if ( ! queryResultClazz.isPresent()) {
             throw new KasperException("Unable to find query result type for query handler " + clazz.getClass());
         }
 

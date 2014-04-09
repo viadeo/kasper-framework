@@ -16,4 +16,5 @@ public class KasperImmutabilityParanamerModule extends ParanamerModule {
     public KasperImmutabilityParanamerModule() {
         super(new CachingParanamer(new KasperParanamer()));
     }
+
 }

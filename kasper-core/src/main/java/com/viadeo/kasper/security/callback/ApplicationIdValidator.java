@@ -6,15 +6,15 @@
 // ============================================================================
 package com.viadeo.kasper.security.callback;
 
-import com.viadeo.kasper.security.KasperInvalidApplicationIdException;
-import com.viadeo.kasper.security.KasperMissingApplicationIdException;
+import com.viadeo.kasper.security.exception.KasperInvalidApplicationIdException;
+import com.viadeo.kasper.security.exception.KasperMissingApplicationIdException;
 
 /**
  * Capability to validate a applicationId.
  */
 public interface ApplicationIdValidator {
 
-    void validate(final String applicationId)
+    void validate(String applicationId)
             throws KasperMissingApplicationIdException,
                    KasperInvalidApplicationIdException;
 

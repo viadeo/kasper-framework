@@ -1,0 +1,66 @@
+<div class="sidebar-contents-dyn hidden-print" role="complementary">
+    <ul class="nav bs-docs-sidenav">
+
+        {{#if node.commands}}
+        <li class="component-category">
+            <a href="#commands">Commands</a>
+            <ul class="nav subnav">
+                {{#each node.commands}}
+                    <li class="component-item">
+                        <a href="#commands_{{this.label}}">{{this.label}}</a>
+                    </li>
+                {{/each}}
+            </ul>
+        </li>
+        {{/if}}
+
+        {{#if node.queries}}
+        <li class="component-category">
+            <a href="#queries">Queries</a>
+            <ul class="nav subnav">
+                {{#each node.queries}}
+                <li class="component-item">
+                    <a href="#queries_{{this.label}}">{{this.label}}</a>
+                </li>
+                {{/each}}
+            </ul>
+        </li>
+        {{/if}}
+
+        {{#if node.events}}
+        <li class="component-category">
+            <a href="#events">Events</a>
+            <ul class="nav subnav">
+                {{#each node.events}}
+                <li class="component-item">
+                    <a href="#events_{{this.label}}">{{this.label}}</a>
+                </li>
+                {{/each}}
+            </ul>
+        </li>
+        {{/if}}
+
+        <li class="component-category">
+            <a href="#domain">Domain</a>
+            <ul class="nav">
+                {{#if node.concepts}}
+                    {{#each node.concepts}}
+                    <li class="component-item">
+                        <a href="#concepts_{{this.name}}">{{this.name}}</a>
+                    </li>
+                    {{/each}}
+                {{/if}}
+                {{#if node.relations}}
+                    {{#each node.relations}}
+                    <li class="component-item">
+                        <a href="#relations_{{this.name}}">{{this.name}}</a>
+                    </li>
+                    {{/each}}
+                {{/if}}
+            </ul>
+        </li>
+
+    </ul>
+
+    <a class="back-to-top">Back to top</a>
+</div>

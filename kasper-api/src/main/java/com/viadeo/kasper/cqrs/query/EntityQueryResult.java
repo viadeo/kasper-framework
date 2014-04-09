@@ -62,6 +62,7 @@ public abstract class EntityQueryResult implements QueryResult {
         if (this == checkNotNull(obj)) {
             return true;
         }
+
         if (!getClass().equals(obj.getClass())) {
             return false;
         }

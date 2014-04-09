@@ -36,9 +36,10 @@ public class CommandSecurityInterceptorFactory extends CommandInterceptorFactory
     @SuppressWarnings("unchecked")
     @Override
     public Optional<InterceptorChain<Command, CommandResponse>> create(final TypeToken<?> type) {
-        final Class<?> commandClass = type.getRawType();
+        final Class<?> commandClass = checkNotNull(type).getRawType();
 
         final SecurityStrategy securityStrategy;
+
         if (commandClass.isAnnotationPresent(XKasperPublic.class)) {
             securityStrategy = new DefaultPublicSecurityStrategy(securityConfiguration);
         } else {

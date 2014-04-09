@@ -15,6 +15,8 @@ public abstract class QueryEventListener<E extends IEvent> extends EventListener
 
     private QueryGateway queryGateway;
 
+    // ------------------------------------------------------------------------
+
     public void setQueryGateway(final QueryGateway queryGateway) {
         this.queryGateway = checkNotNull(queryGateway);
     }

@@ -17,6 +17,8 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.concurrent.ConcurrentMap;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
 
     private static ConcurrentMap<Class, Class> cacheCommands = Maps.newConcurrentMap();
@@ -34,7 +36,7 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends CommandHandler> clazz) {
 
-        if (DOMAINS_CACHE.containsKey(clazz)) {
+        if (DOMAINS_CACHE.containsKey(checkNotNull(clazz))) {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
@@ -52,7 +54,8 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
 
     @Override
     public String getDescription(Class<? extends CommandHandler> handlerClazz) {
-        final XKasperCommandHandler annotation = handlerClazz.getAnnotation(XKasperCommandHandler.class);
+        final XKasperCommandHandler annotation =
+                checkNotNull(handlerClazz).getAnnotation(XKasperCommandHandler.class);
 
         String description = "";
         if (null != annotation) {
@@ -67,7 +70,7 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
 
     @Override
     public String getLabel(final Class<? extends CommandHandler> clazz) {
-        return clazz.getSimpleName()
+        return checkNotNull(clazz).getSimpleName()
                 .replace("CommandHandler", "")
                 .replace("Handler", "")
                 .replace("QueryService", "")
@@ -79,7 +82,7 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
     @SuppressWarnings("unchecked")
     public Class<? extends Command> getCommandClass(final Class<? extends CommandHandler> clazz) {
 
-        if (cacheCommands.containsKey(clazz)) {
+        if (cacheCommands.containsKey(checkNotNull(clazz))) {
             return cacheCommands.get(clazz);
         }
 
@@ -87,9 +90,12 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
         final Optional<Class<? extends Command>> commandClazz =
                 (Optional<Class<? extends Command>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
-                                clazz, CommandHandler.class, CommandHandler.COMMAND_PARAMETER_POSITION);
+                                clazz,
+                                CommandHandler.class,
+                                CommandHandler.COMMAND_PARAMETER_POSITION
+                        );
 
-        if (!commandClazz.isPresent()) {
+        if ( ! commandClazz.isPresent()) {
             throw new KasperException("Unable to find command type for handler " + clazz.getClass());
         }
 

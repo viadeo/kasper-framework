@@ -6,6 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import static com.google.common.base.Preconditions.checkState;
 
 public enum CoreReasonCode {
@@ -62,6 +65,47 @@ public enum CoreReasonCode {
 
     public int code() {
         return this.code;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static final class ParsedCode {
+        public int code;
+        public String label;
+        public CoreReasonCode reason;
+    }
+
+    public static final ParsedCode parseString(final String string) {
+        final ParsedCode ret = new ParsedCode();
+
+        final Pattern codePattern = Pattern.compile("^.([0-9]+). - (.*)$");
+        final Matcher m = codePattern.matcher(string);
+        if (m.matches() && (2 == m.groupCount())) {
+            final String strCode = m.group(1);
+            final String strLabel = m.group(2);
+            try {
+                ret.reason = CoreReasonCode.valueOf(strLabel);
+                ret.code = ret.reason.code();
+                ret.label = ret.reason.name();
+            } catch (final IllegalArgumentException e) {
+                ret.code = Integer.parseInt(strCode);
+                ret.label = strLabel;
+            }
+
+        } else {
+            ret.code = 0;
+            ret.label = string;
+            try {
+                ret.reason = CoreReasonCode.valueOf(string);
+                ret.code = ret.reason.code();
+                ret.label = ret.reason.name();
+            } catch (final IllegalArgumentException e) {
+                ret.code = 0;
+                ret.label = string;
+            }
+        }
+
+        return ret;
     }
 
     // ------------------------------------------------------------------------

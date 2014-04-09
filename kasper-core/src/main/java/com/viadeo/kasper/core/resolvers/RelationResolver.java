@@ -18,6 +18,8 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.concurrent.ConcurrentMap;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class RelationResolver extends AbstractResolver<Relation> {
 
     private static final ConcurrentMap<Class, Class> SOURCES_CACHE = Maps.newConcurrentMap();
@@ -30,7 +32,7 @@ public class RelationResolver extends AbstractResolver<Relation> {
     public RelationResolver() { }
 
     public RelationResolver(final ConceptResolver conceptResolver) {
-        this.conceptResolver= conceptResolver;
+        this.conceptResolver = checkNotNull(conceptResolver);
     }
 
     // ------------------------------------------------------------------------
@@ -46,7 +48,7 @@ public class RelationResolver extends AbstractResolver<Relation> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Relation> clazz) {
 
-        if (DOMAINS_CACHE.containsKey(clazz)) {
+        if (DOMAINS_CACHE.containsKey(checkNotNull(clazz))) {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
@@ -64,10 +66,11 @@ public class RelationResolver extends AbstractResolver<Relation> {
     // ------------------------------------------------------------------------
 
     public String getVerb(final Class<? extends Relation> clazz) {
-        final XKasperRelation relationAnnotation = clazz.getAnnotation(XKasperRelation.class);
+        final XKasperRelation relationAnnotation =
+                checkNotNull(clazz).getAnnotation(XKasperRelation.class);
 
         final String verb;
-        if ((null != relationAnnotation) && ! relationAnnotation.verb().isEmpty()) {
+        if ((null != relationAnnotation) && (! relationAnnotation.verb().isEmpty())) {
             verb = relationAnnotation.verb();
         } else {
             verb = "";
@@ -77,10 +80,11 @@ public class RelationResolver extends AbstractResolver<Relation> {
     }
 
     @Override
-    public String getLabel(Class<? extends Relation> clazz) {
-        final XKasperRelation relationAnnotation = clazz.getAnnotation(XKasperRelation.class);
+    public String getLabel(final Class<? extends Relation> clazz) {
+        final XKasperRelation relationAnnotation =
+                checkNotNull(clazz).getAnnotation(XKasperRelation.class);
 
-        if ((null != relationAnnotation) && ! relationAnnotation.label().isEmpty()) {
+        if ((null != relationAnnotation) && (! relationAnnotation.label().isEmpty())) {
             return relationAnnotation.label().replaceAll(" ", "");
         }
 
@@ -91,12 +95,15 @@ public class RelationResolver extends AbstractResolver<Relation> {
 
     @Override
     public String getDescription(Class<? extends Relation> clazz) {
-        final XKasperRelation annotation = clazz.getAnnotation(XKasperRelation.class);
+        final XKasperRelation annotation =
+                checkNotNull(clazz).getAnnotation(XKasperRelation.class);
 
         String description = "";
+
         if (null != annotation) {
             description = annotation.description();
         }
+
         if (description.isEmpty()) {
             description = String.format("The %s relation between %s and %s",
                     this.getLabel(clazz),
@@ -112,7 +119,8 @@ public class RelationResolver extends AbstractResolver<Relation> {
 
     @SuppressWarnings("unchecked")
     public Class<? extends Concept> getSourceEntityClass(final Class<? extends Relation> clazz) {
-        if (SOURCES_CACHE.containsKey(clazz)) {
+
+        if (SOURCES_CACHE.containsKey(checkNotNull(clazz))) {
             return (Class<? extends Concept>) SOURCES_CACHE.get(clazz);
         }
 
@@ -120,9 +128,12 @@ public class RelationResolver extends AbstractResolver<Relation> {
         final Optional<Class<? extends Concept>> sourceClazz =
                 (Optional<Class<? extends Concept>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
-                                clazz, Relation.class, Relation.SOURCE_PARAMETER_POSITION);
+                                clazz,
+                                Relation.class,
+                                Relation.SOURCE_PARAMETER_POSITION
+                        );
 
-        if (!sourceClazz.isPresent()) {
+        if ( ! sourceClazz.isPresent()) {
             throw new KasperException("Unable to find source concept type for relation " + clazz.getClass());
         }
 
@@ -132,7 +143,8 @@ public class RelationResolver extends AbstractResolver<Relation> {
 
     @SuppressWarnings("unchecked")
     public Class<? extends Concept> getTargetEntityClass(final Class<? extends Relation> clazz) {
-        if (TARGETS_CACHE.containsKey(clazz)) {
+
+        if (TARGETS_CACHE.containsKey(checkNotNull(clazz))) {
             return (Class<? extends Concept>) TARGETS_CACHE.get(clazz);
         }
 
@@ -140,9 +152,12 @@ public class RelationResolver extends AbstractResolver<Relation> {
         final Optional<Class<? extends Concept>> targetClazz =
                 (Optional<Class<? extends Concept>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
-                                clazz, Relation.class, Relation.TARGET_PARAMETER_POSITION);
+                                clazz,
+                                Relation.class,
+                                Relation.TARGET_PARAMETER_POSITION
+                        );
 
-        if (!targetClazz.isPresent()) {
+        if  ( ! targetClazz.isPresent()) {
             throw new KasperException("Unable to find target concept type for relation " + clazz.getClass());
         }
 
@@ -153,22 +168,26 @@ public class RelationResolver extends AbstractResolver<Relation> {
     // ------------------------------------------------------------------------
 
     public boolean isBidirectional(final Class<? extends Relation> clazz) {
-        final XBidirectional biDirAnno = clazz.getAnnotation(XBidirectional.class);
+        final XBidirectional biDirAnno =
+                checkNotNull(clazz).getAnnotation(XBidirectional.class);
         return (null != biDirAnno);
     }
 
     public Optional<String> biDirectionalVerb(final Class<? extends Relation> clazz) {
-        final XBidirectional biDirAnno = clazz.getAnnotation(XBidirectional.class);
-        if ((null != biDirAnno) &&  ! biDirAnno.inverse_verb().isEmpty()) {
+        final XBidirectional biDirAnno =
+                checkNotNull(clazz).getAnnotation(XBidirectional.class);
+
+        if ((null != biDirAnno) && (! biDirAnno.inverse_verb().isEmpty())) {
             return Optional.of(biDirAnno.inverse_verb());
         }
+
         return Optional.absent();
     }
 
     // ------------------------------------------------------------------------
 
     public void setConceptResolver(final ConceptResolver conceptResolver) {
-        this.conceptResolver = conceptResolver;
+        this.conceptResolver = checkNotNull(conceptResolver);
     }
 
 }

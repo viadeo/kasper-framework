@@ -6,15 +6,15 @@
 // ============================================================================
 package com.viadeo.kasper.security.callback;
 
-import com.viadeo.kasper.security.KasperInvalidSecurityTokenException;
-import com.viadeo.kasper.security.KasperMissingSecurityTokenException;
+import com.viadeo.kasper.security.exception.KasperInvalidSecurityTokenException;
+import com.viadeo.kasper.security.exception.KasperMissingSecurityTokenException;
 
 /**
  * Capability to validate a security token.
  */
 public interface SecurityTokenValidator {
 
-    void validate(final String securityToken)
+    void validate(String securityToken)
             throws KasperMissingSecurityTokenException,
                    KasperInvalidSecurityTokenException;
 

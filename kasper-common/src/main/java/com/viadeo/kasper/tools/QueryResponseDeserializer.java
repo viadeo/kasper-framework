@@ -116,5 +116,4 @@ public class QueryResponseDeserializer extends KasperResponseDeserializer<QueryR
         }
     }
 
-
 }

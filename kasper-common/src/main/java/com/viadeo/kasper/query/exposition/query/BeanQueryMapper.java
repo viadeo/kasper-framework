@@ -12,6 +12,8 @@ import com.viadeo.kasper.query.exposition.TypeAdapter;
 
 import java.util.*;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 class BeanQueryMapper implements TypeAdapter<Query> {
 
     private final Set<PropertyAdapter> adapters;
@@ -20,8 +22,8 @@ class BeanQueryMapper implements TypeAdapter<Query> {
     // ------------------------------------------------------------------------
 
     public BeanQueryMapper(final BeanConstructor queryCtr, final Set<PropertyAdapter> adapters) {
-        this.adapters = ImmutableSet.copyOf(sortPropertyAdapterSet(adapters));
-        this.queryCtr = queryCtr;
+        this.adapters = ImmutableSet.copyOf(sortPropertyAdapterSet(checkNotNull(adapters)));
+        this.queryCtr = checkNotNull(queryCtr);
     }
 
     // ------------------------------------------------------------------------
@@ -49,11 +51,13 @@ class BeanQueryMapper implements TypeAdapter<Query> {
             final Object value = adapter.adapt(parser);
             final BeanConstructorProperty ctrParam = queryCtr.parameters().get(adapter.getName());
 
-            if (ctrParam != null) {
+            if (null != ctrParam) {
                 ctrParams[ctrParam.position()] = value;
             } else {
                 if (exists) {
-                    valuesToSet.add(new PropertyAdapterPair<PropertyAdapter, Object>(adapter, value));
+                    valuesToSet.add(
+                            new PropertyAdapterPair<PropertyAdapter, Object>(adapter, value)
+                    );
                 }
             }
         }
@@ -66,8 +70,8 @@ class BeanQueryMapper implements TypeAdapter<Query> {
         return (Query) queryInstance;
     }
 
-    private SortedSet<PropertyAdapter> sortPropertyAdapterSet(Set<PropertyAdapter> propertyAdapters) {
-        SortedSet<PropertyAdapter> sorted = new TreeSet<PropertyAdapter>(new Comparator<PropertyAdapter>() {
+    private SortedSet<PropertyAdapter> sortPropertyAdapterSet(final Set<PropertyAdapter> propertyAdapters) {
+        final SortedSet<PropertyAdapter> sorted = new TreeSet<PropertyAdapter>(new Comparator<PropertyAdapter>() {
             @Override
             public int compare(PropertyAdapter o1, PropertyAdapter o2) {
                 return o1.getName().compareTo(o2.getName());
@@ -78,4 +82,5 @@ class BeanQueryMapper implements TypeAdapter<Query> {
         }
         return sorted;
     }
+
 }

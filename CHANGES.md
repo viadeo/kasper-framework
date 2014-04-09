@@ -1,6 +1,21 @@
 # Kasper Releases #
 
-### Snapshot 0.5-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.5-SNAPSHOT~~))###
+### Snapshot 0.6 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6~~))###
+* [Bug 198](https://github.com/viadeo/kasper-framework/pull/198) Fix issue around the validation of the CoreReasonCode in the fixture
+* [Pull 196](https://github.com/viadeo/kasper-framework/pull/196), [Pull 199](https://github.com/viadeo/kasper-framework/pull/199), [Pull 202](https://github.com/viadeo/kasper-framework/pull/202) New user interface of the auto documentation
+* [Pull 191](https://github.com/viadeo/kasper-framework/pull/191) enrich MDC, normalize hierarcy of default security strategy
+* [Pull 131](https://github.com/viadeo/kasper-framework/pull/131) Use `XKasperAlias` on input object instead of the related handler.
+* [Pull 105](https://github.com/viadeo/kasper-framework/pull/105) Rename module from `kviadeo-web` to `kviadeo-expostion`
+* [Pull 182](https://github.com/viadeo/kasper-framework/pull/182) Improve documentation : 
+  - provide more information on an element of a collection result
+  - fix the behavior with the tree
+* [Pull 97](https://github.com/viadeo/kasper-framework/pull/97) Provide and display a list of constraints for each property of a bean
+
+### Version 0.5.1 (03/20/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.5.1~~))###
+* [Bug] bad metrics names are used in http exposers
+
+
+### Version 0.5 (03/19/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.5~~))###
 * [Pull 128](https://github.com/viadeo/kasper-framework/pull/128) Emerge a common exposure base in order to manage properly the deserialization with jackson of a query in case of a POST.
 * [Improvement 185](https://github.com/viadeo/kasper-framework/pull/185) Add shutdown hook in order to flush published events in bus
 * [Improvement 186](https://github.com/viadeo/kasper-framework/pull/186) Add SecurityConfiguration to KasperPlatformConfiguration :
@@ -12,7 +27,8 @@
     + Add Public/Private resources security strategies:
     - `kasper.security.annotation.XKasperPublic`
 
-### Snapshot 0.4 (03/06/2014, [Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.4~~))###
+
+### Version 0.4 (03/06/2014, [Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.4~~))###
 * [Improvement X] Add a domain owner field in XKasperDomain annotation
 * [Improvement 184](https://github.com/viadeo/kasper-framework/issues/184) Add `getUserLangAsLocal` method in `Context` class
 * [Improvement 181](https://github.com/viadeo/kasper-framework/issues/181) Manage natively immutable object :warning: Jackson dependencies was updated to 2.3.0 version

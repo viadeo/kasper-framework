@@ -17,6 +17,8 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.concurrent.ConcurrentMap;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class EventListenerResolver extends AbstractResolver<EventListener> {
 
     private static ConcurrentMap<Class, Class> cacheEvents = Maps.newConcurrentMap();
@@ -34,7 +36,7 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
     @SuppressWarnings("unchecked")
     public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends EventListener> clazz) {
 
-        if (DOMAINS_CACHE.containsKey(clazz)) {
+        if (DOMAINS_CACHE.containsKey(checkNotNull(clazz))) {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
 
@@ -50,8 +52,8 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
     }
 
     @Override
-    public String getLabel(Class<? extends EventListener> clazz) {
-        return clazz.getSimpleName()
+    public String getLabel(final Class<? extends EventListener> clazz) {
+        return checkNotNull(clazz).getSimpleName()
                 .replace("QueryEventListener", "")
                 .replace("CommandEventListener", "")
                 .replace("QueryListener", "")
@@ -63,13 +65,16 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
     // ------------------------------------------------------------------------
 
     @Override
-    public String getDescription(Class<? extends EventListener> clazz) {
-        final XKasperEventListener annotation = clazz.getAnnotation(XKasperEventListener.class);
+    public String getDescription(final Class<? extends EventListener> clazz) {
+        final XKasperEventListener annotation =
+                checkNotNull(clazz).getAnnotation(XKasperEventListener.class);
 
         String description = "";
+
         if (null != annotation) {
             description = annotation.description();
         }
+
         if (description.isEmpty()) {
             description = String.format("The %s event listener", this.getLabel(clazz));
         }
@@ -82,7 +87,7 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
     @SuppressWarnings("unchecked")
     public Class<? extends Event> getEventClass(final Class<? extends EventListener> clazz) {
 
-        if (cacheEvents.containsKey(clazz)) {
+        if (cacheEvents.containsKey(checkNotNull(clazz))) {
             return cacheEvents.get(clazz);
         }
 
@@ -90,9 +95,12 @@ public class EventListenerResolver extends AbstractResolver<EventListener> {
         final Optional<Class<? extends Event>> eventClazz =
                 (Optional<Class<? extends Event>>)
                         ReflectionGenericsResolver.getParameterTypeFromClass(
-                                clazz, EventListener.class, EventListener.EVENT_PARAMETER_POSITION);
+                                clazz,
+                                EventListener.class,
+                                EventListener.EVENT_PARAMETER_POSITION
+                        );
 
-        if (!eventClazz.isPresent()) {
+        if ( ! eventClazz.isPresent()) {
             throw new KasperException("Unable to find event type for listener " + clazz.getClass());
         }
 

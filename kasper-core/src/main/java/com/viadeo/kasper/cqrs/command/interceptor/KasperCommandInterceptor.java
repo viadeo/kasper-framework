@@ -23,7 +23,7 @@ public class KasperCommandInterceptor implements org.axonframework.commandhandli
 
     // ------------------------------------------------------------------------
 
-    public KasperCommandInterceptor(InterceptorChainRegistry<Command, CommandResponse> interceptorChainRegistry) {
+    public KasperCommandInterceptor(final InterceptorChainRegistry<Command, CommandResponse> interceptorChainRegistry) {
         this.interceptorChainRegistry = checkNotNull(interceptorChainRegistry);
     }
 
@@ -34,6 +34,7 @@ public class KasperCommandInterceptor implements org.axonframework.commandhandli
                          final UnitOfWork unitOfWork,
                          final org.axonframework.commandhandling.InterceptorChain axonInterceptorChain)
             throws Throwable {
+
         final InterceptorChain<Command, CommandResponse> chain;
         final Optional<InterceptorChain<Command, CommandResponse>> optionalInterceptorChain = interceptorChainRegistry.get(commandMessage.getPayloadType());
 
@@ -52,8 +53,8 @@ public class KasperCommandInterceptor implements org.axonframework.commandhandli
         try {
             tail.set(axonInterceptorChain);
             return chain.next(
-                    (Command) commandMessage.getPayload(),
-                    context
+                (Command) commandMessage.getPayload(),
+                context
             );
         } finally {
             tail.remove();

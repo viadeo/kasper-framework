@@ -21,7 +21,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
  */
 public final class ClientRepository<AGR extends AggregateRoot> {
 
+    /**
+     * The decored repository
+     */
     private final IRepository<AGR> repository;
+
+    // ------------------------------------------------------------------------
 
     public ClientRepository(final IRepository<AGR> repository) {
         this.repository = checkNotNull(repository);
@@ -126,6 +131,7 @@ public final class ClientRepository<AGR extends AggregateRoot> {
      */
     public Optional<AGR> get(final KasperID id, final Optional<Long> expectedVersion) {
         Long version = null;
+
         if (expectedVersion.isPresent()) {
             version = expectedVersion.get();
         }
@@ -142,7 +148,7 @@ public final class ClientRepository<AGR extends AggregateRoot> {
      */
     @Deprecated
     @SuppressWarnings("deprecated")
-    public Optional<AGR> get(final KasperID id){
+    public Optional<AGR> get(final KasperID id) {
         try {
             return Optional.of(this.repository.get(id));
         } catch (final AggregateNotFoundException e) {

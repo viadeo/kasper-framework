@@ -11,6 +11,8 @@ import com.viadeo.kasper.event.Event;
 
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class UnitOfWorkEvent extends Event {
 
     final List<String> events = Lists.newArrayList();
@@ -19,7 +21,7 @@ public class UnitOfWorkEvent extends Event {
 
     public UnitOfWorkEvent(final List<String> eventIds) {
         super();
-        for (final String eventId : eventIds) {
+        for (final String eventId : checkNotNull(eventIds)) {
             this.events.add(eventId);
         }
     }

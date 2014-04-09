@@ -83,7 +83,9 @@ public class DomainDescriptorFactoryUTest {
 
         // When
         final CommandHandlerDescriptor descriptor =
-                DomainDescriptorFactory.toCommandHandlerDescriptor(new TestCommandHandler());
+                DomainDescriptorFactory.toCommandHandlerDescriptor(
+                    new TestCommandHandler()
+                );
 
         // Then
         assertNotNull(descriptor);
@@ -97,7 +99,9 @@ public class DomainDescriptorFactoryUTest {
 
         // When
         final QueryHandlerDescriptor descriptor =
-                DomainDescriptorFactory.toQueryHandlerDescriptor(new TestQueryHandler());
+                DomainDescriptorFactory.toQueryHandlerDescriptor(
+                    new TestQueryHandler()
+                );
 
         // Then
         assertNotNull(descriptor);
@@ -112,7 +116,9 @@ public class DomainDescriptorFactoryUTest {
 
         // When
         final EventListenerDescriptor descriptor =
-                DomainDescriptorFactory.toEventListenerDescriptor(new TestEventListener());
+                DomainDescriptorFactory.toEventListenerDescriptor(
+                    new TestEventListener()
+                );
 
         // Then
         assertNotNull(descriptor);
@@ -126,7 +132,9 @@ public class DomainDescriptorFactoryUTest {
 
         // When
         final AggregateDescriptor descriptor =
-                DomainDescriptorFactory.toAggregateDescriptor(TestConcept.class);
+                DomainDescriptorFactory.toAggregateDescriptor(
+                    TestConcept.class
+                );
 
         // Then
         assertNotNull(descriptor);
@@ -142,7 +150,9 @@ public class DomainDescriptorFactoryUTest {
     public void toAggregateDescriptor_fromRelation_shouldBeOk() {
         // When
         final AggregateDescriptor descriptor =
-                DomainDescriptorFactory.toAggregateDescriptor(TestRelation.class);
+                DomainDescriptorFactory.toAggregateDescriptor(
+                    TestRelation.class
+                );
 
         // Then
         assertNotNull(descriptor);
@@ -158,7 +168,9 @@ public class DomainDescriptorFactoryUTest {
     public void toRepositoryDescriptor_fromRepository_shouldBeOk() {
         // When
         final RepositoryDescriptor descriptor =
-                DomainDescriptorFactory.toRepositoryDescriptor(new TestRepository());
+                DomainDescriptorFactory.toRepositoryDescriptor(
+                    new TestRepository()
+                );
 
         // Then
         assertNotNull(descriptor);

@@ -43,6 +43,7 @@ public class CacheInterceptor<Q extends Query, P extends QueryResult> implements
     public QueryResponse<P> process(final Q q,
                                     final Context context,
                                     final InterceptorChain<Q, QueryResponse<P>> chain) throws Exception {
+
         final Serializable key = keyGenerator.computeKey(cacheAnnotation, q);
 
         if (cache.containsKey(key) && (null != cache.get(key))) {

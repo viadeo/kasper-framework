@@ -65,12 +65,12 @@ public class DomainDescriptorFactory {
 
     public DomainDescriptor createFrom(final DomainBundle domainBundle) {
         return new DomainDescriptor(
-                domainBundle.getName(),
-                domainBundle.getDomain().getClass(),
-                Collections2.transform(domainBundle.getQueryHandlers(), TO_QUERY_HANDLER_DESCRIPTOR_FUNCTION),
-                Collections2.transform(domainBundle.getCommandHandlers(), TO_COMMAND_HANDLER_DESCRIPTOR_FUNCTION),
-                Collections2.transform(domainBundle.getRepositories(), TO_REPOSITORY_DESCRIPTOR_FUNCTION),
-                Collections2.transform(domainBundle.getEventListeners(), TO_EVENT_LISTENER_DESCRIPTOR_FUNCTION)
+            domainBundle.getName(),
+            domainBundle.getDomain().getClass(),
+            Collections2.transform(domainBundle.getQueryHandlers(), TO_QUERY_HANDLER_DESCRIPTOR_FUNCTION),
+            Collections2.transform(domainBundle.getCommandHandlers(), TO_COMMAND_HANDLER_DESCRIPTOR_FUNCTION),
+            Collections2.transform(domainBundle.getRepositories(), TO_REPOSITORY_DESCRIPTOR_FUNCTION),
+            Collections2.transform(domainBundle.getEventListeners(), TO_EVENT_LISTENER_DESCRIPTOR_FUNCTION)
         );
     }
 
@@ -83,12 +83,12 @@ public class DomainDescriptorFactory {
             final Collection<EventListener> eventListeners
     ) {
         return new DomainDescriptor(
-                checkNotNull(domainName),
-                checkNotNull(domainClass),
-                Collections2.transform(checkNotNull(queryHandlers), TO_QUERY_HANDLER_DESCRIPTOR_FUNCTION),
-                Collections2.transform(checkNotNull(commandHandlers), TO_COMMAND_HANDLER_DESCRIPTOR_FUNCTION),
-                Collections2.transform(checkNotNull(repositories), TO_REPOSITORY_DESCRIPTOR_FUNCTION),
-                Collections2.transform(checkNotNull(eventListeners), TO_EVENT_LISTENER_DESCRIPTOR_FUNCTION)
+            checkNotNull(domainName),
+            checkNotNull(domainClass),
+            Collections2.transform(checkNotNull(queryHandlers), TO_QUERY_HANDLER_DESCRIPTOR_FUNCTION),
+            Collections2.transform(checkNotNull(commandHandlers), TO_COMMAND_HANDLER_DESCRIPTOR_FUNCTION),
+            Collections2.transform(checkNotNull(repositories), TO_REPOSITORY_DESCRIPTOR_FUNCTION),
+            Collections2.transform(checkNotNull(eventListeners), TO_EVENT_LISTENER_DESCRIPTOR_FUNCTION)
         );
     }
 
@@ -99,9 +99,9 @@ public class DomainDescriptorFactory {
         final Class<? extends CommandHandler> commandHandlerClass = commandHandler.getClass();
         final Optional<? extends Class> commandClass =
                 ReflectionGenericsResolver.getParameterTypeFromClass(
-                        commandHandlerClass,
-                        CommandHandler.class,
-                        CommandHandler.COMMAND_PARAMETER_POSITION
+                    commandHandlerClass,
+                    CommandHandler.class,
+                    CommandHandler.COMMAND_PARAMETER_POSITION
                 );
         return new CommandHandlerDescriptor(commandHandlerClass, commandClass.get());
     }
@@ -110,14 +110,14 @@ public class DomainDescriptorFactory {
     public static QueryHandlerDescriptor toQueryHandlerDescriptor(final QueryHandler queryHandler) {
         final Class<? extends QueryHandler> queryHandlerClass = queryHandler.getClass();
         final Optional<? extends Class> queryClass = ReflectionGenericsResolver.getParameterTypeFromClass(
-                queryHandlerClass,
-                QueryHandler.class,
-                QueryHandler.PARAMETER_QUERY_POSITION
+            queryHandlerClass,
+            QueryHandler.class,
+            QueryHandler.PARAMETER_QUERY_POSITION
         );
         final Optional<? extends Class> queryResultClass = ReflectionGenericsResolver.getParameterTypeFromClass(
-                queryHandlerClass,
-                QueryHandler.class,
-                QueryHandler.PARAMETER_RESULT_POSITION
+            queryHandlerClass,
+            QueryHandler.class,
+            QueryHandler.PARAMETER_RESULT_POSITION
         );
         return new QueryHandlerDescriptor(queryHandlerClass, queryClass.get(), queryResultClass.get());
     }
@@ -126,9 +126,9 @@ public class DomainDescriptorFactory {
     public static EventListenerDescriptor toEventListenerDescriptor(final EventListener eventListener) {
         final Class<? extends EventListener> eventListenerClass = eventListener.getClass();
         final Optional<? extends Class> eventClass = ReflectionGenericsResolver.getParameterTypeFromClass(
-                eventListenerClass,
-                EventListener.class,
-                EventListener.EVENT_PARAMETER_POSITION
+            eventListenerClass,
+            EventListener.class,
+            EventListener.EVENT_PARAMETER_POSITION
         );
         return new EventListenerDescriptor(eventListenerClass, eventClass.get());
     }
@@ -137,9 +137,9 @@ public class DomainDescriptorFactory {
     public static RepositoryDescriptor toRepositoryDescriptor(final Repository repository) {
         final Class<? extends Repository> repositoryClass = repository.getClass();
         final Optional<? extends Class> optEntityClass = ReflectionGenericsResolver.getParameterTypeFromClass(
-                repositoryClass,
-                IRepository.class,
-                IRepository.ENTITY_PARAMETER_POSITION
+            repositoryClass,
+            IRepository.class,
+            IRepository.ENTITY_PARAMETER_POSITION
         );
         return new RepositoryDescriptor(repositoryClass, toAggregateDescriptor(optEntityClass.get()));
     }

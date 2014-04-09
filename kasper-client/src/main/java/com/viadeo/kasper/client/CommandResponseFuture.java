@@ -14,27 +14,29 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 class CommandResponseFuture extends ResponseFuture<CommandResponse> {
 
     private KasperClient kasperClient;
 
     // ------------------------------------------------------------------------
 
-    public CommandResponseFuture(final KasperClient kasperClient, final Future<ClientResponse> futureResponse) {
+    public CommandResponseFuture(final KasperClient kasperClient,
+                                 final Future<ClientResponse> futureResponse) {
         super(futureResponse);
-
-        this.kasperClient = kasperClient;
+        this.kasperClient = checkNotNull(kasperClient);
     }
 
     // ------------------------------------------------------------------------
 
     public CommandResponse get() throws InterruptedException, ExecutionException {
-        return kasperClient.handleResponse(futureResponse().get());
+        return kasperClient.handleCommandResponse(futureResponse().get());
     }
 
     public CommandResponse get(final long timeout, final TimeUnit unit)
             throws InterruptedException, ExecutionException, TimeoutException {
-        return kasperClient.handleResponse(futureResponse().get(timeout, unit));
+        return kasperClient.handleCommandResponse(futureResponse().get(timeout, unit));
     }
 
 }

@@ -179,25 +179,38 @@ public class KasperClient {
         this.flags = Flags.defaults();
     }
 
-
-    KasperClient(final QueryFactory queryFactory, final Client client,
-                 final URL commandBaseUrl, final URL queryBaseUrl, final URL eventBaseLocation,
+    KasperClient(final QueryFactory queryFactory,
+                 final Client client,
+                 final URL commandBaseUrl,
+                 final URL queryBaseUrl,
+                 final URL eventBaseLocation,
                  final HttpContextSerializer contextSerializer,
                  final Flags flags) {
 
-        this.client = client;
-        this.commandBaseLocation = commandBaseUrl;
-        this.queryBaseLocation = queryBaseUrl;
-        this.queryFactory = queryFactory;
-        this.eventBaseLocation = eventBaseLocation;
-        this.contextSerializer = contextSerializer;
-        this.flags = flags;
+        this.client = checkNotNull(client);
+        this.commandBaseLocation = checkNotNull(commandBaseUrl);
+        this.queryBaseLocation = checkNotNull(queryBaseUrl);
+        this.queryFactory = checkNotNull(queryFactory);
+        this.eventBaseLocation = checkNotNull(eventBaseLocation);
+        this.contextSerializer = checkNotNull(contextSerializer);
+        this.flags = checkNotNull(flags);
     }
 
-    KasperClient(final QueryFactory queryFactory, final Client client,
-                 final URL commandBaseUrl, final URL queryBaseUrl, final URL eventBaseLocation,
+    KasperClient(final QueryFactory queryFactory,
+                 final Client client,
+                 final URL commandBaseUrl,
+                 final URL queryBaseUrl,
+                 final URL eventBaseLocation,
                  final HttpContextSerializer contextSerializer) {
-        this(queryFactory, client, commandBaseUrl, queryBaseUrl, eventBaseLocation, contextSerializer, Flags.defaults());
+        this(
+                queryFactory,
+                client,
+                commandBaseUrl,
+                queryBaseUrl,
+                eventBaseLocation,
+                contextSerializer,
+                Flags.defaults()
+        );
     }
 
     // ------------------------------------------------------------------------
@@ -227,7 +240,7 @@ public class KasperClient {
 
         final ClientResponse response = builder.put(ClientResponse.class, command);
 
-        return handleResponse(response);
+        return handleCommandResponse(response);
     }
 
     // --
@@ -274,7 +287,8 @@ public class KasperClient {
         checkNotNull(command);
         checkNotNull(context);
 
-        final AsyncWebResource.Builder builder = client.asyncResource(resolveCommandPath(command.getClass()))
+        final AsyncWebResource.Builder builder = client
+                .asyncResource(resolveCommandPath(command.getClass()))
                 .accept(MediaType.APPLICATION_JSON_TYPE)
                 .type(MediaType.APPLICATION_JSON_TYPE);
 
@@ -286,7 +300,7 @@ public class KasperClient {
                     throws InterruptedException {
                 try {
 
-                    callback.done(handleResponse(f.get()));
+                    callback.done(handleCommandResponse(f.get()));
 
                 } catch (final ExecutionException e) {
                     throw new KasperException(String.format(
@@ -298,30 +312,38 @@ public class KasperClient {
         }, command);
     }
 
-    CommandResponse handleResponse(final ClientResponse clientResponse) {
+    /**
+     * Interpret platform's response to a sent command
+     *
+     * @param clientResponse the native response
+     * @return the CommandResponse deserialized object
+     */
+    CommandResponse handleCommandResponse(final ClientResponse clientResponse) {
         if (checkNotNull(clientResponse).getType().isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
 
             final CommandResponse response = clientResponse.getEntity(CommandResponse.class);
 
-            /* Extract security token if it has been set */
+            /* Extract security token if it has been set in headers */
             final MultivaluedMap<String, String> headers = clientResponse.getHeaders();
             if (headers.containsKey(HEADER_SECURITY_TOKEN)) {
                 response.withSecurityToken(headers.getFirst(HEADER_SECURITY_TOKEN));
             }
 
             return new HTTPCommandResponse(
-                    safeStatusFromCode(clientResponse.getStatus()),
-                    response
+                safeStatusFromCode(clientResponse.getStatus()),
+                response
             );
 
         } else {
 
             return new HTTPCommandResponse(
-                    safeStatusFromCode(clientResponse.getStatus()),
-                    CommandResponse.Status.ERROR,
-                    new KasperReason(
-                            CoreReasonCode.UNKNOWN_REASON,
-                            "Response from platform uses an unsupported type: " + clientResponse.getType())
+                safeStatusFromCode(clientResponse.getStatus()),
+                CommandResponse.Status.ERROR,
+                new KasperReason(
+                    CoreReasonCode.UNKNOWN_REASON,
+                    "Response from platform uses an unsupported type: "
+                        + clientResponse.getType()
+                )
             );
         }
     }
@@ -349,11 +371,14 @@ public class KasperClient {
         contextSerializer.serialize(context, builder);
 
         try {
+
             final ClientResponse response = builder.put(ClientResponse.class, event);
             final ClientResponse.Status status = response.getClientResponseStatus();
+
             if ( ! ACCEPTED.equals(status)) {
                 throw new KasperException("event submission failed with status <" + status.getReasonPhrase() + ">");
             }
+
         } catch (final Exception e) {
             throw new KasperException("Unable to send event : " + event.getClass().getName(), e);
         }
@@ -372,7 +397,9 @@ public class KasperClient {
      * @return an instance of the Response for this query.
      * @throws KasperException if something went wrong.
      */
-    public <P extends QueryResult> QueryResponse<P> query(final Context context, final Query query, final Class<P> mapTo) {
+    public <P extends QueryResult> QueryResponse<P> query(
+            final Context context, final Query query, final Class<P> mapTo)
+    {
         return query(context, query, TypeToken.of(mapTo));
     }
 
@@ -398,13 +425,14 @@ public class KasperClient {
      * @return an instance of the Response for this query.
      * @throws KasperException if something went wrong.
      */
-    public <P extends QueryResult> QueryResponse<P> query(final Context context, final Query query, final TypeToken<P> mapTo) {
+    public <P extends QueryResult> QueryResponse<P> query(
+            final Context context, final Query query, final TypeToken<P> mapTo)
+    {
         checkNotNull(query);
         checkNotNull(mapTo);
         checkNotNull(context);
 
         WebResource webResource = client.resource(resolveQueryPath(query.getClass()));
-
         if ( ! flags.usePostForQueries()) {
             webResource = webResource.queryParams(prepareQueryParams(query));
         }
@@ -428,7 +456,8 @@ public class KasperClient {
     // --
 
     public <P extends QueryResult> Future<QueryResponse<P>> queryAsync(
-            final Context context, final Query query, final Class<P> mapTo) {
+            final Context context, final Query query, final Class<P> mapTo)
+    {
         return queryAsync(context, query, TypeToken.of(mapTo));
     }
 
@@ -440,13 +469,13 @@ public class KasperClient {
      * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command)
      */
     public <P extends QueryResult> Future<QueryResponse<P>> queryAsync(
-            final Context context, final Query query, final TypeToken<P> mapTo) {
+            final Context context, final Query query, final TypeToken<P> mapTo)
+    {
         checkNotNull(query);
         checkNotNull(mapTo);
         checkNotNull(context);
 
         AsyncWebResource asyncWebResource = client.asyncResource(resolveQueryPath(query.getClass()));
-
         if ( ! flags.usePostForQueries()) {
             asyncWebResource = asyncWebResource.queryParams(prepareQueryParams(query));
         }
@@ -472,10 +501,12 @@ public class KasperClient {
 
     /**
      * @see KasperClient#query(Context, com.viadeo.kasper.cqrs.query.Query, Class)
-     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command, Callback)
+        * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command, Callback)
      */
-    public <P extends QueryResult> void queryAsync(final Context context, final Query query, final Class<P> mapTo,
-                                                   final Callback<QueryResponse<P>> callback) {
+    public <P extends QueryResult> void queryAsync(
+            final Context context, final Query query, final Class<P> mapTo,
+            final Callback<QueryResponse<P>> callback)
+    {
         queryAsync(context, query, TypeToken.of(mapTo), callback);
     }
 
@@ -484,15 +515,17 @@ public class KasperClient {
      * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command,
      *      Callback)
      */
-    public <P extends QueryResult> void queryAsync(final Context context, final Query query, final TypeToken<P> mapTo,
-                                                   final Callback<QueryResponse<P>> callback) {
+    public <P extends QueryResult> void queryAsync(
+            final Context context, final Query query,
+            final TypeToken<P> mapTo,
+            final Callback<QueryResponse<P>> callback)
+    {
         checkNotNull(query);
         checkNotNull(mapTo);
         checkNotNull(context);
         checkNotNull(callback);
 
         AsyncWebResource asyncWebResource = client.asyncResource(resolveQueryPath(query.getClass()));
-
         if ( ! flags.usePostForQueries()) {
             asyncWebResource = asyncWebResource.queryParams(prepareQueryParams(query));
         }
@@ -538,11 +571,14 @@ public class KasperClient {
 
             final TypeToken mappedType = new TypeToken<QueryResponse<P>>() { }
                                             .where(
-                                                    new TypeParameter<P>() { },
-                                                    checkNotNull(mapTo)
+                                                new TypeParameter<P>() { },
+                                                checkNotNull(mapTo)
                                             );
 
-            final QueryResponse<P> response = clientResponse.getEntity(new GenericType<QueryResponse<P>>(mappedType.getType()));
+            final QueryResponse<P> response = clientResponse.getEntity(
+                    new GenericType<QueryResponse<P>>(mappedType.getType())
+            );
+
             return new HTTPQueryResponse<P>(
                     safeStatusFromCode(clientResponse.getStatus()),
                     response
@@ -551,11 +587,13 @@ public class KasperClient {
         } else {
 
             return new HTTPQueryResponse<P>(
-                    safeStatusFromCode(clientResponse.getStatus()),
-                    new KasperReason(
-                            CoreReasonCode.UNKNOWN_REASON,
-                            "Response from platform uses an unsupported type: " + clientResponse.getType())
+                safeStatusFromCode(clientResponse.getStatus()),
+                new KasperReason(
+                    CoreReasonCode.UNKNOWN_REASON,
+                    "Response from platform uses an unsupported type: " + clientResponse.getType()
+                )
             );
+
         }
     }
 
@@ -601,15 +639,19 @@ public class KasperClient {
             adapter.adapt(query, queryBuilder);
 
         } catch (final KasperQueryAdapterException ex) {
+
             throw new KasperException(String.format(
-                    "ERROR generating query string for [%s]",
-                    query.getClass()
+                "ERROR generating query string for [%s]",
+                query.getClass()
             ), ex);
+
         } catch (final Exception ex) {
+
             throw new KasperException(String.format(
-                    "ERROR generating query string for [%s]",
-                    query.getClass()
+                "ERROR generating query string for [%s]",
+                query.getClass()
             ), ex);
+
         }
 
         return queryBuilder.build();

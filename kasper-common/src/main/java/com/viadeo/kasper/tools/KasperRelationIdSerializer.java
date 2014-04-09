@@ -18,7 +18,6 @@ public class KasperRelationIdSerializer extends JsonSerializer<KasperRelationID>
     @Override
     public void serialize(final KasperRelationID value, final JsonGenerator jgen, final SerializerProvider provider)
             throws IOException {
-
         jgen.writeString(value.toString());
     }
 

@@ -6,15 +6,15 @@
 // ============================================================================
 package com.viadeo.kasper.security.callback;
 
-import com.viadeo.kasper.security.KasperInvalidIpAddressException;
-import com.viadeo.kasper.security.KasperMissingIpAddressException;
+import com.viadeo.kasper.security.exception.KasperInvalidIpAddressException;
+import com.viadeo.kasper.security.exception.KasperMissingIpAddressException;
 
 /**
  * Capability to validate a ipAddress.
  */
 public interface IpAddressValidator {
 
-    void validate(final String ipAddress)
+    void validate(String ipAddress)
             throws KasperMissingIpAddressException,
                    KasperInvalidIpAddressException;
 

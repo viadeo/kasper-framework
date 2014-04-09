@@ -22,20 +22,30 @@ public class DocumentedRepository extends AbstractDomainElement {
 
     private final DocumentedAggregate documentedAggregate;
 
-     public abstract static class DocumentedAggregate extends AbstractPropertyDomainElement {
+    // ------------------------------------------------------------------------
+
+    public abstract static class DocumentedAggregate extends AbstractPropertyDomainElement {
 
         private final Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents;
+        private final DocumentedRepository documentedRepository;
 
         public DocumentedAggregate(final DocumentedDomain domain,
                                    final DocumentedElementType type,
                                    final Class referenceClass,
-                                   final Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents) {
+                                   final Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents,
+                                   final DocumentedRepository documentedRepository
+        ) {
             super(domain, type, referenceClass);
+            this.documentedRepository = documentedRepository;
             this.sourceEvents = Lists.newArrayList(sourceEvents);
         }
 
         public Collection<LightDocumentedElement<DocumentedEvent>> getSourceEvents() {
             return sourceEvents;
+        }
+
+        public LightDocumentedElement<DocumentedRepository> getRepository() {
+            return documentedRepository == null ? null : documentedRepository.getLightDocumentedElement();
         }
 
         @Override
@@ -46,6 +56,8 @@ public class DocumentedRepository extends AbstractDomainElement {
         }
     }
 
+    // ------------------------------------------------------------------------
+
     public static class DocumentedConcept extends DocumentedAggregate {
 
         private final List<LightDocumentedElement<DocumentedRelation>> sourceRelations;
@@ -54,21 +66,32 @@ public class DocumentedRepository extends AbstractDomainElement {
 
         public DocumentedConcept(final DocumentedDomain documentedDomain,
                                  final Class referenceClass,
-                                 final Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents) {
-            super(documentedDomain, DocumentedElementType.CONCEPT, referenceClass, sourceEvents);
+                                 final Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents,
+                                 final DocumentedRepository documentedRepository
+        ) {
+            super(documentedDomain, DocumentedElementType.CONCEPT, referenceClass, sourceEvents, documentedRepository);
             this.sourceRelations = Lists.newArrayList();
             this.targetRelations = Lists.newArrayList();
             this.componentConcepts = Lists.newArrayList();
         }
 
-        public DocumentedConcept(final DocumentedDomain documentedDomain, final Class referenceClass) {
-            this(documentedDomain, referenceClass, Lists.<LightDocumentedElement<DocumentedEvent>>newArrayList());
+        public DocumentedConcept(
+                final DocumentedDomain documentedDomain,
+                final Class referenceClass,
+                final DocumentedRepository documentedRepository
+        ) {
+            this(documentedDomain, referenceClass, Lists.<LightDocumentedElement<DocumentedEvent>>newArrayList(), documentedRepository);
         }
 
-        public DocumentedConcept(final DocumentedDomain documentedDomain, final AggregateDescriptor aggregateDescriptor) {
+        public DocumentedConcept(
+                final DocumentedDomain documentedDomain,
+                final AggregateDescriptor aggregateDescriptor,
+                final DocumentedRepository documentedRepository
+        ) {
             this(documentedDomain,
                  aggregateDescriptor.getReferenceClass(),
-                 toLightDocumentedEvents(documentedDomain, aggregateDescriptor.getSourceEventClasses())
+                 toLightDocumentedEvents(documentedDomain, aggregateDescriptor.getSourceEventClasses()),
+                 documentedRepository
             );
         }
 
@@ -108,6 +131,8 @@ public class DocumentedRepository extends AbstractDomainElement {
         }
     }
 
+    // ------------------------------------------------------------------------
+
     public static class DocumentedRelation extends DocumentedAggregate {
 
         private final DocumentedConcept sourceConcept;
@@ -117,12 +142,15 @@ public class DocumentedRepository extends AbstractDomainElement {
         private Boolean bidirectional;
 
         public DocumentedRelation(final DocumentedDomain documentedDomain,
-                                  final AggregateDescriptor aggregateDescriptor) {
+                                  final AggregateDescriptor aggregateDescriptor,
+                                  final DocumentedRepository documentedRepository
+        ) {
             this(documentedDomain,
                  aggregateDescriptor.getReferenceClass(),
-                 new DocumentedConcept(documentedDomain, aggregateDescriptor.getSourceClass()),
-                 new DocumentedConcept(documentedDomain, aggregateDescriptor.getTargetClass()),
-                 toLightDocumentedEvents(documentedDomain, aggregateDescriptor.getSourceEventClasses())
+                 new DocumentedConcept(documentedDomain, aggregateDescriptor.getSourceClass(), documentedRepository),
+                 new DocumentedConcept(documentedDomain, aggregateDescriptor.getTargetClass(), documentedRepository),
+                 toLightDocumentedEvents(documentedDomain, aggregateDescriptor.getSourceEventClasses()),
+                 documentedRepository
             );
         }
 
@@ -130,9 +158,10 @@ public class DocumentedRepository extends AbstractDomainElement {
                                   final Class referenceClass,
                                   final DocumentedConcept sourceConcept,
                                   final DocumentedConcept targetConcept,
-                                  final Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents
+                                  final Collection<LightDocumentedElement<DocumentedEvent>> sourceEvents,
+                                  final DocumentedRepository documentedRepository
         ) {
-            super(documentedDomain, DocumentedElementType.RELATION, referenceClass, sourceEvents);
+            super(documentedDomain, DocumentedElementType.RELATION, referenceClass, sourceEvents, documentedRepository);
             this.sourceConcept = sourceConcept;
             this.targetConcept = targetConcept;
         }
@@ -184,16 +213,16 @@ public class DocumentedRepository extends AbstractDomainElement {
 
     public DocumentedRepository(final DocumentedDomain documentedDomain, final RepositoryDescriptor repositoryDescriptor) {
         super(
-                checkNotNull(documentedDomain),
-                DocumentedElementType.REPOSITORY,
-                checkNotNull(repositoryDescriptor).getReferenceClass()
+            checkNotNull(documentedDomain),
+            DocumentedElementType.REPOSITORY,
+            checkNotNull(repositoryDescriptor).getReferenceClass()
         );
 
         final AggregateDescriptor aggregateDescriptor = repositoryDescriptor.getAggregateDescriptor();
         if (aggregateDescriptor.isRelation()) {
-            documentedAggregate = new DocumentedRelation(documentedDomain, aggregateDescriptor);
+            documentedAggregate = new DocumentedRelation(documentedDomain, aggregateDescriptor, this);
         } else {
-            documentedAggregate = new DocumentedConcept(documentedDomain, aggregateDescriptor);
+            documentedAggregate = new DocumentedConcept(documentedDomain, aggregateDescriptor, this);
         }
     }
 

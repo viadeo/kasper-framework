@@ -8,12 +8,16 @@ package com.viadeo.kasper.doc.element;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class LightDocumentedElement<E extends AbstractElement> implements WithType {
 
     protected final E documentedElement;
 
+    // ------------------------------------------------------------------------
+
     public LightDocumentedElement(final E documentedElement) {
-        this.documentedElement = documentedElement;
+        this.documentedElement = checkNotNull(documentedElement);
     }
 
     public String getType() {
@@ -28,12 +32,19 @@ public class LightDocumentedElement<E extends AbstractElement> implements WithTy
         return documentedElement.getName();
     }
 
-    public String getLabel(){
+    public String getLabel() {
         return documentedElement.getLabel();
     }
 
     public String getDescription() {
         return documentedElement.getDescription();
+    }
+
+    public String getDomainName() {
+        if (documentedElement instanceof AbstractDomainElement) {
+            return ((AbstractDomainElement) documentedElement).getDomain().getName();
+        }
+        return null;
     }
 
     public String getURL() {

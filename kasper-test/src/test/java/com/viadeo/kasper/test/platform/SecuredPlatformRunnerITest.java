@@ -21,12 +21,13 @@ import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.security.*;
+import com.viadeo.kasper.security.SecurityConfiguration;
 import com.viadeo.kasper.security.annotation.XKasperPublic;
 import com.viadeo.kasper.security.callback.ApplicationIdValidator;
 import com.viadeo.kasper.security.callback.IdentityContextProvider;
 import com.viadeo.kasper.security.callback.IpAddressValidator;
 import com.viadeo.kasper.security.callback.SecurityTokenValidator;
+import com.viadeo.kasper.security.exception.*;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -63,7 +64,7 @@ public class SecuredPlatformRunnerITest {
         @Override
         public void validate(String securityToken)
                 throws KasperMissingSecurityTokenException,
-                       KasperInvalidSecurityTokenException {
+                KasperInvalidSecurityTokenException {
             if ("".equals(securityToken)) {
                 throw new KasperInvalidSecurityTokenException(
                         INVALID_TOKEN_ERROR_MSG,

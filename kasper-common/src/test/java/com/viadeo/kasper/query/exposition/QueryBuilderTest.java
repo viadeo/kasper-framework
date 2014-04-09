@@ -117,8 +117,10 @@ public class QueryBuilderTest {
     public void testBuildURI() throws URISyntaxException {
         builder.addSingle("name", "fée").begin("names").add("foo", "bar").end();
 
-        assertEquals(new URI("http://www.google.com/somepath?name=f%C3%A9e&names=foo&names=bar").toASCIIString(),
-                builder.build(new URI("http://www.google.com/somepath")).toASCIIString());
+        assertEquals(
+                new URI("http://www.google.com/somepath?name=f%C3%A9e&names=foo&names=bar").toASCIIString(),
+                builder.build(new URI("http://www.google.com/somepath")).toASCIIString()
+        );
     }
 
 }

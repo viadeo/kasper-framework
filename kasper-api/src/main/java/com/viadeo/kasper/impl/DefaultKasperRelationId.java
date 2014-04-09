@@ -34,6 +34,8 @@ public class DefaultKasperRelationId extends AbstractKasperID<String> implements
         return new DefaultKasperRelationId();
     }
 
+    // ------------------------------------------------------------------------
+
     public DefaultKasperRelationId() {
         this.sourceId = new DefaultKasperId(UUID.randomUUID());
         this.targetId = new DefaultKasperId(UUID.randomUUID());
@@ -54,6 +56,8 @@ public class DefaultKasperRelationId extends AbstractKasperID<String> implements
 
         super.setId(id);
     }
+
+    // ------------------------------------------------------------------------
 
     public void setId(final KasperID sourceId, final KasperID targetId) {
         this.sourceId = checkNotNull(sourceId);

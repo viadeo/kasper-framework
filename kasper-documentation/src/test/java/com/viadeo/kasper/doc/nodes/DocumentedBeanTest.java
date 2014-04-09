@@ -6,8 +6,15 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
+import com.viadeo.kasper.annotation.XKasperField;
+import com.viadeo.kasper.er.LinkedConcept;
+import com.viadeo.kasper.test.root.entities.Member;
+import com.viadeo.kasper.test.root.queries.GetAllMembersQueryHandler;
 import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 
@@ -15,23 +22,102 @@ import static org.junit.Assert.*;
 
 public class DocumentedBeanTest {
 
-    public class ClassWithFieldCollection {
+    public static class ClassWithConstant {
         @SuppressWarnings("unused")
-        public Collection<String> fieldCollection;
+        private static final Logger LOGGER = LoggerFactory.getLogger(DocumentedBeanTest.ClassWithConstant.class);
     }
 
     @Test
-    public void testDetectCollection() {
-        // Given
+    public void init_withConstant_shouldBeIgnored() {
+        // When
+        final DocumentedBean bean = new DocumentedBean(ClassWithConstant.class);
+
+        // Then
+        assertNotNull(bean);
+        assertEquals(0, bean.size());
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static class ClassWithTransientFieldUsingAnnotation {
+        @SuppressWarnings("unused")
+        @Transient
+        public String field;
+    }
+
+    @Test
+    public void init_withTransientField_usingAnnotation_shouldBeIgnored() {
+        // When
+        final DocumentedBean bean = new DocumentedBean(ClassWithTransientFieldUsingAnnotation.class);
+
+        // Then
+        assertNotNull(bean);
+        assertEquals(0, bean.size());
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static class ClassWithTransientFieldUsingModifier {
+        @SuppressWarnings("unused")
+        public transient String field;
+    }
+
+    @Test
+    public void init_withTransientField_usingModifier_shouldBeIgnored() {
+        // When
+        final DocumentedBean bean = new DocumentedBean(ClassWithTransientFieldUsingModifier.class);
+
+        // Then
+        assertNotNull(bean);
+        assertEquals(0, bean.size());
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static class ClassWithSimpleField {
+        @SuppressWarnings("unused")
+        public String field;
+    }
+
+    @Test
+    public void init_withSimpleField_shouldBeDetailed() {
+        // When
+        final DocumentedBean bean = new DocumentedBean(ClassWithSimpleField.class);
+
+        // Then
+        assertNotNull(bean);
+        assertEquals(1, bean.size());
+
+        final DocumentedProperty prop = bean.get(0);
+        assertEquals("field", prop.getName());
+        assertEquals("String", prop.getType());
+        assertFalse(prop.isList());
+        assertFalse(prop.getLinkedConcept());
+        assertFalse(prop.isQueryResult());
+    }
+
+    // ------------------------------------------------------------------------
+
+    public class ClassWithFieldCollection {
+        @SuppressWarnings("unused")
+        public Collection<Integer> fieldCollection;
+    }
+
+    @Test
+    public void init_withCollection_shouldBeDetailed() {
+        // When
         final DocumentedBean bean = new DocumentedBean(ClassWithFieldCollection.class);
 
         // Then
+        assertNotNull(bean);
         assertEquals(1, bean.size());
 
         final DocumentedProperty prop = bean.get(0);
         assertEquals("fieldCollection", prop.getName());
-        assertEquals("String", prop.getType());
+        assertEquals("Integer", prop.getType());
         assertTrue(prop.isList());
+        assertFalse(prop.getLinkedConcept());
+        assertFalse(prop.isQueryResult());
     }
 
     // ------------------------------------------------------------------------
@@ -49,38 +135,113 @@ public class DocumentedBeanTest {
         final DocumentedBean bean = new DocumentedBean(ClassExtendingCollectionGeneric.class);
 
         // Then
+        assertNotNull(bean);
         assertEquals(1, bean.size());
 
         final DocumentedProperty prop = bean.get(0);
         assertEquals("fieldCollection", prop.getName());
         assertEquals("String", prop.getType());
         assertTrue(prop.isList());
+        assertFalse(prop.getLinkedConcept());
+        assertFalse(prop.isQueryResult());
     }
 
     // ------------------------------------------------------------------------
 
-    public class ClassWithBeanValidation {
-        @NotNull
-        public String iCantBeNull;
-        public String imNullable;
+    public static class ClassWithLinkedConcept {
+        @SuppressWarnings("unused")
+        public LinkedConcept<Member> member;
     }
 
     @Test
-    public void testDetectBeanValidationAnnotation() {
-        // Given
-        final DocumentedBean bean = new DocumentedBean(ClassWithBeanValidation.class);
+    public void init_withLinkedConcept_shouldBeDetailed() {
+        // When
+        final DocumentedBean bean = new DocumentedBean(ClassWithLinkedConcept.class);
 
         // Then
-        assertEquals(2, bean.size());
-        final DocumentedProperty firstProperty = bean.get(0);
-        assertEquals("iCantBeNull", firstProperty.getName());
-        assertEquals("String", firstProperty.getType());
-        assertTrue(firstProperty.isMandatory());
+        assertNotNull(bean);
+        assertEquals(1, bean.size());
 
-        final DocumentedProperty secondProperty = bean.get(1);
-        assertEquals("imNullable", secondProperty.getName());
-        assertEquals("String", secondProperty.getType());
-        assertFalse(secondProperty.isMandatory());
+        final DocumentedProperty prop = bean.get(0);
+        assertEquals("member", prop.getName());
+        assertEquals("Member", prop.getType());
+        assertFalse(prop.isList());
+        assertTrue(prop.getLinkedConcept());
+        assertFalse(prop.isQueryResult());
+    }
+
+    // ------------------------------------------------------------------------
+
+    public class ClassWithValidationOnField {
+        @SuppressWarnings("unused")
+        @NotNull
+        public String iCantBeNull;
+    }
+
+    @Test
+    public void init_withField_withValidation_shouldBeDetailed() {
+        // When
+        final DocumentedBean bean = new DocumentedBean(ClassWithValidationOnField.class);
+
+        // Then
+        assertNotNull(bean);
+        assertEquals(1, bean.size());
+
+        final DocumentedProperty prop = bean.get(0);
+        assertEquals("iCantBeNull", prop.getName());
+        assertEquals("String", prop.getType());
+        assertFalse(prop.isList());
+        assertFalse(prop.getLinkedConcept());
+        assertFalse(prop.isQueryResult());
+
+        assertEquals(1, prop.getConstraints().size());
+
+        final DocumentedConstraint constraint = prop.getConstraints().iterator().next();
+        assertEquals("NotNull", constraint.getType());
+    }
+
+    @Test
+    public void init_withCollectionQueryResult_shouldBeDetailed() {
+        // When
+        final DocumentedBean bean = new DocumentedBean(GetAllMembersQueryHandler.AllMembersResult.class);
+
+        // Then
+        assertNotNull(bean);
+        assertEquals(1, bean.size());
+
+        final DocumentedProperty prop = bean.get(0);
+        assertEquals("list", prop.getName());
+        assertEquals("MembersResult", prop.getType());
+        assertTrue(prop.isList());
+        assertFalse(prop.getLinkedConcept());
+        assertTrue(prop.isQueryResult());
+        assertEquals(0, prop.getConstraints().size());
+    }
+
+    // ------------------------------------------------------------------------
+
+    public class ClassWithDescriptionOnField {
+        @SuppressWarnings("unused")
+        @XKasperField(description = "a simple field")
+        public String field;
+    }
+
+    @Test
+    public void init_withField_withXKasperField_shouldBeDetailed() {
+        // When
+        final DocumentedBean bean = new DocumentedBean(ClassWithDescriptionOnField.class);
+
+        // Then
+        assertNotNull(bean);
+        assertEquals(1, bean.size());
+
+        final DocumentedProperty prop = bean.get(0);
+        assertEquals("field", prop.getName());
+        assertEquals("String", prop.getType());
+        assertEquals("a simple field", prop.getDescription());
+        assertFalse(prop.isList());
+        assertFalse(prop.getLinkedConcept());
+        assertFalse(prop.isQueryResult());
     }
 
 }

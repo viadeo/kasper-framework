@@ -222,6 +222,7 @@ public interface Platform {
         // --------------------------------------------------------------------
 
         public Platform build() {
+
             checkState(null != eventBus, "the event bus cannot be null");
             checkState(null != commandGateway, "the command gateway cannot be null");
             checkState(null != queryGateway, "the query gateway cannot be null");
@@ -337,6 +338,7 @@ public interface Platform {
         }
 
         protected void initializeKasperMetrics(final DomainHelper domainHelper) {
+
             // FIXME here we declare resolver allowing to defined the name of metrics
             final ConceptResolver conceptResolver = new ConceptResolver();
             final RelationResolver relationResolver = new RelationResolver(conceptResolver);
@@ -404,12 +406,12 @@ public interface Platform {
                               final Map<ExtraComponentKey, Object> extraComponents
         ) {
             this(
-                    platformConfiguration.configuration(),
-                    platformConfiguration.eventBus(),
-                    platformConfiguration.commandGateway(),
-                    platformConfiguration.queryGateway(),
-                    platformConfiguration.metricRegistry(),
-                    extraComponents
+                platformConfiguration.configuration(),
+                platformConfiguration.eventBus(),
+                platformConfiguration.commandGateway(),
+                platformConfiguration.queryGateway(),
+                platformConfiguration.metricRegistry(),
+                extraComponents
             );
         }
 

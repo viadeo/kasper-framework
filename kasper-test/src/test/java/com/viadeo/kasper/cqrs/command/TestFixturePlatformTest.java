@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.impl.DefaultKasperId;
@@ -153,6 +154,26 @@ public class TestFixturePlatformTest {
     }
 
     @Test
+    public void testSimpleCommandError() {
+        fixture
+                .given()
+                .when(
+                        new FixtureUseCase.TestCommand("ERROR")
+                )
+                .expectReturnError(
+                        new KasperReason("ERROR", "I'm bad")
+                );
+    }
+
+    @Test
+    public void testSimpleCommandErrorWithCodeReasonCode() {
+        fixture
+                .given()
+                .when(new FixtureUseCase.TestCoreReasonCodeCommand(CoreReasonCode.CONFLICT))
+                .expectReturnError(CoreReasonCode.CONFLICT);
+    }
+
+    @Test
     public void testSimpleQueryOK() {
         fixture
             .given()
@@ -174,6 +195,14 @@ public class TestFixturePlatformTest {
             .expectReturnError(
                 new KasperReason("ERROR", "I'm bad")
             );
+    }
+
+    @Test
+    public void testSimpleQueryErrorWithCodeReasonCode() {
+        fixture
+                .given()
+                .when(new TestCoreReasonCodeQuery(CoreReasonCode.CONFLICT))
+                .expectReturnError(CoreReasonCode.CONFLICT);
     }
 
     @Test

@@ -57,7 +57,10 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 		final Optional<Class<? extends Event>> eventClassOpt =
 				(Optional<Class<? extends Event>>)
 				ReflectionGenericsResolver.getParameterTypeFromClass(
-						this.getClass(), EventListener.class, EventListener.EVENT_PARAMETER_POSITION);
+						this.getClass(),
+                        EventListener.class,
+                        EventListener.EVENT_PARAMETER_POSITION
+                );
 		
 		if (eventClassOpt.isPresent()) {
 			this.eventClass = eventClassOpt.get();
@@ -98,6 +101,7 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
     public void publish(final IEvent event) {
         checkNotNull(event, "The specified event must be non null");
         checkState(null != eventBus, "Unable to publish the specified event : the event bus is null");
+
         org.axonframework.domain.EventMessage eventMessage = GenericEventMessage.asEventMessage(event);
         this.eventBus.publish(eventMessage);
     }
@@ -112,7 +116,7 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 	@SuppressWarnings({"unchecked", "rawtypes"}) // Safe
 	public void handle(final org.axonframework.domain.EventMessage eventMessage) {
 		
-		if (!this.getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
+		if ( ! this.getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
 			return;
 		}
 
@@ -133,16 +137,19 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 
         /* Handle event */
         try {
+
             try {
                 this.handle(message);
             } catch (final UnsupportedOperationException e) {
                 this.handle((E) eventMessage.getPayload());
             }
+
         } catch (final RuntimeException e) {
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
             getMetricRegistry().meter(meterErrorsName).mark();
             getMetricRegistry().meter(domainMeterErrorsName).mark();
             throw e;
+
         } finally {
             /* Stop timer and record a tick */
             domainTimer.close();
@@ -173,7 +180,8 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 
     // ------------------------------------------------------------------------
 
-    public void setEventBus(EventBus eventBus) {
-        this.eventBus = eventBus;
+    public void setEventBus(final EventBus eventBus) {
+        this.eventBus = checkNotNull(eventBus);
     }
+
 }

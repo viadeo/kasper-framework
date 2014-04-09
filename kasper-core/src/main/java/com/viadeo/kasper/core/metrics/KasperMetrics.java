@@ -53,6 +53,8 @@ public final class KasperMetrics {
 
     KasperMetrics() { /* Utility class */ }
 
+    // ------------------------------------------------------------------------
+
     public MetricRegistry getRegistry() {
         if(null == metricRegistry) {
             throw new IllegalStateException("The metric registry is not initialized.");
@@ -61,35 +63,50 @@ public final class KasperMetrics {
     }
 
     public void setRegistry(final MetricRegistry metricRegistry) {
-        this.metricRegistry = metricRegistry;
+        this.metricRegistry = checkNotNull(metricRegistry);
     }
 
     public void _setNamePrefix(final String prefix) {
-        namePrefix = prefix;
+        namePrefix = checkNotNull(prefix);
     }
 
     public String _name(final String name, final String...names) {
         final String prefix = namePrefix.isEmpty() ? "" : namePrefix + ".";
-        return prefix + MetricRegistry.name(name, names);
+        return prefix + MetricRegistry.name(name, checkNotNull(names));
     }
 
     public String _name(final Class clazz, final String...names) {
-        return this._name(MetricNameStyle.DOMAIN_TYPE_COMPONENT, clazz, names);
+        return this._name(MetricNameStyle.DOMAIN_TYPE_COMPONENT, clazz, checkNotNull(names));
     }
 
     public String _name(final MetricNameStyle style, final Class clazz, final String...names) {
         final String prefix = namePrefix.isEmpty() ? "" : namePrefix + ".";
-        return prefix + MetricRegistry.name(pathForKasperComponent(style, DefaultContextBuilder.get(), clazz), names);
+        return prefix + MetricRegistry.name(
+                pathForKasperComponent(
+                        checkNotNull(style),
+                        DefaultContextBuilder.get(),
+                        checkNotNull(clazz)
+                ),
+                checkNotNull(names)
+        );
     }
 
     public String _name(final MetricNameStyle style, final Context context, final Class clazz, final String...names) {
         final String prefix = namePrefix.isEmpty() ? "" : namePrefix + ".";
-        return prefix + MetricRegistry.name(pathForKasperComponent(style, context, clazz), names);
+        return prefix + MetricRegistry.name(
+                pathForKasperComponent(
+                        checkNotNull(style),
+                        checkNotNull(context),
+                        checkNotNull(clazz)
+                ),
+                checkNotNull(names)
+        );
     }
 
     @SuppressWarnings("unchecked")
     protected String pathForKasperComponent(final MetricNameStyle style, final Context context, final Class clazz) {
-        final MetricNameKey key = new MetricNameKey(style, clazz);
+        checkNotNull(context);
+        final MetricNameKey key = new MetricNameKey(checkNotNull(style), checkNotNull(clazz));
 
         if (pathCache.containsKey(key)) {
             return pathCache.get(key);

@@ -23,6 +23,11 @@ import static org.junit.Assert.assertEquals;
 
 public class KasperClientBuilderTest {
 
+    class TestQuery implements Query {}
+    class TestCommand implements Command {}
+
+    // ------------------------------------------------------------------------
+
     @Test public void testCustomTypeAdapterOverrideDefault() {
         // Given
         final TypeAdapter<Date> expected = new TypeAdapter<Date>() {
@@ -92,6 +97,4 @@ public class KasperClientBuilderTest {
         Assert.assertEquals("/kasper/command/test", resource.getURI().getPath());
     }
 
-    class TestQuery implements Query {}
-    class TestCommand implements Command {}
 }

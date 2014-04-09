@@ -28,13 +28,13 @@ public class KasperMatcherTest {
     public class HelloMessageResult extends IndexedEntity implements QueryResult {
 
         public static final String ENTITY_NAME = "Hello";
-
         private final String message;
 
         // ------------------------------------------------------------------------
 
         public HelloMessageResult(final KasperID id,
-                                  final Long version, final DateTime lastModificationDate,
+                                  final Long version,
+                                  final DateTime lastModificationDate,
                                   final String message) {
             super(id, ENTITY_NAME, version, lastModificationDate);
             this.message = checkNotNull(message);
@@ -58,10 +58,10 @@ public class KasperMatcherTest {
      final Object hello_1 = new HelloMessagesResult().<HelloMessagesResult>withList(
             new ArrayList<HelloMessageResult>() {{
                 this.add(new HelloMessageResult(
-                        HELLO_ID,
-                        0L,
-                        DateTime.now(),
-                        MESSAGE
+                    HELLO_ID,
+                    0L,
+                    DateTime.now(),
+                    MESSAGE
                 ));
             }}
     );
@@ -69,10 +69,10 @@ public class KasperMatcherTest {
     final Object hello_2 = new HelloMessagesResult().<HelloMessagesResult>withList(
             new ArrayList<HelloMessageResult>() {{
                 this.add(new HelloMessageResult(
-                        HELLO_ID,
-                        0L,
-                        anyDate(),
-                        MESSAGE
+                    HELLO_ID,
+                    0L,
+                    anyDate(),
+                    MESSAGE
                 ));
             }}
     );
@@ -80,16 +80,16 @@ public class KasperMatcherTest {
     final Object hello_3 = new HelloMessagesResult().<HelloMessagesResult>withList(
             new ArrayList<HelloMessageResult>() {{
                 this.add(new HelloMessageResult(
-                        HELLO_ID,
-                        1L,
-                        anyDate(),
-                        MESSAGE
+                    HELLO_ID,
+                    1L,
+                    anyDate(),
+                    MESSAGE
                 ));
             }}
     );
 
     final Object hello_4 = new HelloMessagesResult().<HelloMessagesResult>withList(
-            new ArrayList<HelloMessageResult>()
+        new ArrayList<HelloMessageResult>()
     );
 
     // ------------------------------------------------------------------------
@@ -119,8 +119,10 @@ public class KasperMatcherTest {
             Test(Object o) { object = o; }
             void set(Object o) { object = o; }
         }
+
         assertTrue(equalTo(new Test(null)).matches(new Test(null)));
         assertFalse(equalTo(new Test(null)).matches(new Test(42)));
+
         final Test t = new Test(0);
         t.set(t);
         assertTrue(equalTo(t).matches(t));
@@ -138,7 +140,7 @@ public class KasperMatcherTest {
         matcher.describeTo(description);
 
         // When
-        if (! matcher.matches(hello_1)) {
+        if ( ! matcher.matches(hello_1)) {
             // Then
             System.out.println(description);
             fail();
@@ -154,7 +156,7 @@ public class KasperMatcherTest {
         matcher.describeTo(description);
 
         // When
-        if (! matcher.matches(hello_1)) {
+        if ( ! matcher.matches(hello_1)) {
             // Then
             System.out.println(description);
         } else {
@@ -171,7 +173,7 @@ public class KasperMatcherTest {
         matcher.describeTo(description);
 
         // When
-        if (! matcher.matches(hello_1)) {
+        if ( ! matcher.matches(hello_1)) {
             // Then
             System.out.println(description);
         } else {
@@ -188,7 +190,7 @@ public class KasperMatcherTest {
         matcher.describeTo(description);
 
         // When
-        if (! matcher.matches(new HelloMessagesResult())) {
+        if ( ! matcher.matches(new HelloMessagesResult())) {
             // Then
             System.out.println(description);
             fail();

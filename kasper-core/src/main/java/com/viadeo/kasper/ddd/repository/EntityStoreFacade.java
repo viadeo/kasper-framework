@@ -24,7 +24,7 @@ class EntityStoreFacade<AGR extends AggregateRoot> extends MetricsRepositoryFaca
     // ------------------------------------------------------------------------
 
     EntityStoreFacade(final Repository<AGR> kasperRepository) {
-        super(kasperRepository);
+        super(checkNotNull(kasperRepository));
     }
 
     public void setEventStore(final EventStore eventStore) {
@@ -37,8 +37,8 @@ class EntityStoreFacade<AGR extends AggregateRoot> extends MetricsRepositoryFaca
 
         if (null != eventStore) {
             eventStore.appendEvents(
-                    aggregate.getClass().getSimpleName(),
-                    aggregate.getUncommittedEvents()
+                aggregate.getClass().getSimpleName(),
+                aggregate.getUncommittedEvents()
             );
         }
 
@@ -68,6 +68,7 @@ class EntityStoreFacade<AGR extends AggregateRoot> extends MetricsRepositoryFaca
 
     @Override
     protected void doDelete(final AGR aggregate) {
+
         /**
          * Increment non-null version
          */

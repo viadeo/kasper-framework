@@ -15,6 +15,8 @@ package com.viadeo.kasper.impl;
 public class LongKasperId extends AbstractKasperID<Long> {
     private static final long serialVersionUID = 2557842274331061279L;
 
+    // ------------------------------------------------------------------------
+
     LongKasperId() {
         super(0L);
     }

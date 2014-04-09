@@ -30,6 +30,7 @@ import java.util.Arrays;
 import static org.junit.Assert.*;
 
 public class ObjectMapperProviderTest {
+
     final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
 
     static class SomeResult implements QueryResult {
@@ -39,7 +40,7 @@ public class ObjectMapperProviderTest {
 
         public SomeResult() { }
 
-        public SomeResult(String str) {
+        public SomeResult(final String str) {
             this.str = str;
         }
 
@@ -47,7 +48,7 @@ public class ObjectMapperProviderTest {
             return str;
         }
 
-        public void setStr(String str) {
+        public void setStr(final String str) {
             this.str = str;
         }
     }
@@ -62,7 +63,7 @@ public class ObjectMapperProviderTest {
         private final String name;
         private final Integer value;
 
-        public ImmutableQuery(String name, Integer value) {
+        public ImmutableQuery(final String name, final Integer value) {
             this.name = name;
             this.value = value;
         }
@@ -85,10 +86,13 @@ public class ObjectMapperProviderTest {
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
-                expected);
+            expected
+        );
 
-        final QueryResponse<SomeResult> actual = objectReader.readValue(objectReader.getFactory()
-                .createParser(json), new TypeReference<QueryResponse<SomeResult>>() {});
+        final QueryResponse<SomeResult> actual = objectReader.readValue(
+            objectReader.getFactory().createParser(json),
+            new TypeReference<QueryResponse<SomeResult>>() {}
+        );
         
         assertTrue(actual.isOK());
         assertNull(actual.getReason());
@@ -102,20 +106,28 @@ public class ObjectMapperProviderTest {
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
-                expected);
+                expected
+        );
+
         @SuppressWarnings("unchecked")
-        final QueryResponse actual = objectReader.readValue(objectReader.getFactory()
-                .createParser(json), QueryResponse.class);
+        final QueryResponse actual = objectReader.readValue(
+            objectReader.getFactory().createParser(json),
+            QueryResponse.class
+        );
 
         // Then
         assertFalse(actual.isOK());
-        assertEquals(expected.getReason().getCode(), actual.getReason().getCode());
-        assertEquals(expected.getReason().getMessages().size(),
-                     actual.getReason().getMessages().size());
+        assertEquals(expected.getReason().getReasonCode(), actual.getReason().getReasonCode());
+        assertEquals(
+            expected.getReason().getMessages().size(),
+            actual.getReason().getMessages().size()
+        );
 
         for (int i = 0; i < expected.getReason().getMessages().size(); i++) {
-            assertEquals(expected.getReason().getMessages().toArray()[i],
-                         actual.getReason().getMessages().toArray()[i]);
+            assertEquals(
+                expected.getReason().getMessages().toArray()[i],
+                actual.getReason().getMessages().toArray()[i]
+            );
         }
     }
 
@@ -127,15 +139,20 @@ public class ObjectMapperProviderTest {
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
-                expectedResponse);
-        final CommandResponse actualResponse = objectReader.readValue(objectReader.getFactory()
-                .createParser(json), CommandResponse.class);
+            expectedResponse
+        );
+        final CommandResponse actualResponse = objectReader.readValue(
+            objectReader.getFactory().createParser(json),
+            CommandResponse.class
+        );
 
         // Then
         assertEquals(expectedResponse.getStatus(), actualResponse.getStatus());
         assertEquals(expectedError.getCode(), actualResponse.getReason().getCode());
-        assertEquals(expectedError.getMessages().toArray()[0],
-                     actualResponse.getReason().getMessages().toArray()[0]);
+        assertEquals(
+                expectedError.getMessages().toArray()[0],
+                actualResponse.getReason().getMessages().toArray()[0]
+        );
     }
 
     @Test
@@ -148,20 +165,27 @@ public class ObjectMapperProviderTest {
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(
-                expectedResponse);
-        final CommandResponse actualResponse = objectReader.readValue(objectReader.getFactory()
-                .createParser(json), CommandResponse.class);
+                expectedResponse
+        );
+        final CommandResponse actualResponse = objectReader.readValue(
+                objectReader.getFactory().createParser(json),
+                CommandResponse.class
+        );
 
         // Then
         assertEquals(expectedResponse.getStatus(), actualResponse.getStatus());
-        assertEquals(expectedError.getMessages().size(), actualResponse.getReason().getMessages()
-                .size());
+        assertEquals(
+                expectedError.getMessages().size(),
+                actualResponse.getReason().getMessages().size()
+        );
 
         assertEquals(expectedError.getCode(), actualResponse.getReason().getCode());
 
         for (int i = 0; i < expectedError.getMessages().size(); i++) {
-            assertEquals(expectedError.getMessages().toArray()[i],
-                         actualResponse.getReason().getMessages().toArray()[i]);
+            assertEquals(
+                    expectedError.getMessages().toArray()[i],
+                    actualResponse.getReason().getMessages().toArray()[i]
+            );
         }
     }
 
@@ -174,8 +198,10 @@ public class ObjectMapperProviderTest {
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(response);
         final ObjectReader objectReader = ObjectMapperProvider.INSTANCE.objectReader();
-        final SomeCollectionResponse actual = objectReader.readValue(objectReader.getFactory()
-                .createParser(json), SomeCollectionResponse.class);
+        final SomeCollectionResponse actual = objectReader.readValue(
+                objectReader.getFactory().createParser(json),
+                SomeCollectionResponse.class
+        );
 
         // Then
         assertEquals(response.getCount(), actual.getCount());
@@ -199,8 +225,10 @@ public class ObjectMapperProviderTest {
         final String jsonIso8601 = "\"2013-08-06T07:35:00.123Z\"";
 
         // When
-        final DateTime actual = ObjectMapperProvider.INSTANCE.mapper().readValue(jsonIso8601,
-                DateTime.class);
+        final DateTime actual = ObjectMapperProvider.INSTANCE.mapper().readValue(
+                jsonIso8601,
+                DateTime.class
+        );
 
         // Then
         final DateTime expectedDateTime = new DateTime(2013, 8, 6, 7, 35, 0, 123, DateTimeZone.UTC);

@@ -57,7 +57,7 @@ public class QuerySecurityInterceptorFactory extends QueryInterceptorFactory {
     private Class<? extends Query> extractQueryClassFromTypeToken(final TypeToken<?> type) {
         final Class<?> rawType = checkNotNull(type).getRawType();
         return new QueryHandlerResolver().getQueryClass(
-                (Class<? extends QueryHandler>) rawType
+            (Class<? extends QueryHandler>) rawType
         );
     }
 

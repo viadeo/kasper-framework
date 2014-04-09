@@ -64,4 +64,5 @@ public class InterceptorChainRegistry<INPUT, OUTPUT> {
     public void register(InterceptorFactory<INPUT, OUTPUT> interceptorFactory) {
         this.interceptorFactories.add(checkNotNull(interceptorFactory));
     }
+
 }

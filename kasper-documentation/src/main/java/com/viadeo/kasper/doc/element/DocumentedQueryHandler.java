@@ -8,6 +8,8 @@ package com.viadeo.kasper.doc.element;
 
 import com.viadeo.kasper.client.platform.domain.descriptor.QueryHandlerDescriptor;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
+import com.viadeo.kasper.doc.nodes.DocumentedBean;
+import com.viadeo.kasper.doc.nodes.DocumentedQueryResponse;
 import org.springframework.util.LinkedMultiValueMap;
 
 import java.util.List;
@@ -22,16 +24,22 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
     public static class DocumentedQuery extends AbstractPropertyDomainElement {
 
         private final DocumentedQueryHandler queryHandler;
+        private final DocumentedBean response;
 
         public DocumentedQuery(final DocumentedDomain domain,
                                final DocumentedQueryHandler queryHandler,
                                final Class queryClass) {
             super(domain, DocumentedElementType.QUERY, queryClass);
             this.queryHandler = queryHandler;
+            this.response = new DocumentedQueryResponse(queryHandler.documentedQueryResult.getReferenceClass());
         }
 
         public LightDocumentedElement<DocumentedQueryHandler> getQueryHandler() {
             return queryHandler.getLightDocumentedElement();
+        }
+
+        public DocumentedBean getResponse() {
+            return response;
         }
 
         @Override
@@ -49,12 +57,16 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
 
         private static final LinkedMultiValueMap<Class, LightDocumentedElement> HANDLERS_BY_QUERY_RESULTS = new LinkedMultiValueMap<>();
 
+        private DocumentedQueryResult element;
+
         public DocumentedQueryResult(final DocumentedDomain domain,
                                      final DocumentedQueryHandler queryHandler,
                                      final Class queryResultClass) {
             super(domain, DocumentedElementType.QUERY_RESULT, queryResultClass);
 
-            HANDLERS_BY_QUERY_RESULTS.add(queryResultClass, queryHandler.getLightDocumentedElement());
+            if(null != queryHandler) {
+                HANDLERS_BY_QUERY_RESULTS.add(queryResultClass, queryHandler.getLightDocumentedElement());
+            }
         }
 
         public List<LightDocumentedElement> getQueryHandlers() {
@@ -71,6 +83,17 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
         public void accept(DocumentedElementVisitor visitor) {
             visitor.visit(this);
         }
+
+        public LightDocumentedElement<DocumentedQueryResult> getElement() {
+            if(null == element) {
+                return null;
+            }
+            return element.getLightDocumentedElement();
+        }
+
+        public void setElement(DocumentedQueryResult element) {
+            this.element = element;
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -82,8 +105,18 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
                 DocumentedElementType.QUERY_HANDLER,
                 queryHandlerDescriptor.getReferenceClass()
         );
-        this.documentedQuery = new DocumentedQuery(documentedDomain, this, queryHandlerDescriptor.getQueryClass());
-        this.documentedQueryResult = new DocumentedQueryResult(documentedDomain, this, queryHandlerDescriptor.getQueryResultClass());
+
+        this.documentedQueryResult = new DocumentedQueryResult(
+                documentedDomain,
+                this,
+                queryHandlerDescriptor.getQueryResultClass()
+        );
+
+        this.documentedQuery = new DocumentedQuery(
+                documentedDomain,
+                this,
+                queryHandlerDescriptor.getQueryClass()
+        );
     }
 
     // ------------------------------------------------------------------------

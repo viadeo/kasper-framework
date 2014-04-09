@@ -58,11 +58,16 @@ public abstract class CommandHandler<C extends Command>
         @SuppressWarnings("unchecked") // Safe
         final Optional<Class<C>> commandClass =
                 (Optional<Class<C>>) (ReflectionGenericsResolver.getParameterTypeFromClass(
-                        this.getClass(), CommandHandler.class, CommandHandler.COMMAND_PARAMETER_POSITION));
+                        this.getClass(),
+                        CommandHandler.class,
+                        CommandHandler.COMMAND_PARAMETER_POSITION)
+                );
 
-        if (!commandClass.isPresent()) {
-            throw new KasperCommandException("Unable to determine Command class for "
-                    + this.getClass().getSimpleName());
+        if ( ! commandClass.isPresent()) {
+            throw new KasperCommandException(
+                    "Unable to determine Command class for "
+                    + this.getClass().getSimpleName()
+            );
         }
 
         this.commandClass = commandClass.get();
@@ -78,6 +83,7 @@ public abstract class CommandHandler<C extends Command>
      */
     @Override
     public final Object handle(final CommandMessage<C> message, final UnitOfWork uow) throws Throwable {
+
         final KasperCommandMessage<C> kmessage = new KasperCommandMessage<>(message);
         final Context context = kmessage.getContext();
         CurrentContext.set(context);
@@ -210,6 +216,7 @@ public abstract class CommandHandler<C extends Command>
      */
     public void publish(final IEvent event) {
         final EventMessage axonMessage = GenericEventMessage.asEventMessage(event);
+
         if (CurrentUnitOfWork.isStarted()) {
             CurrentUnitOfWork.get().publishEvent(axonMessage, eventBus);
         } else {

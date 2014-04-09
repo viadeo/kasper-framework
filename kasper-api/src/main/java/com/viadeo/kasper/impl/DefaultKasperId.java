@@ -8,6 +8,8 @@ package com.viadeo.kasper.impl;
 
 import java.util.UUID;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  *
  * A default {@link com.viadeo.kasper.KasperID} implementation
@@ -20,9 +22,13 @@ public class DefaultKasperId extends AbstractKasperID<UUID> {
     public static final int UUID_LENGTH = 36;
     public static final String UUID_REGEXP = "[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}";
 
+    // ------------------------------------------------------------------------
+
     public static DefaultKasperId random() {
         return new DefaultKasperId();
     }
+
+    // ------------------------------------------------------------------------
 
     public DefaultKasperId() {
         super(UUID.randomUUID());
@@ -33,7 +39,7 @@ public class DefaultKasperId extends AbstractKasperID<UUID> {
     }
 
     public DefaultKasperId(final String id) {
-        super(UUID.fromString(id));
+        super(UUID.fromString(checkNotNull(id)));
     }
 
 }

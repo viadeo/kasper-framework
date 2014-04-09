@@ -11,6 +11,8 @@ import com.viadeo.kasper.event.Event;
 import org.axonframework.domain.DomainEventMessage;
 import org.axonframework.domain.DomainEventStream;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  * Facade repository used to :
  *
@@ -19,26 +21,31 @@ import org.axonframework.domain.DomainEventStream;
  *
  */
 class RepositoryFacade<AGR extends AggregateRoot> {
+
     private final Repository<AGR> kasperRepository; /* The repository to proxy actions on */
 
     // ------------------------------------------------------------------------
 
     RepositoryFacade(final Repository<AGR> kasperRepository) {
-        this.kasperRepository = kasperRepository;
+        this.kasperRepository = checkNotNull(kasperRepository);
     }
 
     // ------------------------------------------------------------------------
 
-    private void enrichEvents(final AGR aggregate) {
+    private AGR enrichEvents(final AGR aggregate) {
+
         /**
          * Mark events persistency type
          */
         if (aggregate.getUncommittedEventCount() > 0) {
             final DomainEventStream eventStream = aggregate.getUncommittedEvents();
+
             while (eventStream.hasNext()) {
                 final DomainEventMessage message = eventStream.next();
+
                 if (Event.class.isAssignableFrom(message.getPayloadType())) {
                     final Event event = (Event) message.getPayload();
+
                     if (EventSourcedRepository.class.isAssignableFrom(this.kasperRepository.getClass())) {
                         event.setPersistencyType(Event.PersistencyType.EVENT_SOURCE);
                     } else {
@@ -47,18 +54,18 @@ class RepositoryFacade<AGR extends AggregateRoot> {
                 }
             }
         }
+
+        return aggregate;
     }
 
     // ------------------------------------------------------------------------
 
     protected void doSave(final AGR aggregate) {
 
-        this.enrichEvents(aggregate);
-
         /**
          * Manage with save/update differentiation for Kasper repositories
          */
-        if (null == aggregate.getVersion()) {
+        if (null == this.enrichEvents(aggregate).getVersion()) {
             this.kasperRepository.doSave(aggregate);
         } else {
             this.kasperRepository.doUpdate(aggregate);
@@ -75,9 +82,7 @@ class RepositoryFacade<AGR extends AggregateRoot> {
     // ------------------------------------------------------------------------
 
     protected void doDelete(final AGR aggregate) {
-        this.enrichEvents(aggregate);
-
-        this.kasperRepository.doDelete(aggregate);
+        this.kasperRepository.doDelete(this.enrichEvents(aggregate));
     }
 
 }

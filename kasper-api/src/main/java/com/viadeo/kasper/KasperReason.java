@@ -52,7 +52,7 @@ public final class KasperReason implements Serializable, Immutable {
         public static Builder from(final String code, final String...messages) {
             final Builder builder = new Builder();
             builder.code = checkNotNull(code);
-            builder.messages = Lists.newArrayList(messages);
+            builder.messages = Lists.newArrayList(checkNotNull(messages));
             return builder;
         }
 
@@ -62,7 +62,7 @@ public final class KasperReason implements Serializable, Immutable {
         }
 
         public static Builder from(final CoreReasonCode code, final Collection<String> messages) {
-            return from(code.string(), messages.toArray(new String[0]));
+            return from(code.string(), checkNotNull(messages).toArray(new String[0]));
         }
 
         public static Builder from(final CoreReasonCode code, final String...messages) {
@@ -121,35 +121,42 @@ public final class KasperReason implements Serializable, Immutable {
 
     public KasperReason(final String code, final String...messages) {
         this.id = UUID.randomUUID();
-        this.code = checkNotNull(code);
+        this.code = parseCode(checkNotNull(code));
         this.messages = ImmutableList.copyOf(checkNotNull(messages));
     }
 
     public KasperReason(final String code, final Collection<String> messages) {
         this.id = UUID.randomUUID();
-        this.code = checkNotNull(code);
+        this.code = parseCode(checkNotNull(code));
         this.messages = ImmutableList.copyOf(checkNotNull(messages));
     }
 
     public KasperReason(final UUID id, final String code, final Collection<String> messages) {
         this.id = checkNotNull(id);
-        this.code = checkNotNull(code);
+        this.code = parseCode(checkNotNull(code));
         this.messages = ImmutableList.copyOf(checkNotNull(messages));
     }
 
     public KasperReason(final CoreReasonCode code, final String message) {
         this(checkNotNull(code).toString(), checkNotNull(message));
-        this.reasonCode = code;
     }
 
     public KasperReason(final CoreReasonCode code, final String...messages) {
         this(checkNotNull(code).toString(), checkNotNull(messages));
-        this.reasonCode = code;
     }
 
     public KasperReason(final CoreReasonCode code, final Collection<String> messages) {
         this(checkNotNull(code).toString(), checkNotNull(messages));
-        this.reasonCode = code;
+    }
+
+    // ------------------------------------------------------------------------
+
+    private String parseCode(final String rawCode) {
+        final CoreReasonCode.ParsedCode parsedCode = CoreReasonCode.parseString(rawCode);
+        if (null != parsedCode.reason) {
+            this.reasonCode = parsedCode.reason;
+        }
+        return parsedCode.label;
     }
 
     // ------------------------------------------------------------------------

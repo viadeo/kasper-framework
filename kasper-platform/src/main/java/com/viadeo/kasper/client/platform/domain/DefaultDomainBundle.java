@@ -112,4 +112,5 @@ public class DefaultDomainBundle implements DomainBundle {
     public List<CommandInterceptorFactory> getCommandInterceptorFactories() {
         return commandInterceptorFactories;
     }
+
 }

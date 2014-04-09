@@ -9,6 +9,8 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.ddd.Domain;
 
+import java.util.List;
+
 public interface Resolver<T> {
 
     String getTypeName();
@@ -20,6 +22,12 @@ public interface Resolver<T> {
     String getLabel(Class<? extends T> clazz);
 
     String getDescription(Class<? extends T> clazz);
+
+    boolean isPublic(Class<? extends T> clazz);
+
+    boolean isDeprecated(Class<? extends T> clazz);
+
+    Optional<List<String>> getAliases(Class<? extends T> clazz);
 
     void clearCache();
 

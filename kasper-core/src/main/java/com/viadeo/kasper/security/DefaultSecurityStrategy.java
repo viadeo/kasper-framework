@@ -7,17 +7,14 @@
 package com.viadeo.kasper.security;
 
 import com.viadeo.kasper.context.Context;
+import org.apache.log4j.MDC;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class DefaultSecurityStrategy implements SecurityStrategy {
-
-    private final SecurityConfiguration securityConfiguration;
-
-    // ------------------------------------------------------------------------
+public class DefaultSecurityStrategy extends DefaultPublicSecurityStrategy {
 
     public DefaultSecurityStrategy(final SecurityConfiguration securityConfiguration) {
-        this.securityConfiguration = checkNotNull(securityConfiguration);
+        super(checkNotNull(securityConfiguration));
     }
 
     // ------------------------------------------------------------------------
@@ -25,13 +22,14 @@ public class DefaultSecurityStrategy implements SecurityStrategy {
     public void beforeRequest(final Context context) {
         checkNotNull(context);
         securityConfiguration.getSecurityTokenValidator().validate(context.getSecurityToken());
-        securityConfiguration.getIdentityContextProvider().provideIdentity(context);
-        securityConfiguration.getApplicationIdValidator().validate(context.getApplicationId());
-        securityConfiguration.getIpAddressValidator().validate(context.getIpAddress());
+        super.beforeRequest(context);
     }
 
     public void afterRequest() {
-        /* do nothing */
+        super.afterRequest();
+        if (null != this.context) {
+            MDC.put(Context.SECURITY_TOKEN_SHORTNAME, this.context.getSecurityToken());
+        }
     }
 
 }

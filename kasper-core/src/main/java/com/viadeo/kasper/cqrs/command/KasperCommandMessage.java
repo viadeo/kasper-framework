@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.io.Serializable;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 /**
  *
  * Decorator for Axon command message, holds an ICommand for bus traversal
@@ -23,7 +25,6 @@ import java.io.Serializable;
  */
 public class KasperCommandMessage<C extends Command> implements Serializable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(KasperCommandMessage.class);
-
 	private static final long serialVersionUID = 5946300419038957372L;
 
 	/**
@@ -44,7 +45,7 @@ public class KasperCommandMessage<C extends Command> implements Serializable {
 	 * @param decoredMessage the Axon decored command to wrap
 	 */
 	public KasperCommandMessage(final CommandMessage<C> decoredMessage) {
-		this.decoredMessage = decoredMessage;
+		this.decoredMessage = checkNotNull(decoredMessage);
 	}
 
 	// ------------------------------------------------------------------------

@@ -107,67 +107,67 @@ public class KasperDocResourceTest extends JerseyTest {
         public KasperDocResource delegate() {
 
             final DomainDescriptor facebookDomainDescriptor = new DomainDescriptor(
-                    Facebook.NAME,
-                    Facebook.class,
-                    ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(
-                            GetMembersQueryHandler.class,
-                            GetMembersQueryHandler.GetMembersQuery.class,
-                            GetMembersQueryHandler.MembersResult.class
-                    )),
-                    ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(
-                            AddConnectionToMemberHandler.class,
-                            AddConnectionToMemberCommand.class)
+                Facebook.NAME,
+                Facebook.class,
+                ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(
+                    GetMembersQueryHandler.class,
+                    GetMembersQueryHandler.GetMembersQuery.class,
+                    GetMembersQueryHandler.MembersResult.class
+                )),
+                ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(
+                    AddConnectionToMemberHandler.class,
+                    AddConnectionToMemberCommand.class)
+                ),
+                ImmutableList.<RepositoryDescriptor>of(
+                    new RepositoryDescriptor(
+                        MemberRepository.class,
+                        DomainDescriptorFactory.toAggregateDescriptor(Member.class)
                     ),
-                    ImmutableList.<RepositoryDescriptor>of(
-                        new RepositoryDescriptor(
-                                MemberRepository.class,
-                                DomainDescriptorFactory.toAggregateDescriptor(Member.class)
-                        ),
-                        new RepositoryDescriptor(
-                                MemberConnectionsRepository.class,
-                                DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class)
-                        )
-                    ),
-                    ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(
-                            MemberCreatedEventListener.class,
-                            MemberCreatedEvent.class
-                    ))
+                    new RepositoryDescriptor(
+                        MemberConnectionsRepository.class,
+                        DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class)
+                    )
+                ),
+                ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(
+                    MemberCreatedEventListener.class,
+                    MemberCreatedEvent.class
+                ))
             );
 
             final DomainDescriptor applicationDomainDescriptor = new DomainDescriptor(
-                    Applications.NAME,
-                    Applications.class,
-                    ImmutableList.<QueryHandlerDescriptor>of(),
-                    ImmutableList.<CommandHandlerDescriptor>of(),
-                    ImmutableList.<RepositoryDescriptor>of(
-                        new RepositoryDescriptor(
-                                ApplicationRepository.class,
-                                DomainDescriptorFactory.toAggregateDescriptor(Application.class)
-                        ),
-                        new RepositoryDescriptor(
-                                ApplicationMemberFansRepository.class,
-                                DomainDescriptorFactory.toAggregateDescriptor(Member_fanOf_Application.class)
-                        )
+                Applications.NAME,
+                Applications.class,
+                ImmutableList.<QueryHandlerDescriptor>of(),
+                ImmutableList.<CommandHandlerDescriptor>of(),
+                ImmutableList.<RepositoryDescriptor>of(
+                    new RepositoryDescriptor(
+                        ApplicationRepository.class,
+                        DomainDescriptorFactory.toAggregateDescriptor(Application.class)
                     ),
-                    ImmutableList.<EventListenerDescriptor>of()
+                    new RepositoryDescriptor(
+                        ApplicationMemberFansRepository.class,
+                        DomainDescriptorFactory.toAggregateDescriptor(Member_fanOf_Application.class)
+                    )
+                ),
+                ImmutableList.<EventListenerDescriptor>of()
             );
 
             final DomainDescriptor timelinesDomainDescriptor = new DomainDescriptor(
-                    Timeline.NAME,
-                    Timelines.class,
-                    ImmutableList.<QueryHandlerDescriptor>of(),
-                    ImmutableList.<CommandHandlerDescriptor>of(),
-                    ImmutableList.<RepositoryDescriptor>of(
-                        new RepositoryDescriptor(
-                                StatusRepository.class,
-                                DomainDescriptorFactory.toAggregateDescriptor(Status.class)
-                        ),
-                        new RepositoryDescriptor(
-                                TimelineRepository.class,
-                                DomainDescriptorFactory.toAggregateDescriptor(Timeline.class)
-                        )
+                Timeline.NAME,
+                Timelines.class,
+                ImmutableList.<QueryHandlerDescriptor>of(),
+                ImmutableList.<CommandHandlerDescriptor>of(),
+                ImmutableList.<RepositoryDescriptor>of(
+                    new RepositoryDescriptor(
+                        StatusRepository.class,
+                        DomainDescriptorFactory.toAggregateDescriptor(Status.class)
                     ),
-                    ImmutableList.<EventListenerDescriptor>of()
+                    new RepositoryDescriptor(
+                        TimelineRepository.class,
+                        DomainDescriptorFactory.toAggregateDescriptor(Timeline.class)
+                    )
+                ),
+                ImmutableList.<EventListenerDescriptor>of()
             );
 
             final DocumentedPlatform documentedPlatform = new DocumentedPlatform();
@@ -211,10 +211,10 @@ public class KasperDocResourceTest extends JerseyTest {
     	// Traverse available json responses ------------------------------------
         final Predicate<String> filter = new FilterBuilder().include(".*\\.json");
         final Reflections reflections = new Reflections(
-                new ConfigurationBuilder()
-                    .filterInputsBy(filter)
-                    .setScanners(new ResourcesScanner())
-                    .setUrls(Arrays.asList(ClasspathHelper.forClass(this.getClass())))
+            new ConfigurationBuilder()
+                .filterInputsBy(filter)
+                .setScanners(new ResourcesScanner())
+                .setUrls(Arrays.asList(ClasspathHelper.forClass(this.getClass())))
         );
 
         final Set<String> resolved = reflections.getResources(Pattern.compile(".*"));
@@ -241,8 +241,9 @@ public class KasperDocResourceTest extends JerseyTest {
 	        } catch (final JSONException e) {	 
 	        	LOGGER.info("\t--> ERROR");
 	        	throw e;
+
 	        } catch (final AssertionError e) {
-	        	if (!UPDATE_TESTS) {
+	        	if ( ! UPDATE_TESTS) {
 	        		LOGGER.debug("*** RETURNED RESULT :");
 	        		LOGGER.debug(new JSONObject(responseMsg).toString(2));
 	        		LOGGER.info("\t--> ERROR");
@@ -307,6 +308,7 @@ public class KasperDocResourceTest extends JerseyTest {
     	
     	try {
     		jsonAA = new JSONObject(jsonA).toString(2);
+
     	} catch (final JSONException e) {
         	LOGGER.debug("*** BAD JSON :");
         	LOGGER.debug(jsonA);
@@ -315,6 +317,7 @@ public class KasperDocResourceTest extends JerseyTest {
     	
     	try {
     		jsonBB = new JSONObject(jsonB).toString(2);
+
     	} catch (final JSONException e) {
         	LOGGER.debug("*** BAD JSON :");
         	LOGGER.debug(jsonB);
@@ -322,7 +325,11 @@ public class KasperDocResourceTest extends JerseyTest {
     	}
     	
     	try {
-    		assertEquals(jsonAA.replaceAll("[\\s\\n]", ""), jsonBB.replaceAll("[\\s\\n]", ""));
+    		assertEquals(
+                    jsonAA.replaceAll("[\\s\\n]", ""),
+                    jsonBB.replaceAll("[\\s\\n]", "")
+            );
+
     	} catch (final AssertionError e) {
     		LOGGER.debug("*** DIFF RESULT (RESPONSE vs EXPECTED) :");
     		new StringLinesDiffer().output(jsonBB, jsonAA);
@@ -337,20 +344,20 @@ public class KasperDocResourceTest extends JerseyTest {
      */
     public class StringLinesDiffer {
     	
-            private List<String> stringToLines(final String data) {
-            		return Lists.newArrayList(data.split("\\r?\\n"));
-            }
+        private List<String> stringToLines(final String data) {
+            return Lists.newArrayList(data.split("\\r?\\n"));
+        }
 
-            public void output(final String strA, final String strB) {
-                    final List<String> original = stringToLines(strA);
-                    final List<String> revised  = stringToLines(strB);
-                    
-                    final Patch patch = DiffUtils.diff(original, revised);
+        public void output(final String strA, final String strB) {
+            final List<String> original = stringToLines(strA);
+            final List<String> revised  = stringToLines(strB);
 
-                    for (Delta delta: patch.getDeltas()) {
-                            LOGGER.debug(delta.toString());
-                    }
+            final Patch patch = DiffUtils.diff(original, revised);
+
+            for (Delta delta: patch.getDeltas()) {
+                    LOGGER.debug(delta.toString());
             }
+        }
     }    
     
 }

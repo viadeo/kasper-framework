@@ -82,7 +82,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     }
 
     public DefaultQueryHandlersLocator(final QueryHandlerResolver queryHandlerResolver) {
-        this.queryHandlerResolver = queryHandlerResolver;
+        this.queryHandlerResolver = checkNotNull(queryHandlerResolver);
     }
 
     // ------------------------------------------------------------------------
@@ -110,7 +110,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
         @SuppressWarnings("unchecked") // Safe
         final Class<? extends QueryResult> queryResultClass = queryHandlerResolver.getQueryResultClass(handlerClass);
         Collection<QueryHandler> qaClasses = this.handlerQueryResultClasses.get(queryResultClass);
-        if (qaClasses == null) {
+        if (null == qaClasses) {
             qaClasses = new ArrayList<>();
             this.handlerQueryResultClasses.put(queryResultClass, qaClasses);
         }
@@ -145,7 +145,8 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
         if (null != queryHandlerAdapter) {
             throw new KasperQueryException(
                     "The specified adapter is already registered : "
-                            + queryHandlerAdapter);
+                    + queryHandlerAdapter
+            );
         }
 
         this.adapters.put(adapterClass, adapter);
@@ -202,29 +203,29 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
     @SuppressWarnings("rawtypes")
     @Override
     public Optional<QueryHandler> getQueryHandlerFromClass(final Class<? extends QueryHandler> handlerClass) {
-        final QueryHandler handler = this.handlers.getInstance(handlerClass);
+        final QueryHandler handler = this.handlers.getInstance(checkNotNull(handlerClass));
         return Optional.fromNullable(handler);
     }
 
     @SuppressWarnings("rawtypes")
     @Override
     public Optional<QueryHandler> getHandlerByName(final String handlerName) {
-        final QueryHandler handler = this.handlerNames.get(handlerName);
+        final QueryHandler handler = this.handlerNames.get(checkNotNull(handlerName));
         return Optional.fromNullable(handler);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public Optional<QueryHandler<Query,QueryResult>> getHandlerFromQueryClass(Class<? extends Query> queryClass) {
-        final QueryHandler<Query,QueryResult> handler = this.handlerQueryClasses.get(queryClass);
+        final QueryHandler<Query,QueryResult> handler = this.handlerQueryClasses.get(checkNotNull(queryClass));
         return Optional.fromNullable(handler);
     }
 
     @Override
     @SuppressWarnings("rawtypes")
     public Collection<QueryHandler> getHandlersFromQueryResultClass(final Class<? extends QueryResult> queryResultClass) {
-        final Collection<QueryHandler> tmpHandlers = this.handlerQueryResultClasses.get(queryResultClass);
-        if (tmpHandlers == null) {
+        final Collection<QueryHandler> tmpHandlers = this.handlerQueryResultClasses.get(checkNotNull(queryResultClass));
+        if (null == tmpHandlers) {
             return Collections.emptyList();
         }
         return tmpHandlers;
@@ -270,8 +271,11 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
                 if (this.adapters.containsKey(adapterClass)) {
                     instances.add(this.adapters.get(adapterClass));
                 } else {
-                    LOGGER.error(String.format("Query handler %s asks to be adaptered, but no instance of adapter %s can be found in records",
-                            handlerClass, adapterClass));
+                    LOGGER.error(String.format(
+                            "Query handler %s asks to be adaptered, but no instance of adapter %s can be found in records",
+                            handlerClass,
+                            adapterClass
+                    ));
                 }
             }
             this.instanceAdapters.put(handlerClass, instances);
@@ -283,7 +287,7 @@ public class DefaultQueryHandlersLocator implements QueryHandlersLocator {
 
     @Override
     public boolean containsAdapter(final Class<? extends QueryHandlerAdapter> adapterClass) {
-        return adapters.containsKey(adapterClass);
+        return adapters.containsKey(checkNotNull(adapterClass));
     }
 
 }

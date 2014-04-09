@@ -64,7 +64,7 @@ public class BeanProperty {
         if (null == obj) {
             return false;
         }
-        if (!getClass().equals(obj.getClass())) {
+        if ( ! getClass().equals(obj.getClass())) {
             return false;
         }
 
@@ -79,4 +79,5 @@ public class BeanProperty {
 
         return true;
     }
+
 }

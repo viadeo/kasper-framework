@@ -35,7 +35,7 @@ public class QueryAttributesKeyGenerator implements QueryCacheKeyGenerator {
     private static final Comparator<Field> FIELD_BY_NAME_COMPARATOR = new Comparator<Field>() {
         @Override
         public int compare(final Field o1, final Field o2) {
-            return o1.getName().compareTo(o2.getName());
+        return o1.getName().compareTo(o2.getName());
         }
     };
 
@@ -58,18 +58,18 @@ public class QueryAttributesKeyGenerator implements QueryCacheKeyGenerator {
                 return true;
             }
 
-            if (!getClass().equals(o.getClass())) {
+            if ( ! getClass().equals(o.getClass())) {
                 return false;
             }
 
             final FieldCacheKey that = (FieldCacheKey) o;
 
-            if (!Arrays.equals(keys, that.keys)) {
+            if ( ! Arrays.equals(keys, that.keys)) {
                 return false;
             }
 
             if ((null != queryClass) ?
-                    !queryClass.equals(that.queryClass) :
+                    ( ! queryClass.equals(that.queryClass)) :
                     (null != that.queryClass)) {
                 return false;
             }
@@ -79,10 +79,10 @@ public class QueryAttributesKeyGenerator implements QueryCacheKeyGenerator {
 
         @Override
         public int hashCode() {
-            int response = queryClass != null ? queryClass.hashCode() : 0;
-            response = 31 * response + (keys != null ? Arrays.hashCode(keys) : 0);
-            return response;
+            final int response = queryClass != null ? queryClass.hashCode() : 0;
+            return 31 * response + (keys != null ? Arrays.hashCode(keys) : 0);
         }
+
     }
 
     // ------------------------------------------------------------------------
@@ -130,13 +130,16 @@ public class QueryAttributesKeyGenerator implements QueryCacheKeyGenerator {
 
             if (fields.size() != keys.length) {
                 throw new IllegalStateException(
-                        String.format("Could not find expected fields [%s] in query %s",
+                        String.format(
+                                "Could not find expected fields [%s] in query %s",
                                 Joiner.on(',').join(retainMissingNames(fieldNames, fields)),
-                                queryClass));
+                                queryClass
+                        )
+                );
             }
 
             for (final Field field : fields) {
-                if (!field.isAccessible()) {
+                if ( ! field.isAccessible()) {
                     field.setAccessible(true);
                 }
             }
@@ -149,19 +152,27 @@ public class QueryAttributesKeyGenerator implements QueryCacheKeyGenerator {
 
     final Set<String> retainMissingNames(final Set<String> expectedFieldNames, final Set<Field> discoveredFields) {
 
-        final Set<String> discoveredNames = Sets.newHashSet(Iterables.transform(discoveredFields, new Function<Field, String>() {
-            @Override
-            public String apply(Field input) {
-                return input.getName();
-            }
-        }));
+        final Set<String> discoveredNames = Sets.newHashSet(
+                Iterables.transform(
+                        discoveredFields,
+                        new Function<Field, String>() {
+                            @Override
+                            public String apply(Field input) {
+                                return input.getName();
+                            }
+                        }
+                )
+        );
 
-        return Sets.filter(expectedFieldNames, new Predicate<String>() {
-            @Override
-            public boolean apply(final String input) {
-                return !discoveredNames.contains(input);
-            }
-        });
+        return Sets.filter(
+                expectedFieldNames,
+                new Predicate<String>() {
+                    @Override
+                    public boolean apply(final String input) {
+                        return ! discoveredNames.contains(input);
+                    }
+                }
+        );
     }
 
 }

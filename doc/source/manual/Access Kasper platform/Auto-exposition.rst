@@ -14,12 +14,12 @@ databinding component mapping query strings and query POJOS.
 ::
    
    Gradle : 
-      'com.viadeo.kasper:kasper-web:KASPER_LATEST_VERSION'
+      'com.viadeo.kasper:kasper-exposition:KASPER_LATEST_VERSION'
 
    Maven: 
       <dependency>
          <groupId>com.viadeo.kasper</groupId>
-         <artifactId>kasper-web</artifactId>
+         <artifactId>kasper-exposition</artifactId>
          <version>KASPER_LATEST_VERSION</version>
       </dependency>
 

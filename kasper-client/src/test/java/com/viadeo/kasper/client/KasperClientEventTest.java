@@ -60,7 +60,6 @@ public class KasperClientEventTest {
         public MemberCreatedEvent(final String name) {
             this.name = checkNotNull(name);
         }
-
     }
 
     // ------------------------------------------------------------------------

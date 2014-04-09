@@ -7,12 +7,14 @@
 package com.viadeo.kasper.security;
 
 import com.viadeo.kasper.context.Context;
+import org.apache.log4j.MDC;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DefaultPublicSecurityStrategy implements SecurityStrategy {
 
-    private final SecurityConfiguration securityConfiguration;
+    protected final SecurityConfiguration securityConfiguration;
+    protected Context context;
 
     // ------------------------------------------------------------------------
 
@@ -23,14 +25,21 @@ public class DefaultPublicSecurityStrategy implements SecurityStrategy {
     // ------------------------------------------------------------------------
 
     public void beforeRequest(final Context context) {
-        checkNotNull(context);
+        this.context = checkNotNull(context);
+
         securityConfiguration.getIdentityContextProvider().provideIdentity(context);
         securityConfiguration.getApplicationIdValidator().validate(context.getApplicationId());
         securityConfiguration.getIpAddressValidator().validate(context.getIpAddress());
     }
 
     public void afterRequest() {
-        /* do nothing */
+        if (null != context) {
+            MDC.put(Context.IP_ADDRESS_SHORTNAME, context.getIpAddress());
+            MDC.put(Context.UCOUNTRY_SHORTNAME, context.getUserCountry());
+            MDC.put(Context.ULANG_SHORTNAME, context.getUserLang());
+            MDC.put(Context.UID_SHORTNAME, context.getUserId());
+            MDC.put(Context.APPLICATION_ID_SHORTNAME, context.getApplicationId());
+        }
     }
 
 }

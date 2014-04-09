@@ -37,11 +37,11 @@ public class QueryResponse<RESULT extends QueryResult> extends KasperResponse {
     }
 
     public static <R extends QueryResult> QueryResponse<R> error(final CoreReasonCode code) {
-        return new QueryResponse<R>(new KasperReason(code));
+        return new QueryResponse<R>(new KasperReason(checkNotNull(code)));
     }
 
     public static <R extends QueryResult> QueryResponse<R> refused(final CoreReasonCode code) {
-        return new QueryResponse<R>(Status.REFUSED, new KasperReason(code));
+        return new QueryResponse<R>(Status.REFUSED, new KasperReason(checkNotNull(code)));
     }
 
     public static <R extends QueryResult> QueryResponse<R> of(final R result) {
@@ -89,7 +89,7 @@ public class QueryResponse<RESULT extends QueryResult> extends KasperResponse {
 
     @Override
     public boolean equals(final Object obj) {
-        if (obj == null) {
+        if (null == obj) {
             return false;
         }
 

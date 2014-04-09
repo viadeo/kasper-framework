@@ -11,6 +11,7 @@ import com.viadeo.kasper.security.callback.ApplicationIdValidator;
 import com.viadeo.kasper.security.callback.IdentityContextProvider;
 import com.viadeo.kasper.security.callback.IpAddressValidator;
 import com.viadeo.kasper.security.callback.SecurityTokenValidator;
+import com.viadeo.kasper.security.exception.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -65,10 +66,10 @@ public interface SecurityConfiguration {
 
         public SecurityConfiguration build() {
             SecurityConfiguration securityConfiguration = new KasperSecurityConfiguration(
-                    securityTokenValidator,
-                    identityContextProvider,
-                    applicationIdValidator,
-                    ipAddressValidator
+                securityTokenValidator,
+                identityContextProvider,
+                applicationIdValidator,
+                ipAddressValidator
             );
             return securityConfiguration;
         }
@@ -79,9 +80,9 @@ public interface SecurityConfiguration {
 
     class DefautSecurityTokenValidator implements SecurityTokenValidator {
         @Override
-        public void validate(String securityToken)
+        public void validate(final String securityToken)
                 throws KasperMissingSecurityTokenException,
-                       KasperInvalidSecurityTokenException {
+                KasperInvalidSecurityTokenException {
             /* do nothing */
         }
     }
@@ -90,7 +91,7 @@ public interface SecurityConfiguration {
 
     class DefaultIdentityContextProvider implements IdentityContextProvider {
         @Override
-        public void provideIdentity(Context context) throws KasperSecurityException {
+        public void provideIdentity(final Context context) throws KasperSecurityException {
             /* do nothing */
         }
     }
@@ -99,9 +100,9 @@ public interface SecurityConfiguration {
 
     class DefaultApplicationIdValidator implements ApplicationIdValidator {
         @Override
-        public void validate(String applicationId)
+        public void validate(final String applicationId)
                 throws KasperMissingApplicationIdException,
-                       KasperInvalidApplicationIdException {
+                KasperInvalidApplicationIdException {
             /* do nothing */
         }
     }
@@ -110,9 +111,9 @@ public interface SecurityConfiguration {
 
     class DefaultIpAddressValidator implements IpAddressValidator {
         @Override
-        public void validate(String ipAddress)
+        public void validate(final String ipAddress)
                 throws KasperMissingIpAddressException,
-                       KasperInvalidIpAddressException {
+                KasperInvalidIpAddressException {
             /* do nothing */
         }
     }

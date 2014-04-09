@@ -38,19 +38,19 @@ public class DiscoveryDomainBundle extends SpringDomainBundle {
 
     public DiscoveryDomainBundle(final String basePackage, final List<Class> springConfigurations, final BeanDescriptor... beans) {
         this(
-                basePackage,
-                DiscoveryDomainHelper.findCandidateDomain(basePackage),
-                springConfigurations,
-                beans
+            basePackage,
+            DiscoveryDomainHelper.findCandidateDomain(basePackage),
+            springConfigurations,
+            beans
         );
     }
 
     public DiscoveryDomainBundle(final String basePackage, final BeanDescriptor... beans) {
         this(
-                basePackage,
-                DiscoveryDomainHelper.findCandidateDomain(basePackage),
-                Lists.<Class>newArrayList(),
-                beans
+            basePackage,
+            DiscoveryDomainHelper.findCandidateDomain(basePackage),
+            Lists.<Class>newArrayList(),
+            beans
         );
     }
 
@@ -72,8 +72,8 @@ public class DiscoveryDomainBundle extends SpringDomainBundle {
 
         } catch (final ReflectiveOperationException e) {
             throw new KasperException(String.format(
-                    "Unexpected error occurred while initializing the domain bundle with `%s` as base package",
-                    basePackage
+                "Unexpected error occurred while initializing the domain bundle with `%s` as base package",
+                basePackage
             ));
         }
     }

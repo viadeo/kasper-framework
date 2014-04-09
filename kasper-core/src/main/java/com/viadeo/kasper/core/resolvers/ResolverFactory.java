@@ -49,6 +49,8 @@ public class ResolverFactory {
 
     private Map<Class, Resolver> resolvers;
 
+    // ------------------------------------------------------------------------
+
     private void initResolvers() {
         if (null == resolvers) {
             resolvers = new LinkedHashMap<Class, Resolver>() {
@@ -63,7 +65,7 @@ public class ResolverFactory {
                     put(Repository.class, repositoryResolver);
                     put(IEvent.class, eventResolver);
 
-                /* Order is important here (Concept/Relation before Entity) */
+                    /* Order is important here (Concept/Relation before Entity) */
                     put(Concept.class, conceptResolver);
                     put(Relation.class, relationResolver);
                     put(Entity.class, entityResolver);
@@ -76,7 +78,7 @@ public class ResolverFactory {
 
     public Optional<Resolver> getResolverFromClass(final Class clazz) {
 
-        if (clazz == EventListener.class) {
+        if (checkNotNull(clazz).equals(EventListener.class)) {
             return Optional.absent();
         }
 

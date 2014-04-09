@@ -30,6 +30,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class AggregateRoot<I extends KasperID>
 		extends AbstractAnnotatedAggregateRoot<KasperID>
         implements Entity {
+
 	private static final long serialVersionUID = 8352516744342839116L;
 
     public static final String VERSION_METANAME = "VERSION";
@@ -47,7 +48,7 @@ public abstract class AggregateRoot<I extends KasperID>
 	}
 
     protected void setId(final I id) {
-        this.id = id;
+        this.id = checkNotNull(id);
     }
 
     // ------------------------------------------------------------------------
@@ -75,11 +76,14 @@ public abstract class AggregateRoot<I extends KasperID>
 
     @Override
     protected void apply(final Object eventPayload) {
-        apply(eventPayload, enrichMetaData(null));
+        apply(checkNotNull(eventPayload), enrichMetaData(null));
     }
 
     @Override
-    protected void apply(Object eventPayload, MetaData metaData) {
+    protected void apply(final Object eventPayload, final MetaData metaData) {
+        checkNotNull(eventPayload);
+        checkNotNull(metaData);
+
         if ( ! IEvent.class.isAssignableFrom(eventPayload.getClass())) {
             throw new KasperCommandException("Only apply implementations of 'IEvent'");
         }
@@ -90,7 +94,6 @@ public abstract class AggregateRoot<I extends KasperID>
     // ------------------------------------------------------------------------
 
     protected MetaData enrichMetaData(final MetaData metaData) {
-
         final Map<String, Object> newMetaData = Maps.newHashMap();
 
         // Add context

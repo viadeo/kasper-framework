@@ -45,6 +45,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static com.viadeo.kasper.KasperResponse.Status;
+import static junit.framework.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.spy;
@@ -247,9 +248,9 @@ public class KasperClientCommandTest extends JerseyTest {
         final CommandResponse response = client.send(DefaultContextBuilder.get(), command);
 
         // Then
-        Assert.assertNotNull(response);
-        Assert.assertNotNull(response.getReason());
-        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.toString(), response.getReason().getCode());
+        assertNotNull(response);
+        assertNotNull(response.getReason());
+        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
         Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
         Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }
@@ -266,10 +267,11 @@ public class KasperClientCommandTest extends JerseyTest {
         final CommandResponse response = client.sendAsync(DefaultContextBuilder.get(), command).get();
 
         // Then
-        Assert.assertNotNull(response);
-        Assert.assertNotNull(response.getReason());
-        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.toString(), response.getReason().getCode());
+        assertNotNull(response);
+        assertNotNull(response.getReason());
+        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
         Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
         Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
     }
+
 }
