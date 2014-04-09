@@ -446,6 +446,14 @@
                 value = "List(" + value + ")";
               }
 
+              if (key === "type") {
+                value = "<em>" + value + "</em>";
+              }
+
+              if (key === "name") {
+                value = "<code>" + value + "</code>";
+              }
+
               if( level > 0 && j === 0 ) {
                 res += '<td><span class="level n' + level + '"/>' + value + '</td>';
               } else {
