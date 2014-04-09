@@ -9,6 +9,7 @@ package com.viadeo.kasper.doc.nodes;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.viadeo.kasper.annotation.XKasperField;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.doc.nodes.validation.DefaultPropertyValidator;
 import com.viadeo.kasper.doc.nodes.validation.PropertyValidationProcessor;
@@ -18,10 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.persistence.Transient;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Type;
+import java.lang.reflect.*;
 import java.util.*;
 
 /*
@@ -136,9 +134,11 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
         @Override
         public  Optional<DocumentedProperty> extract(final Field field, final Class clazz) {
+            final XKasperField annotation = field.getAnnotation(XKasperField.class);
             return Optional.of(
                     new DocumentedProperty(
                             field.getName(),
+                            annotation == null ? "" : annotation.description(),
                             field.getType().getSimpleName(),
                             null,
                             false,
@@ -166,9 +166,11 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
         @Override
         public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
+            final XKasperField annotation = field.getAnnotation(XKasperField.class);
             return Optional.of(
                     new DocumentedProperty(
                             field.getName(),
+                            annotation == null ? "" : annotation.description(),
                             field.getType().getSimpleName(),
                             Arrays.asList(field.getType().getEnumConstants()).toString(),
                             false,
@@ -218,9 +220,12 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                 type = optType.get();
             }
 
+            final XKasperField annotation = field.getAnnotation(XKasperField.class);
+
             return Optional.of(
                     new DocumentedProperty(
                             field.getName(),
+                            annotation == null ? "" : annotation.description(),
                             type == null ? "unknown" : type.getSimpleName(),
                             null,
                             false,
@@ -248,48 +253,82 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
         @Override
         public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
-            final Class<?> type;
+            final XKasperField annotation = field.getAnnotation(XKasperField.class);
 
-            @SuppressWarnings("unchecked")
-            final Optional<Class> optType = (Optional<Class>)
-                    ReflectionGenericsResolver.getParameterTypeFromClass(
-                            field, clazz, Collection.class, 0);
+            if (field.getGenericType() instanceof ParameterizedType) {
+                final ParameterizedType genericType = (ParameterizedType) field.getGenericType();
+                final Type paramType =  genericType.getActualTypeArguments()[0];
+                final Optional<Class> optionalParamClass = ReflectionGenericsResolver.getClass(paramType);
 
-            if ( ! optType.isPresent()) {
-                LOGGER.warn(String.format(
-                        "Unable to find collection enclosed type for field %s in class %s",
-                        field.getName(), clazz.getSimpleName())
-                );
-                type = null;
-            } else {
-                type = optType.get();
-            }
+                if (optionalParamClass.isPresent()) {
+                    final Class paramClass = optionalParamClass.get();
 
-            if (LinkedConcept.class.isAssignableFrom(type)) {
-                return Optional.of(
-                        new DocumentedProperty(
+                    if( LinkedConcept.class.isAssignableFrom(paramClass)) {
+                        final Type subParamType = ((ParameterizedType) paramType).getActualTypeArguments()[0];
+                        final Class subParamClass = (Class) subParamType;
+
+                        return Optional.of(
+                                new DocumentedProperty(
+                                        field.getName(),
+                                        annotation == null ? "" : annotation.description(),
+                                        subParamClass.getSimpleName(),
+                                        null,
+                                        true,
+                                        true,
+                                        QueryResult.class.isAssignableFrom(subParamClass),
+                                        Sets.<DocumentedConstraint>newHashSet()
+                                )
+                        );
+                    } else {
+                        return Optional.of(
+                            new DocumentedProperty(
                                 field.getName(),
-                                type == null ? "unknown" : type.getSimpleName(),
-                                null,
-                                true,
-                                true,
-                                QueryResult.class.isAssignableFrom(type),
-                                Sets.<DocumentedConstraint>newHashSet()
-                        )
-                );
-            } else {
-                return Optional.of(
-                        new DocumentedProperty(
-                                field.getName(),
-                                type == null ? "unknown" : type.getSimpleName(),
+                                annotation == null ? "" : annotation.description(),
+                                paramClass.getSimpleName(),
                                 null,
                                 true,
                                 false,
-                                QueryResult.class.isAssignableFrom(type),
+                                QueryResult.class.isAssignableFrom(paramClass),
                                 Sets.<DocumentedConstraint>newHashSet()
-                        )
-                );
+                            )
+                        );
+                    }
+                } else {
+                    @SuppressWarnings("unchecked")
+                    final Optional<Class> optType = (Optional<Class>)
+                            ReflectionGenericsResolver.getParameterTypeFromClass(field, clazz, Collection.class, 0);
+
+                    if (optType.isPresent()) {
+                        return Optional.of(
+                                new DocumentedProperty(
+                                        field.getName(),
+                                        annotation == null ? "" : annotation.description(),
+                                        optType.get().getSimpleName(),
+                                        null,
+                                        true,
+                                        false,
+                                        QueryResult.class.isAssignableFrom(optType.get()),
+                                        Sets.<DocumentedConstraint>newHashSet()
+                                )
+                        );
+                    } else {
+                        return Optional.of(
+                                new DocumentedProperty(
+                                        field.getName(),
+                                        annotation == null ? "" : annotation.description(),
+                                        "unknown",
+                                        null,
+                                        true,
+                                        false,
+                                        false,
+                                        Sets.<DocumentedConstraint>newHashSet()
+                                )
+                        );
+                    }
+                }
             }
+
+            return null;
         }
 
     }
@@ -327,9 +366,11 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                 type = optType.get();
             }
 
+            final XKasperField annotation = field.getAnnotation(XKasperField.class);
             return Optional.of(
                     new DocumentedProperty(
                             field.getName(),
+                            annotation == null ? "" : annotation.description(),
                             type == null ? "unknown" : type.getSimpleName(),
                             null,
                             true,

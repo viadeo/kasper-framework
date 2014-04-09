@@ -45,7 +45,7 @@ public class DocumentedRepository extends AbstractDomainElement {
         }
 
         public LightDocumentedElement<DocumentedRepository> getRepository() {
-            return documentedRepository.getLightDocumentedElement();
+            return documentedRepository == null ? null : documentedRepository.getLightDocumentedElement();
         }
 
         @Override

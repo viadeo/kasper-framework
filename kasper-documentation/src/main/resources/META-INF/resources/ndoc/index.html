@@ -44,6 +44,20 @@
         return options.inverse(this);
       });
 
+      Handlebars.registerHelper('mail_to', function (value) {
+        if (value !== "unknown") {
+          return new Handlebars.SafeString('<a href="mailto:' + value + '">' + value + '</a>');
+        }
+        return new Handlebars.SafeString(value);
+      });
+
+      Handlebars.registerHelper('limit_text', function (text, limit) {
+        if (text.length <= limit) {
+          return new Handlebars.SafeString(text);
+        }
+        return new Handlebars.SafeString(text.substring(0, limit) + "...");
+      });
+
       Handlebars.registerHelper('flatten', function (list, separator, key) {
         return new Handlebars.SafeString(flatten(list, separator, key));
       });
@@ -103,13 +117,21 @@
           }
         }
 
-        function expandPanel(anchor) {
+        function sort_on(property) {
+          return function(value1, value2) {
+            var name1 = value1[property].toLowerCase();
+            var name2 = value2[property].toLowerCase();
+            return name1 < name2 ? -1 : 1;
+          }
+        }
+
+        function expand_panel(anchor) {
           if ( $("#" + anchor + " a").hasClass("collapsed") ) {
             $("#" + anchor + " a").trigger("click");
           }
         }
 
-        function scrollToAnchor(anchor, offset) {
+        function scroll_to_anchor(anchor, offset) {
           var new_position = $('#'+anchor).offset();
           var new_top_position = new_position.top + offset;
 
@@ -122,7 +144,7 @@
 
         /** SEARCH **/
 
-        function initializeHomeSearch() {
+        function initialize_home_search() {
           console.log("initialize home search!");
 
           $( '#searchable-domain-box' ).searchable({
@@ -138,7 +160,7 @@
           });
         }
 
-        function initializeGlobalSearch(data) {
+        function initialize_global_search(data) {
           console.log("initialize global search!");
 
           $( "#search" ).autocomplete({
@@ -157,15 +179,15 @@
               var suffix = '';
 
               if(item.type == "domain") {
-                prefix = '<span class="glyphicon glyphicon-unchecked"></span>';
+                prefix = '<span class="glyphicon glyphicon-unchecked"/>';
               } else if(item.type == "commands"){
-                prefix = '<span class="glyphicon glyphicon-log-in"></span>';
+                prefix = '<span class="glyphicon glyphicon-log-in"/>';
               } else if(item.type == "queries"){
-                prefix = '<span class="glyphicon glyphicon-log-out"></span>';
+                prefix = '<span class="glyphicon glyphicon-log-out"/>';
               } else if(item.type == "events"){
-                prefix = '<span class="glyphicon glyphicon-new-window"></span>';
+                prefix = '<span class="glyphicon glyphicon-new-window"/>';
               } else if(item.type == "concepts" || item.type == "relations"){
-                prefix = '<span class="glyphicon glyphicon-stop"></span>';
+                prefix = '<span class="glyphicon glyphicon-stop"/>';
                 suffix = ' (' + item.domain + ')';
               }
               return $( "<li>" )
@@ -221,7 +243,7 @@
         }
 
         function go_dyn(domain, hash) {
-          console.log("go dyn", domain.name);
+          console.log("go dyn", domain.label);
 
           $("#contents_dyn").empty();
           $(".nav > li").removeClass("active");
@@ -231,7 +253,30 @@
           $("#contents > div").hide();
           $("#contents_dyn").fadeIn("slow");
 
-          window.location.hash = "#" + domain.name;
+          window.location.hash = "#" + domain.label;
+        }
+
+        function show_message(level, message, append) {
+          if ( ! append) {
+            $("#message").empty();
+          }
+
+          switch(level) {
+            case 'success':
+              $("#message").append('<div class="alert alert-success">' + message + '</div>');
+              break;
+            case 'info':
+              $("#message").append('<div class="alert alert-info">' + message + '</div>');
+              break;
+            case 'warn':
+              $("#message").append('<div class="alert alert-warning"><span class="glyphicon glyphicon-warning-sign"/>' + message + '</div>');
+              break;
+            case 'error':
+              $("#message").append('<div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"/>' + message + '</div>');
+              break;
+          }
+
+          $(".sidebar-contents-dyn").css("margin-top", "80px");
         }
 
         function initialize_nav() {
@@ -307,6 +352,7 @@
                   cache_templates[template_descritor.name] = template;
                 })
                 .fail(function() {
+                  show_message("error", "Service is temporarily not available please try again later", false)
                   console.log("failed to load template '" + template_descritor.url + "'");
                 });
           });
@@ -322,31 +368,32 @@
                   var searchData = [];
 
                   /* Populate the home page */
-                  $.each(data.list, function(n, domain) {
+                  $.each(data.list.sort(sort_on("label")), function(n, domain) {
 
                     /* Retrieve search data */
                     searchData = searchData.concat(compute_search_data(domain));
 
                     /* Reference node*/
                     component_urls_per_domain[domain.name] = get_url_per_components(domain);
-                    nodes[domain.name] = domain;
+                    nodes[domain.label] = domain;
 
-                    $("#contents_home .page").append(template({ node: domain }))
+                    $("#contents_home .page tbody").append(template({ node: domain }))
 
-                    $("#domain-" + domain.name + "-btn").click(function(){
+                    $("#domain-" + domain.label + "-btn").click(function(){
                       go_dyn(domain);
                     });
 
                     if(n == data.list.length - 1) {
-                      initializeHomeSearch();
-                      initializeGlobalSearch(searchData);
+                      initialize_home_search();
+                      initialize_global_search(searchData);
                       return_to_window_location_hash();
                     }
                   });
                 }
               })
               .fail(function() {
-                console.log("failed to load data from '/kasper/doc/domains'");
+                show_message("error", "Service is temporarily not available please try again later", false)
+                console.log("failed to load template '" + template_descritor.url + "'");
               });
         }
 
@@ -377,12 +424,17 @@
               var key = keys[j];
               var value = properties[i][key];
 
-              if( value == null ) {
+              if( value === null || value.length === 0 ) {
                 value = "-";
               }
 
               if(typeof value === 'object') {
-                value = flatten(value, ",&nbsp;", "message");
+                var new_value = "<ul>";
+                for (var o = 0; o < value.length; o++) {
+                  new_value = "<li>" + value[o]["message"] + "</li>";
+                }
+                new_value += "</ul>"
+                value = new_value;
               }
 
               if (properties[i]["linkedConcept"] && key === "type") {
@@ -399,6 +451,14 @@
                 value = "List(" + value + ")";
               }
 
+              if (key === "type") {
+                value = "<em>" + value + "</em>";
+              }
+
+              if (key === "name") {
+                value = "<code>" + value + "</code>";
+              }
+
               if( level > 0 && j === 0 ) {
                 res += '<td><span class="level n' + level + '"/>' + value + '</td>';
               } else {
@@ -410,7 +470,7 @@
 
             if( has_subtype ) {
               var level_up = level + 1;
-              if (typeof query_results[query_result_name] != 'undefined') {
+              if (typeof query_results[query_result_name] !== 'undefined') {
                 res += get_tr(level_up, query_results[query_result_name].properties, keys, query_results);
               } else {
                 console.log("level: " + level + ", query_result_name: " + query_result_name, query_results[query_result_name]);
@@ -439,67 +499,67 @@
             this.init = init;
           }
 
-          function appendDomainComponent(data) {
+          function append_domain_component(data) {
             if (data.list.length > 0) {
               if( $("#domain-container .panel").length == 0 ) {
                 $("#domain-container").append(cache_templates[PANEL_TEMPLATE_KEY]( {title: "Domain"} ));
               }
-              $("#domain-container .list-group").append(cache_templates[PANEL_CONTENT_TEMPLATE_KEY]( { data: data} ));
+              $("#domain-container .list-group").append(cache_templates[PANEL_CONTENT_TEMPLATE_KEY]( { data: data.list.sort(sort_on("label"))} ));
             }
           }
 
           var panel_contents = [
             new PanelContent("/kasper/doc/domain/" + domain.label + "/commands", function(data) {
               if (data.list.length > 0) {
-                $("#commands-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Commands", data: data,  result: results } ));
+                $("#commands-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Commands", data: data.list.sort(sort_on("label")),  result: results } ));
+              }
+            }),
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/queryResults", function(data) {
+              if (data.list.length > 0) {
+                data.list.forEach(function(query_result) {
+                  results[query_result.name] = query_result;
+                });
               }
             }),
             new PanelContent("/kasper/doc/domain/" + domain.label + "/queries", function(data) {
-              $.get("/kasper/doc/domain/" + domain.label + "/queryResults").done(function(query_results) {
-
-                query_results.list.forEach(function(query_result) {
-                  results[query_result.name] = query_result;
-                });
-
-                if (data.list.length > 0) {
-                  $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data } ));
-                }
-              });
+              if (data.list.length > 0) {
+                $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data.list.sort(sort_on("label")) } ));
+              }
             }),
             new PanelContent("/kasper/doc/domain/" + domain.label + "/events", function(data) {
               if (data.list.length > 0) {
-                $("#events-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Events", data: data} ));
+                $("#events-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Events", data: data.list.sort(sort_on("label"))} ));
               }
             }),
             new PanelContent("/kasper/doc/domain/" + domain.label + "/concepts", function(data) {
-              appendDomainComponent(data);
+              append_domain_component(data);
             }),
             new PanelContent("/kasper/doc/domain/" + domain.label + "/relations", function(data) {
-              appendDomainComponent(data);
+              append_domain_component(data);
             })
           ];
 
           var actualLoad = 0;
-          var f = function() { 
+          var f = function() {
             $('.link').click(function(event) {
               if( $(this).hasClass("in") ) {
                 event.preventDefault();
 
                 var anchor = get_anchor($(this).attr("href"));
                 
-                expandPanel(anchor);
-                scrollToAnchor(anchor, OFFSET_TOP_NAV);
+                expand_panel(anchor);
+                scroll_to_anchor(anchor, OFFSET_TOP_NAV);
               } else if( $(this).hasClass("out") ) {
                 event.preventDefault();
                 go_dyn(nodes[$(this).attr("domain")], get_anchor($(this).attr("href")));
               } else {
-                scrollToAnchor(hash, -60); 
+                scroll_to_anchor(hash, -60); 
               }
             });
 
-            if(hash) { 
+            if(hash) {
               $("#" + hash + " a").trigger("click");
-              scrollToAnchor(hash, -60); 
+              scroll_to_anchor(hash, -60);
             } 
           };
 
@@ -508,10 +568,14 @@
               .done(function(data) {
                 panel_content.init(data);
                 execute(panel_contents.length, ++actualLoad, f);
+              })
+              .fail(function(){
+                show_message("error", "Service is temporarily not available please try again later", false)
+                console.log("failed to load components '" + panel_content.url + "'");
               });
           });
           
-          $("#home-from-" + domain.name).click(function() {
+          $("#home-from-" + domain.label).click(function() {
             go_home();
           });
 
@@ -530,8 +594,8 @@
               $(this).parent().addClass("active");
 
               var anchor = get_anchor($(this).attr("href"));
-              expandPanel(anchor);
-              scrollToAnchor(anchor, OFFSET_TOP_NAV);
+              expand_panel(anchor);
+              scroll_to_anchor(anchor, OFFSET_TOP_NAV);
 
             } else if( $(this).parent().hasClass("component-item") ) {
               event.preventDefault();
@@ -541,12 +605,12 @@
               $(this).parent().addClass("active");
 
               var anchor = get_anchor($(this).attr("href"));
-              expandPanel(anchor);
-              scrollToAnchor(anchor, OFFSET_TOP_NAV);
+              expand_panel(anchor);
+              scroll_to_anchor(anchor, OFFSET_TOP_NAV);
 
             } else if( $(this).hasClass("back-to-top") ) {
               $(".component-category").removeClass("active");
-              scrollToAnchor("top", OFFSET_TOP_NAV);
+              scroll_to_anchor("top", OFFSET_TOP_NAV);
             } else {
               $(".component-category").removeClass("active");
             }
@@ -565,26 +629,26 @@
         function compute_search_data(domain) {
           var data = [];
 
-          data.push(get_search_raw("domain", domain.label, domain.name));
+          data.push(get_search_raw("domain", domain.label, domain.label));
 
           $.each(domain.commands, function(n, command) {
-            data.push(get_search_raw("commands", command.label, domain.name));
+            data.push(get_search_raw("commands", command.label, domain.label));
           });
 
           $.each(domain.queries, function(n, query) {
-            data.push(get_search_raw("queries", query.label, domain.name));
+            data.push(get_search_raw("queries", query.label, domain.label));
           });
 
           $.each(domain.events, function(n, c_event) {
-            data.push(get_search_raw("events", c_event.label, domain.name));
+            data.push(get_search_raw("events", c_event.label, domain.label));
           });
 
           $.each(domain.concepts, function(n, concept) {
-            data.push(get_search_raw("concepts", concept.name, domain.name));
+            data.push(get_search_raw("concepts", concept.name, domain.label));
           });
 
           $.each(domain.relations, function(n, relation) {
-            data.push(get_search_raw("relations", relation.name, domain.name));
+            data.push(get_search_raw("relations", relation.name, domain.label));
           });
 
           return data;
@@ -655,9 +719,14 @@
     </header>
 
     <div id = "top" class="main-container">
+
+      <!-- Message -->
+      <div id="message" class="container"></div>
+
+      <!-- Content -->
       <div id="contents">
 
-        <!-- Home page-->
+        <!-- Home page -->
         <div id="contents_home" class="hero-unit">
           <div class="container">
             <ol class="breadcrumb">
@@ -671,9 +740,16 @@
               <input class="form-control" id="search-domain-box" type="text" placeholder=""/>
             </div>
 
-            <div class="container page" id="searchable-domain-box">
-              <div class="domain-box"></div>
-            </div>
+            <table class="container page table table-hover" id="searchable-domain-box">
+              <thead>
+                <tr>
+                  <th class="col-md-3">Name</th>
+                  <th class="col-md-7">Description</th>
+                  <th class="col-md-2">Overview</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
 
           </div>          
         </div>
@@ -688,7 +764,7 @@
           </div>
           <div class="container page">
             <div class="panel panel-default">
-              <h2 class="panel-heading"><span class="glyphicon glyphicon-align-justify"></span>About</h2>
+              <h2 class="panel-heading"><span class="glyphicon glyphicon-align-justify"/>About</h2>
               <div class="panel-body">
                 ...
               </div>
@@ -706,7 +782,7 @@
           </div>
           <div class="container page">
             <div class="panel panel-default">
-              <h2 class="panel-heading"><span class="glyphicon glyphicon-envelope"></span>Contact</h2>
+              <h2 class="panel-heading"><span class="glyphicon glyphicon-envelope"/>Contact</h2>
               <div class="panel-body">
                 About general Kasper purposes : Viadeo architecture team &lt;<a href="mailto: architecture@viadeoteam.com">architecture@viadeoteam.com</a>&gt;
               </div>
@@ -720,8 +796,6 @@
 
       </div>
     </div>
-
-
 
     <footer class="navbar-default">
       <div class="container">

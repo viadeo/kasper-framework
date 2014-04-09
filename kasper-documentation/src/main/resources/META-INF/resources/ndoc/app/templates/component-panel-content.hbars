@@ -1,4 +1,4 @@
-{{#each data.list}}
+{{#each data}}
   {{#ifCond this.deprecated true}}
     <div class="panel panel-warning alert-warning">
   {{else}}
@@ -6,7 +6,7 @@
   {{/ifCond}}    
     <div class="panel-heading">
       <h4 class="panel-title" id="{{this.typePlural}}_{{this.name}}">
-        <a data-toggle="collapse" data-parent="#accordion-domain" href="#component-{{this.name}}-collapse">
+        <a data-toggle="collapse" data-parent="#accordion-domain" href="#component-{{this.name}}-collapse" class="collapsed">
             <span class="glyphicon glyphicon-stop"/>
             <b>{{this.name}}</b>
         </a>
@@ -14,26 +14,31 @@
       </h4>
     </div>
     <p class="panel-description text-justify">
-      {{#ifCond this.deprecated true}}<span class="glyphicon glyphicon-warning-sign"/></span><strong>Deprecated.</strong>&nbsp;{{/ifCond}}{{this.description}}
+      {{#ifCond this.deprecated true}}<span class="glyphicon glyphicon-warning-sign"/><strong>Deprecated.</strong>&nbsp;{{/ifCond}}{{this.description}}
     </p>
     <div id="component-{{this.name}}-collapse" class="panel-collapse collapse">
       <div class="panel-body">
         {{#if this.properties}}
-          <dl class="block-content dl-horizontal">
+          <dl class="block-content">
             <dt>Fields</dt>
-            <dd/>
-          </dl>
-          <dl class="block-content dl-horizontal no-border">
-            <dt/>
             <dd>
               <table class="table table-striped">
-                <thead><tr><th>Name</th><th>Type</th><th>Constraints</th></tr></thead>
-                <tbody>
-                  {{tr this.properties '["name", "type", "defaultValues", "constraints"]' }}
-                </tbody>
+                  <thead>
+                  <tr>
+                      <th class="col-md-2">Name</th>
+                      <th class="col-md-2">Type</th>
+                      <th class="col-md-4">Description</th>
+                      <th class="col-md-2">Values</th>
+                      <th class="col-md-2">Constraints</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  {{tr this.properties '["name", "type", "description", "defaultValues", "constraints"]' }}
+                  </tbody>
               </table>
             </dd>
           </dl>
+          <div class="clearfix"></div>
         {{/if}}
         {{#if this.type}}
           <dl class="block-content dl-horizontal">

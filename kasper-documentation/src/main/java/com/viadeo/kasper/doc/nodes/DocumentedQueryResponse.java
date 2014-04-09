@@ -8,6 +8,7 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import com.viadeo.kasper.annotation.XKasperField;
 import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
@@ -38,9 +39,12 @@ public class DocumentedQueryResponse extends DocumentedBean {
 
         @Override
         public Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
+            final XKasperField annotation = field.getAnnotation(XKasperField.class);
+
             return Optional.of(
                 new DocumentedProperty(
                     field.getName(),
+                    annotation == null ? "" : annotation.description(),
                     queryResultClass.getSimpleName(),
                     null,
                     false,
@@ -71,11 +75,13 @@ public class DocumentedQueryResponse extends DocumentedBean {
 
         @Override
         public Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
+            final XKasperField annotation = field.getAnnotation(XKasperField.class);
             final ParameterizedType genericSuperclass = (ParameterizedType) queryResultClass.getGenericSuperclass();
             final Type[] parameters = genericSuperclass.getActualTypeArguments();
 
             final DocumentedProperty documentedProperty = new DocumentedProperty(
                     field.getName(),
+                    annotation == null ? "" : annotation.description(),
                     queryResultClass.getSimpleName(),
                     null, false, false, true,
                     Sets.<DocumentedConstraint>newHashSet()

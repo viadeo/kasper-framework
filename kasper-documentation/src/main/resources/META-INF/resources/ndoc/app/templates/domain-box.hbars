@@ -1,20 +1,10 @@
-<div class="domain-box col-md-4">
-  <div class="panel panel-default">
-    <h3 class="panel-heading">
-      <span class="glyphicon glyphicon-unchecked"/>
-      <span class="domain-box-selector">{{node.label}}</span>
-      <small class="pull-right">
-          <span class="glyphicon glyphicon-log-in">{{#if node.commands}}{{node.commands.length}}{{else}}0{{/if}}</span>
-          <span class="glyphicon glyphicon-log-out">{{#if node.queries}}{{node.queries.length}}{{else}}0{{/if}}</span>
-          <span class="glyphicon glyphicon-new-window">{{#if node.events}}{{node.events.length}}{{else}}0{{/if}}</span>
-      </small>
-    </h3>
-    <div class="panel-body">
-      <div class="box">
-        <div class="text text-justify">{{node.description}}</div>
-      </div>
-      <a id="domain-{{node.name}}-btn" href="#{{node.name}}" class="pull-right btn btn-default">More →</a>
-    </div>
-  </div>
-</div>
-<div class="domain-box"></div>
+<tr id="domain-{{node.label}}-btn" class="clickable-row domain-box" href="#{{node.label}}">
+  <td class="domain-box-selector col-md-3"><strong>{{node.label}}</strong></td>
+  <td class="col-md-7">{{limit_text node.description 140}}</td>
+  <td class="col-md-2">
+      <span class="badge"><span class="glyphicon glyphicon-log-in"/>{{node.commands.length}}</span>
+      <span class="badge"><span class="glyphicon glyphicon-log-out"/>{{node.queries.length}}</span>
+      <span class="badge"><span class="glyphicon glyphicon-new-window"/>{{node.events.length}}</span>
+  </td>
+</tr>
+
