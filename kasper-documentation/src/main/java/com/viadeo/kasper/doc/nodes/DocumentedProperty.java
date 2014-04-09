@@ -12,6 +12,7 @@ import java.util.Set;
 public class DocumentedProperty {
 
 	private final String name;
+    private final String description;
 	private final String type;
     private final String defaultValues;
     private final Boolean isList;
@@ -22,23 +23,11 @@ public class DocumentedProperty {
     private String elemType;
     private Boolean mandatory = false; /** javax.validation.constraints.NotNull */
 	
-	// ------------------------------------------------------------------------
-
-    public DocumentedProperty(
-            final String name,
-            final String type,
-            final Boolean isList,
-            final Boolean isLinkedConcept,
-            final Boolean isQueryResult,
-            HashSet<DocumentedConstraint> constraints
-    ) {
-        this(name, type, null, isList, isQueryResult, isLinkedConcept, constraints);
-    }
-
     // ------------------------------------------------------------------------
 
 	public DocumentedProperty(
             final String name,
+            final String description,
             final String type,
             final String defaultValues,
             final Boolean isList,
@@ -47,6 +36,7 @@ public class DocumentedProperty {
             HashSet<DocumentedConstraint> constraints
     ) {
 		this.name = name;
+		this.description = description;
 		this.type = type;
         this.defaultValues = defaultValues;
         this.isList = isList;
@@ -60,8 +50,12 @@ public class DocumentedProperty {
 	public String getName() {
 		return this.name;
 	}
-	
-	public String getType() {
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getType() {
 		return this.type;
 	}
 

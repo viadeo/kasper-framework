@@ -9,6 +9,7 @@ package com.viadeo.kasper.doc.nodes;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
+import com.viadeo.kasper.annotation.XKasperField;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.doc.nodes.validation.DefaultPropertyValidator;
 import com.viadeo.kasper.doc.nodes.validation.PropertyValidationProcessor;
@@ -133,9 +134,11 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
         @Override
         public  Optional<DocumentedProperty> extract(final Field field, final Class clazz) {
+            final XKasperField annotation = field.getAnnotation(XKasperField.class);
             return Optional.of(
                     new DocumentedProperty(
                             field.getName(),
+                            annotation == null ? "" : annotation.description(),
                             field.getType().getSimpleName(),
                             null,
                             false,
@@ -163,9 +166,11 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
         @Override
         public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
+            final XKasperField annotation = field.getAnnotation(XKasperField.class);
             return Optional.of(
                     new DocumentedProperty(
                             field.getName(),
+                            annotation == null ? "" : annotation.description(),
                             field.getType().getSimpleName(),
                             Arrays.asList(field.getType().getEnumConstants()).toString(),
                             false,
@@ -215,9 +220,12 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                 type = optType.get();
             }
 
+            final XKasperField annotation = field.getAnnotation(XKasperField.class);
+
             return Optional.of(
                     new DocumentedProperty(
                             field.getName(),
+                            annotation == null ? "" : annotation.description(),
                             type == null ? "unknown" : type.getSimpleName(),
                             null,
                             false,
@@ -245,6 +253,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
         @Override
         public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
+            final XKasperField annotation = field.getAnnotation(XKasperField.class);
 
             if (field.getGenericType() instanceof ParameterizedType) {
                 final ParameterizedType genericType = (ParameterizedType) field.getGenericType();
@@ -261,6 +270,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                         return Optional.of(
                                 new DocumentedProperty(
                                         field.getName(),
+                                        annotation == null ? "" : annotation.description(),
                                         subParamClass.getSimpleName(),
                                         null,
                                         true,
@@ -273,6 +283,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                         return Optional.of(
                             new DocumentedProperty(
                                 field.getName(),
+                                annotation == null ? "" : annotation.description(),
                                 paramClass.getSimpleName(),
                                 null,
                                 true,
@@ -291,6 +302,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                         return Optional.of(
                                 new DocumentedProperty(
                                         field.getName(),
+                                        annotation == null ? "" : annotation.description(),
                                         optType.get().getSimpleName(),
                                         null,
                                         true,
@@ -303,6 +315,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                         return Optional.of(
                                 new DocumentedProperty(
                                         field.getName(),
+                                        annotation == null ? "" : annotation.description(),
                                         "unknown",
                                         null,
                                         true,
@@ -353,9 +366,11 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                 type = optType.get();
             }
 
+            final XKasperField annotation = field.getAnnotation(XKasperField.class);
             return Optional.of(
                     new DocumentedProperty(
                             field.getName(),
+                            annotation == null ? "" : annotation.description(),
                             type == null ? "unknown" : type.getSimpleName(),
                             null,
                             true,

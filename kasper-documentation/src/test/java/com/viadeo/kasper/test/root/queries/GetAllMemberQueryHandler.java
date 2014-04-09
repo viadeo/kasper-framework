@@ -7,6 +7,7 @@
 package com.viadeo.kasper.test.root.queries;
 
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.annotation.XKasperField;
 import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -30,8 +31,11 @@ public class GetAllMemberQueryHandler extends QueryHandler<GetMembersQueryHandle
     @XKasperQueryResult
     public static class MemberResult implements QueryResult {
         private static final long serialVersionUID = -4481723019905052067L;
+        @XKasperField(description = "the last name of the member")
         public String lastName;
+        @XKasperField(description = "the first name of the member")
         public String firstName;
+        @XKasperField(description = "the id of the member")
         public KasperID id;
     }
 }

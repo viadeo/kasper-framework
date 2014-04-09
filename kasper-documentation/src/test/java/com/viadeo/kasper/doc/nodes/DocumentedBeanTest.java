@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
+import com.viadeo.kasper.annotation.XKasperField;
 import com.viadeo.kasper.er.LinkedConcept;
 import com.viadeo.kasper.test.root.entities.Member;
 import com.viadeo.kasper.test.root.queries.GetAllMembersQueryHandler;
@@ -172,6 +173,7 @@ public class DocumentedBeanTest {
     // ------------------------------------------------------------------------
 
     public class ClassWithValidationOnField {
+        @SuppressWarnings("unused")
         @NotNull
         public String iCantBeNull;
     }
@@ -214,6 +216,32 @@ public class DocumentedBeanTest {
         assertFalse(prop.getLinkedConcept());
         assertTrue(prop.isQueryResult());
         assertEquals(0, prop.getConstraints().size());
+    }
+
+    // ------------------------------------------------------------------------
+
+    public class ClassWithDescriptionOnField {
+        @SuppressWarnings("unused")
+        @XKasperField(description = "a simple field")
+        public String field;
+    }
+
+    @Test
+    public void init_withField_withXKasperField_shouldBeDetailed() {
+        // When
+        final DocumentedBean bean = new DocumentedBean(ClassWithDescriptionOnField.class);
+
+        // Then
+        assertNotNull(bean);
+        assertEquals(1, bean.size());
+
+        final DocumentedProperty prop = bean.get(0);
+        assertEquals("field", prop.getName());
+        assertEquals("String", prop.getType());
+        assertEquals("a simple field", prop.getDescription());
+        assertFalse(prop.isList());
+        assertFalse(prop.getLinkedConcept());
+        assertFalse(prop.isQueryResult());
     }
 
 }

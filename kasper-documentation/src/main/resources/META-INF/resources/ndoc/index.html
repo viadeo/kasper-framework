@@ -179,15 +179,15 @@
               var suffix = '';
 
               if(item.type == "domain") {
-                prefix = '<span class="glyphicon glyphicon-unchecked"></span>';
+                prefix = '<span class="glyphicon glyphicon-unchecked"/>';
               } else if(item.type == "commands"){
-                prefix = '<span class="glyphicon glyphicon-log-in"></span>';
+                prefix = '<span class="glyphicon glyphicon-log-in"/>';
               } else if(item.type == "queries"){
-                prefix = '<span class="glyphicon glyphicon-log-out"></span>';
+                prefix = '<span class="glyphicon glyphicon-log-out"/>';
               } else if(item.type == "events"){
-                prefix = '<span class="glyphicon glyphicon-new-window"></span>';
+                prefix = '<span class="glyphicon glyphicon-new-window"/>';
               } else if(item.type == "concepts" || item.type == "relations"){
-                prefix = '<span class="glyphicon glyphicon-stop"></span>';
+                prefix = '<span class="glyphicon glyphicon-stop"/>';
                 suffix = ' (' + item.domain + ')';
               }
               return $( "<li>" )
@@ -269,10 +269,10 @@
               $("#message").append('<div class="alert alert-info">' + message + '</div>');
               break;
             case 'warn':
-              $("#message").append('<div class="alert alert-warning"><span class="glyphicon glyphicon-warning-sign"></span>' + message + '</div>');
+              $("#message").append('<div class="alert alert-warning"><span class="glyphicon glyphicon-warning-sign"/>' + message + '</div>');
               break;
             case 'error':
-              $("#message").append('<div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"></span>' + message + '</div>');
+              $("#message").append('<div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"/>' + message + '</div>');
               break;
           }
 
@@ -424,12 +424,17 @@
               var key = keys[j];
               var value = properties[i][key];
 
-              if( value === null ) {
+              if( value === null || value.length === 0 ) {
                 value = "-";
               }
 
               if(typeof value === 'object') {
-                value = flatten(value, ",&nbsp;", "message");
+                var new_value = "<ul>";
+                for (var o = 0; o < value.length; o++) {
+                  new_value = "<li>" + value[o]["message"] + "</li>";
+                }
+                new_value += "</ul>"
+                value = new_value;
               }
 
               if (properties[i]["linkedConcept"] && key === "type") {
@@ -759,7 +764,7 @@
           </div>
           <div class="container page">
             <div class="panel panel-default">
-              <h2 class="panel-heading"><span class="glyphicon glyphicon-align-justify"></span>About</h2>
+              <h2 class="panel-heading"><span class="glyphicon glyphicon-align-justify"/>About</h2>
               <div class="panel-body">
                 ...
               </div>
@@ -777,7 +782,7 @@
           </div>
           <div class="container page">
             <div class="panel panel-default">
-              <h2 class="panel-heading"><span class="glyphicon glyphicon-envelope"></span>Contact</h2>
+              <h2 class="panel-heading"><span class="glyphicon glyphicon-envelope"/>Contact</h2>
               <div class="panel-body">
                 About general Kasper purposes : Viadeo architecture team &lt;<a href="mailto: architecture@viadeoteam.com">architecture@viadeoteam.com</a>&gt;
               </div>
@@ -791,8 +796,6 @@
 
       </div>
     </div>
-
-
 
     <footer class="navbar-default">
       <div class="container">

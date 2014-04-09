@@ -134,6 +134,15 @@ h3.block-content {
     border: none;
 }
 
+.panel-body table {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.panel-body table thead th{
+    color: gray;
+}
+
 p.panel-description {
     padding: 10px 15px;
 }

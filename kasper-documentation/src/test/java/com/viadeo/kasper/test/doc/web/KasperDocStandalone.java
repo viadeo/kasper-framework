@@ -29,6 +29,7 @@ import com.viadeo.kasper.test.root.queries.GetMemberQueryHandler;
 import com.viadeo.kasper.test.root.queries.GetMembersQueryHandler;
 import com.viadeo.kasper.test.root.repositories.MemberConnectionsRepository;
 import com.viadeo.kasper.test.root.repositories.MemberRepository;
+import com.viadeo.kasper.test.timelines.Timelines;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 
@@ -87,6 +88,14 @@ public class KasperDocStandalone {
                 Lists.<EventListenerDescriptor>newArrayList()
                 )
         );
+        documentedPlatform.registerDomain(Timelines.NAME, new DomainDescriptor(
+                Timelines.NAME,
+                Timelines.class,
+                Lists.<QueryHandlerDescriptor>newArrayList(),
+                Lists.<CommandHandlerDescriptor>newArrayList(),
+                Lists.<RepositoryDescriptor>newArrayList(),
+                Lists.<EventListenerDescriptor>newArrayList()
+                        ));
         documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
 
         final KasperDocResource res = new KasperDocResource(documentedPlatform);
