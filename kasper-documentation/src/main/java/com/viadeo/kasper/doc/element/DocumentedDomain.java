@@ -41,6 +41,7 @@ public class DocumentedDomain extends AbstractElement {
     private final List<DocumentedQuery> queries;
     private final Map<Class, DocumentedQueryResult> queryResults;
     private final List<DocumentedConcept> concepts;
+    private final List<DocumentedConcept> avatarConcepts;
     private final List<DocumentedRelation> relations;
     private final List<DocumentedEvent> events;
     private final List<DocumentedCommand> commands;
@@ -65,6 +66,7 @@ public class DocumentedDomain extends AbstractElement {
         events = Lists.newArrayList();
         relations = Lists.newArrayList();
         concepts = Lists.newArrayList();
+        avatarConcepts = Lists.newArrayList();
 
         for (final QueryHandlerDescriptor descriptor : domainDescriptor.getQueryHandlerDescriptors()) {
             final DocumentedQueryHandler documentedQueryHandler = new DocumentedQueryHandler(this, descriptor);
@@ -103,7 +105,22 @@ public class DocumentedDomain extends AbstractElement {
                 DocumentedEvent documentedEvent = lightDocumentedEvent.getFullDocumentedElement();
                 events.put(documentedEvent.getReferenceClass(), documentedEvent);
             }
+        }
 
+        for (final DocumentedRelation documentedRelation:relations) {
+            final Class sourceReferenceClass = documentedRelation.getSourceConcept().getReferenceClass();
+            if ( ! concepts.containsKey(sourceReferenceClass)) {
+                final DocumentedConcept documentedConcept = new DocumentedConcept(this, sourceReferenceClass, null);
+                concepts.put(sourceReferenceClass, documentedConcept);
+                avatarConcepts.add(documentedConcept);
+            }
+
+            final Class targetReferenceClass = documentedRelation.getTargetConcept().getReferenceClass();
+            if ( ! concepts.containsKey(targetReferenceClass)) {
+                final DocumentedConcept documentedConcept = new DocumentedConcept(this, targetReferenceClass, null);
+                concepts.put(targetReferenceClass, documentedConcept);
+                avatarConcepts.add(documentedConcept);
+            }
         }
 
         this.concepts.addAll(concepts.values());
@@ -229,6 +246,7 @@ public class DocumentedDomain extends AbstractElement {
         documentedElements.addAll(documentedCommandHandlers);
         documentedElements.addAll(documentedEventListeners);
         documentedElements.addAll(documentedRepositories);
+        documentedElements.addAll(avatarConcepts);
 
         for (final AbstractElement documentedElement : documentedElements) {
             documentedElement.accept(visitor);
