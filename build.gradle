@@ -212,7 +212,7 @@ subprojects {
 
       TYPESAFE_CONFIG       : 'com.typesafe:config:1.0.2',
 
-      KAFKA                 : 'org.apache.kafka:kafka:0.8.1',
+      KAFKA                 : 'org.apache.kafka:kafka_2.8.0:0.8.1',
 
       SCALA_LIBRARY         : 'org.scala-lang:scala-library:2.8.0',
 
