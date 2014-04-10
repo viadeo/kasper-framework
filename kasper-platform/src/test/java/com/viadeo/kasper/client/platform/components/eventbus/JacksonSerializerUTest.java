@@ -212,7 +212,17 @@ public class JacksonSerializerUTest {
         final JacksonSerializer jacksonSerializer = new JacksonSerializer(ObjectMapperProvider.INSTANCE.mapper());
 
         final Context context = new DefaultContext();
+        context.setFunnelCorrelationId("funnelCorrelationId");
+        context.setFunnelName("funnelName");
+        context.setFunnelVersion("0.1");
+        context.setRequestCorrelationId("requestCorrelationId");
+        context.setSecurityToken("securityToken");
+        context.setUserCountry("fr");
+        context.setUserId("42");
+        context.setUserLang("fr");
+        context.setSessionCorrelationId("sessionCorrelationId");
         context.setApplicationId("TEST");
+        context.setIpAddress("127.0.0.1");
 
         final MetaData metaData = new MetaData(
                 ImmutableMap.<String,Object>builder()

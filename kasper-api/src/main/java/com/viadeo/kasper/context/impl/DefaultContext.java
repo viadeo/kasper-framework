@@ -48,7 +48,6 @@ public class DefaultContext extends AbstractContext {
 
     public DefaultContext() {
         super();
-
         this.userId = DEFAULT_USER_ID;
         this.userLang = DEFAULT_USER_LANG;
         this.userCountry = DEFAULT_USER_COUNTRY;
@@ -64,16 +63,17 @@ public class DefaultContext extends AbstractContext {
 
     public DefaultContext(final Map<String, String> contextAsMap) {
         super();
-        this.userId = contextAsMap.get("userId");
-        this.userLang = contextAsMap.get("userLang");
-        this.userCountry = contextAsMap.get("userCountry");
-        this.requestCorrelationId = contextAsMap.get("requestCorrelationId");
-        this.funnelCorrelationId = contextAsMap.get("funnelCorrelationId");
-        this.sessionCorrelationId = contextAsMap.get("sessionCorrelationId");
-        this.applicationId = contextAsMap.get("applicationId");
-        this.securityToken = contextAsMap.get("securityToken");
-        this.funnelName = contextAsMap.get("funnelName");
-        this.funnelVersion = contextAsMap.get("funnelVersion");
+        this.userId = Objects.firstNonNull(contextAsMap.get(UID_SHORTNAME), DEFAULT_USER_ID);
+        this.userLang = Objects.firstNonNull(contextAsMap.get(ULANG_SHORTNAME), DEFAULT_USER_LANG);
+        this.userCountry = Objects.firstNonNull(contextAsMap.get(UCOUNTRY_SHORTNAME), DEFAULT_USER_COUNTRY);
+        this.requestCorrelationId = Objects.firstNonNull(contextAsMap.get(REQUEST_CID_SHORTNAME), DEFAULT_REQCORR_ID);
+        this.funnelCorrelationId = Objects.firstNonNull(contextAsMap.get(FUNNEL_CID_SHORTNAME), DEFAULT_FUNCORR_ID);
+        this.sessionCorrelationId = Objects.firstNonNull(contextAsMap.get(SESSION_CID_SHORTNAME), DEFAULT_SESSCORR_ID);
+        this.applicationId = Objects.firstNonNull(contextAsMap.get(APPLICATION_ID_SHORTNAME), DEFAULT_APPLICATION_ID);
+        this.securityToken = Objects.firstNonNull(contextAsMap.get(SECURITY_TOKEN_SHORTNAME), DEFAULT_SECURITY_TOKEN);
+        this.funnelName = Objects.firstNonNull(contextAsMap.get(FUNNEL_NAME_SHORTNAME), DEFAULT_FUNNEL_NAME);
+        this.funnelVersion = Objects.firstNonNull(contextAsMap.get(FUNNEL_VERS_SHORTNAME), DEFAULT_FUNNEL_VERSION);
+        this.ipAddress = Objects.firstNonNull(contextAsMap.get(IP_ADDRESS_SHORTNAME), DEFAULT_IP_ADDRESS);
     }
 
     // ------------------------------------------------------------------------
