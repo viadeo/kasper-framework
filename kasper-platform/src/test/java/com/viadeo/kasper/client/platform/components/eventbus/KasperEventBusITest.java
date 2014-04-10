@@ -19,6 +19,7 @@ import com.viadeo.kasper.client.platform.components.eventbus.terminal.amqp.Sprin
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.IEvent;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -99,7 +100,7 @@ public class KasperEventBusITest {
         countDownLatch = new CountDownLatch(1);
     }
 
-    @Test
+    @Test @Ignore
     public void publish_listen_usingDistributedEventBus_withAmqpConfiguration_shouldBeOk() throws InterruptedException {
         // Given
         final String expectedMessage = "Coucou David!";
