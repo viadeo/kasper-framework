@@ -16,6 +16,7 @@ dependencies {
     compile libraries.JERSEY_CORE
     compile libraries.SPRING_WEB
     compile libraries.SERVLET
+    compile libraries.JSON_SIMPLE
 
     // Test projects
     testCompile project(':kasper-client')
@@ -25,4 +26,5 @@ dependencies {
     testCompile libraries.GLASSFISH_EXPR_LANG
     testCompile libraries.HIBERNATE_VALIDATOR
     testCompile libraries.TYPESAFE_CONFIG
+    testCompile libraries.JUNIT
 }

@@ -188,6 +188,8 @@ subprojects {
       JODA_MONEY            : 'org.joda:joda-money:0.9',
       GUAVA                 : 'com.google.guava:guava:13.0.1',
 
+      JSON_SIMPLE           : 'com.googlecode.json-simple:json-simple:1.1.1',
+
       LOGBACK               : [
                                 'org.slf4j:slf4j-api:1.7.5',
                                 'ch.qos.logback:logback-classic:1.0.13',
