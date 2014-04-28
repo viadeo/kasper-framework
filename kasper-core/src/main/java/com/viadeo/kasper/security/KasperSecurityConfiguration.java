@@ -6,10 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.security;
 
-import com.viadeo.kasper.security.callback.ApplicationIdValidator;
-import com.viadeo.kasper.security.callback.IdentityContextProvider;
-import com.viadeo.kasper.security.callback.IpAddressValidator;
-import com.viadeo.kasper.security.callback.SecurityTokenValidator;
+import com.viadeo.kasper.security.authz.AuthorizationSecurityManager;
+import com.viadeo.kasper.security.callback.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -19,17 +17,23 @@ public class KasperSecurityConfiguration implements SecurityConfiguration {
     private final IdentityContextProvider identityContextProviders;
     private final ApplicationIdValidator applicationIdValidator;
     private final IpAddressValidator ipAddressValidator;
+    private final AuthorizationValidator authorizationValidator;
+    private final AuthorizationSecurityManager authorizationSecurityManager;
 
     // ------------------------------------------------------------------------
 
     public KasperSecurityConfiguration(final SecurityTokenValidator securityTokenValidator,
                                        final IdentityContextProvider identityContextProviders,
                                        final ApplicationIdValidator applicationIdValidator,
-                                       final IpAddressValidator ipAddressValidator) {
+                                       final IpAddressValidator ipAddressValidator,
+                                       final AuthorizationValidator authorizationValidator,
+                                       final AuthorizationSecurityManager authorizationSecurityManager) {
         this.securityTokenValidator = checkNotNull(securityTokenValidator);
         this.identityContextProviders = checkNotNull(identityContextProviders);
         this.applicationIdValidator = checkNotNull(applicationIdValidator);
         this.ipAddressValidator = checkNotNull(ipAddressValidator);
+        this.authorizationValidator = checkNotNull(authorizationValidator);
+        this.authorizationSecurityManager = checkNotNull(authorizationSecurityManager);
     }
 
     // ------------------------------------------------------------------------
@@ -52,6 +56,16 @@ public class KasperSecurityConfiguration implements SecurityConfiguration {
     @Override
     public IpAddressValidator getIpAddressValidator() {
         return ipAddressValidator;
+    }
+
+    @Override
+    public AuthorizationValidator getAuthorizationValidator() {
+        return authorizationValidator;
+    }
+
+    @Override
+    public AuthorizationSecurityManager getAuthorizationSecurityManager() {
+        return authorizationSecurityManager;
     }
 
 }
