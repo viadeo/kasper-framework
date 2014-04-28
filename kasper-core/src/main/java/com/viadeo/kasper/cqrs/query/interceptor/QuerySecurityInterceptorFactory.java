@@ -7,6 +7,7 @@
 package com.viadeo.kasper.cqrs.query.interceptor;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
@@ -22,11 +23,14 @@ import com.viadeo.kasper.security.SecurityConfiguration;
 import com.viadeo.kasper.security.SecurityStrategy;
 import com.viadeo.kasper.security.annotation.XKasperPublic;
 
+import java.util.Map;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class QuerySecurityInterceptorFactory extends QueryInterceptorFactory {
 
-    private SecurityConfiguration securityConfiguration;
+    private final SecurityConfiguration securityConfiguration;
+    private final Map<Class, SecurityStrategy> strategies = Maps.newHashMap();
 
     // ------------------------------------------------------------------------
 
@@ -40,12 +44,17 @@ public class QuerySecurityInterceptorFactory extends QueryInterceptorFactory {
     @Override
     public Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> create(final TypeToken<?> type) {
         final Class<? extends Query> queryClass = extractQueryClassFromTypeToken(type);
-
         final SecurityStrategy securityStrategy;
-        if (queryClass.isAnnotationPresent(XKasperPublic.class)) {
-            securityStrategy = new DefaultPublicSecurityStrategy(securityConfiguration);
+
+        if (strategies.containsKey(queryClass)) {
+            securityStrategy = strategies.get(queryClass);
         } else {
-            securityStrategy = new DefaultSecurityStrategy(securityConfiguration);
+            if (queryClass.isAnnotationPresent(XKasperPublic.class)) {
+                securityStrategy = new DefaultPublicSecurityStrategy(securityConfiguration, queryClass);
+            } else {
+                securityStrategy = new DefaultSecurityStrategy(securityConfiguration, queryClass);
+            }
+            strategies.put(queryClass, securityStrategy);
         }
 
         final Interceptor<Query, QueryResponse<QueryResult>> interceptor =
@@ -57,7 +66,7 @@ public class QuerySecurityInterceptorFactory extends QueryInterceptorFactory {
     private Class<? extends Query> extractQueryClassFromTypeToken(final TypeToken<?> type) {
         final Class<?> rawType = checkNotNull(type).getRawType();
         return new QueryHandlerResolver().getQueryClass(
-            (Class<? extends QueryHandler>) rawType
+                (Class<? extends QueryHandler>) rawType
         );
     }
 

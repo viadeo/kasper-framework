@@ -7,10 +7,10 @@
 package com.viadeo.kasper.security;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.security.callback.ApplicationIdValidator;
-import com.viadeo.kasper.security.callback.IdentityContextProvider;
-import com.viadeo.kasper.security.callback.IpAddressValidator;
-import com.viadeo.kasper.security.callback.SecurityTokenValidator;
+import com.viadeo.kasper.security.authz.AuthorizationSecurityManager;
+import com.viadeo.kasper.security.authz.impl.DefaultAuthorizationSecurityManager;
+import com.viadeo.kasper.security.callback.*;
+import com.viadeo.kasper.security.callback.impl.DefaultAuthorizationValidator;
 import com.viadeo.kasper.security.exception.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -28,6 +28,10 @@ public interface SecurityConfiguration {
 
     IpAddressValidator getIpAddressValidator();
 
+    AuthorizationValidator getAuthorizationValidator();
+
+    AuthorizationSecurityManager getAuthorizationSecurityManager();
+
     // ------------------------------------------------------------------------
 
     class Builder {
@@ -36,10 +40,13 @@ public interface SecurityConfiguration {
         private IdentityContextProvider identityContextProvider = new DefaultIdentityContextProvider();
         private ApplicationIdValidator applicationIdValidator = new DefaultApplicationIdValidator();
         private IpAddressValidator ipAddressValidator = new DefaultIpAddressValidator();
+        private AuthorizationSecurityManager authorizationSecurityManager = new DefaultAuthorizationSecurityManager();
+        private AuthorizationValidator authorizationValidator = new DefaultAuthorizationValidator(authorizationSecurityManager);
 
         // --------------------------------------------------------------------
 
-        public Builder() { }
+        public Builder() {
+        }
 
         public Builder withSecurityTokenValidator(final SecurityTokenValidator securityTokenValidator) {
             checkNotNull(securityTokenValidator);
@@ -64,12 +71,21 @@ public interface SecurityConfiguration {
             return this;
         }
 
+        public Builder withAuthorizationValidator(final AuthorizationValidator authorizationValidator,
+                                                  final AuthorizationSecurityManager authorizationSecurityManager) {
+            this.authorizationValidator = checkNotNull(authorizationValidator);
+            this.authorizationSecurityManager = checkNotNull(authorizationSecurityManager);
+            return this;
+        }
+
         public SecurityConfiguration build() {
             SecurityConfiguration securityConfiguration = new KasperSecurityConfiguration(
                 securityTokenValidator,
                 identityContextProvider,
                 applicationIdValidator,
-                ipAddressValidator
+                ipAddressValidator,
+                authorizationValidator,
+                authorizationSecurityManager
             );
             return securityConfiguration;
         }

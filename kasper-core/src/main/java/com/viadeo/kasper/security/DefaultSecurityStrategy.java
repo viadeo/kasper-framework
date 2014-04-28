@@ -9,12 +9,15 @@ package com.viadeo.kasper.security;
 import com.viadeo.kasper.context.Context;
 import org.apache.log4j.MDC;
 
+import java.util.List;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DefaultSecurityStrategy extends DefaultPublicSecurityStrategy {
 
-    public DefaultSecurityStrategy(final SecurityConfiguration securityConfiguration) {
-        super(checkNotNull(securityConfiguration));
+    public DefaultSecurityStrategy(final SecurityConfiguration securityConfiguration,
+                                   final Class<?> clazz) {
+        super(checkNotNull(securityConfiguration), clazz);
     }
 
     // ------------------------------------------------------------------------

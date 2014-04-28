@@ -15,11 +15,13 @@ public class DefaultPublicSecurityStrategy implements SecurityStrategy {
 
     protected final SecurityConfiguration securityConfiguration;
     protected Context context;
+    protected Class<?> clazz;
 
     // ------------------------------------------------------------------------
 
-    public DefaultPublicSecurityStrategy(final SecurityConfiguration securityConfiguration) {
+    public DefaultPublicSecurityStrategy(final SecurityConfiguration securityConfiguration, final Class<?> clazz) {
         this.securityConfiguration = checkNotNull(securityConfiguration);
+        this.clazz = clazz;
     }
 
     // ------------------------------------------------------------------------
@@ -30,6 +32,7 @@ public class DefaultPublicSecurityStrategy implements SecurityStrategy {
         securityConfiguration.getIdentityContextProvider().provideIdentity(context);
         securityConfiguration.getApplicationIdValidator().validate(context.getApplicationId());
         securityConfiguration.getIpAddressValidator().validate(context.getIpAddress());
+        securityConfiguration.getAuthorizationValidator().validate(context, this.clazz);
     }
 
     public void afterRequest() {

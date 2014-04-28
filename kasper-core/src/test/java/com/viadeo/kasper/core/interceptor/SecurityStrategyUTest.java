@@ -7,17 +7,20 @@
 package com.viadeo.kasper.core.interceptor;
 
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.security.DefaultPublicSecurityStrategy;
 import com.viadeo.kasper.security.DefaultSecurityStrategy;
 import com.viadeo.kasper.security.SecurityConfiguration;
 import com.viadeo.kasper.security.SecurityStrategy;
-import com.viadeo.kasper.security.callback.ApplicationIdValidator;
-import com.viadeo.kasper.security.callback.IdentityContextProvider;
-import com.viadeo.kasper.security.callback.IpAddressValidator;
-import com.viadeo.kasper.security.callback.SecurityTokenValidator;
+import com.viadeo.kasper.security.authz.AuthorizationSecurityManager;
+import com.viadeo.kasper.security.callback.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import java.util.ArrayList;
 
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.*;
@@ -37,7 +40,14 @@ public class SecurityStrategyUTest {
     @Mock
     IpAddressValidator ipAddressValidator;
 
+    @Mock
+    AuthorizationValidator authorizationValidator;
+
+    @Mock
+    AuthorizationSecurityManager authorizationSecurityManager;
+
     SecurityConfiguration securityConfiguration;
+
 
     // ------------------------------------------------------------------------
 
@@ -49,6 +59,7 @@ public class SecurityStrategyUTest {
                 .withIdentityProvider(identityProvider)
                 .withApplicationIdValidator(applicationIdValidator)
                 .withIpAddressValidator(ipAddressValidator)
+                .withAuthorizationValidator(authorizationValidator, authorizationSecurityManager)
                 .build();
     }
 
@@ -59,7 +70,7 @@ public class SecurityStrategyUTest {
             throws Exception {
 
         // Given
-        final SecurityStrategy securityStrategy = new DefaultSecurityStrategy(securityConfiguration);
+        final SecurityStrategy securityStrategy = new DefaultSecurityStrategy(securityConfiguration, QueryHandler.class);
         final Context context = mock(Context.class);
 
         // When
@@ -70,6 +81,7 @@ public class SecurityStrategyUTest {
         verify(identityProvider).provideIdentity(refEq(context));
         verify(applicationIdValidator).validate(context.getApplicationId());
         verify(ipAddressValidator).validate(context.getIpAddress());
+        verify(authorizationValidator).validate(context, QueryHandler.class);
     }
 
     @Test
@@ -77,7 +89,7 @@ public class SecurityStrategyUTest {
             throws Exception {
 
         // Given
-        final SecurityStrategy securityStrategy = new DefaultPublicSecurityStrategy(securityConfiguration);
+        final SecurityStrategy securityStrategy = new DefaultPublicSecurityStrategy(securityConfiguration, QueryHandler.class);
         final Context context = mock(Context.class);
 
         // When
@@ -88,6 +100,7 @@ public class SecurityStrategyUTest {
         verify(identityProvider).provideIdentity(refEq(context));
         verify(applicationIdValidator).validate(context.getApplicationId());
         verify(ipAddressValidator).validate(context.getIpAddress());
+        verify(authorizationValidator).validate(context, QueryHandler.class);
     }
 
 }
