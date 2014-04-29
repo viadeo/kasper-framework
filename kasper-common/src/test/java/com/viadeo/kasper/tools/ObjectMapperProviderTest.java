@@ -77,6 +77,15 @@ public class ObjectMapperProviderTest {
         }
     }
 
+    public static enum AnEnum { @SuppressWarnings("unused")VAL_1, VAL_2, VAL_3 }
+
+    public static class QueryContainingEnum implements Query {
+
+        private static final long serialVersionUID = 7806317732575729864L;
+
+        public AnEnum anEnum;
+    }
+
     // ------------------------------------------------------------------------
 
     @Test
@@ -310,4 +319,29 @@ public class ObjectMapperProviderTest {
         assertEquals((Integer)42, actual.getValue());
     }
 
+    @Test
+    public void deserializeEnum_withUpperCase() throws IOException {
+        // Given
+        final ObjectMapper mapper = ObjectMapperProvider.INSTANCE.mapper();
+
+        // When
+        final QueryContainingEnum actual = mapper.readValue("{\"anEnum\":\"VAL_3\"}", QueryContainingEnum.class);
+
+        // Then
+        assertNotNull(actual);
+        assertEquals(AnEnum.VAL_3, actual.anEnum);
+    }
+
+    @Test
+    public void deserializeEnum_withLowerCase() throws IOException {
+        // Given
+        final ObjectMapper mapper = ObjectMapperProvider.INSTANCE.mapper();
+
+        // When
+        final QueryContainingEnum actual = mapper.readValue("{\"anEnum\":\"val_2\"}", QueryContainingEnum.class);
+
+        // Then
+        assertNotNull(actual);
+        assertEquals(AnEnum.VAL_2, actual.anEnum);
+    }
 }
