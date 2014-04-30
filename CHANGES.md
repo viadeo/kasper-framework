@@ -1,6 +1,9 @@
 # Kasper Releases #
 
-### Snapshot 0.6 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6~~))###
+### Version 0.6.1 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.1~~))###
+* [Improvement] Allow platform user to register publication handlers for events in the KasperEventBus
+
+### Version 0.6 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6~~))###
 * [Bug 198](https://github.com/viadeo/kasper-framework/pull/198) Fix issue around the validation of the CoreReasonCode in the fixture
 * [Pull 196](https://github.com/viadeo/kasper-framework/pull/196), [Pull 199](https://github.com/viadeo/kasper-framework/pull/199), [Pull 202](https://github.com/viadeo/kasper-framework/pull/202) New user interface of the auto documentation
 * [Pull 191](https://github.com/viadeo/kasper-framework/pull/191) enrich MDC, normalize hierarcy of default security strategy
