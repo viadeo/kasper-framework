@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.security;
 
-import com.viadeo.kasper.security.authz.AuthorizationSecurityManager;
+import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
 import com.viadeo.kasper.security.callback.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;

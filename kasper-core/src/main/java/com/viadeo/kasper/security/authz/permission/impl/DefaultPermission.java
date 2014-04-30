@@ -1,11 +1,12 @@
-package com.viadeo.kasper.security.authz;
+package com.viadeo.kasper.security.authz.permission.impl;
 
+import com.viadeo.kasper.security.authz.permission.Permission;
 
-import org.apache.commons.collections.CollectionUtils;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import java.util.*;
-
-public class Permission {
+public class DefaultPermission implements Permission {
 
     protected static final String WILDCARD_TOKEN = "*";
     protected static final String PART_DIVIDER_TOKEN = ":";
@@ -13,7 +14,7 @@ public class Permission {
 
     private List<List<String>> parts;
 
-    public Permission(String permission) {
+    public DefaultPermission(String permission) {
         setParts(permission);
     }
 
@@ -85,5 +86,16 @@ public class Permission {
 
     public List<List<String>> getParts() {
         return parts;
+    }
+
+    public String toString() {
+        StringBuilder buffer = new StringBuilder();
+        for (List<String> part : parts) {
+            if (buffer.length() > 0) {
+                buffer.append(":");
+            }
+            buffer.append(part);
+        }
+        return buffer.toString();
     }
 }

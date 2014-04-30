@@ -1,4 +1,6 @@
-package com.viadeo.kasper.security.authz;
+package com.viadeo.kasper.security.authz.permission.impl;
+
+import com.viadeo.kasper.security.authz.permission.Permission;
 
 import java.util.ArrayList;
 import java.util.Collection;

@@ -1,6 +1,8 @@
-package com.viadeo.kasper.security.authz;
+package com.viadeo.kasper.security.authz.subject;
 
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.security.authz.permission.Permission;
+import com.viadeo.kasper.security.authz.permission.impl.Role;
 
 import java.util.List;
 
