@@ -12,7 +12,7 @@ import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.security.SecurityStrategy;
+import com.viadeo.kasper.security.strategy.SecurityStrategy;
 import com.viadeo.kasper.security.exception.KasperSecurityException;
 
 import static com.google.common.base.Preconditions.checkNotNull;

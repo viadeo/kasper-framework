@@ -14,10 +14,10 @@ import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.security.DefaultPublicSecurityStrategy;
-import com.viadeo.kasper.security.DefaultSecurityStrategy;
-import com.viadeo.kasper.security.SecurityConfiguration;
-import com.viadeo.kasper.security.SecurityStrategy;
+import com.viadeo.kasper.security.strategy.impl.DefaultPublicSecurityStrategy;
+import com.viadeo.kasper.security.strategy.impl.DefaultSecurityStrategy;
+import com.viadeo.kasper.security.configuration.SecurityConfiguration;
+import com.viadeo.kasper.security.strategy.SecurityStrategy;
 import com.viadeo.kasper.security.annotation.XKasperPublic;
 
 import java.util.Map;

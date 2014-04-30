@@ -4,14 +4,13 @@
 //            Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
 
-description = 'KASPER CORE'
+description = 'KASPER SECURITY'
 
 dependencies {
 
     // Projects
     compile project(':kasper-api')
     compile project(':kasper-common')
-    compile project(':kasper-security')
 
     // Third party dependencies
     compile libraries.REFLECTIONS
