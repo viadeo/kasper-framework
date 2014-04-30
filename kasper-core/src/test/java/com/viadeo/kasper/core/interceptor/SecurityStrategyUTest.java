@@ -7,20 +7,16 @@
 package com.viadeo.kasper.core.interceptor;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.security.DefaultPublicSecurityStrategy;
 import com.viadeo.kasper.security.DefaultSecurityStrategy;
 import com.viadeo.kasper.security.SecurityConfiguration;
 import com.viadeo.kasper.security.SecurityStrategy;
-import com.viadeo.kasper.security.authz.AuthorizationSecurityManager;
+import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
 import com.viadeo.kasper.security.callback.*;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-
-import java.util.ArrayList;
 
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.*;

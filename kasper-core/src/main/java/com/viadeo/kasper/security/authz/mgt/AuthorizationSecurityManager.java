@@ -1,16 +1,18 @@
-package com.viadeo.kasper.security.authz;
+package com.viadeo.kasper.security.authz.mgt;
 
-import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.security.authz.permission.Permission;
+import com.viadeo.kasper.security.authz.permission.impl.Role;
+import com.viadeo.kasper.security.authz.subject.Subject;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
 
 import java.util.List;
 
 public interface AuthorizationSecurityManager {
 
-    public boolean hasRole(final Role role, final Subject subject);
-
     public Subject getSubject(final Context context);
+
+    public boolean hasRole(final Role role, final Subject subject);
 
     public boolean isPermitted(Permission p, List<Permission> permissions);
 

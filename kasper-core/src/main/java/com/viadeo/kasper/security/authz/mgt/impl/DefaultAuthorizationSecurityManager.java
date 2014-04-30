@@ -1,11 +1,12 @@
-package com.viadeo.kasper.security.authz.impl;
+package com.viadeo.kasper.security.authz.mgt.impl;
 
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.security.authz.AuthorizationSecurityManager;
-import com.viadeo.kasper.security.authz.Permission;
-import com.viadeo.kasper.security.authz.Role;
-import com.viadeo.kasper.security.authz.Subject;
+import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
+import com.viadeo.kasper.security.authz.permission.Permission;
+import com.viadeo.kasper.security.authz.permission.impl.DefaultPermission;
+import com.viadeo.kasper.security.authz.permission.impl.Role;
+import com.viadeo.kasper.security.authz.subject.Subject;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
 
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 public class DefaultAuthorizationSecurityManager implements AuthorizationSecurityManager {
 
     public Permission resolvePermission(String permission) {
-        return new Permission(permission);
+        return new DefaultPermission(permission);
     }
 
     //TODO
@@ -37,8 +38,8 @@ public class DefaultAuthorizationSecurityManager implements AuthorizationSecurit
     }
 
     public void checkRole(final String role, final Subject subject) throws KasperUnauthorizedException {
-        if (!hasRole(new Role(role), subject)) {
-            throw new KasperUnauthorizedException("Unauthorized. Need role : " + role, CoreReasonCode.REQUIRE_AUTHORIZATION);
+        if (subject == null || !hasRole(new Role(role), subject)) {
+            throw new KasperUnauthorizedException("Unauthorized. Needed role : " + role, CoreReasonCode.REQUIRE_AUTHORIZATION);
         }
     }
 
@@ -54,7 +55,7 @@ public class DefaultAuthorizationSecurityManager implements AuthorizationSecurit
         Permission permission = resolvePermission(perm);
         if (!(isPermitted(permission, subject.getPermissions())
                 && isPermitted(permission, subject.resolvePermissionsInRole()))) {
-            throw new KasperUnauthorizedException("Unauthorized. Need permission : " + permission, CoreReasonCode.REQUIRE_AUTHORIZATION);
+            throw new KasperUnauthorizedException("Unauthorized. Needed permission : " + permission, CoreReasonCode.REQUIRE_AUTHORIZATION);
         }
     }
 
