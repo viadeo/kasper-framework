@@ -24,7 +24,7 @@ import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QuerySecurityInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryValidationInterceptorFactory;
-import com.viadeo.kasper.security.SecurityConfiguration;
+import com.viadeo.kasper.security.configuration.SecurityConfiguration;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 

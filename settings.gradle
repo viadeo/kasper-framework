@@ -9,5 +9,6 @@ include ':kasper-api',
         ':kasper-common', 
         ':kasper-test', 
         ':kasper-documentation',
-        ':kasper-hadoop'
+        ':kasper-hadoop',
+        ':kasper-security'
 
