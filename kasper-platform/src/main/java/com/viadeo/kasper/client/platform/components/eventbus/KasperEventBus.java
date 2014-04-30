@@ -9,6 +9,7 @@ package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
@@ -24,6 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -57,6 +59,13 @@ public class KasperEventBus extends ClusteringEventBus {
 
     private final Policy currentPolicy;
     private final Optional<KasperProcessorDownLatch> optionalProcessorDownLatch;
+    private final List<PublicationHandler> publicationHandlers = Lists.newLinkedList();
+
+    // ------------------------------------------------------------------------
+
+    public interface PublicationHandler {
+        void handlePublication(EventMessage eventMessage);
+    }
 
     // ------------------------------------------------------------------------
 
@@ -183,6 +192,18 @@ public class KasperEventBus extends ClusteringEventBus {
 
     // ------------------------------------------------------------------------
 
+    public void onEventPublished(final PublicationHandler publicationHandler) {
+        this.publicationHandlers.add(publicationHandler);
+    }
+
+    protected void noticePublicationHandlers(final EventMessage event) {
+        for (final PublicationHandler publicationHandler : publicationHandlers) {
+            publicationHandler.handlePublication(event);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
     public Policy getCurrentPolicy() {
         return this.currentPolicy;
     }
@@ -210,7 +231,13 @@ public class KasperEventBus extends ClusteringEventBus {
             newMessages = messages;
         }
 
+        /* Publish to Axon bus implementation */
         this.publishToSuper(newMessages);
+
+        /* Notice handlers about event publication */
+        for (final EventMessage message : newMessages) {
+            this.noticePublicationHandlers(message);
+        }
     }
 
     @VisibleForTesting
@@ -232,6 +259,8 @@ public class KasperEventBus extends ClusteringEventBus {
             )
         );
     }
+
+    // ------------------------------------------------------------------------
 
     public Optional<Runnable> getShutdownHook(){
         if(optionalProcessorDownLatch.isPresent()) {
