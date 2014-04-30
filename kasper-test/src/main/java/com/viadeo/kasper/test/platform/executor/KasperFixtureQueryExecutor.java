@@ -4,10 +4,11 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.test.platform;
+package com.viadeo.kasper.test.platform.executor;
 
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.test.platform.validator.KasperFixtureQueryResultValidator;
 
 public interface KasperFixtureQueryExecutor<VALIDATOR extends KasperFixtureQueryResultValidator> extends KasperFixtureExecutor {
 

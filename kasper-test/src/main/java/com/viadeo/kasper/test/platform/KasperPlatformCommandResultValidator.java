@@ -8,22 +8,32 @@ package com.viadeo.kasper.test.platform;
 
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.test.platform.validator.KasperFixtureCommandResultValidator;
+import com.viadeo.kasper.test.platform.validator.KasperFixtureEventResultValidator;
+import com.viadeo.kasper.test.platform.validator.base.DefaultBaseValidator;
+import com.viadeo.kasper.tools.KasperMatcher;
 import org.axonframework.test.AxonAssertionError;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import static com.viadeo.kasper.KasperResponse.Status.*;
 import static com.viadeo.kasper.tools.KasperMatcher.equalTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * FIXME: add better debugging information
  */
 public class KasperPlatformCommandResultValidator
-        extends KasperPlatformResultValidator
-        implements KasperFixtureCommandResultValidator {
+        extends DefaultBaseValidator
+        implements KasperFixtureCommandResultValidator, KasperFixtureEventResultValidator<KasperPlatformCommandResultValidator> {
+
+    private final KasperPlatformEventResultValidator eventResultValidator;
 
     // ------------------------------------------------------------------------
 
@@ -32,6 +42,7 @@ public class KasperPlatformCommandResultValidator
             final CommandResponse response,
             final Exception exception) {
         super(platform, response, exception);
+        this.eventResultValidator = new KasperPlatformEventResultValidator(platform, exception);
     }
 
     // ------------------------------------------------------------------------
@@ -88,7 +99,7 @@ public class KasperPlatformCommandResultValidator
     }
 
     @Override
-    public KasperFixtureCommandResultValidator expectReturnOK() {
+    public KasperPlatformCommandResultValidator expectReturnOK() {
         if (null != exception()) {
             throw new RuntimeException("Unexpected exception", exception());
         }
@@ -98,7 +109,7 @@ public class KasperPlatformCommandResultValidator
         return this;
     }
 
-    public KasperFixtureCommandResultValidator expectReturnError() {
+    public KasperPlatformCommandResultValidator expectReturnError() {
         if (null != exception()) {
             throw new RuntimeException("Unexpected exception", exception());
         }
@@ -108,7 +119,7 @@ public class KasperPlatformCommandResultValidator
         return this;
     }
 
-    public KasperFixtureCommandResultValidator expectReturnRefused() {
+    public KasperPlatformCommandResultValidator expectReturnRefused() {
         if (null != exception()) {
             throw new RuntimeException("Unexpected exception", exception());
         }
@@ -190,4 +201,26 @@ public class KasperPlatformCommandResultValidator
         return this;
     }
 
+    @Override
+    public KasperPlatformCommandResultValidator expectExactSequenceOfCommands(Command... commands) {
+        final List<Command> actualCommands = platform().recordedCommands;
+        assertEquals(commands.length, actualCommands.size() - 1);
+
+        for (int i = 0; i < commands.length; i++) {
+            assertTrue(KasperMatcher.equalTo(commands[i]).matches(actualCommands.get(i + 1)));
+        }
+        return this;
+    }
+
+    @Override
+    public KasperPlatformCommandResultValidator expectEventNotificationOn(Class... eventListenerClasses) {
+        eventResultValidator.expectEventNotificationOn(eventListenerClasses);
+        return this;
+    }
+
+    @Override
+    public KasperPlatformCommandResultValidator expectZeroEventNotification() {
+        eventResultValidator.expectZeroEventNotification();
+        return this;
+    }
 }
