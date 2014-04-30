@@ -9,6 +9,9 @@ package com.viadeo.kasper.test.platform;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.test.platform.validator.KasperFixtureCommandResultValidator;
+import com.viadeo.kasper.test.platform.validator.base.ExceptionValidator;
+import com.viadeo.kasper.test.platform.validator.base.FieldValidator;
 import com.viadeo.kasper.tools.KasperMatcher;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.AxonAssertionError;
@@ -21,8 +24,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.tools.KasperMatcher.equalTo;
 import static org.axonframework.test.matchers.Matchers.*;
 
-public class KasperAggregateResultValidator
-        implements KasperFixtureResultValidator, KasperFixtureCommandResultValidator {
+public class KasperAggregateResultValidator implements
+        ExceptionValidator<KasperAggregateResultValidator>,
+        FieldValidator<KasperAggregateResultValidator>,
+        KasperFixtureCommandResultValidator {
 
     private final ResultValidator validator;
     private final JSR303ViolationException validationException;
@@ -99,14 +104,14 @@ public class KasperAggregateResultValidator
     }
 
     @Override
-    public KasperFixtureResultValidator expectReturnError(final KasperReason reason) {
+    public KasperAggregateResultValidator expectReturnError(final KasperReason reason) {
         checkValidation();
         validator.expectReturnValue(CommandResponse.error(reason));
         return this;
     }
 
     @Override
-    public KasperFixtureResultValidator expectReturnRefused(final KasperReason reason) {
+    public KasperAggregateResultValidator expectReturnRefused(final KasperReason reason) {
         checkValidation();
         validator.expectReturnValue(CommandResponse.refused(reason));
         return this;
@@ -127,7 +132,7 @@ public class KasperAggregateResultValidator
     }
 
     @Override
-    public KasperFixtureResultValidator expectValidationErrorOnField(final String field) {
+    public KasperAggregateResultValidator expectValidationErrorOnField(final String field) {
 
         if (null == validationException) {
             throw new AxonAssertionError(String.format(

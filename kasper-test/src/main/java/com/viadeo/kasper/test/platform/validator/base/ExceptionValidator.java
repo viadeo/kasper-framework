@@ -4,8 +4,14 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.test.platform;
+package com.viadeo.kasper.test.platform.validator.base;
 
-public interface KasperFixtureExecutor {
+import org.hamcrest.Matcher;
+
+public interface ExceptionValidator<VALIDATOR extends ExceptionValidator> {
+
+    VALIDATOR expectException(Class<? extends Throwable> expectedException);
+
+    VALIDATOR expectException(Matcher<?> matcher);
 
 }
