@@ -77,20 +77,21 @@ public class SwitchTerminalUTest {
     }
 
     @Test
-    public void publish_withNullAsMessage_isOk() {
+    public void publish_withNullAsMessages_isOk() {
         // Given
         final EventBusTerminal primary = mock(EventBusTerminal.class);
         final EventBusTerminal secondary = mock(EventBusTerminal.class);
 
         final SwitchTerminal terminal = new SwitchTerminal(primary, secondary);
 
-        final EventMessage<String> message = null;
+        final EventMessage<String>[] messages = null;
 
         // When
-        terminal.publish(message);
+        terminal.publish(messages);
 
         // Then
-        verifyZeroInteractions(primary, secondary);
+        verify(primary, never()).publish(any(EventMessage[].class));
+        verify(secondary, never()).publish(any(EventMessage[].class));
     }
 
     @Test
