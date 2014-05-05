@@ -5,6 +5,7 @@ import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
 import com.viadeo.kasper.security.authz.actor.Subject;
 import com.viadeo.kasper.security.authz.permission.impl.WildcardPermission;
+import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -18,6 +19,7 @@ public class DefaultAuthorizationSecurityManagerTest {
 
     private DefaultAuthorizationSecurityManager defaultAuthorizationSecurityManager;
 
+    private Subject subject = new User();
 
     @Before
     public void setUp() {
@@ -27,38 +29,104 @@ public class DefaultAuthorizationSecurityManagerTest {
 
     @Test
     public void test_resolvePermission_shouldReturnPermission() {
-        Permission permission = defaultAuthorizationSecurityManager.resolvePermission("coucou,machin,truc");
+        //Given
+        String perm = "coucou,machin,truc";
+
+        //When
+        Permission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
+
+        //Then
         Assert.assertNotNull(permission);
     }
 
     @Test
-    public void test_resolvePermiertetssion_shouldReturnPermission() {
-        Permission permission = defaultAuthorizationSecurityManager.resolvePermission("coucou:machin:truc");
-        System.out.println(permission.implies(permission));
-    }
-
-
-    @Test
-    public void test_isPermitted_shouldReturnTrue() {
-
-        Permission perm = new WildcardPermission("coucou");
-        Role role = new Role("Robert");
-        Role role2 = new Role("coucou");
-        role.add(perm);
-        role2.add(perm);
-        List<Role> roles = new ArrayList<>();
+    public void test_chekPermission_withGoodPermission_shouldReturnTrue() {
+        //Given
+        String perm = "coucou";
+        Permission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
         List<Permission> permissions = new ArrayList<>();
-        roles.add(role);
-        roles.add(role2);
-        permissions.add(perm);
-        Subject subject = new User(roles, permissions);
+        permissions.add(permission);
+        subject.setPermissions(permissions);
 
-        defaultAuthorizationSecurityManager.checkPermission("coucou", subject);
-        defaultAuthorizationSecurityManager.checkRole("Robert", subject);
-        List<String> rolesToCheck = new ArrayList<>();
-        rolesToCheck.add("Robert");
-        rolesToCheck.add("coucou");
-        defaultAuthorizationSecurityManager.checkRoles(rolesToCheck, subject);
+        //When
+        defaultAuthorizationSecurityManager.checkPermission(perm, subject);
     }
+
+    @Test(expected = KasperUnauthorizedException.class)
+    public void test_chekPermission_withWrongPermission_shouldReturnThrowException() {
+        //Given
+        String perm = "coucou";
+        String wrongPerm = "pascoucou";
+        Permission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
+        List<Permission> permissions = new ArrayList<>();
+        permissions.add(permission);
+        subject.setPermissions(permissions);
+
+        //When
+        defaultAuthorizationSecurityManager.checkPermission(wrongPerm, subject);
+    }
+
+    @Test()
+    public void test_chekRole_withGoodRole_shouldReturnTrue() {
+        //Given
+        String roleStr = "Robert";
+        Role role = new Role(roleStr);
+        List<Role> roles = new ArrayList<>();
+        roles.add(role);
+        subject.setRoles(roles);
+
+        //When
+        defaultAuthorizationSecurityManager.checkRole(roleStr, subject);
+    }
+
+    @Test()
+    public void test_chekPermission_withGoodPermissionInRole_shouldReturnTrue() {
+        //Given
+        String roleStr = "Robert";
+        String perm = "coucou";
+        Role role = new Role(roleStr);
+        Permission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
+        role.add(permission);
+        List<Role> roles = new ArrayList<>();
+        roles.add(role);
+        subject.addRoles(roles);
+
+        //When
+        defaultAuthorizationSecurityManager.checkPermission(perm, subject);
+    }
+
+    @Test(expected = KasperUnauthorizedException.class)
+    public void test_chekRole_withWrongRole_shouldReturnThrowException() {
+        //Given
+        String roleStr = "Robert";
+        String wrongRoleStr = "PasRobert";
+        Role role = new Role(roleStr);
+        List<Role> roles = new ArrayList<>();
+        roles.add(role);
+        subject.setRoles(roles);
+
+        //When
+        defaultAuthorizationSecurityManager.checkRole(wrongRoleStr, subject);
+    }
+
+    @Test(expected = KasperUnauthorizedException.class)
+    public void test_chekPermission_withWrongPermissionInRole_shouldReturnThrowException() {
+        //Given
+        String roleStr = "Robert";
+        String perm = "coucou";
+        String wrongPerm = "pascoucou";
+        Role role = new Role(roleStr);
+        Permission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
+        role.add(permission);
+        List<Role> roles = new ArrayList<>();
+        roles.add(role);
+        subject.addRoles(roles);
+
+        //When
+        defaultAuthorizationSecurityManager.checkPermission(wrongPerm, subject);
+    }
+
+
+
 
 }

@@ -11,7 +11,17 @@ public class User extends Subject {
 
     private KasperID kasperId;
 
-    public User(final List<Role> roles, final List<Permission> permissions){
+    public User() {
+        super();
+        this.kasperId = new DefaultKasperId();
+    }
+
+    public User(final KasperID kasperId) {
+        super();
+        this.kasperId = kasperId;
+    }
+
+    public User(final List<Role> roles, final List<Permission> permissions) {
         super(roles, permissions);
         this.kasperId = new DefaultKasperId();
     }
