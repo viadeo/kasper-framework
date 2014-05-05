@@ -25,6 +25,7 @@ import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Subject {
@@ -42,7 +43,6 @@ public class Subject {
         this.permissions = permissions;
     }
 
-
     public List<Role> getRoles() {
         return roles;
     }
@@ -52,7 +52,17 @@ public class Subject {
     }
 
     public void addRole(Role role){
+        if(this.roles == null){
+            this.roles = new ArrayList<Role>();
+        }
         this.roles.add(role);
+    }
+
+    public void addRoles(Collection<Role> roles){
+        if(this.roles == null){
+            this.roles = new ArrayList<Role>();
+        }
+        this.roles.addAll(roles);
     }
 
     public List<Permission> getPermissions() {
@@ -64,7 +74,17 @@ public class Subject {
     }
 
     public void addPermission(Permission permission){
+        if(this.permissions == null){
+            this.permissions = new ArrayList<Permission>();
+        }
         this.permissions.add(permission);
+    }
+
+    public void addPermissions(Collection<Permission> permissions){
+        if(this.permissions == null){
+            this.permissions = new ArrayList<Permission>();
+        }
+        this.permissions.addAll(permissions);
     }
 
     public List<Permission> resolvePermissionsInRole() {
@@ -73,5 +93,28 @@ public class Subject {
             permissions.addAll(role.getPermissions());
         }
         return permissions;
+    }
+
+    public boolean isPermitted(Permission p) {
+        if (this.permissions != null && !this.permissions.isEmpty()) {
+            for (Permission perm : this.permissions) {
+                if (perm.implies(p)) {
+                    return true;
+                }
+            }
+        }
+        if(this.roles != null && !this.roles.isEmpty()){
+            for (Role role : this.roles) {
+                if (role.isPermitted(p)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+
+    public boolean hasRole(Role role) {
+        return this.roles.contains(role);
     }
 }

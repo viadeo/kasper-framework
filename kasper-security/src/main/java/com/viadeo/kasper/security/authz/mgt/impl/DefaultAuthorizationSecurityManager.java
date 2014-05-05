@@ -22,23 +22,8 @@ public class DefaultAuthorizationSecurityManager implements AuthorizationSecurit
         return new Subject();
     }
 
-    public boolean isPermitted(Permission p, List<Permission> permissions) {
-        if (permissions != null && !permissions.isEmpty()) {
-            for (Permission perm : permissions) {
-                if (perm.implies(p)) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }
-
-    public boolean hasRole(Role role, Subject subject) {
-        return subject.getRoles().contains(role);
-    }
-
     public void checkRole(final String role, final Subject subject) throws KasperUnauthorizedException {
-        if (subject == null || !hasRole(new Role(role), subject)) {
+        if (subject == null || !subject.hasRole(new Role(role))) {
             throw new KasperUnauthorizedException("Unauthorized. Needed role : " + role, CoreReasonCode.REQUIRE_AUTHORIZATION);
         }
     }
@@ -53,8 +38,7 @@ public class DefaultAuthorizationSecurityManager implements AuthorizationSecurit
 
     public void checkPermission(final String perm, final Subject subject) throws KasperUnauthorizedException {
         Permission permission = resolvePermission(perm);
-        if (!(isPermitted(permission, subject.getPermissions())
-                && isPermitted(permission, subject.resolvePermissionsInRole()))) {
+        if (!subject.isPermitted(permission)) {
             throw new KasperUnauthorizedException("Unauthorized. Needed permission : " + permission, CoreReasonCode.REQUIRE_AUTHORIZATION);
         }
     }

@@ -12,10 +12,6 @@ public interface AuthorizationSecurityManager {
 
     public Subject getSubject(final Context context);
 
-    public boolean hasRole(final Role role, final Subject subject);
-
-    public boolean isPermitted(Permission p, List<Permission> permissions);
-
     public Permission resolvePermission(String permission);
 
     public void checkRole(final String role, final Subject subject) throws KasperUnauthorizedException;
