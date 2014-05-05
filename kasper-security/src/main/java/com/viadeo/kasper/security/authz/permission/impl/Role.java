@@ -81,6 +81,17 @@ public class Role {
         }
     }
 
+    public boolean isPermitted(Permission p) {
+        if (this.permissions != null && !this.permissions.isEmpty()) {
+            for (Permission perm : this.permissions) {
+                if (perm.implies(p)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     public int hashCode() {
         return (getName() != null ? getName().hashCode() : 0);
     }
@@ -92,7 +103,7 @@ public class Role {
         if (o instanceof Role) {
             Role sr = (Role) o;
             //only check name, since role names should be unique across an entire application:
-            return (getName() != null ? getName().equals(sr.getName()) : sr.getName() == null);
+            return (getName() != null ? getName().equalsIgnoreCase(sr.getName()) : sr.getName() == null);
         }
         return false;
     }
