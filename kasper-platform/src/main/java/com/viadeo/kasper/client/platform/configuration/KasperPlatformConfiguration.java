@@ -13,6 +13,8 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBusBuilder;
+import com.viadeo.kasper.client.platform.components.eventbus.cluster.AsynchronousClusterFactory;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandBus;
@@ -25,13 +27,12 @@ import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QuerySecurityInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryValidationInterceptorFactory;
 import com.viadeo.kasper.security.SecurityConfiguration;
+import org.axonframework.eventhandling.DefaultClusterSelector;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 
 import java.util.List;
 import java.util.Map;
-
-import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus.Policy;
 
 /**
  * The KasperPlatformConfiguration class provides default implementation of the components required by the  {@link com.viadeo.kasper.client.platform.Platform}.
@@ -56,7 +57,10 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     }
 
     public KasperPlatformConfiguration(SecurityConfiguration securityConfiguration) {
-        this.eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
+        this.eventBus = new KasperEventBusBuilder()
+                .with(new DefaultClusterSelector(new AsynchronousClusterFactory().create("default")))
+                .build();
+
         this.queryGateway = new KasperQueryGateway();
         this.metricRegistry = new MetricRegistry();
         this.extraComponents = Maps.newHashMap();

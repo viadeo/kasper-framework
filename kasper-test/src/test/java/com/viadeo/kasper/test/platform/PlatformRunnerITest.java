@@ -24,7 +24,7 @@ import java.util.concurrent.Executors;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.test.platform.PlatformRunnerITest.*;
-import static junit.framework.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
 
 @RunWith(PlatformRunner.class)
 @PlatformRunner.Bundles({TestDomainBundleA.class, TestDomainBundleB.class})

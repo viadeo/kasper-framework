@@ -13,4 +13,8 @@ dependencies {
 
     // Third perty dependencies
     compile libraries.TYPESAFE_CONFIG
+    compile libraries.AXON_KAFKA_TERMINAL
+
+    // Test dependencies
+    testCompile libraries.JUNIT
 }

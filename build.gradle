@@ -201,7 +201,9 @@ subprojects {
                               ],
       GLASSFISH_EXPR_LANG   : 'org.glassfish.web:javax.el:2.2.3',
 
-      TYPESAFE_CONFIG       : 'com.typesafe:config:1.0.2'
+      TYPESAFE_CONFIG       : 'com.typesafe:config:1.0.2',
+
+      AXON_KAFKA_TERMINAL   : 'com.viadeo.axonframework:axon-kafka-terminal:0.1.1'
 
   ] // see http://stackoverflow.com/questions/9547170/in-gradle-how-do-i-declare-common-dependencies-in-a-single-place
 
