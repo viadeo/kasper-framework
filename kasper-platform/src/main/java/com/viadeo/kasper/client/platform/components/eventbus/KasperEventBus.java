@@ -65,6 +65,7 @@ public class KasperEventBus extends ClusteringEventBus {
 
     public interface PublicationHandler {
         void handlePublication(EventMessage eventMessage);
+        void shutdown();
     }
 
     // ------------------------------------------------------------------------
@@ -263,10 +264,19 @@ public class KasperEventBus extends ClusteringEventBus {
     // ------------------------------------------------------------------------
 
     public Optional<Runnable> getShutdownHook(){
-        if(optionalProcessorDownLatch.isPresent()) {
+        final KasperEventBus that = this;
+        if (optionalProcessorDownLatch.isPresent()) {
             return Optional.<Runnable>of(new Runnable() {
                 @Override
                 public void run() {
+                    LOGGER.info("Starting shutdown : Publication handlers");
+                    System.out.println("Starting shutdown : Publication handlers");
+                    for (final PublicationHandler handler : that.publicationHandlers) {
+                        handler.shutdown();
+                    }
+                    LOGGER.info("Shutdown complete : Publication handlers");
+                    System.out.println("Shutdown complete : Publication handlers");
+
                     LOGGER.info("Starting shutdown : Event Processing");
                     System.out.println("Starting shutdown : Event Processing");
                     optionalProcessorDownLatch.get().await();
