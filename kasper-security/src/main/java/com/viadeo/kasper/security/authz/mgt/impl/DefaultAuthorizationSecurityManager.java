@@ -18,8 +18,24 @@ public class DefaultAuthorizationSecurityManager implements AuthorizationSecurit
     }
 
     //TODO
-    public Subject getSubject(Context context) {
+    public Subject getSubject(final Context context) {
         return new Subject();
+    }
+
+    public void addRole(final Role role, final Subject subject){
+        subject.addRole(role);
+    }
+
+    public void addPermission(final Permission permission, final Subject subject){
+        subject.addPermission(permission);
+    }
+
+    public void addRoles(final List<Role> roles, final Subject subject){
+        subject.addRoles(roles);
+    }
+
+    public void addPermissions(final List<Permission> permissions, final Subject subject){
+        subject.addPermissions(permissions);
     }
 
     public void checkRole(final String role, final Subject subject) throws KasperUnauthorizedException {

@@ -70,6 +70,13 @@ public class Role {
         permissions.add(permission);
     }
 
+    public void remove(Permission permission) {
+        List<Permission> permissions = getPermissions();
+        if (permissions != null) {
+            permissions.remove(permission);
+        }
+    }
+
     public void addAll(Collection<Permission> perms) {
         if (perms != null && !perms.isEmpty()) {
             List<Permission> permissions = getPermissions();
@@ -78,6 +85,15 @@ public class Role {
                 setPermissions(permissions);
             }
             permissions.addAll(perms);
+        }
+    }
+
+    public void removeAll(Collection<Permission> perms) {
+        if (perms != null && !perms.isEmpty()) {
+            List<Permission> permissions = getPermissions();
+            if (permissions != null) {
+                permissions.removeAll(perms);;
+            }
         }
     }
 
