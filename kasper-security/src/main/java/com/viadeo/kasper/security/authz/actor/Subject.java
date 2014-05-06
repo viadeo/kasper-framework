@@ -47,44 +47,68 @@ public class Subject {
         return roles;
     }
 
-    public void setRoles(List<Role> roles) {
+    public void setRoles(final List<Role> roles) {
         this.roles = roles;
     }
 
-    public void addRole(Role role){
+    public void addRole(final Role role){
         if(this.roles == null){
             this.roles = new ArrayList<Role>();
         }
         this.roles.add(role);
     }
 
-    public void addRoles(Collection<Role> roles){
+    public void removeRole(final Role role){
+        if(this.roles != null){
+            this.roles.remove(role);
+        }
+    }
+
+    public void addRoles(final Collection<Role> roles){
         if(this.roles == null){
             this.roles = new ArrayList<Role>();
         }
         this.roles.addAll(roles);
     }
 
+    public void removeRoles(final Collection<Role> roles){
+        if(this.roles != null){
+            this.roles.removeAll(roles);
+        }
+    }
+
     public List<Permission> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<Permission> permissions) {
+    public void setPermissions(final List<Permission> permissions) {
         this.permissions = permissions;
     }
 
-    public void addPermission(Permission permission){
+    public void addPermission(final Permission permission){
         if(this.permissions == null){
             this.permissions = new ArrayList<Permission>();
         }
         this.permissions.add(permission);
     }
 
-    public void addPermissions(Collection<Permission> permissions){
+    public void removePermission(final Permission permission){
+        if(this.permissions != null){
+            this.permissions.remove(permission);
+        }
+    }
+
+    public void addPermissions(final Collection<Permission> permissions){
         if(this.permissions == null){
             this.permissions = new ArrayList<Permission>();
         }
         this.permissions.addAll(permissions);
+    }
+
+    public void removePermissions(final Collection<Permission> permissions){
+        if(this.permissions != null){
+            this.permissions.removeAll(permissions);
+        }
     }
 
     public List<Permission> resolvePermissionsInRole() {
@@ -95,7 +119,7 @@ public class Subject {
         return permissions;
     }
 
-    public boolean isPermitted(Permission p) {
+    public boolean isPermitted(final Permission p) {
         if (this.permissions != null && !this.permissions.isEmpty()) {
             for (Permission perm : this.permissions) {
                 if (perm.implies(p)) {
@@ -114,7 +138,7 @@ public class Subject {
     }
 
 
-    public boolean hasRole(Role role) {
+    public boolean hasRole(final Role role) {
         return this.roles.contains(role);
     }
 }
