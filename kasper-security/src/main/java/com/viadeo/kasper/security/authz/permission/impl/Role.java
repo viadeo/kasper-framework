@@ -1,3 +1,10 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,85 +28,90 @@
 
 package com.viadeo.kasper.security.authz.permission.impl;
 
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.security.authz.permission.Permission;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class Role {
 
     private String name;
     private List<Permission> permissions;
 
+    // ------------------------------------------------------------------------
 
-    public Role() {
+    public Role() { }
+
+    public Role(final String name) {
+        setName(checkNotNull(name));
     }
 
-    public Role(String name) {
-        setName(name);
+    public Role(final String name, final List<Permission> permissions) {
+        setName(checkNotNull(name));
+        setPermissions(checkNotNull(permissions));
     }
 
-    public Role(String name, List<Permission> permissions) {
-        setName(name);
-        setPermissions(permissions);
-    }
+    // ------------------------------------------------------------------------
 
     public String getName() {
         return name;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setName(final String name) {
+        this.name = checkNotNull(name);
     }
 
     public List<Permission> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<Permission> permissions) {
-        this.permissions = permissions;
+    public void setPermissions(final List<Permission> permissions) {
+        this.permissions = checkNotNull(permissions);
     }
 
-    public void add(Permission permission) {
-        List<Permission> permissions = getPermissions();
-        if (permissions == null) {
-            permissions = new ArrayList<Permission>();
-            setPermissions(permissions);
+    // ------------------------------------------------------------------------
+
+    public void add(final Permission permission) {
+        checkNotNull(permission);
+        if (null == this.permissions) {
+            this.permissions = Lists.newArrayList();
         }
-        permissions.add(permission);
+        this.permissions.add(permission);
     }
 
-    public void remove(Permission permission) {
-        List<Permission> permissions = getPermissions();
-        if (permissions != null) {
-            permissions.remove(permission);
+    public void remove(final Permission permission) {
+        checkNotNull(permission);
+        if (null != this.permissions) {
+            this.permissions.remove(permission);
         }
     }
 
-    public void addAll(Collection<Permission> perms) {
-        if (perms != null && !perms.isEmpty()) {
-            List<Permission> permissions = getPermissions();
-            if (permissions == null) {
-                permissions = new ArrayList<Permission>(perms.size());
-                setPermissions(permissions);
+    public void addAll(final Collection<Permission> perms) {
+        if ((null != perms) && ( ! perms.isEmpty())) {
+            if (null == this.permissions) {
+                this.permissions = new ArrayList<Permission>(perms.size());
             }
-            permissions.addAll(perms);
+            this.permissions.addAll(perms);
         }
     }
 
-    public void removeAll(Collection<Permission> perms) {
-        if (perms != null && !perms.isEmpty()) {
-            List<Permission> permissions = getPermissions();
-            if (permissions != null) {
+    public void removeAll(final Collection<Permission> perms) {
+        if ((null != perms) && ( ! perms.isEmpty())) {
+            if (null != this.permissions) {
                 permissions.removeAll(perms);;
             }
         }
     }
 
-    public boolean isPermitted(Permission p) {
-        if (this.permissions != null && !this.permissions.isEmpty()) {
-            for (Permission perm : this.permissions) {
+    // ------------------------------------------------------------------------
+
+    public boolean isPermitted(final Permission p) {
+        if ((null != this.permissions) && ( ! this.permissions.isEmpty())) {
+            for (final Permission perm : this.permissions) {
                 if (perm.implies(p)) {
                     return true;
                 }
@@ -108,17 +120,19 @@ public class Role {
         return false;
     }
 
+    // ------------------------------------------------------------------------
+
     public int hashCode() {
-        return (getName() != null ? getName().hashCode() : 0);
+        return ((null != getName()) ? getName().hashCode() : 0);
     }
 
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (o == this) {
             return true;
         }
         if (o instanceof Role) {
-            Role sr = (Role) o;
-            //only check name, since role names should be unique across an entire application:
+            final Role sr = (Role) o;
+            /* only check name, since role names should be unique across an entire application: */
             return (getName() != null ? getName().equalsIgnoreCase(sr.getName()) : sr.getName() == null);
         }
         return false;
@@ -127,4 +141,5 @@ public class Role {
     public String toString() {
         return getName();
     }
+
 }
