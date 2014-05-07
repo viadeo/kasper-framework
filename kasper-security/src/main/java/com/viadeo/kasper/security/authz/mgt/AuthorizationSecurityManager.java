@@ -22,12 +22,4 @@ public interface AuthorizationSecurityManager {
 
     public void checkPermissions(final List<String> permissions, final Subject subject) throws KasperUnauthorizedException;
 
-    public void addRole(final Role role, final Subject subject);
-
-    public void addPermission(final Permission permission, final Subject subject);
-
-    public void addRoles(final List<Role> roles, final Subject subject);
-
-    public void addPermissions(final List<Permission> permissions, final Subject subject);
-
 }
