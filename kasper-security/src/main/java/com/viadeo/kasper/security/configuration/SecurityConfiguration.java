@@ -46,12 +46,10 @@ public interface SecurityConfiguration {
 
         // --------------------------------------------------------------------
 
-        public Builder() {
-        }
+        public Builder() { }
 
         public Builder withSecurityTokenValidator(final SecurityTokenValidator securityTokenValidator) {
-            checkNotNull(securityTokenValidator);
-            this.securityTokenValidator = securityTokenValidator;
+            this.securityTokenValidator = checkNotNull(securityTokenValidator);
             return this;
         }
 
@@ -80,7 +78,7 @@ public interface SecurityConfiguration {
         }
 
         public SecurityConfiguration build() {
-            SecurityConfiguration securityConfiguration = new KasperSecurityConfiguration(
+            final SecurityConfiguration securityConfiguration = new KasperSecurityConfiguration(
                 securityTokenValidator,
                 identityContextProvider,
                 applicationIdValidator,
@@ -99,7 +97,7 @@ public interface SecurityConfiguration {
         @Override
         public void validate(final String securityToken)
                 throws KasperMissingSecurityTokenException,
-                KasperInvalidSecurityTokenException {
+                       KasperInvalidSecurityTokenException {
             /* do nothing */
         }
     }
@@ -119,7 +117,7 @@ public interface SecurityConfiguration {
         @Override
         public void validate(final String applicationId)
                 throws KasperMissingApplicationIdException,
-                KasperInvalidApplicationIdException {
+                       KasperInvalidApplicationIdException {
             /* do nothing */
         }
     }
@@ -130,7 +128,7 @@ public interface SecurityConfiguration {
         @Override
         public void validate(final String ipAddress)
                 throws KasperMissingIpAddressException,
-                KasperInvalidIpAddressException {
+                       KasperInvalidIpAddressException {
             /* do nothing */
         }
     }

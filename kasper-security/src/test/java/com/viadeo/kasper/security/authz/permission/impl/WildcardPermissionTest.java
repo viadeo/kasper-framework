@@ -1,3 +1,10 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,9 +28,10 @@
 
 package com.viadeo.kasper.security.authz.permission.impl;
 
+import org.junit.Test;
+
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
 
 /**
  * @since 0.9
@@ -89,7 +97,6 @@ public class WildcardPermissionTest {
         p2 = new WildcardPermission("whatwhat", false);
         assertFalse(p1.implies(p2));
         assertFalse(p2.implies(p1));
-
     }
 
     @Test
@@ -128,7 +135,6 @@ public class WildcardPermissionTest {
         assertFalse(p2.implies(p1));
         assertFalse(p3.implies(p1));
         assertTrue(p2.implies(p3));
-
     }
 
     @Test
@@ -195,6 +201,6 @@ public class WildcardPermissionTest {
         p1 = new WildcardPermission("newsletter:*:read:*");
         assertTrue(p1.implies(p2));
         assertTrue(p1.implies(p6));
-
     }
+
 }

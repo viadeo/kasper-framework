@@ -1,3 +1,10 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -21,6 +28,7 @@
 
 package com.viadeo.kasper.security.authz.actor;
 
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
 
@@ -28,53 +36,49 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class Subject {
 
     private List<Role> roles;
     private List<Permission> permissions;
 
+    // ------------------------------------------------------------------------
+
     public Subject() {
-        this.roles = new ArrayList<Role>();
-        this.permissions = new ArrayList<Permission>();
+        this.roles = Lists.newArrayList();
+        this.permissions = Lists.newArrayList();
     }
 
     public Subject(final List<Role> roles, final List<Permission> permissions) {
-        this.roles = roles;
-        this.permissions = permissions;
+        this.roles = checkNotNull(roles);
+        this.permissions = checkNotNull(permissions);
     }
+
+    // ------------------------------------------------------------------------
 
     public List<Role> getRoles() {
         return roles;
     }
 
     public void setRoles(final List<Role> roles) {
-        this.roles = roles;
+        this.roles = checkNotNull(roles);
     }
 
-    public void addRole(final Role role){
-        if(this.roles == null){
-            this.roles = new ArrayList<Role>();
-        }
-        this.roles.add(role);
+    public void addRole(final Role role) {
+        this.roles.add(checkNotNull(role));
     }
 
-    public void removeRole(final Role role){
-        if(this.roles != null){
-            this.roles.remove(role);
-        }
+    public void removeRole(final Role role) {
+        this.roles.remove(checkNotNull(role));
     }
 
     public void addRoles(final Collection<Role> roles){
-        if(this.roles == null){
-            this.roles = new ArrayList<Role>();
-        }
-        this.roles.addAll(roles);
+        this.roles.addAll(checkNotNull(roles));
     }
 
     public void removeRoles(final Collection<Role> roles){
-        if(this.roles != null){
-            this.roles.removeAll(roles);
-        }
+        this.roles.removeAll(checkNotNull(roles));
     }
 
     public List<Permission> getPermissions() {
@@ -82,63 +86,60 @@ public class Subject {
     }
 
     public void setPermissions(final List<Permission> permissions) {
-        this.permissions = permissions;
+        this.permissions = checkNotNull(permissions);
     }
 
-    public void addPermission(final Permission permission){
-        if(this.permissions == null){
-            this.permissions = new ArrayList<Permission>();
-        }
-        this.permissions.add(permission);
+    public void addPermission(final Permission permission) {
+        this.permissions.add(checkNotNull(permission));
     }
 
-    public void removePermission(final Permission permission){
-        if(this.permissions != null){
-            this.permissions.remove(permission);
-        }
+    public void removePermission(final Permission permission) {
+        this.permissions.remove(checkNotNull(permission));
     }
 
-    public void addPermissions(final Collection<Permission> permissions){
-        if(this.permissions == null){
-            this.permissions = new ArrayList<Permission>();
-        }
-        this.permissions.addAll(permissions);
+    public void addPermissions(final Collection<Permission> permissions) {
+        this.permissions.addAll(checkNotNull(permissions));
     }
 
-    public void removePermissions(final Collection<Permission> permissions){
-        if(this.permissions != null){
-            this.permissions.removeAll(permissions);
-        }
+    public void removePermissions(final Collection<Permission> permissions) {
+        this.permissions.removeAll(checkNotNull(permissions));
     }
+
+    // ------------------------------------------------------------------------
 
     public List<Permission> resolvePermissionsInRole() {
-        List<Permission> permissions = new ArrayList<Permission>();
-        for (Role role : getRoles()) {
+        // FIXME: cache this list instead of recreating it each time
+        final List<Permission> permissions = new ArrayList<Permission>();
+        for (final Role role : getRoles()) {
             permissions.addAll(role.getPermissions());
         }
         return permissions;
     }
 
     public boolean isPermitted(final Permission p) {
-        if (this.permissions != null && !this.permissions.isEmpty()) {
-            for (Permission perm : this.permissions) {
+        checkNotNull(p);
+
+        if (this.permissions != null && ( ! this.permissions.isEmpty())) {
+            for (final Permission perm : this.permissions) {
                 if (perm.implies(p)) {
                     return true;
                 }
             }
         }
-        if(this.roles != null && !this.roles.isEmpty()){
-            for (Role role : this.roles) {
+
+        if ((null != this.roles) && ( ! this.roles.isEmpty())) {
+            for (final Role role : this.roles) {
                 if (role.isPermitted(p)) {
                     return true;
                 }
             }
         }
+
         return false;
     }
 
-
     public boolean hasRole(final Role role) {
-        return this.roles.contains(role);
+        return this.roles.contains(checkNotNull(role));
     }
+
 }

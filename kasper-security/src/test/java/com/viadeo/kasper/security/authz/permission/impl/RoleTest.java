@@ -1,39 +1,47 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.permission.impl;
 
 import com.viadeo.kasper.security.authz.permission.Permission;
-import junit.framework.Assert;
 import org.junit.Test;
+
+import static junit.framework.Assert.*;
 
 public class RoleTest {
 
     @Test
     public void test_isPermitted_withPermissions_shoudlAssert() {
-        //Given
-        Role role = new Role("role");
-        Permission perm = new WildcardPermission("permission");
+        // Given
+        final Role role = new Role("role");
+        final Permission perm = new WildcardPermission("permission");
         role.add(perm);
 
-        //When
-        boolean resultForGoodPerm = role.isPermitted(perm);
-        boolean resultForWrongPerm = role.isPermitted(new WildcardPermission("wrongPermission"));
+        // When
+        final boolean resultForGoodPerm = role.isPermitted(perm);
+        final boolean resultForWrongPerm = role.isPermitted(new WildcardPermission("wrongPermission"));
 
-        //Then
-        Assert.assertTrue(resultForGoodPerm);
-        Assert.assertFalse(resultForWrongPerm);
+        // Then
+        assertTrue(resultForGoodPerm);
+        assertFalse(resultForWrongPerm);
     }
 
     @Test
     public void test_removePermission_shouldRemove() {
-        //Given
-        Role role = new Role("role");
-        Permission perm = new WildcardPermission("permission");
+        // Given
+        final Role role = new Role("role");
+        final Permission perm = new WildcardPermission("permission");
         role.add(perm);
 
-        //When
-        Permission perm2 = new WildcardPermission("permission");
+        // When
+        final Permission perm2 = new WildcardPermission("permission");
         role.remove(perm2);
 
-        //Then
-        Assert.assertEquals(role.getPermissions().size(), 0);
+        // Then
+        assertEquals(role.getPermissions().size(), 0);
     }
+
 }

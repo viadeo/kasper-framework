@@ -23,7 +23,7 @@ public class DefaultPublicSecurityStrategy implements SecurityStrategy {
 
     public DefaultPublicSecurityStrategy(final SecurityConfiguration securityConfiguration, final Class<?> clazz) {
         this.securityConfiguration = checkNotNull(securityConfiguration);
-        this.clazz = clazz;
+        this.clazz = checkNotNull(clazz);
     }
 
     // ------------------------------------------------------------------------
