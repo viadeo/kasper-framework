@@ -48,9 +48,9 @@ public class KasperEventBus extends ClusteringEventBus {
 
     /* FIXME: make it configurable */
     private static final int CORE_POOL_SIZE = 50;
-    private static final int MAXIMUM_POOL_SIZE = 200;
-    private static final long KEEP_ALIVE_TIME = 60L;
-    private static final TimeUnit TIME_UNIT = TimeUnit.MINUTES;
+    private static final int MAXIMUM_POOL_SIZE = 500;
+    private static final long KEEP_ALIVE_TIME = 30L;
+    private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
 
     public static enum Policy {
         SYNCHRONOUS, ASYNCHRONOUS, USER
