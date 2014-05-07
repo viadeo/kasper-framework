@@ -22,6 +22,38 @@ public class DefaultAuthorizationSecurityManager implements AuthorizationSecurit
         return new Subject();
     }
 
+    public void addRole(final Role role, final Subject subject){
+        subject.addRole(role);
+    }
+
+    public void removeRole(final Role role, final Subject subject){
+        subject.removeRole(role);
+    }
+
+    public void addPermission(final Permission permission, final Subject subject){
+        subject.addPermission(permission);
+    }
+
+    public void removePermission(final Permission permission, final Subject subject){
+        subject.removePermission(permission);
+    }
+
+    public void addRoles(final List<Role> roles, final Subject subject){
+        subject.addRoles(roles);
+    }
+
+    public void removeRoles(final List<Role> roles, final Subject subject){
+        subject.removeRoles(roles);
+    }
+
+    public void addPermissions(final List<Permission> permissions, final Subject subject){
+        subject.addPermissions(permissions);
+    }
+
+    public void removePermissions(final List<Permission> permissions, final Subject subject){
+        subject.removePermissions(permissions);
+    }
+
     public void checkRole(final String role, final Subject subject) throws KasperUnauthorizedException {
         if (subject == null || !subject.hasRole(new Role(role))) {
             throw new KasperUnauthorizedException("Unauthorized. Needed role : " + role, CoreReasonCode.REQUIRE_AUTHORIZATION);
