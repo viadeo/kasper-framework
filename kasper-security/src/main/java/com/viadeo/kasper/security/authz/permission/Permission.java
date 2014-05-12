@@ -1,3 +1,10 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
+
 /*
  * Licensed to the Apache Software Foundation (ASF) under one
  * or more contributor license agreements.  See the NOTICE file
@@ -39,6 +46,6 @@ public interface Permission {
      * @return {@code true} if this current instance <em>implies</em> all the functionality and/or resource access
      *         described by the specified {@code Permission} argument, {@code false} otherwise.
      */
-    public boolean implies(Permission p);
+    boolean implies(Permission p);
 
 }

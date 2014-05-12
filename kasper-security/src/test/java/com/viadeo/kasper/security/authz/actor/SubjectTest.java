@@ -1,14 +1,23 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
+
 package com.viadeo.kasper.security.authz.actor;
 
 import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
 import com.viadeo.kasper.security.authz.permission.impl.WildcardPermission;
-import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static junit.framework.Assert.*;
 
 public class SubjectTest {
 
@@ -32,6 +41,7 @@ public class SubjectTest {
     private List<Role> roles1;
     private List<Role> roles2;
 
+    // ------------------------------------------------------------------------
 
     @Before
     public void setUp() {
@@ -71,68 +81,71 @@ public class SubjectTest {
         roles2.add(role5);
     }
 
+    // ------------------------------------------------------------------------
+
     @Test
     public void test_addPermissions_withPermission_shouldHaveGoodSize(){
-        //Given
+        // Given
 
-        //When
+        // When
         subject.addPermissions(permissions1);
 
-        //Then
-        Assert.assertEquals(subject.getPermissions().size(), 2);
+        // Then
+        assertEquals(subject.getPermissions().size(), 2);
     }
 
     @Test
     public void test_removesPermissions_withPermission_shouldHaveGoodSize(){
-        //Given
+        // Given
         subject.addPermissions(permissions1);
 
-        //When
+        // When
         subject.removePermissions(permissions1);
 
-        //Then
-        Assert.assertEquals(subject.getPermissions().size(), 0);
+        // Then
+        assertEquals(subject.getPermissions().size(), 0);
     }
 
     @Test
     public void test_isPermitted_withPermissions_shouldBePermitted(){
-        //Given
+        // Given
         subject.addPermissions(permissions1);
 
-        //When
-        boolean isPermitted1 = subject.isPermitted(perm1);
-        boolean isPermitted2 = subject.isPermitted(perm3);
+        // When
+        final boolean isPermitted1 = subject.isPermitted(perm1);
+        final boolean isPermitted2 = subject.isPermitted(perm3);
 
-        //Then
-        Assert.assertTrue(isPermitted1);
-        Assert.assertFalse(isPermitted2);
+        // Then
+        assertTrue(isPermitted1);
+        assertFalse(isPermitted2);
     }
 
     @Test
     public void test_isPermitted_withRoles_shouldBePermitted(){
-        //Given
+        // Given
         subject.addRoles(roles1);
 
-        //When
-        boolean isPermitted1 = subject.isPermitted(perm1);
-        boolean isPermitted2 = subject.isPermitted(perm3);
+        // When
+        final boolean isPermitted1 = subject.isPermitted(perm1);
+        final boolean isPermitted2 = subject.isPermitted(perm3);
 
-        //Then
-        Assert.assertTrue(isPermitted1);
-        Assert.assertFalse(isPermitted2);
+        // Then
+        assertTrue(isPermitted1);
+        assertFalse(isPermitted2);
     }
 
     @Test
     public void test_hasRole_withRoles_shouldBeHasRole(){
-        //Given
+        // Given
         subject.addRoles(roles1);
 
-        //When
-        boolean hasRole1 = subject.hasRole(role1);
-        boolean hasRole2 = subject.hasRole(role3);
+        // When
+        final boolean hasRole1 = subject.hasRole(role1);
+        final boolean hasRole2 = subject.hasRole(role3);
 
-        //Then
-        Assert.assertTrue(hasRole1);
-        Assert.assertFalse(hasRole2);
+        // Then
+        assertTrue(hasRole1);
+        assertFalse(hasRole2);
     }
+
 }

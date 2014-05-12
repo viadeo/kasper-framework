@@ -1,3 +1,10 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
+
 package com.viadeo.kasper.security.callback.impl;
 
 import com.viadeo.kasper.context.Context;
@@ -13,35 +20,32 @@ import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
 import com.viadeo.kasper.security.authz.permission.impl.WildcardPermission;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
-import junit.framework.Assert;
+
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.mockito.Matchers.any;
-import static org.mockito.Mockito.mock;
+import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
-import static org.mockito.MockitoAnnotations.Mock;
 
 public class DefaultAuthorizationValidatorTest {
 
     AuthorizationSecurityManager authorizationSecurityManager;
 
-    @XKasperRequireRoles("bidule,machin,chose,truc")
+    @XKasperRequireRoles("perm1,perm2,perm3,perm4")
     @XKasperCommand
     private static class TestRoleCommand implements Command {
     }
 
-    @XKasperRequireRoles({"bidule,machin", "chose,truc"})
+    @XKasperRequireRoles({"perm1,perm2", "perm3,perm4"})
     @XKasperCommand
     private static class TestMultiplesRolesCommand implements Command {
     }
 
-    @XKasperRequirePermissions("bidule,machin,chose,truc")
+    @XKasperRequirePermissions("perm1,perm2,perm3,perm4")
     @XKasperCommand
     private static class TestPermissionCommand implements Command {
     }
@@ -56,12 +60,14 @@ public class DefaultAuthorizationValidatorTest {
     private static class TestSimpleRoleCommand implements Command {
     }
 
-    @XKasperRequirePermissions("coucou")
+    @XKasperRequirePermissions("perm5")
     @XKasperCommand
     private static class TestSimplePermissionCommand implements Command {
     }
 
     DefaultAuthorizationValidator defaultAuthorizationValidator;
+
+    // ------------------------------------------------------------------------
 
     @Before
     public void setUp() {
@@ -69,121 +75,129 @@ public class DefaultAuthorizationValidatorTest {
         defaultAuthorizationValidator = new DefaultAuthorizationValidator(authorizationSecurityManager);
     }
 
+    // ------------------------------------------------------------------------
+
     @Test
     public void test_extractRoles_withNull_shouldReturnEmpty() {
         // Given
 
-        //When
-        List<String> result = defaultAuthorizationValidator.extractRoles(TestRoleCommand.class);
+        // When
+        final List<String> result = defaultAuthorizationValidator.extractRoles(TestRoleCommand.class);
 
-        //Then
-        Assert.assertEquals(result.size(), 1);
-        Assert.assertEquals("bidule,machin,chose,truc", result.get(0));
+        // Then
+        assertEquals(result.size(), 1);
+        assertEquals("perm1,perm2,perm3,perm4", result.get(0));
     }
 
     @Test
     public void test_extractMultiplesRoles_withNull_shouldReturnEmpty() {
         // Given
 
-        //When
-        List<String> result = defaultAuthorizationValidator.extractRoles(TestMultiplesRolesCommand.class);
+        // When
+        final List<String> result = defaultAuthorizationValidator.extractRoles(TestMultiplesRolesCommand.class);
 
-        //Then
-        Assert.assertEquals(result.size(), 2);
-        Assert.assertEquals("bidule,machin", result.get(0));
-        Assert.assertEquals("chose,truc", result.get(1));
+        // Then
+        assertEquals(result.size(), 2);
+        assertEquals("perm1,perm2", result.get(0));
+        assertEquals("perm3,perm4", result.get(1));
     }
 
     @Test
     public void test_extractPermissions_withNull_shouldReturnEmpty() {
         // Given
 
-        //When
-        List<String> result = defaultAuthorizationValidator.extractPermissions(TestPermissionCommand.class);
+        // When
+        final List<String> result = defaultAuthorizationValidator.extractPermissions(TestPermissionCommand.class);
 
-        //Then
-        Assert.assertEquals(result.size(), 1);
-        Assert.assertEquals("bidule,machin,chose,truc", result.get(0));
+        // Then
+        assertEquals(result.size(), 1);
+        assertEquals("perm1,perm2,perm3,perm4", result.get(0));
     }
 
     @Test
     public void test_extractComplexePermissions_withNull_shouldReturnEmpty() {
         // Given
 
-        //When
-        List<String> result = defaultAuthorizationValidator.extractPermissions(TestComplexePermissionCommand.class);
+        // When
+        final List<String> result = defaultAuthorizationValidator.extractPermissions(TestComplexePermissionCommand.class);
 
-        //Then
-        Assert.assertEquals(result.size(), 1);
-        Assert.assertEquals("groups:897452:post:newsletter", result.get(0));
+        // Then
+        assertEquals(result.size(), 1);
+        assertEquals("groups:897452:post:newsletter", result.get(0));
     }
 
     @Test
     public void test_validate_withGoodSubjectAndGoodRole_shouldGoThrough(){
         // Given
-        Subject subject = initTestSubject();
-        Context context = new DefaultContext();
+        final Subject subject = initTestSubject();
+        final Context context = new DefaultContext();
         when(authorizationSecurityManager.getSubject(context)).thenReturn(subject);
 
-        //When
+        // When
         defaultAuthorizationValidator.validate(context, TestSimpleRoleCommand.class);
     }
 
     @Test
     public void test_validate_withGoodSubjectAndGoodPermissionFromRole_shouldGoThrough(){
         // Given
-        Subject subject = initTestSubject();
-        Context context = new DefaultContext();
+        final Subject subject = initTestSubject();
+        final Context context = new DefaultContext();
         when(authorizationSecurityManager.getSubject(context)).thenReturn(subject);
 
-        //When
+        // When
         defaultAuthorizationValidator.validate(context, TestSimplePermissionCommand.class);
     }
 
     @Test
     public void test_validate_withGoodSubjectAndGoodPermission_shouldGoThrough(){
         // Given
-        Subject subject = initTestSubject();
+        final Subject subject = initTestSubject();
         subject.setPermissions(subject.getRoles().get(0).getPermissions());
         subject.setRoles(new ArrayList<Role>());
-        Context context = new DefaultContext();
+        final Context context = new DefaultContext();
         when(authorizationSecurityManager.getSubject(context)).thenReturn(subject);
 
-        //When
+        // When
         defaultAuthorizationValidator.validate(context, TestSimplePermissionCommand.class);
     }
 
     @Test(expected = KasperUnauthorizedException.class)
     public void test_validate_withGoodSubjectAndWrongRole_shouldThrowException(){
         // Given
-        Subject subject = initTestSubject();
-        Context context = new DefaultContext();
+        final Subject subject = initTestSubject();
+        final Context context = new DefaultContext();
         when(authorizationSecurityManager.getSubject(context)).thenReturn(subject);
 
-        //When
+        // When
         defaultAuthorizationValidator.validate(context, TestRoleCommand.class);
     }
 
     @Test(expected = KasperUnauthorizedException.class)
     public void test_validate_withGoodSubjectAndWrongPermission_shouldThrowException(){
         // Given
-        Subject subject = initTestSubject();
-        Context context = new DefaultContext();
+        final Subject subject = initTestSubject();
+        final Context context = new DefaultContext();
         when(authorizationSecurityManager.getSubject(context)).thenReturn(subject);
 
-        //When
+        // When
         defaultAuthorizationValidator.validate(context, TestPermissionCommand.class);
     }
 
+    // ------------------------------------------------------------------------
+
     private Subject initTestSubject(){
-        Subject subject = new Subject();
-        String roleStr = "Robert";
-        String perm = "coucou";
-        Role role = new Role(roleStr);
-        Permission permission = new WildcardPermission(perm);
+        final Subject subject = new Subject();
+        final String roleStr = "Robert";
+        final String perm = "perm5";
+
+        final Role role = new Role(roleStr);
+
+        final Permission permission = new WildcardPermission(perm);
         role.add(permission);
-        List<Role> roles = new ArrayList<>();
+
+        final List<Role> roles = new ArrayList<>();
         roles.add(role);
+
         subject.addRoles(roles);
         return subject;
     }

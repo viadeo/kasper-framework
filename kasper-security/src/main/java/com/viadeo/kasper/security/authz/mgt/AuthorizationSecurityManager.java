@@ -1,33 +1,32 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.mgt;
 
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.security.authz.actor.Subject;
 import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
-import com.viadeo.kasper.security.authz.actor.Subject;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
 
 import java.util.List;
 
 public interface AuthorizationSecurityManager {
 
-    public Subject getSubject(final Context context);
 
-    public Permission resolvePermission(String permission);
+    Subject getSubject(Context context);
 
-    public void checkRole(final String role, final Subject subject) throws KasperUnauthorizedException;
+    Permission resolvePermission(String permission);
 
-    public void checkRoles(List<String> roles, final Subject subject) throws KasperUnauthorizedException;
+    void checkRole(String role, Subject subject) throws KasperUnauthorizedException;
 
-    public void checkPermission(final String perm, final Subject subject) throws KasperUnauthorizedException;
+    void checkRoles(List<String> roles, Subject subject) throws KasperUnauthorizedException;
 
-    public void checkPermissions(final List<String> permissions, final Subject subject) throws KasperUnauthorizedException;
+    void checkPermission(String perm, Subject subject) throws KasperUnauthorizedException;
 
-    public void addRole(final Role role, final Subject subject);
-
-    public void addPermission(final Permission permission, final Subject subject);
-
-    public void addRoles(final List<Role> roles, final Subject subject);
-
-    public void addPermissions(final List<Permission> permissions, final Subject subject);
+    void checkPermissions(List<String> permissions, Subject subject) throws KasperUnauthorizedException;
 
 }
