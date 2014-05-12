@@ -67,5 +67,6 @@ And encourages you to use some software patterns in your developments :
     Helpers
     Testing
     Security
+    Authorization
 
 
