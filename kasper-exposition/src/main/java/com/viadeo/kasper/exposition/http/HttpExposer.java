@@ -9,6 +9,7 @@ package com.viadeo.kasper.exposition.http;
 import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.CoreReasonCode;
@@ -235,6 +236,9 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         MDC.put("appVersion", meta.getVersion());
         MDC.put("appBuildingDate", meta.getBuildingDate().toString());
         MDC.put("appDeploymentDate", meta.getDeploymentDate().toString());
+
+        MDC.put("clientVersion", Objects.firstNonNull(httpRequest.getHeader(HttpContextHeaders.HEADER_CLIENT_VERSION), "undefined"));
+        MDC.put("clientId", Objects.firstNonNull(context.getApplicationId(), "undefined"));
 
         return context;
     }
