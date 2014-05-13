@@ -81,6 +81,15 @@ subprojects {
       deployerJars
   }
 
+  jar {
+      manifest {
+          attributes(
+              "Manifest-Version"    : "1.0",
+              "Kasper-Version"    : version
+          )
+      }
+  }
+
   // Use UTF-8 for reading xml (and other) data tests files
   tasks.withType(Test) { systemProperty "file.encoding", "UTF-8"  }
   tasks.withType(Compile) { options.encoding = "UTF-8" }
