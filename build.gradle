@@ -93,6 +93,15 @@ configure(subprojects) {
         archives javadocJar
     }
 
+    jar {
+        manifest {
+            attributes(
+                    "Manifest-Version"    : "1.0",
+                    "Kasper-Version"    : version
+            )
+        }
+    }
+
     // -----------------------------------------------------------------------------------------------------------------
 
     apply plugin: 'jacoco'
