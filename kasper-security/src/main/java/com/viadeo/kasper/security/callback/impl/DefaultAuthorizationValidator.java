@@ -10,7 +10,7 @@ package com.viadeo.kasper.security.callback.impl;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.security.annotation.XKasperRequirePermissions;
 import com.viadeo.kasper.security.annotation.XKasperRequireRoles;
-import com.viadeo.kasper.security.authz.actor.Subject;
+import com.viadeo.kasper.security.authz.actor.Actor;
 import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
 import com.viadeo.kasper.security.callback.AuthorizationValidator;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
@@ -39,10 +39,10 @@ public class DefaultAuthorizationValidator implements AuthorizationValidator {
         checkNotNull(context);
         checkNotNull(clazz);
 
-        final Subject subject = this.authorizationSecurityManager.getSubject(context);
+        final Actor actor = this.authorizationSecurityManager.getActor(context);
 
-        this.authorizationSecurityManager.checkRoles(extractRoles(clazz), subject);
-        this.authorizationSecurityManager.checkPermissions(extractPermissions(clazz), subject);
+        this.authorizationSecurityManager.checkRoles(extractRoles(clazz), actor);
+        this.authorizationSecurityManager.checkPermissions(extractPermissions(clazz), actor);
     }
 
     protected List<String> extractRoles(final Class<?> clazz) {

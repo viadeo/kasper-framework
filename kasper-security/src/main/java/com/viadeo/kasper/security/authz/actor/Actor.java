@@ -31,6 +31,8 @@ package com.viadeo.kasper.security.authz.actor;
 
 
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
 
@@ -40,24 +42,41 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Subject {
+public class Actor {
 
     private List<Role> roles;
     private List<Permission> permissions;
+    private KasperID kasperId;
 
     // ------------------------------------------------------------------------
 
-    public Subject() {
+    public Actor() {
         this.roles = Lists.newArrayList();
         this.permissions = Lists.newArrayList();
+        this.kasperId = new DefaultKasperId();
     }
 
-    public Subject(final List<Role> roles, final List<Permission> permissions) {
+    public Actor(final KasperID kasperId) {
+        this.roles = Lists.newArrayList();
+        this.permissions = Lists.newArrayList();
+        this.kasperId = checkNotNull(kasperId);
+    }
+
+    public Actor(final KasperID kasperId, final List<Role> roles, final List<Permission> permissions) {
         this.roles = checkNotNull(roles);
         this.permissions = checkNotNull(permissions);
+        this.kasperId = checkNotNull(kasperId);
     }
 
     // ------------------------------------------------------------------------
+
+    public KasperID getKasperId() {
+        return kasperId;
+    }
+
+    public void setKasperId(KasperID kasperId) {
+        this.kasperId = kasperId;
+    }
 
     public List<Role> getRoles() {
         return roles;

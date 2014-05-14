@@ -7,9 +7,8 @@
 package com.viadeo.kasper.security.authz.mgt;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.security.authz.actor.Subject;
+import com.viadeo.kasper.security.authz.actor.Actor;
 import com.viadeo.kasper.security.authz.permission.Permission;
-import com.viadeo.kasper.security.authz.permission.impl.Role;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
 
 import java.util.List;
@@ -17,16 +16,16 @@ import java.util.List;
 public interface AuthorizationSecurityManager {
 
 
-    Subject getSubject(Context context);
+    Actor getActor(Context context);
 
     Permission resolvePermission(String permission);
 
-    void checkRole(String role, Subject subject) throws KasperUnauthorizedException;
+    void checkRole(String role, Actor actor) throws KasperUnauthorizedException;
 
-    void checkRoles(List<String> roles, Subject subject) throws KasperUnauthorizedException;
+    void checkRoles(List<String> roles, Actor actor) throws KasperUnauthorizedException;
 
-    void checkPermission(String perm, Subject subject) throws KasperUnauthorizedException;
+    void checkPermission(String perm, Actor actor) throws KasperUnauthorizedException;
 
-    void checkPermissions(List<String> permissions, Subject subject) throws KasperUnauthorizedException;
+    void checkPermissions(List<String> permissions, Actor actor) throws KasperUnauthorizedException;
 
 }

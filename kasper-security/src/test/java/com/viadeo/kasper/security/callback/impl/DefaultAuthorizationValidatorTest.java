@@ -13,7 +13,7 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.security.annotation.XKasperRequirePermissions;
 import com.viadeo.kasper.security.annotation.XKasperRequireRoles;
-import com.viadeo.kasper.security.authz.actor.Subject;
+import com.viadeo.kasper.security.authz.actor.Actor;
 import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
 import com.viadeo.kasper.security.authz.mgt.impl.DefaultAuthorizationSecurityManager;
 import com.viadeo.kasper.security.authz.permission.Permission;
@@ -129,9 +129,9 @@ public class DefaultAuthorizationValidatorTest {
     @Test
     public void test_validate_withGoodSubjectAndGoodRole_shouldGoThrough(){
         // Given
-        final Subject subject = initTestSubject();
+        final Actor actor = initTestSubject();
         final Context context = new DefaultContext();
-        when(authorizationSecurityManager.getSubject(context)).thenReturn(subject);
+        when(authorizationSecurityManager.getActor(context)).thenReturn(actor);
 
         // When
         defaultAuthorizationValidator.validate(context, TestSimpleRoleCommand.class);
@@ -140,9 +140,9 @@ public class DefaultAuthorizationValidatorTest {
     @Test
     public void test_validate_withGoodSubjectAndGoodPermissionFromRole_shouldGoThrough(){
         // Given
-        final Subject subject = initTestSubject();
+        final Actor actor = initTestSubject();
         final Context context = new DefaultContext();
-        when(authorizationSecurityManager.getSubject(context)).thenReturn(subject);
+        when(authorizationSecurityManager.getActor(context)).thenReturn(actor);
 
         // When
         defaultAuthorizationValidator.validate(context, TestSimplePermissionCommand.class);
@@ -151,11 +151,11 @@ public class DefaultAuthorizationValidatorTest {
     @Test
     public void test_validate_withGoodSubjectAndGoodPermission_shouldGoThrough(){
         // Given
-        final Subject subject = initTestSubject();
-        subject.setPermissions(subject.getRoles().get(0).getPermissions());
-        subject.setRoles(new ArrayList<Role>());
+        final Actor actor = initTestSubject();
+        actor.setPermissions(actor.getRoles().get(0).getPermissions());
+        actor.setRoles(new ArrayList<Role>());
         final Context context = new DefaultContext();
-        when(authorizationSecurityManager.getSubject(context)).thenReturn(subject);
+        when(authorizationSecurityManager.getActor(context)).thenReturn(actor);
 
         // When
         defaultAuthorizationValidator.validate(context, TestSimplePermissionCommand.class);
@@ -164,9 +164,9 @@ public class DefaultAuthorizationValidatorTest {
     @Test(expected = KasperUnauthorizedException.class)
     public void test_validate_withGoodSubjectAndWrongRole_shouldThrowException(){
         // Given
-        final Subject subject = initTestSubject();
+        final Actor actor = initTestSubject();
         final Context context = new DefaultContext();
-        when(authorizationSecurityManager.getSubject(context)).thenReturn(subject);
+        when(authorizationSecurityManager.getActor(context)).thenReturn(actor);
 
         // When
         defaultAuthorizationValidator.validate(context, TestRoleCommand.class);
@@ -175,9 +175,9 @@ public class DefaultAuthorizationValidatorTest {
     @Test(expected = KasperUnauthorizedException.class)
     public void test_validate_withGoodSubjectAndWrongPermission_shouldThrowException(){
         // Given
-        final Subject subject = initTestSubject();
+        final Actor actor = initTestSubject();
         final Context context = new DefaultContext();
-        when(authorizationSecurityManager.getSubject(context)).thenReturn(subject);
+        when(authorizationSecurityManager.getActor(context)).thenReturn(actor);
 
         // When
         defaultAuthorizationValidator.validate(context, TestPermissionCommand.class);
@@ -185,8 +185,8 @@ public class DefaultAuthorizationValidatorTest {
 
     // ------------------------------------------------------------------------
 
-    private Subject initTestSubject(){
-        final Subject subject = new Subject();
+    private Actor initTestSubject(){
+        final Actor actor = new Actor();
         final String roleStr = "Robert";
         final String perm = "perm5";
 
@@ -198,8 +198,8 @@ public class DefaultAuthorizationValidatorTest {
         final List<Role> roles = new ArrayList<>();
         roles.add(role);
 
-        subject.addRoles(roles);
-        return subject;
+        actor.addRoles(roles);
+        return actor;
     }
 
 }

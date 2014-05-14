@@ -17,39 +17,24 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
-public class User extends Subject {
+public class User extends Actor {
 
-    private KasperID kasperId;
     // ------------------------------------------------------------------------
 
     public User() {
         super();
-        this.kasperId = new DefaultKasperId();
     }
 
     public User(final KasperID kasperId) {
-        super();
-        this.kasperId = checkNotNull(kasperId);
+        super(kasperId);
     }
 
     public User(final List<Role> roles, final List<Permission> permissions) {
-        super(roles, permissions);
-        this.kasperId = new DefaultKasperId();
+        super(new DefaultKasperId(), roles, permissions);
     }
 
     public User(final List<Role> roles, final List<Permission> permissions, final KasperID kasperId) {
-        super(roles, permissions);
-        this.kasperId = checkNotNull(kasperId);
-    }
-
-    // ------------------------------------------------------------------------
-
-    public KasperID getKasperId() {
-        return kasperId;
-    }
-
-    public void setKasperId(final KasperID kasperId) {
-        this.kasperId = checkNotNull(kasperId);
+        super(kasperId, roles, permissions);
     }
 
 }

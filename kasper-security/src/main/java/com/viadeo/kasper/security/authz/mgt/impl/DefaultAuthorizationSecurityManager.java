@@ -9,7 +9,7 @@ package com.viadeo.kasper.security.authz.mgt.impl;
 
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.security.authz.actor.Subject;
+import com.viadeo.kasper.security.authz.actor.Actor;
 import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
 import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
@@ -27,12 +27,12 @@ public class DefaultAuthorizationSecurityManager implements AuthorizationSecurit
     }
 
     // TODO
-    public Subject getSubject(final Context context) {
-        return new Subject();
+    public Actor getActor(final Context context) {
+        return new Actor();
     }
 
-    public void checkRole(final String role, final Subject subject) throws KasperUnauthorizedException {
-        if ((null == subject) || ( ! subject.hasRole(new Role(role)))) {
+    public void checkRole(final String role, final Actor actor) throws KasperUnauthorizedException {
+        if ((null == actor) || ( ! actor.hasRole(new Role(role)))) {
             throw new KasperUnauthorizedException(
                     "Unauthorized. Needed role : " + role,
                     CoreReasonCode.REQUIRE_AUTHORIZATION
@@ -40,18 +40,18 @@ public class DefaultAuthorizationSecurityManager implements AuthorizationSecurit
         }
     }
 
-    public void checkRoles(final List<String> roles, final Subject subject) throws KasperUnauthorizedException {
-        if ((null != roles) && ( ! roles.isEmpty()) && (null != subject)) {
+    public void checkRoles(final List<String> roles, final Actor actor) throws KasperUnauthorizedException {
+        if ((null != roles) && ( ! roles.isEmpty()) && (null != actor)) {
             for (final String role : roles) {
-                checkRole(role, subject);
+                checkRole(role, actor);
             }
         }
     }
 
-    public void checkPermission(final String perm, final Subject subject) throws KasperUnauthorizedException {
+    public void checkPermission(final String perm, final Actor actor) throws KasperUnauthorizedException {
 
         final Permission permission = resolvePermission(perm);
-        if ( ! subject.isPermitted(permission)) {
+        if ( ! actor.isPermitted(permission)) {
             throw new KasperUnauthorizedException(
                     "Unauthorized. Needed permission : " + permission,
                     CoreReasonCode.REQUIRE_AUTHORIZATION
@@ -59,10 +59,10 @@ public class DefaultAuthorizationSecurityManager implements AuthorizationSecurit
         }
     }
 
-    public void checkPermissions(final List<String> permissions, final Subject subject) throws KasperUnauthorizedException {
-        if ((null != permissions) && ( ! permissions.isEmpty()) && (null != subject)) {
+    public void checkPermissions(final List<String> permissions, final Actor actor) throws KasperUnauthorizedException {
+        if ((null != permissions) && ( ! permissions.isEmpty()) && (null != actor)) {
             for (final String permission : permissions) {
-                checkPermission(permission, subject);
+                checkPermission(permission, actor);
             }
         }
     }

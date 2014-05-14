@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.mgt.impl;
 
-import com.viadeo.kasper.security.authz.actor.Subject;
+import com.viadeo.kasper.security.authz.actor.Actor;
 import com.viadeo.kasper.security.authz.actor.User;
 import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
@@ -24,7 +24,7 @@ public class DefaultAuthorizationSecurityManagerTest {
 
     private DefaultAuthorizationSecurityManager defaultAuthorizationSecurityManager;
 
-    private Subject subject = new User();
+    private Actor actor = new User();
 
     // ------------------------------------------------------------------------
 
@@ -54,10 +54,10 @@ public class DefaultAuthorizationSecurityManagerTest {
         final Permission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
         final List<Permission> permissions = new ArrayList<>();
         permissions.add(permission);
-        subject.setPermissions(permissions);
+        actor.setPermissions(permissions);
 
         // When
-        defaultAuthorizationSecurityManager.checkPermission(perm, subject);
+        defaultAuthorizationSecurityManager.checkPermission(perm, actor);
     }
 
     @Test(expected = KasperUnauthorizedException.class)
@@ -68,10 +68,10 @@ public class DefaultAuthorizationSecurityManagerTest {
         final Permission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
         final List<Permission> permissions = new ArrayList<>();
         permissions.add(permission);
-        subject.setPermissions(permissions);
+        actor.setPermissions(permissions);
 
         // When
-        defaultAuthorizationSecurityManager.checkPermission(wrongPerm, subject);
+        defaultAuthorizationSecurityManager.checkPermission(wrongPerm, actor);
     }
 
     @Test
@@ -81,10 +81,10 @@ public class DefaultAuthorizationSecurityManagerTest {
         final Role role = new Role(roleStr);
         final List<Role> roles = new ArrayList<>();
         roles.add(role);
-        subject.setRoles(roles);
+        actor.setRoles(roles);
 
         // When
-        defaultAuthorizationSecurityManager.checkRole(roleStr, subject);
+        defaultAuthorizationSecurityManager.checkRole(roleStr, actor);
     }
 
     @Test
@@ -97,10 +97,10 @@ public class DefaultAuthorizationSecurityManagerTest {
         role.add(permission);
         final List<Role> roles = new ArrayList<>();
         roles.add(role);
-        subject.addRoles(roles);
+        actor.addRoles(roles);
 
         // When
-        defaultAuthorizationSecurityManager.checkPermission(perm, subject);
+        defaultAuthorizationSecurityManager.checkPermission(perm, actor);
     }
 
     @Test(expected = KasperUnauthorizedException.class)
@@ -111,10 +111,10 @@ public class DefaultAuthorizationSecurityManagerTest {
         final Role role = new Role(roleStr);
         final List<Role> roles = new ArrayList<>();
         roles.add(role);
-        subject.setRoles(roles);
+        actor.setRoles(roles);
 
         // When
-        defaultAuthorizationSecurityManager.checkRole(wrongRoleStr, subject);
+        defaultAuthorizationSecurityManager.checkRole(wrongRoleStr, actor);
     }
 
     @Test(expected = KasperUnauthorizedException.class)
@@ -128,10 +128,10 @@ public class DefaultAuthorizationSecurityManagerTest {
         role.add(permission);
         final List<Role> roles = new ArrayList<>();
         roles.add(role);
-        subject.addRoles(roles);
+        actor.addRoles(roles);
 
         // When
-        defaultAuthorizationSecurityManager.checkPermission(wrongPerm, subject);
+        defaultAuthorizationSecurityManager.checkPermission(wrongPerm, actor);
     }
 
 }

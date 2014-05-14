@@ -17,11 +17,10 @@ import java.util.List;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
-public class Group extends Subject {
+public class Group extends Actor {
 
     private String name;
     private List<User> users;
-    private KasperID kasperId;
 
 
     // ------------------------------------------------------------------------
@@ -31,21 +30,12 @@ public class Group extends Subject {
                  final List<User> users,
                  final String name,
                  final KasperID kasperId) {
-        super(roles, permissions);
+        super(kasperId, roles, permissions);
         this.users = checkNotNull(users);
         this.name = checkNotNull(name);
-        this.kasperId = checkNotNull(kasperId);
     }
 
     // ------------------------------------------------------------------------
-
-    public KasperID getKasperId() {
-        return kasperId;
-    }
-
-    public void setKasperId(final KasperID kasperId) {
-        this.kasperId = checkNotNull(kasperId);
-    }
 
     public String getName() {
         return name;

@@ -19,9 +19,9 @@ import java.util.List;
 
 import static junit.framework.Assert.*;
 
-public class SubjectTest {
+public class ActorTest {
 
-    private Subject subject;
+    private Actor actor;
 
     private Role role1;
     private Role role2;
@@ -45,7 +45,7 @@ public class SubjectTest {
 
     @Before
     public void setUp() {
-        subject = new Subject();
+        actor = new Actor();
         role1 = new Role("role1");
         role2 = new Role("role2");
         role3 = new Role("role3");
@@ -88,32 +88,32 @@ public class SubjectTest {
         // Given
 
         // When
-        subject.addPermissions(permissions1);
+        actor.addPermissions(permissions1);
 
         // Then
-        assertEquals(subject.getPermissions().size(), 2);
+        assertEquals(actor.getPermissions().size(), 2);
     }
 
     @Test
     public void test_removesPermissions_withPermission_shouldHaveGoodSize(){
         // Given
-        subject.addPermissions(permissions1);
+        actor.addPermissions(permissions1);
 
         // When
-        subject.removePermissions(permissions1);
+        actor.removePermissions(permissions1);
 
         // Then
-        assertEquals(subject.getPermissions().size(), 0);
+        assertEquals(actor.getPermissions().size(), 0);
     }
 
     @Test
     public void test_isPermitted_withPermissions_shouldBePermitted(){
         // Given
-        subject.addPermissions(permissions1);
+        actor.addPermissions(permissions1);
 
         // When
-        final boolean isPermitted1 = subject.isPermitted(perm1);
-        final boolean isPermitted2 = subject.isPermitted(perm3);
+        final boolean isPermitted1 = actor.isPermitted(perm1);
+        final boolean isPermitted2 = actor.isPermitted(perm3);
 
         // Then
         assertTrue(isPermitted1);
@@ -123,11 +123,11 @@ public class SubjectTest {
     @Test
     public void test_isPermitted_withRoles_shouldBePermitted(){
         // Given
-        subject.addRoles(roles1);
+        actor.addRoles(roles1);
 
         // When
-        final boolean isPermitted1 = subject.isPermitted(perm1);
-        final boolean isPermitted2 = subject.isPermitted(perm3);
+        final boolean isPermitted1 = actor.isPermitted(perm1);
+        final boolean isPermitted2 = actor.isPermitted(perm3);
 
         // Then
         assertTrue(isPermitted1);
@@ -137,11 +137,11 @@ public class SubjectTest {
     @Test
     public void test_hasRole_withRoles_shouldBeHasRole(){
         // Given
-        subject.addRoles(roles1);
+        actor.addRoles(roles1);
 
         // When
-        final boolean hasRole1 = subject.hasRole(role1);
-        final boolean hasRole2 = subject.hasRole(role3);
+        final boolean hasRole1 = actor.hasRole(role1);
+        final boolean hasRole2 = actor.hasRole(role3);
 
         // Then
         assertTrue(hasRole1);
