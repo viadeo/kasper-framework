@@ -19,7 +19,6 @@ import java.util.jar.Manifest;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ManifestReader {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(ManifestReader.class);
 
     public static final String KASPER_VERSION_NAME = "Kasper-Version";
@@ -27,14 +26,18 @@ public class ManifestReader {
     private final URL url;
     private Optional<Manifest> manifest;
 
+    // ------------------------------------------------------------------------
+
     public ManifestReader(final Class<?> clazz) {
-        this(toUrl(toPath(clazz)));
+        this(toUrl(toPath(checkNotNull(clazz))));
     }
 
     public ManifestReader(final URL url) {
         this.url = checkNotNull(url, "undefined url");
         this.manifest = Optional.absent();
     }
+
+    // ------------------------------------------------------------------------
 
     protected static String toPath(final Class<?> clazz) {
         checkNotNull(clazz, "unable to define a path from an undefined class");
@@ -53,7 +56,7 @@ public class ManifestReader {
             final JarURLConnection connection = (JarURLConnection) url.openConnection();
             final JarFile jar = connection.getJarFile();
             manifest = jar.getManifest();
-        } catch (IOException e) {
+        } catch (final IOException e) {
             LOGGER.error("No found jar file from the specified URL '{}'", url, e);
         }
 
@@ -67,8 +70,10 @@ public class ManifestReader {
 
     public Optional<String> getKasperVersion() {
         if(manifest.isPresent()) {
-            return Optional.fromNullable(manifest.get().getMainAttributes().getValue(KASPER_VERSION_NAME));
+            final String version = manifest.get().getMainAttributes().getValue(KASPER_VERSION_NAME);
+            return Optional.fromNullable(version);
         }
         return Optional.absent();
     }
+
 }

@@ -18,6 +18,7 @@ public class ManifestReaderUTest {
     @Test(expected = NullPointerException.class)
     public void toPath_withNull_throwException() {
         // Given nothing
+
         // When
         ManifestReader.toPath(null);
 
@@ -27,17 +28,19 @@ public class ManifestReaderUTest {
     @Test
     public void toPath_withClass_isOk() {
         // Given nothing
+
         // When
         final String path = ManifestReader.toPath(KasperClient.class);
 
         // Then
         assertNotNull(path);
-        assertEquals("com/viadeo/kasper/client/KasperClient.class", path);
+        assertEquals(KasperClient.class.getName().replaceAll("\\.", "/") + ".class", path);
     }
 
     @Test(expected = NullPointerException.class)
     public void toUrl_withNull_throwException() {
         // Given nothing
+
         // When
         ManifestReader.toUrl(null);
 
@@ -84,4 +87,5 @@ public class ManifestReaderUTest {
         assertTrue(manifestReader.getKasperVersion().isPresent());
         assertEquals("42", manifestReader.getKasperVersion().get());
     }
+
 }
