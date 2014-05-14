@@ -28,6 +28,6 @@ dependencies {
     // Test dependencies
     testCompile libraries.JERSEY_TEST_CORE
     testCompile libraries.JERSEY_TEST_HTTP
-    testCompile files('src/test/resources/libs/testManifest-0.1.jar')
+    testCompile files('src/test/resources/libs/testManifest.jar')
 
 }
