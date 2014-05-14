@@ -149,7 +149,12 @@ subprojects {
       JERSEY_TEST_HTTP      : 'com.sun.jersey.jersey-test-framework:jersey-test-framework-http:1.16',
       JERSEY_TEST_GRIZZLY   : 'org.glassfish.jersey.test-framework.providers:jersey-test-framework-provider-grizzly2:2.0',
 
-      JETTY_SERVLET         : 'org.eclipse.jetty:jetty-servlet:8.1.10.v20130312',
+      JETTY_MANAGEMENT      : 'org.eclipse.jetty:jetty-jmx:8.1.8.v20121106',
+      JETTY                 : [
+              'org.eclipse.jetty:jetty-http:8.1.10.v20130312',
+              'org.eclipse.jetty:jetty-server:8.1.10.v20130312',
+              'org.eclipse.jetty:jetty-servlet:8.1.10.v20130312'
+      ],
 
       PARANAMER             : 'com.thoughtworks.paranamer:paranamer:2.5.2',
       REFLECTIONS           : 'org.reflections:reflections:0.9.9-RC1',
@@ -164,14 +169,18 @@ subprojects {
       SPRING_WEB            : 'org.springframework:spring-web:3.1.4.RELEASE',
       SPRING_TEST           : 'org.springframework:spring-test:3.1.4.RELEASE',
 
-      YAMMER_METRICS        : 'com.codahale.metrics:metrics-core:3.1.0-VIADEO-0.1',
+      METRICS_CORE        : 'com.codahale.metrics:metrics-core:3.1.0-VIADEO-0.1',
       METRICS_JSON          : 'com.codahale.metrics:metrics-json:3.1.0-VIADEO-0.1',
+      METRICS_JETTY         : 'com.codahale.metrics:metrics-jetty8:3.1.0-VIADEO-0.1',
+      METRICS_SERVLET       : 'com.codahale.metrics:metrics-servlets:3.1.0-VIADEO-0.1',
+      METRICS_HEALTHCHECK   : 'com.codahale.metrics:metrics-healthchecks:3.1.0-VIADEO-0.1',
 
       AXON_TEST             : 'org.axonframework:axon-test:2.0.5',
       AXON_CORE             : [
                                 'javax.persistence:persistence-api:1.0',
                                 'org.axonframework:axon-core:2.0.5'
                               ],
+
       JCACHE                : 'javax.cache:cache-api:0.5',
       JCACHE_EHCACHE        : 'net.sf.ehcache:ehcache-jcache:1.5.0-0.5',
 

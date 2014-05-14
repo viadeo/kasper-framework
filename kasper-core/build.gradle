@@ -16,7 +16,7 @@ dependencies {
     compile libraries.REFLECTIONS
     compile libraries.SPRING_CONTEXT
     compile libraries.AXON_CORE
-    compile libraries.YAMMER_METRICS
+    compile libraries.METRICS_CORE
     compile libraries.JCACHE
     compile libraries.VALIDATION_API
     compile libraries.GUAVA
