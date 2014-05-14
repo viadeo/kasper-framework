@@ -19,7 +19,6 @@ public class KasperSecurityConfiguration implements SecurityConfiguration {
     private final ApplicationIdValidator applicationIdValidator;
     private final IpAddressValidator ipAddressValidator;
     private final AuthorizationValidator authorizationValidator;
-    private final AuthorizationSecurityManager authorizationSecurityManager;
 
     // ------------------------------------------------------------------------
 
@@ -27,14 +26,12 @@ public class KasperSecurityConfiguration implements SecurityConfiguration {
                                        final IdentityContextProvider identityContextProviders,
                                        final ApplicationIdValidator applicationIdValidator,
                                        final IpAddressValidator ipAddressValidator,
-                                       final AuthorizationValidator authorizationValidator,
-                                       final AuthorizationSecurityManager authorizationSecurityManager) {
+                                       final AuthorizationValidator authorizationValidator) {
         this.securityTokenValidator = checkNotNull(securityTokenValidator);
         this.identityContextProviders = checkNotNull(identityContextProviders);
         this.applicationIdValidator = checkNotNull(applicationIdValidator);
         this.ipAddressValidator = checkNotNull(ipAddressValidator);
         this.authorizationValidator = checkNotNull(authorizationValidator);
-        this.authorizationSecurityManager = checkNotNull(authorizationSecurityManager);
     }
 
     // ------------------------------------------------------------------------
@@ -62,11 +59,6 @@ public class KasperSecurityConfiguration implements SecurityConfiguration {
     @Override
     public AuthorizationValidator getAuthorizationValidator() {
         return authorizationValidator;
-    }
-
-    @Override
-    public AuthorizationSecurityManager getAuthorizationSecurityManager() {
-        return authorizationSecurityManager;
     }
 
 }

@@ -41,6 +41,10 @@ public class KasperPlatformQueryResultValidator
 
     @Override
     public KasperFixtureQueryResultValidator expectReturnOK() {
+        System.out.print("#######################");
+        System.out.print("KasperFixtureQueryResultValidator expectReturnOK");
+        System.out.print("response() : "+response());
+        System.out.print("QueryResponse) response()).getStatus() : "+((QueryResponse) response()).getStatus());
         if ((null == response()) ||  ! OK.equals(((QueryResponse) response()).getStatus())) {
             throw new AxonAssertionError("Query did not answered OK");
         }

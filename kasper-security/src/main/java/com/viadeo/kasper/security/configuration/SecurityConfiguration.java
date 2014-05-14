@@ -31,8 +31,6 @@ public interface SecurityConfiguration {
 
     AuthorizationValidator getAuthorizationValidator();
 
-    AuthorizationSecurityManager getAuthorizationSecurityManager();
-
     // ------------------------------------------------------------------------
 
     class Builder {
@@ -41,8 +39,7 @@ public interface SecurityConfiguration {
         private IdentityContextProvider identityContextProvider = new DefaultIdentityContextProvider();
         private ApplicationIdValidator applicationIdValidator = new DefaultApplicationIdValidator();
         private IpAddressValidator ipAddressValidator = new DefaultIpAddressValidator();
-        private AuthorizationSecurityManager authorizationSecurityManager = new DefaultAuthorizationSecurityManager();
-        private AuthorizationValidator authorizationValidator = new DefaultAuthorizationValidator(authorizationSecurityManager);
+        private AuthorizationValidator authorizationValidator = new FakeAuthorizationValidator();
 
         // --------------------------------------------------------------------
 
@@ -71,10 +68,8 @@ public interface SecurityConfiguration {
             return this;
         }
 
-        public Builder withAuthorizationValidator(final AuthorizationValidator authorizationValidator,
-                                                  final AuthorizationSecurityManager authorizationSecurityManager) {
+        public Builder withAuthorizationValidator(final AuthorizationValidator authorizationValidator) {
             this.authorizationValidator = checkNotNull(authorizationValidator);
-            this.authorizationSecurityManager = checkNotNull(authorizationSecurityManager);
             return this;
         }
 
@@ -84,8 +79,7 @@ public interface SecurityConfiguration {
                 identityContextProvider,
                 applicationIdValidator,
                 ipAddressValidator,
-                authorizationValidator,
-                authorizationSecurityManager
+                authorizationValidator
             );
             return securityConfiguration;
         }
@@ -130,6 +124,15 @@ public interface SecurityConfiguration {
         public void validate(final String ipAddress)
                 throws KasperMissingIpAddressException,
                        KasperInvalidIpAddressException {
+            /* do nothing */
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    class FakeAuthorizationValidator implements AuthorizationValidator {
+        @Override
+        public void validate(Context context, Class<?> clazz) throws KasperUnauthorizedException {
             /* do nothing */
         }
     }

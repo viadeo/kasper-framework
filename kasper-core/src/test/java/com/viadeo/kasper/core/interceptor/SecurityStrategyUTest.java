@@ -55,7 +55,7 @@ public class SecurityStrategyUTest {
                 .withIdentityProvider(identityProvider)
                 .withApplicationIdValidator(applicationIdValidator)
                 .withIpAddressValidator(ipAddressValidator)
-                .withAuthorizationValidator(authorizationValidator, authorizationSecurityManager)
+                .withAuthorizationValidator(authorizationValidator)
                 .build();
     }
 
