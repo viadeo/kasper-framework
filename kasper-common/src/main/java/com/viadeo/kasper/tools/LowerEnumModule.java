@@ -16,13 +16,17 @@ import com.viadeo.kasper.exception.KasperException;
 import java.io.IOException;
 import java.lang.reflect.Method;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class LowerEnumModule extends SimpleModule {
 
     private static final long serialVersionUID = -3897575151769316482L;
 
+    // ------------------------------------------------------------------------
+
     @Override
     public void setupModule(final SetupContext context) {
-        super.setupModule(context);
+        super.setupModule(checkNotNull(context));
         final Deserializers.Base deser = new Deserializers.Base() {
             @SuppressWarnings("unchecked")
             @Override
@@ -37,6 +41,8 @@ public class LowerEnumModule extends SimpleModule {
         };
         context.addDeserializers(deser);
     }
+
+    // ------------------------------------------------------------------------
 
     public static class LowerEnumDeserializer extends StdScalarDeserializer<Enum<?>> {
 
@@ -54,9 +60,10 @@ public class LowerEnumModule extends SimpleModule {
             try {
                 final Method valueOfMethod = enumClass.getDeclaredMethod("valueOf", String.class);
                 return (Enum<?>) valueOfMethod.invoke(null, text);
-            } catch (Exception e) {
+            } catch (final Exception e) {
                 throw new KasperException("Cannot deserialize enum " + enumClass.getName() + " from '" + text + "'", e);
             }
         }
     }
+
 }
