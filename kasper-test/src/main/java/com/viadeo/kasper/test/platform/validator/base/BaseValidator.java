@@ -8,6 +8,7 @@ package com.viadeo.kasper.test.platform.validator.base;
 
 import org.axonframework.test.Reporter;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.test.platform.KasperPlatformFixture.RecordingPlatform;
 
 public abstract class BaseValidator {
@@ -17,12 +18,16 @@ public abstract class BaseValidator {
     private final Exception exception;
     private final Reporter reporter;
 
+    // ------------------------------------------------------------------------
+
     public BaseValidator(final RecordingPlatform platform, final Object response, final Exception exception) {
-        this.platform = platform;
+        this.platform = checkNotNull(platform);
         this.response = response;
         this.exception = exception;
         this.reporter = new Reporter();
     }
+
+    // ------------------------------------------------------------------------
 
     protected Reporter reporter() {
         return reporter;
@@ -43,4 +48,5 @@ public abstract class BaseValidator {
     protected boolean hasException() {
         return this.exception != null;
     }
+
 }
