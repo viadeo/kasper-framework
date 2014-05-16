@@ -28,106 +28,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 public class JsonTransformer {
-
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonTransformer.class);
 
     private final NNode current;
 
-    protected JsonTransformer(final Optional<Class> optionalClazz, final Map<String, String[]> parameters){
-        this.current = new NNode("root", false);
-
-        for (final String key : parameters.keySet()) {
-            createNodes(current, optionalClazz, key, parameters.get(key));
-        }
-    }
-
-    protected static boolean isArrayOrCollection(final String fieldName, final Optional<Class> optionalClazz) {
-        if (optionalClazz.isPresent()) {
-            try {
-                final Class clazz = optionalClazz.get().getDeclaredField(fieldName).getType();
-                return clazz.isArray() || Collection.class.isAssignableFrom(clazz);
-            } catch (NoSuchFieldException | NullPointerException e) {
-                LOGGER.debug("The '{}' parameter is ignored due to an unexpected error with '{}'", fieldName, optionalClazz.get().getName(), e);
-            }
-        }
-        return false;
-    }
-
-    protected static Optional<Class> getSubClass(final String fieldName, final Optional<Class> optionalClazz) {
-        Optional<Class> optionalSubClass = Optional.absent();
-
-        if (optionalClazz.isPresent()) {
-            try {
-                final Field declaredField = optionalClazz.get().getDeclaredField(fieldName);
-                if (declaredField != null) {
-                    if (Collection.class.isAssignableFrom(declaredField.getType())) {
-                        final Class clazz = (Class) ((ParameterizedType) declaredField.getGenericType()).getActualTypeArguments()[0];
-                        optionalSubClass = Optional.of(clazz);
-                    } else {
-                        final Class type = declaredField.getType();
-                        optionalSubClass = Optional.of(type);
-                    }
-                }
-            } catch (NoSuchFieldException e) {
-                LOGGER.debug("The '{}' parameter is ignored : unable to identify the class related to the parameter from '{}'", fieldName, optionalClazz.get().getName(), e);
-            }
-        }
-
-        return optionalSubClass;
-    }
-
-    protected void createNodes(
-            final NNode parent,
-            final Optional<Class> optionalClazz,
-            final String key,
-            final String[] values
-    ) {
-        final int index = key.indexOf('.');
-
-        if(values.length == 0) {
-            return;
-        }
-
-        if (index == -1) {
-            parent.append(key, new Leaf(key, values, isArrayOrCollection(key, optionalClazz)));
-        } else {
-            final String actualName = key.substring(0, index);
-            final String subName = key.substring(index + 1, key.length());
-            final NNode node;
-
-            if (parent.hasElement(actualName)) {
-                final Collection<Node> elements = parent.getElements(actualName);
-                final Object element = elements.iterator().next();
-
-                if( element instanceof NNode) {
-                    node = (NNode) element;
-                } else {
-                    throw new JsonTransformerException("unexpected error");
-                }
-            } else {
-                node = new NNode(actualName, isArrayOrCollection(actualName, optionalClazz));
-                parent.append(actualName, node);
-            }
-
-            createNodes(node, getSubClass(actualName, optionalClazz), subName, values);
-        }
-    }
-
-    public static JsonTransformer from(final Map<String, String[]> parameters) {
-        return new JsonTransformer(Optional.<Class>absent(), parameters);
-    }
-
-    public static JsonTransformer from(final Class clazz, final Map<String, String[]> parameters) {
-        return new JsonTransformer(Optional.fromNullable(clazz), parameters);
-    }
-
-    public static JsonTransformer from(final Optional<Class> optionalClazz, final Map<String, String[]> parameters) {
-        return new JsonTransformer(optionalClazz, parameters);
-    }
-
-    public String toJson() {
-        return current.toJson().toJSONString();
-    }
+    // ------------------------------------------------------------------------
 
     private static interface Node {
         JSONAware toJson();
@@ -139,13 +44,17 @@ public class JsonTransformer {
         private final List<String> values;
         private final boolean arrayOrCollection;
 
-        public Leaf(String name, String[] values, boolean arrayOrCollection) {
+        // ---------
+
+        public Leaf(final String name, final String[] values, final boolean arrayOrCollection) {
             checkNotNull(values);
             checkState(values.length > 0, "should contains at least one value");
             this.name = checkNotNull(name);
             this.values = Lists.newArrayList(values);
             this.arrayOrCollection = checkNotNull(arrayOrCollection);
         }
+
+        // ---------
 
         @Override
         public String getName() {
@@ -177,11 +86,15 @@ public class JsonTransformer {
         private final String name;
         private final boolean arrayOrCollection;
 
+        // ---------
+
         private NNode(final String name, final boolean arrayOrCollection) {
             this.name = name;
             this.arrayOrCollection = arrayOrCollection;
             this.elements = ArrayListMultimap.create();
         }
+
+        // ----------
 
         @Override
         public String getName() {
@@ -288,12 +201,117 @@ public class JsonTransformer {
     }
 
     public static class JsonTransformerException extends RuntimeException {
-
         private static final long serialVersionUID = -6254523548731940786L;
 
         public JsonTransformerException(String message) {
             super(message);
         }
+    }
+
+    // ------------------------------------------------------------------------
+
+    protected JsonTransformer(final Optional<Class> optionalClazz, final Map<String, String[]> parameters) {
+        this.current = new NNode("root", false);
+
+        for (final String key : parameters.keySet()) {
+            createNodes(current, optionalClazz, key, parameters.get(key));
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    protected static boolean isArrayOrCollection(final String fieldName, final Optional<Class> optionalClazz) {
+        if (optionalClazz.isPresent()) {
+            try {
+                final Class clazz = optionalClazz.get().getDeclaredField(fieldName).getType();
+                return clazz.isArray() || Collection.class.isAssignableFrom(clazz);
+            } catch (final NoSuchFieldException | NullPointerException e) {
+                LOGGER.debug("The '{}' parameter is ignored due to an unexpected error with '{}'", fieldName, optionalClazz.get().getName(), e);
+            }
+        }
+        return false;
+    }
+
+    // ------------------------------------------------------------------------
+
+    protected static Optional<Class> getSubClass(final String fieldName, final Optional<Class> optionalClazz) {
+        Optional<Class> optionalSubClass = Optional.absent();
+
+        if (optionalClazz.isPresent()) {
+            try {
+                final Field declaredField = optionalClazz.get().getDeclaredField(fieldName);
+                if (declaredField != null) {
+                    if (Collection.class.isAssignableFrom(declaredField.getType())) {
+                        final Class clazz = (Class) ((ParameterizedType) declaredField.getGenericType()).getActualTypeArguments()[0];
+                        optionalSubClass = Optional.of(clazz);
+                    } else {
+                        final Class type = declaredField.getType();
+                        optionalSubClass = Optional.of(type);
+                    }
+                }
+            } catch (final NoSuchFieldException e) {
+                LOGGER.debug("The '{}' parameter is ignored : unable to identify the class related to the parameter from '{}'", fieldName, optionalClazz.get().getName(), e);
+            }
+        }
+
+        return optionalSubClass;
+    }
+
+    // ------------------------------------------------------------------------
+
+    protected void createNodes(
+            final NNode parent,
+            final Optional<Class> optionalClazz,
+            final String key,
+            final String[] values) {
+
+        final int index = key.indexOf('.');
+
+        if (values.length == 0) {
+            return;
+        }
+
+        if (index == -1) {
+            parent.append(key, new Leaf(key, values, isArrayOrCollection(key, optionalClazz)));
+        } else {
+            final String actualName = key.substring(0, index);
+            final String subName = key.substring(index + 1, key.length());
+            final NNode node;
+
+            if (parent.hasElement(actualName)) {
+                final Collection<Node> elements = parent.getElements(actualName);
+                final Object element = elements.iterator().next();
+
+                if(element instanceof NNode) {
+                    node = (NNode) element;
+                } else {
+                    throw new JsonTransformerException("unexpected error");
+                }
+            } else {
+                node = new NNode(actualName, isArrayOrCollection(actualName, optionalClazz));
+                parent.append(actualName, node);
+            }
+
+            createNodes(node, getSubClass(actualName, optionalClazz), subName, values);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    public static JsonTransformer from(final Map<String, String[]> parameters) {
+        return new JsonTransformer(Optional.<Class>absent(), parameters);
+    }
+
+    public static JsonTransformer from(final Class clazz, final Map<String, String[]> parameters) {
+        return new JsonTransformer(Optional.fromNullable(clazz), parameters);
+    }
+
+    public static JsonTransformer from(final Optional<Class> optionalClazz, final Map<String, String[]> parameters) {
+        return new JsonTransformer(optionalClazz, parameters);
+    }
+
+    public String toJson() {
+        return current.toJson().toJSONString();
     }
 
 }

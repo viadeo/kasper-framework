@@ -9,9 +9,9 @@ package com.viadeo.kasper.exposition.http;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.reflect.TypeToken;
-import com.google.common.base.Optional;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
 import com.viadeo.kasper.query.exposition.query.QueryParser;
 
