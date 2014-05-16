@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.test.platform;
 
 import com.viadeo.kasper.cqrs.command.Command;
@@ -16,15 +22,17 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
-public class KasperPlatformEventResultValidator
+public class KasperPlatformListenedEventsValidator
         extends DefaultBaseValidator
         implements KasperFixtureEventResultValidator {
 
-    KasperPlatformEventResultValidator(
+    KasperPlatformListenedEventsValidator(
             final KasperPlatformFixture.RecordingPlatform platform,
             final Exception exception) {
         super(platform, null, exception);
     }
+
+    // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
     @Override
@@ -68,4 +76,5 @@ public class KasperPlatformEventResultValidator
         }
         return this;
     }
+
 }

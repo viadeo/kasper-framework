@@ -33,7 +33,7 @@ public class KasperPlatformCommandResultValidator
         extends DefaultBaseValidator
         implements KasperFixtureCommandResultValidator, KasperFixtureEventResultValidator<KasperPlatformCommandResultValidator> {
 
-    private final KasperPlatformEventResultValidator eventResultValidator;
+    private final KasperPlatformListenedEventsValidator eventResultValidator;
 
     // ------------------------------------------------------------------------
 
@@ -42,7 +42,7 @@ public class KasperPlatformCommandResultValidator
             final CommandResponse response,
             final Exception exception) {
         super(platform, response, exception);
-        this.eventResultValidator = new KasperPlatformEventResultValidator(platform, exception);
+        this.eventResultValidator = new KasperPlatformListenedEventsValidator(platform, exception);
     }
 
     // ------------------------------------------------------------------------
@@ -202,18 +202,19 @@ public class KasperPlatformCommandResultValidator
     }
 
     @Override
-    public KasperPlatformCommandResultValidator expectExactSequenceOfCommands(Command... commands) {
+    public KasperPlatformCommandResultValidator expectExactSequenceOfCommands(final Command... commands) {
         final List<Command> actualCommands = platform().recordedCommands;
         assertEquals(commands.length, actualCommands.size() - 1);
 
         for (int i = 0; i < commands.length; i++) {
             assertTrue(KasperMatcher.equalTo(commands[i]).matches(actualCommands.get(i + 1)));
         }
+
         return this;
     }
 
     @Override
-    public KasperPlatformCommandResultValidator expectEventNotificationOn(Class... eventListenerClasses) {
+    public KasperPlatformCommandResultValidator expectEventNotificationOn(final Class... eventListenerClasses) {
         eventResultValidator.expectEventNotificationOn(eventListenerClasses);
         return this;
     }
@@ -223,4 +224,5 @@ public class KasperPlatformCommandResultValidator
         eventResultValidator.expectZeroEventNotification();
         return this;
     }
+
 }

@@ -8,8 +8,8 @@ package com.viadeo.kasper.test.platform.fixture;
 
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.test.platform.validator.KasperFixtureCommandResultValidator;
 import com.viadeo.kasper.test.platform.executor.KasperFixtureCommandExecutor;
+import com.viadeo.kasper.test.platform.validator.KasperFixtureCommandResultValidator;
 
 import java.util.List;
 
