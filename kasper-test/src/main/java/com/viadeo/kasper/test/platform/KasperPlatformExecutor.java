@@ -6,16 +6,23 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
+import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.test.platform.executor.KasperFixtureCommandExecutor;
+import com.viadeo.kasper.test.platform.executor.KasperFixtureEventExecutor;
+import com.viadeo.kasper.test.platform.executor.KasperFixtureQueryExecutor;
+
+import static com.viadeo.kasper.test.platform.KasperPlatformFixture.RecordingPlatform;
 
 public class KasperPlatformExecutor implements
         KasperFixtureCommandExecutor<KasperPlatformCommandResultValidator>,
-        KasperFixtureQueryExecutor<KasperPlatformQueryResultValidator> {
+        KasperFixtureQueryExecutor<KasperPlatformQueryResultValidator>,
+        KasperFixtureEventExecutor<KasperPlatformListenedEventsValidator> {
 
-    private final KasperPlatformFixture.RecordingPlatform platform;
+    private final RecordingPlatform platform;
 
     // ------------------------------------------------------------------------
 
-    KasperPlatformExecutor(final KasperPlatformFixture.RecordingPlatform platform) {
+    KasperPlatformExecutor(final RecordingPlatform platform) {
         this.platform = platform;
     }
 
@@ -55,6 +62,22 @@ public class KasperPlatformExecutor implements
         }
 
         return new KasperPlatformQueryResultValidator(platform, response, exception);
+    }
+
+    @Override
+    public KasperPlatformListenedEventsValidator when(final Event event) {
+        return this.when(event, DefaultContextBuilder.get());
+    }
+
+    @Override
+    public KasperPlatformListenedEventsValidator when(final Event event, final Context context) {
+        Exception exception = null;
+        try {
+            platform.get().getEventBus().publishEvent(context, event);
+        } catch (final Exception e) {
+            exception = e;
+        }
+        return new KasperPlatformListenedEventsValidator(platform, exception);
     }
 
 }

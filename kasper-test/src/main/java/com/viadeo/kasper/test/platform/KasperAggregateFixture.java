@@ -20,6 +20,7 @@ import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.domain.DomainEvent;
 import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.test.platform.fixture.KasperCommandFixture;
 import org.axonframework.commandhandling.CommandBus;
 import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventstore.EventStore;

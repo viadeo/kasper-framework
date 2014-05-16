@@ -10,7 +10,9 @@ import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.impl.DefaultKasperId;
+import com.viadeo.kasper.impl.StringKasperId;
 import com.viadeo.kasper.test.platform.KasperPlatformFixture;
+import com.viadeo.kasper.tools.KasperMatcher;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.AxonAssertionError;
 import org.junit.Before;
@@ -240,4 +242,83 @@ public class TestFixturePlatformTest {
                 );
     }
 
+    @Test
+    public void testEventNotificationOk() {
+        fixture
+                .given()
+                .when(new TestCreatedEvent(
+                        new StringKasperId("one"))
+                )
+                .expectEventNotificationOn(
+                        TestCreatedEventListener.class
+                );
+    }
+
+    @Test
+    public void testEventNotificationAfterCommandOk() {
+        fixture
+                .given()
+                .when(
+                        new TestCreateCommand(
+                                DefaultKasperId.random(),
+                                firstName
+                        )
+                )
+                .expectEventNotificationOn(
+                        TestCreatedEventListener.class,
+                        TestFirstNameChangedEventListener.class
+                );
+    }
+
+    @Test
+    public void testZeroEventNotificationAfterCommandOk() {
+        fixture
+                .given()
+                .when(
+                        new TestCommand("OK")
+                )
+                .expectZeroEventNotification();
+    }
+
+    @Test
+    public void testCommandDelegationAfterCommandOk() {
+        final DefaultKasperId kasperId = DefaultKasperId.random();
+
+        fixture
+                .given()
+                .when(
+                        new TestCreateUserCommand(kasperId, "Jack", "Bauer")
+                )
+                .expectExactSequenceOfCommands(
+                        new TestCreateCommand(kasperId, "Jack"),
+                        new TestChangeLastNameCommand(kasperId, "Bauer")
+                );
+    }
+
+    @Test
+    public void testCommandDelegationAfterCommandUsingAnyKasperIdOk() {
+        fixture
+                .given()
+                .when(
+                        new TestCreateUserCommand(DefaultKasperId.random(), "Jack", "Bauer")
+                )
+                .expectExactSequenceOfCommands(
+                        new TestCreateCommand(KasperMatcher.anyKasperId(), "Jack"),
+                        new TestChangeLastNameCommand(KasperMatcher.anyKasperId(), "Bauer")
+                );
+    }
+
+    @Test
+    public void testCommandDelegationAfterEventOk() {
+
+        fixture
+                .given()
+                .when(
+                        new DoSyncUserEvent("Jack", "Bauer")
+                )
+                .expectExactSequenceOfCommands(
+                        new TestCreateCommand(KasperMatcher.anyKasperId(), "Jack"),
+                        new TestChangeLastNameCommand(KasperMatcher.anyKasperId(), "Bauer")
+                );
+    }
 }

@@ -52,14 +52,14 @@ public class TestFixturePlatformSpringTest extends TestFixturePlatformTest {
             }
         };
 
-        this.fixture = new KasperPlatformFixture();
-        this.fixture.register(
-                new SpringDomainBundle(
-                          new FixtureUseCase.TestDomain()
-                        , Lists.<Class>newArrayList(FixtureUseCaseSpringConfiguration.class)
-                        , new SpringDomainBundle.BeanDescriptor(eventStore)
-                )
+        final SpringDomainBundle domainBundle = new SpringDomainBundle(
+                new FixtureUseCase.TestDomain()
+                , Lists.<Class>newArrayList(FixtureUseCaseSpringConfiguration.class)
+                , new SpringDomainBundle.BeanDescriptor(eventStore)
         );
+
+        this.fixture = new KasperPlatformFixture();
+        this.fixture.register(domainBundle);
     }
 
 }

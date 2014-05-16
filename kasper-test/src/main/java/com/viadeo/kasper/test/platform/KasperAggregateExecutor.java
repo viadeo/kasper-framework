@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.test.platform;
 
 import com.google.common.collect.Maps;
@@ -5,6 +11,7 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandValidationInterceptor;
+import com.viadeo.kasper.test.platform.executor.KasperFixtureCommandExecutor;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.TestExecutor;
 import org.slf4j.Logger;
