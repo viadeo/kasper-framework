@@ -2,6 +2,7 @@
 
 ## Snapshot 0.7-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7-SNAPSHOT~~))###
 
+* [Pull 205](https://github.com/viadeo/kasper-framework/pull/205) Use ObjectMapper implementation to ser/deser query
 
 ### Snapshot 0.6 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6~~))###
 * [Bug 198](https://github.com/viadeo/kasper-framework/pull/198) Fix issue around the validation of the CoreReasonCode in the fixture
