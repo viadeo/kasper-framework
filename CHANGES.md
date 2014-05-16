@@ -9,6 +9,9 @@
   - allow to verify that no listeners are notified
   - allow to verify from an emitted event that a sequence of commands are sent
   - allow to verify from an sent command that a sequence of commands are sent
+* [Pull 207](https://github.com/viadeo/kasper-framework/pull/207) Expose the kasper version :
+  - set as attribute in the header when we use the kasper client
+  - set in the MDC wen we process an HTTP request in the exposition layer
 
 ### Snapshot 0.6 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6~~))###
 * [Bug 198](https://github.com/viadeo/kasper-framework/pull/198) Fix issue around the validation of the CoreReasonCode in the fixture
