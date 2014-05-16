@@ -6,20 +6,20 @@
 // ============================================================================
 package com.viadeo.kasper.client;
 
-import com.sun.jersey.api.client.PartialRequestBuilder;
+import com.sun.jersey.api.client.RequestBuilder;
 import com.viadeo.kasper.context.Context;
 
 import static com.viadeo.kasper.context.HttpContextHeaders.*;
 
 public class HttpContextSerializer {
 
-    private static final void setHeader(final PartialRequestBuilder builder, final String header, final Object value) {
+    private static void setHeader(final RequestBuilder builder, final String header, final Object value) {
         if ((null != value) && (! value.toString().isEmpty())) {
             builder.header(header, value.toString());
         }
     }
 
-    public void serialize(final Context context, final PartialRequestBuilder builder) {
+    public void serialize(final Context context, final RequestBuilder builder) {
             setHeader(builder, HEADER_SESSION_CORRELATION_ID, context.getSessionCorrelationId());
             setHeader(builder, HEADER_FUNNEL_CORRELATION_ID, context.getFunnelCorrelationId());
             setHeader(builder, HEADER_REQUEST_CORRELATION_ID, context.getRequestCorrelationId());
