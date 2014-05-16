@@ -71,7 +71,7 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
 
         this.objectToHttpResponse = new ObjectToHttpServletResponse(mapper);
         this.httpRequestToObjectWithJson = new HttpServletRequestToObject.JsonToObjectMapper(mapper);
-        this.httpRequestToObjectWithString = new HttpServletRequestToObject.StringRequestToObjectMapper(mapper, queryAdapterFactory);
+        this.httpRequestToObjectWithString = new HttpServletRequestToObject.StringRequestToObjectMapper2(mapper);
     }
 
     // ------------------------------------------------------------------------
