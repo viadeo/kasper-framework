@@ -11,17 +11,18 @@ import com.viadeo.kasper.test.platform.executor.KasperFixtureCommandExecutor;
 import com.viadeo.kasper.test.platform.executor.KasperFixtureEventExecutor;
 import com.viadeo.kasper.test.platform.executor.KasperFixtureQueryExecutor;
 
+import static com.viadeo.kasper.test.platform.KasperPlatformFixture.RecordingPlatform;
+
 public class KasperPlatformExecutor implements
         KasperFixtureCommandExecutor<KasperPlatformCommandResultValidator>,
         KasperFixtureQueryExecutor<KasperPlatformQueryResultValidator>,
-        KasperFixtureEventExecutor<KasperPlatformEventResultValidator>
-{
+        KasperFixtureEventExecutor<KasperPlatformListenedEventsValidator> {
 
-    private final KasperPlatformFixture.RecordingPlatform platform;
+    private final RecordingPlatform platform;
 
     // ------------------------------------------------------------------------
 
-    KasperPlatformExecutor(final KasperPlatformFixture.RecordingPlatform platform) {
+    KasperPlatformExecutor(final RecordingPlatform platform) {
         this.platform = platform;
     }
 
@@ -64,18 +65,19 @@ public class KasperPlatformExecutor implements
     }
 
     @Override
-    public KasperPlatformEventResultValidator when(Event event) {
+    public KasperPlatformListenedEventsValidator when(final Event event) {
         return this.when(event, DefaultContextBuilder.get());
     }
 
     @Override
-    public KasperPlatformEventResultValidator when(Event event, Context context) {
+    public KasperPlatformListenedEventsValidator when(final Event event, final Context context) {
         Exception exception = null;
         try {
             platform.get().getEventBus().publishEvent(context, event);
         } catch (final Exception e) {
             exception = e;
         }
-        return new KasperPlatformEventResultValidator(platform, exception);
+        return new KasperPlatformListenedEventsValidator(platform, exception);
     }
+
 }

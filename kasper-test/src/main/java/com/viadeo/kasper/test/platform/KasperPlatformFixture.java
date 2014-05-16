@@ -33,13 +33,13 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static org.mockito.Mockito.spy;
 
 public class KasperPlatformFixture implements
         KasperCommandFixture<KasperPlatformExecutor, KasperPlatformCommandResultValidator>,
         KasperQueryFixture<KasperPlatformExecutor, KasperPlatformQueryResultValidator>,
-        KasperEventFixture<KasperPlatformExecutor, KasperPlatformEventResultValidator>
-{
+        KasperEventFixture<KasperPlatformExecutor, KasperPlatformListenedEventsValidator> {
 
     private final RecordingPlatform platform;
     private final SpyEventBus eventBus;
@@ -49,47 +49,49 @@ public class KasperPlatformFixture implements
     private boolean initialized;
     private DomainBundle domainBundle;
 
+    // ------------------------------------------------------------------------
+
     public KasperPlatformFixture() {
         this(ConfigFactory.empty());
     }
 
     public KasperPlatformFixture(final Config config) {
-        this.config = config;
+        this.config = checkNotNull(config);
         this.platform = new RecordingPlatform();
-        this.eventBus = new SpyEventBus(platform);
-        this.commandBus = new SpyCommandBus(platform);
+        this.eventBus = new SpyEventBus(this.platform);
+        this.commandBus = new SpyCommandBus(this.platform);
     }
 
     // ------------------------------------------------------------------------
 
     private KasperPlatformExecutor prepare() {
-        platform.recordedEvents.clear();
-        return new KasperPlatformExecutor(platform);
+        this.platform.recordedEvents.clear();
+        return new KasperPlatformExecutor(this.platform);
     }
 
     
     private void initialize() {
-        if( ! initialized) {
+        if( ! this.initialized) {
             final KasperPlatformConfiguration platformConfiguration = new KasperPlatformConfiguration();
 
-            platform.set(
-                    new Platform.Builder(platformConfiguration)
-                            .withConfiguration(config)
-                            .withEventBus(eventBus)
-                            .withCommandGateway(
-                                    new KasperCommandGateway(commandBus)
-                            )
-                            .addDomainBundle(domainBundle)
-                            .build()
+            this.platform.set(
+                new Platform.Builder(platformConfiguration)
+                        .withConfiguration(this.config)
+                        .withEventBus(this.eventBus)
+                        .withCommandGateway(
+                            new KasperCommandGateway(this.commandBus)
+                        )
+                        .addDomainBundle(this.domainBundle)
+                        .build()
             );
 
-            initialized = true;
+            this.initialized = true;
         }
     }
 
     private void reset() {
-        initialized = false;
-        platform.reset();
+        this.initialized = false;
+        this.platform.reset();
     }
 
     public KasperPlatformFixture register(final DomainBundle domainBundle){
@@ -125,7 +127,7 @@ public class KasperPlatformFixture implements
 
         for (final IEvent event : events) {
             try {
-                platform.get().getEventBus().publishEvent(context, event);
+                this.platform.get().getEventBus().publishEvent(context, event);
             } catch (final Exception e) {
                 throw new KasperException(e);
             }
@@ -155,8 +157,8 @@ public class KasperPlatformFixture implements
 
         for (final Command command : commands) {
             try {
-                platform.get().getCommandGateway().sendCommandAndWaitForAResponse(
-                        command, context
+                this.platform.get().getCommandGateway().sendCommandAndWaitForAResponse(
+                    command, context
                 );
             } catch (final Exception e) {
                 throw new KasperException(e);
@@ -177,17 +179,19 @@ public class KasperPlatformFixture implements
         public final Map<Class<? extends EventListener>, EventListener> listeners = Maps.newHashMap();
         private Platform platform;
 
+        // -----
+
         public Platform get() {
             return this.platform;
         }
 
         public void set(final Platform platform) {
-            this.platform = platform;
+            this.platform = checkNotNull(platform);
         }
 
-        public List<IEvent> getRecordedEvents(Class<IEvent> eventClass) {
+        public List<IEvent> getRecordedEvents(final Class<IEvent> eventClass) {
             final List<IEvent> events = Lists.newArrayList();
-            for (final IEvent event : recordedEvents) {
+            for (final IEvent event : this.recordedEvents) {
                 if (eventClass.isAssignableFrom(event.getClass())) {
                     events.add(event);
                 }
@@ -196,9 +200,9 @@ public class KasperPlatformFixture implements
         }
 
         public void reset() {
-            recordedCommands.clear();
-            recordedEvents.clear();
-            listeners.clear();
+            this.recordedCommands.clear();
+            this.recordedEvents.clear();
+            this.listeners.clear();
         }
     }
 
@@ -209,26 +213,30 @@ public class KasperPlatformFixture implements
 
         private final RecordingPlatform recordingPlatform;
 
+        // -----
+
         protected SpyEventBus(RecordingPlatform recordingPlatform){
             this.recordingPlatform = recordingPlatform;
         }
+
+        // -----
 
         @Override
         public void publish(final EventMessage... messages) {
             super.publish(messages);
             for (final EventMessage message : messages) {
                 if (IEvent.class.isAssignableFrom(message.getPayloadType())) {
-                    recordingPlatform.recordedEvents.add((IEvent) message.getPayload());
+                    this.recordingPlatform.recordedEvents.add((IEvent) message.getPayload());
                 }
             }
         }
 
         @Override
-        public void subscribe(org.axonframework.eventhandling.EventListener eventListener) {
+        public void subscribe(final org.axonframework.eventhandling.EventListener eventListener) {
             if (eventListener instanceof EventListener) {
                 final EventListener kasperEventListener = (EventListener) eventListener;
                 final EventListener spiedKasperEventListener = spy(kasperEventListener);
-                recordingPlatform.listeners.put(kasperEventListener.getClass(), spiedKasperEventListener);
+                this.recordingPlatform.listeners.put(kasperEventListener.getClass(), spiedKasperEventListener);
                 super.subscribe(spiedKasperEventListener);
             } else {
                 super.subscribe(eventListener);
@@ -243,13 +251,13 @@ public class KasperPlatformFixture implements
 
         private final RecordingPlatform recordingPlatform;
 
-        protected SpyCommandBus(RecordingPlatform recordingPlatform){
-            this.recordingPlatform = recordingPlatform;
+        protected SpyCommandBus(final RecordingPlatform recordingPlatform){
+            this.recordingPlatform = checkNotNull(recordingPlatform);
         }
 
         @Override
-        protected <R> void doDispatch(CommandMessage<?> command, CommandCallback<R> callback) {
-            recordingPlatform.recordedCommands.add((Command)command.getPayload());
+        protected <R> void doDispatch(final CommandMessage<?> command, final CommandCallback<R> callback) {
+            this.recordingPlatform.recordedCommands.add((Command) command.getPayload());
             super.doDispatch(command, callback);
         }
 

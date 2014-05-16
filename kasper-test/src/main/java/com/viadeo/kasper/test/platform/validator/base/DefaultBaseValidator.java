@@ -17,12 +17,13 @@ import static com.viadeo.kasper.test.platform.KasperPlatformFixture.RecordingPla
 import static com.viadeo.kasper.tools.KasperMatcher.equalTo;
 
 public class DefaultBaseValidator extends BaseValidator
-        implements ExceptionValidator<DefaultBaseValidator>, FieldValidator<DefaultBaseValidator>
-{
+        implements ExceptionValidator<DefaultBaseValidator>, FieldValidator<DefaultBaseValidator> {
 
     public DefaultBaseValidator(final RecordingPlatform platform, final Object response, final Exception exception) {
         super(platform, response, exception);
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public DefaultBaseValidator expectException(final Class<? extends Throwable> expectedException) {
@@ -64,8 +65,8 @@ public class DefaultBaseValidator extends BaseValidator
 
         if ( ! found) {
             throw new AxonAssertionError(String.format(
-                    "The expected validation error on field %s not occurred",
-                    field
+                "The expected validation error on field %s not occurred",
+                field
             ));
         }
 
@@ -73,7 +74,6 @@ public class DefaultBaseValidator extends BaseValidator
     }
 
     protected void expectReturnValue(final Matcher<?> matcher) {
-
         final StringDescription description = new StringDescription();
         matcher.describeTo(description);
 
@@ -82,7 +82,6 @@ public class DefaultBaseValidator extends BaseValidator
         } else if ( ! matcher.matches(this.response())) {
             reporter().reportWrongResult(this.response(), description);
         }
-
     }
 
 }
