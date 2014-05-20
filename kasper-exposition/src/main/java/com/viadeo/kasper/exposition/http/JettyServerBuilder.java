@@ -18,7 +18,6 @@ import com.codahale.metrics.servlets.MetricsServlet;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import org.eclipse.jetty.jmx.MBeanContainer;
@@ -48,6 +47,8 @@ import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 import java.util.List;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 public class JettyServerBuilder {
     public static final Connector[] EMPTY_CONNECTORS = new Connector[0];
@@ -64,48 +65,71 @@ public class JettyServerBuilder {
     private HealthCheckRegistry healthCheckRegistry;
     private MetricRegistry metricRegistry;
 
-    public JettyServerBuilder(JettyConfiguration config) {
+    // ------------------------------------------------------------------------
+
+    /**
+     * An HTTP servlet which outputs a {@code text/plain} {@code "Jetty is in da place!"} response.
+     */
+    public static class JettyPingServlet extends HttpServlet {
+        private static final String CONTENT_TYPE = "text/plain";
+        private static final String CONTENT = "Jetty is in da place!";
+
+        @Override
+        protected void doGet(final HttpServletRequest req,
+                             final HttpServletResponse resp) throws ServletException, IOException {
+            resp.setStatus(HttpServletResponse.SC_OK);
+            resp.setHeader("Cache-Control", "must-revalidate,no-cache,no-store");
+            resp.setContentType(CONTENT_TYPE);
+            try (final PrintWriter writer = resp.getWriter()) {
+                writer.println(CONTENT);
+            }
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    public JettyServerBuilder(final JettyConfiguration config) {
         this.config = config;
         this.staticContextHandlers = Lists.newArrayList();
     }
 
-    public JettyServerBuilder withQueryExposer(HttpQueryExposer exposer) {
+    public JettyServerBuilder withQueryExposer(final HttpQueryExposer exposer) {
         this.queryExposer = exposer;
         return this;
     }
 
-    public JettyServerBuilder withCommandExposer(HttpCommandExposer exposer) {
+    public JettyServerBuilder withCommandExposer(final HttpCommandExposer exposer) {
         this.commandExposer = exposer;
         return this;
     }
 
-    public JettyServerBuilder withEventExposer(HttpEventExposer exposer) {
+    public JettyServerBuilder withEventExposer(final HttpEventExposer exposer) {
         this.eventExposer = exposer;
         return this;
     }
 
-    public JettyServerBuilder withJaxRs(Application application) {
+    public JettyServerBuilder withJaxRs(final Application application) {
         this.application = application;
         return this;
     }
 
-    public JettyServerBuilder withHealthCheckRegistry(HealthCheckRegistry registry) {
-        Preconditions.checkNotNull(registry);
+    public JettyServerBuilder withHealthCheckRegistry(final HealthCheckRegistry registry) {
+        checkNotNull(registry);
         this.healthCheckRegistry = registry;
         return this;
     }
 
-    public JettyServerBuilder withMetricRegistry(MetricRegistry registry) {
-        Preconditions.checkNotNull(registry);
+    public JettyServerBuilder withMetricRegistry(final MetricRegistry registry) {
+        checkNotNull(registry);
         this.metricRegistry = registry;
         return this;
     }
 
-    public JettyServerBuilder addStaticResource(String path, ResourceHandler resourceHandler) {
-        Preconditions.checkNotNull(path);
-        Preconditions.checkNotNull(resourceHandler);
+    public JettyServerBuilder addStaticResource(final String path, final ResourceHandler resourceHandler) {
+        checkNotNull(path);
+        checkNotNull(resourceHandler);
 
-        ContextHandler handler = new ContextHandler(path);
+        final ContextHandler handler = new ContextHandler(path);
         handler.setHandler(resourceHandler);
         handler.setConnectorNames(new String[]{MAIN_CONNECTOR_NAME});
 
@@ -114,16 +138,18 @@ public class JettyServerBuilder {
         return this;
     }
 
+    // ------------------------------------------------------------------------
+
     public Server build() {
-        Server server = new Server();
+        final Server server = new Server();
 
         server.addConnector(createMainConnector());
         server.addConnector(createAdminConnector());
 
-        HandlerCollection handlerCollection = new HandlerCollection();
+        final HandlerCollection handlerCollection = new HandlerCollection();
 
         // FIXME main application should not expose static content
-        for (ContextHandler contextHandler : staticContextHandlers) {
+        for (final ContextHandler contextHandler : staticContextHandlers) {
             handlerCollection.addHandler(contextHandler);
         }
 
@@ -137,7 +163,7 @@ public class JettyServerBuilder {
         server.setGracefulShutdown(config.getShutdownGracePeriod());
 
         if (config.isJmxEnabled()) {
-            MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
+            final MBeanContainer mbContainer = new MBeanContainer(ManagementFactory.getPlatformMBeanServer());
             server.getContainer().addEventListener(mbContainer);
             server.addBean(mbContainer);
 
@@ -147,26 +173,28 @@ public class JettyServerBuilder {
         return server;
     }
 
-    private Handler createMainHandler() {
-        ServletContextHandler servletHandler = new ServletContextHandler();
+    // ------------------------------------------------------------------------
 
-        if (this.queryExposer != null) {
+    private Handler createMainHandler() {
+        final ServletContextHandler servletHandler = new ServletContextHandler();
+
+        if (null != this.queryExposer) {
             servletHandler.addServlet(new ServletHolder(queryExposer), config.getQueryPath());
         }
-        if (this.commandExposer != null) {
+        if (null != this.commandExposer) {
             servletHandler.addServlet(new ServletHolder(commandExposer), config.getCommandPath());
         }
-        if (this.eventExposer != null) {
+        if (null != this.eventExposer) {
             servletHandler.addServlet(new ServletHolder(eventExposer), config.getEventPath());
         }
-        if (this.application != null) {
+        if (null != this.application) {
             servletHandler.addServlet(new ServletHolder(new ServletContainer(application)), "/*"); // FIXME root path should be configurable
         }
 
-        servletHandler.setConnectorNames(new String[]{MAIN_CONNECTOR_NAME});
+        servletHandler.setConnectorNames(new String[] { MAIN_CONNECTOR_NAME });
 
         Handler handler = servletHandler;
-        if (this.metricRegistry != null) {
+        if (null != this.metricRegistry) {
             handler = new InstrumentedHandler(this.metricRegistry, handler);
         }
 
@@ -174,48 +202,51 @@ public class JettyServerBuilder {
     }
 
     private Handler createAdminHandler() {
-        ServletContextHandler handler = new ServletContextHandler();
+        final ServletContextHandler handler = new ServletContextHandler();
 
         handler.setAttribute(
-                HealthCheckServlet.HEALTH_CHECK_REGISTRY,
-                Objects.firstNonNull(healthCheckRegistry, new HealthCheckRegistry())
+            HealthCheckServlet.HEALTH_CHECK_REGISTRY,
+            Objects.firstNonNull(healthCheckRegistry, new HealthCheckRegistry())
         );
         handler.setAttribute(
-                MetricsServlet.METRICS_REGISTRY,
-                Objects.firstNonNull(metricRegistry, new MetricRegistry())
+            MetricsServlet.METRICS_REGISTRY,
+            Objects.firstNonNull(metricRegistry, new MetricRegistry())
         );
 
         handler.addServlet(new ServletHolder(new AdminServlet()), "/*");
         handler.addServlet(new ServletHolder(new JettyPingServlet()), "/jetty/*");
-        handler.setConnectorNames(new String[]{ADMIN_CONNECTOR_NAME});
+        handler.setConnectorNames(new String[] { ADMIN_CONNECTOR_NAME });
 
         return handler;
     }
 
     @VisibleForTesting
     protected ThreadPool createServerThreadPool() {
-        QueuedThreadPool pool;
-        if (this.metricRegistry == null) {
+        final QueuedThreadPool pool;
+        if (null == this.metricRegistry) {
             pool = new QueuedThreadPool();
         } else {
             pool = new InstrumentedQueuedThreadPool(this.metricRegistry);
         }
+
         pool.setMinThreads(config.getPoolMinThreads());
         pool.setMaxThreads(config.getPoolMaxThreads());
+
         return pool;
     }
 
     @VisibleForTesting
     protected AbstractConnector createMainConnector() {
-        BlockingChannelConnector connector;
-        if (this.metricRegistry == null) {
+
+        final BlockingChannelConnector connector;
+        if (null == this.metricRegistry) {
             connector = new BlockingChannelConnector();
             connector.setPort(config.getPort());
         } else {
             connector = new InstrumentedBlockingChannelConnector(
-                    metricRegistry,
-                    config.getPort(),
-                    Clock.defaultClock()
+                metricRegistry,
+                config.getPort(),
+                Clock.defaultClock()
             );
         }
 
@@ -237,7 +268,7 @@ public class JettyServerBuilder {
     }
 
     private Connector createAdminConnector() {
-        SocketConnector connector = new SocketConnector();
+        final SocketConnector connector = new SocketConnector();
 
         connector.setHost(config.getHost());
         connector.setPort(config.getAdminPort());
@@ -247,62 +278,55 @@ public class JettyServerBuilder {
         return connector;
     }
 
-    public static int getPort(Server server) {
-        Preconditions.checkNotNull(server);
-        Preconditions.checkState(server.isStarted(), "Server must be started to return its main port.");
+    public static int getPort(final Server server) {
+        checkNotNull(server);
+        checkState(server.isStarted(), "Server must be started to return its main port.");
 
-        Optional<Connector> connector = getConnectorByName(MAIN_CONNECTOR_NAME, server);
+        final Optional<Connector> connector = getConnectorByName(MAIN_CONNECTOR_NAME, server);
         if (connector.isPresent()) {
             return connector.get().getLocalPort();
         } else {
-            throw new IllegalStateException("Impossible to find the main port. The server does not contain any Connector with the appropriate name '" + MAIN_CONNECTOR_NAME + "'");
+            throw new IllegalStateException(String.format(
+                "Impossible to find the main port. The server does not contain any Connector with the appropriate name '%s'",
+                MAIN_CONNECTOR_NAME
+            ));
         }
     }
 
-    public static int getAdminPort(Server server) {
-        Preconditions.checkNotNull(server);
-        Preconditions.checkState(server.isStarted(), "Server must be started to return its admin port.");
+    public static int getAdminPort(final Server server) {
+        checkNotNull(server);
+        checkState(server.isStarted(), "Server must be started to return its admin port.");
 
-        Optional<Connector> connector = getConnectorByName(ADMIN_CONNECTOR_NAME, server);
+        final Optional<Connector> connector = getConnectorByName(ADMIN_CONNECTOR_NAME, server);
         if (connector.isPresent()) {
             return connector.get().getLocalPort();
         } else {
-            throw new IllegalStateException("Impossible to find the admin port. The server does not contain any Connector with the appropriate name '" + ADMIN_CONNECTOR_NAME + "'");
+            throw new IllegalStateException(String.format(
+                "Impossible to find the admin port. The server does not contain any Connector with the appropriate name '%s'",
+                ADMIN_CONNECTOR_NAME
+            ));
         }
     }
 
-    public static Optional<Connector> getConnectorByName(String name, Server server) {
-        Preconditions.checkNotNull(name);
-        Connector[] connectors = Objects.firstNonNull(server.getConnectors(), EMPTY_CONNECTORS);
+    public static Optional<Connector> getConnectorByName(final String name, final Server server) {
+        checkNotNull(name);
+
+        final Connector[] connectors = Objects.firstNonNull(server.getConnectors(), EMPTY_CONNECTORS);
+
         Optional<Connector> result = Optional.absent();
-        for (Connector connector : connectors) {
+        for (final Connector connector : connectors) {
             if (name.equals(connector.getName())) {
                 if (result.isPresent()) {
-                    throw new IllegalStateException("Multiple connectors have the same name '" + name + "'");
+                    throw new IllegalStateException(String.format(
+                            "Multiple connectors have the same name '%s'",
+                            name
+                    ));
                 }
                 result = Optional.of(connector);
             }
         }
+
         return result;
-    }
-
-    /**
-     * An HTTP servlet which outputs a {@code text/plain} {@code "Jetty is in da place!"} response.
-     */
-    public static class JettyPingServlet extends HttpServlet {
-        private static final String CONTENT_TYPE = "text/plain";
-        private static final String CONTENT = "Jetty is in da place!";
-
-        @Override
-        protected void doGet(HttpServletRequest req,
-                             HttpServletResponse resp) throws ServletException, IOException {
-            resp.setStatus(HttpServletResponse.SC_OK);
-            resp.setHeader("Cache-Control", "must-revalidate,no-cache,no-store");
-            resp.setContentType(CONTENT_TYPE);
-            try (PrintWriter writer = resp.getWriter()) {
-                writer.println(CONTENT);
-            }
-        }
     }
 
 }

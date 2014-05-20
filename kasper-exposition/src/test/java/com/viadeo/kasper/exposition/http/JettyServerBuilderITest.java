@@ -38,7 +38,7 @@ import static org.mockito.Mockito.mock;
  */
 public class JettyServerBuilderITest {
 
-    private Config baseConf = ConfigFactory.parseMap(
+    private static final Config BASE_CONF = ConfigFactory.parseMap(
             ImmutableMap.<String, Object>builder()
                     .put("port", 0)
                     .put("adminPort", 0)
@@ -63,12 +63,16 @@ public class JettyServerBuilderITest {
 
     private Server server;
 
+    // ------------------------------------------------------------------------
+
     @After
     public void stopServer() throws Exception {
-        if (server != null) {
+        if (null != server) {
             server.stop();
         }
     }
+
+    // ------------------------------------------------------------------------
 
     /**
      * This test uses a {@link org.mockito.Mock} of {@link com.viadeo.kasper.exposition.http.HttpQueryExposer} because it
@@ -77,18 +81,18 @@ public class JettyServerBuilderITest {
     @Test
     public void queryExposition() throws Exception {
         // Given
-        Config queryConf = baseConf.withValue("path.query", ConfigValueFactory.fromAnyRef("/query/*"));
-        JettyConfiguration config = new JettyConfiguration(queryConf);
+        final Config queryConf = BASE_CONF.withValue("path.query", ConfigValueFactory.fromAnyRef("/query/*"));
+        final JettyConfiguration config = new JettyConfiguration(queryConf);
 
         server = new JettyServerBuilder(config)
-                .withQueryExposer(mock(HttpQueryExposer.class))
-                .build();
+                    .withQueryExposer(mock(HttpQueryExposer.class))
+                    .build();
         server.start();
 
-        int port = JettyServerBuilder.getPort(server);
+        final int port = JettyServerBuilder.getPort(server);
 
         // When
-        ClientResponse response = Client.create().resource("http://localhost:" + port).path("/query/nawak").get(ClientResponse.class);
+        final ClientResponse response = Client.create().resource("http://localhost:" + port).path("/query/nawak").get(ClientResponse.class);
 
         // Then
         assertEquals(200, response.getStatus());
@@ -101,18 +105,18 @@ public class JettyServerBuilderITest {
     @Test
     public void commandExposition() throws Exception {
         // Given
-        Config commandConf = baseConf.withValue("path.command", ConfigValueFactory.fromAnyRef("/command/*"));
-        JettyConfiguration config = new JettyConfiguration(commandConf);
+        final Config commandConf = BASE_CONF.withValue("path.command", ConfigValueFactory.fromAnyRef("/command/*"));
+        final JettyConfiguration config = new JettyConfiguration(commandConf);
 
         server = new JettyServerBuilder(config)
                 .withCommandExposer(mock(HttpCommandExposer.class))
                 .build();
         server.start();
 
-        int port = JettyServerBuilder.getPort(server);
+        final int port = JettyServerBuilder.getPort(server);
 
         // When
-        ClientResponse response = Client.create().resource("http://localhost:" + port).path("/command/nawak").get(ClientResponse.class);
+        final ClientResponse response = Client.create().resource("http://localhost:" + port).path("/command/nawak").get(ClientResponse.class);
 
         // Then
         assertEquals(200, response.getStatus());
@@ -125,41 +129,45 @@ public class JettyServerBuilderITest {
     @Test
     public void eventExposition() throws Exception {
         // Given
-        Config commandConf = baseConf.withValue("path.event", ConfigValueFactory.fromAnyRef("/event/*"));
-        JettyConfiguration config = new JettyConfiguration(commandConf);
+        final Config commandConf = BASE_CONF.withValue("path.event", ConfigValueFactory.fromAnyRef("/event/*"));
+        final JettyConfiguration config = new JettyConfiguration(commandConf);
 
         server = new JettyServerBuilder(config)
                 .withEventExposer(mock(HttpEventExposer.class))
                 .build();
         server.start();
 
-        int port = JettyServerBuilder.getPort(server);
+        final int port = JettyServerBuilder.getPort(server);
 
         // When
-        ClientResponse response = Client.create().resource("http://localhost:" + port).path("/event/nawak").get(ClientResponse.class);
+        final ClientResponse response = Client.create().resource("http://localhost:" + port).path("/event/nawak").get(ClientResponse.class);
 
         // Then
         assertEquals(200, response.getStatus());
     }
+
+    // ------------------------------------------------------------------------
 
     @Test
     public void jaxRsExposition() throws Exception {
         // Given
-        Application application = new DefaultResourceConfig(FunkyResource.class);
+        final Application application = new DefaultResourceConfig(FunkyResource.class);
 
-        server = new JettyServerBuilder(new JettyConfiguration(baseConf))
+        server = new JettyServerBuilder(new JettyConfiguration(BASE_CONF))
                 .withJaxRs(application)
                 .build();
         server.start();
 
-        int port = JettyServerBuilder.getPort(server);
+        final int port = JettyServerBuilder.getPort(server);
 
         // When
-        ClientResponse response = Client.create().resource("http://localhost:" + port).path("/funkyResource").get(ClientResponse.class);
+        final ClientResponse response = Client.create().resource("http://localhost:" + port).path("/funkyResource").get(ClientResponse.class);
 
         // Then
         assertEquals(200, response.getStatus());
     }
+
+    // ------------------------------------------------------------------------
 
     @Path("/funkyResource")
     public static class FunkyResource {
@@ -172,19 +180,19 @@ public class JettyServerBuilderITest {
     @Test
     public void staticDocExposition() throws Exception {
         // Given
-        ResourceHandler resourceHandler = new ResourceHandler();
+        final ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setResourceBase(Resources.getResource("META-INF/resources/doc").toExternalForm());
         resourceHandler.setWelcomeFiles(new String[]{"index.htm"});
 
-        server = new JettyServerBuilder(new JettyConfiguration(baseConf))
+        server = new JettyServerBuilder(new JettyConfiguration(BASE_CONF))
                 .addStaticResource("/doc", resourceHandler)
                 .build();
         server.start();
 
-        int port = JettyServerBuilder.getPort(server);
+        final int port = JettyServerBuilder.getPort(server);
 
         // When
-        ClientResponse response = Client.create().resource("http://localhost:" + port).path("/doc/index.htm").get(ClientResponse.class);
+        final ClientResponse response = Client.create().resource("http://localhost:" + port).path("/doc/index.htm").get(ClientResponse.class);
 
         // Then
         assertEquals(200, response.getStatus());
@@ -193,14 +201,14 @@ public class JettyServerBuilderITest {
     @Test
     public void pingExposition() throws Exception {
         // Given
-        server = new JettyServerBuilder(new JettyConfiguration(baseConf))
+        server = new JettyServerBuilder(new JettyConfiguration(BASE_CONF))
                 .build();
         server.start();
 
-        int port = JettyServerBuilder.getAdminPort(server);
+        final int port = JettyServerBuilder.getAdminPort(server);
 
         // When
-        ClientResponse response = Client.create().resource("http://localhost:" + port).path("/ping").get(ClientResponse.class);
+        final ClientResponse response = Client.create().resource("http://localhost:" + port).path("/ping").get(ClientResponse.class);
 
         // Then
         assertEquals(200, response.getStatus());
@@ -210,14 +218,14 @@ public class JettyServerBuilderITest {
     @Test
     public void adminExposition() throws Exception {
         // Given
-        server = new JettyServerBuilder(new JettyConfiguration(baseConf))
+        server = new JettyServerBuilder(new JettyConfiguration(BASE_CONF))
                 .build();
         server.start();
 
-        int port = JettyServerBuilder.getAdminPort(server);
+        final int port = JettyServerBuilder.getAdminPort(server);
 
         // When
-        ClientResponse response = Client.create().resource("http://localhost:" + port).path("/").get(ClientResponse.class);
+        final ClientResponse response = Client.create().resource("http://localhost:" + port).path("/").get(ClientResponse.class);
 
         // Then
         assertEquals(200, response.getStatus());
@@ -226,7 +234,7 @@ public class JettyServerBuilderITest {
     @Test
     public void healthCheckExposition() throws Exception {
         // Given
-        HealthCheckRegistry registry = new HealthCheckRegistry();
+        final HealthCheckRegistry registry = new HealthCheckRegistry();
         registry.register("pouik", new HealthCheck() {
             @Override
             protected Result check() throws Exception {
@@ -234,20 +242,22 @@ public class JettyServerBuilderITest {
             }
         });
 
-        server = new JettyServerBuilder(new JettyConfiguration(baseConf))
+        server = new JettyServerBuilder(new JettyConfiguration(BASE_CONF))
                 .withHealthCheckRegistry(registry)
                 .build();
         server.start();
 
-        int port = JettyServerBuilder.getAdminPort(server);
+        final int port = JettyServerBuilder.getAdminPort(server);
 
         // When
-        ClientResponse response = Client.create().resource("http://localhost:" + port).path("/healthcheck").get(ClientResponse.class);
+        final ClientResponse response = Client.create().resource("http://localhost:" + port).path("/healthcheck").get(ClientResponse.class);
 
         // Then
         assertEquals(200, response.getStatus());
         assertThat(response.getEntity(String.class), StringContains.containsString("pouik"));
     }
+
+    // ------------------------------------------------------------------------
 
     @Test
     @Ignore
@@ -260,17 +270,16 @@ public class JettyServerBuilderITest {
      */
     public void jmx() throws Exception {
         // Given
-        int jmxPort = 1099;
-        String url = "service:jmx:rmi:///jndi/rmi://localhost:" + jmxPort + "/jmxrmi";
-        JMXServiceURL serviceUrl = new JMXServiceURL(url);
+        final int jmxPort = 1099;
+        final String url = "service:jmx:rmi:///jndi/rmi://localhost:" + jmxPort + "/jmxrmi";
+        final JMXServiceURL serviceUrl = new JMXServiceURL(url);
 
-        Config jmxConf = baseConf.withValue("jmx.enabled", ConfigValueFactory.fromAnyRef(true));
-        server = new JettyServerBuilder(new JettyConfiguration(jmxConf))
-                .build();
+        final Config jmxConf = BASE_CONF.withValue("jmx.enabled", ConfigValueFactory.fromAnyRef(true));
+        server = new JettyServerBuilder(new JettyConfiguration(jmxConf)).build();
         server.start();
 
         // When
-        JMXConnector connector = JMXConnectorFactory.connect(serviceUrl);
+        final JMXConnector connector = JMXConnectorFactory.connect(serviceUrl);
 
         // Then
         assertNotNull(connector);
@@ -279,17 +288,18 @@ public class JettyServerBuilderITest {
     @Test
     public void jettyPingExposition() throws Exception {
         // Given
-        server = new JettyServerBuilder(new JettyConfiguration(baseConf))
+        server = new JettyServerBuilder(new JettyConfiguration(BASE_CONF))
                 .build();
         server.start();
 
-        int port = JettyServerBuilder.getAdminPort(server);
+        final int port = JettyServerBuilder.getAdminPort(server);
 
         // When
-        ClientResponse response = Client.create().resource("http://localhost:" + port).path("/jetty").get(ClientResponse.class);
+        final ClientResponse response = Client.create().resource("http://localhost:" + port).path("/jetty").get(ClientResponse.class);
 
         // Then
         assertEquals(200, response.getStatus());
         assertEquals("Jetty is in da place!\n", response.getEntity(String.class));
     }
+
 }

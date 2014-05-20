@@ -13,39 +13,53 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 public class JettyConfigurationUTest {
+
     @Test
     public void getAcceptors_auto() {
-        JettyConfiguration conf = new JettyConfiguration(ConfigFactory.empty().withValue("acceptorThreads", ConfigValueFactory.fromAnyRef("auto")));
+        final JettyConfiguration conf = new JettyConfiguration(ConfigFactory.empty()
+                .withValue("acceptorThreads", ConfigValueFactory.fromAnyRef("auto"))
+        );
         assertEquals(JettyConfiguration.DEFAULT_ACCEPTORS, conf.getAcceptors());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void getAcceptors_with_bad_string_throws_exception() {
-        JettyConfiguration conf = new JettyConfiguration(ConfigFactory.empty().withValue("acceptorThreads", ConfigValueFactory.fromAnyRef("bad-string")));
+        final JettyConfiguration conf = new JettyConfiguration(ConfigFactory.empty()
+                .withValue("acceptorThreads", ConfigValueFactory.fromAnyRef("bad-string"))
+        );
         conf.getAcceptors();
     }
 
     @Test
     public void getMaxBuffers_auto() {
-        JettyConfiguration conf = new JettyConfiguration(ConfigFactory.empty().withValue("maxBufferCount", ConfigValueFactory.fromAnyRef("auto")));
+        final JettyConfiguration conf = new JettyConfiguration(ConfigFactory.empty()
+                .withValue("maxBufferCount", ConfigValueFactory.fromAnyRef("auto"))
+        );
         assertEquals(JettyConfiguration.DEFAULT_ACCEPTORS, conf.getMaxBuffers());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void getMaxBuffers_with_bad_string_throws_exception() {
-        JettyConfiguration conf = new JettyConfiguration(ConfigFactory.empty().withValue("maxBufferCount", ConfigValueFactory.fromAnyRef("bad-string")));
+        final JettyConfiguration conf = new JettyConfiguration(ConfigFactory.empty()
+                .withValue("maxBufferCount", ConfigValueFactory.fromAnyRef("bad-string"))
+        );
         conf.getMaxBuffers();
     }
 
     @Test
     public void getPoolMinThreads_auto() {
-        JettyConfiguration conf = new JettyConfiguration(ConfigFactory.empty().withValue("minThreads", ConfigValueFactory.fromAnyRef("auto")));
+        final JettyConfiguration conf = new JettyConfiguration(ConfigFactory.empty()
+                .withValue("minThreads", ConfigValueFactory.fromAnyRef("auto"))
+        );
         assertEquals(JettyConfiguration.DEFAULT_MIN_THREADS, conf.getPoolMinThreads());
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void getPoolMinThreads_with_bad_string_throws_exception() {
-        JettyConfiguration conf = new JettyConfiguration(ConfigFactory.empty().withValue("minThreads", ConfigValueFactory.fromAnyRef("bad-string")));
+        final JettyConfiguration conf = new JettyConfiguration(ConfigFactory.empty()
+                .withValue("minThreads", ConfigValueFactory.fromAnyRef("bad-string"))
+        );
         conf.getPoolMinThreads();
     }
+
 }

@@ -22,6 +22,7 @@ import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.impl.DefaultContext;
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -68,11 +69,65 @@ public class JettyHttpServerITest {
         }
     };
 
+    // ---- Dummy domain definition -------------------------------------------
+
+    @XKasperUnregistered
+    @XKasperDomain(prefix = "foo", label = "foobar", description = "foobar foo foo")
+    public static class Foobar implements Domain { }
+
+    @XKasperUnregistered
+    public static class DummyQuery implements Query {
+        public DummyQuery() { }
+    }
+
+    public static class DummyQueryResult implements QueryResult {
+        public String foo = "foo";
+    }
+
+    @XKasperUnregistered
+    public static class DummyCommand implements Command {
+        public DummyCommand() { }
+    }
+
+    @XKasperUnregistered
+    public static class DummyEvent extends Event {
+        public DummyEvent() { }
+    }
+
+    @XKasperUnregistered
+    @XKasperQueryHandler(domain = Foobar.class)
+    public static class DummyQueryService extends QueryHandler<DummyQuery, DummyQueryResult> {
+        @Override
+        public QueryResponse<DummyQueryResult> retrieve(final DummyQuery query) throws Exception {
+            return QueryResponse.of(new DummyQueryResult());
+        }
+    }
+
+    @XKasperUnregistered
+    @XKasperCommandHandler(domain = Foobar.class)
+    public static class DummyCommandHandler extends CommandHandler<DummyCommand> {
+        @Override
+        public CommandResponse handle(final DummyCommand command) throws Exception {
+            return CommandResponse.ok();
+        }
+    }
+
+    @XKasperUnregistered
+    @XKasperCommandHandler(domain = Foobar.class)
+    public static class DummyEventListener extends EventListener<DummyEvent> {
+        @Override
+        public void handle(final DummyEvent event){ }
+    }
+
+    // ------------------------------------------------------------------------
+
     @Test
     public void server_exposes_query_handlers() throws Exception {
+        // Given
+        final KasperClient client = new KasperClientBuilder().queryBaseLocation(getServerUri() + "/kasper/query/").create();
+
         // When
-        KasperClient client = new KasperClientBuilder().queryBaseLocation(getServerUri() + "/kasper/query/").create();
-        QueryResponse<DummyQueryResult> result = client.query(new DefaultContext(), new DummyQuery(), DummyQueryResult.class);
+        final QueryResponse<DummyQueryResult> result = client.query(new DefaultContext(), new DummyQuery(), DummyQueryResult.class);
 
         // Then
         assertNotNull(result.getResult());
@@ -81,9 +136,11 @@ public class JettyHttpServerITest {
 
     @Test
     public void server_exposes_command_handlers() throws Exception {
+        // Given
+        final KasperClient client = new KasperClientBuilder().commandBaseLocation(getServerUri() + "/kasper/command/").create();
+
         // When
-        KasperClient client = new KasperClientBuilder().commandBaseLocation(getServerUri() + "/kasper/command/").create();
-        CommandResponse result = client.send(new DefaultContext(), new DummyCommand());
+        final CommandResponse result = client.send(new DefaultContext(), new DummyCommand());
 
         // Then
         assertEquals(CommandResponse.Status.OK, result.getStatus());
@@ -91,8 +148,10 @@ public class JettyHttpServerITest {
 
     @Test
     public void server_exposes_event_listeners() throws Exception {
+        // Given
+        final KasperClient client = new KasperClientBuilder().eventBaseLocation(getServerUri() + "/kasper/event/").create();
+
         // When
-        KasperClient client = new KasperClientBuilder().eventBaseLocation(getServerUri() + "/kasper/event/").create();
         client.emit(new DefaultContext(), new DummyEvent());
 
         // Then
@@ -100,22 +159,25 @@ public class JettyHttpServerITest {
 
     @Test
     public void server_exposes_json_documentation() throws Exception {
+        // Given
+        final Client client = Client.create();
+
         // When
-        Client client = Client.create();
-        ClientResponse response = client.resource(getServerUri()).path("/kasper/doc/domains").get(ClientResponse.class);
+        final ClientResponse response = client.resource(getServerUri()).path("/kasper/doc/domains").get(ClientResponse.class);
 
         // Then
         assertEquals(200, response.getStatus());
         assertEquals("application/json", response.getHeaders().get("Content-Type").get(0));
-        String json = response.getEntity(String.class);
-        assertThat(json, StringContains.containsString("foobar"));
+        assertThat(response.getEntity(String.class), StringContains.containsString("foobar"));
     }
 
     @Test
     public void server_exposes_static_resources_for_the_documentation() throws Exception {
+        // Given
+        final Client client = Client.create();
+
         // When
-        Client client = Client.create();
-        ClientResponse response = client.resource(getServerUri()).path("/doc/index.htm").get(ClientResponse.class);
+        final ClientResponse response = client.resource(getServerUri()).path("/doc/index.htm").get(ClientResponse.class);
 
         // Then
         assertEquals(200, response.getStatus());
@@ -123,13 +185,17 @@ public class JettyHttpServerITest {
 
     @Test
     public void server_exposes_admin_on_different_port() throws Exception {
+        // Given
+        final Client client = Client.create();
+
         // When
-        Client client = Client.create();
-        ClientResponse response = client.resource(getAdminServerUri()).get(ClientResponse.class);
+        final ClientResponse response = client.resource(getAdminServerUri()).get(ClientResponse.class);
 
         // Then
         assertEquals(200, response.getStatus());
     }
+
+    // ------------------------------------------------------------------------
 
     private String getServerUri() {
         return "http://localhost:" + server.getPort();
@@ -141,7 +207,7 @@ public class JettyHttpServerITest {
 
     private static JettyHttpServer createServer() {
 
-        ImmutableMap<String, Object> httpConfig = ImmutableMap.<String, Object>builder()
+        final ImmutableMap<String, Object> httpConfig = ImmutableMap.<String, Object>builder()
                 .put("port", 0)
                 .put("adminPort", 0)
                 .put("bindHost", "127.0.0.1")
@@ -165,7 +231,7 @@ public class JettyHttpServerITest {
                 .put("maxBufferCount", 1024)
                 .build();
 
-        Config config = ConfigFactory.empty()
+        final Config config = ConfigFactory.empty()
                 .withFallback(ConfigFactory.parseMap(httpConfig).atPath("runtime.http"))
                 .withValue("infrastructure.graphite.port", ConfigValueFactory.fromAnyRef(4400))
                 .withValue("infrastructure.graphite.host", ConfigValueFactory.fromAnyRef("localhost"))
@@ -173,10 +239,10 @@ public class JettyHttpServerITest {
                 .withValue("kasper.boot.scanPrefixes", ConfigValueFactory.fromAnyRef(Arrays.asList("com.viadeo.platform.http")))
                 .withValue("runtime.spring.domains", ConfigValueFactory.fromAnyRef(Arrays.asList("com.viadeo.platform.http.JettyHttpServerTest.FoobarConfiguration")));
 
-        HttpCommandExposerPlugin httpCommandExposerPlugin = new HttpCommandExposerPlugin();
-        HttpQueryExposerPlugin httpQueryExposerPlugin = new HttpQueryExposerPlugin();
-        HttpEventExposerPlugin httpEventExposerPlugin = new HttpEventExposerPlugin();
-        DocumentationPlugin documentationPlugin = new DocumentationPlugin();
+        final HttpCommandExposerPlugin httpCommandExposerPlugin = new HttpCommandExposerPlugin();
+        final HttpQueryExposerPlugin httpQueryExposerPlugin = new HttpQueryExposerPlugin();
+        final HttpEventExposerPlugin httpEventExposerPlugin = new HttpEventExposerPlugin();
+        final DocumentationPlugin documentationPlugin = new DocumentationPlugin();
 
         new Platform.Builder(new KasperPlatformConfiguration())
                 .withEventBus(new KasperEventBus(KasperEventBus.Policy.ASYNCHRONOUS))
@@ -186,81 +252,32 @@ public class JettyHttpServerITest {
                 .addPlugin(httpEventExposerPlugin)
                 .addPlugin(documentationPlugin)
                 .addDomainBundle(
-                        new DomainBundle.Builder(new Foobar())
-                                .with(new DummyCommandHandler())
-                                .with(new DummyQueryService())
-                                .with(new DummyEventListener())
-                                .build()
+                    new DomainBundle.Builder(new Foobar())
+                        .with(new DummyCommandHandler())
+                        .with(new DummyQueryService())
+                        .with(new DummyEventListener())
+                        .build()
                 )
                 .build();
 
-        DefaultResourceConfig resourceConfig = new DefaultResourceConfig();
+        final DefaultResourceConfig resourceConfig = new DefaultResourceConfig();
         resourceConfig.getSingletons().add(documentationPlugin.getKasperDocResource());
 
-        ResourceHandler resourceHandler = new ResourceHandler();
+        final ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setResourceBase(Resources.getResource("META-INF/resources/doc").toExternalForm());
         resourceHandler.setWelcomeFiles(new String[]{"index.htm"});
 
         return new JettyHttpServer(
-                new JettyConfiguration(config.getConfig("runtime.http"))
-                , httpQueryExposerPlugin.getHttpExposer()
-                , httpCommandExposerPlugin.getHttpExposer()
-                , httpEventExposerPlugin.getHttpExposer()
-                , resourceConfig
-                , new HealthCheckRegistry()
-                , KasperMetrics.getMetricRegistry()
-                , ImmutableMap.<String, ResourceHandler>builder().put("/doc", resourceHandler).build()
+            new JettyConfiguration(config.getConfig("runtime.http")),
+            httpQueryExposerPlugin.getHttpExposer(),
+            httpCommandExposerPlugin.getHttpExposer(),
+            httpEventExposerPlugin.getHttpExposer(),
+            resourceConfig,
+            new HealthCheckRegistry(),
+            KasperMetrics.getMetricRegistry(),
+            ImmutableMap.<String, ResourceHandler>builder().put("/doc", resourceHandler).build()
         );
     }
 
-
-    // Dummy domain definition
-
-    @XKasperDomain(prefix = "foo", label = "foobar", description = "foobar foo foo")
-    public static class Foobar implements Domain {
-    }
-
-    public static class DummyQuery implements Query {
-        public DummyQuery() {
-        }
-    }
-
-    public static class DummyQueryResult implements QueryResult {
-        public String foo = "foo";
-    }
-
-    public static class DummyCommand implements Command {
-        public DummyCommand() {
-        }
-    }
-
-    public static class DummyEvent extends Event {
-        public DummyEvent() {
-        }
-    }
-
-    @XKasperQueryHandler(domain = Foobar.class)
-    public static class DummyQueryService extends QueryHandler<DummyQuery, DummyQueryResult> {
-        @Override
-        public QueryResponse<DummyQueryResult> retrieve(DummyQuery query) throws Exception {
-            return QueryResponse.of(new DummyQueryResult());
-        }
-    }
-
-    @XKasperCommandHandler(domain = Foobar.class)
-    public static class DummyCommandHandler extends CommandHandler<DummyCommand> {
-
-        @Override
-        public CommandResponse handle(DummyCommand command) throws Exception {
-            return CommandResponse.ok();
-        }
-    }
-
-    @XKasperCommandHandler(domain = Foobar.class)
-    public static class DummyEventListener extends EventListener<DummyEvent> {
-
-        @Override
-        public void handle(final DummyEvent event){ }
-    }
 }
 

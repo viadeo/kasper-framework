@@ -32,9 +32,14 @@ public class JettyHttpServerUTest {
     @Mock
     ResourceConfig resourceConfig;
 
+    // ------------------------------------------------------------------------
+
     @Test(expected = IllegalStateException.class)
     public void testStopThrowIllegalStateExceptionWhenNotStarted() throws Exception {
-        JettyHttpServer server = new JettyHttpServer(
+        // Given
+
+        // When
+        final JettyHttpServer server = new JettyHttpServer(
                 configuration,
                 httpQueryExposer,
                 httpCommandExposer,
@@ -45,5 +50,8 @@ public class JettyHttpServerUTest {
         );
 
         server.stop();
+
+        // Then
     }
+
 }

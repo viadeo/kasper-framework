@@ -34,7 +34,7 @@ import static org.mockito.Mockito.*;
 public class JettyServerBuilderUTest {
 
     private static final String MAIN_CONNECTOR_NAME = "main";
-    Config typeSafeConfig = ConfigFactory.parseMap(ImmutableMap.<String, Object>builder()
+    private static final Config BASE_CONFIG = ConfigFactory.parseMap(ImmutableMap.<String, Object>builder()
             .put("port", "12345")
             .put("adminPort", "12345")
             .put("bindHost", "chezBibi")
@@ -58,18 +58,19 @@ public class JettyServerBuilderUTest {
             .put("maxBufferCount", 10)
             .build());
 
-    private JettyConfiguration config = new JettyConfiguration(typeSafeConfig);
+    private JettyConfiguration config = new JettyConfiguration(BASE_CONFIG);
+
+    // ------------------------------------------------------------------------
 
     @Test
     public void minimal_builder_usage() {
-        Server server = new JettyServerBuilder(config).build();
-
+        final Server server = new JettyServerBuilder(config).build();
         assertNotNull(server);
     }
 
     @Test
     public void createMainConnector() {
-        AbstractConnector connector = new JettyServerBuilder(config).createMainConnector();
+        final AbstractConnector connector = new JettyServerBuilder(config).createMainConnector();
 
         assertEquals(MAIN_CONNECTOR_NAME, connector.getName());
         assertEquals(config.getPort(), connector.getPort());
@@ -89,11 +90,14 @@ public class JettyServerBuilderUTest {
 
     @Test
     public void createMainConnector_withMetricRegistry_returns_InstrumentedConnector() {
-        AbstractConnector connector = new JettyServerBuilder(config)
+        final AbstractConnector connector = new JettyServerBuilder(config)
                 .withMetricRegistry(new MetricRegistry())
                 .createMainConnector();
 
-        assertTrue("Main connector must be an InstrumentedBlockingChannelConnector", connector instanceof InstrumentedBlockingChannelConnector);
+        assertTrue(
+                "Main connector must be an InstrumentedBlockingChannelConnector",
+                connector instanceof InstrumentedBlockingChannelConnector
+        );
     }
 
     @Test
@@ -103,8 +107,8 @@ public class JettyServerBuilderUTest {
 
     @Test
     public void getConnectorByName_with_no_matching_connectors_returns_absent() {
-        Server server = new Server();
-        SocketConnector connector = new SocketConnector();
+        final Server server = new Server();
+        final SocketConnector connector = new SocketConnector();
         connector.setName("no-name");
         server.addConnector(connector);
 
@@ -113,8 +117,8 @@ public class JettyServerBuilderUTest {
 
     @Test
     public void getConnectorByName_with_matching_connector_returns_the_connector() {
-        Server server = new Server();
-        SocketConnector connector = new SocketConnector();
+        final Server server = new Server();
+        final SocketConnector connector = new SocketConnector();
         connector.setName("pouet");
         server.addConnector(connector);
 
@@ -123,11 +127,11 @@ public class JettyServerBuilderUTest {
 
     @Test(expected = IllegalStateException.class)
     public void getConnectorByName_with_multiple_matching_connectors_throws_IllegalStateException() {
-        Server server = new Server();
-        SocketConnector connector1 = new SocketConnector();
+        final Server server = new Server();
+        final SocketConnector connector1 = new SocketConnector();
         connector1.setName("pouet");
         server.addConnector(connector1);
-        SocketConnector connector2 = new SocketConnector();
+        final SocketConnector connector2 = new SocketConnector();
         connector2.setName("pouet");
         server.addConnector(connector2);
 
@@ -136,10 +140,9 @@ public class JettyServerBuilderUTest {
 
     @Test
     public void getPort_with_well_configured_server_returns_the_port() throws Exception {
-        int port = 12345;
-
-        Server server = new Server();
-        SocketConnector connector = new SocketConnector();
+        final int port = 12345;
+        final Server server = new Server();
+        final SocketConnector connector = new SocketConnector();
         connector.setPort(port);
         connector.setName(JettyServerBuilder.MAIN_CONNECTOR_NAME);
         server.addConnector(connector);
@@ -152,8 +155,8 @@ public class JettyServerBuilderUTest {
 
     @Test(expected = IllegalStateException.class)
     public void getPort_with_server_with_wrong_connector_throws_IllegalStateException() throws Exception {
-        Server server = new Server();
-        SocketConnector connector = new SocketConnector();
+        final Server server = new Server();
+        final SocketConnector connector = new SocketConnector();
         connector.setPort(12345);
         connector.setName("bad-name");
         server.addConnector(connector);
@@ -173,7 +176,7 @@ public class JettyServerBuilderUTest {
 
     @Test(expected = IllegalStateException.class)
     public void getPort_with_server_without_connectors_throws_IllegalStateException() throws Exception {
-        Server server = new Server();
+        final Server server = new Server();
         server.start();
 
         try {
@@ -185,10 +188,10 @@ public class JettyServerBuilderUTest {
 
     @Test
     public void getAdminPort_with_well_configured_server_returns_the_port() throws Exception {
-        int port = 12345;
+        final int port = 12345;
 
-        Server server = new Server();
-        SocketConnector connector = new SocketConnector();
+        final Server server = new Server();
+        final SocketConnector connector = new SocketConnector();
         connector.setPort(port);
         connector.setName(JettyServerBuilder.ADMIN_CONNECTOR_NAME);
         server.addConnector(connector);
@@ -201,8 +204,8 @@ public class JettyServerBuilderUTest {
 
     @Test(expected = IllegalStateException.class)
     public void getAdminPort_with_server_with_wrong_connector_throws_IllegalStateException() throws Exception {
-        Server server = new Server();
-        SocketConnector connector = new SocketConnector();
+        final Server server = new Server();
+        final SocketConnector connector = new SocketConnector();
         connector.setPort(12345);
         connector.setName("bad-name");
         server.addConnector(connector);
@@ -222,7 +225,7 @@ public class JettyServerBuilderUTest {
 
     @Test(expected = IllegalStateException.class)
     public void getAdminPort_with_server_without_connectors_throws_IllegalStateException() throws Exception {
-        Server server = new Server();
+        final Server server = new Server();
         server.start();
 
         try {
@@ -235,7 +238,7 @@ public class JettyServerBuilderUTest {
     @Test
     public void build_with_metric_registry_uses_instrumented_connector() {
         // Given
-        MetricRegistry registry = spy(new MetricRegistry());
+        final MetricRegistry registry = spy(new MetricRegistry());
 
         // When
         new JettyServerBuilder(config)
@@ -250,8 +253,9 @@ public class JettyServerBuilderUTest {
     @Test
     public void build_without_metric_registry_uses_a_QueuedThreadPool() {
         // Given + When
-        ThreadPool threadPool = new JettyServerBuilder(config)
-                .build().getThreadPool();
+        final ThreadPool threadPool = new JettyServerBuilder(config)
+                .build()
+                .getThreadPool();
 
         // Then
         assertTrue("Thread pool must be a QueuedThreadPool", threadPool instanceof QueuedThreadPool);
@@ -260,7 +264,7 @@ public class JettyServerBuilderUTest {
     @Test
     public void build_with_metric_registry_uses_an_InstrumentedQueuedThreadPool() {
         // Given + When
-        ThreadPool threadPool = new JettyServerBuilder(config)
+        final ThreadPool threadPool = new JettyServerBuilder(config)
                 .withMetricRegistry(new MetricRegistry())
                 .build()
                 .getThreadPool();
@@ -272,21 +276,21 @@ public class JettyServerBuilderUTest {
     @Test
     public void build_without_metric_registry_uses_non_instrumented_handler_for_main_handler() {
         // Given + When
-        Server server = new JettyServerBuilder(config)
-                .build();
+        final Server server = new JettyServerBuilder(config)
+                                .build();
 
         // Then
         // Reverse strategy to test if the main handler "/" is not instrumented:
         // 1. get all instrumented handlers
         // 2. check that the main handler is not in these handlers
-        List<Handler> instrumentedHandlers = Arrays.asList(server.getChildHandlersByClass(InstrumentedHandler.class));
+        final List<Handler> instrumentedHandlers = Arrays.asList(server.getChildHandlersByClass(InstrumentedHandler.class));
         assertFalse("Main handler must not be instrumented", containsMainHandler(instrumentedHandlers));
     }
 
     @Test
     public void build_with_metric_registry_uses_instrumented_handler_for_main_handler() {
         // Given + When
-        Server server = new JettyServerBuilder(config)
+        final Server server = new JettyServerBuilder(config)
                 .withMetricRegistry(new MetricRegistry())
                 .build();
 
@@ -294,21 +298,23 @@ public class JettyServerBuilderUTest {
         // Reverse strategy to test if the main handler "/" is instrumented:
         // 1. get all instrumented handlers
         // 2. check that the main handler is in these handlers
-        List<Handler> instrumentedHandlers = Arrays.asList(server.getChildHandlersByClass(InstrumentedHandler.class));
+        final List<Handler> instrumentedHandlers = Arrays.asList(server.getChildHandlersByClass(InstrumentedHandler.class));
         assertTrue("Main handler must be instrumented", containsMainHandler(instrumentedHandlers));
     }
 
-    private boolean containsMainHandler(List<Handler> instrumentedHandlers) {
+    // ------------------------------------------------------------------------
+
+    private boolean containsMainHandler(final List<Handler> instrumentedHandlers) {
         return Iterables.any(instrumentedHandlers, new Predicate<Handler>() {
             @Override
             public boolean apply(final Handler input) {
-                if (input == null) {
+                if (null == input) {
                     return false;
                 }
-                InstrumentedHandler instrumentedHandler = (InstrumentedHandler) input;
+                final InstrumentedHandler instrumentedHandler = (InstrumentedHandler) input;
                 if (instrumentedHandler.getHandler() instanceof ContextHandler) {
-                    ContextHandler contextHandler = (ContextHandler) instrumentedHandler.getHandler();
-                    String[] connectorNames = contextHandler.getConnectorNames();
+                    final ContextHandler contextHandler = (ContextHandler) instrumentedHandler.getHandler();
+                    final String[] connectorNames = contextHandler.getConnectorNames();
                     if (Arrays.asList(connectorNames).contains(MAIN_CONNECTOR_NAME)) {
                         return contextHandler.getContextPath().equals("/");
                     }
@@ -317,4 +323,5 @@ public class JettyServerBuilderUTest {
             }
         });
     }
+
 }
