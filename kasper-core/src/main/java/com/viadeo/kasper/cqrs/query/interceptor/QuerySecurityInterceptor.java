@@ -14,7 +14,7 @@ import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.security.KasperSecurityException;
 import com.viadeo.kasper.security.SecurityStrategy;
-import com.viadeo.kasper.security.exception.KasperSecurityException;
+import com.viadeo.kasper.security.KasperSecurityException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

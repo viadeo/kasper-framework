@@ -27,7 +27,7 @@ import com.viadeo.kasper.security.callback.ApplicationIdValidator;
 import com.viadeo.kasper.security.callback.IdentityContextProvider;
 import com.viadeo.kasper.security.callback.IpAddressValidator;
 import com.viadeo.kasper.security.callback.SecurityTokenValidator;
-import com.viadeo.kasper.security.exception.*;
+import com.viadeo.kasper.security.*;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
