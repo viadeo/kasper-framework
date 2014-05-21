@@ -30,6 +30,8 @@ package com.viadeo.kasper.security.authz.permission.impl;
 
 
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.security.authz.permission.Permission;
 
 import java.util.ArrayList;
@@ -40,18 +42,38 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Role {
 
+    private KasperID kasperId;
     private String name;
     private List<Permission> permissions;
 
     // ------------------------------------------------------------------------
 
-    public Role() { }
+    public Role() {
+        this.kasperId = new DefaultKasperId();
+    }
+
+    public Role(final KasperID kasperId) {
+        this.kasperId = kasperId;
+    }
 
     public Role(final String name) {
+        this.kasperId = new DefaultKasperId();
+        setName(checkNotNull(name));
+    }
+
+    public Role(final KasperID kasperId, final String name) {
+        this.kasperId = kasperId;
         setName(checkNotNull(name));
     }
 
     public Role(final String name, final List<Permission> permissions) {
+        this.kasperId = new DefaultKasperId();
+        setName(checkNotNull(name));
+        setPermissions(checkNotNull(permissions));
+    }
+
+    public Role(final KasperID kasperId, final String name, final List<Permission> permissions) {
+        this.kasperId = kasperId;
         setName(checkNotNull(name));
         setPermissions(checkNotNull(permissions));
     }
@@ -74,6 +96,14 @@ public class Role {
         this.permissions = checkNotNull(permissions);
     }
 
+    public KasperID getKasperId() {
+        return kasperId;
+    }
+
+    public void setKasperId(KasperID kasperId) {
+        this.kasperId = kasperId;
+    }
+
     // ------------------------------------------------------------------------
 
     public void add(final Permission permission) {
@@ -92,7 +122,7 @@ public class Role {
     }
 
     public void addAll(final Collection<Permission> perms) {
-        if ((null != perms) && ( ! perms.isEmpty())) {
+        if ((null != perms) && (!perms.isEmpty())) {
             if (null == this.permissions) {
                 this.permissions = new ArrayList<Permission>(perms.size());
             }
@@ -101,9 +131,10 @@ public class Role {
     }
 
     public void removeAll(final Collection<Permission> perms) {
-        if ((null != perms) && ( ! perms.isEmpty())) {
+        if ((null != perms) && (!perms.isEmpty())) {
             if (null != this.permissions) {
-                permissions.removeAll(perms);;
+                permissions.removeAll(perms);
+                ;
             }
         }
     }
@@ -111,7 +142,7 @@ public class Role {
     // ------------------------------------------------------------------------
 
     public boolean isPermitted(final Permission p) {
-        if ((null != this.permissions) && ( ! this.permissions.isEmpty())) {
+        if ((null != this.permissions) && (!this.permissions.isEmpty())) {
             for (final Permission perm : this.permissions) {
                 if (perm.implies(p)) {
                     return true;

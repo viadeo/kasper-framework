@@ -42,7 +42,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class Actor {
+public abstract class Actor {
 
     private List<Role> roles;
     private List<Permission> permissions;

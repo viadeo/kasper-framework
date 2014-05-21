@@ -26,9 +26,10 @@ public class DefaultAuthorizationSecurityManager implements AuthorizationSecurit
         return new WildcardPermission(checkNotNull(permission));
     }
 
-    // TODO
+
     public Actor getActor(final Context context) {
-        return new Actor();
+        // TODO
+        return null;
     }
 
     public void checkRole(final String role, final Actor actor) throws KasperUnauthorizedException {

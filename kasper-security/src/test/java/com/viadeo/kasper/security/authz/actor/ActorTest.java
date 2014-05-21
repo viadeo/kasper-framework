@@ -45,7 +45,7 @@ public class ActorTest {
 
     @Before
     public void setUp() {
-        actor = new Actor();
+        actor = new User();
         role1 = new Role("role1");
         role2 = new Role("role2");
         role3 = new Role("role3");

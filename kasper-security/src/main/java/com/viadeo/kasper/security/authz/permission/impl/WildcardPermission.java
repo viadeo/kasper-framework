@@ -28,6 +28,8 @@
 
 package com.viadeo.kasper.security.authz.permission.impl;
 
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.security.authz.permission.Permission;
 
 import java.io.Serializable;
@@ -42,17 +44,34 @@ public class WildcardPermission implements Permission, Serializable {
     protected static final String SUBPART_DIVIDER_TOKEN = ",";
     protected static final boolean DEFAULT_CASE_SENSITIVE = false;
 
+    private KasperID kasperId;
     private List<Set<String>> parts;
 
     // ------------------------------------------------------------------------
 
-    protected WildcardPermission() { }
+    protected WildcardPermission() {
+        this.kasperId = new DefaultKasperId();
+    }
+
+    protected WildcardPermission(final KasperID kasperId) {
+        this.kasperId = kasperId;
+    }
 
     public WildcardPermission(final String wildcardString) {
         this(wildcardString, DEFAULT_CASE_SENSITIVE);
     }
 
+    public WildcardPermission(final KasperID kasperId, final String wildcardString) {
+        this(kasperId, wildcardString, DEFAULT_CASE_SENSITIVE);
+    }
+
     public WildcardPermission(final String wildcardString, final boolean caseSensitive) {
+        this.kasperId = new DefaultKasperId();
+        setParts(wildcardString, checkNotNull(caseSensitive));
+    }
+
+    public WildcardPermission(final KasperID kasperId, final String wildcardString, final boolean caseSensitive) {
+        this.kasperId = kasperId;
         setParts(wildcardString, checkNotNull(caseSensitive));
     }
 
@@ -103,6 +122,10 @@ public class WildcardPermission implements Permission, Serializable {
 
     protected List<Set<String>> getParts() {
         return this.parts;
+    }
+
+    public KasperID getKasperId() {
+        return kasperId;
     }
 
     // ------------------------------------------------------------------------

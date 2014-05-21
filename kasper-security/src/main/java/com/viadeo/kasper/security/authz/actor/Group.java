@@ -25,11 +25,11 @@ public class Group extends Actor {
 
     // ------------------------------------------------------------------------
 
-    public Group(final List<Role> roles,
+    public Group(final String name,
+                 final KasperID kasperId,
+                 final List<Role> roles,
                  final List<Permission> permissions,
-                 final List<User> users,
-                 final String name,
-                 final KasperID kasperId) {
+                 final List<User> users) {
         super(kasperId, roles, permissions);
         this.users = checkNotNull(users);
         this.name = checkNotNull(name);

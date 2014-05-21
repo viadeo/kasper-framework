@@ -33,7 +33,7 @@ public class User extends Actor {
         super(new DefaultKasperId(), roles, permissions);
     }
 
-    public User(final List<Role> roles, final List<Permission> permissions, final KasperID kasperId) {
+    public User(final KasperID kasperId, final List<Role> roles, final List<Permission> permissions) {
         super(kasperId, roles, permissions);
     }
 

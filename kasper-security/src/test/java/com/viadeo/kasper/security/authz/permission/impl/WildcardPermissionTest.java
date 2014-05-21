@@ -39,11 +39,6 @@ import static org.junit.Assert.assertTrue;
 public class WildcardPermissionTest {
 
     @Test(expected = IllegalArgumentException.class)
-    public void testNull() {
-        new WildcardPermission(null);
-    }
-
-    @Test(expected = IllegalArgumentException.class)
     public void testEmpty() {
         new WildcardPermission("");
     }
