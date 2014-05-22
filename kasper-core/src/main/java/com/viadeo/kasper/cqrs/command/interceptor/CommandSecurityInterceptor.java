@@ -37,7 +37,9 @@ public class CommandSecurityInterceptor<C extends Command> implements Intercepto
         try {
             securityStrategy.beforeRequest(context);
         } catch (final KasperSecurityException e) {
-            return CommandResponse.error(e.getKasperReason());
+            //temporary commented the return error before real interceptor activation
+            LOGGER.warn(String.format("%s generated error : %s", input.toString(), e.getKasperReason()));
+            //return CommandResponse.error(e.getKasperReason());
         }
 
         final CommandResponse commandResponse = chain.next(input, context);
