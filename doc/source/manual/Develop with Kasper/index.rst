@@ -62,7 +62,6 @@ And encourages you to use some software patterns in your developments :
     Queries
     Validation
     Aliasing
-    HadoopIndex
     Context
     Helpers
     Testing
