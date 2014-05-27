@@ -82,7 +82,7 @@ public interface SecurityConfiguration {
         @Override
         public void validate(final String securityToken)
                 throws KasperMissingSecurityTokenException,
-                KasperInvalidSecurityTokenException {
+                       KasperInvalidSecurityTokenException {
             /* do nothing */
         }
     }

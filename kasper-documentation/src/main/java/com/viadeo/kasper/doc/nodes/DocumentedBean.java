@@ -38,13 +38,14 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
     public interface Extractor {
 
         boolean accept(Field field);
+
         Optional<DocumentedProperty> extract(Field field, Class clazz);
 
     }
 
     // ------------------------------------------------------------------------
 
-    public static abstract class BaseExtractor implements Extractor{
+    public abstract static class BaseExtractor implements Extractor{
 
         private final Extractor next;
 

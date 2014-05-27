@@ -22,7 +22,7 @@ public class KasperUnitOfWorkFactory implements UnitOfWorkFactory {
      * Initializes the Unit of Work Factory to create Unit of Work that are not bound to any transaction.
      */
     public KasperUnitOfWorkFactory() {
-        this(null);
+        this.transactionManager = null;
     }
 
     // ------------------------------------------------------------------------
