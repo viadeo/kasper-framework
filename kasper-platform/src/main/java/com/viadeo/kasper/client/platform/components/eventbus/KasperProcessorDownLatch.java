@@ -36,6 +36,7 @@ public class KasperProcessorDownLatch {
     private CountDownLatch countDownLatch;
     private boolean awaiting;
     private int nbProcessors;
+    private Integer synchroFlag = 42;
 
     // ------------------------------------------------------------------------
 
@@ -61,8 +62,10 @@ public class KasperProcessorDownLatch {
         nbProcessors = runAllProcessors();
 
         LOGGER.info("Starting all scheduled event processor : {}", nbProcessors);
-        
-        countDownLatch = new CountDownLatch(nbProcessors);
+
+        synchronized(synchroFlag) {
+            countDownLatch = new CountDownLatch(nbProcessors);
+        }
         awaiting = true;
 
         final boolean succeed;

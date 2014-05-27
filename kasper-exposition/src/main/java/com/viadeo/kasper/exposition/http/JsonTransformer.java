@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
+import static java.util.Map.Entry;
 
 public class JsonTransformer {
     private static final Logger LOGGER = LoggerFactory.getLogger(JsonTransformer.class);
@@ -203,7 +204,7 @@ public class JsonTransformer {
     public static class JsonTransformerException extends RuntimeException {
         private static final long serialVersionUID = -6254523548731940786L;
 
-        public JsonTransformerException(String message) {
+        public JsonTransformerException(final String message) {
             super(message);
         }
     }
@@ -213,8 +214,8 @@ public class JsonTransformer {
     protected JsonTransformer(final Optional<Class> optionalClazz, final Map<String, String[]> parameters) {
         this.current = new NNode("root", false);
 
-        for (final String key : parameters.keySet()) {
-            createNodes(current, optionalClazz, key, parameters.get(key));
+        for (final Entry<String, String[]> entry : parameters.entrySet()) {
+            createNodes(current, optionalClazz, entry.getKey(), entry.getValue());
         }
     }
 

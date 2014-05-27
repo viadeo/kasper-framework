@@ -117,8 +117,7 @@ public class KasperQueryGateway implements QueryGateway {
         /* Monitor the request calls */
         timer.stop();
         domainTimer.stop();
-
-        final long time = classTimer.stop();
+        classTimer.stop();
 
         getMetricRegistry().meter(GLOBAL_METER_REQUESTS_NAME).mark();
 

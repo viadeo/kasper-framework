@@ -41,7 +41,7 @@ public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult>
 
         try {
             securityStrategy.beforeRequest(context);
-        } catch (KasperSecurityException e) {
+        } catch (final KasperSecurityException e) {
             //temporary commented the return error before real interceptor activation
             LOGGER.warn(String.format("%s generated error : %s", input.toString(), e.getKasperReason()));
             //return QueryResponse.error(e.getKasperReason());

@@ -52,16 +52,16 @@ public abstract class HttpServletRequestToObject {
 
             try {
                 return factory.create(TypeToken.of(clazz)).adapt(new QueryParser(params.build()));
-            } catch (final Throwable t) {
+            } catch (final Exception t) {
                 throw new RuntimeException(
-                        String.format(
-                                "Unable to parse input to [%s] with parameters [%s]",
-                                clazz,
-                                request.getQueryString()
-                        ),
-                        t
+                    String.format(
+                        "Unable to parse input to [%s] with parameters [%s]",
+                        clazz,
+                        request.getQueryString()
+                    ), t
                 );
             }
+
         }
     }
 

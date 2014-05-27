@@ -40,23 +40,23 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
     private static final long serialVersionUID = 8444284922303895624L;
 
     private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
-    private final transient List<ExposureDescriptor<Command,CommandHandler>> descriptors;
 
+    private final transient List<ExposureDescriptor<Command,CommandHandler>> descriptors;
     private final transient CommandGateway commandGateway;
 
-    private final ObjectToHttpServletResponse objectToHttpResponse;
-    private final HttpServletRequestToObject httpRequestToObject;
+    private final transient ObjectToHttpServletResponse objectToHttpResponse;
+    private final transient HttpServletRequestToObject httpRequestToObject;
 
     // ------------------------------------------------------------------------
 
     public HttpCommandExposer(final Platform platform,
                               final List<ExposureDescriptor<Command,CommandHandler>> descriptors) {
         this(
-                platform.getCommandGateway(),
-                platform.getMeta(),
-                descriptors,
-                new HttpContextDeserializer(),
-                ObjectMapperProvider.INSTANCE.mapper()
+            platform.getCommandGateway(),
+            platform.getMeta(),
+            descriptors,
+            new HttpContextDeserializer(),
+            ObjectMapperProvider.INSTANCE.mapper()
         );
     }
     
@@ -66,6 +66,7 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
                               final HttpContextDeserializer contextDeserializer,
                               final ObjectMapper mapper) {
         super(contextDeserializer, meta);
+
         this.commandGateway = checkNotNull(commandGateway);
         this.descriptors = checkNotNull(descriptors);
 
@@ -129,10 +130,11 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
 
     @Override
     protected void checkMediaType(final HttpServletRequest httpRequest) throws HttpExposerException {
-        if ((null == httpRequest.getContentType()) || ( ! httpRequest.getContentType().contains(MediaType.APPLICATION_JSON_VALUE))) {
+        if ((null == httpRequest.getContentType())
+                || ( ! httpRequest.getContentType().contains(MediaType.APPLICATION_JSON_VALUE))) {
             throw new HttpExposerException(
-                    CoreReasonCode.UNSUPPORTED_MEDIA_TYPE,
-                    "Accepting and producing only " + MediaType.APPLICATION_JSON_VALUE
+                CoreReasonCode.UNSUPPORTED_MEDIA_TYPE,
+                "Accepting and producing only " + MediaType.APPLICATION_JSON_VALUE
             );
         }
     }
@@ -168,13 +170,15 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
         final String commandName = commandClass.getSimpleName();
 
         LOGGER.info("-> Exposing command[{}] at path[/{}]",
-                commandName,
-                    getServletContext().getContextPath() + commandPath);
+            commandName,
+            getServletContext().getContextPath() + commandPath
+        );
 
         for (final String alias : aliases) {
             LOGGER.info("-> Exposing command[{}] at path[/{}]",
-                    commandName,
-                    getServletContext().getContextPath() + alias);
+                commandName,
+                getServletContext().getContextPath() + alias
+            );
         }
 
         putKey(commandPath, commandClass, exposedCommands);
