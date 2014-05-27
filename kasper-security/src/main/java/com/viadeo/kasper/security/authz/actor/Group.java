@@ -7,10 +7,12 @@
 
 package com.viadeo.kasper.security.authz.actor;
 
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -25,8 +27,21 @@ public class Group extends Actor {
 
     // ------------------------------------------------------------------------
 
-    public Group(final String name,
-                 final KasperID kasperId,
+    public Group(final String name){
+        super();
+        this.name = checkNotNull(name);
+        this.users = Lists.newArrayList();
+    }
+
+    public Group(final KasperID kasperId,
+                 final String name){
+        super(kasperId);
+        this.name = checkNotNull(name);
+        this.users = Lists.newArrayList();
+    }
+
+    public Group(final KasperID kasperId,
+                 final String name,
                  final List<Role> roles,
                  final List<Permission> permissions,
                  final List<User> users) {
@@ -51,5 +66,13 @@ public class Group extends Actor {
 
     public void setUsers(final List<User> users) {
         this.users = checkNotNull(users);
+    }
+
+    public void addUser(final User user){
+        users.add(checkNotNull(user));
+    }
+
+    public void removeUser(final User user){
+        users.remove(checkNotNull(user));
     }
 }
