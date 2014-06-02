@@ -31,7 +31,7 @@ public class DomainHelper {
 
     public void add(final Map<Class, Class<? extends Domain>> domainClassByComponentClasses) {
         this.domainClassByComponentClasses.putAll(checkNotNull(domainClassByComponentClasses));
-        LOGGER.info("registered components : {}", domainClassByComponentClasses);
+        LOGGER.debug("registered components : {}", domainClassByComponentClasses);
     }
 
     public void add(final Class componentClass, final Class<? extends Domain> domainClass) {
@@ -40,7 +40,7 @@ public class DomainHelper {
 
     public Class<? extends Domain> getDomainClassOf(final Class componentClass){
         checkNotNull(componentClass);
-        LOGGER.info("getDomainClassOf {}, {}", componentClass, domainClassByComponentClasses);
+        LOGGER.debug("getDomainClassOf {}, {}", componentClass, domainClassByComponentClasses);
         return domainClassByComponentClasses.get(componentClass);
     }
 
