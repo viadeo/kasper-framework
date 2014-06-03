@@ -10,8 +10,8 @@ import com.viadeo.kasper.security.authz.actor.Actor;
 import com.viadeo.kasper.security.authz.actor.User;
 import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
+import com.viadeo.kasper.security.exception.KasperSecurityException;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -36,7 +36,7 @@ public class DefaultAuthorizationSecurityManagerTest {
     // ------------------------------------------------------------------------
 
     @Test
-    public void test_resolvePermission_shouldReturnPermission() {
+    public void test_resolvePermission_shouldReturnPermission() throws KasperSecurityException {
         // Given
         final String perm = "perm1,perm2,perm3";
 
@@ -48,7 +48,7 @@ public class DefaultAuthorizationSecurityManagerTest {
     }
 
     @Test
-    public void test_chekPermission_withGoodPermission_shouldNotThrowException() {
+    public void test_chekPermission_withGoodPermission_shouldNotThrowException() throws KasperSecurityException {
         // Given
         final String perm = "perm1";
         final Permission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
@@ -61,7 +61,7 @@ public class DefaultAuthorizationSecurityManagerTest {
     }
 
     @Test(expected = KasperUnauthorizedException.class)
-    public void test_chekPermission_withWrongPermission_shouldThrowException() {
+    public void test_chekPermission_withWrongPermission_shouldThrowException() throws KasperSecurityException {
         // Given
         final String perm = "perm1";
         final String wrongPerm = "wrongperm1";
@@ -75,7 +75,7 @@ public class DefaultAuthorizationSecurityManagerTest {
     }
 
     @Test
-    public void test_chekRole_withGoodRole_shouldNotThrowException() {
+    public void test_chekRole_withGoodRole_shouldNotThrowException() throws KasperSecurityException {
         // Given
         final String roleStr = "Robert";
         final Role role = new Role(roleStr);
@@ -88,7 +88,7 @@ public class DefaultAuthorizationSecurityManagerTest {
     }
 
     @Test
-    public void test_chekPermission_withGoodPermissionInRole_shouldNotThrowException() {
+    public void test_chekPermission_withGoodPermissionInRole_shouldNotThrowException() throws KasperSecurityException {
         // Given
         final String roleStr = "Robert";
         final String perm = "perm1";
@@ -104,7 +104,7 @@ public class DefaultAuthorizationSecurityManagerTest {
     }
 
     @Test(expected = KasperUnauthorizedException.class)
-    public void test_chekRole_withWrongRole_shouldThrowException() {
+    public void test_chekRole_withWrongRole_shouldThrowException() throws KasperSecurityException {
         // Given
         final String roleStr = "Robert";
         final String wrongRoleStr = "PasRobert";
@@ -118,7 +118,7 @@ public class DefaultAuthorizationSecurityManagerTest {
     }
 
     @Test(expected = KasperUnauthorizedException.class)
-    public void test_chekPermission_withWrongPermissionInRole_shouldThrowException() {
+    public void test_chekPermission_withWrongPermissionInRole_shouldThrowException() throws KasperSecurityException {
         // Given
         final String roleStr = "Robert";
         final String perm = "perm1";

@@ -7,6 +7,7 @@
 package com.viadeo.kasper.security.strategy;
 
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.security.exception.KasperSecurityException;
 
 /**
  * Defines a security strategy that applies to a given (query or command) handler instance.
@@ -20,8 +21,8 @@ import com.viadeo.kasper.context.Context;
  */
 public interface SecurityStrategy {
 
-    void beforeRequest(Context context);
+   void beforeRequest(final Context context) throws KasperSecurityException;
 
-    void afterRequest();
+   void afterRequest();
 
 }

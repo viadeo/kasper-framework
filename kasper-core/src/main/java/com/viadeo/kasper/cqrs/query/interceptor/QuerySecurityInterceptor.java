@@ -14,12 +14,15 @@ import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.security.strategy.SecurityStrategy;
 import com.viadeo.kasper.security.exception.KasperSecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult>
         implements Interceptor<Q, QueryResponse<R>> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(QuerySecurityInterceptor.class);
     private SecurityStrategy securityStrategy;
 
     // ------------------------------------------------------------------------
@@ -38,8 +41,10 @@ public class QuerySecurityInterceptor<Q extends Query, R extends QueryResult>
 
         try {
             securityStrategy.beforeRequest(context);
-        } catch (KasperSecurityException e) {
-            return QueryResponse.error(e.getKasperReason());
+        } catch (final KasperSecurityException e) {
+            //temporary commented the return error before real interceptor activation
+            LOGGER.warn(String.format("%s generated error : %s", input.toString(), e.getKasperReason()));
+            //return QueryResponse.error(e.getKasperReason());
         }
 
         final QueryResponse<R> queryResponse = chain.next(input, context);

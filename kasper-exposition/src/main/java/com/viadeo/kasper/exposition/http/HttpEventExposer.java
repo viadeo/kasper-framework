@@ -52,12 +52,12 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
     private static final long serialVersionUID = 3099102125586430908L;
 
     private final Map<String, Class<? extends Event>> exposedEvents = new HashMap<>();
-    private final List<ExposureDescriptor<Event, EventListener>> descriptors;
 
-    private final KasperEventBus eventBus;
+    private final transient List<ExposureDescriptor<Event, EventListener>> descriptors;
+    private final transient KasperEventBus eventBus;
 
-    private final ObjectToHttpServletResponse objectToHttpResponse;
-    private final HttpServletRequestToObject httpRequestToObject;
+    private final transient ObjectToHttpServletResponse objectToHttpResponse;
+    private final transient HttpServletRequestToObject httpRequestToObject;
 
     // ------------------------------------------------------------------------
 

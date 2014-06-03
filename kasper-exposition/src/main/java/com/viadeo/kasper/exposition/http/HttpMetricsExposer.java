@@ -31,7 +31,6 @@ import java.util.concurrent.TimeUnit;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class HttpMetricsExposer extends HttpServlet {
-
     private static final long serialVersionUID = 8444284924203895624L;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(HttpMetricsExposer.class);
@@ -55,7 +54,7 @@ public class HttpMetricsExposer extends HttpServlet {
         KasperMetricsOutput() { }
     }
 
-    private static final KasperMetricsFilter kasperMetricsFilter = new KasperMetricsFilter();
+    private static final KasperMetricsFilter KASPER_METRICS_FILTER = new KasperMetricsFilter();
 
     private final MetricRegistry metrics;
     private final ObjectMapper mapper;
@@ -87,31 +86,31 @@ public class HttpMetricsExposer extends HttpServlet {
         final KasperMetricsOutput output = new KasperMetricsOutput();
 
         /* Counters */
-        final Map<String, Counter> counters = metrics.getCounters(kasperMetricsFilter);
+        final Map<String, Counter> counters = metrics.getCounters(KASPER_METRICS_FILTER);
         for (final Map.Entry<String, Counter> counter : counters.entrySet()) {
             output.counters.put(counter.getKey(), counter.getValue());
         }
 
         /* Gauges */
-        final Map<String, Gauge> gauges = metrics.getGauges(kasperMetricsFilter);
+        final Map<String, Gauge> gauges = metrics.getGauges(KASPER_METRICS_FILTER);
         for (final Map.Entry<String, Gauge> gauge : gauges.entrySet()) {
             output.gauges.put(gauge.getKey(), gauge.getValue());
         }
 
         /* Histograms */
-        final Map<String, Histogram> histograms = metrics.getHistograms(kasperMetricsFilter);
+        final Map<String, Histogram> histograms = metrics.getHistograms(KASPER_METRICS_FILTER);
         for (final Map.Entry<String, Histogram> histogram : histograms.entrySet()) {
             output.histograms.put(histogram.getKey(), histogram.getValue());
         }
 
         /* Meters */
-        final Map<String, Meter> meters = metrics.getMeters(kasperMetricsFilter);
+        final Map<String, Meter> meters = metrics.getMeters(KASPER_METRICS_FILTER);
         for (final Map.Entry<String, Meter> meter : meters.entrySet()) {
             output.meters.put(meter.getKey(), meter.getValue());
         }
 
         /* Timers */
-        final Map<String, Timer> timers = metrics.getTimers(kasperMetricsFilter);
+        final Map<String, Timer> timers = metrics.getTimers(KASPER_METRICS_FILTER);
         for (final Map.Entry<String, Timer> timer : timers.entrySet()) {
             output.timers.put(timer.getKey(), timer.getValue());
         }

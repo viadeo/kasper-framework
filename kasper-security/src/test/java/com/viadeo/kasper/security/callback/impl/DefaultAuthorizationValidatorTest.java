@@ -20,6 +20,7 @@ import com.viadeo.kasper.security.authz.mgt.impl.DefaultAuthorizationSecurityMan
 import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
 import com.viadeo.kasper.security.authz.permission.impl.WildcardPermission;
+import com.viadeo.kasper.security.exception.KasperSecurityException;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
 
 import org.junit.Before;
@@ -128,7 +129,7 @@ public class DefaultAuthorizationValidatorTest {
     }
 
     @Test
-    public void test_validate_withGoodSubjectAndGoodRole_shouldGoThrough(){
+    public void test_validate_withGoodSubjectAndGoodRole_shouldGoThrough()  throws KasperSecurityException {
         // Given
         final Actor actor = initTestUser();
         final Context context = new DefaultContext();
@@ -139,7 +140,7 @@ public class DefaultAuthorizationValidatorTest {
     }
 
     @Test
-    public void test_validate_withGoodSubjectAndGoodPermissionFromRole_shouldGoThrough(){
+    public void test_validate_withGoodSubjectAndGoodPermissionFromRole_shouldGoThrough() throws KasperSecurityException{
         // Given
         final Actor actor = initTestUser();
         final Context context = new DefaultContext();
@@ -150,7 +151,7 @@ public class DefaultAuthorizationValidatorTest {
     }
 
     @Test
-    public void test_validate_withGoodSubjectAndGoodPermission_shouldGoThrough(){
+    public void test_validate_withGoodSubjectAndGoodPermission_shouldGoThrough() throws KasperSecurityException{
         // Given
         final Actor actor = initTestUser();
         actor.setPermissions(actor.getRoles().get(0).getPermissions());
@@ -163,7 +164,7 @@ public class DefaultAuthorizationValidatorTest {
     }
 
     @Test(expected = KasperUnauthorizedException.class)
-    public void test_validate_withGoodSubjectAndWrongRole_shouldThrowException(){
+    public void test_validate_withGoodSubjectAndWrongRole_shouldThrowException() throws KasperSecurityException{
         // Given
         final Actor actor = initTestUser();
         final Context context = new DefaultContext();
@@ -174,7 +175,7 @@ public class DefaultAuthorizationValidatorTest {
     }
 
     @Test(expected = KasperUnauthorizedException.class)
-    public void test_validate_withGoodSubjectAndWrongPermission_shouldThrowException(){
+    public void test_validate_withGoodSubjectAndWrongPermission_shouldThrowException() throws KasperSecurityException{
         // Given
         final Actor actor = initTestUser();
         final Context context = new DefaultContext();

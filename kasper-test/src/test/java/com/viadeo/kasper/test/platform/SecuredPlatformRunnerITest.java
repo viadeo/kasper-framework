@@ -28,6 +28,7 @@ import com.viadeo.kasper.security.callback.IdentityContextProvider;
 import com.viadeo.kasper.security.callback.IpAddressValidator;
 import com.viadeo.kasper.security.callback.SecurityTokenValidator;
 import com.viadeo.kasper.security.exception.*;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -37,6 +38,7 @@ import java.util.List;
 
 import static org.junit.Assert.*;
 
+@Ignore
 @RunWith(PlatformRunner.class)
 @PlatformRunner.Configuration(SecuredPlatformRunnerITest.SecuredKasperPlatformConfiguration.class)
 @PlatformRunner.Bundles({SecuredPlatformRunnerITest.SecuredDomainBundle.class})

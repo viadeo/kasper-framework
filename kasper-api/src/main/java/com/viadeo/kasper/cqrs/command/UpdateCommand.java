@@ -52,7 +52,7 @@ public abstract class UpdateCommand implements Command {
 
     @Override
     public boolean equals(final Object obj) {
-        if (null != obj) {
+        if (null == obj) {
             return false;
         }
         if (getClass() != obj.getClass()) {

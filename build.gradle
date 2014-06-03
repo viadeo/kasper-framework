@@ -81,6 +81,15 @@ subprojects {
       deployerJars
   }
 
+  jar {
+      manifest {
+          attributes(
+              "Manifest-Version"    : "1.0",
+              "Kasper-Version"    : version
+          )
+      }
+  }
+
   // Use UTF-8 for reading xml (and other) data tests files
   tasks.withType(Test) { systemProperty "file.encoding", "UTF-8"  }
   tasks.withType(Compile) { options.encoding = "UTF-8" }
@@ -187,6 +196,8 @@ subprojects {
       JODA_TIME             : 'joda-time:joda-time:2.1',
       JODA_MONEY            : 'org.joda:joda-money:0.9',
       GUAVA                 : 'com.google.guava:guava:13.0.1',
+
+      JSON_SIMPLE           : 'com.googlecode.json-simple:json-simple:1.1.1',
 
       LOGBACK               : [
                                 'org.slf4j:slf4j-api:1.7.5',

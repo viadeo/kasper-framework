@@ -13,11 +13,14 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.security.strategy.SecurityStrategy;
 import com.viadeo.kasper.security.exception.KasperSecurityException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CommandSecurityInterceptor<C extends Command> implements Interceptor<C, CommandResponse> {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(CommandSecurityInterceptor.class);
     private SecurityStrategy securityStrategy;
 
     // ------------------------------------------------------------------------
@@ -37,7 +40,9 @@ public class CommandSecurityInterceptor<C extends Command> implements Intercepto
         try {
             securityStrategy.beforeRequest(context);
         } catch (final KasperSecurityException e) {
-            return CommandResponse.error(e.getKasperReason());
+            //temporary commented the return error before real interceptor activation
+            LOGGER.warn(String.format("%s generated error : %s", input.toString(), e.getKasperReason()));
+            //return CommandResponse.error(e.getKasperReason());
         }
 
         final CommandResponse commandResponse = chain.next(input, context);

@@ -10,6 +10,8 @@ import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.test.platform.validator.KasperFixtureQueryResultValidator;
+import com.viadeo.kasper.test.platform.validator.base.DefaultBaseValidator;
 import org.axonframework.test.AxonAssertionError;
 
 import static com.viadeo.kasper.KasperResponse.Status.*;
@@ -19,7 +21,7 @@ import static com.viadeo.kasper.tools.KasperMatcher.equalTo;
  * FIXME: add better debugging information
  */
 public class KasperPlatformQueryResultValidator
-        extends KasperPlatformResultValidator
+        extends DefaultBaseValidator
         implements KasperFixtureQueryResultValidator {
 
     // ------------------------------------------------------------------------

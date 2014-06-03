@@ -8,6 +8,8 @@ package com.viadeo.kasper.security.strategy.impl;
 
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.security.configuration.SecurityConfiguration;
+
+import com.viadeo.kasper.security.exception.KasperSecurityException;
 import org.apache.log4j.MDC;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -21,12 +23,14 @@ public class DefaultSecurityStrategy extends DefaultPublicSecurityStrategy {
 
     // ------------------------------------------------------------------------
 
-    public void beforeRequest(final Context context) {
+    @Override
+    public void beforeRequest(final Context context)  throws KasperSecurityException {
         checkNotNull(context);
         securityConfiguration.getSecurityTokenValidator().validate(context.getSecurityToken());
         super.beforeRequest(context);
     }
 
+    @Override
     public void afterRequest() {
         super.afterRequest();
         if (null != this.context) {
