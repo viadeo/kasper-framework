@@ -141,11 +141,6 @@ public class SecuredPlatformRunnerITest {
 
     private static class TestResult implements QueryResult { }
 
-
-
-
-
-
     @XKasperQueryHandler(domain = SecuredDomain.class)
     private static class TestQueryHandler extends QueryHandler<TestQuery, TestResult> {
         public QueryResponse<TestResult> retrieve(final QueryMessage<TestQuery> message) throws Exception {

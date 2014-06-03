@@ -17,11 +17,11 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.security.strategy.impl.DefaultPublicSecurityStrategy;
-import com.viadeo.kasper.security.strategy.impl.DefaultSecurityStrategy;
+import com.viadeo.kasper.security.annotation.XKasperPublic;
 import com.viadeo.kasper.security.configuration.SecurityConfiguration;
 import com.viadeo.kasper.security.strategy.SecurityStrategy;
-import com.viadeo.kasper.security.annotation.XKasperPublic;
+import com.viadeo.kasper.security.strategy.impl.DefaultPublicSecurityStrategy;
+import com.viadeo.kasper.security.strategy.impl.DefaultSecurityStrategy;
 
 import java.util.Map;
 

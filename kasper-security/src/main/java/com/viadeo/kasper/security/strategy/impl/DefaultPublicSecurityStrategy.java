@@ -30,7 +30,7 @@ public class DefaultPublicSecurityStrategy implements SecurityStrategy {
     // ------------------------------------------------------------------------
 
     @Override
-    public void beforeRequest(final Context context)  throws KasperSecurityException {
+    public void beforeRequest(final Context context) throws KasperSecurityException {
         this.context = checkNotNull(context);
 
         securityConfiguration.getIdentityContextProvider().provideIdentity(context);

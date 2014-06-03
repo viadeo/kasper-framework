@@ -7,10 +7,7 @@
 package com.viadeo.kasper.security.configuration;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
-import com.viadeo.kasper.security.authz.mgt.impl.DefaultAuthorizationSecurityManager;
 import com.viadeo.kasper.security.callback.*;
-import com.viadeo.kasper.security.callback.impl.DefaultAuthorizationValidator;
 import com.viadeo.kasper.security.configuration.impl.KasperSecurityConfiguration;
 import com.viadeo.kasper.security.exception.*;
 
@@ -75,11 +72,11 @@ public interface SecurityConfiguration {
 
         public SecurityConfiguration build() {
             final SecurityConfiguration securityConfiguration = new KasperSecurityConfiguration(
-                securityTokenValidator,
-                identityContextProvider,
-                applicationIdValidator,
-                ipAddressValidator,
-                authorizationValidator
+                    securityTokenValidator,
+                    identityContextProvider,
+                    applicationIdValidator,
+                    ipAddressValidator,
+                    authorizationValidator
             );
             return securityConfiguration;
         }
@@ -92,7 +89,7 @@ public interface SecurityConfiguration {
         @Override
         public void validate(final String securityToken)
                 throws KasperMissingSecurityTokenException,
-                       KasperInvalidSecurityTokenException {
+                KasperInvalidSecurityTokenException {
             /* do nothing */
         }
     }
@@ -112,7 +109,7 @@ public interface SecurityConfiguration {
         @Override
         public void validate(final String applicationId)
                 throws KasperMissingApplicationIdException,
-                       KasperInvalidApplicationIdException {
+                KasperInvalidApplicationIdException {
             /* do nothing */
         }
     }
@@ -123,7 +120,7 @@ public interface SecurityConfiguration {
         @Override
         public void validate(final String ipAddress)
                 throws KasperMissingIpAddressException,
-                       KasperInvalidIpAddressException {
+                KasperInvalidIpAddressException {
             /* do nothing */
         }
     }
