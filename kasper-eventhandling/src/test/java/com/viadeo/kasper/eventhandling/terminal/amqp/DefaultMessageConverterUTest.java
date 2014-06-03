@@ -7,14 +7,9 @@
 package com.viadeo.kasper.eventhandling.terminal.amqp;
 
 import com.google.common.collect.ImmutableMap;
-import com.rabbitmq.client.AMQP;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContext;
-import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericDomainEventMessage;
 import org.axonframework.domain.GenericEventMessage;
-import org.axonframework.eventhandling.amqp.AMQPMessage;
-import org.axonframework.eventhandling.amqp.RoutingKeyResolver;
 import org.axonframework.serializer.SerializedObject;
 import org.axonframework.serializer.Serializer;
 import org.axonframework.serializer.SimpleSerializedObject;
@@ -25,15 +20,19 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageBuilder;
 import org.springframework.amqp.core.MessageDeliveryMode;
 import org.springframework.amqp.core.MessageProperties;
+import org.springframework.amqp.support.converter.MessageConversionException;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.viadeo.kasper.eventhandling.terminal.amqp.DefaultMessageConverter.*;
+import static com.viadeo.kasper.eventhandling.terminal.amqp.EventMessageConverter.*;
 import static org.junit.Assert.*;
-import static org.mockito.Matchers.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -42,16 +41,14 @@ public class DefaultMessageConverterUTest {
     @Mock
     private Serializer serializer;
 
-    @Mock
-    private RoutingKeyResolver routingKeyResolver;
 
-    private DefaultMessageConverter converter;
+    private EventMessageConverter converter;
     private DateTime timestamp;
     private Map<String, Object> properties;
 
     @Before
     public void setUp() throws Exception {
-        converter = new DefaultMessageConverter(serializer, routingKeyResolver);
+        converter = new EventMessageConverter(serializer);
         timestamp = new DateTime("2012-10-12");
         properties = ImmutableMap.<String, Object>builder()
                 .put("foo", "bar")
@@ -59,31 +56,28 @@ public class DefaultMessageConverterUTest {
     }
 
     @Test
-    public void createAMQPMessage_withDomainEventMessage_isOk() throws Exception {
+    public void toMessage_withDomainEventMessage_isOk() throws Exception {
         // Given
-        final SimpleSerializedObject<byte[]> serializedObject = new SimpleSerializedObject<>("payload".getBytes(), byte[].class, new SimpleSerializedType("bytes", "payload-revision"));
+        SimpleSerializedObject<byte[]> serializedObject = new SimpleSerializedObject<>("payload".getBytes(), byte[].class, new SimpleSerializedType("bytes", "payload-revision"));
         when(serializer.serialize(anyObject(), any(Class.class))).thenReturn(serializedObject);
 
-        final GenericDomainEventMessage<String> message = new GenericDomainEventMessage<>("event-id", timestamp, "event-aggregate-id", 1L, "payload", properties);
-
-        when(routingKeyResolver.resolveRoutingKey(refEq(message))).thenReturn("myWonderfulRoutingKey");
+        GenericDomainEventMessage<String> axonMessage = new GenericDomainEventMessage<>("event-id", timestamp, "event-aggregate-id", 1L, "payload", properties);
 
         // When
-        final AMQPMessage amqpMessage = converter.createAMQPMessage(message);
+        Message springMessage = converter.toMessage(axonMessage, new MessageProperties());
 
         // Then
-        assertNotNull(amqpMessage);
-        assertEquals("payload", new String(amqpMessage.getBody()));
-        assertEquals("myWonderfulRoutingKey", amqpMessage.getRoutingKey());
+        assertNotNull(springMessage);
+        assertEquals("payload", new String(springMessage.getBody()));
 
-        final AMQP.BasicProperties actualProperties = amqpMessage.getProperties();
-        assertEquals(Integer.valueOf(2), actualProperties.getDeliveryMode());
+        MessageProperties actualProperties = springMessage.getMessageProperties();
+        assertEquals(MessageDeliveryMode.PERSISTENT, actualProperties.getDeliveryMode());
         assertEquals("event-id", actualProperties.getMessageId());
         assertEquals("application/json", actualProperties.getContentType());
         assertEquals("UTF-8", actualProperties.getContentEncoding());
         assertEquals("java.lang.String", actualProperties.getType());
 
-        final Map<String, Object> headers = actualProperties.getHeaders();
+        Map<String, Object> headers = actualProperties.getHeaders();
         assertTrue(headers.containsKey(PAYLOAD_REVISION_KEY));
         assertTrue(headers.containsKey(PAYLOAD_TYPE_KEY));
         assertEquals("1.0", headers.get(SERIALIZER_VERSION_KEY));
@@ -96,35 +90,35 @@ public class DefaultMessageConverterUTest {
     }
 
     @Test
-    public void createAMQPMessage_withEventMessage_isOk() throws Exception {
+    public void toMessage_withEventMessage_isOk() throws Exception {
         // Given
-        final SimpleSerializedObject<byte[]> serializedObject = new SimpleSerializedObject<>("payload".getBytes(), byte[].class, new SimpleSerializedType("bytes", "payload-revision"));
+        SimpleSerializedObject<byte[]> serializedObject = new SimpleSerializedObject<>("payload".getBytes(), byte[].class, new SimpleSerializedType("bytes", "payload-revision"));
         when(serializer.serialize(anyObject(), any(Class.class))).thenReturn(serializedObject);
 
-        GenericEventMessage<String> message = new GenericEventMessage<>("event-id", timestamp, "payload", properties);
+        GenericEventMessage<String> axonMessage = new GenericEventMessage<>("event-id", timestamp, "payload", properties);
 
         // When
-        final AMQPMessage amqpMessage = converter.createAMQPMessage(message);
+        Message springMessage = converter.toMessage(axonMessage, new MessageProperties());
 
         // Then
-        assertNotNull(amqpMessage);
+        assertNotNull(springMessage);
 
-        final Map<String, Object> headers = amqpMessage.getProperties().getHeaders();
+        Map<String, Object> headers = springMessage.getMessageProperties().getHeaders();
         assertEquals((byte) 1, headers.get(EVENT_TYPE_KEY));
         assertFalse(headers.containsKey(AGGREGATE_ID_KEY));
         assertFalse(headers.containsKey(SEQUENCE_NUMBER_KEY));
     }
 
     @Test(expected = NullPointerException.class)
-    public void createAMQPMessage_withNullAsEventMessage_throwException() throws Exception {
+    public void toMessage_withNullAsEventMessage_throwException() throws Exception {
         // Given nothing
         // When
-        converter.createAMQPMessage(null);
+        converter.toMessage(null, new MessageProperties());
         // Then throw exception
     }
 
     @Test
-    public void createAMQPMessage_withNullAsValueOfContextProperties_isOk() {
+    public void toMessage_withNullAsValueOfContextProperties_isOk() {
         // Given
         properties = new HashMap<>(properties);
         properties.put("lolilou", null);
@@ -132,95 +126,92 @@ public class DefaultMessageConverterUTest {
         final SimpleSerializedObject<byte[]> serializedObject = new SimpleSerializedObject<>("payload".getBytes(), byte[].class, new SimpleSerializedType("bytes", "payload-revision"));
         when(serializer.serialize(anyObject(), any(Class.class))).thenReturn(serializedObject);
 
-        final GenericEventMessage<String> message = new GenericEventMessage<>("event-id", timestamp, "payload", properties);
+        final GenericEventMessage<String> axonMessage = new GenericEventMessage<>("event-id", timestamp, "payload", properties);
 
         // When
-        converter.createAMQPMessage(message);
+        converter.toMessage(axonMessage, new MessageProperties());
 
         // Then no exception is thrown
     }
 
     @Test
-    public void readAMQPMessage_fromDomainEventMessage_isOk() throws Exception {
+    public void fromMessage_fromDomainEventMessage_isOk() throws Exception {
         // Given
         final String payload = "foobar";
-
         when(serializer.deserialize(any(SerializedObject.class))).thenReturn(payload);
+        Message amqpMessage = MessageBuilder.withBody(payload.getBytes())
+                .setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT)
+                .setContentEncoding("charset=utf-8")
+                .setContentType("application/json")
+                .setType("java.lang.String")
+                .setHeader(AGGREGATE_ID_KEY, "aggregate-id")
+                .setHeader(PAYLOAD_TYPE_KEY, payload.getClass().getName())
+                .setHeader(PAYLOAD_REVISION_KEY, "0")
+                .setHeader(SEQUENCE_NUMBER_KEY, 1L)
+                .setHeader(EVENT_TYPE_KEY, "")
+                .setHeader(EVENT_TIMESTAMP_KEY, "2012-10-12T00:00:00.000+02:00")
+                .setHeader(SERIALIZER_VERSION_KEY, "1.0")
+                .build();
 
-
-        MessageProperties properties = new MessageProperties();
-
-        properties.setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT);
-        properties.setContentEncoding("charset=utf-8");
-        properties.setContentType("application/json");
-        properties.setType("java.lang.String");
-        properties.setHeader(AGGREGATE_ID_KEY, "aggregate-id");
-        properties.setHeader(PAYLOAD_TYPE_KEY, payload.getClass().getName());
-        properties.setHeader(PAYLOAD_REVISION_KEY, "0");
-        properties.setHeader(SEQUENCE_NUMBER_KEY, 1L);
-        properties.setHeader(EVENT_TYPE_KEY, "");
-        properties.setHeader(EVENT_TIMESTAMP_KEY, "2012-10-12T00:00:00.000+02:00");
-        properties.setHeader(SERIALIZER_VERSION_KEY, "1.0");
 
         // When
-        final EventMessage eventMessage = converter.readAMQPMessage(payload.getBytes(), properties);
+        final GenericDomainEventMessage eventMessage = (GenericDomainEventMessage) converter.fromMessage(amqpMessage);
 
         // Then
         assertNotNull(eventMessage);
-        assertTrue(eventMessage instanceof GenericDomainEventMessage);
         assertEquals(payload, eventMessage.getPayload());
         assertEquals(payload.getClass(), eventMessage.getPayloadType());
-
-        final GenericDomainEventMessage domainEventMessage = (GenericDomainEventMessage) eventMessage;
-        assertEquals(1L, domainEventMessage.getSequenceNumber());
-        assertEquals("aggregate-id", domainEventMessage.getAggregateIdentifier());
+        assertEquals(1L, eventMessage.getSequenceNumber());
+        assertEquals("aggregate-id", eventMessage.getAggregateIdentifier());
 
     }
 
     @Test
-    public void readAMQPMessage_fromEventMessage_isOk() throws Exception {
+    public void fromMessage_fromEventMessage_isOk() throws Exception {
         // Given
         final String payload = "toto";
 
         when(serializer.deserialize(any(SerializedObject.class))).thenReturn(payload);
 
-        MessageProperties properties = new MessageProperties();
+        Message amqpMessage = MessageBuilder.withBody(payload.getBytes())
+                .setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT)
+                .setContentEncoding("charset=utf-8")
+                .setContentType("application/json")
+                .setType("java.lang.String")
+                .setHeader(AGGREGATE_ID_KEY, "aggregate-id")
+                .setHeader(PAYLOAD_TYPE_KEY, payload.getClass().getName())
+                .setHeader(PAYLOAD_REVISION_KEY, "0")
+                .setHeader(SEQUENCE_NUMBER_KEY, 1L)
+                .setHeader(EVENT_TYPE_KEY, "")
+                .setHeader(EVENT_TIMESTAMP_KEY, "2012-10-12T00:00:00.000+02:00")
+                .setHeader(SERIALIZER_VERSION_KEY, "1.0")
+                .build();
 
-        properties.setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT);
-        properties.setContentEncoding("charset=utf-8");
-        properties.setContentType("application/json");
-        properties.setType("java.lang.String");
-        properties.setHeader(AGGREGATE_ID_KEY, "aggregate-id");
-        properties.setHeader(PAYLOAD_TYPE_KEY, payload.getClass().getName());
-        properties.setHeader(PAYLOAD_REVISION_KEY, "0");
-        properties.setHeader(SEQUENCE_NUMBER_KEY, 1L);
-        properties.setHeader(EVENT_TYPE_KEY, "");
-        properties.setHeader(EVENT_TIMESTAMP_KEY, "2012-10-12T00:00:00.000+02:00");
-        properties.setHeader(SERIALIZER_VERSION_KEY, "1.0");
 
         // When
-        final EventMessage eventMessage = converter.readAMQPMessage(payload.getBytes(), properties);
+        final GenericDomainEventMessage eventMessage = (GenericDomainEventMessage) converter.fromMessage(amqpMessage);
 
         // Then
         assertNotNull(eventMessage);
-        assertTrue(eventMessage instanceof GenericEventMessage);
         assertEquals(payload, eventMessage.getPayload());
         assertEquals(payload.getClass(), eventMessage.getPayloadType());
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = MessageConversionException.class)
     public void readAMQPMessage_withNullAsByteArray_throwException() throws Exception {
         // Given nothing
         // When
-        converter.readAMQPMessage(null, new MessageProperties());
+        converter.fromMessage(null);
         // Then throw exception
     }
 
-    @Test(expected = NullPointerException.class)
+    @Test(expected = MessageConversionException.class)
     public void readAMQPMessage_withNullAsProperties_throwException() throws Exception {
         // Given nothing
+        Message amqpMessage = MessageBuilder.withBody("boo".getBytes()).build();
+
         // When
-        converter.readAMQPMessage("foo".getBytes(), null);
+        converter.fromMessage(amqpMessage);
         // Then throw exception
     }
 
@@ -257,18 +248,14 @@ public class DefaultMessageConverterUTest {
 
         final Object object = metadata.get(Context.METANAME);
         assertNotNull(object);
-        assertTrue(object instanceof Map);
-
-        @SuppressWarnings("unchecked")
-        final Context context = new DefaultContext((Map) object);
-        assertEquals("fr", context.getUserLang());
+        assertTrue(object instanceof Context);
+        assertEquals("fr", ((Context) object).getUserLang());
     }
 
     @Test()
     public void toMetadata_withMap_withoutHeaders_throwException() {
+
         // Given
-
-
         MessageProperties properties = new MessageProperties();
 
         properties.setDeliveryMode(MessageDeliveryMode.PERSISTENT);

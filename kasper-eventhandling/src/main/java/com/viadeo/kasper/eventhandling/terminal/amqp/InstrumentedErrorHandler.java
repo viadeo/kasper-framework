@@ -7,8 +7,6 @@
 package com.viadeo.kasper.eventhandling.terminal.amqp;
 
 import com.codahale.metrics.MetricRegistry;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler;
 import org.springframework.util.ErrorHandler;
 
@@ -17,11 +15,9 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 public final class InstrumentedErrorHandler implements ErrorHandler {
 
-    protected static final Log logger = LogFactory.getLog(InstrumentedErrorHandler.class);
     private final static String ERROR_METER = name(InstrumentedErrorHandler.class, "error");
     private final MetricRegistry metricRegistry;
     private final ConditionalRejectingErrorHandler errorHandler;
-
 
     public InstrumentedErrorHandler(ConditionalRejectingErrorHandler errorHandler, MetricRegistry metricRegistry) {
         this.metricRegistry = checkNotNull(metricRegistry);

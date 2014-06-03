@@ -25,7 +25,7 @@ public class MetaDataDeserializer extends JsonDeserializer<MetaData> {
         final Object object = map.get(Context.METANAME);
 
         if (null != object) {
-            final DefaultContext defaultContext = new DefaultContext((Map<String, String>) object);
+            final Context defaultContext = new DefaultContext((Map<String, String>) object);
             map.put(Context.METANAME, defaultContext);
         }
 
