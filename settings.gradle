@@ -8,5 +8,6 @@ include ':kasper-api',
         ':kasper-client', 
         ':kasper-common', 
         ':kasper-test', 
-        ':kasper-documentation'
+        ':kasper-documentation',
+        ':kasper-eventhandling'
 
