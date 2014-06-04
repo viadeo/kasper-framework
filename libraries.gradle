@@ -71,5 +71,11 @@ ext.libraries = [
         ],
         GLASSFISH_EXPR_LANG: 'org.glassfish.web:javax.el:2.2.3',
 
-        TYPESAFE_CONFIG: 'com.typesafe:config:1.0.2'
+        TYPESAFE_CONFIG: 'com.typesafe:config:1.0.2',
+
+        POWER_MOCK: [
+                'org.powermock:powermock:1.5.5',
+                'org.powermock:powermock-api-mockito:1.5.5',
+                'org.powermock:powermock-module-junit4:1.5.5'
+        ],
 ]
