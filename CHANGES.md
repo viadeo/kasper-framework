@@ -1,9 +1,18 @@
 # Kasper Releases #
 
-### Version 0.6.1 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.1~~))###
+### Version 0.6.3 (05/22/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.3~~))###
+* [Bug] Reduce level of security logger to warn
+
+
+### Version 0.6.2 (05/21/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.2~~))###
+* Temporary commented return error during interceptor checks and put log instead
+
+
+### Version 0.6.1 (04/30/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.1~~))###
 * [Improvement] Allow platform user to register publication handlers for events in the KasperEventBus
 
-### Version 0.6 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6~~))###
+
+### Version 0.6 (04/09/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6~~))###
 * [Bug 198](https://github.com/viadeo/kasper-framework/pull/198) Fix issue around the validation of the CoreReasonCode in the fixture
 * [Pull 196](https://github.com/viadeo/kasper-framework/pull/196), [Pull 199](https://github.com/viadeo/kasper-framework/pull/199), [Pull 202](https://github.com/viadeo/kasper-framework/pull/202) New user interface of the auto documentation
 * [Pull 191](https://github.com/viadeo/kasper-framework/pull/191) enrich MDC, normalize hierarcy of default security strategy
@@ -13,6 +22,7 @@
   - provide more information on an element of a collection result
   - fix the behavior with the tree
 * [Pull 97](https://github.com/viadeo/kasper-framework/pull/97) Provide and display a list of constraints for each property of a bean
+
 
 ### Version 0.5.1 (03/20/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.5.1~~))###
 * [Bug] bad metrics names are used in http exposers
