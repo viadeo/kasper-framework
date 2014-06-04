@@ -40,7 +40,7 @@ public class DocumentedCommandHandler extends AbstractDomainElement {
 
         @Override
         public LightDocumentedElement<DocumentedCommand> getLightDocumentedElement() {
-            return new LightDocumentedElement<>(this);
+            return new LightDocumentedInputElement<>(this);
         }
 
         @Override

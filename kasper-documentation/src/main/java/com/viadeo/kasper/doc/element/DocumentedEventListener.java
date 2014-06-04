@@ -57,7 +57,7 @@ public class DocumentedEventListener extends AbstractDomainElement {
 
         @Override
         public LightDocumentedElement<DocumentedEvent> getLightDocumentedElement() {
-            return new LightDocumentedElement<>(this);
+            return new LightDocumentedInputElement<>(this);
         }
 
         @Override

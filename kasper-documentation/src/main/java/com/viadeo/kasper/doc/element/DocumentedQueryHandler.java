@@ -44,7 +44,7 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
 
         @Override
         public LightDocumentedElement<DocumentedQuery> getLightDocumentedElement() {
-            return new LightDocumentedElement<>(this);
+            return new LightDocumentedInputElement<>(this);
         }
 
         @Override
