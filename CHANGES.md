@@ -15,6 +15,18 @@
   - set in the MDC wen we process an HTTP request in the exposition layer
 
 
+### Version 0.6.4 (06/04/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.4~~))###
+* [Improvement] Enrich light documentation with aliases
+
+
+### Version 0.6.3 (05/22/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.3~~))###
+* [Bug] Reduce level of security logger to warn
+
+
+### Version 0.6.2 (05/21/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.2~~))###
+* Temporary commented return error during interceptor checks and put log instead
+
+
 ### Version 0.6.1 (04/30/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.1~~))###
 * [Improvement] Allow platform user to register publication handlers for events in the KasperEventBus
 
