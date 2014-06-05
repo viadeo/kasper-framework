@@ -8,11 +8,11 @@ package com.viadeo.kasper.eventhandling.terminal.amqp;
 
 import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
+import com.typesafe.config.ConfigObject;
 import com.viadeo.kasper.eventhandling.serializer.JacksonSerializer;
-import org.axonframework.eventhandling.ClusteringEventBus;
-import org.axonframework.eventhandling.DefaultClusterSelector;
-import org.axonframework.eventhandling.EventBus;
+import org.axonframework.eventhandling.*;
 import org.axonframework.serializer.Serializer;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -23,6 +23,10 @@ import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
 import org.springframework.util.ErrorHandler;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -108,9 +112,9 @@ public class EventBusFactory {
 
         final RabbitAdmin admin = rabbitAdmin(connectionFactory);
 
-        final AMQPCluster cluster = defaultAmqpCluster(config, connectionFactory, template, admin, errorHandler);
+        final ClusterSelector cluster = clusterSelector(config, connectionFactory, template, admin, errorHandler);
 
-        return new ClusteringEventBus(new DefaultClusterSelector(cluster));
+        return new ClusteringEventBus(cluster);
     }
 
     /**
@@ -127,6 +131,7 @@ public class EventBusFactory {
      * Creates the amqp cluster for default event handling
      * The cluster setup a "one queue per consumer" topology.
      *
+     *
      * @param config            bus configuration
      * @param connectionFactory connection factory
      * @param template          template used for production
@@ -134,21 +139,33 @@ public class EventBusFactory {
      * @param errorHandler      error handler
      * @return AMQP cluster
      */
-    public AMQPCluster defaultAmqpCluster(Config config,
-                                          ConnectionFactory connectionFactory,
-                                          RabbitTemplate template,
-                                          RabbitAdmin admin,
-                                          ErrorHandler errorHandler) {
+    public CompositeClusterSelector clusterSelector(Config config,
+                                                       ConnectionFactory connectionFactory,
+                                                       RabbitTemplate template,
+                                                       RabbitAdmin admin,
+                                                       ErrorHandler errorHandler) {
 
-        return new AMQPCluster("default", admin,
-                template,
-                config.getString("sub.exchange.name"),
-                config.getString("sub.exchange.dead_letter.name_format"),
-                config.getString("sub.queue.name_format"),
-                config.getString("sub.queue.dead_letter.name_format"),
-                config.getBoolean("sub.queue.durable"),
-                connectionFactory,
-                errorHandler);
+        List<? extends ConfigObject> clusters = config.getObjectList("clusters");
+        ArrayList<ClusterSelector> clusterSelectors = Lists.newArrayList();
+        for (ConfigObject cluster : clusters) {
+            Config clusterConfig = cluster
+                    .toConfig()
+                    .withFallback(config.getConfig("default"));
+
+            Pattern pattern = Pattern.compile(clusterConfig.getString("pattern"));
+            ClassNamePatternClusterSelector selector = new ClassNamePatternClusterSelector(pattern, new AMQPCluster(clusterConfig.getString("name"), admin,
+                    template,
+                    clusterConfig.getString("sub.exchange.name"),
+                    clusterConfig.getString("sub.exchange.dead_letter.name_format"),
+                    clusterConfig.getString("sub.queue.name_format"),
+                    clusterConfig.getString("sub.queue.dead_letter.name_format"),
+                    clusterConfig.getBoolean("sub.queue.durable"),
+                    connectionFactory,
+                    errorHandler));
+            clusterSelectors.add(selector);
+        }
+
+        return new CompositeClusterSelector(clusterSelectors);
     }
 
     /**
@@ -164,9 +181,9 @@ public class EventBusFactory {
         final RabbitTemplate template = new RabbitTemplate(connectionFactory);
         RetryTemplate retryTemplate = new RetryTemplate();
         ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-        backOffPolicy.setInitialInterval(config.getInt("pub.exponentialBackOff.initialInterval"));
-        backOffPolicy.setMultiplier(config.getDouble("pub.exponentialBackOff.multiplier"));
-        backOffPolicy.setMaxInterval(config.getInt("pub.exponentialBackOff.maxInterval"));
+        backOffPolicy.setInitialInterval(config.getInt("default.pub.exponentialBackOff.initialInterval"));
+        backOffPolicy.setMultiplier(config.getDouble("default.pub.exponentialBackOff.multiplier"));
+        backOffPolicy.setMaxInterval(config.getInt("default.pub.exponentialBackOff.maxInterval"));
         retryTemplate.setBackOffPolicy(backOffPolicy);
         template.setRetryTemplate(retryTemplate);
         template.setMessageConverter(messageConverter);

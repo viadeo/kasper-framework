@@ -40,22 +40,29 @@ public class SpringAmqpEventBusITest {
 
     private static final Map<String, Object> SPRING_AMQP_TERMINAL_PROPERTIES = ImmutableMap.<String, Object>builder()
 
+            .put("clusters", Lists.<Map>newArrayList(
+                    ImmutableMap.builder()
+                            .put("name", "default")
+                            .put("pattern", ".*")
+                            .build()
+            ))
+
             // publish
-            .put("pub.exponentialBackOff.initialInterval", 500)
-            .put("pub.exponentialBackOff.multiplier", 10.0)
-            .put("pub.exponentialBackOff.maxInterval", 10000)
+            .put("default.pub.exponentialBackOff.initialInterval", 500)
+            .put("default.pub.exponentialBackOff.multiplier", 10.0)
+            .put("default.pub.exponentialBackOff.maxInterval", 10000)
 
             // subscribe
-            .put("sub.exchange.name", "platform")
-            .put("sub.exchange.durable", Boolean.TRUE)
-            .put("sub.exchange.transactional", Boolean.FALSE)
-            .put("sub.exchange.dead_letter.name_format", "{{exchange}}_dead-letter")
-            .put("sub.queue.durable", Boolean.TRUE)
-            .put("sub.queue.exclusive", Boolean.FALSE)
-            .put("sub.queue.autodelete", Boolean.FALSE)
-            .put("sub.queue.name_format", "{{exchange}}_{{cluster}}_{{listener}}")
-            .put("sub.queue.dead_letter.name_format", "{{queue}}_dead-letter")
-            .put("sub.queue.dead_letter.durable", true)
+            .put("default.sub.exchange.name", "platform")
+            .put("default.sub.exchange.durable", Boolean.TRUE)
+            .put("default.sub.exchange.transactional", Boolean.FALSE)
+            .put("default.sub.exchange.dead_letter.name_format", "{{exchange}}_dead-letter")
+            .put("default.sub.queue.durable", Boolean.TRUE)
+            .put("default.sub.queue.exclusive", Boolean.FALSE)
+            .put("default.sub.queue.autodelete", Boolean.FALSE)
+            .put("default.sub.queue.name_format", "{{exchange}}_{{cluster}}_{{listener}}")
+            .put("default.sub.queue.dead_letter.name_format", "{{queue}}_dead-letter")
+            .put("default.sub.queue.dead_letter.durable", true)
 
              // CONNECTION
             .put("port", ConnectionFactory.DEFAULT_AMQP_PORT)
@@ -79,6 +86,9 @@ public class SpringAmqpEventBusITest {
         );
 
         Config config = ConfigFactory.parseMap(SPRING_AMQP_TERMINAL_PROPERTIES);
+        String s = config.toString();
+
+
         eventBusFactory = new EventBusFactory(config).with(messageConverter);
         eventBus = eventBusFactory.create();
         admin = eventBusFactory.rabbitAdmin(eventBusFactory.connectionFactory(config));
