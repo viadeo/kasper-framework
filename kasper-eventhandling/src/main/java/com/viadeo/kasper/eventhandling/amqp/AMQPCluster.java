@@ -1,7 +1,8 @@
-package com.viadeo.kasper.eventhandling.terminal.amqp;
+package com.viadeo.kasper.eventhandling.amqp;
 
 import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.Channel;
+import com.viadeo.kasper.event.IEvent;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.eventhandling.Cluster;
 import org.axonframework.eventhandling.ClusterMetaData;
@@ -136,20 +137,25 @@ public class AMQPCluster implements Cluster {
                         .put("x-dead-letter-exchange", deadLetterExchangeName)
                         .build()
         );
+
         TopicExchange exchange = new TopicExchange(exchangeName);
         admin.declareExchange(exchange);
         admin.declareQueue(queue);
 
         // add bindings
         Class eventClass = eventListener.getEventClass();
-        Set subTypesOf = this.reflections.getSubTypesOf(eventClass);
-        admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with(eventClass.getName()));
-        admin.declareBinding(BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with(eventClass.getName()));
-        for (Object o : subTypesOf) {
-            String routingKey = ((Class) o).getName();
-            admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with(routingKey));
-            admin.declareBinding(BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with(routingKey));
+        String routingKey = eventClass.equals(IEvent.class) ? "#" : eventClass.getName();
+
+        Set subTypes = this.reflections.getSubTypesOf(eventClass);
+        admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with(routingKey));
+        admin.declareBinding(BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with(routingKey));
+
+        for (Object type : subTypes) {
+            String subRoutingKey = ((Class) type).getName();
+            admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with(subRoutingKey));
+            admin.declareBinding(BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with(subRoutingKey));
         }
+
 
         return queueName;
     }

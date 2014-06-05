@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.eventhandling.terminal.amqp;
+package com.viadeo.kasper.eventhandling.amqp;
 
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;

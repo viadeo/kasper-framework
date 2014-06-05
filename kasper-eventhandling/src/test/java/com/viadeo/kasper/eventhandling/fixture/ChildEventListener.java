@@ -1,11 +1,11 @@
-package com.viadeo.kasper.eventhandling.cluster.fixture;
+package com.viadeo.kasper.eventhandling.fixture;
 
 import com.viadeo.kasper.event.EventListener;
 
 public class ChildEventListener extends EventListener<UserEvent> {
-    private Spy spy;
+    private Spy<UserEvent> spy;
 
-    public ChildEventListener(final Spy spy) {
+    public ChildEventListener(final Spy<UserEvent> spy) {
         this.spy = spy;
     }
 

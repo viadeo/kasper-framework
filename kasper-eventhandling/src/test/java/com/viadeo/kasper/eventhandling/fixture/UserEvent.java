@@ -1,4 +1,4 @@
-package com.viadeo.kasper.eventhandling.cluster.fixture;
+package com.viadeo.kasper.eventhandling.fixture;
 
 import com.google.common.base.Objects;
 import com.viadeo.kasper.event.IEvent;

@@ -1,4 +1,4 @@
-package com.viadeo.kasper.eventhandling.cluster.fixture;
+package com.viadeo.kasper.eventhandling.fixture;
 
 
 public class ChildEvent extends UserEvent {

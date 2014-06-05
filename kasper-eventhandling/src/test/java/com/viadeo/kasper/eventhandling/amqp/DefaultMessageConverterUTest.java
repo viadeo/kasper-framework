@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.eventhandling.terminal.amqp;
+package com.viadeo.kasper.eventhandling.amqp;
 
 import com.google.common.collect.ImmutableMap;
 import com.viadeo.kasper.context.Context;
@@ -29,7 +29,7 @@ import org.springframework.amqp.support.converter.MessageConversionException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.viadeo.kasper.eventhandling.terminal.amqp.EventMessageConverter.*;
+import static com.viadeo.kasper.eventhandling.amqp.EventMessageConverter.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;

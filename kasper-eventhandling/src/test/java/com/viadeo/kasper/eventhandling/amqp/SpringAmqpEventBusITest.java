@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.eventhandling.terminal.amqp;
+package com.viadeo.kasper.eventhandling.amqp;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableMap;
@@ -13,10 +13,10 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.eventhandling.cluster.fixture.ChildEventListener;
-import com.viadeo.kasper.eventhandling.cluster.fixture.Spy;
-import com.viadeo.kasper.eventhandling.cluster.fixture.UserEvent;
-import com.viadeo.kasper.eventhandling.cluster.fixture.UserEventListener;
+import com.viadeo.kasper.eventhandling.fixture.ChildEventListener;
+import com.viadeo.kasper.eventhandling.fixture.Spy;
+import com.viadeo.kasper.eventhandling.fixture.UserEvent;
+import com.viadeo.kasper.eventhandling.fixture.UserEventListener;
 import com.viadeo.kasper.eventhandling.serializer.JacksonSerializer;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.axonframework.domain.GenericEventMessage;
@@ -186,13 +186,13 @@ public class SpringAmqpEventBusITest {
         eventBus.subscribe(new UserEventListener(spy));
 
         // When
-        admin.getRabbitTemplate().send("platform", "com.viadeo.kasper.eventhandling.cluster.fixture.UserEvent", new Message("F0".getBytes(), new MessageProperties()));
+        admin.getRabbitTemplate().send("platform", "com.viadeo.kasper.eventhandling.fixture.UserEvent", new Message("F0".getBytes(), new MessageProperties()));
         eventBus.publish(new GenericEventMessage<>(new UserEvent("Chuck", "Norris", 1)));
 
         // Then
         spy.await();
         assertEquals(1, spy.size());
-        Message receive = admin.getRabbitTemplate().receive("platform_default_com.viadeo.kasper.eventhandling.cluster.fixture.UserEventListener_dead-letter");
+        Message receive = admin.getRabbitTemplate().receive("platform_default_com.viadeo.kasper.eventhandling.fixture.UserEventListener_dead-letter");
         assertNotNull(receive);
         assertEquals("F0", new String(receive.getBody()));
     }

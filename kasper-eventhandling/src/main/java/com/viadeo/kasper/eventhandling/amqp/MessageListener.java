@@ -1,4 +1,4 @@
-package com.viadeo.kasper.eventhandling.terminal.amqp;
+package com.viadeo.kasper.eventhandling.amqp;
 
 import org.axonframework.domain.EventMessage;
 import org.axonframework.eventhandling.EventListener;

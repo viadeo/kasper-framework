@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.eventhandling.terminal.amqp;
+package com.viadeo.kasper.eventhandling.amqp;
 
 import com.codahale.metrics.MetricRegistry;
 import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler;

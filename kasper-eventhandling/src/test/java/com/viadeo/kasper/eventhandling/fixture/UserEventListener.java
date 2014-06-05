@@ -1,4 +1,4 @@
-package com.viadeo.kasper.eventhandling.cluster.fixture;
+package com.viadeo.kasper.eventhandling.fixture;
 
 import com.viadeo.kasper.event.EventListener;
 import org.slf4j.Logger;
@@ -8,10 +8,10 @@ import org.slf4j.LoggerFactory;
 public class UserEventListener extends EventListener<UserEvent> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserEventListener.class);
-    private Spy spy;
+    private Spy<UserEvent> spy;
 
 
-    public UserEventListener(final Spy spy) throws InterruptedException {
+    public UserEventListener(final Spy<UserEvent> spy) throws InterruptedException {
         this.spy = spy;
     }
 
