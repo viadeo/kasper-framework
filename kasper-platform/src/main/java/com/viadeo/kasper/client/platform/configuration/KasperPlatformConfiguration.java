@@ -25,6 +25,7 @@ import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QuerySecurityInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryValidationInterceptorFactory;
 import com.viadeo.kasper.security.SecurityConfiguration;
+import org.axonframework.eventhandling.DefaultClusterSelector;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 
@@ -56,7 +57,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     }
 
     public KasperPlatformConfiguration(SecurityConfiguration securityConfiguration) {
-        this.eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
+        this.eventBus = new KasperEventBus(new DefaultClusterSelector());
         this.queryGateway = new KasperQueryGateway();
         this.metricRegistry = new MetricRegistry();
         this.extraComponents = Maps.newHashMap();

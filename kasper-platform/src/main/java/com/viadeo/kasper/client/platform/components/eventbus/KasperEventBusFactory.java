@@ -10,11 +10,18 @@ import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.Lists;
+import com.sun.javaws.exceptions.InvalidArgumentException;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
+import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.MetaData;
 import org.axonframework.eventhandling.*;
+import org.axonframework.eventhandling.async.DefaultErrorHandler;
+import org.axonframework.eventhandling.async.RetryPolicy;
+import org.axonframework.eventhandling.async.SequentialPolicy;
 import org.axonframework.serializer.Serializer;
+import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
+import org.axonframework.unitofwork.NoTransactionManager;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitAdmin;
@@ -27,6 +34,9 @@ import org.springframework.util.ErrorHandler;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -103,8 +113,6 @@ public class KasperEventBusFactory {
         }
 
         ConnectionFactory connectionFactory = connectionFactory(config);
-
-
         if (null == this.messageConverter) {
             final SimpleModule module = new SimpleModule();
             module.addDeserializer(MetaData.class, new KasperMetaDataDeserializer());
@@ -116,9 +124,9 @@ public class KasperEventBusFactory {
 
         final RabbitTemplate template = rabbitTemplate(connectionFactory, messageConverter);
         final RabbitAdmin admin = rabbitAdmin(connectionFactory);
-        final ClusterSelector cluster = clusterSelector(config, connectionFactory, template, admin, errorHandler);
+        final ClusterSelector clusterSelector = clusterSelector(config, connectionFactory, template, admin, errorHandler);
 
-        return new ClusteringEventBus(cluster);
+        return new KasperEventBus(clusterSelector);
     }
 
     /**
@@ -132,8 +140,9 @@ public class KasperEventBusFactory {
     }
 
     /**
-     * Creates the amqp cluster for default event handling
-     * The cluster setup a "one queue per consumer" topology.
+     * Get a cluster selector instance.
+     * For the moment we only return one Composite cluster in order
+     * to ease migration between asynchronous and amqp cluster
      *
      * @param config            bus configuration
      * @param connectionFactory connection factory
@@ -142,41 +151,91 @@ public class KasperEventBusFactory {
      * @param errorHandler      error handler
      * @return AMQP cluster
      */
-    public CompositeClusterSelector clusterSelector(Config config,
+    public ClusterSelector clusterSelector(Config config,
                                                     ConnectionFactory connectionFactory,
                                                     RabbitTemplate template,
                                                     RabbitAdmin admin,
                                                     ErrorHandler errorHandler) {
 
         List<? extends ConfigObject> clusters = config.getObjectList("clusters");
-        ArrayList<ClusterSelector> clusterSelectors = Lists.newArrayList();
+        ArrayList<Cluster> clusterList = Lists.newArrayList();
         for (ConfigObject clusterConfigObject : clusters) {
             Config clusterConfig = clusterConfigObject
                     .toConfig()
                     .withFallback(config.getConfig("default"));
 
-            AMQPCluster cluster = new AMQPCluster(clusterConfig.getString("name"), admin,
-                    template,
-                    new KasperRoutingKeysResolver(),
-                    connectionFactory,
-                    errorHandler);
-
-            cluster.setExchangeName(clusterConfig.getString("sub.exchange.name"));
-            cluster.setDeadLetterExchangeNameFormat(clusterConfig.getString("sub.exchange.dead_letter.name_format"));
-            cluster.setQueueNameFormat(clusterConfig.getString("sub.queue.name_format"));
-            cluster.setDeadLetterQueueNameFormat(clusterConfig.getString("sub.queue.dead_letter.name_format"));
-            cluster.setQueueDurable(clusterConfig.getBoolean("sub.queue.durable"));
-            cluster.setPrefetchCount(clusterConfig.getInt("sub.container.prefetchCount"));
-            cluster.setMaxPoolSize(clusterConfig.getInt("sub.container.maxPoolSize"));
-
-            Pattern pattern = Pattern.compile(clusterConfig.getString("pattern"));
-            ClassNamePatternClusterSelector selector = new ClassNamePatternClusterSelector(pattern, cluster);
-
-
-            clusterSelectors.add(selector);
+            String type = clusterConfig.getString("type");
+            Cluster cluster;
+            switch (type) {
+                case "amqp":
+                    cluster = amqpCluster(clusterConfig, connectionFactory, template, admin, errorHandler);
+                    break;
+                case "async":
+                    cluster = asyncCluster(clusterConfig);
+                    break;
+                default:
+                    throw new IllegalArgumentException("unknown cluster type");
+            }
+            clusterList.add(cluster);
         }
 
-        return new CompositeClusterSelector(clusterSelectors);
+        Cluster cluster = new CompositeCluster(clusterList);
+        return new ClassNamePatternClusterSelector(Pattern.compile(".*"), cluster);
+    }
+
+    /**
+     * Retrieve an async cluster instance
+     *
+     * @param config bus configuration
+     * @return lifecycle cluster
+     */
+    private Cluster asyncCluster(Config config) {
+
+        LinkedBlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>();
+        ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
+                config.getInt("sub.corePoolSize"),
+                config.getInt("sub.maximumPoolSize"),
+                config.getMilliseconds("sub.keepAliveTime"),
+                TimeUnit.MILLISECONDS,
+                workQueue
+        );
+
+        return new AsynchronousCluster(
+                config.getString("name"),
+                threadPoolExecutor,
+                new DefaultUnitOfWorkFactory(new NoTransactionManager()),
+                new SequentialPolicy(),
+                new AsynchronousCluster.ErrorHandler(RetryPolicy.proceed())
+        );
+    }
+
+    /**
+     * Retrieve the amqp cluster instance
+     *
+     * @param config            bus configuration
+     * @param connectionFactory connection factory
+     * @param template          template used for production
+     * @param admin             admin used to setup topology
+     * @param errorHandler      error handler
+     * @return lifecycle cluster
+     */
+    private SmartlifeCycleCluster amqpCluster(Config config, ConnectionFactory connectionFactory, RabbitTemplate template, RabbitAdmin admin, ErrorHandler errorHandler) {
+
+        AMQPCluster cluster = new AMQPCluster(config.getString("name"), admin,
+                template,
+                new KasperRoutingKeysResolver(),
+                connectionFactory,
+                errorHandler);
+
+        cluster.setExchangeName(config.getString("sub.exchange.name"));
+        cluster.setDeadLetterExchangeNameFormat(config.getString("sub.exchange.dead_letter.name_format"));
+        cluster.setQueueNameFormat(config.getString("sub.queue.name_format"));
+        cluster.setDeadLetterQueueNameFormat(config.getString("sub.queue.dead_letter.name_format"));
+        cluster.setQueueDurable(config.getBoolean("sub.queue.durable"));
+        cluster.setPrefetchCount(config.getInt("sub.container.prefetchCount"));
+        cluster.setMaxPoolSize(config.getInt("sub.container.maxPoolSize"));
+
+        return cluster;
     }
 
     /**

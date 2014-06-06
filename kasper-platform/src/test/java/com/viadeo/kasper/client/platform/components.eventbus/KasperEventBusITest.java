@@ -39,16 +39,25 @@ public class KasperEventBusITest {
             .put("clusters", Lists.<Map>newArrayList(
                     ImmutableMap.builder()
                             .put("name", "default")
+                            .put("type", "amqp")
                             .put("pattern", ".*")
+                            .build(),
+                    ImmutableMap.builder()
+                            .put("name", "async")
+                            .put("type", "async")
+                            .put("pattern", ".*")
+                            .put("sub.corePoolSize", 50)
+                            .put("sub.maximumPoolSize", 500)
+                            .put("sub.keepAliveTime", "30ms")
                             .build()
             ))
 
-            // publish
+                    // publish
             .put("default.pub.exponentialBackOff.initialInterval", 500)
             .put("default.pub.exponentialBackOff.multiplier", 10.0)
             .put("default.pub.exponentialBackOff.maxInterval", 10000)
 
-            // subscribe
+                    // subscribe
             .put("default.sub.exchange.name", "platform")
             .put("default.sub.exchange.durable", Boolean.TRUE)
             .put("default.sub.exchange.transactional", Boolean.FALSE)
@@ -62,7 +71,7 @@ public class KasperEventBusITest {
             .put("default.sub.container.maxPoolSize", 10)
             .put("default.sub.container.prefetchCount", 10)
 
-             // CONNECTION
+                    // CONNECTION
             .put("port", ConnectionFactory.DEFAULT_AMQP_PORT)
             .put("hostname", "127.0.0.1")
             .put("username", "kasper")
@@ -107,7 +116,7 @@ public class KasperEventBusITest {
     public void an_event_listener_should_receive_an_event_after_publication() throws InterruptedException {
 
         // Given
-        Spy<UserEvent> spy = new Spy<>(1);
+        Spy<UserEvent> spy = new Spy<>(2);
         UserEvent payload = new UserEvent("Chuck", "Norris", 60);
         eventBus.subscribe(new UserEventListener(spy));
 
@@ -116,7 +125,7 @@ public class KasperEventBusITest {
 
         // Then
         spy.await();
-        assertEquals(1, spy.size());
+        assertEquals(2, spy.size());
         assertEquals(payload, spy.get(0));
     }
 

@@ -3,7 +3,6 @@ package com.viadeo.kasper.client.platform.components.eventbus;
 import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.Channel;
 import org.axonframework.domain.EventMessage;
-import org.axonframework.eventhandling.Cluster;
 import org.axonframework.eventhandling.ClusterMetaData;
 import org.axonframework.eventhandling.DefaultClusterMetaData;
 import org.axonframework.eventhandling.EventListener;
@@ -17,7 +16,6 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
-import org.springframework.context.SmartLifecycle;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.ErrorHandler;
 
@@ -28,7 +26,7 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class AMQPCluster implements Cluster, SmartLifecycle {
+public class AMQPCluster implements SmartlifeCycleCluster {
 
     private final RabbitAdmin admin;
     private final RabbitTemplate template;
