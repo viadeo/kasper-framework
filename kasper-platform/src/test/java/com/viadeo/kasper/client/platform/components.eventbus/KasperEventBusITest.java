@@ -13,7 +13,6 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.eventhandling.amqp.JacksonSerializer;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;

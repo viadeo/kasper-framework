@@ -1,4 +1,4 @@
-package com.viadeo.kasper.eventhandling.amqp;
+package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.Channel;
@@ -77,7 +77,7 @@ public class AMQPCluster implements Cluster, SmartLifecycle {
     @Override
     public void subscribe(EventListener eventListener) {
 
-        final String queueName = setupTopology((com.viadeo.kasper.event.EventListener) eventListener);
+        final String queueName = setupTopology(eventListener);
 
         // set up the listener and container
         MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageListener(eventListener), template.getMessageConverter());
@@ -106,7 +106,7 @@ public class AMQPCluster implements Cluster, SmartLifecycle {
      * @param eventListener event listener
      * @return String created queue's name
      */
-    protected String setupTopology(com.viadeo.kasper.event.EventListener eventListener) {
+    protected String setupTopology(EventListener eventListener) {
 
         final String queueName = queueNameFormat
                 .replace("{{exchange}}", exchangeName)

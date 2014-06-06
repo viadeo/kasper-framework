@@ -1,4 +1,4 @@
-package com.viadeo.kasper.eventhandling.amqp;
+package com.viadeo.kasper.client.platform.components.eventbus;
 
 import org.axonframework.domain.EventMessage;
 import org.axonframework.eventhandling.EventListener;

@@ -2,7 +2,6 @@ package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.event.IEvent;
-import com.viadeo.kasper.eventhandling.amqp.RoutingKeysResolver;
 import org.axonframework.eventhandling.EventListener;
 import org.reflections.Reflections;
 
