@@ -17,6 +17,7 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer;
 import org.springframework.amqp.rabbit.listener.adapter.MessageListenerAdapter;
+import org.springframework.context.SmartLifecycle;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.ErrorHandler;
 
@@ -27,7 +28,7 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class AMQPCluster implements Cluster {
+public class AMQPCluster implements Cluster, SmartLifecycle {
 
     private final RabbitAdmin admin;
     private final RabbitTemplate template;
@@ -75,10 +76,6 @@ public class AMQPCluster implements Cluster {
      */
     @Override
     public void subscribe(EventListener eventListener) {
-
-        if (!(eventListener instanceof com.viadeo.kasper.event.EventListener)) {
-            throw new IllegalArgumentException("Sadly, this implementation require an instance of com.viadeo.kasper.event.EventListener");
-        }
 
         final String queueName = setupTopology((com.viadeo.kasper.event.EventListener) eventListener);
 
@@ -239,6 +236,23 @@ public class AMQPCluster implements Cluster {
                 container.stop();
             }
         }
+    }
+
+
+    @Override
+    public boolean isAutoStartup() {
+        return true;
+    }
+
+    @Override
+    public void stop(Runnable callback) {
+        stop();
+        callback.run();
+    }
+
+    @Override
+    public int getPhase() {
+        return Integer.MAX_VALUE;
     }
 
     /**
