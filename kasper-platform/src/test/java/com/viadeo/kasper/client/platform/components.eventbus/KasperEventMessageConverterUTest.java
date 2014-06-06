@@ -1,10 +1,4 @@
-// ============================================================================
-//                 KASPER - Kasper is the treasure keeper
-//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
-//
-//           Viadeo Framework for effective CQRS/DDD architecture
-// ============================================================================
-package com.viadeo.kasper.eventhandling.amqp;
+package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.collect.ImmutableMap;
 import com.viadeo.kasper.context.Context;
@@ -29,26 +23,25 @@ import org.springframework.amqp.support.converter.MessageConversionException;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.viadeo.kasper.eventhandling.amqp.EventMessageConverter.*;
+import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventMessageConverter.*;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyObject;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultMessageConverterUTest {
-
+public class KasperEventMessageConverterUTest {
     @Mock
     private Serializer serializer;
 
 
-    private EventMessageConverter converter;
+    private KasperEventMessageConverter converter;
     private DateTime timestamp;
     private Map<String, Object> properties;
 
     @Before
     public void setUp() throws Exception {
-        converter = new EventMessageConverter(serializer);
+        converter = new KasperEventMessageConverter(serializer);
         timestamp = new DateTime("2012-10-12");
         properties = ImmutableMap.<String, Object>builder()
                 .put("foo", "bar")

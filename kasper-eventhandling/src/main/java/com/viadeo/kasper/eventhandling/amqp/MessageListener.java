@@ -2,7 +2,6 @@ package com.viadeo.kasper.eventhandling.amqp;
 
 import org.axonframework.domain.EventMessage;
 import org.axonframework.eventhandling.EventListener;
-import org.springframework.amqp.support.converter.MessageConversionException;
 
 
 public class MessageListener {
@@ -15,10 +14,6 @@ public class MessageListener {
 
     @SuppressWarnings("unused")
     public void handleMessage(EventMessage eventMessage) {
-        try {
-            listener.handle(eventMessage);
-        } catch (Exception e) {
-            throw new MessageConversionException("Unable to deserialize an incoming message", e);
-        }
+        listener.handle(eventMessage);
     }
 }

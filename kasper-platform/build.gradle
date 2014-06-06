@@ -10,7 +10,9 @@ dependencies {
 
     // Projects
     compile project(':kasper-core')
+    compile project(':kasper-eventhandling')
 
     // Third perty dependencies
     compile libraries.TYPESAFE_CONFIG
+
 }

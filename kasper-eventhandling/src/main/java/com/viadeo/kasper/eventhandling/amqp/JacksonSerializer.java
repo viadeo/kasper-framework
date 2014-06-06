@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.eventhandling.serializer;
+package com.viadeo.kasper.eventhandling.amqp;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
@@ -25,11 +25,6 @@ public class JacksonSerializer implements Serializer {
     public JacksonSerializer(final ObjectMapper objectMapper) {
         this.objectMapper = checkNotNull(objectMapper);
         this.converterFactory = new ChainingConverterFactory();
-
-        final SimpleModule module = new SimpleModule();
-        module.addDeserializer(MetaData.class, new MetaDataDeserializer());
-
-        objectMapper.registerModule(module);
     }
 
     @Override

@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.eventhandling.amqp;
+package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
@@ -27,9 +27,9 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class EventMessageConverter implements MessageConverter {
+public class KasperEventMessageConverter implements MessageConverter {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(EventMessageConverter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventMessageConverter.class);
     private final MessageSerializer serializer;
 
     final static String HEADER_REQUIRED_MESSAGE = "header %s is required";
@@ -47,7 +47,7 @@ public class EventMessageConverter implements MessageConverter {
     final static String PREFIX_CONTEXT_KEY = "X-CONTEXT-";
 
 
-    public EventMessageConverter(final Serializer serializer) {
+    public KasperEventMessageConverter(final Serializer serializer) {
         this.serializer = new MessageSerializer(checkNotNull(serializer));
     }
 

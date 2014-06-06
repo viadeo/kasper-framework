@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.eventhandling.amqp;
+package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableMap;
@@ -13,11 +13,7 @@ import com.rabbitmq.client.ConnectionFactory;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.eventhandling.fixture.ChildEventListener;
-import com.viadeo.kasper.eventhandling.fixture.Spy;
-import com.viadeo.kasper.eventhandling.fixture.UserEvent;
-import com.viadeo.kasper.eventhandling.fixture.UserEventListener;
-import com.viadeo.kasper.eventhandling.serializer.JacksonSerializer;
+import com.viadeo.kasper.eventhandling.amqp.JacksonSerializer;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
@@ -31,12 +27,13 @@ import org.springframework.amqp.rabbit.core.RabbitAdmin;
 
 import java.util.Map;
 
+import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventBusFixture.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class SpringAmqpEventBusITest {
+public class KasperEventBusITest {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SpringAmqpEventBusITest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBusITest.class);
 
     private static final Map<String, Object> SPRING_AMQP_TERMINAL_PROPERTIES = ImmutableMap.<String, Object>builder()
 
@@ -63,6 +60,8 @@ public class SpringAmqpEventBusITest {
             .put("default.sub.queue.name_format", "{{exchange}}_{{cluster}}_{{listener}}")
             .put("default.sub.queue.dead_letter.name_format", "{{queue}}_dead-letter")
             .put("default.sub.queue.dead_letter.durable", true)
+            .put("default.sub.container.maxPoolSize", 10)
+            .put("default.sub.container.prefetchCount", 10)
 
              // CONNECTION
             .put("port", ConnectionFactory.DEFAULT_AMQP_PORT)
@@ -73,7 +72,8 @@ public class SpringAmqpEventBusITest {
 
     private EventBus eventBus;
     private RabbitAdmin admin;
-    private EventBusFactory eventBusFactory;
+    private KasperEventBusFactory eventBusFactory;
+
 
     @Before
     public void setup() throws Throwable {
@@ -81,7 +81,7 @@ public class SpringAmqpEventBusITest {
         // Testability...
         KasperMetrics.setMetricRegistry(new MetricRegistry());
 
-        EventMessageConverter messageConverter = new EventMessageConverter(
+        KasperEventMessageConverter messageConverter = new KasperEventMessageConverter(
                 new JacksonSerializer(ObjectMapperProvider.INSTANCE.mapper())
         );
 
@@ -89,7 +89,7 @@ public class SpringAmqpEventBusITest {
         String s = config.toString();
 
 
-        eventBusFactory = new EventBusFactory(config).with(messageConverter);
+        eventBusFactory = new KasperEventBusFactory(config).with(messageConverter);
         eventBus = eventBusFactory.create();
         admin = eventBusFactory.rabbitAdmin(eventBusFactory.connectionFactory(config));
 
@@ -97,7 +97,7 @@ public class SpringAmqpEventBusITest {
         admin.deleteExchange("platform");
         admin.deleteExchange("platform_dead-letter");
 
-        for (String name : Lists.newArrayList(UserEventListener.class.getName(), ChildEventListener.class.getName())) {
+        for (String name : Lists.newArrayList(KasperEventBusFixture.UserEventListener.class.getName(), ChildEventListener.class.getName())) {
             admin.deleteQueue("platform_default_" + name);
             admin.deleteQueue("platform_default_" + name + "_dead-letter");
         }
@@ -186,13 +186,13 @@ public class SpringAmqpEventBusITest {
         eventBus.subscribe(new UserEventListener(spy));
 
         // When
-        admin.getRabbitTemplate().send("platform", "com.viadeo.kasper.eventhandling.fixture.UserEvent", new Message("F0".getBytes(), new MessageProperties()));
+        admin.getRabbitTemplate().send("platform", "com.viadeo.kasper.client.platform.components.eventbus.KasperEventBusFixture$UserEvent", new Message("F0".getBytes(), new MessageProperties()));
         eventBus.publish(new GenericEventMessage<>(new UserEvent("Chuck", "Norris", 1)));
 
         // Then
         spy.await();
         assertEquals(1, spy.size());
-        Message receive = admin.getRabbitTemplate().receive("platform_default_com.viadeo.kasper.eventhandling.fixture.UserEventListener_dead-letter");
+        Message receive = admin.getRabbitTemplate().receive("platform_default_com.viadeo.kasper.client.platform.components.eventbus.KasperEventBusFixture$UserEventListener_dead-letter");
         assertNotNull(receive);
         assertEquals("F0", new String(receive.getBody()));
     }

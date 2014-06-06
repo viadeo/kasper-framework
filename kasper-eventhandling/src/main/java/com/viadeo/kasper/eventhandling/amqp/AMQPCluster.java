@@ -2,13 +2,11 @@ package com.viadeo.kasper.eventhandling.amqp;
 
 import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.Channel;
-import com.viadeo.kasper.event.IEvent;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.eventhandling.Cluster;
 import org.axonframework.eventhandling.ClusterMetaData;
 import org.axonframework.eventhandling.DefaultClusterMetaData;
 import org.axonframework.eventhandling.EventListener;
-import org.reflections.Reflections;
 import org.springframework.amqp.core.BindingBuilder;
 import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.core.Queue;
@@ -23,47 +21,46 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.ErrorHandler;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class AMQPCluster implements Cluster {
 
-    private final Reflections reflections;
     private final RabbitAdmin admin;
     private final RabbitTemplate template;
     private final ConnectionFactory connectionFactory;
     private final ErrorHandler errorHandler;
+    private final RoutingKeysResolver routingKeysResolver;
     private final String name;
-    private final String queueNameFormat;
-    private final String deadLetterExchangeNameFormat;
-    private final String exchangeName;
-    private final String deadLetterQueueNameFormat;
-    private final boolean queueDurable;
+
+    private String queueNameFormat;
+    private String deadLetterExchangeNameFormat;
+    private String exchangeName;
+    private String deadLetterQueueNameFormat;
+    private int maxPoolSize = 10;
+    private int prefetchCount = 10;
+    private boolean queueDurable = true;
+
     private final Map<EventListener, SimpleMessageListenerContainer> containerMap;
     private final DefaultClusterMetaData clusterMetaData;
 
-    protected AMQPCluster(String name,
-                          RabbitAdmin admin,
-                          RabbitTemplate template,
-                          String exchangeName,
-                          String deadLetterExchangeNameFormat,
-                          String queueNameFormat,
-                          String deadLetterQueueNameFormat,
-                          boolean queueDurable,
-                          ConnectionFactory connectionFactory,
-                          ErrorHandler errorHandler
+
+    public AMQPCluster(String name,
+                       RabbitAdmin admin,
+                       RabbitTemplate template,
+                       RoutingKeysResolver routingKeysResolver,
+                       ConnectionFactory connectionFactory,
+                       ErrorHandler errorHandler
     ) {
         this.name = name;
         this.admin = admin;
         this.template = template;
-        this.queueNameFormat = queueNameFormat;
-        this.deadLetterExchangeNameFormat = deadLetterExchangeNameFormat;
-        this.exchangeName = exchangeName;
-        this.deadLetterQueueNameFormat = deadLetterQueueNameFormat;
-        this.queueDurable = queueDurable;
+        this.routingKeysResolver = routingKeysResolver;
         this.connectionFactory = connectionFactory;
         this.errorHandler = errorHandler;
-        this.reflections = new Reflections();
         this.containerMap = new HashMap<>();
         this.clusterMetaData = new DefaultClusterMetaData();
     }
@@ -76,6 +73,7 @@ public class AMQPCluster implements Cluster {
      *
      * @param eventListener eventListener to subscribe
      */
+    @Override
     public void subscribe(EventListener eventListener) {
 
         if (!(eventListener instanceof com.viadeo.kasper.event.EventListener)) {
@@ -89,9 +87,9 @@ public class AMQPCluster implements Cluster {
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
         container.setMessageListener(adapter);
         container.setQueueNames(queueName);
-        container.setPrefetchCount(10);
+        container.setPrefetchCount(prefetchCount);
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setMaxPoolSize(10);
+        taskExecutor.setMaxPoolSize(maxPoolSize);
         taskExecutor.initialize();
         container.setTaskExecutor(taskExecutor);
         container.setErrorHandler(errorHandler);
@@ -111,7 +109,7 @@ public class AMQPCluster implements Cluster {
      * @param eventListener event listener
      * @return String created queue's name
      */
-    private String setupTopology(com.viadeo.kasper.event.EventListener eventListener) {
+    protected String setupTopology(com.viadeo.kasper.event.EventListener eventListener) {
 
         final String queueName = queueNameFormat
                 .replace("{{exchange}}", exchangeName)
@@ -141,31 +139,29 @@ public class AMQPCluster implements Cluster {
         TopicExchange exchange = new TopicExchange(exchangeName);
         admin.declareExchange(exchange);
         admin.declareQueue(queue);
-
-        // add bindings
-        Class eventClass = eventListener.getEventClass();
-        String routingKey = eventClass.equals(IEvent.class) ? "#" : eventClass.getName();
-
-        Set subTypes = this.reflections.getSubTypesOf(eventClass);
-        admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with(routingKey));
-        admin.declareBinding(BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with(routingKey));
-
-        for (Object type : subTypes) {
-            String subRoutingKey = ((Class) type).getName();
-            admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with(subRoutingKey));
-            admin.declareBinding(BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with(subRoutingKey));
+        List<String> routingKeys = routingKeysResolver.resolve(eventListener);
+        for (String key : routingKeys) {
+            admin.declareBinding(BindingBuilder.bind(queue).to(exchange).with(key));
+            admin.declareBinding(BindingBuilder.bind(deadLetterQueue).to(deadLetterExchange).with(key));
         }
-
 
         return queueName;
     }
 
-
+    /**
+     * @see org.axonframework.eventhandling.Cluster#getName()
+     */
     @Override
     public String getName() {
         return name;
     }
 
+    /**
+     * Publish messages using provided rabbit template
+     *
+     * @see org.springframework.amqp.rabbit.core.RabbitTemplate#execute(org.springframework.amqp.rabbit.core.ChannelCallback)
+     * @param events a list of message to publish
+     */
     @Override
     public void publish(final EventMessage... events) {
 
@@ -186,22 +182,31 @@ public class AMQPCluster implements Cluster {
      * @param eventListener listener to unsubscribe
      * @see org.axonframework.eventhandling.Cluster#unsubscribe(org.axonframework.eventhandling.EventListener)
      */
+    @Override
     public void unsubscribe(EventListener eventListener) {
         SimpleMessageListenerContainer container = containerMap.get(eventListener);
         container.stop();
         containerMap.remove(eventListener);
     }
 
+    /**
+     * @see org.axonframework.eventhandling.Cluster#getMembers()
+     */
+    @Override
     public Set<EventListener> getMembers() {
         return containerMap.keySet();
     }
 
+    /**
+     * @see org.axonframework.eventhandling.Cluster#getMetaData()
+     */
+    @Override
     public ClusterMetaData getMetaData() {
         return clusterMetaData;
     }
 
     /**
-     * Weither or not one of the container is still running
+     * returns true if one of the container is still running
      *
      * @return status
      */
@@ -234,5 +239,76 @@ public class AMQPCluster implements Cluster {
                 container.stop();
             }
         }
+    }
+
+    /**
+     * Set the name format used to create the queues
+     * this format accept 3 placeholders :
+     * - {{cluster}}
+     * - {{exchange}}
+     * - {{listener}}
+     *
+     * @param queueNameFormat the queue name format
+     */
+    public void setQueueNameFormat(String queueNameFormat) {
+        this.queueNameFormat = checkNotNull(queueNameFormat);
+    }
+
+    /**
+     * Set the dead letter exchange name format
+     * this format accept 1 placeholder :
+     * - {{queue}}
+     *
+     * @param deadLetterExchangeNameFormat the dead-letter exchange name format
+     */
+    public void setDeadLetterExchangeNameFormat(String deadLetterExchangeNameFormat) {
+        this.deadLetterExchangeNameFormat = checkNotNull(deadLetterExchangeNameFormat);
+    }
+
+    /**
+     * Set the exchange name
+     *
+     * @param exchangeName exchange name
+     */
+    public void setExchangeName(String exchangeName) {
+        this.exchangeName = checkNotNull(exchangeName);
+    }
+
+    /**
+     * Set the dead letter queue name format
+     * this format accept 1 placeholder :
+     * - {{queue}}
+     *
+     * @param deadLetterQueueNameFormat the dead-letter queue name format
+     */
+    public void setDeadLetterQueueNameFormat(String deadLetterQueueNameFormat) {
+        this.deadLetterQueueNameFormat = checkNotNull(deadLetterQueueNameFormat);
+    }
+
+    /**
+     * Set the {@link org.springframework.amqp.core.Queue#isDurable()}
+     *
+     * @param queueDurable is queue durable or not
+     */
+    public void setQueueDurable(boolean queueDurable) {
+        this.queueDurable = checkNotNull(queueDurable);
+    }
+
+    /**
+     * Set the {@link org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor#setMaxPoolSize(int))}
+     *
+     * @param maxPoolSize max pool size
+     */
+    public void setMaxPoolSize(int maxPoolSize) {
+        this.maxPoolSize = maxPoolSize;
+    }
+
+    /**
+     * Set the {@link org.springframework.amqp.rabbit.listener.SimpleMessageListenerContainer#setPrefetchCount(int)}
+     *
+     * @param prefetchCount number of message to fetch out of rabbitmq in a single call
+     */
+    public void setPrefetchCount(int prefetchCount) {
+        this.prefetchCount = prefetchCount;
     }
 }
