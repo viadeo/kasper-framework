@@ -47,6 +47,7 @@ public class KasperEventBusITest {
             admin.deleteQueue("platform_default_" + name);
             admin.deleteQueue("platform_default_" + name + "_dead-letter");
         }
+
     }
 
     @Test
@@ -169,10 +170,8 @@ public class KasperEventBusITest {
 
     private EventBus eventBus(Config config) {
 
-        KasperEventMessageConverter messageConverter = new KasperEventMessageConverter(
-                new JacksonSerializer(ObjectMapperProvider.INSTANCE.mapper())
-        );
-        eventBusFactory = new KasperEventBusFactory(config).with(messageConverter);
+        eventBusFactory = new KasperEventBusFactory(config)
+                .with(ObjectMapperProvider.INSTANCE.mapper());
 
         return eventBusFactory.create();
     }

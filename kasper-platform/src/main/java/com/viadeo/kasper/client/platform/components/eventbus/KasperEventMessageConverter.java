@@ -115,14 +115,12 @@ public class KasperEventMessageConverter implements MessageConverter {
         }
 
         final MetaData metaData = eventMessage.getMetaData();
-
         for (final Map.Entry<String, Object> entry : metaData.entrySet()) {
             if (entry.getValue() != null) {
                 if (Context.METANAME.equals(entry.getKey())) {
                     @SuppressWarnings("unchecked")
-                    final Map<String, Object> contextAsMap = (Map<String, Object>) entry.getValue();
-
-                    for (final Map.Entry<String, Object> contextEntry : contextAsMap.entrySet()) {
+                    final Context context = (Context) entry.getValue();
+                    for (final Map.Entry<String, String> contextEntry : context.asMap().entrySet()) {
                         builder.setHeader(PREFIX_CONTEXT_KEY + contextEntry.getKey(), contextEntry.getValue());
                     }
                 } else {

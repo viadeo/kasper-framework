@@ -32,8 +32,6 @@ import org.axonframework.unitofwork.UnitOfWorkFactory;
 import java.util.List;
 import java.util.Map;
 
-import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus.Policy;
-
 /**
  * The KasperPlatformConfiguration class provides default implementation of the components required by the  {@link com.viadeo.kasper.client.platform.Platform}.
  *

@@ -238,8 +238,8 @@ public class KasperEventBusFactory {
         cluster.setDeadLetterQueueNameFormat(config.getString("queue.deadLetterNameFormat"));
         cluster.setQueueDurable(config.getBoolean("queue.durable"));
         cluster.setPrefetchCount(config.getInt("prefetchCount"));
-        cluster.setQueueExpires(config.getMilliseconds("expires"));
-        cluster.setMessageTTL(config.getMilliseconds("messageTTL"));
+        cluster.setQueueExpires(config.getMilliseconds("queue.expires"));
+        cluster.setMessageTTL(config.getMilliseconds("queue.messageTTL"));
 
         return cluster;
     }
