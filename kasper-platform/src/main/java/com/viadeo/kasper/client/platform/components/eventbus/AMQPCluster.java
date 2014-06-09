@@ -107,12 +107,12 @@ public class AMQPCluster implements SmartlifeCycleCluster {
     protected String setupTopology(EventListener eventListener) {
 
         final String queueName = queueNameFormat
-                .replace("{{exchange}}", exchangeName)
-                .replace("{{cluster}}", getName())
-                .replace("{{listener}}", eventListener.getClass().getName());
+                .replace("%exchange%", exchangeName)
+                .replace("%cluster%", getName())
+                .replace("%listener%", eventListener.getClass().getName());
 
-        final String deadLetterExchangeName = deadLetterExchangeNameFormat.replace("{{exchange}}", exchangeName);
-        final String deadLetterQueueName = deadLetterQueueNameFormat.replace("{{queue}}", queueName);
+        final String deadLetterExchangeName = deadLetterExchangeNameFormat.replace("%exchange%", exchangeName);
+        final String deadLetterQueueName = deadLetterQueueNameFormat.replace("%queue%", queueName);
 
         DirectExchange deadLetterExchange = new DirectExchange(deadLetterExchangeName);
         admin.declareExchange(deadLetterExchange);
@@ -256,9 +256,9 @@ public class AMQPCluster implements SmartlifeCycleCluster {
     /**
      * Set the name format used to create the queues
      * this format accept 3 placeholders :
-     * - {{cluster}}
-     * - {{exchange}}
-     * - {{listener}}
+     * - %cluster%
+     * - %exchange%
+     * - %listener%
      *
      * @param queueNameFormat the queue name format
      */
@@ -269,7 +269,7 @@ public class AMQPCluster implements SmartlifeCycleCluster {
     /**
      * Set the dead letter exchange name format
      * this format accept 1 placeholder :
-     * - {{queue}}
+     * - %queue%
      *
      * @param deadLetterExchangeNameFormat the dead-letter exchange name format
      */
@@ -289,7 +289,7 @@ public class AMQPCluster implements SmartlifeCycleCluster {
     /**
      * Set the dead letter queue name format
      * this format accept 1 placeholder :
-     * - {{queue}}
+     * - %queue%
      *
      * @param deadLetterQueueNameFormat the dead-letter queue name format
      */

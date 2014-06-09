@@ -10,13 +10,13 @@ import com.codahale.metrics.MetricRegistry;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.google.common.collect.Lists;
-import com.sun.javaws.exceptions.InvalidArgumentException;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigObject;
-import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.MetaData;
-import org.axonframework.eventhandling.*;
-import org.axonframework.eventhandling.async.DefaultErrorHandler;
+import org.axonframework.eventhandling.ClassNamePatternClusterSelector;
+import org.axonframework.eventhandling.Cluster;
+import org.axonframework.eventhandling.ClusterSelector;
+import org.axonframework.eventhandling.EventBus;
 import org.axonframework.eventhandling.async.RetryPolicy;
 import org.axonframework.eventhandling.async.SequentialPolicy;
 import org.axonframework.serializer.Serializer;
@@ -33,7 +33,7 @@ import org.springframework.retry.support.RetryTemplate;
 import org.springframework.util.ErrorHandler;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
@@ -49,6 +49,7 @@ public class KasperEventBusFactory {
     private MetricRegistry metricRegistry;
     private ErrorHandler errorHandler;
     private ObjectMapper objectMapper;
+    private ConnectionFactory connectionFactory;
 
     /**
      * Use type safe configuration to assemble the bus
@@ -100,31 +101,11 @@ public class KasperEventBusFactory {
      */
     public EventBus create() {
 
-        if (null == this.objectMapper) {
-            objectMapper = new ObjectMapper();
-        }
-
         if (null == metricRegistry) {
             metricRegistry = new MetricRegistry();
         }
 
-        if (null == errorHandler) {
-            errorHandler = new InstrumentedErrorHandler(new ConditionalRejectingErrorHandler(), metricRegistry);
-        }
-
-        ConnectionFactory connectionFactory = connectionFactory(config);
-        if (null == this.messageConverter) {
-            final SimpleModule module = new SimpleModule();
-            module.addDeserializer(MetaData.class, new KasperMetaDataDeserializer());
-
-            objectMapper.registerModule(module);
-            Serializer serializer = new JacksonSerializer(objectMapper);
-            this.messageConverter = new KasperEventMessageConverter(serializer);
-        }
-
-        final RabbitTemplate template = rabbitTemplate(connectionFactory, messageConverter);
-        final RabbitAdmin admin = rabbitAdmin(connectionFactory);
-        final ClusterSelector clusterSelector = clusterSelector(config, connectionFactory, template, admin, errorHandler);
+        final ClusterSelector clusterSelector = clusterSelector(config);
 
         return new KasperEventBus(clusterSelector);
     }
@@ -135,7 +116,7 @@ public class KasperEventBusFactory {
      * @param connectionFactory connection factory
      * @return rabbitmq instance
      */
-    public RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
+    RabbitAdmin rabbitAdmin(ConnectionFactory connectionFactory) {
         return new RabbitAdmin(connectionFactory);
     }
 
@@ -145,33 +126,23 @@ public class KasperEventBusFactory {
      * to ease migration between asynchronous and amqp cluster
      *
      * @param config            bus configuration
-     * @param connectionFactory connection factory
-     * @param template          template used for production
-     * @param admin             admin used to setup topology
-     * @param errorHandler      error handler
      * @return AMQP cluster
      */
-    public ClusterSelector clusterSelector(Config config,
-                                                    ConnectionFactory connectionFactory,
-                                                    RabbitTemplate template,
-                                                    RabbitAdmin admin,
-                                                    ErrorHandler errorHandler) {
+    ClusterSelector clusterSelector(Config config) {
 
-        List<? extends ConfigObject> clusters = config.getObjectList("clusters");
+        ConfigObject clusters = config.getObject("clusters");
+        Set<String> names = clusters.keySet();
         ArrayList<Cluster> clusterList = Lists.newArrayList();
-        for (ConfigObject clusterConfigObject : clusters) {
-            Config clusterConfig = clusterConfigObject
-                    .toConfig()
-                    .withFallback(config.getConfig("default"));
-
+        for (String name : names) {
+            Config clusterConfig = clusters.toConfig().getConfig(name);
             String type = clusterConfig.getString("type");
             Cluster cluster;
             switch (type) {
                 case "amqp":
-                    cluster = amqpCluster(clusterConfig, connectionFactory, template, admin, errorHandler);
+                    cluster = amqpCluster(name, clusterConfig.withFallback(config.getConfig("defaults.amqp")));
                     break;
                 case "async":
-                    cluster = asyncCluster(clusterConfig);
+                    cluster = asyncCluster(name, clusterConfig.withFallback(config.getConfig("defaults.async")));
                     break;
                 default:
                     throw new IllegalArgumentException("unknown cluster type");
@@ -180,6 +151,7 @@ public class KasperEventBusFactory {
         }
 
         Cluster cluster = new CompositeCluster(clusterList);
+
         return new ClassNamePatternClusterSelector(Pattern.compile(".*"), cluster);
     }
 
@@ -189,19 +161,19 @@ public class KasperEventBusFactory {
      * @param config bus configuration
      * @return lifecycle cluster
      */
-    private Cluster asyncCluster(Config config) {
+    Cluster asyncCluster(String name, Config config) {
 
         LinkedBlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>();
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
-                config.getInt("sub.corePoolSize"),
-                config.getInt("sub.maximumPoolSize"),
-                config.getMilliseconds("sub.keepAliveTime"),
+                config.getInt("corePoolSize"),
+                config.getInt("maximumPoolSize"),
+                config.getMilliseconds("keepAliveTime"),
                 TimeUnit.MILLISECONDS,
                 workQueue
         );
 
         return new AsynchronousCluster(
-                config.getString("name"),
+                name,
                 threadPoolExecutor,
                 new DefaultUnitOfWorkFactory(new NoTransactionManager()),
                 new SequentialPolicy(),
@@ -213,27 +185,44 @@ public class KasperEventBusFactory {
      * Retrieve the amqp cluster instance
      *
      * @param config            bus configuration
-     * @param connectionFactory connection factory
-     * @param template          template used for production
-     * @param admin             admin used to setup topology
-     * @param errorHandler      error handler
      * @return lifecycle cluster
      */
-    private SmartlifeCycleCluster amqpCluster(Config config, ConnectionFactory connectionFactory, RabbitTemplate template, RabbitAdmin admin, ErrorHandler errorHandler) {
+    SmartlifeCycleCluster amqpCluster(String name, Config config) {
 
-        AMQPCluster cluster = new AMQPCluster(config.getString("name"), admin,
+        if (null == connectionFactory) {
+            connectionFactory = connectionFactory(config);
+        }
+
+        if (null == messageConverter) {
+            messageConverter = messageConverter();
+        }
+
+        if (null == this.objectMapper) {
+            objectMapper = new ObjectMapper();
+        }
+
+        if (null == errorHandler) {
+            errorHandler = new InstrumentedErrorHandler(new ConditionalRejectingErrorHandler(), metricRegistry);
+        }
+
+        final RabbitTemplate template = rabbitTemplate(config, connectionFactory, messageConverter);
+
+        final RabbitAdmin admin = rabbitAdmin(connectionFactory);
+
+
+        AMQPCluster cluster = new AMQPCluster(name, admin,
                 template,
                 new KasperRoutingKeysResolver(),
                 connectionFactory,
                 errorHandler);
 
-        cluster.setExchangeName(config.getString("sub.exchange.name"));
-        cluster.setDeadLetterExchangeNameFormat(config.getString("sub.exchange.dead_letter.name_format"));
-        cluster.setQueueNameFormat(config.getString("sub.queue.name_format"));
-        cluster.setDeadLetterQueueNameFormat(config.getString("sub.queue.dead_letter.name_format"));
-        cluster.setQueueDurable(config.getBoolean("sub.queue.durable"));
-        cluster.setPrefetchCount(config.getInt("sub.container.prefetchCount"));
-        cluster.setMaxPoolSize(config.getInt("sub.container.maxPoolSize"));
+        cluster.setExchangeName(config.getString("exchange.name"));
+        cluster.setDeadLetterExchangeNameFormat(config.getString("exchange.deadLetterNameFormat"));
+        cluster.setQueueNameFormat(config.getString("queue.nameFormat"));
+        cluster.setDeadLetterQueueNameFormat(config.getString("queue.deadLetterNameFormat"));
+        cluster.setQueueDurable(config.getBoolean("queue.durable"));
+        cluster.setPrefetchCount(config.getInt("prefetchCount"));
+        cluster.setMaxPoolSize(config.getInt("maxPoolSize"));
 
         return cluster;
     }
@@ -246,14 +235,14 @@ public class KasperEventBusFactory {
      * @param messageConverter  message converter
      * @return rabbit template
      */
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory, MessageConverter messageConverter) {
+    RabbitTemplate rabbitTemplate(Config config, ConnectionFactory connectionFactory, MessageConverter messageConverter) {
 
         final RabbitTemplate template = new RabbitTemplate(connectionFactory);
         RetryTemplate retryTemplate = new RetryTemplate();
         ExponentialBackOffPolicy backOffPolicy = new ExponentialBackOffPolicy();
-        backOffPolicy.setInitialInterval(config.getInt("default.pub.exponentialBackOff.initialInterval"));
-        backOffPolicy.setMultiplier(config.getDouble("default.pub.exponentialBackOff.multiplier"));
-        backOffPolicy.setMaxInterval(config.getInt("default.pub.exponentialBackOff.maxInterval"));
+        backOffPolicy.setInitialInterval(config.getInt("retry.exponentialBackOff.initialInterval"));
+        backOffPolicy.setMultiplier(config.getDouble("retry.exponentialBackOff.multiplier"));
+        backOffPolicy.setMaxInterval(config.getInt("retry.exponentialBackOff.maxInterval"));
         retryTemplate.setBackOffPolicy(backOffPolicy);
         template.setRetryTemplate(retryTemplate);
         template.setMessageConverter(messageConverter);
@@ -266,7 +255,7 @@ public class KasperEventBusFactory {
      *
      * @return connection factory
      */
-    public ConnectionFactory connectionFactory(Config config) {
+    ConnectionFactory connectionFactory(Config config) {
 
         final CachingConnectionFactory factory = new CachingConnectionFactory();
         factory.setHost(config.getString("hostname"));
@@ -275,5 +264,19 @@ public class KasperEventBusFactory {
         factory.setPassword(config.getString("password"));
 
         return factory;
+    }
+
+    /**
+     * Convert message from spring to axon/kasper format
+     *
+     * @return spring amqp message converter
+     */
+    MessageConverter messageConverter() {
+        final SimpleModule module = new SimpleModule();
+        module.addDeserializer(MetaData.class, new KasperMetaDataDeserializer());
+
+        objectMapper.registerModule(module);
+        Serializer serializer = new JacksonSerializer(objectMapper);
+        return new KasperEventMessageConverter(serializer);
     }
 }
