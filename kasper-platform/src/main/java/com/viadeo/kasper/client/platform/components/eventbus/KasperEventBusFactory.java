@@ -238,6 +238,8 @@ public class KasperEventBusFactory {
         cluster.setDeadLetterQueueNameFormat(config.getString("queue.deadLetterNameFormat"));
         cluster.setQueueDurable(config.getBoolean("queue.durable"));
         cluster.setPrefetchCount(config.getInt("prefetchCount"));
+        cluster.setQueueExpires(config.getMilliseconds("expires"));
+        cluster.setMessageTTL(config.getMilliseconds("messageTTL"));
 
         return cluster;
     }
@@ -246,7 +248,7 @@ public class KasperEventBusFactory {
      * Get the task executor used by containers
      *
      * @param config config for task executor
-     * @return
+     * @return task executor
      */
     private ConcurrentTaskExecutor taskExecutor(Config config) {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();

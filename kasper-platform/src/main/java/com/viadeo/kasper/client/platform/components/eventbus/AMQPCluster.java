@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.Executor;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class AMQPCluster implements SmartlifeCycleCluster {
@@ -42,8 +43,9 @@ public class AMQPCluster implements SmartlifeCycleCluster {
     private String deadLetterExchangeNameFormat;
     private String exchangeName;
     private String deadLetterQueueNameFormat;
-    private int maxPoolSize = 10;
     private int prefetchCount = 10;
+    private Long queueExpires;
+    private Long messageTTL;
     private boolean queueDurable = true;
 
     private final Map<EventListener, SimpleMessageListenerContainer> containerMap;
@@ -125,14 +127,23 @@ public class AMQPCluster implements SmartlifeCycleCluster {
 
 
         // declare topic and queue
+        ImmutableMap.Builder<String, Object> properties = ImmutableMap.<String, Object>builder()
+                .put("x-dead-letter-exchange", deadLetterExchangeName);
+
+        if (null != queueExpires) {
+            properties.put("x-expires", queueExpires);
+        }
+
+        if (null != messageTTL) {
+            properties.put("x-message-ttl", messageTTL);
+        }
+
         final Queue queue = new Queue(
                 queueName,
                 queueDurable,
                 false,
                 false,
-                ImmutableMap.<String, Object>builder()
-                        .put("x-dead-letter-exchange", deadLetterExchangeName)
-                        .build()
+                properties.build()
         );
 
         TopicExchange exchange = new TopicExchange(exchangeName);
@@ -317,5 +328,26 @@ public class AMQPCluster implements SmartlifeCycleCluster {
      */
     public void setPrefetchCount(int prefetchCount) {
         this.prefetchCount = prefetchCount;
+    }
+
+    /**
+     * Set the queue expires
+     *
+     * @link http://www.rabbitmq.com/ttl.html#queue-ttl
+     * @param queueExpires time in millisecond before queue expiration
+     */
+    public void setQueueExpires(Long queueExpires) {
+        checkArgument(queueExpires > 1000 * 3600, "At least 1 day is required for queue expiration");
+        this.queueExpires = queueExpires;
+    }
+
+    /**
+     * Set the message ttl for the queues
+     *
+     * @param messageTTL time in milliseconds before message expiration
+     */
+    public void setMessageTTL(Long messageTTL) {
+        checkArgument(messageTTL > 1000 * 3600, "At least 1 day is required for message expiration");
+        this.messageTTL = messageTTL;
     }
 }
