@@ -31,9 +31,6 @@ public class KasperEventBus extends ClusteringEventBus {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBus.class);
 
-    public static enum Policy {
-        SYNCHRONOUS, ASYNCHRONOUS, USER
-    }
 
     public KasperEventBus(ClusterSelector clusterSelector) {
         super(clusterSelector);

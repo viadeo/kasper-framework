@@ -1,5 +1,6 @@
 package com.viadeo.kasper.client.platform.components.eventbus;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableMap;
 import com.rabbitmq.client.Channel;
 import org.axonframework.domain.EventMessage;
@@ -32,6 +33,7 @@ public class AMQPCluster implements SmartlifeCycleCluster {
     private final RabbitTemplate template;
     private final ConnectionFactory connectionFactory;
     private final ErrorHandler errorHandler;
+    private MetricRegistry metricRegistry;
     private final RoutingKeysResolver routingKeysResolver;
     private final String name;
 
@@ -52,14 +54,16 @@ public class AMQPCluster implements SmartlifeCycleCluster {
                        RabbitTemplate template,
                        RoutingKeysResolver routingKeysResolver,
                        ConnectionFactory connectionFactory,
-                       ErrorHandler errorHandler
+                       ErrorHandler errorHandler,
+                       MetricRegistry metricRegistry
     ) {
-        this.name = name;
-        this.admin = admin;
-        this.template = template;
-        this.routingKeysResolver = routingKeysResolver;
-        this.connectionFactory = connectionFactory;
-        this.errorHandler = errorHandler;
+        this.name = checkNotNull(name);
+        this.admin = checkNotNull(admin);
+        this.template = checkNotNull(template);
+        this.routingKeysResolver = checkNotNull(routingKeysResolver);
+        this.connectionFactory = checkNotNull(connectionFactory);
+        this.errorHandler = checkNotNull(errorHandler);
+        this.metricRegistry = checkNotNull(metricRegistry);
         this.containerMap = new HashMap<>();
         this.clusterMetaData = new DefaultClusterMetaData();
     }
@@ -78,7 +82,7 @@ public class AMQPCluster implements SmartlifeCycleCluster {
         final String queueName = setupTopology(eventListener);
 
         // set up the listener and container
-        MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageListener(eventListener), template.getMessageConverter());
+        MessageListenerAdapter adapter = new MessageListenerAdapter(new MessageListener(eventListener, metricRegistry), template.getMessageConverter());
         SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
         container.setMessageListener(adapter);
         container.setQueueNames(queueName);

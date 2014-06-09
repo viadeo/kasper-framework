@@ -16,12 +16,12 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 
-public class CompositeCluster implements Cluster {
+public class CompositeCluster implements SmartlifeCycleCluster {
 
-    private final List<Cluster> clusters;
+    private final List<SmartlifeCycleCluster> clusters;
     private final DefaultClusterMetaData metadata;
 
-    public CompositeCluster(List<Cluster> clusters) {
+    public CompositeCluster(List<SmartlifeCycleCluster> clusters) {
         this.clusters = checkNotNull(clusters);
         this.metadata = new DefaultClusterMetaData();
     }
@@ -72,5 +72,48 @@ public class CompositeCluster implements Cluster {
     @Override
     public ClusterMetaData getMetaData() {
        return metadata;
+    }
+
+    @Override
+    public boolean isAutoStartup() {
+        return true;
+    }
+
+    @Override
+    public void stop(Runnable callback) {
+        for (SmartlifeCycleCluster cluster : clusters) {
+            cluster.stop();
+        }
+        callback.run();
+    }
+
+    @Override
+    public void start() {
+        for (SmartlifeCycleCluster cluster : clusters) {
+            cluster.start();
+        }
+    }
+
+    @Override
+    public void stop() {
+        for (SmartlifeCycleCluster cluster : clusters) {
+            cluster.stop();
+        }
+    }
+
+    @Override
+    public boolean isRunning() {
+        for (SmartlifeCycleCluster cluster : clusters) {
+            if (cluster.isRunning()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    @Override
+    public int getPhase() {
+        return Integer.MAX_VALUE;
     }
 }

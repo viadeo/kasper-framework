@@ -50,6 +50,7 @@ public class KasperEventBusFactory {
     private ErrorHandler errorHandler;
     private ObjectMapper objectMapper;
     private ConnectionFactory connectionFactory;
+    private ArrayList<SmartlifeCycleCluster> clusterList;
 
     /**
      * Use type safe configuration to assemble the bus
@@ -107,6 +108,16 @@ public class KasperEventBusFactory {
 
         final ClusterSelector clusterSelector = clusterSelector(config);
 
+        // TODO : this is clearly the job of a DI framework
+        Runtime.getRuntime().addShutdownHook(new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (SmartlifeCycleCluster cluster : clusterList) {
+                    cluster.stop();
+                }
+            }
+        }));
+
         return new KasperEventBus(clusterSelector);
     }
 
@@ -132,11 +143,11 @@ public class KasperEventBusFactory {
 
         ConfigObject clusters = config.getObject("clusters");
         Set<String> names = clusters.keySet();
-        ArrayList<Cluster> clusterList = Lists.newArrayList();
+        clusterList = Lists.newArrayList();
         for (String name : names) {
             Config clusterConfig = clusters.toConfig().getConfig(name);
             String type = clusterConfig.getString("type");
-            Cluster cluster;
+            SmartlifeCycleCluster cluster;
             switch (type) {
                 case "amqp":
                     cluster = amqpCluster(name, clusterConfig.withFallback(config.getConfig("defaults.amqp")));
@@ -161,7 +172,7 @@ public class KasperEventBusFactory {
      * @param config bus configuration
      * @return lifecycle cluster
      */
-    Cluster asyncCluster(String name, Config config) {
+    SmartlifeCycleCluster asyncCluster(String name, Config config) {
 
         LinkedBlockingQueue<Runnable> workQueue = new LinkedBlockingQueue<>();
         ThreadPoolExecutor threadPoolExecutor = new ThreadPoolExecutor(
@@ -214,7 +225,8 @@ public class KasperEventBusFactory {
                 template,
                 new KasperRoutingKeysResolver(),
                 connectionFactory,
-                errorHandler);
+                errorHandler,
+                metricRegistry);
 
         cluster.setExchangeName(config.getString("exchange.name"));
         cluster.setDeadLetterExchangeNameFormat(config.getString("exchange.deadLetterNameFormat"));
