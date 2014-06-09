@@ -30,6 +30,8 @@ import org.springframework.amqp.rabbit.listener.ConditionalRejectingErrorHandler
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
 import org.springframework.retry.support.RetryTemplate;
+import org.springframework.scheduling.concurrent.ConcurrentTaskExecutor;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.util.ErrorHandler;
 
 import java.util.ArrayList;
@@ -220,13 +222,15 @@ public class KasperEventBusFactory {
 
         final RabbitAdmin admin = rabbitAdmin(connectionFactory);
 
+        ConcurrentTaskExecutor taskExecutor = taskExecutor(config);
 
         AMQPCluster cluster = new AMQPCluster(name, admin,
                 template,
                 new KasperRoutingKeysResolver(),
                 connectionFactory,
                 errorHandler,
-                metricRegistry);
+                metricRegistry,
+                taskExecutor);
 
         cluster.setExchangeName(config.getString("exchange.name"));
         cluster.setDeadLetterExchangeNameFormat(config.getString("exchange.deadLetterNameFormat"));
@@ -234,9 +238,23 @@ public class KasperEventBusFactory {
         cluster.setDeadLetterQueueNameFormat(config.getString("queue.deadLetterNameFormat"));
         cluster.setQueueDurable(config.getBoolean("queue.durable"));
         cluster.setPrefetchCount(config.getInt("prefetchCount"));
-        cluster.setMaxPoolSize(config.getInt("maxPoolSize"));
 
         return cluster;
+    }
+
+    /**
+     * Get the task executor used by containers
+     *
+     * @param config config for task executor
+     * @return
+     */
+    private ConcurrentTaskExecutor taskExecutor(Config config) {
+        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
+        taskExecutor.setMaxPoolSize(config.getInt("maximumPoolSize"));
+        taskExecutor.setCorePoolSize(config.getInt("corePoolSize"));
+        taskExecutor.initialize();
+
+        return new ConcurrentTaskExecutor(taskExecutor);
     }
 
     /**

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.Executor;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -47,6 +48,7 @@ public class AMQPCluster implements SmartlifeCycleCluster {
 
     private final Map<EventListener, SimpleMessageListenerContainer> containerMap;
     private final DefaultClusterMetaData clusterMetaData;
+    private final Executor taskExecutor;
 
 
     public AMQPCluster(String name,
@@ -55,8 +57,9 @@ public class AMQPCluster implements SmartlifeCycleCluster {
                        RoutingKeysResolver routingKeysResolver,
                        ConnectionFactory connectionFactory,
                        ErrorHandler errorHandler,
-                       MetricRegistry metricRegistry
-    ) {
+                       MetricRegistry metricRegistry,
+                       Executor taskExecutor) {
+        this.taskExecutor = taskExecutor;
         this.name = checkNotNull(name);
         this.admin = checkNotNull(admin);
         this.template = checkNotNull(template);
@@ -87,9 +90,6 @@ public class AMQPCluster implements SmartlifeCycleCluster {
         container.setMessageListener(adapter);
         container.setQueueNames(queueName);
         container.setPrefetchCount(prefetchCount);
-        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setMaxPoolSize(maxPoolSize);
-        taskExecutor.initialize();
         container.setTaskExecutor(taskExecutor);
         container.setErrorHandler(errorHandler);
         container.start();
@@ -308,15 +308,6 @@ public class AMQPCluster implements SmartlifeCycleCluster {
      */
     public void setQueueDurable(boolean queueDurable) {
         this.queueDurable = checkNotNull(queueDurable);
-    }
-
-    /**
-     * Set the {@link org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor#setMaxPoolSize(int))}
-     *
-     * @param maxPoolSize max pool size
-     */
-    public void setMaxPoolSize(int maxPoolSize) {
-        this.maxPoolSize = maxPoolSize;
     }
 
     /**
