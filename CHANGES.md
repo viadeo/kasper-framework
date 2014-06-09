@@ -2,9 +2,9 @@
 
 ## Snapshot 0.7-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7-SNAPSHOT~~))###
 
-* [Pull 214](https://github.com/viadeo/kasper-framework/pull/214) Reduce log level od DomainHelper to debug 
+* [Pull 214](https://github.com/viadeo/kasper-framework/pull/214) Reduce log level of DomainHelper to debug 
 * [Pull 205](https://github.com/viadeo/kasper-framework/pull/205) Use ObjectMapper implementation to ser/deser query
-* [Pull 201](https://github.com/viadeo/kasper-framework/pull/201) Provide a deserializer allowing to manage with unsensitive case
+* [Pull 201](https://github.com/viadeo/kasper-framework/pull/201) Provide a deserializer of enum allowing to manage with unsensitive case
 * [Pull 195](https://github.com/viadeo/kasper-framework/pull/195) Improve platform fixture
   - allow to verify that a listener is notified 
   - allow to verify that no listeners are notified
