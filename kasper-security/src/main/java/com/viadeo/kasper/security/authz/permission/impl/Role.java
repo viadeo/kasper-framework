@@ -42,38 +42,21 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class Role {
 
-    private KasperID kasperId;
     private String name;
     private List<Permission> permissions;
 
     // ------------------------------------------------------------------------
 
     public Role() {
-        this.kasperId = new DefaultKasperId();
+
     }
 
-    public Role(final KasperID kasperId) {
-        this.kasperId = kasperId;
-    }
 
     public Role(final String name) {
-        this.kasperId = new DefaultKasperId();
-        setName(checkNotNull(name));
-    }
-
-    public Role(final KasperID kasperId, final String name) {
-        this.kasperId = kasperId;
         setName(checkNotNull(name));
     }
 
     public Role(final String name, final List<Permission> permissions) {
-        this.kasperId = new DefaultKasperId();
-        setName(checkNotNull(name));
-        setPermissions(checkNotNull(permissions));
-    }
-
-    public Role(final KasperID kasperId, final String name, final List<Permission> permissions) {
-        this.kasperId = kasperId;
         setName(checkNotNull(name));
         setPermissions(checkNotNull(permissions));
     }
@@ -94,14 +77,6 @@ public class Role {
 
     public void setPermissions(final List<Permission> permissions) {
         this.permissions = checkNotNull(permissions);
-    }
-
-    public KasperID getKasperId() {
-        return kasperId;
-    }
-
-    public void setKasperId(KasperID kasperId) {
-        this.kasperId = kasperId;
     }
 
     // ------------------------------------------------------------------------

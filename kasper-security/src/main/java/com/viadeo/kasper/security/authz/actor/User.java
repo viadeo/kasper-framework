@@ -25,16 +25,9 @@ public class User extends Actor {
         super();
     }
 
-    public User(final KasperID kasperId) {
-        super(kasperId);
-    }
 
     public User(final List<Role> roles, final List<Permission> permissions) {
-        super(new DefaultKasperId(), roles, permissions);
-    }
-
-    public User(final KasperID kasperId, final List<Role> roles, final List<Permission> permissions) {
-        super(kasperId, roles, permissions);
+        super( roles, permissions);
     }
 
 }

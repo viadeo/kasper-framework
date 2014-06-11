@@ -33,19 +33,11 @@ public class Group extends Actor {
         this.users = Lists.newArrayList();
     }
 
-    public Group(final KasperID kasperId,
-                 final String name){
-        super(kasperId);
-        this.name = checkNotNull(name);
-        this.users = Lists.newArrayList();
-    }
-
-    public Group(final KasperID kasperId,
-                 final String name,
+    public Group(final String name,
                  final List<Role> roles,
                  final List<Permission> permissions,
                  final List<User> users) {
-        super(kasperId, roles, permissions);
+        super(roles, permissions);
         this.users = checkNotNull(users);
         this.name = checkNotNull(name);
     }

@@ -46,37 +46,20 @@ public abstract class Actor {
 
     private List<Role> roles;
     private List<Permission> permissions;
-    private KasperID kasperId;
 
     // ------------------------------------------------------------------------
 
     public Actor() {
         this.roles = Lists.newArrayList();
         this.permissions = Lists.newArrayList();
-        this.kasperId = new DefaultKasperId();
     }
 
-    public Actor(final KasperID kasperId) {
-        this.roles = Lists.newArrayList();
-        this.permissions = Lists.newArrayList();
-        this.kasperId = checkNotNull(kasperId);
-    }
-
-    public Actor(final KasperID kasperId, final List<Role> roles, final List<Permission> permissions) {
+    public Actor(final List<Role> roles, final List<Permission> permissions) {
         this.roles = checkNotNull(roles);
         this.permissions = checkNotNull(permissions);
-        this.kasperId = checkNotNull(kasperId);
     }
 
-    // ------------------------------------------------------------------------
-
-    public KasperID getKasperId() {
-        return kasperId;
-    }
-
-    public void setKasperId(KasperID kasperId) {
-        this.kasperId = kasperId;
-    }
+    // -----------------------------------------------------------------------
 
     public List<Role> getRoles() {
         return roles;
