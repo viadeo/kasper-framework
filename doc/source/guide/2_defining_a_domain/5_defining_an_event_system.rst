@@ -1,7 +1,6 @@
-.. _events:
 
-CQRS: Events
-============
+Defining an event system
+========================
 
 Events are the nervous system of the Kasper platform.
 
@@ -12,8 +11,11 @@ architectural areas.
 
 **Query listeners** denormalize events within query indexes.
 
-Events
-------
+
+..  _Defining_an_events:
+
+Defining an events
+------------------------
 
 Kasper events are defined as immutable, anemic objects, extending the **Event**  interface and
 can optionally define metadata using the **@XKasperEvent** annotation, its class name ends with the
@@ -27,7 +29,7 @@ can optionally define metadata using the **@XKasperEvent** annotation, its class
     @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
     public class UsersAreNowConnectedEvent extends Event {
         private final KasperId userSource;
-        private final KasperId userTarget; 
+        private final KasperId userTarget;
 
         public UsersAreNowConnected(final KasperId userSource, final KasperId userTarget) {
             this.userSource = userSource;
@@ -43,8 +45,12 @@ can optionally define metadata using the **@XKasperEvent** annotation, its class
         }
     }
 
-Domain events
-^^^^^^^^^^^^^
+
+
+..  _Defining_an_domain_events:
+
+Defining a domain events
+------------------------
 
 If your event is originated from a domain (not a management event or other out-of-domain generated event), you have to preferably mark your events with the **DomainEvent** interface.
 
@@ -60,7 +66,7 @@ If your event is originated from a domain (not a management event or other out-o
     @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
     public class UsersAreNowConnectedEvent extends Event implements UsersEvent {
         private final KasperId userSource;
-        private final KasperId userTarget; 
+        private final KasperId userTarget;
 
         public UsersAreNowConnected(final KasperId userSource, final KasperId userTarget) {
             this.userSource = userSource;
@@ -77,8 +83,10 @@ If your event is originated from a domain (not a management event or other out-o
     }
 
 
-Domain entity events
-^^^^^^^^^^^^^^^^^^^^
+..  _Defining_a_domain_entity_events:
+
+Defining a domain entity events
+------------------------
 
 As a vast majority of cases, events have as major concern a specific domain entity, the interface **EntityEvent<Domain>** is
 provided, with default implementations **EntityCreatedEvent**, **EntityUpdatedEvent** and **EntityDeletedEvent**.
@@ -90,7 +98,7 @@ provided, with default implementations **EntityCreatedEvent**, **EntityUpdatedEv
 
     @XKasperEvent( action = MyDomainActions.IS_CONNECTED_TO )
     public class UsersAreNowConnectedEvent extends EntityCreatedEvent<MyDomain> {
-        private final KasperId userTarget; 
+        private final KasperId userTarget;
 
         public UsersAreNowConnected(final KasperId userSource,
                                     final KasperId userTarget) {
@@ -108,8 +116,10 @@ provided, with default implementations **EntityCreatedEvent**, **EntityUpdatedEv
     }
 
 
-Event listeners
----------------
+..  _Defining_an_event_listener:
+
+Defining an event listener
+------------------------
 
 An event listener "just" listens for events..
 
@@ -125,8 +135,8 @@ A Kasper event listener have to extend the **EventListener<Event>**, declaring i
 
         @Override
         public void handle(final UsersAreNowConnectedEvent event) {
-            MailService.send(event.getUserSource(), event.getUserTarget(), MailTemplates.USERS_ARE_NOW_CONNECTED);            
-            MailService.send(event.getUserTarget(), event.getUSerSource(), MailTemplates.USERS_ARE_NOW_CONNECTED);            
+            MailService.send(event.getUserSource(), event.getUserTarget(), MailTemplates.USERS_ARE_NOW_CONNECTED);
+            MailService.send(event.getUserTarget(), event.getUSerSource(), MailTemplates.USERS_ARE_NOW_CONNECTED);
         }
 
     }
@@ -134,7 +144,11 @@ A Kasper event listener have to extend the **EventListener<Event>**, declaring i
 A common job of event listeners is to send new commands to the command gateway concerning its domain or another.
 You can access the **getCommandGateway()** getter in order to retrieve an (optional) reference to the command gateway.
 
-Events hierarchies
+
+
+..  _Understand_the_hierarchies_of_events:
+
+Understand the hierarchies of events
 ------------------
 
 Kasper event listeners are parameterized with an event class, this imply they can listen for events hierarchies.
@@ -160,3 +174,19 @@ Sub-hierarchies can then also be created for functional sub-areas, operations, e
 
 A listener can then listen for all finished operations on cars, for all car loan events, all car wash events or even all events occured on the Cars domain.
 
+
+..  _Use_events_to_decouple_your_legacy:
+
+Use events to decouple your legacy
+----------------------------------
+
+Events can be emitted to the platform using **POST** or **PUT** requests, there are no query parameters, everything is in the body.
+Actually only json content is supported as input and output.
+
+To enable Command exposition register **HttpEventExposer** servlet, it will then use **DomainLocator** to locate each command handler.
+
+Warning: Domain events exposing is an anti-pattern of the platform's spirit in itself, this endpoint is provided as a migration helper when dealing with a
+legacy platform allowing a smooth decoupling : the legacy platform can then send domain events in place of the not-yet-implemented platform's
+domain to come.
+
+see :doc:`../3_defining_a_platform/8_using_http_exposition`
