@@ -1,5 +1,7 @@
+**Using in local**
 
 * Build documentation
+- install node : sudo apt-get install node
 - install Sphinx-doc : sudo apt-get install python-sphinx
 - install npm : sudo apt-get install npm
 - install the less compiler (requires node NPM) : sudo npm install -g less
@@ -12,3 +14,10 @@
 
 Refer to http://docutils.sourceforge.net/docs/user/rst/quickstart.html for reStructuredText format reference
 Refer to http://sphinx-doc.org/contents.html for Sphinx documentation
+
+**Using in Vagrant**
+$ vagrand up
+$ ssh -X vagrant@127.0.0.1 -p 2222
+$ cd doc
+$ /opt/sublime-text/sublime_text .&
+$ ./watch.sh
