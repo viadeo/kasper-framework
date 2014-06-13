@@ -25,16 +25,22 @@ import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.MockitoAnnotations;
+import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
 
+@RunWith(MockitoJUnitRunner.class)
 public class DefaultAuthorizationValidatorTest {
 
+    @MockitoAnnotations.Mock
     AuthorizationSecurityManager authorizationSecurityManager;
 
     @XKasperRequireRoles("perm1,perm2,perm3,perm4")
@@ -133,7 +139,7 @@ public class DefaultAuthorizationValidatorTest {
         // Given
         final Actor actor = initTestUser();
         final Context context = new DefaultContext();
-        when(authorizationSecurityManager.getActor(context)).thenReturn(actor);
+        doReturn(actor).when(authorizationSecurityManager).getActor(context);
 
         // When
         defaultAuthorizationValidator.validate(context, TestSimpleRoleCommand.class);
@@ -144,7 +150,7 @@ public class DefaultAuthorizationValidatorTest {
         // Given
         final Actor actor = initTestUser();
         final Context context = new DefaultContext();
-        when(authorizationSecurityManager.getActor(context)).thenReturn(actor);
+        doReturn(actor).when(authorizationSecurityManager).getActor(context);
 
         // When
         defaultAuthorizationValidator.validate(context, TestSimplePermissionCommand.class);
@@ -157,7 +163,7 @@ public class DefaultAuthorizationValidatorTest {
         actor.setPermissions(actor.getRoles().get(0).getPermissions());
         actor.setRoles(new ArrayList<Role>());
         final Context context = new DefaultContext();
-        when(authorizationSecurityManager.getActor(context)).thenReturn(actor);
+        doReturn(actor).when(authorizationSecurityManager).getActor(context);
 
         // When
         defaultAuthorizationValidator.validate(context, TestSimplePermissionCommand.class);
@@ -168,7 +174,7 @@ public class DefaultAuthorizationValidatorTest {
         // Given
         final Actor actor = initTestUser();
         final Context context = new DefaultContext();
-        when(authorizationSecurityManager.getActor(context)).thenReturn(actor);
+        doReturn(actor).when(authorizationSecurityManager).getActor(context);
 
         // When
         defaultAuthorizationValidator.validate(context, TestRoleCommand.class);
@@ -179,7 +185,7 @@ public class DefaultAuthorizationValidatorTest {
         // Given
         final Actor actor = initTestUser();
         final Context context = new DefaultContext();
-        when(authorizationSecurityManager.getActor(context)).thenReturn(actor);
+        doReturn(actor).when(authorizationSecurityManager).getActor(context);
 
         // When
         defaultAuthorizationValidator.validate(context, TestPermissionCommand.class);

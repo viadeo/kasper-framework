@@ -28,8 +28,7 @@ public class DefaultAuthorizationSecurityManager implements AuthorizationSecurit
 
 
     public Actor getActor(final Context context) {
-        // TODO
-        return null;
+       throw new UnsupportedOperationException("Method not implemented");
     }
 
     public void checkRole(final String role, final Actor actor) throws KasperUnauthorizedException {

@@ -32,11 +32,11 @@ public interface SecurityConfiguration {
 
     class Builder {
 
-        private SecurityTokenValidator securityTokenValidator = new DefautSecurityTokenValidator();
-        private IdentityContextProvider identityContextProvider = new DefaultIdentityContextProvider();
-        private ApplicationIdValidator applicationIdValidator = new DefaultApplicationIdValidator();
-        private IpAddressValidator ipAddressValidator = new DefaultIpAddressValidator();
-        private AuthorizationValidator authorizationValidator = new FakeAuthorizationValidator();
+        private SecurityTokenValidator securityTokenValidator = new NoOpSecurityTokenValidator();
+        private IdentityContextProvider identityContextProvider = new NoOpIdentityContextProvider();
+        private ApplicationIdValidator applicationIdValidator = new NoOpApplicationIdValidator();
+        private IpAddressValidator ipAddressValidator = new NoOpIpAddressValidator();
+        private AuthorizationValidator authorizationValidator = new NoOpAuthorizationValidator();
 
         // --------------------------------------------------------------------
 
@@ -85,7 +85,7 @@ public interface SecurityConfiguration {
 
     // ------------------------------------------------------------------------
 
-    class DefautSecurityTokenValidator implements SecurityTokenValidator {
+    class NoOpSecurityTokenValidator implements SecurityTokenValidator {
         @Override
         public void validate(final String securityToken)
                 throws KasperMissingSecurityTokenException,
@@ -96,7 +96,7 @@ public interface SecurityConfiguration {
 
     // ------------------------------------------------------------------------
 
-    class DefaultIdentityContextProvider implements IdentityContextProvider {
+    class NoOpIdentityContextProvider implements IdentityContextProvider {
         @Override
         public void provideIdentity(final Context context) throws KasperSecurityException {
             /* do nothing */
@@ -105,7 +105,7 @@ public interface SecurityConfiguration {
 
     // ------------------------------------------------------------------------
 
-    class DefaultApplicationIdValidator implements ApplicationIdValidator {
+    class NoOpApplicationIdValidator implements ApplicationIdValidator {
         @Override
         public void validate(final String applicationId)
                 throws KasperMissingApplicationIdException,
@@ -116,7 +116,7 @@ public interface SecurityConfiguration {
 
     // ------------------------------------------------------------------------
 
-    class DefaultIpAddressValidator implements IpAddressValidator {
+    class NoOpIpAddressValidator implements IpAddressValidator {
         @Override
         public void validate(final String ipAddress)
                 throws KasperMissingIpAddressException,
@@ -127,7 +127,7 @@ public interface SecurityConfiguration {
 
     // ------------------------------------------------------------------------
 
-    class FakeAuthorizationValidator implements AuthorizationValidator {
+    class NoOpAuthorizationValidator implements AuthorizationValidator {
         @Override
         public void validate(Context context, Class<?> clazz) throws KasperUnauthorizedException {
             /* do nothing */
