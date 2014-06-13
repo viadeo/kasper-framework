@@ -30,6 +30,7 @@ public class DocumentedCommandHandler extends AbstractDomainElement {
             this.response = new DocumentedBean(CommandResponse.class);
         }
 
+        @SuppressWarnings("unused")
         public LightDocumentedElement<DocumentedCommandHandler> getCommandHandler() {
             return documentedCommandHandler.getLightDocumentedElement();
         }
@@ -40,7 +41,7 @@ public class DocumentedCommandHandler extends AbstractDomainElement {
 
         @Override
         public LightDocumentedElement<DocumentedCommand> getLightDocumentedElement() {
-            return new LightDocumentedElement<>(this);
+            return new LightDocumentedInputElement<>(this);
         }
 
         @Override
@@ -69,6 +70,7 @@ public class DocumentedCommandHandler extends AbstractDomainElement {
     @Override
     public LightDocumentedElement<DocumentedCommandHandler> getLightDocumentedElement() {
         return new LightDocumentedElement<DocumentedCommandHandler>(this) {
+            @SuppressWarnings("unused")
             public String getCommandName() {
                 return documentedElement.getCommand().getName();
             }

@@ -44,7 +44,7 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
 
         @Override
         public LightDocumentedElement<DocumentedQuery> getLightDocumentedElement() {
-            return new LightDocumentedElement<>(this);
+            return new LightDocumentedInputElement<>(this);
         }
 
         @Override
@@ -132,10 +132,12 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
     public LightDocumentedElement<DocumentedQueryHandler> getLightDocumentedElement() {
         return new LightDocumentedElement<DocumentedQueryHandler>(this) {
 
+            @SuppressWarnings("unused")
             public String getQueryName() {
                 return documentedElement.getQuery().getName();
             }
 
+            @SuppressWarnings("unused")
             public String getQueryResultName() {
                 return documentedElement.getQueryResult().getName();
             }

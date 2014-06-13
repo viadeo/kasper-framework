@@ -8,10 +8,9 @@ package com.viadeo.kasper.security.exception;
 
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.exception.KasperCheckedException;
 
-public class KasperSecurityException extends KasperException {
-
+public class KasperSecurityException extends KasperCheckedException {
     private static final long serialVersionUID = 4329882967999237383L;
 
     private final KasperReason kasperReason;

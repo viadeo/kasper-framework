@@ -36,28 +36,28 @@ public class DomainDescriptorFactory {
     private static final Function<CommandHandler, CommandHandlerDescriptor> TO_COMMAND_HANDLER_DESCRIPTOR_FUNCTION = new Function<CommandHandler, CommandHandlerDescriptor>() {
         @Override
         public CommandHandlerDescriptor apply(final CommandHandler commandHandler) {
-            return toCommandHandlerDescriptor(checkNotNull(commandHandler));
+            return toCommandHandlerDescriptor(commandHandler);
         }
     };
 
     private static final Function<QueryHandler, QueryHandlerDescriptor> TO_QUERY_HANDLER_DESCRIPTOR_FUNCTION = new Function<QueryHandler, QueryHandlerDescriptor>() {
         @Override
         public QueryHandlerDescriptor apply(final QueryHandler queryHandler) {
-            return toQueryHandlerDescriptor(checkNotNull(queryHandler));
+            return toQueryHandlerDescriptor(queryHandler);
         }
     };
 
     private static final Function<EventListener, EventListenerDescriptor> TO_EVENT_LISTENER_DESCRIPTOR_FUNCTION = new Function<EventListener, EventListenerDescriptor>() {
         @Override
         public EventListenerDescriptor apply(final EventListener eventListener) {
-            return toEventListenerDescriptor(checkNotNull(eventListener));
+            return toEventListenerDescriptor(eventListener);
         }
     };
 
     private static final Function<Repository, RepositoryDescriptor> TO_REPOSITORY_DESCRIPTOR_FUNCTION = new Function<Repository, RepositoryDescriptor>() {
         @Override
         public RepositoryDescriptor apply(final Repository repository) {
-            return toRepositoryDescriptor(checkNotNull(repository));
+            return toRepositoryDescriptor(repository);
         }
     };
 
@@ -74,14 +74,12 @@ public class DomainDescriptorFactory {
         );
     }
 
-    public DomainDescriptor createFrom(
-            final String domainName,
-            final Class<? extends Domain> domainClass,
-            final Collection<QueryHandler> queryHandlers,
-            final Collection<CommandHandler> commandHandlers,
-            final Collection<Repository> repositories,
-            final Collection<EventListener> eventListeners
-    ) {
+    public DomainDescriptor createFrom(final String domainName,
+                                       final Class<? extends Domain> domainClass,
+                                       final Collection<QueryHandler> queryHandlers,
+                                       final Collection<CommandHandler> commandHandlers,
+                                       final Collection<Repository> repositories,
+                                       final Collection<EventListener> eventListeners) {
         return new DomainDescriptor(
             checkNotNull(domainName),
             checkNotNull(domainClass),

@@ -190,10 +190,12 @@ public class DocumentedRepository extends AbstractDomainElement {
         public LightDocumentedElement<DocumentedRelation> getLightDocumentedElement() {
             return new LightDocumentedElement<DocumentedRelation>(this) {
 
+                @SuppressWarnings("unused")
                 public String getSourceConceptName() {
                     return documentedElement.sourceConcept.getName();
                 }
 
+                @SuppressWarnings("unused")
                 public String getTargetConceptName() {
                     return documentedElement.targetConcept.getName();
                 }

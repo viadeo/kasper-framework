@@ -2,8 +2,9 @@
 
 ## Snapshot 0.7-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7-SNAPSHOT~~))###
 
+* [Pull 214](https://github.com/viadeo/kasper-framework/pull/214) Reduce log level of DomainHelper to debug 
 * [Pull 205](https://github.com/viadeo/kasper-framework/pull/205) Use ObjectMapper implementation to ser/deser query
-* [Pull 201](https://github.com/viadeo/kasper-framework/pull/201) Provide a deserializer allowing to manage with unsensitive case
+* [Pull 201](https://github.com/viadeo/kasper-framework/pull/201) Provide a deserializer of enum allowing to manage with unsensitive case
 * [Pull 195](https://github.com/viadeo/kasper-framework/pull/195) Improve platform fixture
   - allow to verify that a listener is notified 
   - allow to verify that no listeners are notified
@@ -12,6 +13,18 @@
 * [Pull 207](https://github.com/viadeo/kasper-framework/pull/207) Expose the kasper version :
   - set as attribute in the header when we use the kasper client
   - set in the MDC wen we process an HTTP request in the exposition layer
+
+
+### Version 0.6.4 (06/04/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.4~~))###
+* [Improvement] Enrich light documentation with aliases
+
+
+### Version 0.6.3 (05/22/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.3~~))###
+* [Bug] Reduce level of security logger to warn
+
+
+### Version 0.6.2 (05/21/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.2~~))###
+* Temporary commented return error during interceptor checks and put log instead
 
 
 ### Version 0.6.1 (04/30/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.1~~))###
