@@ -4,7 +4,7 @@ Serialization and Deserialization
 
 By default Kasper provide a pre-configured ObjectMapper ready to work. We can retrieve this mapper in invoking `ObjectMapperProvider.INSTANCE.mapper()`
 
-However according to your case then you can specialize to register new module on the mapper.
+However according to your needs you can register a new module on it.
 
 
 TypeAdapters

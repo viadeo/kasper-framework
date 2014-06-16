@@ -2,6 +2,7 @@
 Architecture and principles
 ========================
 
+.. contents::
 
 .. image:: ./img/kasper-platform.png
     :scale: 45%
@@ -23,26 +24,21 @@ Kasper defines five responsibility areas :
     * defining and handling data queries
     * indexing events into dedicated storage backends
 
-* The **NEUTRAL** area provides some platform services to the two other layers, such as :
-    * security mechanisms (Authentication/Identifcation) and ACLs (Authorizations)
-    * asynchronous errors events and other events storage for the users of the system (either final ones or system users)
+* The **NEUTRAL** area provides some platform services to the two other layers, such as security mechanisms (Authentication/Identifcation) and ACLs (Authorizations)
 
 * The **PRODUCT**, or platform client :
     * responsible to send commands to the platform, mainly asynchronously, and to manage user flow and interactions (task oriented)
     * responsible for sending data requests to the platform
 
-* The **EVENT PLATFORM** is responsible for dealing for the event communication, persistence and storage, it deals with three kind of events :
-    * APPLICATION events are events from the product
-    * DOMAIN events are events sent by the domain implementation of the COMMAND area
-    * SYSTEM events are events sent by the infrastructure
+* The **EVENT BUS** is responsible for dealing for the event communication, persistence and storage
 
 The implementation of the event platform is not fully part of the Kasper framework, which only manages with APPLICATION and DOMAIN events.
-
 
 Using Kasper you'll first need to understand some major facts :
 
 1. Your model is split into two parts :
-    * the **write model** (command), enclosing the main part of your business model (validation, business relations, services, events, inter-domain communications)
+    * the **write model** (command), enclosing the main part of your business model
+      (validation, business relations, services, events, inter-domain communications)
     * the **read model** (query), enclosing data transfer logic and indexation policies
 2. The write model (command) is known to have **ACID** transactional properties (http://en.wikipedia.org/wiki/ACID)
 3. The read model try to prepare the data to be read with a minimum of computations and is known to be **BASE** (Basically Available, Soft state, Eventual consistency : http://en.wikipedia.org/wiki/Eventual_consistency)
@@ -58,7 +54,7 @@ Using Kasper you'll first need to understand some major facts :
 9. Commands, queries, events and even the model must be developed with the product in mind, at each step, choose carefully the names of your software components with
    this idea always in mind, maintain the coherency between the code and the specification, they are different implementations of the same thing, expressed with
    an ubiquitous language shared between the product and technical teams (**Intention-revealing interfaces**).
-10. Data persistence is only required while we are not implementing our products on a Turing machine with infinite memory and storage. Think your model as a way to express
+10. Data persistence on COMMAND area is only required while we are not implementing our products on a Turing machine with infinite memory and storage. Think your model as a way to express
     the needs of your product first, then think your data persistence mechanisms at the end, when all other things has been done, it must be the last thing you want
     to think about.
 
@@ -88,7 +84,7 @@ An alternative, for those who dislike too many modules can be the following spli
     :align: center
     :scale: 80%
 
-BUT, you'll have to be perhaps a bit more strict on the usages of classes depedencies in order to not allow unwanted dependencies :
+BUT, you'll have to be perhaps a bit more strict on the usages of classes dependencies in order to not allow unwanted dependencies :
 
     * Event listeners should only know commands, it is allowed to make a dependency to domain if domain services are used directly, but be careful..
     * Command handlers should only know domain classes.. and commands
@@ -127,11 +123,9 @@ Kasper domain modeling is heavily based on Domain-Driven Design paradigms.
 
     **Context**: The setting in which a word or statement appears that determines its meaning.
 
-.. image:: ../img/ddd-diagram.png
+.. image:: ./img/ddd-diagram.png
     :scale: 45%
     :align: center
-
-.. contents::
 
 
 **DDD entities**

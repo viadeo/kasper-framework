@@ -1,13 +1,12 @@
 
-Defining an interceptors
-========================
+Defining an interceptor
+=======================
 
-Both side (query or command) have a responsibility chain for which you can add your implementation of interceptor in order
-to generalize some behavior to the platform. But you can add interceptor on a specific query handler (see `Using query filter` in :doc:`../2_defining_a_domain/2_defining_the_query_side`).
+Both side (query or command) have a responsibility chain within which you can insert your own interceptors in order
+to generalize some behavior to the platform. But you can also add and interceptor on a specific command or query handler (see `Using query filter` in :doc:`../2_defining_a_domain/2_defining_the_query_side`).
 
 The easy way to add an interceptor for every handlers is to implement `InterceptorFactory` that will be provided by the
 platform configuration (see :doc:`./2_defining_configuration`).
-
 
 An interceptor interferes before the delegation to the related handler and after the corresponding gateways.
 

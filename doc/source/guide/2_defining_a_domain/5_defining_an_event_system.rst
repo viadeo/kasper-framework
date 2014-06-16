@@ -12,10 +12,10 @@ architectural areas.
 **Query listeners** denormalize events within query indexes.
 
 
-..  _Defining_an_events:
+..  _Defining_an_event:
 
-Defining an events
-------------------------
+Defining an event
+-----------------
 
 Kasper events are defined as immutable, anemic objects, extending the **Event**  interface and
 can optionally define metadata using the **@XKasperEvent** annotation, its class name ends with the
@@ -47,10 +47,10 @@ can optionally define metadata using the **@XKasperEvent** annotation, its class
 
 
 
-..  _Defining_an_domain_events:
+..  _Defining_an_domain_event:
 
-Defining a domain events
-------------------------
+Defining a domain event
+-----------------------
 
 If your event is originated from a domain (not a management event or other out-of-domain generated event), you have to preferably mark your events with the **DomainEvent** interface.
 
@@ -83,10 +83,10 @@ If your event is originated from a domain (not a management event or other out-o
     }
 
 
-..  _Defining_a_domain_entity_events:
+..  _Defining_a_domain_entity_event:
 
-Defining a domain entity events
-------------------------
+Defining a domain entity event
+------------------------------
 
 As a vast majority of cases, events have as major concern a specific domain entity, the interface **EntityEvent<Domain>** is
 provided, with default implementations **EntityCreatedEvent**, **EntityUpdatedEvent** and **EntityDeletedEvent**.
@@ -119,7 +119,7 @@ provided, with default implementations **EntityCreatedEvent**, **EntityUpdatedEv
 ..  _Defining_an_event_listener:
 
 Defining an event listener
-------------------------
+--------------------------
 
 An event listener "just" listens for events..
 
@@ -143,7 +143,6 @@ A Kasper event listener have to extend the **EventListener<Event>**, declaring i
 
 A common job of event listeners is to send new commands to the command gateway concerning its domain or another.
 You can access the **getCommandGateway()** getter in order to retrieve an (optional) reference to the command gateway.
-
 
 
 ..  _Understand_the_hierarchies_of_events:

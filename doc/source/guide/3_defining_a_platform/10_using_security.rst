@@ -8,8 +8,8 @@ callbacks interfaces allowing you to check some needs.
 
 Those needs are :
 
-* SecurityTokenValidator to check the securtity token (not called for Public strategy)
-* IdentityContextProvider to set the user informations in the context
+* SecurityTokenValidator to check the security token (not called for Public strategy)
+* IdentityContextProvider to set the user information in the context
 * ApplicationIdValidator to check the applicationId
 * IpAddressValidator to check the ip address
 

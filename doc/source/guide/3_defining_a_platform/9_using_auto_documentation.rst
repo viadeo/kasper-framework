@@ -8,7 +8,7 @@ Using auto documentation
 Installing auto documentation
 ------------------------
 
-The auto documentation is available as plugins thanks to `DocumentationPlugin` plugin allows to define web services.
+The auto documentation is available as a plugin thanks to `DocumentationPlugin` plugin which defines some web services.
 
 From the plugin, you can retrieve Jersey resource `KasperDocResource`.
 

@@ -8,23 +8,16 @@ Introduction
 ------------------------
 
 The queries will only contain the methods for getting data. From an architectural point of view these would be all methods
-that return DTOs that the clients consumes. The DTOs are usually projections of domain objects. But it's not the goal
-to produce this pattern.
-
-Using CQRS you can avoid these projections. Instead it is possible to introduce a new way of projecting DTOs. You can bypass
-the domain model and get DTOs directly from the data storage using an handler as read layer. When an application is requesting
-data, this could be done by a single call to the handler which returns a single DTO containing all the needed data.
-This DTO will be represented by an implementation of `QueryResult` interface.
+that return DTOs (Data Transfer Objects), or *QueryResult*, that the clients consumes.
 
 .. image:: ../img/query_side.png
     :scale: 100%
     :align: center
 
-
 The query handler performs the following tasks:
 
 * It receives the Query instance
-* It validates that the Query is a valid Query
+* It validates that the Query is a valid Query, the default abstract Kasper query handler will validates the Query against JSR-303 annotations
 * It invokes the appropriate view to collect data.
 * It returns the state at the request moment as result.
 
@@ -107,9 +100,9 @@ A Kasper query result has to implement the interface QueryResult and can optiona
 Some sub classes are available in standard by Kasper framework :
 
 * **com.viadeo.kasper.cqrs.query.PaginatedQueryResult** : can be implemented when the response is paginated.
-* **com.viadeo.kasper.cqrs.query.EntityQueryResult**
-* **com.viadeo.kasper.cqrs.query.CollectionQueryResult**
-* **com.viadeo.kasper.cqrs.query.MapQueryResult**
+* **com.viadeo.kasper.cqrs.query.EntityQueryResult** : contains basis entity fields like the type, the id and the version
+* **com.viadeo.kasper.cqrs.query.CollectionQueryResult** : a collection of unit query results
+* **com.viadeo.kasper.cqrs.query.MapQueryResult** : a map of string-indexed unit query results
 
 
 ..  _Defining_a_query_handler:
@@ -138,7 +131,7 @@ It has to extend **QueryHandler<Query, QueryResult>** and specify its owning dom
 
     }
 
-You have to implement at least one of the **retrieve()** methods, the second one only take the query without the message :
+You have to implement at least one of the **retrieve()** methods, the second one only takes the query without the enclosing message :
 
 **usage**
 

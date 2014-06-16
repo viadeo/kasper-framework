@@ -7,22 +7,21 @@ Defining the command side
 Introduction
 ------------------------
 
-The command side is only focused on processing of commands
+The command side is focused on processing of commands, maintenance of model coherency and data persistence with ACID propertes.
 
 Commands are created by the client application and then sent to the domain layer. Commands are messages that instruct a
-specific entity to perform a certain action. Commands are named like DoSomethingCommand (for example, ChangeNameCommand,
-DeleteOrderCommand ...). They instruct the target entity to do something that might result in different outcomes or fail.
+specific entity to perform a certain action. Commands are named like DoSomethingCommand (for example, ChangeMyNameCommand,
+DeleteAnOrderCommand ...). They instruct the target entity to do something that might result in different outcomes or fail.
 Commands are handled by command handlers.
 
-All commands will be sent to the command bus which will delegate each command to the command handler. This demonstrates
+All commands will be sent to the command bus which will delegate each command to the matching command handler. This demonstrates
 that there is only one entry point into the domain. The responsibility of the command handlers is to execute the appropriate
-domain behavior on the domain. Command handlers should have a connection to the repository to provide the ability to load the
-needed aggregate on which behavior will be executed.
+domain behavior. Command handlers should have a connection to the repository to provide the ability to load the
+needed aggregate (entity) on which behavior will be executed.
 
 .. image:: ../img/command_side.png
     :scale: 100%
     :align: center
-
 
 The command handler performs the following tasks:
 
@@ -30,7 +29,7 @@ The command handler performs the following tasks:
 * It validates that the Command is a valid Command
 * It locates the aggregate instance that is the target of the Command.
 * It invokes the appropriate method on the aggregate instance passing in any parameter from the command.
-* It persists the new state of the aggregate to storage.
+* It persists the new state of the aggregate to storage (repository).
 
 Using Kasper framework you'll have to define one and only one **command handler** per defined **command**.
 
@@ -140,7 +139,7 @@ construct aggregates, they can have different strategies for that :
 2. Call a direct constructor of the aggregate which is reserved for this usage
 3. Provide an internal static builder within the aggregate (**preferred way**)
 
-In case you have to choose the second or third strategy, annotate your constructor with **@XKasperEntityStoreCreator**.
+In case you have to choose the second or third strategy, annotate your constructor with the **@XKasperEntityStoreCreator** marker.
 
 
 ..  _Modeling_a_concept:
@@ -148,7 +147,7 @@ In case you have to choose the second or third strategy, annotate your construct
 Modeling a Concept
 ------------------------
 
-A concept aggregate root is the base entity of a model. It is a persistable business entity as you can understand it in
+A concept aggregate root is the base entity of a model. It is a persisted business entity as you can understand it in
 many other object models.
 
 *ex: a Car, a Member, a BlogPost, a Forum, a Job, ...*
@@ -243,6 +242,7 @@ Use instead a `LinkedConcept` which is a typed KasperId :
 
     }
 
+This allows a better identification of links between concepts.
 
 ..  _Modeling_a_relation:
 
