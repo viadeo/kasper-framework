@@ -21,7 +21,7 @@ violations as error messages.
         ...
     }
 
-    public class AddressQueryResult implements QueryResult {
+    public class AddressQuery implements Query {
         @NotNull private String street;
         ...
     }

@@ -19,13 +19,15 @@ So a domain :
 * cannot have access to any part of another domain other than its api components (C/Q/E)
 * represent an atomic functional area, generally handled by only one close team
 
-    .. toctree::
-        :maxdepth: 3
+Contents
 
-        1_implementing_a_domain
-        2_defining_the_query_side
-        3_defining_the_command_side
-        4_defining_a_domain_service
-        5_defining_an_event_system
-        6_using_validation
-        7_using_alias
+.. toctree::
+    :maxdepth: 3
+
+    1_implementing_a_domain
+    2_defining_the_query_side
+    3_defining_the_command_side
+    4_defining_a_domain_service
+    5_defining_an_event_system
+    6_using_validation
+    7_using_alias

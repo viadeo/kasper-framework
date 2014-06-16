@@ -7,7 +7,7 @@ command handlers, query handlers, event listeners, repositories.
 
 The framework propose several implementations of `DomainBundle` in order to facilitate its usage.
 
-Warning: According the chosen implementation, components of a bundle will be initialized after have been configured by the wiring of platform.
+Warning: According the chosen implementation, components of a bundle will be initialized after they have been configured by the wiring mechanisms of the platform.
 
 
 ..  _Defining_a_domain_bundle_from_scratch:

@@ -43,7 +43,7 @@ Once `Servlet`s have been initialized then they can be added as resource to your
 Predefined Error codes
 ----------------------
 
-For query & command errors some codes have been predefined, but users a free to use new ones, defined codes are mapped to HTTP status codes (defaults to 500).
+For query & command errors some codes have been predefined in class **CoreReasonCode**, but users a free to use new ones, defined codes are mapped to HTTP status codes (defaults to 500).
 
 | REQUIRED_INPUT (400 - BAD REQUEST)
 | INVALID_INPUT (400 - BAD REQUEST)
