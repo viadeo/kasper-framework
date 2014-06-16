@@ -18,6 +18,7 @@ import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.ClusterSelector;
 import org.axonframework.eventhandling.ClusteringEventBus;
+import org.axonframework.eventhandling.DefaultClusterSelector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -31,6 +32,9 @@ public class KasperEventBus extends ClusteringEventBus {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBus.class);
 
+    public KasperEventBus() {
+        super(new DefaultClusterSelector());
+    }
 
     public KasperEventBus(ClusterSelector clusterSelector) {
         super(clusterSelector);

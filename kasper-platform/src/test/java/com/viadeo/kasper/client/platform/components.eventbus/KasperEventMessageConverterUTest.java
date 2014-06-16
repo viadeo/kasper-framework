@@ -74,7 +74,7 @@ public class KasperEventMessageConverterUTest {
         assertTrue(headers.containsKey(PAYLOAD_REVISION_KEY));
         assertTrue(headers.containsKey(PAYLOAD_TYPE_KEY));
         assertEquals("1.0", headers.get(SERIALIZER_VERSION_KEY));
-        assertEquals("2012-10-12T00:00:00.000+02:00", headers.get(EVENT_TIMESTAMP_KEY));
+        assertEquals(timestamp.toString(), headers.get(EVENT_TIMESTAMP_KEY));
         assertEquals("event-aggregate-id", headers.get(AGGREGATE_ID_KEY));
         assertEquals(1L, headers.get(SEQUENCE_NUMBER_KEY));
         assertEquals((byte) 3, headers.get(EVENT_TYPE_KEY));
