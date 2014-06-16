@@ -13,6 +13,8 @@ task wrapper(type: Wrapper) {
 // Apply annotation processing on idea for lombok
 idea {
     project {
+        languageLevel = '1.7'
+
         ipr {
             withXml { xmlDocument ->
                 def project = xmlDocument.asNode()
@@ -25,6 +27,7 @@ idea {
                         processorPath(useClasspath: 'true')
                     }
                 })
+                xmlDocument.node.component.find { it.@name == 'VcsDirectoryMappings' }.mapping.@vcs = 'Git'
             }
         }
     }
