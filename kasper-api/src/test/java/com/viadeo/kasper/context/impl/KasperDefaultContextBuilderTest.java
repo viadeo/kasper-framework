@@ -59,8 +59,8 @@ public class KasperDefaultContextBuilderTest extends TestCase {
         // Then
         assertEquals("en", locale.getLanguage());
         assertEquals("", locale.getVariant());
-        assertEquals("English", locale.getDisplayLanguage());
-        assertEquals("English", locale.getDisplayName());
+        assertEquals("English", locale.getDisplayLanguage(Locale.ENGLISH));
+        assertEquals("English", locale.getDisplayName(Locale.ENGLISH));
         assertEquals("", locale.getDisplayVariant());
         assertEquals("en", locale.toLanguageTag());
         assertEquals("", locale.getCountry());
@@ -79,8 +79,8 @@ public class KasperDefaultContextBuilderTest extends TestCase {
         // Then
         assertEquals("en", locale.getLanguage());
         assertEquals("", locale.getVariant());
-        assertEquals("English", locale.getDisplayLanguage());
-        assertEquals("English (United States)", locale.getDisplayName());
+        assertEquals("English", locale.getDisplayLanguage(Locale.ENGLISH));
+        assertEquals("English (United States)", locale.getDisplayName(Locale.ENGLISH));
         assertEquals("", locale.getDisplayVariant());
         assertEquals("en-US", locale.toLanguageTag());
         assertEquals("US", locale.getCountry());
