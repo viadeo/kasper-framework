@@ -7,6 +7,7 @@
 package com.viadeo.kasper.cqrs.command.interceptor;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.Interceptor;
@@ -19,11 +20,14 @@ import com.viadeo.kasper.security.SecurityConfiguration;
 import com.viadeo.kasper.security.SecurityStrategy;
 import com.viadeo.kasper.security.annotation.XKasperPublic;
 
+import java.util.Map;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CommandSecurityInterceptorFactory extends CommandInterceptorFactory {
 
     private SecurityConfiguration securityConfiguration;
+    private final Map<Class, SecurityStrategy> strategies = Maps.newHashMap();
 
     // ------------------------------------------------------------------------
 
@@ -40,10 +44,15 @@ public class CommandSecurityInterceptorFactory extends CommandInterceptorFactory
 
         final SecurityStrategy securityStrategy;
 
-        if (commandClass.isAnnotationPresent(XKasperPublic.class)) {
-            securityStrategy = new DefaultPublicSecurityStrategy(securityConfiguration);
+        if (strategies.containsKey(commandClass)) {
+            securityStrategy = strategies.get(commandClass);
         } else {
-            securityStrategy = new DefaultSecurityStrategy(securityConfiguration);
+            if (commandClass.isAnnotationPresent(XKasperPublic.class)) {
+                securityStrategy = new DefaultPublicSecurityStrategy(securityConfiguration);
+            } else {
+                securityStrategy = new DefaultSecurityStrategy(securityConfiguration);
+            }
+            strategies.put(commandClass, securityStrategy);
         }
 
         final Interceptor<Command, CommandResponse> interceptor =
