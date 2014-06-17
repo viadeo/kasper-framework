@@ -38,6 +38,16 @@ We can retrieve HttpServlet from each plugins after their initialization by the 
 
 Once `Servlet`s have been initialized then they can be added as resource to your server.
 
+*Usage :*
+
+::
+    # Query
+    curl -XGET http://internal-kasper.demo.sf.viadeo.internal/kasper/query/GetBuildInfo
+
+    # Command
+    curl -XPOST -H "Content-Type: application/json" -d '{"idToUse":"myKiosk"}' http://internal-kasper.demo.sf.viadeo.internal/kasper/command/CreateKiosk
+
+
 ..  _Predrefined_Error_codes:
 
 Predefined Error codes
