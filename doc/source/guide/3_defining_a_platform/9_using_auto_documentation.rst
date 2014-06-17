@@ -40,6 +40,15 @@ We can access to the documentation under two different ways :
 
 The UI is a client of bellow web services.
 
+*usage :*
+::
+    # OSX
+    open http://internal-kasper.demo.sf.viadeo.internal/doc/
+
+    # Linux
+    xdg-open http://internal-kasper.demo.sf.viadeo.internal/doc/
+
+
 **web services**
 
 +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------+
@@ -53,6 +62,13 @@ The UI is a client of bellow web services.
 +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------+
 | <host_name>/kasper/doc/domain/<domain_name>/<'commands' or 'queries' or 'events' or 'queryResults' or 'commandHandlers' or 'queryHandlers' or 'eventListeners' or 'concepts' or 'relations' or 'repositories'>/<component_name> | Get a specific component in full version of a specific domain                   |
 +---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------+
+
+*usage :*
+::
+    curl http://internal-kasper.demo.sf.viadeo.internal/kasper/doc/domains
+
+    curl http://internal-kasper.demo.sf.viadeo.internal/kasper/doc/domain/Subscription/command/FreeSubscriptionByAffiliateCommand
+
 
 Completing documentation
 ------------------------
