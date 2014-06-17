@@ -103,13 +103,15 @@ In response you receive a json of the following form.
 
     {
         status: "ERROR" // values can be : OK, ERROR or REFUSED
-        errors: [ // empty if status = OK
+        id: "1124d9e8-6266-4bcf-8035-37a02ba75c69",
+        code: 1006, // a mandatory code, describing what is wrong
+        label: "NOT_FOUND", // a mandatory human readable code, describing what is wrong
+        reason: true, // set to true if we have reasons, false otherwise
+        reasons: [
             {
-                "code": "CONFLICT", // a mandatory human readable code, describing what is wrong
-                "message": "user already exists", // a free technical message, providing more information on waht happened
-                "userMessage": "You already have an account." // a optional free user facing message, can be sent/displayed to end users
+                "message": "user already exists", // a message, providing more information on what happened
             }
-            // other errors
+            // other reasons
         ]
     }
 
@@ -147,14 +149,16 @@ information on what happened, see :doc:`3_defining_a_platform/8_using_http_expos
     :linenos:
 
     {
-        "id": "edbe1970-3b5e-11e3-aa6e-0800200c9a66",
-        "message": "Some query was not found...", // a technical global error message
-        "reasons": [ // can be empty
+        status: "ERROR" // values can be : OK, ERROR or REFUSED
+        id: "1124d9e8-6266-4bcf-8035-37a02ba75c69",
+        code: 1002, // a mandatory code, describing what is wrong
+        label: "INVALID_INPUT", // a mandatory human readable code, describing what is wrong
+        reason: true, // set to true if we have reasons, false otherwise
+        reasons: [
             {
-                "code": "INVALID_INPUT", // awlays present, a readable code telling what happened
-                "message": "Some technical message", // a detailed free technical message
-                "userMessage": "Wrong email address?" // a optional free user message, can be displayed/sent to end users.
+                "message": "Wrong email address?", // a message, providing more information on what happened
             }
+            // other reasons
         ]
     }
 
