@@ -77,7 +77,6 @@ public final class ObjectMapperProvider {
 
         mapper.registerModule(kasperClientModule);
         mapper.registerModule(new KasperImmutabilityParanamerModule());
-        mapper.registerModule(new LowerEnumModule());
 
         /* Third-party modules */
         mapper.registerModule(new GuavaModule());
