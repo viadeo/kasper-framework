@@ -27,12 +27,15 @@
 
 // inspired from apache shiro
 
-package com.viadeo.kasper.security.authz.actor;
+package com.viadeo.kasper.security.authz.entities.actor;
 
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.security.authz.permission.Permission;
-import com.viadeo.kasper.security.authz.permission.impl.Role;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.er.Concept;
+import com.viadeo.kasper.impl.DefaultKasperId;
+import com.viadeo.kasper.security.authz.entities.permission.Permission;
+import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +43,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class Actor {
+public abstract class Actor extends Concept{
 
     private List<Role> roles;
     private List<Permission> permissions;
@@ -50,11 +53,6 @@ public abstract class Actor {
     public Actor() {
         this.roles = Lists.newArrayList();
         this.permissions = Lists.newArrayList();
-    }
-
-    public Actor(final List<Role> roles, final List<Permission> permissions) {
-        this.roles = checkNotNull(roles);
-        this.permissions = checkNotNull(permissions);
     }
 
     // -----------------------------------------------------------------------

@@ -7,8 +7,6 @@
 
 package com.viadeo.kasper.security.authz.actor;
 
-import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
 

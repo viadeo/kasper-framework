@@ -8,11 +8,9 @@
 package com.viadeo.kasper.security.authz.actor;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
 
-import java.util.ArrayList;
 import java.util.List;
 
 

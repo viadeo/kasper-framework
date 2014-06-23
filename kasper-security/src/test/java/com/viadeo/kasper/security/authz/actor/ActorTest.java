@@ -7,6 +7,7 @@
 
 package com.viadeo.kasper.security.authz.actor;
 
+import com.viadeo.kasper.security.authz.actor.User;
 import com.viadeo.kasper.security.authz.permission.Permission;
 import com.viadeo.kasper.security.authz.permission.impl.Role;
 import com.viadeo.kasper.security.authz.permission.impl.WildcardPermission;

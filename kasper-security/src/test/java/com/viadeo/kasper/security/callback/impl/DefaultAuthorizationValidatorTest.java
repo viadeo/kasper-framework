@@ -35,7 +35,6 @@ import java.util.List;
 import static junit.framework.Assert.assertEquals;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
 public class DefaultAuthorizationValidatorTest {
