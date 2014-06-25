@@ -32,8 +32,4 @@ public class UserAddedToGroupRepository extends Repository<Group_has_User> {
     protected void doDelete(final Group_has_User aggregate) {
         authorizationStorage.removeUserFromGroup(aggregate);
     }
-
-    public List<User> getUsersForGroup(final Group group){
-        return authorizationStorage.getUsersForGroup(group);
-    }
 }

@@ -36,6 +36,7 @@ import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.security.authz.entities.permission.Permission;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
+import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -46,7 +47,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class Actor extends Concept{
 
     private List<Role> roles;
-    private List<Permission> permissions;
+    private List<WildcardPermission> permissions;
 
     // ------------------------------------------------------------------------
 
@@ -81,27 +82,27 @@ public abstract class Actor extends Concept{
         this.roles.removeAll(checkNotNull(roles));
     }
 
-    public List<Permission> getPermissions() {
+    public List<WildcardPermission> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(final List<Permission> permissions) {
+    public void setPermissions(final List<WildcardPermission> permissions) {
         this.permissions = checkNotNull(permissions);
     }
 
-    public void addPermission(final Permission permission) {
+    public void addPermission(final WildcardPermission permission) {
         this.permissions.add(checkNotNull(permission));
     }
 
-    public void removePermission(final Permission permission) {
+    public void removePermission(final WildcardPermission permission) {
         this.permissions.remove(checkNotNull(permission));
     }
 
-    public void addPermissions(final Collection<Permission> permissions) {
+    public void addPermissions(final Collection<WildcardPermission> permissions) {
         this.permissions.addAll(checkNotNull(permissions));
     }
 
-    public void removePermissions(final Collection<Permission> permissions) {
+    public void removePermissions(final Collection<WildcardPermission> permissions) {
         this.permissions.removeAll(checkNotNull(permissions));
     }
 

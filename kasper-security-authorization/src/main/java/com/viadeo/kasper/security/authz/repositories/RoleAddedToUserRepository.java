@@ -32,12 +32,4 @@ public class RoleAddedToUserRepository extends Repository<User_has_Role> {
     protected void doDelete(final User_has_Role aggregate) {
         authorizationStorage.removeRoleFromUser(aggregate);
     }
-
-    public List<Role> getRolesForUser(final User user){
-        return authorizationStorage.getRolesForUser(user);
-    }
-
-    public List<User> getAllUsersForRole(final Role role){
-        return authorizationStorage.getAllUsersForRole(role);
-    }
 }

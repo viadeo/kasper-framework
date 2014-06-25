@@ -8,20 +8,21 @@ import com.viadeo.kasper.security.authz.Authorization;
 import com.viadeo.kasper.security.authz.entities.actor.User;
 import com.viadeo.kasper.security.authz.entities.permission.Permission;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
+import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 
 import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 @XKasperEvent(description = "An Authorization group has been created", action = "created")
-public class GroupCreatedEvent extends EntityCreatedEvent<Authorization> {
+public class AuthorizationGroupCreatedEvent extends EntityCreatedEvent<Authorization> {
 
     private String name;
     private List<User> users;
     private List<Role> roles;
-    private List<Permission> permissions;
+    private List<WildcardPermission> permissions;
 
-    public GroupCreatedEvent(final KasperID entityId, final String name) {
+    public AuthorizationGroupCreatedEvent(final KasperID entityId, final String name) {
         super(checkNotNull(entityId));
         this.name = checkNotNull(name);
         this.users = Lists.newArrayList();
@@ -29,7 +30,7 @@ public class GroupCreatedEvent extends EntityCreatedEvent<Authorization> {
         this.permissions = Lists.newArrayList();
     }
 
-    public GroupCreatedEvent(final KasperID entityId, final String name, final List<User> users, final List<Role> roles, final List<Permission> permissions) {
+    public AuthorizationGroupCreatedEvent(final KasperID entityId, final String name, final List<User> users, final List<Role> roles, final List<WildcardPermission> permissions) {
         super(entityId);
         this.name = checkNotNull(name);
         this.users = checkNotNull(users);
@@ -49,7 +50,7 @@ public class GroupCreatedEvent extends EntityCreatedEvent<Authorization> {
         return roles;
     }
 
-    public List<Permission> getPermissions() {
+    public List<WildcardPermission> getPermissions() {
         return permissions;
     }
 }

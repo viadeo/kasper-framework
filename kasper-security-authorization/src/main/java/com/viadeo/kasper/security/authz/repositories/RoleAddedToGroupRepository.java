@@ -32,12 +32,4 @@ public class RoleAddedToGroupRepository extends Repository<Group_has_Role> {
     protected void doDelete(final Group_has_Role aggregate) {
         authorizationStorage.removeRoleFromGroup(aggregate);
     }
-
-    public List<Role> getRolesForGroup(final Group group){
-        return authorizationStorage.getRolesForGroup(group);
-    }
-
-    public List<Group> getAllGroupsForRole(final Role role){
-        return authorizationStorage.getAllGroupsForRole(role);
-    }
 }

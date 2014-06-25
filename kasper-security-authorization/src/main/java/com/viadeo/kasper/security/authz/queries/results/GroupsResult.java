@@ -8,13 +8,13 @@ import java.util.List;
 @XKasperQueryResult(description = "the user authorization list")
 public class GroupsResult implements QueryResult {
 
-    private final List<GroupsResult> groups;
+    private final List<GroupResult> groups;
 
-    public GroupsResult(List<GroupsResult> groups) {
+    public GroupsResult(List<GroupResult> groups) {
         this.groups = groups;
     }
 
-    public List<GroupsResult> getGroups() {
+    public List<GroupResult> getGroups() {
         return groups;
     }
 }

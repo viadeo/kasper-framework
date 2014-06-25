@@ -11,10 +11,10 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.security.authz.Authorization;
-import com.viadeo.kasper.security.authz.entities.permission.Permission;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
-import com.viadeo.kasper.security.authz.events.group.GroupCreatedEvent;
-import com.viadeo.kasper.security.authz.events.group.GroupDeletedEvent;
+import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
+import com.viadeo.kasper.security.authz.events.group.AuthorizationGroupCreatedEvent;
+import com.viadeo.kasper.security.authz.events.group.AuthorizationGroupDeletedEvent;
 import org.axonframework.eventhandling.annotation.EventHandler;
 
 import java.util.List;
@@ -30,30 +30,30 @@ public class Group extends Actor {
     // ------------------------------------------------------------------------
 
     public Group(final String name){
-        apply(new GroupCreatedEvent(new DefaultKasperId(), name));
+        apply(new AuthorizationGroupCreatedEvent(new DefaultKasperId(), name));
     }
 
     public Group(final KasperID kasperID, final String name){
-        apply(new GroupCreatedEvent(kasperID, name));
+        apply(new AuthorizationGroupCreatedEvent(kasperID, name));
     }
 
     public Group(final String name,
                  final List<Role> roles,
-                 final List<Permission> permissions,
+                 final List<WildcardPermission> permissions,
                  final List<User> users) {
-        apply(new GroupCreatedEvent(new DefaultKasperId(), name, users, roles, permissions));
+        apply(new AuthorizationGroupCreatedEvent(new DefaultKasperId(), name, users, roles, permissions));
     }
 
     public Group(final KasperID kasperID,
                  final String name,
                  final List<Role> roles,
-                 final List<Permission> permissions,
+                 final List<WildcardPermission> permissions,
                  final List<User> users) {
-        apply(new GroupCreatedEvent(kasperID, name, users, roles, permissions));
+        apply(new AuthorizationGroupCreatedEvent(kasperID, name, users, roles, permissions));
     }
 
     @EventHandler
-    public void onCreated(GroupCreatedEvent event) {
+    public void onCreated(AuthorizationGroupCreatedEvent event) {
         setId(event.getEntityId());
         setName(event.getName());
         setUsers(event.getUsers());
@@ -62,12 +62,12 @@ public class Group extends Actor {
     }
 
     public Group delete() {
-        apply(new GroupDeletedEvent(getEntityId()));
+        apply(new AuthorizationGroupDeletedEvent(getEntityId()));
         return this;
     }
 
     @EventHandler
-    public void onDeleted(final GroupDeletedEvent e) {
+    public void onDeleted(final AuthorizationGroupDeletedEvent e) {
         this.markDeleted();
     }
 

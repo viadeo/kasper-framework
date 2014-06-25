@@ -32,8 +32,4 @@ public class PermissionAddedToRoleRepository extends Repository<Role_has_Permiss
     protected void doDelete(final Role_has_Permission aggregate) {
         authorizationStorage.removePermissionFromRole(aggregate);
     }
-
-    public List<Permission> getPermissionsForRole(final Role role){
-        return authorizationStorage.getPermissionsForRole(role);
-    }
 }

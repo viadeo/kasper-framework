@@ -8,13 +8,13 @@ import java.util.List;
 @XKasperQueryResult(description = "the roles authorization list")
 public class RolesResult implements QueryResult {
 
-    private final List<RolesResult> roles;
+    private final List<RoleResult> roles;
 
-    public RolesResult(List<RolesResult> roles) {
+    public RolesResult(List<RoleResult> roles) {
         this.roles = roles;
     }
 
-    public List<RolesResult> getRoles() {
+    public List<RoleResult> getRoles() {
         return roles;
     }
 }

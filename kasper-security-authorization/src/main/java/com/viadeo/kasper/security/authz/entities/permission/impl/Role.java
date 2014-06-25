@@ -50,7 +50,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class Role extends Concept {
 
     private String name;
-    private List<Permission> permissions;
+    private List<WildcardPermission> permissions;
 
     // ------------------------------------------------------------------------
 
@@ -70,11 +70,11 @@ public class Role extends Concept {
         apply(new RoleCreatedEvent(kasperId, name));
     }
 
-    public Role(final String name, final List<Permission> permissions) {
+    public Role(final String name, final List<WildcardPermission> permissions) {
         apply(new RoleCreatedEvent(new DefaultKasperId(), name, permissions));
     }
 
-    public Role(final KasperID kasperId, final String name, final List<Permission> permissions) {
+    public Role(final KasperID kasperId, final String name, final List<WildcardPermission> permissions) {
         apply(new RoleCreatedEvent(kasperId, name, permissions));
     }
 
@@ -105,17 +105,17 @@ public class Role extends Concept {
         this.name = checkNotNull(name);
     }
 
-    public List<Permission> getPermissions() {
+    public List<WildcardPermission> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(final List<Permission> permissions) {
+    public void setPermissions(final List<WildcardPermission> permissions) {
         this.permissions = checkNotNull(permissions);
     }
 
     // ------------------------------------------------------------------------
 
-    public void add(final Permission permission) {
+    public void add(final WildcardPermission permission) {
         checkNotNull(permission);
         if (null == this.permissions) {
             this.permissions = Lists.newArrayList();
@@ -130,10 +130,10 @@ public class Role extends Concept {
         }
     }
 
-    public void addAll(final Collection<Permission> perms) {
+    public void addAll(final Collection<WildcardPermission> perms) {
         if ((null != perms) && (!perms.isEmpty())) {
             if (null == this.permissions) {
-                this.permissions = new ArrayList<Permission>(perms.size());
+                this.permissions = new ArrayList<WildcardPermission>(perms.size());
             }
             this.permissions.addAll(perms);
         }

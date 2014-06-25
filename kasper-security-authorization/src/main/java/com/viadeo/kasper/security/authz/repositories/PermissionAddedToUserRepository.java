@@ -32,8 +32,4 @@ public class PermissionAddedToUserRepository extends Repository<User_has_Permiss
     protected void doDelete(final User_has_Permission aggregate) {
         authorizationStorage.removePermissionFromUser(aggregate);
     }
-
-    public List<Permission> getPermissionsForUser(final User user){
-        return authorizationStorage.getPermissionsForUser(user);
-    }
 }

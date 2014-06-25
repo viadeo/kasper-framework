@@ -8,12 +8,12 @@ import com.viadeo.kasper.security.authz.entities.actor.Group;
 import com.viadeo.kasper.security.authz.entities.actor.User;
 
 @XKasperEvent(description = "An Authorization permission has been created", action = "created")
-public class UserAddedToGroupEvent extends EntityCreatedEvent<Authorization> {
+public class AuthorizationUserAddedToGroupEvent extends EntityCreatedEvent<Authorization> {
 
     private Group group;
     private User user;
 
-    public UserAddedToGroupEvent(final KasperID entityId, final Group group, final User user) {
+    public AuthorizationUserAddedToGroupEvent(final KasperID entityId, final Group group, final User user) {
         super(entityId);
         this.group = group;
         this.user = user;

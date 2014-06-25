@@ -32,8 +32,4 @@ public class PermissionAddedToGroupRepository extends Repository<Group_has_Permi
     protected void doDelete(final Group_has_Permission aggregate) {
         authorizationStorage.removePermissionFromGroup(aggregate);
     }
-
-    public List<Permission> getPermissionsForGroup(final Group group){
-        return authorizationStorage.getPermissionsForGroup(group);
-    }
 }

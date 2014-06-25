@@ -7,8 +7,8 @@ import com.viadeo.kasper.security.authz.Authorization;
 import com.viadeo.kasper.security.authz.entities.actor.Group;
 import com.viadeo.kasper.security.authz.entities.actor.User;
 import com.viadeo.kasper.security.authz.entities.relations.ids.GroupUserAssociationId;
-import com.viadeo.kasper.security.authz.events.user.UserAddedToGroupEvent;
-import com.viadeo.kasper.security.authz.events.user.UserRemovedFromGroupEvent;
+import com.viadeo.kasper.security.authz.events.user.AuthorizationUserAddedToGroupEvent;
+import com.viadeo.kasper.security.authz.events.user.AuthorizationUserRemovedFromGroupEvent;
 import org.axonframework.eventhandling.annotation.EventHandler;
 
 @XKasperRelation(domain = Authorization.class, label = "")
@@ -18,23 +18,23 @@ public class Group_has_User extends Relation<Group, User> {
     private User user;
 
     public Group_has_User(final Group group, final User user) {
-        apply(new UserAddedToGroupEvent(new GroupUserAssociationId(group.getEntityId(), user.getEntityId()), group, user));
+        apply(new AuthorizationUserAddedToGroupEvent(new GroupUserAssociationId(group.getEntityId(), user.getEntityId()), group, user));
     }
 
     @EventHandler
-    public void onCreated(final UserAddedToGroupEvent event) {
+    public void onCreated(final AuthorizationUserAddedToGroupEvent event) {
         setId((KasperRelationID) event.getEntityId());
         this.group = event.getGroup();
         this.user = event.getUser();
     }
 
     public Group_has_User delete() {
-        apply(new UserRemovedFromGroupEvent(getEntityId()));
+        apply(new AuthorizationUserRemovedFromGroupEvent(getEntityId()));
         return this;
     }
 
     @EventHandler
-    protected void onDeleted(final UserAddedToGroupEvent event) {
+    protected void onDeleted(final AuthorizationUserAddedToGroupEvent event) {
         this.markDeleted();
     }
 

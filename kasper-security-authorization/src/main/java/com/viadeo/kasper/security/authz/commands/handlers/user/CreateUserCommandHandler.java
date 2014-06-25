@@ -13,7 +13,7 @@ public class CreateUserCommandHandler extends EntityCommandHandler<CreateUserCom
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<CreateUserCommand> message) throws Exception {
-        User user = new User(message.getCommand().getIdToUse());
+        User user = new User(message.getCommand().getIdToUse(), message.getCommand().getFirstName(), message.getCommand().getLastName());
         this.getRepository().add(user);
         return CommandResponse.ok();
     }

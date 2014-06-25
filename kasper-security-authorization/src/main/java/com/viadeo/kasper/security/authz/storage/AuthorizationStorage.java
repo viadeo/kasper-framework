@@ -18,13 +18,13 @@ public interface AuthorizationStorage {
 
     /********************************* Backoffice methods ***********************************/
 
-    public void createPermission(final Permission permission);
+    public void createPermission(final WildcardPermission permission);
 
-    public void deletePermission(final Permission kasperID);
+    public void deletePermission(final WildcardPermission permission);
 
     public Role createRole(final Role role);
 
-    public void deleteRole(final Role kasperID);
+    public void deleteRole(final Role role);
 
     public User createUser(final User user);
 
@@ -78,20 +78,16 @@ public interface AuthorizationStorage {
 
     public List<User> getAllUsers();
 
-    public List<User> getUsersForGroup(final Group group);
+    public List<Role> getRolesHavingPermission(final KasperID permissionId);
 
-    public List<Permission> getPermissionsForRole(final Role role);
+    public List<Group> getGroupsHavingRole(final KasperID roleId);
 
-    public List<Permission> getPermissionsForUser(final User user);
+    public List<Group> getGroupsHavingPermission(final KasperID permissionId);
 
-    public List<Permission> getPermissionsForGroup(final Group group);
+    public List<Group> getGroupsHavingUser(final KasperID userId);
 
-    public List<Role> getRolesForGroup(final Group group);
+    public List<User> getUsersHavingRole(final KasperID roleId);
 
-    public List<Role> getRolesForUser(final User user);
-
-    public List<Group> getAllGroupsForRole(final Role role);
-
-    public List<User> getAllUsersForRole(final Role role);
+    public List<User> getUsersHavingPermission(final KasperID permissionId);
 
 }
