@@ -11,7 +11,7 @@ dependencies {
     // Projects
     compile project(':kasper-api')
     compile project(':kasper-common')
-    compile project(':kasper-security')
+    //compile project(':kasper-security')
 
     // Third party dependencies
     compile libraries.REFLECTIONS

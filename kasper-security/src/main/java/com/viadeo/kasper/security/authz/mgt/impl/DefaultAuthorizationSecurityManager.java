@@ -9,11 +9,11 @@ package com.viadeo.kasper.security.authz.mgt.impl;
 
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.security.authz.actor.Actor;
+import com.viadeo.kasper.security.authz.entities.actor.Actor;
 import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
-import com.viadeo.kasper.security.authz.permission.Permission;
-import com.viadeo.kasper.security.authz.permission.impl.Role;
-import com.viadeo.kasper.security.authz.permission.impl.WildcardPermission;
+import com.viadeo.kasper.security.authz.entities.permission.Permission;
+import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
+import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
 
 import java.util.List;
@@ -22,13 +22,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DefaultAuthorizationSecurityManager implements AuthorizationSecurityManager {
 
-    public Permission resolvePermission(final String permission) {
+    public WildcardPermission resolvePermission(final String permission) {
         return new WildcardPermission(checkNotNull(permission));
-    }
-
-
-    public Actor getActor(final Context context) {
-       throw new UnsupportedOperationException("Method not implemented");
     }
 
     public void checkRole(final String role, final Actor actor) throws KasperUnauthorizedException {

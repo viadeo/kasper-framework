@@ -6,7 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.permission.impl;
 
-import com.viadeo.kasper.security.authz.permission.Permission;
+import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
+import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 import org.junit.Test;
 
 import static junit.framework.Assert.*;
@@ -17,7 +18,7 @@ public class RoleTest {
     public void test_isPermitted_withPermissions_shoudlAssert() {
         // Given
         final Role role = new Role("role");
-        final Permission perm = new WildcardPermission("permission");
+        final WildcardPermission perm = new WildcardPermission("permission");
         role.add(perm);
 
         // When
@@ -33,11 +34,11 @@ public class RoleTest {
     public void test_removePermission_shouldRemove() {
         // Given
         final Role role = new Role("role");
-        final Permission perm = new WildcardPermission("permission");
+        final WildcardPermission perm = new WildcardPermission("permission");
         role.add(perm);
 
         // When
-        final Permission perm2 = new WildcardPermission("permission");
+        final WildcardPermission perm2 = new WildcardPermission("permission");
         role.remove(perm2);
 
         // Then

@@ -7,16 +7,13 @@
 package com.viadeo.kasper.security.authz.mgt;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.security.authz.actor.Actor;
-import com.viadeo.kasper.security.authz.permission.Permission;
+import com.viadeo.kasper.security.authz.entities.actor.Actor;
+import com.viadeo.kasper.security.authz.entities.permission.Permission;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
 
 import java.util.List;
 
 public interface AuthorizationSecurityManager {
-
-
-    Actor getActor(Context context);
 
     Permission resolvePermission(String permission);
 

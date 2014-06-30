@@ -6,10 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.mgt.impl;
 
-import com.viadeo.kasper.security.authz.actor.Actor;
-import com.viadeo.kasper.security.authz.actor.User;
-import com.viadeo.kasper.security.authz.permission.Permission;
-import com.viadeo.kasper.security.authz.permission.impl.Role;
+import com.viadeo.kasper.security.authz.entities.actor.Actor;
+import com.viadeo.kasper.security.authz.entities.actor.User;
+import com.viadeo.kasper.security.authz.entities.permission.Permission;
+import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
+import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 import com.viadeo.kasper.security.exception.KasperSecurityException;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
 import org.junit.Before;
@@ -24,7 +25,7 @@ public class DefaultAuthorizationSecurityManagerTest {
 
     private DefaultAuthorizationSecurityManager defaultAuthorizationSecurityManager;
 
-    private Actor actor = new User();
+    private Actor actor = new User("Kasper", "User");
 
     // ------------------------------------------------------------------------
 
@@ -51,8 +52,8 @@ public class DefaultAuthorizationSecurityManagerTest {
     public void test_chekPermission_withGoodPermission_shouldNotThrowException() throws KasperSecurityException {
         // Given
         final String perm = "perm1";
-        final Permission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
-        final List<Permission> permissions = new ArrayList<>();
+        final WildcardPermission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
+        final List<WildcardPermission> permissions = new ArrayList<WildcardPermission>();
         permissions.add(permission);
         actor.setPermissions(permissions);
 
@@ -65,8 +66,8 @@ public class DefaultAuthorizationSecurityManagerTest {
         // Given
         final String perm = "perm1";
         final String wrongPerm = "wrongperm1";
-        final Permission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
-        final List<Permission> permissions = new ArrayList<>();
+        final WildcardPermission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
+        final List<WildcardPermission> permissions = new ArrayList<WildcardPermission>();
         permissions.add(permission);
         actor.setPermissions(permissions);
 
@@ -93,7 +94,7 @@ public class DefaultAuthorizationSecurityManagerTest {
         final String roleStr = "Robert";
         final String perm = "perm1";
         final Role role = new Role(roleStr);
-        final Permission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
+        final WildcardPermission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
         role.add(permission);
         final List<Role> roles = new ArrayList<>();
         roles.add(role);
@@ -124,7 +125,7 @@ public class DefaultAuthorizationSecurityManagerTest {
         final String perm = "perm1";
         final String wrongPerm = "wrongperm1";
         final Role role = new Role(roleStr);
-        final Permission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
+        final WildcardPermission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
         role.add(permission);
         final List<Role> roles = new ArrayList<>();
         roles.add(role);

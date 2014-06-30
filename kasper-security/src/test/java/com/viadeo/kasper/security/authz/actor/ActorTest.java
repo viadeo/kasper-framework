@@ -7,11 +7,11 @@
 
 package com.viadeo.kasper.security.authz.actor;
 
-import com.viadeo.kasper.security.authz.actor.User;
-import com.viadeo.kasper.security.authz.permission.Permission;
-import com.viadeo.kasper.security.authz.permission.impl.Role;
-import com.viadeo.kasper.security.authz.permission.impl.WildcardPermission;
-
+import com.viadeo.kasper.security.authz.entities.actor.Actor;
+import com.viadeo.kasper.security.authz.entities.actor.User;
+import com.viadeo.kasper.security.authz.entities.permission.Permission;
+import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
+import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -30,14 +30,14 @@ public class ActorTest {
     private Role role4;
     private Role role5;
 
-    private Permission perm1;
-    private Permission perm2;
-    private Permission perm3;
-    private Permission perm4;
-    private Permission perm5;
+    private WildcardPermission perm1;
+    private WildcardPermission perm2;
+    private WildcardPermission perm3;
+    private WildcardPermission perm4;
+    private WildcardPermission perm5;
 
-    private List<Permission> permissions1;
-    private List<Permission> permissions2;
+    private List<WildcardPermission> permissions1;
+    private List<WildcardPermission> permissions2;
 
     private List<Role> roles1;
     private List<Role> roles2;
@@ -46,7 +46,7 @@ public class ActorTest {
 
     @Before
     public void setUp() {
-        actor = new User();
+        actor = new User("Kasper", "User");
         role1 = new Role("role1");
         role2 = new Role("role2");
         role3 = new Role("role3");
@@ -58,10 +58,10 @@ public class ActorTest {
         perm4 = new WildcardPermission("perm4");
         perm5 = new WildcardPermission("perm5");
 
-        permissions1 = new ArrayList<Permission>();
+        permissions1 = new ArrayList<WildcardPermission>();
         permissions1.add(perm1);
         permissions1.add(perm2);
-        permissions2 = new ArrayList<Permission>();
+        permissions2 = new ArrayList<WildcardPermission>();
         permissions2.add(perm3);
         permissions2.add(perm4);
         permissions2.add(perm5);

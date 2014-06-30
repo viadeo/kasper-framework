@@ -10,8 +10,9 @@ package com.viadeo.kasper.security.callback.impl;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.security.annotation.XKasperRequirePermissions;
 import com.viadeo.kasper.security.annotation.XKasperRequireRoles;
-import com.viadeo.kasper.security.authz.actor.Actor;
+import com.viadeo.kasper.security.authz.entities.actor.Actor;
 import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
+import com.viadeo.kasper.security.authz.storage.AuthorizationStorage;
 import com.viadeo.kasper.security.callback.AuthorizationValidator;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
 
@@ -25,11 +26,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class DefaultAuthorizationValidator implements AuthorizationValidator {
 
     private AuthorizationSecurityManager authorizationSecurityManager;
+    private AuthorizationStorage authorizationStorage;
 
     // ------------------------------------------------------------------------
 
-    public DefaultAuthorizationValidator(final AuthorizationSecurityManager authorizationSecurityManager) {
+    public DefaultAuthorizationValidator(final AuthorizationSecurityManager authorizationSecurityManager, final AuthorizationStorage authorizationStorage) {
         this.authorizationSecurityManager = checkNotNull(authorizationSecurityManager);
+        this.authorizationStorage = checkNotNull(authorizationStorage);
     }
 
     // ------------------------------------------------------------------------
@@ -39,7 +42,7 @@ public class DefaultAuthorizationValidator implements AuthorizationValidator {
         checkNotNull(context);
         checkNotNull(clazz);
 
-        final Actor actor = this.authorizationSecurityManager.getActor(context);
+        final Actor actor = this.authorizationStorage.getActor(context);
 
         this.authorizationSecurityManager.checkRoles(extractRoles(clazz), actor);
         this.authorizationSecurityManager.checkPermissions(extractPermissions(clazz), actor);

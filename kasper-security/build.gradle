@@ -11,6 +11,8 @@ dependencies {
     // Projects
     compile project(':kasper-api')
     compile project(':kasper-common')
+    compile project(':kasper-core')
+    //compile project(':kasper-platform')
 
     // Third party dependencies
     compile libraries.REFLECTIONS

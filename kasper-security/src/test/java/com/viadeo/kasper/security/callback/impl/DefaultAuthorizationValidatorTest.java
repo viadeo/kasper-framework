@@ -13,13 +13,14 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.security.annotation.XKasperRequirePermissions;
 import com.viadeo.kasper.security.annotation.XKasperRequireRoles;
-import com.viadeo.kasper.security.authz.actor.Actor;
-import com.viadeo.kasper.security.authz.actor.User;
+import com.viadeo.kasper.security.authz.entities.actor.Actor;
+import com.viadeo.kasper.security.authz.entities.actor.User;
+import com.viadeo.kasper.security.authz.entities.permission.Permission;
+import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
+import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
 import com.viadeo.kasper.security.authz.mgt.impl.DefaultAuthorizationSecurityManager;
-import com.viadeo.kasper.security.authz.permission.Permission;
-import com.viadeo.kasper.security.authz.permission.impl.Role;
-import com.viadeo.kasper.security.authz.permission.impl.WildcardPermission;
+import com.viadeo.kasper.security.authz.storage.AuthorizationStorage;
 import com.viadeo.kasper.security.exception.KasperSecurityException;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
 
@@ -41,6 +42,9 @@ public class DefaultAuthorizationValidatorTest {
 
     @MockitoAnnotations.Mock
     AuthorizationSecurityManager authorizationSecurityManager;
+
+    @MockitoAnnotations.Mock
+    AuthorizationStorage authorizationStorage;
 
     @XKasperRequireRoles("perm1,perm2,perm3,perm4")
     @XKasperCommand
@@ -79,7 +83,7 @@ public class DefaultAuthorizationValidatorTest {
     @Before
     public void setUp() {
         authorizationSecurityManager = spy(new DefaultAuthorizationSecurityManager());
-        defaultAuthorizationValidator = new DefaultAuthorizationValidator(authorizationSecurityManager);
+        defaultAuthorizationValidator = new DefaultAuthorizationValidator(authorizationSecurityManager,authorizationStorage);
     }
 
     // ------------------------------------------------------------------------
@@ -138,7 +142,7 @@ public class DefaultAuthorizationValidatorTest {
         // Given
         final Actor actor = initTestUser();
         final Context context = new DefaultContext();
-        doReturn(actor).when(authorizationSecurityManager).getActor(context);
+        doReturn(actor).when(authorizationStorage).getActor(context);
 
         // When
         defaultAuthorizationValidator.validate(context, TestSimpleRoleCommand.class);
@@ -149,7 +153,7 @@ public class DefaultAuthorizationValidatorTest {
         // Given
         final Actor actor = initTestUser();
         final Context context = new DefaultContext();
-        doReturn(actor).when(authorizationSecurityManager).getActor(context);
+        doReturn(actor).when(authorizationStorage).getActor(context);
 
         // When
         defaultAuthorizationValidator.validate(context, TestSimplePermissionCommand.class);
@@ -162,7 +166,7 @@ public class DefaultAuthorizationValidatorTest {
         actor.setPermissions(actor.getRoles().get(0).getPermissions());
         actor.setRoles(new ArrayList<Role>());
         final Context context = new DefaultContext();
-        doReturn(actor).when(authorizationSecurityManager).getActor(context);
+        doReturn(actor).when(authorizationStorage).getActor(context);
 
         // When
         defaultAuthorizationValidator.validate(context, TestSimplePermissionCommand.class);
@@ -173,7 +177,7 @@ public class DefaultAuthorizationValidatorTest {
         // Given
         final Actor actor = initTestUser();
         final Context context = new DefaultContext();
-        doReturn(actor).when(authorizationSecurityManager).getActor(context);
+        doReturn(actor).when(authorizationStorage).getActor(context);
 
         // When
         defaultAuthorizationValidator.validate(context, TestRoleCommand.class);
@@ -184,7 +188,7 @@ public class DefaultAuthorizationValidatorTest {
         // Given
         final Actor actor = initTestUser();
         final Context context = new DefaultContext();
-        doReturn(actor).when(authorizationSecurityManager).getActor(context);
+        doReturn(actor).when(authorizationStorage).getActor(context);
 
         // When
         defaultAuthorizationValidator.validate(context, TestPermissionCommand.class);
@@ -193,13 +197,13 @@ public class DefaultAuthorizationValidatorTest {
     // ------------------------------------------------------------------------
 
     private User initTestUser(){
-        final User actor = new User();
+        final User actor = new User("Kasper", "Robert");
         final String roleStr = "Robert";
         final String perm = "perm5";
 
         final Role role = new Role(roleStr);
 
-        final Permission permission = new WildcardPermission(perm);
+        final WildcardPermission permission = new WildcardPermission(perm);
         role.add(permission);
 
         final List<Role> roles = new ArrayList<>();

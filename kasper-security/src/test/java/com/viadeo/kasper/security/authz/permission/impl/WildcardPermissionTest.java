@@ -28,6 +28,7 @@
 
 package com.viadeo.kasper.security.authz.permission.impl;
 
+import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 import org.junit.Test;
 
 import static org.junit.Assert.assertFalse;
