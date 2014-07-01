@@ -40,25 +40,25 @@ public interface AuthorizationStorage {
 
     public Role removePermissionFromRole(final Role_has_Permission role_has_permission);
 
-    public void addPermissionToUser(final User_has_Permission user_has_Permission);
+    public User addPermissionToUser(final User_has_Permission user_has_Permission);
 
-    public void removePermissionFromUser(final User_has_Permission user_has_Permission);
+    public User removePermissionFromUser(final User_has_Permission user_has_Permission);
 
-    public void addPermissionToGroup(final Group_has_Permission group_has_permission);
+    public Group addPermissionToGroup(final Group_has_Permission group_has_permission);
 
-    public void removePermissionFromGroup(final Group_has_Permission group_has_permission);
+    public Group removePermissionFromGroup(final Group_has_Permission group_has_permission);
 
-    public void addRoleToUser(final User_has_Role user_has_role);
+    public User addRoleToUser(final User_has_Role user_has_role);
 
-    public void removeRoleFromUser(final User_has_Role user_has_role);
+    public User removeRoleFromUser(final User_has_Role user_has_role);
 
     public Group addRoleToGroup(final Group_has_Role group_has_role);
 
-    public void removeRoleFromGroup(final Group_has_Role group_has_role);
+    public Group removeRoleFromGroup(final Group_has_Role group_has_role);
 
-    public void addUserToGroup(final Group_has_User group_has_user);
+    public Group addUserToGroup(final Group_has_User group_has_user);
 
-    public void removeUserFromGroup(final Group_has_User group_has_user);
+    public Group removeUserFromGroup(final Group_has_User group_has_user);
 
     /************************************* gets ****************************/
 
