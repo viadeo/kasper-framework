@@ -18,7 +18,7 @@ public interface AuthorizationStorage {
 
     /********************************* Backoffice methods ***********************************/
 
-    public void createPermission(final WildcardPermission permission);
+    public WildcardPermission createPermission(final WildcardPermission permission);
 
     public void deletePermission(final WildcardPermission permission);
 
@@ -64,7 +64,7 @@ public interface AuthorizationStorage {
 
     public WildcardPermission getPermission(final KasperID kasperID);
 
-    public List<Permission> getAllPermissions();
+    public List<WildcardPermission> getAllPermissions();
 
     public Role getRole(final KasperID kasperID);
 

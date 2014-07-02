@@ -37,7 +37,7 @@ public class PermissionRepository extends Repository<WildcardPermission> {
         authorizationStorage.deletePermission(aggregate);
     }
 
-    public List<Permission> getAllPermissions(){
+    public List<WildcardPermission> getAllPermissions(){
         return authorizationStorage.getAllPermissions();
     }
 }

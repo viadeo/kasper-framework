@@ -23,7 +23,7 @@ public class GetGroupsHavingPermissionQueryHandler extends QueryHandler<GetGroup
     }
 
     public QueryResponse<GroupsResult> retrieve(final QueryMessage<GetGroupsHavingPermissionQuery> message) {
-        final List<Group> groups = this.authorizationStorage.getGroupsHavingRole(message.getQuery().getPermissionId());
+        final List<Group> groups = this.authorizationStorage.getGroupsHavingPermission(message.getQuery().getPermissionId());
         return QueryResponse.of(new GroupsResult(GroupResult.getGroupResults(groups)));
     }
 }

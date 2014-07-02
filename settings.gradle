@@ -9,6 +9,5 @@ include ':kasper-api',
         ':kasper-common', 
         ':kasper-test',
         ':kasper-documentation',
-        ':kasper-security',
-        ':kasper-security-authorization'
+        ':kasper-security'
 
