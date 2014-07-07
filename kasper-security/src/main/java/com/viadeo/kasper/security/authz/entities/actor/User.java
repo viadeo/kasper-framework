@@ -77,4 +77,15 @@ public class User extends Actor {
     public String getLastName() {
         return lastName;
     }
+
+    public boolean equals(final Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o instanceof User) {
+            final User sr = (User) o;
+            return (getEntityId() != null ? getEntityId().equals(sr.getEntityId()) : sr.getEntityId() == null);
+        }
+        return false;
+    }
 }

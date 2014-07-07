@@ -34,7 +34,7 @@ public class Group_has_Role extends Relation<Group, Role> {
     }
 
     @EventHandler
-    protected void onDeleted(final RoleAddedToGroupEvent event) {
+    protected void onDeleted(final RoleRemovedFromGroupEvent event) {
         this.markDeleted();
     }
 

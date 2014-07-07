@@ -34,7 +34,7 @@ public class Group_has_Permission extends Relation<Group, WildcardPermission> {
     }
 
     @EventHandler
-    protected void onDeleted(final PermissionAddedToGroupEvent event) {
+    protected void onDeleted(final PermissionRemovedFromGroupEvent event) {
         this.markDeleted();
     }
 

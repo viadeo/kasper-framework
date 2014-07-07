@@ -34,7 +34,7 @@ public class Group_has_User extends Relation<Group, User> {
     }
 
     @EventHandler
-    protected void onDeleted(final AuthorizationUserAddedToGroupEvent event) {
+    protected void onDeleted(final AuthorizationUserRemovedFromGroupEvent event) {
         this.markDeleted();
     }
 

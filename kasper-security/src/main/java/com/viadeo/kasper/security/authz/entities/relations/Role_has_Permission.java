@@ -34,7 +34,7 @@ public class Role_has_Permission extends Relation<Role, WildcardPermission> {
     }
 
     @EventHandler
-    protected void onDeleted(final PermissionAddedToRoleEvent event) {
+    public void onDeleted(final PermissionRemovedFromRoleEvent event) {
         this.markDeleted();
     }
 

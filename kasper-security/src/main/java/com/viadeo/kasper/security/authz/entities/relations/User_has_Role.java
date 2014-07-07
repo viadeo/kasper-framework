@@ -34,7 +34,7 @@ public class User_has_Role extends Relation<User, Role> {
     }
 
     @EventHandler
-    protected void onDeleted(final RoleAddedToUserEvent event) {
+    protected void onDeleted(final RoleRemovedFromUserEvent event) {
         this.markDeleted();
     }
 

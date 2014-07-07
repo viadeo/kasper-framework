@@ -29,11 +29,11 @@ public class Group extends Actor {
 
     // ------------------------------------------------------------------------
 
-    public Group(final String name){
+    public Group(final String name) {
         apply(new AuthorizationGroupCreatedEvent(new DefaultKasperId(), name));
     }
 
-    public Group(final KasperID kasperID, final String name){
+    public Group(final KasperID kasperID, final String name) {
         apply(new AuthorizationGroupCreatedEvent(kasperID, name));
     }
 
@@ -89,11 +89,22 @@ public class Group extends Actor {
         this.users = checkNotNull(users);
     }
 
-    public void addUser(final User user){
+    public void addUser(final User user) {
         users.add(checkNotNull(user));
     }
 
-    public void removeUser(final User user){
+    public void removeUser(final User user) {
         users.remove(checkNotNull(user));
+    }
+
+    public boolean equals(final Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (o instanceof Group) {
+            final Group sr = (Group) o;
+            return (getEntityId() != null ? getEntityId().equals(sr.getEntityId()) : sr.getEntityId() == null);
+        }
+        return false;
     }
 }
