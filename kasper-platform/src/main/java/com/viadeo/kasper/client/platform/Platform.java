@@ -96,7 +96,7 @@ public interface Platform {
         private DomainHelper domainHelper;
         private KasperEventBus eventBus;
         private KasperCommandGateway commandGateway;
-        private KasperQueryGateway queryGateway;
+        private QueryGateway queryGateway;
         private Config configuration;
         private RepositoryManager repositoryManager;
         private MetricRegistry metricRegistry;
