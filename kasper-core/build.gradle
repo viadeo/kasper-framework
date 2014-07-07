@@ -13,6 +13,11 @@ dependencies {
     compile project(':kasper-common')
 
     // Third party dependencies
+    compile('com.netflix.hystrix:hystrix-core:1.3.16') {
+        exclude module: 'commons-logging'
+    }
+    compile 'com.netflix.hystrix:hystrix-codahale-metrics-publisher:1.3.16'
+
     compile libraries.REFLECTIONS
     compile libraries.SPRING_CONTEXT
     compile libraries.AXON_CORE

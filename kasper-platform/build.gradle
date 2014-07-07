@@ -13,7 +13,8 @@ dependencies {
 
     // Third perty dependencies
     compile libraries.TYPESAFE_CONFIG
-    
+
     testCompile libraries.JUNIT
     testCompile libraries.MOCKITO
+    testCompile libraries.HIBERNATE_VALIDATOR
 }
