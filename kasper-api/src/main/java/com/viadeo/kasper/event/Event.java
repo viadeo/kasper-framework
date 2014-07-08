@@ -22,12 +22,12 @@ public abstract class Event implements IEvent {
      * Optional Unit Of Work macro event parent id
      * ( set during uow commit() )
      */
-    private String uowEventId;
+    private transient String uowEventId;
 
     /**
      * Event type, can be set by the repository before persisting
      */
-    private PersistencyType type = PersistencyType.UNKNOWN;
+    private transient PersistencyType persistencyType = PersistencyType.UNKNOWN;
 
     // ------------------------------------------------------------------------
 
@@ -40,11 +40,11 @@ public abstract class Event implements IEvent {
     // ------------------------------------------------------------------------
 
     public void setPersistencyType(final PersistencyType type) {
-        this.type = checkNotNull(type);
+        this.persistencyType = checkNotNull(type);
     }
 
     public PersistencyType getPersistencyType() {
-        return this.type;
+        return this.persistencyType;
     }
 
     // ------------------------------------------------------------------------
@@ -79,7 +79,7 @@ public abstract class Event implements IEvent {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .addValue(this.type)
+                .addValue(this.persistencyType)
                 .toString();
     }
 
