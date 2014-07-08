@@ -2,7 +2,6 @@
 
 ## Snapshot 0.7-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7-SNAPSHOT~~))###
 
-* [Pull 221](https://github.com/viadeo/kasper-framework/pull/221) Add authentication's CoreReasonCodes
 * [Pull 214](https://github.com/viadeo/kasper-framework/pull/214) Reduce log level of DomainHelper to debug 
 * [Pull 205](https://github.com/viadeo/kasper-framework/pull/205) Use ObjectMapper implementation to ser/deser query
 * [Pull 201](https://github.com/viadeo/kasper-framework/pull/201) Provide a deserializer of enum allowing to manage with unsensitive case
@@ -14,8 +13,15 @@
 * [Pull 207](https://github.com/viadeo/kasper-framework/pull/207) Expose the kasper version :
   - set as attribute in the header when we use the kasper client
   - set in the MDC wen we process an HTTP request in the exposition layer
-* Set 'uowEventId' and 'persistencyType' as transient fields in Event
 
+
+### Version 0.6.5 (08/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.5~~))###
+
+* [Pull 221](https://github.com/viadeo/kasper-framework/pull/221) Add authentication's CoreReasonCodes
+* Remove 'println' during the shutdown the event bus
+* Call shutdown on publication handlers
+* Set 'uowEventId' and 'persistencyType' as transient fields in Event
+ 
 
 ### Version 0.6.4 (06/04/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.4~~))###
 * [Improvement] Enrich light documentation with aliases
