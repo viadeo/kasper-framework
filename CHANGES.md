@@ -15,6 +15,14 @@
   - set in the MDC wen we process an HTTP request in the exposition layer
 
 
+### Version 0.6.5 (08/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.5~~))###
+
+* [Pull 221](https://github.com/viadeo/kasper-framework/pull/221) Add authentication's CoreReasonCodes
+* Remove 'println' during the shutdown the event bus
+* Call shutdown on publication handlers
+* Set 'uowEventId' and 'persistencyType' as transient fields in Event
+ 
+
 ### Version 0.6.4 (06/04/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.4~~))###
 * [Improvement] Enrich light documentation with aliases
 
