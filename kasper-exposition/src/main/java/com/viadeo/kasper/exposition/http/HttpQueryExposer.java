@@ -22,6 +22,7 @@ import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.exposition.alias.AliasRegistry;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
 import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
+import com.viadeo.kasper.security.annotation.XKasperPublic;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.springframework.http.MediaType;
 
@@ -155,12 +156,13 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
         final String queryPath = queryToPath(queryClass);
         final List<String> aliases = AliasRegistry.aliasesFrom(queryClass);
         final String queryName = queryClass.getSimpleName();
+        final String isPublicResource = queryClass.getAnnotation(XKasperPublic.class) != null ? "public " : "";
 
-        LOGGER.info("-> Exposing query[{}] at path[/{}]", queryName,
+        LOGGER.info("-> Exposing " + isPublicResource + "query[{}] at path[/{}]", queryName,
                     getServletContext().getContextPath() + queryPath);
 
         for (final String alias : aliases) {
-            LOGGER.info("-> Exposing query[{}] at path[/{}]",
+            LOGGER.info("-> Exposing " + isPublicResource + "query[{}] at path[/{}]",
                     queryName,
                     getServletContext().getContextPath() + alias);
         }

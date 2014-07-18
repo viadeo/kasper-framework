@@ -54,6 +54,8 @@ The following annotations are currently used by the framework :
 - XKasperEvent
 - XKasperQuery
 - XKasperPublic
+- XKasperRequirePermissions
+- XKasperRequireRoles
 
 Some are mandatory (**here in bold**) for discovery and registering, other are optional, for adding metadata to your components.
 

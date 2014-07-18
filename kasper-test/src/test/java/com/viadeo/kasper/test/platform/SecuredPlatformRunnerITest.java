@@ -21,7 +21,7 @@ import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.security.SecurityConfiguration;
+import com.viadeo.kasper.security.configuration.SecurityConfiguration;
 import com.viadeo.kasper.security.annotation.XKasperPublic;
 import com.viadeo.kasper.security.callback.ApplicationIdValidator;
 import com.viadeo.kasper.security.callback.IdentityContextProvider;

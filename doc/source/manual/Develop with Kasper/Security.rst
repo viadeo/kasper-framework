@@ -10,5 +10,6 @@ Those needs are :
    - IdentityContextProvider to set the user informations in the context
    - ApplicationIdValidator to check the applicationId
    - IpAddressValidator to check the ip address
+   - AuthorizationValidator to check accesses to resource
 
 These callbacks are called before query and command requests.
