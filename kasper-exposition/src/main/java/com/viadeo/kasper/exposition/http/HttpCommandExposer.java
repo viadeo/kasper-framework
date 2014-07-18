@@ -41,7 +41,7 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
 
     private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
 
-    private final transient List<ExposureDescriptor<Command,CommandHandler>> descriptors;
+    private final transient List<ExposureDescriptor<Command, CommandHandler>> descriptors;
     private final transient CommandGateway commandGateway;
 
     private final transient ObjectToHttpServletResponse objectToHttpResponse;
@@ -50,19 +50,19 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
     // ------------------------------------------------------------------------
 
     public HttpCommandExposer(final Platform platform,
-                              final List<ExposureDescriptor<Command,CommandHandler>> descriptors) {
+                              final List<ExposureDescriptor<Command, CommandHandler>> descriptors) {
         this(
-                platform.getCommandGateway(),
-                platform.getMeta(),
-                descriptors,
-                new HttpContextDeserializer(),
-                ObjectMapperProvider.INSTANCE.mapper()
+            platform.getCommandGateway(),
+            platform.getMeta(),
+            descriptors,
+            new HttpContextDeserializer(),
+            ObjectMapperProvider.INSTANCE.mapper()
         );
     }
 
     public HttpCommandExposer(final CommandGateway commandGateway,
                               final Meta meta,
-                              final List<ExposureDescriptor<Command,CommandHandler>> descriptors,
+                              final List<ExposureDescriptor<Command, CommandHandler>> descriptors,
                               final HttpContextDeserializer contextDeserializer,
                               final ObjectMapper mapper) {
         super(contextDeserializer, meta);
@@ -80,7 +80,7 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
     public void init() throws ServletException {
         LOGGER.info("=============== Exposing commands ===============");
 
-        for (final ExposureDescriptor<Command,CommandHandler> descriptor : descriptors) {
+        for (final ExposureDescriptor<Command, CommandHandler> descriptor : descriptors) {
             expose(descriptor);
         }
 
@@ -131,10 +131,10 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
     @Override
     protected void checkMediaType(final HttpServletRequest httpRequest) throws HttpExposerException {
         if ((null == httpRequest.getContentType())
-                || ( ! httpRequest.getContentType().contains(MediaType.APPLICATION_JSON_VALUE))) {
+                || (!httpRequest.getContentType().contains(MediaType.APPLICATION_JSON_VALUE))) {
             throw new HttpExposerException(
-                    CoreReasonCode.UNSUPPORTED_MEDIA_TYPE,
-                    "Accepting and producing only " + MediaType.APPLICATION_JSON_VALUE
+                CoreReasonCode.UNSUPPORTED_MEDIA_TYPE,
+                "Accepting and producing only " + MediaType.APPLICATION_JSON_VALUE
             );
         }
     }
@@ -154,8 +154,8 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
 
     // ------------------------------------------------------------------------
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    HttpExposer expose(final ExposureDescriptor<Command,CommandHandler> descriptor) {
+    @SuppressWarnings({"rawtypes", "unchecked"})
+    HttpExposer expose(final ExposureDescriptor<Command, CommandHandler> descriptor) {
         checkNotNull(descriptor);
 
         final TypeToken<? extends CommandHandler> typeToken = TypeToken.of(descriptor.getHandler());
@@ -170,14 +170,14 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
         final String commandName = commandClass.getSimpleName();
 
         LOGGER.info("-> Exposing command[{}] at path[/{}]",
-                commandName,
-                getServletContext().getContextPath() + commandPath
+            commandName,
+            getServletContext().getContextPath() + commandPath
         );
 
         for (final String alias : aliases) {
             LOGGER.info("-> Exposing command[{}] at path[/{}]",
-                    commandName,
-                    getServletContext().getContextPath() + alias
+                commandName,
+                getServletContext().getContextPath() + alias
             );
         }
 
