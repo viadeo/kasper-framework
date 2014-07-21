@@ -8,11 +8,11 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
@@ -135,7 +135,7 @@ public class KasperCommandGateway implements CommandGateway {
 
             // if hystrixEnable=true (system property)
             if (HystrixGateway.isActivated()) {
-                this.commandGateway = new HystrixCommandGateway(commandGateway);
+                this.commandGateway = new HystrixCommandGateway(commandGateway, KasperMetrics.getMetricRegistry());
             } else {
                 this.commandGateway = commandGateway;
             }

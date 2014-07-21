@@ -1,5 +1,6 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
+import com.codahale.metrics.MetricRegistry;
 import com.netflix.hystrix.HystrixCommand;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.context.Context;
@@ -31,7 +32,8 @@ public class HystrixQueryGateway extends HystrixGateway implements QueryGateway{
 
     private final QueryGateway queryGateway;
 
-    public HystrixQueryGateway(QueryGateway queryGateway) {
+    public HystrixQueryGateway(QueryGateway queryGateway, MetricRegistry metricRegistry) {
+        super(metricRegistry);
         this.queryGateway = queryGateway;
     }
 

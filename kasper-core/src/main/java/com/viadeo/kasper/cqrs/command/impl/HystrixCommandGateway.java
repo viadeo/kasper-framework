@@ -1,14 +1,15 @@
 package com.viadeo.kasper.cqrs.command.impl;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.Futures;
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.resilience.HystrixCommandWithExceptionPolicy;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.resilience.HystrixCommandWithExceptionPolicy;
 import com.viadeo.kasper.resilience.HystrixGateway;
 import com.viadeo.kasper.resilience.HystrixHelper;
 import org.axonframework.common.annotation.MetaData;
@@ -18,7 +19,6 @@ import org.slf4j.LoggerFactory;
 import javax.validation.constraints.NotNull;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicLong;
 
 
 /**
@@ -51,7 +51,8 @@ public class HystrixCommandGateway extends HystrixGateway implements CommandGate
 
     private final CommandGateway commandGateway;
 
-    public HystrixCommandGateway(CommandGateway commandGateway) {
+    public HystrixCommandGateway(CommandGateway commandGateway, MetricRegistry metricRegistry) {
+        super(metricRegistry);
         this.commandGateway = commandGateway;
     }
 

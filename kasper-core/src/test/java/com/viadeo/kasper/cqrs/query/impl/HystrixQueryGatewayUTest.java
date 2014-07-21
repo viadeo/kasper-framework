@@ -1,5 +1,6 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
+import com.codahale.metrics.MetricRegistry;
 import com.netflix.hystrix.exception.HystrixBadRequestException;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
@@ -19,7 +20,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class HystrixQueryGatewayUTest {
@@ -32,7 +32,7 @@ public class HystrixQueryGatewayUTest {
     @Before
     public void init() {
         queryGateway = mock(QueryGateway.class);
-        hystrixQueryGateway = new HystrixQueryGateway(queryGateway);
+        hystrixQueryGateway = new HystrixQueryGateway(queryGateway, new MetricRegistry());
         query = mock(Query.class);
         context = mock(Context.class);
     }
