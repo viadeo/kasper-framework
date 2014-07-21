@@ -1,5 +1,6 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
+import com.codahale.metrics.MetricRegistry;
 import com.netflix.hystrix.exception.HystrixBadRequestException;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
@@ -32,7 +33,7 @@ public class HystrixQueryGatewayUTest {
     @Before
     public void init() {
         queryGateway = mock(QueryGateway.class);
-        hystrixQueryGateway = new HystrixQueryGateway(queryGateway);
+        hystrixQueryGateway = new HystrixQueryGateway(queryGateway, new MetricRegistry());
         query = mock(Query.class);
         context = mock(Context.class);
     }

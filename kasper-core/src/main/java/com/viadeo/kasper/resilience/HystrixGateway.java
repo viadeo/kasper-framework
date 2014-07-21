@@ -5,7 +5,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
 import com.netflix.hystrix.contrib.codahalemetricspublisher.HystrixCodaHaleMetricsPublisher;
 import com.netflix.hystrix.strategy.HystrixPlugins;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +29,9 @@ public abstract class HystrixGateway {
     /**
      * Register metrics on object creation
      */
-    protected HystrixGateway() {
+    protected HystrixGateway(MetricRegistry metricRegistry) {
         // register metrics plugin
-        registerMetricPlugin();
+        registerMetricPlugin(metricRegistry);
     }
 
     /**
@@ -62,7 +61,7 @@ public abstract class HystrixGateway {
      * If true, log message to show activation (removed later)<br>
      * @return true if activated, false otherwise
      */
-    public static final boolean isActivated() {
+    public static boolean isActivated() {
         if ( "true".equals(System.getProperty(SYSTEM_PROPERTY_HYSTRIX_ENABLE)) ) {
             logActivation();
             return true;
@@ -71,10 +70,9 @@ public abstract class HystrixGateway {
     }
 
     @VisibleForTesting
-    static final synchronized void registerMetricPlugin() {
-        if (metricNotInitialized) {
+    static synchronized void registerMetricPlugin(MetricRegistry metricRegistry) {
+        if (metricNotInitialized && metricRegistry != null) {
             try {
-                MetricRegistry metricRegistry = KasperMetrics.getMetricRegistry();
                 HystrixPlugins.getInstance().registerMetricsPublisher(new HystrixCodaHaleMetricsPublisher(metricRegistry));
                 metricNotInitialized = false;
             } catch (IllegalStateException e) {

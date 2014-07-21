@@ -21,6 +21,7 @@ import org.joda.money.CurrencyUnit;
 import org.joda.money.Money;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -319,6 +320,7 @@ public class ObjectMapperProviderTest {
         assertEquals((Integer)42, actual.getValue());
     }
 
+    @Ignore("waiting for EnumLowerModule")
     @Test
     public void deserializeEnum_withUpperCase() throws IOException {
         // Given
@@ -332,6 +334,7 @@ public class ObjectMapperProviderTest {
         assertEquals(AnEnum.VAL_3, actual.anEnum);
     }
 
+    @Ignore("waiting for EnumLowerModule")
     @Test
     public void deserializeEnum_withLowerCase() throws IOException {
         // Given
