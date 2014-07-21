@@ -31,7 +31,7 @@ public abstract class HystrixGateway {
      */
     protected HystrixGateway(MetricRegistry metricRegistry) {
         // register metrics plugin
-        registerMetricPlugin(metricRegistry);
+        registerMetricPlugin(metricRegistry, HystrixPlugins.getInstance());
     }
 
     /**
@@ -70,10 +70,10 @@ public abstract class HystrixGateway {
     }
 
     @VisibleForTesting
-    static synchronized void registerMetricPlugin(MetricRegistry metricRegistry) {
+    static synchronized void registerMetricPlugin(MetricRegistry metricRegistry, HystrixPlugins hystrixPlugins) {
         if (metricNotInitialized && metricRegistry != null) {
             try {
-                HystrixPlugins.getInstance().registerMetricsPublisher(new HystrixCodaHaleMetricsPublisher(metricRegistry));
+                hystrixPlugins.registerMetricsPublisher(new HystrixCodaHaleMetricsPublisher(metricRegistry));
                 metricNotInitialized = false;
             } catch (IllegalStateException e) {
                 LOGGER.error("metrics will not be available for hystrix gateway", e);
