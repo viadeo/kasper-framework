@@ -11,29 +11,20 @@ Example:
 
 ![hystrix command gateway](img/hystrix-command-gateway.png)
 
-_KasperCommandGateway.java_ :
-
-    final CommandGateway commandGateway = checkNotNull(commandGatewayFactoryBean.getObject()); // retrieve axon proxy
-    
-    // if hystrixEnable=true (system property)
-    if (HystrixGateway.isActivated()) {
-        this.commandGateway = new HystrixCommandGateway(commandGateway);
-    } else {
-        this.commandGateway = commandGateway;
-    }
-
 ## On query side
 
 ![hystrix query gateway](img/hystrix-query-gateway.png)
 
+## Activation in Kasper platform
 
 _KasperPlatformConfiguration.java_: 
 
-    // if hystrixEnable=true (system property)
     if (HystrixGateway.isActivated()) {
-        this.queryGateway =  new HystrixQueryGateway(new KasperQueryGateway());
+        this.queryGateway =  new HystrixQueryGateway(new KasperQueryGateway(), metricRegistry);
+        this.commandGateway = new HystrixCommandGateway(new KasperCommandGateway(commandBus), metricRegistry);
     } else {
         this.queryGateway = new KasperQueryGateway();
+        this.commandGateway = new KasperCommandGateway(commandBus);
     }
 
 ## Class diagram
