@@ -12,6 +12,7 @@ public class HystrixGatewayUTest {
     public void testRegisterMetrics_should_not_throws_exception() throws Exception {
 
         // nothing is initialized
+        HystrixGateway.metricNotInitialized = true;
         HystrixGateway.registerMetricPlugin(null);
         assertTrue(HystrixGateway.metricNotInitialized);
 
