@@ -6,8 +6,10 @@ import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandProperties;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.resilience.HystrixCommandWithExceptionPolicy;
 import com.viadeo.kasper.resilience.HystrixGateway;
@@ -172,4 +174,13 @@ public class HystrixCommandGateway extends HystrixGateway implements CommandGate
         return commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
     }
 
+    @Override
+    public void register(CommandHandler commandHandler) {
+        commandGateway.register(commandHandler);
+    }
+
+    @Override
+    public void register(CommandInterceptorFactory interceptorFactory) {
+        commandGateway.register(interceptorFactory);
+    }
 }

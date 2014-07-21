@@ -8,11 +8,10 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
-import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
-import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
@@ -21,7 +20,6 @@ import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandHandlerInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.interceptor.KasperCommandInterceptor;
 import com.viadeo.kasper.exception.KasperException;
-import com.viadeo.kasper.resilience.HystrixGateway;
 import org.axonframework.commandhandling.CommandDispatchInterceptor;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
@@ -131,14 +129,7 @@ public class KasperCommandGateway implements CommandGateway {
         }
 
         try {
-            final CommandGateway commandGateway = checkNotNull(commandGatewayFactoryBean.getObject()); // retrieve axon proxy
-
-            // if hystrixEnable=true (system property)
-            if (HystrixGateway.isActivated()) {
-                this.commandGateway = new HystrixCommandGateway(commandGateway, KasperMetrics.getMetricRegistry());
-            } else {
-                this.commandGateway = commandGateway;
-            }
+            this.commandGateway = checkNotNull(commandGatewayFactoryBean.getObject()); // retrieve axon proxy
         } catch (final Exception e) {
             throw new KasperException("Unable to initialize the Command Gateway", e);
         }
@@ -226,11 +217,7 @@ public class KasperCommandGateway implements CommandGateway {
 
     // ------------------------------------------------------------------------
 
-    /**
-     * Register a command handler to the gateway
-     *
-     * @param commandHandler the command handler to be registered
-     */
+    @Override
     public void register(final CommandHandler commandHandler) {
 
         domainLocator.registerHandler(checkNotNull(commandHandler));
@@ -262,7 +249,8 @@ public class KasperCommandGateway implements CommandGateway {
      *
      * @param interceptorFactory the query interceptor factory to register
      */
-    public void register(final InterceptorFactory interceptorFactory) {
+    @Override
+    public void register(final CommandInterceptorFactory interceptorFactory) {
         checkNotNull(interceptorFactory);
         LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
 

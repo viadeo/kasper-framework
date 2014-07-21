@@ -7,6 +7,7 @@
 package com.viadeo.kasper.cqrs.command;
 
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import org.axonframework.commandhandling.gateway.Timeout;
 import org.axonframework.common.annotation.MetaData;
 
@@ -129,5 +130,19 @@ public interface CommandGateway {
     @Timeout(value = DEFAULT_TIMEOUT_SEC, unit = TimeUnit.SECONDS)
     CommandResponse sendCommandAndWaitForAResponseWithException(@NotNull Command command, @MetaData(Context.METANAME) Context context)
             throws Exception;
+
+    /**
+     * Register a command handler to the gateway
+     *
+     * @param commandHandler the command handler to be registered
+     */
+    void register(final CommandHandler commandHandler);
+
+    /**
+     * Register an interceptor factory to the gateway
+     *
+     * @param interceptorFactory the query interceptor factory to register
+     */
+    void register(final CommandInterceptorFactory interceptorFactory);
 
 }
