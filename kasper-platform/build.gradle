@@ -13,4 +13,6 @@ dependencies {
 
     // Third perty dependencies
     compile libraries.TYPESAFE_CONFIG
+
+    testCompile libraries.HIBERNATE_VALIDATOR
 }

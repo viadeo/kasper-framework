@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.netflix.hystrix.exception.HystrixBadRequestException;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperResponse;
 import com.viadeo.kasper.client.platform.Meta;
@@ -103,7 +104,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                                    final HttpServletResponse httpResponse) throws IOException {
 
         INPUT input = null;
-        RESPONSE response;
+        RESPONSE response = null;
 
         /* 0) Create a request correlation id */
         final UUID kasperCorrelationUUID = UUID.randomUUID();
@@ -134,6 +135,12 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             );
 
             return;
+
+        } catch (final HystrixBadRequestException invalidInputException) {
+            // bean validation exception
+            if (invalidInputException.getCause() instanceof JSR303ViolationException) {
+                throw (JSR303ViolationException) invalidInputException.getCause();
+            }
 
         } catch (final JSR303ViolationException validationException) {
 

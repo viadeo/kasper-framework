@@ -15,15 +15,19 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.cqrs.command.impl.HystrixCommandGateway;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandBus;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandSecurityInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandValidationInterceptorFactory;
+import com.viadeo.kasper.cqrs.query.QueryGateway;
+import com.viadeo.kasper.cqrs.query.impl.HystrixQueryGateway;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QuerySecurityInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryValidationInterceptorFactory;
+import com.viadeo.kasper.resilience.HystrixGateway;
 import com.viadeo.kasper.security.SecurityConfiguration;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
@@ -41,7 +45,7 @@ import static com.viadeo.kasper.client.platform.components.eventbus.KasperEventB
 public class KasperPlatformConfiguration implements PlatformConfiguration {
 
     private final KasperEventBus eventBus;
-    private final KasperQueryGateway queryGateway;
+    private final QueryGateway queryGateway;
     private final MetricRegistry metricRegistry;
     private final Config configuration;
     private final KasperCommandGateway commandGateway;
@@ -57,7 +61,12 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
 
     public KasperPlatformConfiguration(SecurityConfiguration securityConfiguration) {
         this.eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
-        this.queryGateway = new KasperQueryGateway();
+        // if hystrixEnable=true (system property)
+        if (HystrixGateway.isActivated()) {
+            this.queryGateway =  new HystrixQueryGateway(new KasperQueryGateway());
+        } else {
+            this.queryGateway = new KasperQueryGateway();
+        }
         this.metricRegistry = new MetricRegistry();
         this.extraComponents = Maps.newHashMap();
         this.configuration = ConfigFactory.empty();
@@ -94,7 +103,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     }
 
     @Override
-    public KasperQueryGateway queryGateway() {
+    public QueryGateway queryGateway() {
         return queryGateway;
     }
 
