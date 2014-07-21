@@ -11,7 +11,7 @@ import com.typesafe.config.Config;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
+import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 
 import java.util.List;
@@ -33,7 +33,7 @@ public interface PlatformConfiguration {
     /**
      * @return the command gateway
      */
-    KasperCommandGateway commandGateway();
+    CommandGateway commandGateway();
 
     /**
      * @return the query gateway
