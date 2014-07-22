@@ -19,7 +19,7 @@ public class HystrixGatewayUTest {
         // reset flag
         HystrixGateway.metricNotInitialized = true;
         MetricRegistry metricRegistry = new MetricRegistry();
-        HystrixPlugins hystrixPlugins = spy(HystrixPlugins.getInstance());
+        HystrixPlugins hystrixPlugins = mock(HystrixPlugins.class);
 
         // initialized a metric registry for kasper metric
         HystrixGateway.registerMetricPlugin(metricRegistry, hystrixPlugins);
