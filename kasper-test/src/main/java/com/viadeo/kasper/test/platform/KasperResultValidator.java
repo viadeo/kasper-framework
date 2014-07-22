@@ -29,7 +29,7 @@ public class KasperResultValidator implements ResultValidator {
     }
 
     @Override
-    public ResultValidator expectEventsMatching(final Matcher<List<?>> matcher) {
+    public ResultValidator expectEventsMatching(final Matcher<? extends Iterable<?>> matcher) {
         return delegate.expectEventsMatching(matcher);
     }
 
@@ -39,7 +39,7 @@ public class KasperResultValidator implements ResultValidator {
     }
 
     @Override
-    public ResultValidator expectPublishedEventsMatching(final Matcher<List<?>> matcher) {
+    public ResultValidator expectPublishedEventsMatching(final Matcher<? extends Iterable<?>> matcher) {
         return delegate.expectPublishedEventsMatching(matcher);
     }
 
@@ -49,7 +49,7 @@ public class KasperResultValidator implements ResultValidator {
     }
 
     @Override
-    public ResultValidator expectStoredEventsMatching(final Matcher<List<?>> matcher) {
+    public ResultValidator expectStoredEventsMatching(final Matcher<? extends Iterable<?>> matcher) {
         return delegate.expectStoredEventsMatching(matcher);
     }
 
