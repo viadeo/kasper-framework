@@ -18,8 +18,9 @@ Kasper is the Viadeo's new platform architecture, **this is the engine framework
 .. toctree::
    :maxdepth: 1
 
+
    getting-started
-   manual/index
+   guide/index
    
 .. raw:: html
 
