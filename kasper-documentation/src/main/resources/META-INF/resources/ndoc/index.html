@@ -297,23 +297,13 @@
 
           $("#contents > div").hide();
           $("#contents_home").show();
-
-          $('#home, .home, #brand').click(function() {
-            go_home();
-          });
-
-          $('#about').click(function() {
-            go_about();
-          });
-
-          $('#contact').click(function() {
-            go_contact();
-          });
         }
 
         function return_to_window_location_hash() {
           switch(window.location.hash) {
+            case '':
             case '#':
+            case '#home':
               go_home();
               break;
             case '#contact':
@@ -393,7 +383,8 @@
                     $("#contents_home .page tbody").append(template({ node: domain }))
 
                     $("#domain-" + domain.label + "-btn").click(function(){
-                      go_dyn(domain);
+                      //go_dyn(domain);
+                      window.location.hash = "#" + domain.label;
                     });
 
                     if(n == data.list.length - 1) {
@@ -485,8 +476,6 @@
               var level_up = level + 1;
               if (typeof query_results[query_result_name] !== 'undefined') {
                 res += get_tr(level_up, query_results[query_result_name].properties, keys, query_results);
-              } else {
-                console.log("level: " + level + ", query_result_name: " + query_result_name, query_results[query_result_name]);
               }
             }
           }
@@ -632,7 +621,6 @@
 
         /** DATA **/
         function get_search_raw(type, label, domain) {
-            console.log("raw", type, label, domain);
             return {
                 "type":type,
                 "label":label,
@@ -642,7 +630,6 @@
         }
 
         function get_search_raw(type, label, domain, alias) {
-            console.log("raw", type, label, domain, alias);
           return {
             "type":type,
             "label":label,
@@ -709,6 +696,10 @@
 
         /** END **/
 
+        window.onhashchange = function(e) {
+          return_to_window_location_hash();
+        }
+
         $(document).ready(function() {
           initialize_nav();
           load_templates();
@@ -729,7 +720,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a id="brand" class="navbar-brand" href="#">autodoc</a>
+          <a id="brand" class="navbar-brand" href="#home">autodoc</a>
         </div>
 
         <div class="navbar-collapse collapse">
@@ -745,7 +736,7 @@
           </div>
 
           <ul class="nav navbar-nav navbar-left">
-            <li class="active"><a id="home" href="#">Home</a></li>
+            <li class="active"><a id="home" href="#home">Home</a></li>
             <li><a id="about" href="#about">About</a></li>
             <li><a id="contact" href="#contact">Contact</a></li>
           </ul>
