@@ -166,9 +166,14 @@
           $( "#search" ).autocomplete({
               source: data,
               select: function( event, ui ) {
-                $("#search").val(ui.item.label);
+                if (ui.item.is_aliased) {
+                  $("#search").val(ui.item.alias);
+                } else {
+                  $("#search").val(ui.item.label);
+                }
                 $("#search_type").val(ui.item.type);
                 $("#search_domain").val(ui.item.domain);
+                $("#search_original").val(ui.item.label);
                 return false;
               }
             }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
@@ -177,6 +182,13 @@
               ul.id = "search-autocomplete";
               var prefix = '';
               var suffix = '';
+
+              if (item.alias) {
+                  prefix = '<span class="glyphicon glyphicon-tags"/>';
+                  return $( "<li>" )
+                          .append( '<a>' + prefix + item.alias + '</a>' )
+                          .appendTo( ul );
+              }
 
               if(item.type == "domain") {
                 prefix = '<span class="glyphicon glyphicon-unchecked"/>';
@@ -200,11 +212,12 @@
                 // Do something
                 var type = $("#search_type").get(0).value;
                 var domain = $("#search_domain").get(0).value;
+                var name = $("#search_original").get(0).value;
 
-                console.log("search", type, this.value, domain);
+                console.log("search", type, name, domain);
 
                 if(type != "domain") {
-                  go_dyn(nodes[domain], type + "_" + this.value);
+                  go_dyn(nodes[domain], type + "_" + name);
                 } else {
                   go_dyn(nodes[domain]);
                 }
@@ -619,10 +632,23 @@
 
         /** DATA **/
         function get_search_raw(type, label, domain) {
+            console.log("raw", type, label, domain);
+            return {
+                "type":type,
+                "label":label,
+                "domain":domain,
+                "is_aliased": false
+            };
+        }
+
+        function get_search_raw(type, label, domain, alias) {
+            console.log("raw", type, label, domain, alias);
           return {
             "type":type,
             "label":label,
-            "domain":domain
+            "domain":domain,
+            "alias":alias,
+            "is_aliased": true
           };
         }
 
@@ -633,14 +659,23 @@
 
           $.each(domain.commands, function(n, command) {
             data.push(get_search_raw("commands", command.label, domain.label));
+            $.each(command.aliases, function(n, alias) {
+              data.push(get_search_raw("commands", command.label, domain.label, alias));
+            });
           });
 
           $.each(domain.queries, function(n, query) {
             data.push(get_search_raw("queries", query.label, domain.label));
+            $.each(query.aliases, function(n, alias) {
+              data.push(get_search_raw("queries", query.label, domain.label, alias));
+            });
           });
 
           $.each(domain.events, function(n, c_event) {
             data.push(get_search_raw("events", c_event.label, domain.label));
+            $.each(c_event.aliases, function(n, alias) {
+              data.push(get_search_raw("events", c_event.label, domain.label, alias));
+            });
           });
 
           $.each(domain.concepts, function(n, concept) {
@@ -705,6 +740,7 @@
               <input id="search" class="form-control"/>
               <input id="search_type" type="hidden"/>
               <input id="search_domain" type="hidden"/>
+              <input id="search_original" type="hidden"/>
             </div>
           </div>
 
