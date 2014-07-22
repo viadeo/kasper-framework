@@ -32,6 +32,7 @@ import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.QueryEventListener;
 import org.junit.Test;
 
@@ -678,7 +679,8 @@ public class PlatformBuilderUTest {
                     Lists.<QueryHandlerDescriptor>newArrayList(),
                     Lists.<CommandHandlerDescriptor>newArrayList(),
                     Lists.<RepositoryDescriptor>newArrayList(),
-                    Lists.<EventListenerDescriptor>newArrayList()
+                    Lists.<EventListenerDescriptor>newArrayList(),
+                    Lists.<Class<? extends IEvent>>newArrayList()
                 )
         );
         return domainDescriptorFactory;
