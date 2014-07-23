@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.mgt.impl;
 
-import com.viadeo.kasper.security.authz.entities.actor.Actor;
 import com.viadeo.kasper.security.authz.entities.actor.User;
 import com.viadeo.kasper.security.authz.entities.permission.Permission;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
@@ -17,6 +16,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
@@ -25,7 +25,31 @@ public class DefaultAuthorizationSecurityManagerTest {
 
     private DefaultAuthorizationSecurityManager defaultAuthorizationSecurityManager;
 
-    private Actor actor = new User("Kasper", "User");
+    private class OpenUser extends User {
+        public OpenUser(String firstName, String lastName) {
+            super(firstName, lastName);
+        }
+        protected void _addRoles(final Collection<Role> roles) {
+            super.addRoles(roles);
+        }
+        protected void _setRoles(final List<Role> roles) {
+            super.setRoles(roles);
+        }
+        protected void _setPermissions(final List<WildcardPermission> permissions) {
+            super.setPermissions(permissions);
+        }
+    }
+
+    private class OpenRole extends Role {
+        public OpenRole(String name) {
+            super(name);
+        }
+        public void _add(WildcardPermission permission) {
+            super.add(permission);
+        }
+    }
+
+    private OpenUser actor = new OpenUser("Kasper", "User");
 
     // ------------------------------------------------------------------------
 
@@ -55,7 +79,7 @@ public class DefaultAuthorizationSecurityManagerTest {
         final WildcardPermission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
         final List<WildcardPermission> permissions = new ArrayList<WildcardPermission>();
         permissions.add(permission);
-        actor.setPermissions(permissions);
+        actor._setPermissions(permissions);
 
         // When
         defaultAuthorizationSecurityManager.checkPermission(perm, actor);
@@ -69,7 +93,7 @@ public class DefaultAuthorizationSecurityManagerTest {
         final WildcardPermission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
         final List<WildcardPermission> permissions = new ArrayList<WildcardPermission>();
         permissions.add(permission);
-        actor.setPermissions(permissions);
+        actor._setPermissions(permissions);
 
         // When
         defaultAuthorizationSecurityManager.checkPermission(wrongPerm, actor);
@@ -82,7 +106,7 @@ public class DefaultAuthorizationSecurityManagerTest {
         final Role role = new Role(roleStr);
         final List<Role> roles = new ArrayList<>();
         roles.add(role);
-        actor.setRoles(roles);
+        actor._setRoles(roles);
 
         // When
         defaultAuthorizationSecurityManager.checkRole(roleStr, actor);
@@ -93,12 +117,12 @@ public class DefaultAuthorizationSecurityManagerTest {
         // Given
         final String roleStr = "Robert";
         final String perm = "perm1";
-        final Role role = new Role(roleStr);
+        final OpenRole role = new OpenRole(roleStr);
         final WildcardPermission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
-        role.add(permission);
+        role._add(permission);
         final List<Role> roles = new ArrayList<>();
         roles.add(role);
-        actor.addRoles(roles);
+        actor._addRoles(roles);
 
         // When
         defaultAuthorizationSecurityManager.checkPermission(perm, actor);
@@ -112,7 +136,7 @@ public class DefaultAuthorizationSecurityManagerTest {
         final Role role = new Role(roleStr);
         final List<Role> roles = new ArrayList<>();
         roles.add(role);
-        actor.setRoles(roles);
+        actor._setRoles(roles);
 
         // When
         defaultAuthorizationSecurityManager.checkRole(wrongRoleStr, actor);
@@ -124,12 +148,12 @@ public class DefaultAuthorizationSecurityManagerTest {
         final String roleStr = "Robert";
         final String perm = "perm1";
         final String wrongPerm = "wrongperm1";
-        final Role role = new Role(roleStr);
+        final OpenRole role = new OpenRole(roleStr);
         final WildcardPermission permission = defaultAuthorizationSecurityManager.resolvePermission(perm);
-        role.add(permission);
+        role._add(permission);
         final List<Role> roles = new ArrayList<>();
         roles.add(role);
-        actor.addRoles(roles);
+        actor._addRoles(roles);
 
         // When
         defaultAuthorizationSecurityManager.checkPermission(wrongPerm, actor);

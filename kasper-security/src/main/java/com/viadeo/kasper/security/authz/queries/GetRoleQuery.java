@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.queries;
 
 import com.viadeo.kasper.KasperID;
@@ -9,11 +15,12 @@ public class GetRoleQuery implements Query {
 
     private final KasperID roleId;
 
-    public GetRoleQuery(KasperID roleId) {
+    public GetRoleQuery(final KasperID roleId) {
         this.roleId = roleId;
     }
 
     public KasperID getRoleId() {
         return roleId;
     }
+
 }

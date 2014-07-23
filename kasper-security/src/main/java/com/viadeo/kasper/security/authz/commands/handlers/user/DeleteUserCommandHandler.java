@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.commands.handlers.user;
 
 import com.viadeo.kasper.cqrs.command.CommandResponse;
@@ -13,8 +19,9 @@ public class DeleteUserCommandHandler extends EntityCommandHandler<DeleteUserCom
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<DeleteUserCommand> message) throws Exception {
-        User user = this.getRepository().business().get(message.getCommand().getId());
-        this.getRepository().add(user.delete());
+        final User user = this.getRepository().business().get(message.getCommand().getId());
+        user.delete();
         return CommandResponse.ok();
     }
+
 }

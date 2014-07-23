@@ -35,35 +35,42 @@ public abstract class AbstractPropertyDomainElement extends AbstractDomainElemen
         this.properties = new DocumentedBean(referenceClass);
         this.publicAccess = referenceClass.getAnnotation(XKasperPublic.class) != null;
 
+        // @XKasperRequireRoles
+        if (null != referenceClass.getAnnotation(XKasperRequireRoles.class)) {
+            final XKasperRequireRoles requireRoles = (XKasperRequireRoles)
+                    referenceClass.getAnnotation(XKasperRequireRoles.class);
 
-        if (referenceClass.getAnnotation(XKasperRequireRoles.class) != null) {
-            final XKasperRequireRoles requireRoles = (XKasperRequireRoles) referenceClass.getAnnotation(XKasperRequireRoles.class);
-            if(requireRoles.value() != null){
+            if (null != requireRoles.value()) {
                 this.roles = Lists.newArrayList(requireRoles.value());
-            }else{
+            } else {
                 this.roles = Lists.newArrayList();
             }
         } else {
             this.roles = Lists.newArrayList();
         }
 
-        if (referenceClass.getAnnotation(XKasperRequirePermissions.class) != null) {
-            final XKasperRequirePermissions requirePermissions = (XKasperRequirePermissions) referenceClass.getAnnotation(XKasperRequirePermissions.class);
-            if(requirePermissions.value() != null){
+        // @XKasperRequirePermissions
+        if (null != referenceClass.getAnnotation(XKasperRequirePermissions.class)) {
+            final XKasperRequirePermissions requirePermissions = (XKasperRequirePermissions)
+                    referenceClass.getAnnotation(XKasperRequirePermissions.class);
+
+            if (null != requirePermissions.value()){
                 this.permissions =  Lists.newArrayList(requirePermissions.value());
-            }else{
+            } else {
                 this.permissions = Lists.newArrayList();
             }
         } else {
             this.permissions = Lists.newArrayList();
         }
 
+        // @XKasperAlias
         final XKasperAlias annotation = (XKasperAlias) referenceClass.getAnnotation(XKasperAlias.class);
         if (null != annotation) {
             this.aliases = Lists.newArrayList(annotation.values());
         } else {
             this.aliases = Lists.newArrayList();
         }
+
     }
 
     // ------------------------------------------------------------------------
@@ -87,4 +94,5 @@ public abstract class AbstractPropertyDomainElement extends AbstractDomainElemen
     public List<String> getPermissions() {
         return permissions;
     }
+
 }

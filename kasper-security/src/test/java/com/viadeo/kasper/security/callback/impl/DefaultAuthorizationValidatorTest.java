@@ -15,7 +15,6 @@ import com.viadeo.kasper.security.annotation.XKasperRequirePermissions;
 import com.viadeo.kasper.security.annotation.XKasperRequireRoles;
 import com.viadeo.kasper.security.authz.entities.actor.Actor;
 import com.viadeo.kasper.security.authz.entities.actor.User;
-import com.viadeo.kasper.security.authz.entities.permission.Permission;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
 import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
@@ -23,7 +22,6 @@ import com.viadeo.kasper.security.authz.mgt.impl.DefaultAuthorizationSecurityMan
 import com.viadeo.kasper.security.authz.storage.AuthorizationStorage;
 import com.viadeo.kasper.security.exception.KasperSecurityException;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +29,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
@@ -77,6 +76,30 @@ public class DefaultAuthorizationValidatorTest {
     }
 
     DefaultAuthorizationValidator defaultAuthorizationValidator;
+
+    private class OpenUser extends User {
+        public OpenUser(String firstName, String lastName) {
+            super(firstName, lastName);
+        }
+        protected void _addRoles(final Collection<Role> roles) {
+            super.addRoles(roles);
+        }
+        protected void _setRoles(final List<Role> roles) {
+            super.setRoles(roles);
+        }
+        protected void _setPermissions(final List<WildcardPermission> permissions) {
+            super.setPermissions(permissions);
+        }
+    }
+
+    private class OpenRole extends Role {
+        public OpenRole(String name) {
+            super(name);
+        }
+        public void _add(WildcardPermission permission) {
+            super.add(permission);
+        }
+    }
 
     // ------------------------------------------------------------------------
 
@@ -162,9 +185,9 @@ public class DefaultAuthorizationValidatorTest {
     @Test
     public void test_validate_withGoodSubjectAndGoodPermission_shouldGoThrough() throws KasperSecurityException{
         // Given
-        final Actor actor = initTestUser();
-        actor.setPermissions(actor.getRoles().get(0).getPermissions());
-        actor.setRoles(new ArrayList<Role>());
+        final OpenUser actor = initTestUser();
+        actor._setPermissions(actor.getRoles().get(0).getPermissions());
+        actor._setRoles(new ArrayList<Role>());
         final Context context = new DefaultContext();
         doReturn(actor).when(authorizationStorage).getActor(context);
 
@@ -196,20 +219,20 @@ public class DefaultAuthorizationValidatorTest {
 
     // ------------------------------------------------------------------------
 
-    private User initTestUser(){
-        final User actor = new User("Kasper", "Robert");
+    private OpenUser initTestUser(){
+        final OpenUser actor = new OpenUser("Kasper", "Robert");
         final String roleStr = "Robert";
         final String perm = "perm5";
 
-        final Role role = new Role(roleStr);
+        final OpenRole role = new OpenRole(roleStr);
 
         final WildcardPermission permission = new WildcardPermission(perm);
-        role.add(permission);
+        role._add(permission);
 
         final List<Role> roles = new ArrayList<>();
         roles.add(role);
 
-        actor.addRoles(roles);
+        actor._addRoles(roles);
         return actor;
     }
 

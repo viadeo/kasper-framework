@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.events.user;
 
 import com.google.common.collect.Lists;
@@ -18,6 +24,8 @@ public class AuthorizationUserCreatedEvent extends EntityCreatedEvent<Authorizat
     private List<Role> roles;
     private List<WildcardPermission> permissions;
 
+    // ------------------------------------------------------------------------
+
     public AuthorizationUserCreatedEvent(KasperID entityId) {
         super(checkNotNull(entityId));
         this.roles = Lists.newArrayList();
@@ -30,6 +38,8 @@ public class AuthorizationUserCreatedEvent extends EntityCreatedEvent<Authorizat
         this.permissions = checkNotNull(permissions);
     }
 
+    // ------------------------------------------------------------------------
+
     public List<Role> getRoles() {
         return roles;
     }
@@ -37,4 +47,5 @@ public class AuthorizationUserCreatedEvent extends EntityCreatedEvent<Authorizat
     public List<WildcardPermission> getPermissions() {
         return permissions;
     }
+    
 }

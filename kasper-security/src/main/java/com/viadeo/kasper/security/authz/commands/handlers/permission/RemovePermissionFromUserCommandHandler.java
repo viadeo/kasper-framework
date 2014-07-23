@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.commands.handlers.permission;
 
 import com.google.common.base.Optional;
@@ -18,11 +24,11 @@ public class RemovePermissionFromUserCommandHandler extends EntityCommandHandler
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<RemovePermissionFromUserCommand> message) throws Exception {
-        User_has_Permission userHasPermission = new User_has_Permission(
+        final User_has_Permission userHasPermission = new User_has_Permission(
                 this.getUser(message.getCommand().getUserId()),
                 this.getPermission(message.getCommand().getPermissionId())
         );
-        this.getRepository().add(userHasPermission.delete());
+        userHasPermission.delete();
         return CommandResponse.ok();
     }
 
@@ -30,7 +36,7 @@ public class RemovePermissionFromUserCommandHandler extends EntityCommandHandler
         WildcardPermission permission = null;
         final Optional<ClientRepository<WildcardPermission>> permissionRepositoryOpt = this.getRepositoryOf(WildcardPermission.class);
         if (permissionRepositoryOpt.isPresent()) {
-            permission = permissionRepositoryOpt.get().load(id, Optional.<Long>absent()).get();
+            permission = permissionRepositoryOpt.get().business().get(id);
         }
         return permission;
     }
@@ -39,8 +45,9 @@ public class RemovePermissionFromUserCommandHandler extends EntityCommandHandler
         User user = null;
         final Optional<ClientRepository<User>> userRepositoryOpt = this.getRepositoryOf(User.class);
         if (userRepositoryOpt.isPresent()) {
-            user = userRepositoryOpt.get().load(id, Optional.<Long>absent()).get();
+            user = userRepositoryOpt.get().business().get(id);
         }
         return user;
     }
+
 }

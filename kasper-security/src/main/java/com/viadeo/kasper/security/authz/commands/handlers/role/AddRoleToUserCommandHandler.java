@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.commands.handlers.role;
 
 import com.google.common.base.Optional;
@@ -18,7 +24,7 @@ public class AddRoleToUserCommandHandler extends EntityCommandHandler<AddRoleToU
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<AddRoleToUserCommand> message) throws Exception {
-        User_has_Role user_has_role = new User_has_Role(
+        final User_has_Role user_has_role = new User_has_Role(
                 this.getUser(message.getCommand().getUserId()),
                 this.getRole(message.getCommand().getRoleId())
         );
@@ -30,7 +36,7 @@ public class AddRoleToUserCommandHandler extends EntityCommandHandler<AddRoleToU
         Role role = null;
         final Optional<ClientRepository<Role>> roleRepositoryOpt = this.getRepositoryOf(Role.class);
         if (roleRepositoryOpt.isPresent()) {
-            role = roleRepositoryOpt.get().load(id, Optional.<Long>absent()).get();
+            role = roleRepositoryOpt.get().business().get(id);
         }
         return role;
     }
@@ -39,8 +45,9 @@ public class AddRoleToUserCommandHandler extends EntityCommandHandler<AddRoleToU
         User user = null;
         final Optional<ClientRepository<User>> userRepositoryOpt = this.getRepositoryOf(User.class);
         if (userRepositoryOpt.isPresent()) {
-            user = userRepositoryOpt.get().load(id, Optional.<Long>absent()).get();
+            user = userRepositoryOpt.get().business().get(id);
         }
         return user;
     }
+
 }

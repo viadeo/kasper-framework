@@ -8,12 +8,11 @@
 package com.viadeo.kasper.security.authz.mgt.impl;
 
 import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.security.authz.entities.actor.Actor;
-import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
 import com.viadeo.kasper.security.authz.entities.permission.Permission;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
 import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
+import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
 
 import java.util.List;
@@ -61,4 +60,5 @@ public class DefaultAuthorizationSecurityManager implements AuthorizationSecurit
             }
         }
     }
+
 }

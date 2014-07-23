@@ -8,6 +8,7 @@
 package com.viadeo.kasper.security.authz.entities.actor;
 
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.ddd.annotation.XKasperEntityStoreCreator;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.security.authz.Authorization;
@@ -29,6 +30,9 @@ public class User extends Actor {
 
     // ------------------------------------------------------------------------
 
+    public User() { }
+
+    @XKasperEntityStoreCreator
     public User(final String firstName, final String lastName) {
         super();
         this.firstName = checkNotNull(firstName);
@@ -60,6 +64,8 @@ public class User extends Actor {
         setPermissions(event.getPermissions());
     }
 
+    // ------------------------------------------------------------------------
+
     public User delete() {
         apply(new AuthorizationUserDeletedEvent(getEntityId()));
         return this;
@@ -70,6 +76,8 @@ public class User extends Actor {
         this.markDeleted();
     }
 
+    // ------------------------------------------------------------------------
+
     public String getFirstName() {
         return firstName;
     }
@@ -77,6 +85,8 @@ public class User extends Actor {
     public String getLastName() {
         return lastName;
     }
+
+    // ------------------------------------------------------------------------
 
     public boolean equals(final Object o) {
         if (o == this) {
@@ -88,4 +98,5 @@ public class User extends Actor {
         }
         return false;
     }
+
 }

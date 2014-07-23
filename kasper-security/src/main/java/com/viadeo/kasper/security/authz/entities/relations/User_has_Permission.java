@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.entities.relations;
 
 import com.viadeo.kasper.KasperRelationID;
@@ -17,6 +23,10 @@ public class User_has_Permission extends Relation<User, WildcardPermission> {
     private User user;
     private WildcardPermission permission;
 
+    // ------------------------------------------------------------------------
+
+    public User_has_Permission() { }
+
     public User_has_Permission(final User user, final WildcardPermission permission) {
         apply(new PermissionAddedToUserEvent(new UserPermissionAssociationId(user.getEntityId(), permission.getEntityId()), user, permission));
     }
@@ -28,6 +38,8 @@ public class User_has_Permission extends Relation<User, WildcardPermission> {
         this.permission = event.getPermission();
     }
 
+    // ------------------------------------------------------------------------
+
     public User_has_Permission delete() {
         apply(new PermissionRemovedFromUserEvent(getEntityId()));
         return this;
@@ -38,6 +50,8 @@ public class User_has_Permission extends Relation<User, WildcardPermission> {
         this.markDeleted();
     }
 
+    // ------------------------------------------------------------------------
+
     public User getUser() {
         return user;
     }
@@ -45,4 +59,5 @@ public class User_has_Permission extends Relation<User, WildcardPermission> {
     public WildcardPermission getPermission() {
         return permission;
     }
+
 }

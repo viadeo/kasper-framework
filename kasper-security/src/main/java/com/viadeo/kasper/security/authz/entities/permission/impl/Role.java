@@ -28,7 +28,6 @@
 
 package com.viadeo.kasper.security.authz.entities.permission.impl;
 
-
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.er.Concept;
@@ -54,9 +53,7 @@ public class Role extends Concept {
 
     // ------------------------------------------------------------------------
 
-    public Role() {
-        apply(new RoleCreatedEvent(new DefaultKasperId()));
-    }
+    public Role() { }
 
     public Role(final KasperID kasperId) {
         apply(new RoleCreatedEvent(kasperId));
@@ -85,6 +82,8 @@ public class Role extends Concept {
         setPermissions(event.getPermissions());
     }
 
+    // ------------------------------------------------------------------------
+
     public Role delete() {
         apply(new RoleDeletedEvent(getEntityId()));
         return this;
@@ -101,7 +100,7 @@ public class Role extends Concept {
         return name;
     }
 
-    public void setName(final String name) {
+    protected void setName(final String name) {
         this.name = checkNotNull(name);
     }
 
@@ -109,13 +108,13 @@ public class Role extends Concept {
         return permissions;
     }
 
-    public void setPermissions(final List<WildcardPermission> permissions) {
+    protected void setPermissions(final List<WildcardPermission> permissions) {
         this.permissions = checkNotNull(permissions);
     }
 
     // ------------------------------------------------------------------------
 
-    public void add(final WildcardPermission permission) {
+    protected void add(final WildcardPermission permission) {
         checkNotNull(permission);
         if (null == this.permissions) {
             this.permissions = Lists.newArrayList();
@@ -123,14 +122,14 @@ public class Role extends Concept {
         this.permissions.add(permission);
     }
 
-    public void remove(final Permission permission) {
+    protected void remove(final Permission permission) {
         checkNotNull(permission);
         if (null != this.permissions) {
             this.permissions.remove(permission);
         }
     }
 
-    public void addAll(final Collection<WildcardPermission> perms) {
+    protected void addAll(final Collection<WildcardPermission> perms) {
         if ((null != perms) && (!perms.isEmpty())) {
             if (null == this.permissions) {
                 this.permissions = new ArrayList<WildcardPermission>(perms.size());
@@ -139,7 +138,7 @@ public class Role extends Concept {
         }
     }
 
-    public void removeAll(final Collection<Permission> perms) {
+    protected void removeAll(final Collection<Permission> perms) {
         if ((null != perms) && (!perms.isEmpty())) {
             if (null != this.permissions) {
                 permissions.removeAll(perms);

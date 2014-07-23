@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.commands.handlers.group;
 
 import com.viadeo.kasper.cqrs.command.CommandResponse;
@@ -13,9 +19,10 @@ public class DeleteGroupCommandHandler extends EntityCommandHandler<DeleteGroupC
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<DeleteGroupCommand> message) throws Exception {
-        Group group = this.getRepository().business().get(message.getCommand().getId());
-        this.getRepository().add(group.delete());
+        final Group group = this.getRepository().business().get(message.getCommand().getId());
+        group.delete();
         return CommandResponse.ok();
     }
+
 }
 

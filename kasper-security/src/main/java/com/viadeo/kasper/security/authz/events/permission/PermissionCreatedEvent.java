@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.events.permission;
 
 import com.viadeo.kasper.KasperID;
@@ -13,6 +19,8 @@ public class PermissionCreatedEvent extends EntityCreatedEvent<Authorization> {
     private String wildcardString;
     private boolean caseSensitive;
 
+    // ------------------------------------------------------------------------
+
     public PermissionCreatedEvent(KasperID entityId) {
         super(checkNotNull(entityId));
     }
@@ -23,6 +31,8 @@ public class PermissionCreatedEvent extends EntityCreatedEvent<Authorization> {
         this.caseSensitive = checkNotNull(caseSensitive);
     }
 
+    // ------------------------------------------------------------------------
+
     public String getWildcardString() {
         return wildcardString;
     }
@@ -30,5 +40,6 @@ public class PermissionCreatedEvent extends EntityCreatedEvent<Authorization> {
     public boolean isCaseSensitive() {
         return caseSensitive;
     }
+
 }
 
