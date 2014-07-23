@@ -13,6 +13,8 @@ task wrapper(type: Wrapper) {
 // Apply annotation processing on idea for lombok
 idea {
     project {
+        languageLevel = '1.7'
+
         ipr {
             withXml { xmlDocument ->
                 def project = xmlDocument.asNode()
@@ -25,6 +27,7 @@ idea {
                         processorPath(useClasspath: 'true')
                     }
                 })
+                xmlDocument.node.component.find { it.@name == 'VcsDirectoryMappings' }.mapping.@vcs = 'Git'
             }
         }
     }
@@ -38,7 +41,7 @@ allprojects  {
   apply plugin: 'idea'
 
   group = 'com.viadeo.kasper'
-  version = '0.6.5'
+  version = '0.7'
 
   idea {
     module {
@@ -79,6 +82,15 @@ subprojects {
       all*.exclude module: 'slf4j-log4j12'
       all*.exclude(module: 'log4j', version: '1.2.9')
       deployerJars
+  }
+
+  jar {
+      manifest {
+          attributes(
+              "Manifest-Version"    : "1.0",
+              "Kasper-Version"    : version
+          )
+      }
   }
 
   // Use UTF-8 for reading xml (and other) data tests files
@@ -167,10 +179,10 @@ subprojects {
       YAMMER_METRICS        : 'com.codahale.metrics:metrics-core:3.1.0-VIADEO-0.1',
       METRICS_JSON          : 'com.codahale.metrics:metrics-json:3.1.0-VIADEO-0.1',
 
-      AXON_TEST             : 'org.axonframework:axon-test:2.0.5',
+      AXON_TEST             : 'org.axonframework:axon-test:2.2',
       AXON_CORE             : [
                                 'javax.persistence:persistence-api:1.0',
-                                'org.axonframework:axon-core:2.0.5'
+                                'org.axonframework:axon-core:2.2'
                               ],
       JCACHE                : 'javax.cache:cache-api:0.5',
       JCACHE_EHCACHE        : 'net.sf.ehcache:ehcache-jcache:1.5.0-0.5',
@@ -187,6 +199,14 @@ subprojects {
       JODA_TIME             : 'joda-time:joda-time:2.1',
       JODA_MONEY            : 'org.joda:joda-money:0.9',
       GUAVA                 : 'com.google.guava:guava:13.0.1',
+
+      POWER_MOCK            : [
+                                'org.powermock:powermock:1.5.5',
+                                'org.powermock:powermock-api-mockito:1.5.5',
+                                'org.powermock:powermock-module-junit4:1.5.5'
+                              ],
+
+      JSON_SIMPLE           : 'com.googlecode.json-simple:json-simple:1.1.1',
 
       LOGBACK               : [
                                 'org.slf4j:slf4j-api:1.7.5',

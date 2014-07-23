@@ -27,11 +27,16 @@ import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.er.Concept;
+import com.viadeo.kasper.event.CommandEventListener;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.domain.EntityCreatedEvent;
 import com.viadeo.kasper.event.domain.EntityUpdatedEvent;
+import com.viadeo.kasper.impl.DefaultKasperId;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.eventstore.EventStore;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.NotNull;
 import java.util.Map;
@@ -100,6 +105,64 @@ public class FixtureUseCase {
         }
         public String getLastName() {
             return this.lastName;
+        }
+    }
+
+    public static class TestCreatedEventListener extends EventListener<TestCreatedEvent> {
+        @Override
+        public void handle(TestCreatedEvent event) {
+            // nothing
+        }
+    }
+
+    public static class TestFirstNameChangedEventListener extends EventListener<TestFirstNameChangedEvent> {
+        @Override
+        public void handle(TestFirstNameChangedEvent event) {
+            // nothing
+        }
+    }
+
+    public static class TestLastNameChangedEventListener extends EventListener<TestLastNameChangedEvent> {
+        @Override
+        public void handle(TestLastNameChangedEvent event) {
+            // nothing
+        }
+    }
+
+    public static class DoSyncUserEvent extends Event {
+        private static final long serialVersionUID = -1686085684381486691L;
+        public final String firstName;
+        public final String lastName;
+
+        public DoSyncUserEvent(String firstName, String lastName) {
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
+    }
+
+    public static class DoSyncUserEventListener extends CommandEventListener<DoSyncUserEvent> {
+        private static final Logger LOGGER = LoggerFactory.getLogger(DoSyncUserEventListener.class);
+
+        @Override
+        public void handle(DoSyncUserEvent event) {
+            final DefaultKasperId kasperId = DefaultKasperId.random();
+
+            try {
+                final CommandResponse response1 = getCommandGateway().get().sendCommandAndWaitForAResponse(
+                        new TestCreateCommand(kasperId, event.firstName),
+                        getContext()
+                );
+
+                if (response1.isOK()) {
+                    getCommandGateway().get().sendCommandAndWaitForAResponse(
+                            new TestChangeLastNameCommand(kasperId, event.lastName),
+                            getContext()
+                    );
+                }
+
+            } catch (Exception e) {
+                LOGGER.error("Unexpected error", e);
+            }
         }
     }
 
@@ -332,20 +395,66 @@ public class FixtureUseCase {
         }
     }
 
+    public static class TestCreateUserCommand extends CreateCommand {
+
+        private static final long serialVersionUID = -304218800458456173L;
+
+        @NotNull
+        public final String firstName;
+
+        @NotNull
+        public final String lastName;
+
+        public TestCreateUserCommand(KasperID kasperID, String firstName, String lastName) {
+            super(kasperID);
+            this.firstName = firstName;
+            this.lastName = lastName;
+        }
+
+    }
+
+    @XKasperCommandHandler( domain = TestDomain.class )
+    public static class TestCreateUserCommandHandler extends CommandHandler<TestCreateUserCommand> {
+
+        @Override
+        public CommandResponse handle(TestCreateUserCommand command) throws Exception {
+            final CommandResponse response1 = getCommandGateway().sendCommandAndWaitForAResponse(
+                    new TestCreateCommand(command.getIdToUse(), command.firstName),
+                    getContext()
+            );
+
+            if (response1.isOK()) {
+                return getCommandGateway().sendCommandAndWaitForAResponse(
+                        new TestChangeLastNameCommand(command.getIdToUse(), command.lastName),
+                        getContext()
+                );
+            } else {
+                return response1;
+            }
+        }
+
+    }
+
     public static DomainBundle getDomainBundle() {
         return new DefaultDomainBundle(
                   Lists.<CommandHandler>newArrayList(
                           new TestCreateCommandHandler(),
                           new TestChangeLastNameCommandHandler(),
                           new TestCoreReasonCodeCommandHandler(),
-                          new TestCommandHandler()
+                          new TestCommandHandler(),
+                          new TestCreateUserCommandHandler()
                   )
                 , Lists.<QueryHandler>newArrayList(
                           new TestGetSomeDataQueryHandler(),
                           new TestCoreReasonCodeQueryHandler()
                 )
                 , Lists.<Repository>newArrayList(new TestRepository())
-                , Lists.<EventListener>newArrayList()
+                , Lists.<EventListener>newArrayList(
+                        new TestCreatedEventListener(),
+                        new TestFirstNameChangedEventListener(),
+                        new TestLastNameChangedEventListener(),
+                        new DoSyncUserEventListener()
+                )
                 , Lists.<QueryInterceptorFactory>newArrayList()
                 , Lists.<CommandInterceptorFactory>newArrayList()
                 , new TestDomain()

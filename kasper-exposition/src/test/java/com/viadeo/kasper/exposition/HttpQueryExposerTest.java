@@ -69,7 +69,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
     public static class SomeQuery implements Query {
         private static final long serialVersionUID = -7447288176593489294L;
 
-        private String aValue;
+        private String value;
         private int[] intArray;
         private boolean doThrowSomeException;
 
@@ -83,16 +83,16 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
             this.intArray = intArray;
         }
 
-        public String getAValue() {
-            return aValue;
+        public String getValue() {
+            return value;
         }
 
         public boolean isDoThrowSomeException() {
             return doThrowSomeException;
         }
 
-        public void setAValue(final String aValue) {
-            this.aValue = aValue;
+        public void setValue(final String aValue) {
+            this.value = aValue;
         }
 
         public void setDoThrowSomeException(final boolean doThrowSomeException) {
@@ -134,7 +134,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
                         messages.add(q.getErrorCodes().get(i));
                 }
 
-                return QueryResponse.error(new KasperReason(q.aValue, messages));
+                return QueryResponse.error(new KasperReason(q.value, messages));
             }
 
             final SomeResponse response = new SomeResponse();
@@ -197,7 +197,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
     public void testQueryRoundTrip() throws JsonProcessingException {
         // Given
         final SomeQuery query = new SomeQuery();
-        query.aValue = "foo";
+        query.value = "foo";
         query.doThrowSomeException = false;
         query.intArray = new int[] { 1, 2, 3 };
 
@@ -206,7 +206,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
                 DefaultContextBuilder.get(), query, SomeResponse.class);
 
         // Then
-        assertEquals(query.aValue, response.getResult().query.aValue);
+        assertEquals(query.value, response.getResult().query.value);
         assertEquals(query.doThrowSomeException, response.getResult().query.doThrowSomeException);
         assertArrayEquals(query.intArray, response.getResult().query.intArray);
     }
@@ -218,7 +218,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         // Given
         final SomeQuery query = new SomeQuery();
         query.doThrowSomeException = true;
-        query.aValue = "aaa";
+        query.value = "aaa";
 
         // When
         final QueryResponse<SomeResponse> actual = client().query(
@@ -226,7 +226,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
         // Then
         assertFalse(actual.isOK());
-        assertEquals(query.aValue, actual.getReason().getLabel());
+        assertEquals(query.value, actual.getReason().getLabel());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, actual.asHttp().getHTTPStatus());
     }
 
@@ -237,7 +237,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         // Given
         final SomeQuery query = new SomeQuery();
         query.doThrowSomeException = true;
-        query.aValue = CoreReasonCode.NOT_FOUND.name();
+        query.value = CoreReasonCode.NOT_FOUND.name();
 
         // When
         final QueryResponse<SomeResponse> actual = client().query(
@@ -245,7 +245,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
         // Then
         assertFalse(actual.isOK());
-        assertEquals(query.aValue, actual.getReason().getLabel());
+        assertEquals(query.value, actual.getReason().getLabel());
         assertEquals(Response.Status.NOT_FOUND, actual.asHttp().getHTTPStatus());
     }
 
@@ -272,7 +272,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         // Given
         final SomeQuery query = new SomeQuery();
         query.setDoThrowSomeException(true);
-        query.setAValue("some error message");
+        query.setValue("some error message");
         query.setErrorCodes(Arrays.asList("a", "b"));
 
         // When
@@ -281,7 +281,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
        
         // Then
         assertFalse(actual.isOK());
-        assertEquals(query.getAValue(), actual.getReason().getCode());
+        assertEquals(query.getValue(), actual.getReason().getCode());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, actual.asHttp().getHTTPStatus());
         final String[] actualMessages = actual.getReason().getMessages().toArray(new String[0]);
         for (int i = 0; i < query.getErrorCodes().size(); i++) {

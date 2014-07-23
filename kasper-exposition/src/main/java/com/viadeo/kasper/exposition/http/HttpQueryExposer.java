@@ -42,20 +42,20 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
     private final transient List<ExposureDescriptor<Query,QueryHandler>> descriptors;
     private final transient QueryGateway queryGateway;
 
-    private final ObjectToHttpServletResponse objectToHttpResponse;
-    private final HttpServletRequestToObject httpRequestToObjectWithJson;
-    private final HttpServletRequestToObject httpRequestToObjectWithString;
+    private final transient ObjectToHttpServletResponse objectToHttpResponse;
+    private final transient HttpServletRequestToObject httpRequestToObjectWithJson;
+    private final transient HttpServletRequestToObject httpRequestToObjectWithString;
 
     // ------------------------------------------------------------------------
 
     public HttpQueryExposer(final Platform platform, final List<ExposureDescriptor<Query,QueryHandler>> descriptors) {
         this(
-                platform.getQueryGateway(),
-                platform.getMeta(),
-                descriptors,
-                new QueryFactoryBuilder().create(),
-                new HttpContextDeserializer(),
-                ObjectMapperProvider.INSTANCE.mapper()
+            platform.getQueryGateway(),
+            platform.getMeta(),
+            descriptors,
+            new QueryFactoryBuilder().create(),
+            new HttpContextDeserializer(),
+            ObjectMapperProvider.INSTANCE.mapper()
         );
     }
 
@@ -71,7 +71,7 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
 
         this.objectToHttpResponse = new ObjectToHttpServletResponse(mapper);
         this.httpRequestToObjectWithJson = new HttpServletRequestToObject.JsonToObjectMapper(mapper);
-        this.httpRequestToObjectWithString = new HttpServletRequestToObject.StringRequestToObjectMapper(mapper, queryAdapterFactory);
+        this.httpRequestToObjectWithString = new HttpServletRequestToObject.StringRequestToObjectMapper2(mapper);
     }
 
     // ------------------------------------------------------------------------

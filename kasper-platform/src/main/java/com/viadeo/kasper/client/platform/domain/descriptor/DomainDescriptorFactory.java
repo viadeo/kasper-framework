@@ -21,10 +21,17 @@ import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.annotation.EventHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.core.type.filter.AssignableTypeFilter;
 
 import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -33,31 +40,33 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DomainDescriptorFactory {
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DomainDescriptorFactory.class);
+
     private static final Function<CommandHandler, CommandHandlerDescriptor> TO_COMMAND_HANDLER_DESCRIPTOR_FUNCTION = new Function<CommandHandler, CommandHandlerDescriptor>() {
         @Override
         public CommandHandlerDescriptor apply(final CommandHandler commandHandler) {
-            return toCommandHandlerDescriptor(checkNotNull(commandHandler));
+            return toCommandHandlerDescriptor(commandHandler);
         }
     };
 
     private static final Function<QueryHandler, QueryHandlerDescriptor> TO_QUERY_HANDLER_DESCRIPTOR_FUNCTION = new Function<QueryHandler, QueryHandlerDescriptor>() {
         @Override
         public QueryHandlerDescriptor apply(final QueryHandler queryHandler) {
-            return toQueryHandlerDescriptor(checkNotNull(queryHandler));
+            return toQueryHandlerDescriptor(queryHandler);
         }
     };
 
     private static final Function<EventListener, EventListenerDescriptor> TO_EVENT_LISTENER_DESCRIPTOR_FUNCTION = new Function<EventListener, EventListenerDescriptor>() {
         @Override
         public EventListenerDescriptor apply(final EventListener eventListener) {
-            return toEventListenerDescriptor(checkNotNull(eventListener));
+            return toEventListenerDescriptor(eventListener);
         }
     };
 
     private static final Function<Repository, RepositoryDescriptor> TO_REPOSITORY_DESCRIPTOR_FUNCTION = new Function<Repository, RepositoryDescriptor>() {
         @Override
         public RepositoryDescriptor apply(final Repository repository) {
-            return toRepositoryDescriptor(checkNotNull(repository));
+            return toRepositoryDescriptor(repository);
         }
     };
 
@@ -70,29 +79,50 @@ public class DomainDescriptorFactory {
             Collections2.transform(domainBundle.getQueryHandlers(), TO_QUERY_HANDLER_DESCRIPTOR_FUNCTION),
             Collections2.transform(domainBundle.getCommandHandlers(), TO_COMMAND_HANDLER_DESCRIPTOR_FUNCTION),
             Collections2.transform(domainBundle.getRepositories(), TO_REPOSITORY_DESCRIPTOR_FUNCTION),
-            Collections2.transform(domainBundle.getEventListeners(), TO_EVENT_LISTENER_DESCRIPTOR_FUNCTION)
+            Collections2.transform(domainBundle.getEventListeners(), TO_EVENT_LISTENER_DESCRIPTOR_FUNCTION),
+            retrieveEventsFrom(domainBundle.getDomain().getClass())
         );
     }
 
-    public DomainDescriptor createFrom(
-            final String domainName,
-            final Class<? extends Domain> domainClass,
-            final Collection<QueryHandler> queryHandlers,
-            final Collection<CommandHandler> commandHandlers,
-            final Collection<Repository> repositories,
-            final Collection<EventListener> eventListeners
-    ) {
+    public DomainDescriptor createFrom(final String domainName,
+                                       final Class<? extends Domain> domainClass,
+                                       final Collection<QueryHandler> queryHandlers,
+                                       final Collection<CommandHandler> commandHandlers,
+                                       final Collection<Repository> repositories,
+                                       final Collection<EventListener> eventListeners) {
         return new DomainDescriptor(
             checkNotNull(domainName),
             checkNotNull(domainClass),
             Collections2.transform(checkNotNull(queryHandlers), TO_QUERY_HANDLER_DESCRIPTOR_FUNCTION),
             Collections2.transform(checkNotNull(commandHandlers), TO_COMMAND_HANDLER_DESCRIPTOR_FUNCTION),
             Collections2.transform(checkNotNull(repositories), TO_REPOSITORY_DESCRIPTOR_FUNCTION),
-            Collections2.transform(checkNotNull(eventListeners), TO_EVENT_LISTENER_DESCRIPTOR_FUNCTION)
+            Collections2.transform(checkNotNull(eventListeners), TO_EVENT_LISTENER_DESCRIPTOR_FUNCTION),
+            retrieveEventsFrom(domainClass)
         );
     }
 
     // ------------------------------------------------------------------------
+
+    public static Collection<Class<? extends IEvent>> retrieveEventsFrom(final Class<? extends Domain> domainClass) {
+        final List<Class<? extends IEvent>> eventClasses = Lists.newArrayList();
+
+        final ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
+        scanner.addIncludeFilter(new AssignableTypeFilter(IEvent.class));
+
+        for (final BeanDefinition bd : scanner.findCandidateComponents(domainClass.getPackage().getName())) {
+            try {
+                @SuppressWarnings("unchecked")
+                Class<IEvent> eventClass = (Class<IEvent>) Class.forName(bd.getBeanClassName());
+                if ( ! (Modifier.isAbstract(eventClass.getModifiers()) || Modifier.isInterface(eventClass.getModifiers())) ) {
+                    eventClasses.add(eventClass);
+                }
+            } catch (ClassNotFoundException e) {
+                LOGGER.error("Failed to found class : '{}'", bd.getBeanClassName());
+            }
+        }
+
+        return eventClasses;
+    }
 
     @SuppressWarnings("unchecked")
     public static CommandHandlerDescriptor toCommandHandlerDescriptor(final CommandHandler commandHandler) {

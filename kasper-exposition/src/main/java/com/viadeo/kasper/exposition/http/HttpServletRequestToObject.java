@@ -9,6 +9,7 @@ package com.viadeo.kasper.exposition.http;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
@@ -29,7 +30,7 @@ public abstract class HttpServletRequestToObject {
 
     public abstract <T> T map(final HttpServletRequest request, final Class<T> clazz) throws IOException;
 
-
+    @Deprecated
     public static class StringRequestToObjectMapper extends HttpServletRequestToObject {
 
         private final QueryFactory factory;
@@ -51,15 +52,30 @@ public abstract class HttpServletRequestToObject {
 
             try {
                 return factory.create(TypeToken.of(clazz)).adapt(new QueryParser(params.build()));
-            } catch (final Throwable t) {
+            } catch (final Exception t) {
                 throw new RuntimeException(
-                        String.format(
-                                "Unable to parse input to [%s] with parameters [%s]",
-                                clazz,
-                                request.getQueryString()
-                        ),
-                        t
+                    String.format(
+                        "Unable to parse input to [%s] with parameters [%s]",
+                        clazz,
+                        request.getQueryString()
+                    ), t
                 );
+            }
+
+        }
+    }
+
+    public static class StringRequestToObjectMapper2 extends HttpServletRequestToObject {
+
+        protected StringRequestToObjectMapper2(final ObjectMapper objectMapper) {
+            super(objectMapper);
+        }
+
+        @Override
+        public <T> T map(final HttpServletRequest request, final Class<T> clazz) throws IOException {
+            final String json = JsonTransformer.from(Optional.<Class>fromNullable(clazz), request.getParameterMap()).toJson();
+            try (final JsonParser parser = reader.getFactory().createParser(json)) {
+                return reader.readValue(parser, clazz);
             }
         }
     }

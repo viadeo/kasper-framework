@@ -50,7 +50,7 @@ public class DomainResolver implements Resolver<Domain> {
             domainName = domainAnnotation.label().replaceAll(" ", "");
         }
 
-        if (null == domainName) {
+        if (domainName.isEmpty()) {
             domainName = clazz.getSimpleName().replace("Domain", "");
         }
 

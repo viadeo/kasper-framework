@@ -29,4 +29,6 @@ public final class HttpContextHeaders {
 
     public static final String HEADER_REQUEST_IP_ADDRESS = "X-Forwarded-For";
 
+    public static final String HEADER_CLIENT_VERSION = "X-KASPER-CLIENT-VERSION";
+
 }

@@ -81,6 +81,7 @@ public class KasperParanamer implements Paranamer {
             return EMPTY_NAMES;
         }
 
+        @SuppressWarnings("unchecked") // Safe
         final Constructor constructor = (Constructor) accessibleObject;
         final Class declaringClass = constructor.getDeclaringClass();
 

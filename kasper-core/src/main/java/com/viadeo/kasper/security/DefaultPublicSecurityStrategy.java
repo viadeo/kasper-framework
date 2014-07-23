@@ -7,6 +7,7 @@
 package com.viadeo.kasper.security;
 
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.security.exception.KasperSecurityException;
 import org.apache.log4j.MDC;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -24,7 +25,8 @@ public class DefaultPublicSecurityStrategy implements SecurityStrategy {
 
     // ------------------------------------------------------------------------
 
-    public void beforeRequest(final Context context) {
+    @Override
+    public void beforeRequest(final Context context) throws KasperSecurityException {
         this.context = checkNotNull(context);
 
         securityConfiguration.getIdentityContextProvider().provideIdentity(context);
@@ -32,6 +34,7 @@ public class DefaultPublicSecurityStrategy implements SecurityStrategy {
         securityConfiguration.getIpAddressValidator().validate(context.getIpAddress());
     }
 
+    @Override
     public void afterRequest() {
         if (null != context) {
             MDC.put(Context.IP_ADDRESS_SHORTNAME, context.getIpAddress());

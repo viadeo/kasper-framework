@@ -55,6 +55,11 @@ public final class KasperMetrics {
 
     // ------------------------------------------------------------------------
 
+    /**
+     * Accessor on Metric registry for kasper framework
+     * @return a common metric registry for kasper framework
+     * @throws java.lang.IllegalStateException if metric registry is not initialized
+     */
     public MetricRegistry getRegistry() {
         if(null == metricRegistry) {
             throw new IllegalStateException("The metric registry is not initialized.");

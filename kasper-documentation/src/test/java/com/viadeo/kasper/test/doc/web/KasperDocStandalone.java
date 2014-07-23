@@ -16,12 +16,16 @@ import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
+import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.test.applications.Applications;
 import com.viadeo.kasper.test.root.Facebook;
 import com.viadeo.kasper.test.root.commands.AddConnectionToMemberCommand;
 import com.viadeo.kasper.test.root.entities.Member;
 import com.viadeo.kasper.test.root.entities.Member_connectedTo_Member;
+import com.viadeo.kasper.test.root.events.FacebookEvent;
+import com.viadeo.kasper.test.root.events.FacebookMemberEvent;
 import com.viadeo.kasper.test.root.events.MemberCreatedEvent;
+import com.viadeo.kasper.test.root.events.NewMemberConnectionEvent;
 import com.viadeo.kasper.test.root.handlers.AddConnectionToMemberHandler;
 import com.viadeo.kasper.test.root.listeners.MemberCreatedEventListener;
 import com.viadeo.kasper.test.root.queries.GetAllMemberQueryHandler;
@@ -74,6 +78,12 @@ public class KasperDocStandalone {
                 ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(
                         MemberCreatedEventListener.class,
                         MemberCreatedEvent.class)
+                ),
+                ImmutableList.<Class<? extends IEvent>>of(
+                        FacebookEvent.class,
+                        FacebookMemberEvent.class,
+                        MemberCreatedEvent.class,
+                        NewMemberConnectionEvent.class
                 )
         );
 
@@ -85,7 +95,8 @@ public class KasperDocStandalone {
                 Lists.<QueryHandlerDescriptor>newArrayList(),
                 Lists.<CommandHandlerDescriptor>newArrayList(),
                 Lists.<RepositoryDescriptor>newArrayList(),
-                Lists.<EventListenerDescriptor>newArrayList()
+                Lists.<EventListenerDescriptor>newArrayList(),
+                Lists.<Class<? extends IEvent>>newArrayList()
                 )
         );
         documentedPlatform.registerDomain(Timelines.NAME, new DomainDescriptor(
@@ -94,8 +105,9 @@ public class KasperDocStandalone {
                 Lists.<QueryHandlerDescriptor>newArrayList(),
                 Lists.<CommandHandlerDescriptor>newArrayList(),
                 Lists.<RepositoryDescriptor>newArrayList(),
-                Lists.<EventListenerDescriptor>newArrayList()
-                        ));
+                Lists.<EventListenerDescriptor>newArrayList(),
+                Lists.<Class<? extends IEvent>>newArrayList()
+        ));
         documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
 
         final KasperDocResource res = new KasperDocResource(documentedPlatform);
@@ -111,7 +123,7 @@ public class KasperDocStandalone {
         server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("src/main/resources/META-INF/resources/doc/"),"/doc");
         server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("src/main/resources/META-INF/resources/ndoc/"),"/ndoc");
 
-        System.out.println(String.format("Try out %skasper/doc/domains \nAccess UI at %sdoc/index.htm", baseUri, baseUri, baseUri));
+        System.out.println(String.format("Try out %skasper/doc/domains \nAccess UI at %sdoc/index.htm", baseUri, baseUri));
 
         System.in.read();
 

@@ -9,6 +9,7 @@ package com.viadeo.kasper.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.google.common.collect.SetMultimap;
 import com.google.common.reflect.TypeParameter;
 import com.google.common.reflect.TypeToken;
@@ -18,6 +19,7 @@ import com.sun.jersey.core.util.MultivaluedMapImpl;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.http.HTTPCommandResponse;
@@ -133,6 +135,8 @@ public class KasperClient {
     @VisibleForTesting
     protected final HttpContextSerializer contextSerializer;
 
+    private final String version;
+
     // ------------------------------------------------------------------------
 
     public static final class Flags {
@@ -165,18 +169,30 @@ public class KasperClient {
 
     // ------------------------------------------------------------------------
 
+    protected static String version() {
+        final Optional<String> version = new ManifestReader(KasperClient.class).getKasperVersion();
+        if (version.isPresent()) {
+            return version.get();
+        }
+        return "nc";
+    }
+
+    // ------------------------------------------------------------------------
+
     /**
      * Creates a new KasperClient instance using the default
      * {@link KasperClientBuilder} configuration.
      */
     public KasperClient() {
-        this.client = DEFAULT_KASPER_CLIENT.client;
-        this.commandBaseLocation = DEFAULT_KASPER_CLIENT.commandBaseLocation;
-        this.queryBaseLocation = DEFAULT_KASPER_CLIENT.queryBaseLocation;
-        this.eventBaseLocation = DEFAULT_KASPER_CLIENT.eventBaseLocation;
-        this.queryFactory = DEFAULT_KASPER_CLIENT.queryFactory;
-        this.contextSerializer = DEFAULT_KASPER_CLIENT.contextSerializer;
-        this.flags = Flags.defaults();
+        this(
+            DEFAULT_KASPER_CLIENT.queryFactory,
+            DEFAULT_KASPER_CLIENT.client,
+            DEFAULT_KASPER_CLIENT.commandBaseLocation,
+            DEFAULT_KASPER_CLIENT.queryBaseLocation,
+            DEFAULT_KASPER_CLIENT.eventBaseLocation,
+            DEFAULT_KASPER_CLIENT.contextSerializer,
+            Flags.defaults()
+        );
     }
 
     KasperClient(final QueryFactory queryFactory,
@@ -194,6 +210,7 @@ public class KasperClient {
         this.eventBaseLocation = checkNotNull(eventBaseLocation);
         this.contextSerializer = checkNotNull(contextSerializer);
         this.flags = checkNotNull(flags);
+        this.version = version();
     }
 
     KasperClient(final QueryFactory queryFactory,
@@ -203,14 +220,29 @@ public class KasperClient {
                  final URL eventBaseLocation,
                  final HttpContextSerializer contextSerializer) {
         this(
-                queryFactory,
-                client,
-                commandBaseUrl,
-                queryBaseUrl,
-                eventBaseLocation,
-                contextSerializer,
-                Flags.defaults()
+            queryFactory,
+            client,
+            commandBaseUrl,
+            queryBaseUrl,
+            eventBaseLocation,
+            contextSerializer,
+            Flags.defaults()
         );
+    }
+
+    // ------------------------------------------------------------------------
+
+    protected <BUILDER_OUT extends RequestBuilder<BUILDER_OUT>, BUILDER_IN extends RequestBuilder<BUILDER_OUT>> BUILDER_OUT configureBuilder(
+            final Context context,
+            final BUILDER_IN builder) {
+        final BUILDER_OUT builderOut = builder
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .header(HttpContextHeaders.HEADER_CLIENT_VERSION, version);
+
+        contextSerializer.serialize(context, builderOut);
+
+        return builderOut;
     }
 
     // ------------------------------------------------------------------------
@@ -231,12 +263,10 @@ public class KasperClient {
         checkNotNull(command);
         checkNotNull(context);
 
-        final WebResource.Builder builder = client
-                .resource(resolveCommandPath(command.getClass()))
-                .accept(MediaType.APPLICATION_JSON_TYPE)
-                .type(MediaType.APPLICATION_JSON_TYPE);
-
-        contextSerializer.serialize(context, builder);
+        final WebResource.Builder builder = configureBuilder(
+            context,
+            client.resource(resolveCommandPath(command.getClass()))
+        );
 
         final ClientResponse response = builder.put(ClientResponse.class, command);
 
@@ -258,12 +288,10 @@ public class KasperClient {
         checkNotNull(command);
         checkNotNull(context);
 
-        final AsyncWebResource.Builder builder = client
-                .asyncResource(resolveCommandPath(command.getClass()))
-                .accept(MediaType.APPLICATION_JSON_TYPE)
-                .type(MediaType.APPLICATION_JSON_TYPE);
-
-        contextSerializer.serialize(context, builder);
+        final AsyncWebResource.Builder builder = configureBuilder(
+            context,
+            client.asyncResource(resolveCommandPath(command.getClass()))
+        );
 
         final Future<ClientResponse> futureResponse = builder.put(ClientResponse.class, command);
 
@@ -287,12 +315,10 @@ public class KasperClient {
         checkNotNull(command);
         checkNotNull(context);
 
-        final AsyncWebResource.Builder builder = client
-                .asyncResource(resolveCommandPath(command.getClass()))
-                .accept(MediaType.APPLICATION_JSON_TYPE)
-                .type(MediaType.APPLICATION_JSON_TYPE);
-
-        contextSerializer.serialize(context, builder);
+        final AsyncWebResource.Builder builder = configureBuilder(
+            context,
+            client.asyncResource(resolveCommandPath(command.getClass()))
+        );
 
         builder.put(new TypeListener<ClientResponse>(ClientResponse.class) {
             @Override
@@ -304,8 +330,8 @@ public class KasperClient {
 
                 } catch (final ExecutionException e) {
                     throw new KasperException(String.format(
-                                "ERROR handling command [%s]",
-                                command.getClass()), e
+                        "ERROR handling command [%s]",
+                        command.getClass()), e
                     );
                 }
             }
@@ -363,12 +389,10 @@ public class KasperClient {
         checkNotNull(event);
         checkNotNull(context);
 
-        final WebResource.Builder builder = client
-                .resource(resolveEventPath(event.getClass()))
-                .accept(MediaType.APPLICATION_JSON_TYPE)
-                .type(MediaType.APPLICATION_JSON_TYPE);
-
-        contextSerializer.serialize(context, builder);
+        final WebResource.Builder builder = configureBuilder(
+            context,
+            client.resource(resolveEventPath(event.getClass()))
+        );
 
         try {
 
@@ -398,8 +422,7 @@ public class KasperClient {
      * @throws KasperException if something went wrong.
      */
     public <P extends QueryResult> QueryResponse<P> query(
-            final Context context, final Query query, final Class<P> mapTo)
-    {
+            final Context context, final Query query, final Class<P> mapTo) {
         return query(context, query, TypeToken.of(mapTo));
     }
 
@@ -437,11 +460,7 @@ public class KasperClient {
             webResource = webResource.queryParams(prepareQueryParams(query));
         }
 
-        final WebResource.Builder builder = webResource
-                .accept(MediaType.APPLICATION_JSON_TYPE)
-                .type(MediaType.APPLICATION_JSON_TYPE);
-
-        contextSerializer.serialize(context, builder);
+        final WebResource.Builder builder = configureBuilder(context, webResource);
 
         final ClientResponse response;
         if (flags.usePostForQueries()) {
@@ -456,8 +475,7 @@ public class KasperClient {
     // --
 
     public <P extends QueryResult> Future<QueryResponse<P>> queryAsync(
-            final Context context, final Query query, final Class<P> mapTo)
-    {
+            final Context context, final Query query, final Class<P> mapTo) {
         return queryAsync(context, query, TypeToken.of(mapTo));
     }
 
@@ -469,8 +487,7 @@ public class KasperClient {
      * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command)
      */
     public <P extends QueryResult> Future<QueryResponse<P>> queryAsync(
-            final Context context, final Query query, final TypeToken<P> mapTo)
-    {
+            final Context context, final Query query, final TypeToken<P> mapTo) {
         checkNotNull(query);
         checkNotNull(mapTo);
         checkNotNull(context);
@@ -480,9 +497,7 @@ public class KasperClient {
             asyncWebResource = asyncWebResource.queryParams(prepareQueryParams(query));
         }
 
-        final AsyncWebResource.Builder builder = asyncWebResource
-                .accept(MediaType.APPLICATION_JSON_TYPE)
-                .type(MediaType.APPLICATION_JSON_TYPE);
+        final AsyncWebResource.Builder builder = configureBuilder(context, asyncWebResource);
 
         contextSerializer.serialize(context, builder);
 
@@ -505,8 +520,7 @@ public class KasperClient {
      */
     public <P extends QueryResult> void queryAsync(
             final Context context, final Query query, final Class<P> mapTo,
-            final Callback<QueryResponse<P>> callback)
-    {
+            final Callback<QueryResponse<P>> callback) {
         queryAsync(context, query, TypeToken.of(mapTo), callback);
     }
 
@@ -518,8 +532,7 @@ public class KasperClient {
     public <P extends QueryResult> void queryAsync(
             final Context context, final Query query,
             final TypeToken<P> mapTo,
-            final Callback<QueryResponse<P>> callback)
-    {
+            final Callback<QueryResponse<P>> callback) {
         checkNotNull(query);
         checkNotNull(mapTo);
         checkNotNull(context);
@@ -530,9 +543,7 @@ public class KasperClient {
             asyncWebResource = asyncWebResource.queryParams(prepareQueryParams(query));
         }
 
-        final AsyncWebResource.Builder builder = asyncWebResource
-                .accept(MediaType.APPLICATION_JSON_TYPE)
-                .type(MediaType.APPLICATION_JSON_TYPE);
+        final AsyncWebResource.Builder builder = configureBuilder(context, asyncWebResource);
 
         contextSerializer.serialize(context, builder);
 
@@ -548,8 +559,7 @@ public class KasperClient {
     private <P extends QueryResult> TypeListener<ClientResponse> createTypeListener(
             final Query query,
             final TypeToken<P> mapTo,
-            final Callback<QueryResponse<P>> callback
-    ) {
+            final Callback<QueryResponse<P>> callback) {
         return new TypeListener<ClientResponse>(ClientResponse.class) {
             @Override
             public void onComplete(final Future<ClientResponse> f) throws InterruptedException {
@@ -613,7 +623,7 @@ public class KasperClient {
         return map;
     }
 
-    private String queryToJson(final Query query){
+    private String queryToJson(final Query query) {
         final ObjectWriter objectWriter = ObjectMapperProvider.INSTANCE.objectWriter();
         final String queryToJson;
 
