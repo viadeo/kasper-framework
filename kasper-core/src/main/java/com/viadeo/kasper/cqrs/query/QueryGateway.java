@@ -14,9 +14,9 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 /** The Kasper query gateway, used to result queries from the kasper platform */
 public interface QueryGateway {
 
-    public static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryGateway.class, "requests-time");
-    public static final String GLOBAL_METER_REQUESTS_NAME = name(QueryGateway.class, "requests");
-    public static final String GLOBAL_METER_ERRORS_NAME = name(QueryGateway.class, "errors");
+    static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryGateway.class, "requests-time");
+    static final String GLOBAL_METER_REQUESTS_NAME = name(QueryGateway.class, "requests");
+    static final String GLOBAL_METER_ERRORS_NAME = name(QueryGateway.class, "errors");
 
 	/**
 	 * @param context the query execution context
@@ -34,7 +34,7 @@ public interface QueryGateway {
      *               Otherwise the  adapter will be applied only on the component whose reference it
      */
     @Deprecated
-    public void register(final String name, final  QueryHandlerAdapter adapter, final boolean global);
+    void register(final String name, final  QueryHandlerAdapter adapter, final boolean global);
 
 
     /**
@@ -42,13 +42,13 @@ public interface QueryGateway {
      *
      * @param interceptorFactory the query interceptor factory to register
      */
-    public void register(final QueryInterceptorFactory interceptorFactory);
+    void register(final QueryInterceptorFactory interceptorFactory);
 
     /**
      * Register a query handler to the gateway
      *
      * @param queryHandler the query handler to register
      */
-    public void register(final QueryHandler queryHandler);
+    void register(final QueryHandler queryHandler);
 
 }

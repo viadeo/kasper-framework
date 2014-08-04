@@ -22,6 +22,7 @@ import com.viadeo.kasper.security.DefaultSecurityStrategy;
 import com.viadeo.kasper.security.SecurityConfiguration;
 import com.viadeo.kasper.security.SecurityStrategy;
 import com.viadeo.kasper.security.annotation.XKasperPublic;
+
 import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;

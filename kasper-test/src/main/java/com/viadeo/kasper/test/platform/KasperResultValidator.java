@@ -11,8 +11,6 @@ import org.axonframework.test.ResultValidator;
 import org.hamcrest.CoreMatchers;
 import org.hamcrest.Matcher;
 
-import java.util.List;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class KasperResultValidator implements ResultValidator {

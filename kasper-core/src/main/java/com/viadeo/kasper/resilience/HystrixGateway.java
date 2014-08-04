@@ -1,5 +1,10 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.resilience;
-
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
@@ -26,19 +31,23 @@ public abstract class HystrixGateway {
 
     private AtomicLong fallbackCount = new AtomicLong(0); // when no metric is available
 
+    // ------------------------------------------------------------------------
+
     /**
      * Register metrics on object creation
      */
-    protected HystrixGateway(MetricRegistry metricRegistry) {
+    protected HystrixGateway(final MetricRegistry metricRegistry) {
         // register metrics plugin
         registerMetricPlugin(metricRegistry, HystrixPlugins.getInstance());
     }
+
+    // ------------------------------------------------------------------------
 
     /**
      * Increment fallback count and do something later (maybe)
      * @param commandName hystrix command name
      */
-    protected final void reportFallback(String commandName) {
+    protected final void reportFallback(final String commandName) {
         LOGGER.error("call to [{}] failed due to timeout", commandName);
         fallbackCount.incrementAndGet();
     }
@@ -70,12 +79,12 @@ public abstract class HystrixGateway {
     }
 
     @VisibleForTesting
-    static synchronized void registerMetricPlugin(MetricRegistry metricRegistry, HystrixPlugins hystrixPlugins) {
-        if (metricNotInitialized && metricRegistry != null) {
+    static synchronized void registerMetricPlugin(final MetricRegistry metricRegistry, final HystrixPlugins hystrixPlugins) {
+        if (metricNotInitialized && (null != metricRegistry)) {
             try {
                 hystrixPlugins.registerMetricsPublisher(new HystrixCodaHaleMetricsPublisher(metricRegistry));
                 metricNotInitialized = false;
-            } catch (IllegalStateException e) {
+            } catch (final IllegalStateException e) {
                 LOGGER.error("metrics will not be available for hystrix gateway", e);
             }
         }
@@ -92,4 +101,5 @@ public abstract class HystrixGateway {
     public final long getFallbackCount() {
         return fallbackCount.get();
     }
+
 }

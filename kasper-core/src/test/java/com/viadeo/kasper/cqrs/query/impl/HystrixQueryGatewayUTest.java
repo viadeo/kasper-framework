@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.codahale.metrics.MetricRegistry;
@@ -16,11 +22,8 @@ import org.mockito.stubbing.Answer;
 
 import java.util.Collections;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyString;
 import static org.mockito.Mockito.*;
 
 public class HystrixQueryGatewayUTest {
@@ -30,6 +33,8 @@ public class HystrixQueryGatewayUTest {
     private Query query;
     private Context context;
 
+    // ------------------------------------------------------------------------
+
     @Before
     public void init() {
         queryGateway = mock(QueryGateway.class);
@@ -37,6 +42,8 @@ public class HystrixQueryGatewayUTest {
         query = mock(Query.class);
         context = mock(Context.class);
     }
+
+    // ------------------------------------------------------------------------
 
     @Test(timeout = 2000)
     public void retrieve_should_fallback_on_timeout() throws Exception {
@@ -46,34 +53,33 @@ public class HystrixQueryGatewayUTest {
 
         // When
         try {
-            long initialFallbackCount = hystrixQueryGateway.getFallbackCount();
+            final long initialFallbackCount = hystrixQueryGateway.getFallbackCount();
             hystrixQueryGateway.retrieve(query, context);
 
             // Then
             assertTrue(initialFallbackCount < hystrixQueryGateway.getFallbackCount());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             fail();
         }
 
     }
 
-
     @Test
     public void any_should_not_enter_fallback_on_interceptor_exceptions() throws Exception {
-        //Given (exception throws by interceptor)
+        // Given (exception throws by interceptor)
         doThrow(new JSR303ViolationException("error in validation", Collections.EMPTY_SET)).when(queryGateway).retrieve(any(Query.class), any(Context.class));
-
-
 
         // When
         try {
-            long fallbackCount = hystrixQueryGateway.getFallbackCount();
+            final long fallbackCount = hystrixQueryGateway.getFallbackCount();
             hystrixQueryGateway.retrieve(query, context);
+
             // Then
             // fallback count should not be incremented --> fallback method should not be invoked
             assertEquals(fallbackCount, hystrixQueryGateway.getFallbackCount());
-        } catch (HystrixBadRequestException e) {
-            // c'est normal, on rebalance l'exception a la couche appelante
+
+        } catch (final HystrixBadRequestException e) {
+            // normal, with re-throw exception to the calling layer
         }
 
     }
@@ -83,23 +89,20 @@ public class HystrixQueryGatewayUTest {
     @XKasperUnregistered
     private static final class TestQueryResult implements QueryResult { }
 
-
-    // aie j'ai mal aux yeux
-
     private class SlowAnswer implements Answer<QueryResponse<TestQueryResult>> {
 
         private int sleepInMs = 10000; // default
 
-        public SlowAnswer(int sleepInMs) {
+        public SlowAnswer(final int sleepInMs) {
             this.sleepInMs = sleepInMs;
         }
 
         @Override
-        public QueryResponse<TestQueryResult> answer(InvocationOnMock invocation) {
+        public QueryResponse<TestQueryResult> answer(final InvocationOnMock invocation) {
             if (sleepInMs > 0) {
                 try {
                     Thread.sleep(sleepInMs);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     // interrupted
                 }
             }
@@ -107,4 +110,5 @@ public class HystrixQueryGatewayUTest {
         }
 
     }
+
 }

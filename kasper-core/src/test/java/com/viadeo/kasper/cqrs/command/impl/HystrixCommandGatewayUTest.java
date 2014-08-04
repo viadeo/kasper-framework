@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
 import com.codahale.metrics.MetricRegistry;
@@ -34,14 +40,19 @@ public class HystrixCommandGatewayUTest {
     private Command command;
     private Context context;
 
+    // ------------------------------------------------------------------------
+
     @Before
     public void init() {
         cg = mock(CommandGateway.class);
-        KasperCommandGateway bloatGateway = createBloatGateway(cg);
+
+        final KasperCommandGateway bloatGateway = createBloatGateway(cg);
         hystrixCommandGateway = new HystrixCommandGateway(bloatGateway, new MetricRegistry());
         command = mock(Command.class);
         context = mock(Context.class);
     }
+
+    // ------------------------------------------------------------------------
 
 //    @Test(timeout = 1400)
     public void sendCommand_should_fallback_on_timeout() throws Exception {
@@ -51,10 +62,10 @@ public class HystrixCommandGatewayUTest {
 
         // When
         try {
-            long initialFallbackCount = hystrixCommandGateway.getFallbackCount();
+            final long initialFallbackCount = hystrixCommandGateway.getFallbackCount();
             hystrixCommandGateway.sendCommand(command, context);
             assertTrue(initialFallbackCount < hystrixCommandGateway.getFallbackCount());
-        } catch (Exception e) {
+        } catch (final Exception e) {
             fail();
         }
         // Then
@@ -68,8 +79,11 @@ public class HystrixCommandGatewayUTest {
         doAnswer(new SlowAnswer(2000)).when(cg).sendCommandAndWait(any(Command.class), any(Context.class), anyInt(), any(TimeUnit.class));
         doAnswer(new SlowAnswer(1000)).when(cg).sendCommand(any(Command.class), any(Context.class));
 
-        long initialFallbackCount = hystrixCommandGateway.getFallbackCount();
+        // When
+        final long initialFallbackCount = hystrixCommandGateway.getFallbackCount();
         hystrixCommandGateway.sendCommandAndWait(command, context, 50L, TimeUnit.MILLISECONDS);
+
+        // Then
         assertTrue(initialFallbackCount < hystrixCommandGateway.getFallbackCount());
     }
 
@@ -80,13 +94,13 @@ public class HystrixCommandGatewayUTest {
         doAnswer(new FakeCommandResponseAnswer(2000)).when(cg).sendCommandForFuture(any(Command.class), any(Context.class));
 
         // When
-        Future<CommandResponse> commandResponseFuture = hystrixCommandGateway.sendCommandForFuture(command, context);
+        final Future<CommandResponse> commandResponseFuture = hystrixCommandGateway.sendCommandForFuture(command, context);
 
         // Then
         try {
             commandResponseFuture.get(1000, TimeUnit.MILLISECONDS);
             assertFalse(commandResponseFuture.get().isOK());
-        } catch (InterruptedException | ExecutionException | TimeoutException e) {
+        } catch (final InterruptedException | ExecutionException | TimeoutException e) {
             // not yet finished
             fail();
         }
@@ -98,44 +112,46 @@ public class HystrixCommandGatewayUTest {
         doAnswer(new FakeCommandResponseAnswer(0)).when(cg).sendCommandForFuture(any(Command.class), any(Context.class));
 
         // When
-        Future<CommandResponse> commandResponseFuture = hystrixCommandGateway.sendCommandForFuture(command, context);
+        final Future<CommandResponse> commandResponseFuture = hystrixCommandGateway.sendCommandForFuture(command, context);
 
         // Then
         try {
             commandResponseFuture.get(500, TimeUnit.MILLISECONDS);
             assertTrue(commandResponseFuture.get().isOK());
-        }catch (InterruptedException | ExecutionException | TimeoutException e) {
+        }catch (final InterruptedException | ExecutionException | TimeoutException e) {
             // not yet finished
             fail();
         }
     }
 
-
     @Test
     public void any_should_not_enter_fallback_on_interceptor_exceptions() throws Exception {
-        //Given (exception throws by interceptor)
+        // Given (exception throws by interceptor)
         doThrow(new JSR303ViolationException("error in validation", Collections.EMPTY_SET)).when(cg).sendCommand(any(Command.class), any(Context.class));
         doThrow(new JSR303ViolationException("error in validation", Collections.EMPTY_SET)).when(cg).sendCommandForFuture(any(Command.class), any(Context.class));
         doThrow(new JSR303ViolationException("error in validation", Collections.EMPTY_SET)).when(cg).sendCommandAndWait(any(Command.class), any(Context.class), anyLong(), any(TimeUnit.class));
 
-
-        // When
+        // When / Then
         try {
             hystrixCommandGateway.sendCommandForFuture(command, context);
             assertEquals(0L, hystrixCommandGateway.getFallbackCount());
-        } catch (HystrixBadRequestException e) {
+        } catch (final HystrixBadRequestException e) {
             // c'est normal, on rebalance l'exception a la couche appelante
         }
+
+        // When / Then
         try {
             hystrixCommandGateway.sendCommand(command, context);
             assertEquals(0L, hystrixCommandGateway.getFallbackCount());
-        } catch (HystrixBadRequestException e) {
+        } catch (final HystrixBadRequestException e) {
             // c'est normal, on rebalance l'exception a la couche appelante
         }
+
+        // When / Then
         try {
             hystrixCommandGateway.sendCommandAndWait(command, context, 1L, TimeUnit.SECONDS);
             assertEquals(0L, hystrixCommandGateway.getFallbackCount());
-        } catch (HystrixBadRequestException e) {
+        } catch (final HystrixBadRequestException e) {
             // c'est normal, on rebalance l'exception a la couche appelante
         }
 
@@ -143,36 +159,42 @@ public class HystrixCommandGatewayUTest {
 
     //-------------- test classes and methods
 
-    private KasperCommandGateway createBloatGateway(CommandGateway cg) {
-        if (cg == null) throw new NullPointerException("boulet c'est null ton param");
+    private KasperCommandGateway createBloatGateway(final CommandGateway cg) {
+        if (null == cg) {
+            throw new NullPointerException("Hey noob ! Your param is just weird !");
+        }
+
         try {
             final CommandGatewayFactoryBean<CommandGateway> cgfb = mock(CommandGatewayFactoryBean.class);
 
             when(cgfb.getObject()).thenReturn(cg);
-            KasperCommandBus cb = mock(KasperCommandBus.class);
-            DomainLocator dl = mock(DomainLocator.class);
-            InterceptorChainRegistry icr = mock(InterceptorChainRegistry.class);
+            final KasperCommandBus cb = mock(KasperCommandBus.class);
+            final DomainLocator dl = mock(DomainLocator.class);
+            final InterceptorChainRegistry icr = mock(InterceptorChainRegistry.class);
             return new KasperCommandGateway(cgfb, cb, dl, icr);
-        } catch (Exception e) {
-            // devrait pas arriver
+
+        } catch (final Exception e) {
+            // should not occur
             return null;
         }
     }
+
+    // ------------------------------------------------------------------------
 
     private class SlowAnswer implements Answer<Void> {
 
         private int sleepInMs = 10000; // default
 
-        public SlowAnswer(int sleepInMs) {
+        public SlowAnswer(final int sleepInMs) {
             this.sleepInMs = sleepInMs;
         }
 
         @Override
-        public Void answer(InvocationOnMock invocation) {
+        public Void answer(final InvocationOnMock invocation) {
             if (sleepInMs > 0) {
                 try {
                     Thread.sleep(sleepInMs);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     // interrupted
                 }
             }
@@ -184,22 +206,21 @@ public class HystrixCommandGatewayUTest {
 
         private int sleepInMs = 0; // default
 
-        public FakeCommandResponseAnswer(int sleepInMs) {
+        public FakeCommandResponseAnswer(final int sleepInMs) {
             this.sleepInMs = sleepInMs;
         }
 
         @Override
-        public Future<CommandResponse> answer(InvocationOnMock invocation) {
+        public Future<CommandResponse> answer(final InvocationOnMock invocation) {
             if (sleepInMs > 0) {
                 try {
                     Thread.sleep(sleepInMs);
-                } catch (InterruptedException e) {
+                } catch (final InterruptedException e) {
                     // interrupted
                 }
             }
             return Futures.immediateFuture(CommandResponse.ok());
         }
     }
-
 
 }

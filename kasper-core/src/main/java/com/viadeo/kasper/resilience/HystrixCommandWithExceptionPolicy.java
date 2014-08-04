@@ -1,9 +1,17 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.resilience;
 
 import com.netflix.hystrix.HystrixCommand;
 import com.netflix.hystrix.HystrixCommandGroupKey;
 import com.viadeo.kasper.core.policy.ExceptionPolicy;
 import com.viadeo.kasper.core.policy.HystrixInterceptorExceptionPolicy;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Run an hystrix command with an Exception policy
@@ -15,36 +23,40 @@ public abstract class HystrixCommandWithExceptionPolicy<R> extends HystrixComman
 
     private final ExceptionPolicy policy;
 
-    protected HystrixCommandWithExceptionPolicy(HystrixCommandGroupKey group) {
+    // ------------------------------------------------------------------------
+
+    protected HystrixCommandWithExceptionPolicy(final HystrixCommandGroupKey group) {
         super(group);
         this.policy = DEFAULT_POLICY;
     }
 
-    protected HystrixCommandWithExceptionPolicy(HystrixCommand.Setter setter) {
+    protected HystrixCommandWithExceptionPolicy(final HystrixCommand.Setter setter) {
         super(setter);
         this.policy = new HystrixInterceptorExceptionPolicy();
     }
 
-    protected HystrixCommandWithExceptionPolicy(HystrixCommandGroupKey group, ExceptionPolicy policy) {
+    protected HystrixCommandWithExceptionPolicy(final HystrixCommandGroupKey group, final ExceptionPolicy policy) {
         super(group);
-        this.policy = policy;
+        this.policy = checkNotNull(policy);
     }
 
-    protected HystrixCommandWithExceptionPolicy(HystrixCommand.Setter setter, ExceptionPolicy policy) {
+    protected HystrixCommandWithExceptionPolicy(final HystrixCommand.Setter setter, final ExceptionPolicy policy) {
         super(setter);
-        this.policy = policy;
+        this.policy = checkNotNull(policy);
     }
 
+    // ------------------------------------------------------------------------
 
     @Override
     public final R run() throws Exception {
         try {
             return runWithException();
-        } catch (Exception e) {
+        } catch (final Exception e) {
             policy.manage(e); // send exception to calling method
             throw e; // go to fallback
         }
     }
 
     protected abstract R runWithException() throws Exception;
+
 }

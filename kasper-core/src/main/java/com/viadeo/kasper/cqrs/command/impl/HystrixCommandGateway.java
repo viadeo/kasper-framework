@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
 import com.codahale.metrics.MetricRegistry;
@@ -21,6 +27,8 @@ import org.slf4j.LoggerFactory;
 import javax.validation.constraints.NotNull;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 
 /**
@@ -53,11 +61,14 @@ public class HystrixCommandGateway extends HystrixGateway implements CommandGate
 
     private final CommandGateway commandGateway;
 
-    public HystrixCommandGateway(CommandGateway commandGateway, MetricRegistry metricRegistry) {
+    // ------------------------------------------------------------------------
+
+    public HystrixCommandGateway(final CommandGateway commandGateway, final MetricRegistry metricRegistry) {
         super(metricRegistry);
-        this.commandGateway = commandGateway;
+        this.commandGateway = checkNotNull(commandGateway);
     }
 
+    // ------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -70,23 +81,24 @@ public class HystrixCommandGateway extends HystrixGateway implements CommandGate
     @Override
     public void sendCommand(final @NotNull Command command, final @MetaData(Context.METANAME) Context context) {
 
+        final HystrixCommand<Void> commandHystrixCommand =
+                new HystrixCommandWithExceptionPolicy<Void>(HystrixHelper.buildSetter(command)) {
+                    @Override
+                    protected Void runWithException() throws Exception {
+                        commandGateway.sendCommand(command, context);
+                        return null;
+                    }
+                    @Override
+                    protected Void getFallback() {
+                        reportFallback(command.getClass().getName());
+                        return null;
+                    }
+                };
 
-        HystrixCommand<Void> commandHystrixCommand = new HystrixCommandWithExceptionPolicy<Void>(HystrixHelper.buildSetter(command)) {
-
-            @Override
-            protected Void runWithException() throws Exception {
-                commandGateway.sendCommand(command, context);
-                return null;
-            }
-
-            @Override
-            protected Void getFallback() {
-                reportFallback(command.getClass().getName());
-                return null;
-            }
-        };
         commandHystrixCommand.execute();
     }
+
+    // ------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -98,27 +110,32 @@ public class HystrixCommandGateway extends HystrixGateway implements CommandGate
      * @throws com.netflix.hystrix.exception.HystrixBadRequestException if an exception is thrown by an interceptor
      */
     @Override
-    public Future<CommandResponse> sendCommandForFuture(@NotNull final Command command, @MetaData(Context.METANAME) final Context context) {
-        HystrixCommand<Future<CommandResponse>> commandHystrixCommand = new HystrixCommandWithExceptionPolicy<Future<CommandResponse>>(
-                HystrixHelper.buildSetter(command)
-                        .andCommandPropertiesDefaults(
-                                HystrixCommandProperties.Setter()
-                                        .withExecutionIsolationThreadTimeoutInMilliseconds(DEFAULT_TIMEOUT_IN_MS))) {
+    public Future<CommandResponse> sendCommandForFuture(final @NotNull Command command,
+                                                        final @MetaData(Context.METANAME) Context context) {
 
-            @Override
-            protected Future<CommandResponse> runWithException() throws Exception {
-                return commandGateway.sendCommandForFuture(command, context);
-            }
+        final HystrixCommandProperties.Setter confTimeout = HystrixCommandProperties.Setter()
+                .withExecutionIsolationThreadTimeoutInMilliseconds(DEFAULT_TIMEOUT_IN_MS);
 
-            @Override
-            protected Future<CommandResponse> getFallback() {
-                reportFallback(command.getClass().getName());
-                return Futures.immediateFuture(CommandResponse.error(CoreReasonCode.INTERNAL_COMPONENT_TIMEOUT));
-            }
+        final HystrixCommand<Future<CommandResponse>> commandHystrixCommand =
+                new HystrixCommandWithExceptionPolicy<Future<CommandResponse>>(
+                    HystrixHelper.buildSetter(command)
+                                 .andCommandPropertiesDefaults(confTimeout)
+                ) {
+                    @Override
+                    protected Future<CommandResponse> runWithException() throws Exception {
+                        return commandGateway.sendCommandForFuture(command, context);
+                    }
+                    @Override
+                    protected Future<CommandResponse> getFallback() {
+                        reportFallback(command.getClass().getName());
+                        return Futures.immediateFuture(CommandResponse.error(CoreReasonCode.INTERNAL_COMPONENT_TIMEOUT));
+                    }
+                };
 
-        };
         return commandHystrixCommand.execute();
     }
+
+    // ------------------------------------------------------------------------
 
     /**
      * {@inheritDoc}
@@ -131,56 +148,69 @@ public class HystrixCommandGateway extends HystrixGateway implements CommandGate
      * @throws com.netflix.hystrix.exception.HystrixBadRequestException if an exception is thrown by an interceptor
      */
     @Override
-    public void sendCommandAndWait(@NotNull final Command command, @MetaData(Context.METANAME) final Context context, long timeout, TimeUnit unit) {
+    public void sendCommandAndWait(final @NotNull Command command,
+                                   final @MetaData(Context.METANAME) Context context,
+                                   final long timeout,
+                                   final TimeUnit unit) {
 
         long timeoutInMs = TimeUnit.MILLISECONDS.convert(timeout, unit);
 
         if (timeoutInMs >= LONG_TIMEOUT_IN_MS) {
-            LOGGER.warn("Timeout for sending command {} is too long !! Try to set it with a lower value(ex: less than 10 minutes)", command.getClass().getName());
+            LOGGER.warn(
+                    "Timeout for sending command {} is too long !! Try to set it with a lower value(ex: less than 10 minutes)",
+                    command.getClass().getName()
+            );
         }
 
-        HystrixCommandProperties.Setter confTimeout = HystrixCommandProperties.Setter()
+        final HystrixCommandProperties.Setter confTimeout = HystrixCommandProperties.Setter()
                 .withExecutionIsolationThreadTimeoutInMilliseconds((int) timeoutInMs);
 
         // add a specific timeout for this pool
-        HystrixCommand<Void> commandHystrixCommand = new HystrixCommandWithExceptionPolicy<Void>(
-                HystrixHelper.buildSetter(command)
-                        .andCommandPropertiesDefaults(confTimeout)) {
+        final HystrixCommand<Void> commandHystrixCommand =
+                new HystrixCommandWithExceptionPolicy<Void>(
+                    HystrixHelper
+                            .buildSetter(command)
+                            .andCommandPropertiesDefaults(confTimeout)) {
+                                @Override
+                                protected Void runWithException() throws Exception {
+                                    commandGateway.sendCommand(command, context);
+                                    return null;
+                                }
+                                @Override
+                                protected Void getFallback() {
+                                    reportFallback(command.getClass().getName());
+                                    return null;
+                                }
+                            };
 
-            @Override
-            protected Void runWithException() throws Exception {
-                commandGateway.sendCommand(command, context);
-                return null;
-            }
-
-            @Override
-            protected Void getFallback() {
-                reportFallback(command.getClass().getName());
-                return null;
-            }
-        };
         commandHystrixCommand.execute();
-
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public CommandResponse sendCommandAndWaitForAResponse(@NotNull Command command, @MetaData(Context.METANAME) Context context) throws Exception {
+    public CommandResponse sendCommandAndWaitForAResponse(final @NotNull Command command,
+                                                          final @MetaData(Context.METANAME) Context context) throws Exception {
         // no support
         return commandGateway.sendCommandAndWaitForAResponse(command, context);
     }
 
     @Override
-    public CommandResponse sendCommandAndWaitForAResponseWithException(@NotNull Command command, @MetaData(Context.METANAME) Context context) throws Exception {
+    public CommandResponse sendCommandAndWaitForAResponseWithException(final @NotNull Command command,
+                                                                       final @MetaData(Context.METANAME) Context context) throws Exception {
         return commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public void register(CommandHandler commandHandler) {
+    public void register(final CommandHandler commandHandler) {
         commandGateway.register(commandHandler);
     }
 
     @Override
-    public void register(CommandInterceptorFactory interceptorFactory) {
+    public void register(final CommandInterceptorFactory interceptorFactory) {
         commandGateway.register(interceptorFactory);
     }
+
 }

@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.resilience;
 
 import com.netflix.hystrix.*;
@@ -15,7 +21,11 @@ public class HystrixHelper {
     private static final String EVENT_GROUP_NAME = "event";
     private static final String QUERY_GROUP_NAME = "query";
 
-    private HystrixHelper() {} // utility class
+    // ------------------------------------------------------------------------
+
+    private HystrixHelper() { /* utility class */ }
+
+    // ------------------------------------------------------------------------
 
     /**
      * Build setter for a hystrix command for a kasper command<br>
@@ -27,7 +37,7 @@ public class HystrixHelper {
      * @param command a kasper command
      * @return a setter to build a HystrixCommand
      */
-    public static final HystrixCommand.Setter buildSetter(@NotNull Command command) {
+    public static final HystrixCommand.Setter buildSetter(final @NotNull Command command) {
         return buildSpecificSetter(command, COMMAND_GROUP_NAME);
     }
 
@@ -41,7 +51,7 @@ public class HystrixHelper {
      * @param query a kasper command
      * @return a setter to build a HystrixCommand
      */
-    public static final HystrixCommand.Setter buildSetter(@NotNull Query query) {
+    public static final HystrixCommand.Setter buildSetter(final @NotNull Query query) {
         return buildSpecificSetter(query, QUERY_GROUP_NAME);
     }
 
@@ -55,7 +65,7 @@ public class HystrixHelper {
      * @param event a kasper command
      * @return a setter to build a HystrixCommand
      */
-    public static final HystrixCommand.Setter buildSetter(@NotNull Event event) {
+    public static final HystrixCommand.Setter buildSetter(final @NotNull Event event) {
         return buildSpecificSetter(event, EVENT_GROUP_NAME);
     }
 
@@ -66,23 +76,28 @@ public class HystrixHelper {
      * @return hystrix command setter
      * @throws java.lang.NullPointerException if any parameter is null
      */
-    private static final HystrixCommand.Setter buildSpecificSetter(@NotNull Object object, @NotNull String objGroupName) {
+    private static final HystrixCommand.Setter buildSpecificSetter(final @NotNull Object object, final @NotNull String objGroupName) {
         checkNotNull(object);
         checkNotNull(objGroupName);
-        Class<?> currentClass = object.getClass();
+
+        final Class<?> currentClass = object.getClass();
 
         return HystrixCommand.Setter
+
                 // configure command group and command name
                 .withGroupKey(HystrixCommandGroupKey.Factory.asKey(objGroupName))
                 .andCommandKey(HystrixCommandKey.Factory.asKey(currentClass.getName()))
+
                 // configure thread pool key
                 .andThreadPoolKey(HystrixThreadPoolKey.Factory.asKey(currentClass.getPackage().getName()))
+
                 // configure circuit breaker
                 .andCommandPropertiesDefaults(
                         HystrixCommandProperties.Setter()
-                        .withCircuitBreakerSleepWindowInMilliseconds(60000) // default to 500 ms
+                            .withCircuitBreakerSleepWindowInMilliseconds(60000) // default to 500 ms
                             .withMetricsRollingStatisticalWindowInMilliseconds(60000) // default to 10000 ms
                             .withMetricsRollingStatisticalWindowBuckets(60) // default to 10
                 );
     }
+
 }

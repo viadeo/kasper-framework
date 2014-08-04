@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.codahale.metrics.MetricRegistry;
@@ -11,6 +17,8 @@ import com.viadeo.kasper.resilience.HystrixGateway;
 import com.viadeo.kasper.resilience.HystrixHelper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Decorator for kasper query gateway.
@@ -32,44 +40,49 @@ public class HystrixQueryGateway extends HystrixGateway implements QueryGateway{
 
     private final QueryGateway queryGateway;
 
-    public HystrixQueryGateway(QueryGateway queryGateway, MetricRegistry metricRegistry) {
+    // ------------------------------------------------------------------------
+
+    public HystrixQueryGateway(final QueryGateway queryGateway, final MetricRegistry metricRegistry) {
         super(metricRegistry);
-        this.queryGateway = queryGateway;
+        this.queryGateway = checkNotNull(queryGateway);
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public <RESULT extends QueryResult> QueryResponse<RESULT> retrieve(final Query query, final Context context) throws Exception {
 
-        HystrixCommand<QueryResponse<RESULT>> commandHystrixCommand = new HystrixCommandWithExceptionPolicy<QueryResponse<RESULT>>(HystrixHelper.buildSetter(query)) {
-
-            @Override
-            protected QueryResponse<RESULT> runWithException() throws Exception {
-                return queryGateway.retrieve(query, context);
-            }
-
-            @Override
-            protected QueryResponse<RESULT> getFallback() {
-                reportFallback(query.getClass().getName());
-                return QueryResponse.error(CoreReasonCode.INTERNAL_COMPONENT_TIMEOUT);
-            }
-        };
+        final HystrixCommand<QueryResponse<RESULT>> commandHystrixCommand =
+                new HystrixCommandWithExceptionPolicy<QueryResponse<RESULT>>(HystrixHelper.buildSetter(query)) {
+                    @Override
+                    protected QueryResponse<RESULT> runWithException() throws Exception {
+                        return queryGateway.retrieve(query, context);
+                    }
+                    @Override
+                    protected QueryResponse<RESULT> getFallback() {
+                        reportFallback(query.getClass().getName());
+                        return QueryResponse.error(CoreReasonCode.INTERNAL_COMPONENT_TIMEOUT);
+                    }
+                };
 
         return commandHystrixCommand.execute();
     }
 
+    // ------------------------------------------------------------------------
+
     @Deprecated
     @Override
-    public void register(String name, QueryHandlerAdapter adapter, boolean global) {
+    public void register(final String name, final QueryHandlerAdapter adapter, final boolean global) {
         queryGateway.register(name, adapter, global);
     }
 
     @Override
-    public void register(QueryInterceptorFactory interceptorFactory) {
+    public void register(final QueryInterceptorFactory interceptorFactory) {
         queryGateway.register(interceptorFactory);
     }
 
     @Override
-    public void register(QueryHandler queryHandler) {
+    public void register(final QueryHandler queryHandler) {
         queryGateway.register(queryHandler);
     }
 
