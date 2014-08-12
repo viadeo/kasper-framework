@@ -8,6 +8,7 @@ package com.viadeo.kasper.client.platform.domain.descriptor;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
@@ -21,9 +22,12 @@ import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.junit.Test;
+
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 
@@ -180,4 +184,13 @@ public class DomainDescriptorFactoryUTest {
         assertEquals(TestConcept.class, aggregateDescriptor.getReferenceClass());
     }
 
+    @Test
+    public void retrieveEventsFrom_shouldNeOk() {
+        Collection<Class<? extends IEvent>> classes = DomainDescriptorFactory.retrieveEventsFrom(MyCustomDomainBox.MyCustomDomain.class);
+        assertNotNull(classes);
+        assertTrue(classes.contains(MyCustomDomainBox.MyCustomEvent.class));
+        assertTrue(classes.contains(MyCustomDomainBox.MyCustomDomainEvent.class));
+        assertTrue(classes.contains(MyCustomDomainBox.MyCustomMalformedDomainEvent.class));
+        assertFalse(classes.contains(MyCustomDomainBox.AbstractMyCustomEvent.class));
+    }
 }

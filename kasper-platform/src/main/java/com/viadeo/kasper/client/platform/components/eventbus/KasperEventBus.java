@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -93,7 +94,7 @@ public class KasperEventBus extends ClusteringEventBus {
 
     /*
      * Return a default cluster selector using the specified error handler
-     * FIXME: eventually manage with a correct transaction manager
+     * FIXME: eventually manage with a complete transaction manager
      */
     public static ClusterSelector getCluster(
             final Policy busPolicy,
@@ -118,9 +119,12 @@ public class KasperEventBus extends ClusteringEventBus {
                     errorHandler
                 ) {
                     @Override
-                    protected EventProcessor newProcessingScheduler(EventProcessor.ShutdownCallback shutDownCallback) {
+                    protected EventProcessor newProcessingScheduler(EventProcessor.ShutdownCallback shutDownCallback, Set<EventListener> eventListeners,
+                                                                    MultiplexingEventProcessingMonitor eventProcessingMonitor) {
                         final EventProcessor eventProcessor = super.newProcessingScheduler(
-                            new KasperShutdownCallback(processorDownLatch, shutDownCallback)
+                            new KasperShutdownCallback(processorDownLatch, shutDownCallback),
+                            eventListeners,
+                            eventProcessingMonitor
                         );
                         processorDownLatch.process(eventProcessor);
                         return eventProcessor;

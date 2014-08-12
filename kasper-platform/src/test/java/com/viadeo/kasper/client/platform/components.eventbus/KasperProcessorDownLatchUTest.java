@@ -6,9 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform.components.eventbus;
 
-import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.eventhandling.EventListener;
+import org.axonframework.eventhandling.MultiplexingEventProcessingMonitor;
 import org.axonframework.eventhandling.async.ErrorHandler;
 import org.axonframework.eventhandling.async.EventProcessor;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
@@ -205,7 +206,8 @@ public class KasperProcessorDownLatchUTest {
                 new KasperShutdownCallback(processorDownLatch, mock(EventProcessor.ShutdownCallback.class)),
                 mock(ErrorHandler.class),
                 mock(UnitOfWorkFactory.class),
-                Lists.<EventListener>newArrayList()
+                Sets.<EventListener>newHashSet(),
+                mock(MultiplexingEventProcessingMonitor.class)
             );
             this.timeout = timeout;
         }

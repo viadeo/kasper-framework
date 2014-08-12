@@ -63,9 +63,13 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
      * Intercept and record events
      */
     @Override
-    public void registerForPublication(final EventMessage<?> message, final EventBus eventBus) {
+    public void registerForPublication(final EventMessage<?> message, final EventBus eventBus, final boolean notifyRegistrationHandlers) {
 
-        super.registerForPublication(checkNotNull(message), checkNotNull(eventBus));
+        super.registerForPublication(
+                checkNotNull(message),
+                checkNotNull(eventBus),
+                notifyRegistrationHandlers
+        );
 
         if ( ! UnitOfWorkEvent.class.isAssignableFrom(message.getPayloadType())) {
             final List<EventMessage<?>> events;
@@ -87,6 +91,8 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
     @Override
     @SuppressWarnings("unchecked")
     protected void publishEvents() {
+
+        final boolean notifyRegistrationHandlers = false;
 
         for (final Map.Entry<EventBus, List<EventMessage<?>>> entry : eventsToBePublished.entrySet()) {
             if (entry.getValue().size() > 1) {
@@ -119,7 +125,7 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
                     context.get().asMetaDataMap()
                 );
 
-                this.registerForPublication(uowMessage, entry.getKey());
+                this.registerForPublication(uowMessage, entry.getKey(), notifyRegistrationHandlers);
 
             } else {
 

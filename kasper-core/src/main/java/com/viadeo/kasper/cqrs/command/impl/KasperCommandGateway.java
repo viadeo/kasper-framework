@@ -92,6 +92,15 @@ public class KasperCommandGateway implements CommandGateway {
         );
     }
 
+    /**
+     *
+     * @param commandGatewayFactoryBean
+     * @param commandBus
+     * @param domainLocator
+     * @param interceptorChainRegistry
+     * @param commandDispatchInterceptors
+     * @throws java.lang.NullPointerException
+     */
     protected KasperCommandGateway(final CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean,
                                    final KasperCommandBus commandBus,
                                    final DomainLocator domainLocator,
@@ -120,7 +129,7 @@ public class KasperCommandGateway implements CommandGateway {
         }
 
         try {
-            this.commandGateway = checkNotNull(commandGatewayFactoryBean.getObject());
+            this.commandGateway = checkNotNull(commandGatewayFactoryBean.getObject()); // retrieve axon proxy
         } catch (final Exception e) {
             throw new KasperException("Unable to initialize the Command Gateway", e);
         }
@@ -135,12 +144,9 @@ public class KasperCommandGateway implements CommandGateway {
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
+        checkNotNull(command); // fast fail
         MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
-
-        commandGateway.sendCommand(
-                checkNotNull(command),
-                context
-        );
+        commandGateway.sendCommand(command, context);
     }
 
     @Override
@@ -150,12 +156,10 @@ public class KasperCommandGateway implements CommandGateway {
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
+        checkNotNull(command); // fast fail
         MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
 
-        return commandGateway.sendCommandForFuture(
-                checkNotNull(command),
-                context
-        );
+        return commandGateway.sendCommandForFuture(command, context);
     }
 
     @Override
@@ -165,10 +169,11 @@ public class KasperCommandGateway implements CommandGateway {
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
+        checkNotNull(command); // fast fail
         MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
 
         return commandGateway.sendCommandAndWaitForAResponse(
-                checkNotNull(command),
+                command,
                 context
         );
     }
@@ -180,10 +185,11 @@ public class KasperCommandGateway implements CommandGateway {
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
+        checkNotNull(command); // fast fail
         MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
 
         return commandGateway.sendCommandAndWaitForAResponseWithException(
-                checkNotNull(command),
+                command,
                 context
         );
     }
@@ -197,38 +203,21 @@ public class KasperCommandGateway implements CommandGateway {
                 final long timeout,
                 final TimeUnit unit) throws Exception {
 
+        checkNotNull(command); // fast fail
         MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
 
         commandGateway.sendCommandAndWait(
-                checkNotNull(command),
+                command,
                 context,
                 timeout,
                 checkNotNull(unit)
         );
     }
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public void sendCommandAndWaitForever(
-                final Command command,
-                @MetaData(Context.METANAME)
-                final Context context) throws Exception {
-
-        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
-
-        commandGateway.sendCommandAndWaitForever(
-                checkNotNull(command),
-                context
-        );
-    }
 
     // ------------------------------------------------------------------------
 
-    /**
-     * Register a command handler to the gateway
-     *
-     * @param commandHandler the command handler to be registered
-     */
+    @Override
     public void register(final CommandHandler commandHandler) {
 
         domainLocator.registerHandler(checkNotNull(commandHandler));
@@ -255,11 +244,7 @@ public class KasperCommandGateway implements CommandGateway {
         );
     }
 
-    /**
-     * Register an interceptor factory to the gateway
-     *
-     * @param interceptorFactory the query interceptor factory to register
-     */
+    @Override
     public void register(final CommandInterceptorFactory interceptorFactory) {
         checkNotNull(interceptorFactory);
         LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());

@@ -32,28 +32,30 @@ import static org.mockito.Mockito.*;
 
 public class KasperCommandGatewayUTest {
 
-    private final KasperCommandGateway commandGateway;
-    private final KasperCommandBus commandBus;
-    private final DomainLocator domainLocator;
-    private final CommandGateway decoratedCommandGateway;
-    private final InterceptorChainRegistry<Command, CommandResponse> interceptorChainRegistry;
+    private KasperCommandGateway commandGateway;
+    private KasperCommandBus commandBus;
+    private CommandGatewayFactoryBean commandGatewayFactoryBean;
+    private DomainLocator domainLocator;
+    private CommandGateway decoratedCommandGateway;
+
+    private InterceptorChainRegistry<Command, CommandResponse> interceptorChainRegistry;
 
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked")
     public KasperCommandGatewayUTest() throws Exception {
-        final CommandGatewayFactoryBean<CommandGateway> commandGatewayFactoryBean = mock(CommandGatewayFactoryBean.class);
+
+    }
+
+    @Before
+    public void setUp() throws Exception {
+        commandGatewayFactoryBean = mock(CommandGatewayFactoryBean.class);
         decoratedCommandGateway = mock(CommandGateway.class);
         when(commandGatewayFactoryBean.getObject()).thenReturn(decoratedCommandGateway);
         commandBus = mock(KasperCommandBus.class);
         domainLocator = mock(DomainLocator.class);
         interceptorChainRegistry = mock(InterceptorChainRegistry.class);
         commandGateway = new KasperCommandGateway(commandGatewayFactoryBean, commandBus, domainLocator, interceptorChainRegistry);
-    }
-
-    @Before
-    public void setUp() {
-        reset(domainLocator, decoratedCommandGateway);
     }
 
     // ------------------------------------------------------------------------
@@ -69,7 +71,7 @@ public class KasperCommandGatewayUTest {
 
         // Then
         verify(decoratedCommandGateway).sendCommand(refEq(command), refEq(context));
-        verifyNoMoreInteractions(decoratedCommandGateway);
+
     }
 
     @Test
@@ -83,7 +85,6 @@ public class KasperCommandGatewayUTest {
 
         // Then
         verify(decoratedCommandGateway).sendCommandForFuture(refEq(command), refEq(context));
-        verifyNoMoreInteractions(decoratedCommandGateway);
     }
 
     @Test
@@ -97,7 +98,6 @@ public class KasperCommandGatewayUTest {
 
         // Then
         verify(decoratedCommandGateway).sendCommandAndWaitForAResponse(refEq(command), refEq(context));
-        verifyNoMoreInteractions(decoratedCommandGateway);
     }
 
     @Test
@@ -111,7 +111,6 @@ public class KasperCommandGatewayUTest {
 
         // Then
         verify(decoratedCommandGateway).sendCommandAndWaitForAResponseWithException(refEq(command), refEq(context));
-        verifyNoMoreInteractions(decoratedCommandGateway);
     }
 
     @Test
@@ -125,22 +124,7 @@ public class KasperCommandGatewayUTest {
         commandGateway.sendCommandAndWait(command, context, 1000, unit);
 
         // Then
-        verify(decoratedCommandGateway).sendCommandAndWait(refEq(command), refEq(context), anyLong(), refEq(unit));
-        verifyNoMoreInteractions(decoratedCommandGateway);
-    }
-
-    @Test
-    public void sendCommandAndWaitForever_shouldDelegateTheCall() throws Exception {
-        // Given
-        final  Command command = mock(Command.class);
-        final Context context = mock(Context.class);
-
-        // When
-        commandGateway.sendCommandAndWaitForever(command, context);
-
-        // Then
-        verify(decoratedCommandGateway).sendCommandAndWaitForever(refEq(command), refEq(context));
-        verifyNoMoreInteractions(decoratedCommandGateway);
+        verify(decoratedCommandGateway).sendCommandAndWait(refEq(command), refEq(context), anyLong(), any(TimeUnit.class));
     }
 
     @Test(expected = NullPointerException.class)
