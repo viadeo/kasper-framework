@@ -9,7 +9,6 @@ package com.viadeo.kasper.security.authz.entities.actor;
 
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
-import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.security.authz.Authorization;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
 import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
@@ -29,19 +28,10 @@ public class Group extends Actor {
 
     // ------------------------------------------------------------------------
 
-    public Group(final String name) {
-        apply(new AuthorizationGroupCreatedEvent(new DefaultKasperId(), name));
-    }
+    public Group() { }
 
     public Group(final KasperID kasperID, final String name) {
         apply(new AuthorizationGroupCreatedEvent(kasperID, name));
-    }
-
-    public Group(final String name,
-                 final List<Role> roles,
-                 final List<WildcardPermission> permissions,
-                 final List<User> users) {
-        apply(new AuthorizationGroupCreatedEvent(new DefaultKasperId(), name, users, roles, permissions));
     }
 
     public Group(final KasperID kasperID,
@@ -53,13 +43,15 @@ public class Group extends Actor {
     }
 
     @EventHandler
-    public void onCreated(AuthorizationGroupCreatedEvent event) {
+    public void onCreated(final AuthorizationGroupCreatedEvent event) {
         setId(event.getEntityId());
         setName(event.getName());
         setUsers(event.getUsers());
         setRoles(event.getRoles());
         setPermissions(event.getPermissions());
     }
+
+    // ------------------------------------------------------------------------
 
     public Group delete() {
         apply(new AuthorizationGroupDeletedEvent(getEntityId()));
@@ -77,25 +69,29 @@ public class Group extends Actor {
         return name;
     }
 
-    public void setName(final String name) {
-        this.name = checkNotNull(name);
-    }
-
     public List<User> getUsers() {
         return users;
     }
 
-    public void setUsers(final List<User> users) {
+    // ------------------------------------------------------------------------
+
+    protected void setName(final String name) {
+        this.name = checkNotNull(name);
+    }
+
+    protected void setUsers(final List<User> users) {
         this.users = checkNotNull(users);
     }
 
-    public void addUser(final User user) {
+    protected void addUser(final User user) {
         users.add(checkNotNull(user));
     }
 
-    public void removeUser(final User user) {
+    protected void removeUser(final User user) {
         users.remove(checkNotNull(user));
     }
+
+    // ------------------------------------------------------------------------
 
     public boolean equals(final Object o) {
         if (o == this) {
@@ -107,4 +103,5 @@ public class Group extends Actor {
         }
         return false;
     }
+
 }

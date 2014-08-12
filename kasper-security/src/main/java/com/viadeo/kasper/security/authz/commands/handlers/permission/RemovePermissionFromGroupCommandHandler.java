@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.commands.handlers.permission;
 
 import com.google.common.base.Optional;
@@ -18,11 +24,11 @@ public class RemovePermissionFromGroupCommandHandler extends EntityCommandHandle
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<RemovePermissionFromGroupCommand> message) throws Exception {
-        Group_has_Permission groupHasPermission = new Group_has_Permission(
+        final Group_has_Permission groupHasPermission = new Group_has_Permission(
                 this.getGroup(message.getCommand().getGroupId()),
                 this.getPermission(message.getCommand().getPermissionId())
         );
-        this.getRepository().add(groupHasPermission.delete());
+        groupHasPermission.delete();
         return CommandResponse.ok();
     }
 
@@ -30,7 +36,7 @@ public class RemovePermissionFromGroupCommandHandler extends EntityCommandHandle
         WildcardPermission permission = null;
         final Optional<ClientRepository<WildcardPermission>> permissionRepositoryOpt = this.getRepositoryOf(WildcardPermission.class);
         if (permissionRepositoryOpt.isPresent()) {
-            permission = permissionRepositoryOpt.get().load(id, Optional.<Long>absent()).get();
+            permission = permissionRepositoryOpt.get().business().get(id);
         }
         return permission;
     }
@@ -39,8 +45,9 @@ public class RemovePermissionFromGroupCommandHandler extends EntityCommandHandle
         Group group = null;
         final Optional<ClientRepository<Group>> groupRepositoryOpt = this.getRepositoryOf(Group.class);
         if (groupRepositoryOpt.isPresent()) {
-            group = groupRepositoryOpt.get().load(id, Optional.<Long>absent()).get();
+            group = groupRepositoryOpt.get().business().get(id);
         }
         return group;
     }
+
 }

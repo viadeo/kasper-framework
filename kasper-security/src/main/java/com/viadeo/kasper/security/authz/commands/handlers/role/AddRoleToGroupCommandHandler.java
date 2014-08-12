@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.commands.handlers.role;
 
 import com.google.common.base.Optional;
@@ -18,7 +24,7 @@ public class AddRoleToGroupCommandHandler extends EntityCommandHandler<AddRoleTo
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<AddRoleToGroupCommand> message) throws Exception {
-        Group_has_Role groupHasRole = new Group_has_Role(
+        final Group_has_Role groupHasRole = new Group_has_Role(
                 this.getGroup(message.getCommand().getGroupId()),
                 this.getRole(message.getCommand().getRoleId())
         );
@@ -30,7 +36,7 @@ public class AddRoleToGroupCommandHandler extends EntityCommandHandler<AddRoleTo
         Role role = null;
         final Optional<ClientRepository<Role>> roleRepositoryOpt = this.getRepositoryOf(Role.class);
         if (roleRepositoryOpt.isPresent()) {
-            role = roleRepositoryOpt.get().load(id, Optional.<Long>absent()).get();
+            role = roleRepositoryOpt.get().business().get(id);
         }
         return role;
     }
@@ -39,8 +45,9 @@ public class AddRoleToGroupCommandHandler extends EntityCommandHandler<AddRoleTo
         Group group = null;
         final Optional<ClientRepository<Group>> groupRepositoryOpt = this.getRepositoryOf(Group.class);
         if (groupRepositoryOpt.isPresent()) {
-            group = groupRepositoryOpt.get().load(id, Optional.<Long>absent()).get();
+            group = groupRepositoryOpt.get().business().get(id);
         }
         return group;
     }
+
 }

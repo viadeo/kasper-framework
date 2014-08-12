@@ -22,7 +22,6 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-
 public class DefaultAuthorizationValidator implements AuthorizationValidator {
 
     private AuthorizationSecurityManager authorizationSecurityManager;
@@ -30,7 +29,8 @@ public class DefaultAuthorizationValidator implements AuthorizationValidator {
 
     // ------------------------------------------------------------------------
 
-    public DefaultAuthorizationValidator(final AuthorizationSecurityManager authorizationSecurityManager, final AuthorizationStorage authorizationStorage) {
+    public DefaultAuthorizationValidator(final AuthorizationSecurityManager authorizationSecurityManager,
+                                         final AuthorizationStorage authorizationStorage) {
         this.authorizationSecurityManager = checkNotNull(authorizationSecurityManager);
         this.authorizationStorage = checkNotNull(authorizationStorage);
     }
@@ -49,7 +49,8 @@ public class DefaultAuthorizationValidator implements AuthorizationValidator {
     }
 
     protected List<String> extractRoles(final Class<?> clazz) {
-        final List<String> roles = new ArrayList<String>();
+        final List<String> roles = new ArrayList<>();
+
         if (null != clazz.getAnnotation(XKasperRequireRoles.class)) {
             final String[] neededRoles = clazz.getAnnotation(XKasperRequireRoles.class).value();
             if ((null != neededRoles) && (neededRoles.length > 0)) {
@@ -60,10 +61,10 @@ public class DefaultAuthorizationValidator implements AuthorizationValidator {
     }
 
     protected List<String> extractPermissions(final Class<?> clazz) {
-        final List<String> permissions = new ArrayList<String>();
+        final List<String> permissions = new ArrayList<>();
         if (null != clazz.getAnnotation(XKasperRequirePermissions.class)) {
             final String[] neededPermissions = clazz.getAnnotation(XKasperRequirePermissions.class).value();
-            if (neededPermissions != null && neededPermissions.length > 0) {
+            if ((null != neededPermissions) && (neededPermissions.length > 0)) {
                 permissions.addAll(Arrays.asList(neededPermissions));
             }
         }

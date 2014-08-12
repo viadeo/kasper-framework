@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.commands.handlers.role;
 
 import com.google.common.base.Optional;
@@ -18,11 +24,11 @@ public class RemoveRoleFromUserCommandHandler extends EntityCommandHandler<Remov
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<RemoveRoleFromUserCommand> message) throws Exception {
-        User_has_Role userHasRole = new User_has_Role(
-                this.getUser(message.getCommand().getUserId()),
-                this.getRole(message.getCommand().getRoleId())
+        final User_has_Role userHasRole = new User_has_Role(
+            this.getUser(message.getCommand().getUserId()),
+            this.getRole(message.getCommand().getRoleId())
         );
-        this.getRepository().add(userHasRole.delete());
+        userHasRole.delete();
         return CommandResponse.ok();
     }
 
@@ -30,7 +36,7 @@ public class RemoveRoleFromUserCommandHandler extends EntityCommandHandler<Remov
         Role role = null;
         final Optional<ClientRepository<Role>> roleRepositoryOpt = this.getRepositoryOf(Role.class);
         if (roleRepositoryOpt.isPresent()) {
-            role = roleRepositoryOpt.get().load(id, Optional.<Long>absent()).get();
+            role = roleRepositoryOpt.get().business().get(id);
         }
         return role;
     }
@@ -39,8 +45,9 @@ public class RemoveRoleFromUserCommandHandler extends EntityCommandHandler<Remov
         User user = null;
         final Optional<ClientRepository<User>> userRepositoryOpt = this.getRepositoryOf(User.class);
         if (userRepositoryOpt.isPresent()) {
-            user = userRepositoryOpt.get().load(id, Optional.<Long>absent()).get();
+            user = userRepositoryOpt.get().business().get(id);
         }
         return user;
     }
+
 }

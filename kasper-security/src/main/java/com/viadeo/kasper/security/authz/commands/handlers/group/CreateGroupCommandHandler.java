@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.commands.handlers.group;
 
 import com.viadeo.kasper.cqrs.command.CommandResponse;
@@ -13,8 +19,9 @@ public class CreateGroupCommandHandler extends EntityCommandHandler<CreateGroupC
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<CreateGroupCommand> message) throws Exception {
-        Group permission = new Group(message.getCommand().getName());
+        final Group permission = new Group(message.getCommand().getIdToUse(), message.getCommand().getName());
         this.getRepository().add(permission);
         return CommandResponse.ok();
     }
+
 }

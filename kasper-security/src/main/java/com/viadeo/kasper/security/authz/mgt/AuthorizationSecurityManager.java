@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.mgt;
 
-import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.security.authz.entities.actor.Actor;
 import com.viadeo.kasper.security.authz.entities.permission.Permission;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;

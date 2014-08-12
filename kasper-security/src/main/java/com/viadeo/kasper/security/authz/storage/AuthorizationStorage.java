@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.storage;
 
 import com.viadeo.kasper.KasperID;
@@ -5,7 +11,6 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.security.authz.entities.actor.Actor;
 import com.viadeo.kasper.security.authz.entities.actor.Group;
 import com.viadeo.kasper.security.authz.entities.actor.User;
-import com.viadeo.kasper.security.authz.entities.permission.Permission;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
 import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 import com.viadeo.kasper.security.authz.entities.relations.*;
@@ -18,76 +23,76 @@ public interface AuthorizationStorage {
 
     /********************************* Backoffice methods ***********************************/
 
-    public WildcardPermission createPermission(final WildcardPermission permission);
+    WildcardPermission createPermission(WildcardPermission permission);
 
-    public void deletePermission(final WildcardPermission permission);
+    void deletePermission(WildcardPermission permission);
 
-    public Role createRole(final Role role);
+    Role createRole(Role role);
 
-    public void deleteRole(final Role role);
+    void deleteRole(Role role);
 
-    public User createUser(final User user);
+    User createUser(User user);
 
-    public void deleteUser(final User user);
+    void deleteUser(User user);
 
-    public Group createGroup(final Group group);
+    Group createGroup(Group group);
 
-    public void deleteGroup(final Group group);
+    void deleteGroup(Group group);
 
     /****************************** add/remove **********************************/
 
-    public Role addPermissionToRole(final Role_has_Permission role_has_permission);
+    Role addPermissionToRole(Role_has_Permission role_has_permission);
 
-    public Role removePermissionFromRole(final Role_has_Permission role_has_permission);
+    Role removePermissionFromRole(Role_has_Permission role_has_permission);
 
-    public User addPermissionToUser(final User_has_Permission user_has_Permission);
+    User addPermissionToUser(User_has_Permission user_has_Permission);
 
-    public User removePermissionFromUser(final User_has_Permission user_has_Permission);
+    User removePermissionFromUser(User_has_Permission user_has_Permission);
 
-    public Group addPermissionToGroup(final Group_has_Permission group_has_permission);
+    Group addPermissionToGroup(Group_has_Permission group_has_permission);
 
-    public Group removePermissionFromGroup(final Group_has_Permission group_has_permission);
+    Group removePermissionFromGroup(Group_has_Permission group_has_permission);
 
-    public User addRoleToUser(final User_has_Role user_has_role);
+    User addRoleToUser(User_has_Role user_has_role);
 
-    public User removeRoleFromUser(final User_has_Role user_has_role);
+    User removeRoleFromUser(User_has_Role user_has_role);
 
-    public Group addRoleToGroup(final Group_has_Role group_has_role);
+    Group addRoleToGroup(Group_has_Role group_has_role);
 
-    public Group removeRoleFromGroup(final Group_has_Role group_has_role);
+    Group removeRoleFromGroup(Group_has_Role group_has_role);
 
-    public Group addUserToGroup(final Group_has_User group_has_user);
+    Group addUserToGroup(Group_has_User group_has_user);
 
-    public Group removeUserFromGroup(final Group_has_User group_has_user);
+    Group removeUserFromGroup(Group_has_User group_has_user);
 
     /************************************* gets ****************************/
 
-    public WildcardPermission getPermission(final KasperID kasperID);
+    WildcardPermission getPermission(KasperID kasperID);
 
-    public List<WildcardPermission> getAllPermissions();
+    List<WildcardPermission> getAllPermissions();
 
-    public Role getRole(final KasperID kasperID);
+    Role getRole(KasperID kasperID);
 
-    public List<Role> getAllRoles();
+    List<Role> getAllRoles();
 
-    public Group getGroup(final KasperID kasperID);
+    Group getGroup(KasperID kasperID);
 
-    public List<Group> getAllGroups();
+    List<Group> getAllGroups();
 
-    public User getUser(final KasperID kasperID);
+    User getUser(KasperID kasperID);
 
-    public List<User> getAllUsers();
+    List<User> getAllUsers();
 
-    public List<Role> getRolesHavingPermission(final KasperID permissionId);
+    List<Role> getRolesHavingPermission(KasperID permissionId);
 
-    public List<Group> getGroupsHavingRole(final KasperID roleId);
+    List<Group> getGroupsHavingRole(KasperID roleId);
 
-    public List<Group> getGroupsHavingPermission(final KasperID permissionId);
+    List<Group> getGroupsHavingPermission(KasperID permissionId);
 
-    public List<Group> getGroupsHavingUser(final KasperID userId);
+    List<Group> getGroupsHavingUser(KasperID userId);
 
-    public List<User> getUsersHavingRole(final KasperID roleId);
+    List<User> getUsersHavingRole(KasperID roleId);
 
-    public List<User> getUsersHavingPermission(final KasperID permissionId);
+    List<User> getUsersHavingPermission(KasperID permissionId);
 
 }

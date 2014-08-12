@@ -28,6 +28,7 @@
 
 package com.viadeo.kasper.security.authz.entities.permission.impl;
 
+import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
@@ -53,10 +54,7 @@ public class WildcardPermission extends Concept implements Permission, Serializa
 
     // ------------------------------------------------------------------------
 
-
-    public WildcardPermission() {
-        apply(new PermissionCreatedEvent(new DefaultKasperId()));
-    }
+    public WildcardPermission() { }
 
     protected WildcardPermission(final KasperID kasperId) {
         apply(new PermissionCreatedEvent(kasperId));
@@ -83,6 +81,8 @@ public class WildcardPermission extends Concept implements Permission, Serializa
         setId(event.getEntityId());
         setParts(event.getWildcardString(), event.isCaseSensitive());
     }
+
+    // ------------------------------------------------------------------------
 
     public WildcardPermission delete() {
         apply(new PermissionDeletedEvent(getEntityId()));
@@ -139,8 +139,8 @@ public class WildcardPermission extends Concept implements Permission, Serializa
     // ------------------------------------------------------------------------
 
 
-    protected List<Set<String>> getParts() {
-        return this.parts;
+    public List<Set<String>> getParts() {
+        return ImmutableList.copyOf(this.parts);
     }
 
     // ------------------------------------------------------------------------
@@ -148,7 +148,7 @@ public class WildcardPermission extends Concept implements Permission, Serializa
     public boolean implies(final Permission p) {
 
         // By default only supports comparisons with other WildcardPermissions
-        if (!(p instanceof WildcardPermission)) {
+        if ( ! (p instanceof WildcardPermission)) {
             return false;
         }
 
@@ -163,7 +163,7 @@ public class WildcardPermission extends Concept implements Permission, Serializa
                 return true;
             } else {
                 final Set<String> part = getParts().get(i);
-                if ((!part.contains(WILDCARD_TOKEN)) && (!part.containsAll(otherPart))) {
+                if (( ! part.contains(WILDCARD_TOKEN)) && ( ! part.containsAll(otherPart))) {
                     return false;
                 }
                 i++;
@@ -173,7 +173,7 @@ public class WildcardPermission extends Concept implements Permission, Serializa
         // If this permission has more parts than the other parts, only imply it if all of the other parts are wildcards
         for (; i < getParts().size(); i++) {
             final Set<String> part = getParts().get(i);
-            if (!part.contains(WILDCARD_TOKEN)) {
+            if ( ! part.contains(WILDCARD_TOKEN)) {
                 return false;
             }
         }

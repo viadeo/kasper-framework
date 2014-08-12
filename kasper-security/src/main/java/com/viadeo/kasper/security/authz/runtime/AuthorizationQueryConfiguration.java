@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.runtime;
 
 import com.viadeo.kasper.security.authz.queries.handlers.*;
@@ -67,4 +73,5 @@ public class AuthorizationQueryConfiguration {
     public GetUsersQueryHandler getUsersQueryHandler(AuthorizationStorage authorizationStorage) {
         return new GetUsersQueryHandler(authorizationStorage);
     }
+
 }

@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.entities.relations;
 
 import com.viadeo.kasper.KasperRelationID;
@@ -17,6 +23,10 @@ public class Group_has_Role extends Relation<Group, Role> {
     private Group group;
     private Role role;
 
+    // ------------------------------------------------------------------------
+
+    public Group_has_Role() { }
+
     public Group_has_Role(final Group group, final Role role) {
         apply(new RoleAddedToGroupEvent(new GroupRoleAssociationId(group.getEntityId(), role.getEntityId()), group, role));
     }
@@ -28,6 +38,8 @@ public class Group_has_Role extends Relation<Group, Role> {
         this.role = event.getRole();
     }
 
+    // ------------------------------------------------------------------------
+
     public Group_has_Role delete() {
         apply(new RoleRemovedFromGroupEvent(getEntityId()));
         return this;
@@ -38,6 +50,8 @@ public class Group_has_Role extends Relation<Group, Role> {
         this.markDeleted();
     }
 
+    // ------------------------------------------------------------------------
+
     public Group getGroup() {
         return group;
     }
@@ -45,4 +59,5 @@ public class Group_has_Role extends Relation<Group, Role> {
     public Role getRole() {
         return role;
     }
+
 }

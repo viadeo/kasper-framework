@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.commands.handlers.role;
 
 import com.viadeo.kasper.cqrs.command.CommandResponse;
@@ -13,8 +19,9 @@ public class CreateRoleCommandHandler extends EntityCommandHandler<CreateRoleCom
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<CreateRoleCommand> message) throws Exception {
-        Role role = new Role(message.getCommand().getName());
+        final Role role = new Role(message.getCommand().getName());
         this.getRepository().add(role);
         return CommandResponse.ok();
     }
+
 }

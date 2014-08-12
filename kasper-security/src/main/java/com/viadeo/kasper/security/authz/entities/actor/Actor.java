@@ -42,17 +42,14 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class Actor extends Concept{
+public abstract class Actor extends Concept {
 
-    private List<Role> roles;
-    private List<WildcardPermission> permissions;
+    private List<Role> roles = Lists.newArrayList();
+    private List<WildcardPermission> permissions = Lists.newArrayList();
 
     // ------------------------------------------------------------------------
 
-    public Actor() {
-        this.roles = Lists.newArrayList();
-        this.permissions = Lists.newArrayList();
-    }
+    public Actor() { }
 
     // -----------------------------------------------------------------------
 
@@ -60,47 +57,49 @@ public abstract class Actor extends Concept{
         return roles;
     }
 
-    public void setRoles(final List<Role> roles) {
-        this.roles = checkNotNull(roles);
-    }
-
-    public void addRole(final Role role) {
-        this.roles.add(checkNotNull(role));
-    }
-
-    public void removeRole(final Role role) {
-        this.roles.remove(checkNotNull(role));
-    }
-
-    public void addRoles(final Collection<Role> roles){
-        this.roles.addAll(checkNotNull(roles));
-    }
-
-    public void removeRoles(final Collection<Role> roles){
-        this.roles.removeAll(checkNotNull(roles));
-    }
-
     public List<WildcardPermission> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(final List<WildcardPermission> permissions) {
+    // ------------------------------------------------------------------------
+
+    protected void setRoles(final List<Role> roles) {
+        this.roles = checkNotNull(roles);
+    }
+
+    protected void addRole(final Role role) {
+        this.roles.add(checkNotNull(role));
+    }
+
+    protected void removeRole(final Role role) {
+        this.roles.remove(checkNotNull(role));
+    }
+
+    protected void addRoles(final Collection<Role> roles){
+        this.roles.addAll(checkNotNull(roles));
+    }
+
+    protected void removeRoles(final Collection<Role> roles){
+        this.roles.removeAll(checkNotNull(roles));
+    }
+
+    protected void setPermissions(final List<WildcardPermission> permissions) {
         this.permissions = checkNotNull(permissions);
     }
 
-    public void addPermission(final WildcardPermission permission) {
+    protected void addPermission(final WildcardPermission permission) {
         this.permissions.add(checkNotNull(permission));
     }
 
-    public void removePermission(final WildcardPermission permission) {
+    protected void removePermission(final WildcardPermission permission) {
         this.permissions.remove(checkNotNull(permission));
     }
 
-    public void addPermissions(final Collection<WildcardPermission> permissions) {
+    protected void addPermissions(final Collection<WildcardPermission> permissions) {
         this.permissions.addAll(checkNotNull(permissions));
     }
 
-    public void removePermissions(final Collection<WildcardPermission> permissions) {
+    protected void removePermissions(final Collection<WildcardPermission> permissions) {
         this.permissions.removeAll(checkNotNull(permissions));
     }
 
@@ -118,7 +117,7 @@ public abstract class Actor extends Concept{
     public boolean isPermitted(final Permission p) {
         checkNotNull(p);
 
-        if (this.permissions != null && ( ! this.permissions.isEmpty())) {
+        if ((null != this.permissions) && ( ! this.permissions.isEmpty())) {
             for (final Permission perm : this.permissions) {
                 if (perm.implies(p)) {
                     return true;

@@ -7,28 +7,54 @@
 
 package com.viadeo.kasper.security.authz.actor;
 
-import com.viadeo.kasper.security.authz.entities.actor.Actor;
 import com.viadeo.kasper.security.authz.entities.actor.User;
-import com.viadeo.kasper.security.authz.entities.permission.Permission;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
 import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import static junit.framework.Assert.*;
 
 public class ActorTest {
 
-    private Actor actor;
+    private class OpenUser extends User {
+        public OpenUser(String firstName, String lastName) {
+            super(firstName, lastName);
+        }
+        protected void _addRoles(final Collection<Role> roles) {
+            super.addRoles(roles);
+        }
+        protected void _addPermissions(final List<WildcardPermission> permissions) {
+            super.addPermissions(permissions);
+        }
+        protected void _removePermissions(final List<WildcardPermission> permissions) {
+            super.removePermissions(permissions);
+        }
+    }
 
-    private Role role1;
-    private Role role2;
-    private Role role3;
-    private Role role4;
-    private Role role5;
+    private class OpenRole extends Role {
+        public OpenRole(String name) {
+            super(name);
+        }
+        public void _addAll(Collection<WildcardPermission> perms) {
+            super.addAll(perms);
+        }
+        public void _add(WildcardPermission permission) {
+            super.add(permission);
+        }
+    }
+
+    private OpenUser actor;
+
+    private OpenRole role1;
+    private OpenRole role2;
+    private OpenRole role3;
+    private OpenRole role4;
+    private OpenRole role5;
 
     private WildcardPermission perm1;
     private WildcardPermission perm2;
@@ -46,12 +72,12 @@ public class ActorTest {
 
     @Before
     public void setUp() {
-        actor = new User("Kasper", "User");
-        role1 = new Role("role1");
-        role2 = new Role("role2");
-        role3 = new Role("role3");
-        role4 = new Role("role4");
-        role5 = new Role("role5");
+        actor = new OpenUser("Kasper", "User");
+        role1 = new OpenRole("role1");
+        role2 = new OpenRole("role2");
+        role3 = new OpenRole("role3");
+        role4 = new OpenRole("role4");
+        role5 = new OpenRole("role5");
         perm1 = new WildcardPermission("perm1");
         perm2 = new WildcardPermission("perm2");
         perm3 = new WildcardPermission("perm3");
@@ -66,11 +92,11 @@ public class ActorTest {
         permissions2.add(perm4);
         permissions2.add(perm5);
 
-        role1.addAll(permissions1);
-        role2.add(perm2);
-        role3.add(perm3);
-        role4.add(perm4);
-        role5.addAll(permissions2);
+        role1._addAll(permissions1);
+        role2._add(perm2);
+        role3._add(perm3);
+        role4._add(perm4);
+        role5._addAll(permissions2);
 
         roles1 = new ArrayList<Role>();
         roles2 = new ArrayList<Role>();
@@ -89,7 +115,7 @@ public class ActorTest {
         // Given
 
         // When
-        actor.addPermissions(permissions1);
+        actor._addPermissions(permissions1);
 
         // Then
         assertEquals(actor.getPermissions().size(), 2);
@@ -98,10 +124,10 @@ public class ActorTest {
     @Test
     public void test_removesPermissions_withPermission_shouldHaveGoodSize(){
         // Given
-        actor.addPermissions(permissions1);
+        actor._addPermissions(permissions1);
 
         // When
-        actor.removePermissions(permissions1);
+        actor._removePermissions(permissions1);
 
         // Then
         assertEquals(actor.getPermissions().size(), 0);
@@ -110,7 +136,7 @@ public class ActorTest {
     @Test
     public void test_isPermitted_withPermissions_shouldBePermitted(){
         // Given
-        actor.addPermissions(permissions1);
+        actor._addPermissions(permissions1);
 
         // When
         final boolean isPermitted1 = actor.isPermitted(perm1);
@@ -124,7 +150,7 @@ public class ActorTest {
     @Test
     public void test_isPermitted_withRoles_shouldBePermitted(){
         // Given
-        actor.addRoles(roles1);
+        actor._addRoles(roles1);
 
         // When
         final boolean isPermitted1 = actor.isPermitted(perm1);
@@ -138,7 +164,7 @@ public class ActorTest {
     @Test
     public void test_hasRole_withRoles_shouldBeHasRole(){
         // Given
-        actor.addRoles(roles1);
+        actor._addRoles(roles1);
 
         // When
         final boolean hasRole1 = actor.hasRole(role1);

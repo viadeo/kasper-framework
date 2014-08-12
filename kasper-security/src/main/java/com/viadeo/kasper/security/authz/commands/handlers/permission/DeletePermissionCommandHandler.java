@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.security.authz.commands.handlers.permission;
 
 import com.viadeo.kasper.cqrs.command.CommandResponse;
@@ -13,8 +19,10 @@ public class DeletePermissionCommandHandler extends EntityCommandHandler<DeleteP
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<DeletePermissionCommand> message) throws Exception {
-        WildcardPermission permission = this.getRepository().business().get(message.getCommand().getId());
-        this.getRepository().add(permission.delete());
+        final WildcardPermission permission =
+                this.getRepository().business().get(message.getCommand().getId());
+
+        permission.delete();
         return CommandResponse.ok();
     }
 

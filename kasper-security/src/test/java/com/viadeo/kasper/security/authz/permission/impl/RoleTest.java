@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.permission.impl;
 
+import com.viadeo.kasper.security.authz.entities.permission.Permission;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
 import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 import org.junit.Test;
@@ -14,12 +15,26 @@ import static junit.framework.Assert.*;
 
 public class RoleTest {
 
+    private class OpenRole extends Role {
+        public OpenRole(String name) {
+            super(name);
+        }
+        protected void _remove(Permission permission) {
+            super.remove(permission);
+        }
+        public void _add(WildcardPermission permission) {
+            super.add(permission);
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
     @Test
     public void test_isPermitted_withPermissions_shoudlAssert() {
         // Given
-        final Role role = new Role("role");
+        final OpenRole role = new OpenRole("role");
         final WildcardPermission perm = new WildcardPermission("permission");
-        role.add(perm);
+        role._add(perm);
 
         // When
         final boolean resultForGoodPerm = role.isPermitted(perm);
@@ -33,15 +48,16 @@ public class RoleTest {
     @Test
     public void test_removePermission_shouldRemove() {
         // Given
-        final Role role = new Role("role");
+        final OpenRole role = new OpenRole("role");
         final WildcardPermission perm = new WildcardPermission("permission");
-        role.add(perm);
+        role._add(perm);
 
         // When
         final WildcardPermission perm2 = new WildcardPermission("permission");
-        role.remove(perm2);
+        role._remove(perm2);
 
         // Then
         assertEquals(role.getPermissions().size(), 0);
     }
+
 }

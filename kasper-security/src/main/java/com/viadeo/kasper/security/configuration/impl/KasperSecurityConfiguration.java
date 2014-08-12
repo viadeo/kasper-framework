@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.security.configuration.impl;
 
-import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
 import com.viadeo.kasper.security.callback.*;
 import com.viadeo.kasper.security.configuration.SecurityConfiguration;
 
