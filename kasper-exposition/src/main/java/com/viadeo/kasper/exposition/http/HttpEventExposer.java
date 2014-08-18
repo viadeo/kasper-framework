@@ -138,6 +138,11 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
     }
 
     @Override
+    protected KasperResponse createRefusedResponse(final CoreReasonCode code, final List<String> reasons) {
+        return new KasperResponse(KasperResponse.Status.REFUSED, new KasperReason(code, reasons));
+    }
+
+    @Override
     protected boolean isManageable(final String requestName) {
         return exposedEvents.containsKey(requestName);
     }
