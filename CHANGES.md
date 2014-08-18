@@ -4,7 +4,7 @@
 ## Snapshot 0.8-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8-SNAPSHOT~~))###
 
 
-## Snapshot 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~))###
+## Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~))###
 
 * [Pull 228](https://github.com/viadeo/kasper-framework/pull/228) Migrated to Axon framework 2.2
 * [Pull 211](https://github.com/viadeo/kasper-framework/pull/211) Ensure to add only one RetryFilter on  the Kasper client in order to avoid stack overflow
@@ -25,6 +25,11 @@
   - set as attribute in the header when we use the kasper client
   - set in the MDC wen we process an HTTP request in the exposition layer
 
+
+### Version 0.6.6 (18/08/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.6~~))###
+
+* Produces a warning instead of an error when the exposure manages a refused response
+ 
 
 ### Version 0.6.5 (08/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.5~~))###
 
