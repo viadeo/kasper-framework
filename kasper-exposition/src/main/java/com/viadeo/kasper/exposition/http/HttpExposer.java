@@ -71,6 +71,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     protected abstract RESPONSE createErrorResponse(final CoreReasonCode code, final List<String> reasons);
 
+    protected abstract RESPONSE createRefusedResponse(final CoreReasonCode code, final List<String> reasons);
+
     protected abstract boolean isManageable(final String requestName);
 
     protected abstract <T extends INPUT> Class<T> getInputClass(final String inputName);
@@ -152,7 +154,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             sendError(
                 httpResponse,
                 objectToHttpResponse,
-                createErrorResponse(CoreReasonCode.INVALID_INPUT, errorMessages),
+                createRefusedResponse(CoreReasonCode.INVALID_INPUT, errorMessages),
                 kasperCorrelationUUID,
                 validationException,
                 Optional.fromNullable(input)

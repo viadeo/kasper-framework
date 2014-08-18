@@ -125,6 +125,11 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
     }
 
     @Override
+    protected QueryResponse createRefusedResponse(final CoreReasonCode code, final List<String> reasons) {
+        return QueryResponse.refused(new KasperReason(code, reasons));
+    }
+
+    @Override
     protected boolean isManageable(final String requestName) {
        return exposedQueries.containsKey(checkNotNull(requestName));
     }
