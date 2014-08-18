@@ -313,12 +313,12 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         } finally {
             getMetricRegistry().meter(metricNames.getErrorsName()).mark();
 
-            if (input.isPresent()) {
-                final String inputName = input.get().getClass().getSimpleName();
-                requestLogger.error("Error in {} [{}] : {}", getInputTypeName(), inputName, response.getReason(),
-                        throwable);
+            final String inputName = input.isPresent() ? input.get().getClass().getSimpleName() : "undefined";
+
+            if (response.getStatus() == KasperResponse.Status.REFUSED) {
+                requestLogger.warn("Refused {} [{}] : {}", getInputTypeName(), inputName, response.getReason(), throwable);
             } else {
-                requestLogger.error("Error in {} : {}", getInputTypeName(), response.getReason(), throwable);
+                requestLogger.error("Error in {} [{}] : {}", getInputTypeName(), inputName, response.getReason(), throwable);
             }
         }
     }
