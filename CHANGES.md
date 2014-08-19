@@ -3,6 +3,13 @@
 
 ## Snapshot 0.8-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8-SNAPSHOT~~))###
 
+* Produces a warning instead of an error when the exposure manages a refused response
+* Review SerDe of a KasperID:
+  - unlink serializer / deserializer to `KasperID` interface
+  - link DefaultKasperId<Serializer|deserializer> to `DefaultKasperID`
+  - link DefaultKasperRelationId<Serializer|deserializer> to `DefaultKasperRelationID`
+  - provide an adapter in order to try to deserialize `KasperID` with `DefaultKasperId` in order to ensure retro-compatibility
+
 
 ## Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~))###
 
