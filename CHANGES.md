@@ -33,6 +33,15 @@
   - set in the MDC wen we process an HTTP request in the exposition layer
 
 
+### Version 0.6.7 (19/08/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.7~~))###
+
+* Review SerDe of a KasperID:
+  - unlink serializer / deserializer to `KasperID` interface
+  - link DefaultKasperId<Serializer|deserializer> to `DefaultKasperID`
+  - link DefaultKasperRelationId<Serializer|deserializer> to `DefaultKasperRelationID`
+  - provide an adapter in order to try to deserialize `KasperID` with `DefaultKasperId` in order to ensure retro-compatibility
+
+
 ### Version 0.6.6 (18/08/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.6~~))###
 
 * Produces a warning instead of an error when the exposure manages a refused response
