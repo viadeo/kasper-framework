@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.queries.handlers;
 
+import com.google.common.base.Optional;
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryMessage;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
@@ -28,7 +30,11 @@ public class GetUserQueryHandler extends QueryHandler<GetUserQuery, UserResult> 
     }
 
     public QueryResponse<UserResult> retrieve(final QueryMessage<GetUserQuery> message) {
-        final User user = this.authorizationStorage.getUser(message.getQuery().getUserId());
-        return QueryResponse.of(UserResult.getUserResult(user));
+        final Optional<User> user = this.authorizationStorage.getUser(message.getQuery().getUserId());
+        if (user.isPresent()) {
+            return QueryResponse.of(UserResult.getUserResult(user.get()));
+        } else {
+            return QueryResponse.error(CoreReasonCode.INVALID_INPUT);
+        }
     }
 }

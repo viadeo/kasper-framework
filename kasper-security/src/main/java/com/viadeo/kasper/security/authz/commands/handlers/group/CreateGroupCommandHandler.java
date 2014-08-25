@@ -19,8 +19,8 @@ public class CreateGroupCommandHandler extends EntityCommandHandler<CreateGroupC
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<CreateGroupCommand> message) throws Exception {
-        final Group permission = new Group(message.getCommand().getIdToUse(), message.getCommand().getName());
-        this.getRepository().add(permission);
+        final Group group = new Group(message.getCommand().getIdToUse(), message.getCommand().getName());
+        this.getRepository().add(group);
         return CommandResponse.ok();
     }
 

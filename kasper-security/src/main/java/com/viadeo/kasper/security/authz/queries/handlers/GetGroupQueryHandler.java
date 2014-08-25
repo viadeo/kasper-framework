@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.queries.handlers;
 
+import com.google.common.base.Optional;
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryMessage;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
@@ -26,7 +28,12 @@ public class GetGroupQueryHandler extends QueryHandler<GetGroupQuery, GroupResul
     }
 
     public QueryResponse<GroupResult> retrieve(final QueryMessage<GetGroupQuery> message) {
-        final Group group = this.authorizationStorage.getGroup(message.getQuery().getGroupId());
-        return QueryResponse.of(GroupResult.getGroupResult(group));
+        final Optional<Group> group = this.authorizationStorage.getGroup(message.getQuery().getGroupId());
+        if (group.isPresent()) {
+            return QueryResponse.of(GroupResult.getGroupResult(group.get()));
+        } else {
+            return QueryResponse.error(CoreReasonCode.INVALID_INPUT);
+        }
+
     }
 }

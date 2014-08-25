@@ -30,7 +30,7 @@ public class UserRepository extends Repository<User> {
 
     @Override
     protected Optional<User> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {
-        return Optional.of(authorizationStorage.getUser(aggregateIdentifier));
+        return authorizationStorage.getUser(aggregateIdentifier);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class UserRepository extends Repository<User> {
         authorizationStorage.deleteUser(aggregate);
     }
 
-    public List<User> getAllUsers(){
+    public Optional<List<User>> getAllUsers(){
         return authorizationStorage.getAllUsers();
     }
 

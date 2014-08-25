@@ -7,6 +7,7 @@
 
 package com.viadeo.kasper.security.callback.impl;
 
+import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -163,7 +164,7 @@ public class DefaultAuthorizationValidatorTest {
     @Test
     public void test_validate_withGoodSubjectAndGoodRole_shouldGoThrough()  throws KasperSecurityException {
         // Given
-        final Actor actor = initTestUser();
+        final Optional<OpenUser> actor = initTestUser();
         final Context context = new DefaultContext();
         doReturn(actor).when(authorizationStorage).getActor(context);
 
@@ -174,7 +175,7 @@ public class DefaultAuthorizationValidatorTest {
     @Test
     public void test_validate_withGoodSubjectAndGoodPermissionFromRole_shouldGoThrough() throws KasperSecurityException{
         // Given
-        final Actor actor = initTestUser();
+        final Optional<OpenUser> actor = initTestUser();
         final Context context = new DefaultContext();
         doReturn(actor).when(authorizationStorage).getActor(context);
 
@@ -185,9 +186,9 @@ public class DefaultAuthorizationValidatorTest {
     @Test
     public void test_validate_withGoodSubjectAndGoodPermission_shouldGoThrough() throws KasperSecurityException{
         // Given
-        final OpenUser actor = initTestUser();
-        actor._setPermissions(actor.getRoles().get(0).getPermissions());
-        actor._setRoles(new ArrayList<Role>());
+        final Optional<OpenUser> actor = initTestUser();
+        actor.get()._setPermissions(actor.get().getRoles().get(0).getPermissions());
+        actor.get()._setRoles(new ArrayList<Role>());
         final Context context = new DefaultContext();
         doReturn(actor).when(authorizationStorage).getActor(context);
 
@@ -198,7 +199,7 @@ public class DefaultAuthorizationValidatorTest {
     @Test(expected = KasperUnauthorizedException.class)
     public void test_validate_withGoodSubjectAndWrongRole_shouldThrowException() throws KasperSecurityException{
         // Given
-        final Actor actor = initTestUser();
+        final Optional<OpenUser> actor = initTestUser();
         final Context context = new DefaultContext();
         doReturn(actor).when(authorizationStorage).getActor(context);
 
@@ -209,7 +210,7 @@ public class DefaultAuthorizationValidatorTest {
     @Test(expected = KasperUnauthorizedException.class)
     public void test_validate_withGoodSubjectAndWrongPermission_shouldThrowException() throws KasperSecurityException{
         // Given
-        final Actor actor = initTestUser();
+        final Optional<OpenUser> actor = initTestUser();
         final Context context = new DefaultContext();
         doReturn(actor).when(authorizationStorage).getActor(context);
 
@@ -219,7 +220,7 @@ public class DefaultAuthorizationValidatorTest {
 
     // ------------------------------------------------------------------------
 
-    private OpenUser initTestUser(){
+    private Optional<OpenUser> initTestUser(){
         final OpenUser actor = new OpenUser("Kasper", "Robert");
         final String roleStr = "Robert";
         final String perm = "perm5";
@@ -233,7 +234,7 @@ public class DefaultAuthorizationValidatorTest {
         roles.add(role);
 
         actor._addRoles(roles);
-        return actor;
+        return Optional.of(actor);
     }
 
 }

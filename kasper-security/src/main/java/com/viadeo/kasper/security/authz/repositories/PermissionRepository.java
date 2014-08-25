@@ -30,7 +30,7 @@ public class PermissionRepository extends Repository<WildcardPermission> {
 
     @Override
     protected Optional<WildcardPermission> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {
-        return Optional.of(authorizationStorage.getPermission(aggregateIdentifier));
+        return authorizationStorage.getPermission(aggregateIdentifier);
     }
 
     @Override
@@ -50,7 +50,7 @@ public class PermissionRepository extends Repository<WildcardPermission> {
 
     // ------------------------------------------------------------------------
 
-    public List<WildcardPermission> getAllPermissions(){
+    public Optional<List<WildcardPermission>> getAllPermissions(){
         return authorizationStorage.getAllPermissions();
     }
 

@@ -19,9 +19,7 @@ public class CreatePermissionCommandHandler extends EntityCommandHandler<CreateP
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<CreatePermissionCommand> message) throws Exception {
-        final WildcardPermission permission =
-                new WildcardPermission(message.getCommand().getPermission());
-
+        final WildcardPermission permission = new WildcardPermission(message.getCommand().getPermission());
         this.getRepository().add(permission);
         return CommandResponse.ok();
     }

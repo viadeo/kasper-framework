@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.storage;
 
+import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.security.authz.entities.actor.Actor;
@@ -19,80 +20,80 @@ import java.util.List;
 
 public interface AuthorizationStorage {
 
-    Actor getActor(Context context);
+    Optional<Actor> getActor(Context context);
 
     /********************************* Backoffice methods ***********************************/
 
-    WildcardPermission createPermission(WildcardPermission permission);
+    boolean createPermission(WildcardPermission permission);
 
-    void deletePermission(WildcardPermission permission);
+    boolean deletePermission(WildcardPermission permission);
 
-    Role createRole(Role role);
+    boolean createRole(Role role);
 
-    void deleteRole(Role role);
+    boolean deleteRole(Role role);
 
-    User createUser(User user);
+    boolean createUser(User user);
 
-    void deleteUser(User user);
+    boolean deleteUser(User user);
 
-    Group createGroup(Group group);
+    boolean createGroup(Group group);
 
-    void deleteGroup(Group group);
+    boolean deleteGroup(Group group);
 
     /****************************** add/remove **********************************/
 
-    Role addPermissionToRole(Role_has_Permission role_has_permission);
+    Optional<Role> addPermissionToRole(Role_has_Permission role_has_permission);
 
-    Role removePermissionFromRole(Role_has_Permission role_has_permission);
+    Optional<Role> removePermissionFromRole(Role_has_Permission role_has_permission);
 
-    User addPermissionToUser(User_has_Permission user_has_Permission);
+    Optional<User> addPermissionToUser(User_has_Permission user_has_Permission);
 
-    User removePermissionFromUser(User_has_Permission user_has_Permission);
+    Optional<User> removePermissionFromUser(User_has_Permission user_has_Permission);
 
-    Group addPermissionToGroup(Group_has_Permission group_has_permission);
+    Optional<Group> addPermissionToGroup(Group_has_Permission group_has_permission);
 
-    Group removePermissionFromGroup(Group_has_Permission group_has_permission);
+    Optional<Group> removePermissionFromGroup(Group_has_Permission group_has_permission);
 
-    User addRoleToUser(User_has_Role user_has_role);
+    Optional<User> addRoleToUser(User_has_Role user_has_role);
 
-    User removeRoleFromUser(User_has_Role user_has_role);
+    Optional<User> removeRoleFromUser(User_has_Role user_has_role);
 
-    Group addRoleToGroup(Group_has_Role group_has_role);
+    Optional<Group> addRoleToGroup(Group_has_Role group_has_role);
 
-    Group removeRoleFromGroup(Group_has_Role group_has_role);
+    Optional<Group> removeRoleFromGroup(Group_has_Role group_has_role);
 
-    Group addUserToGroup(Group_has_User group_has_user);
+    Optional<Group> addUserToGroup(Group_has_User group_has_user);
 
-    Group removeUserFromGroup(Group_has_User group_has_user);
+    Optional<Group> removeUserFromGroup(Group_has_User group_has_user);
 
     /************************************* gets ****************************/
 
-    WildcardPermission getPermission(KasperID kasperID);
+    Optional<WildcardPermission> getPermission(KasperID kasperID);
 
-    List<WildcardPermission> getAllPermissions();
+    Optional<List<WildcardPermission>> getAllPermissions();
 
-    Role getRole(KasperID kasperID);
+    Optional<Role> getRole(KasperID kasperID);
 
-    List<Role> getAllRoles();
+    Optional<List<Role>> getAllRoles();
 
-    Group getGroup(KasperID kasperID);
+    Optional<Group> getGroup(KasperID kasperID);
 
-    List<Group> getAllGroups();
+    Optional<List<Group>> getAllGroups();
 
-    User getUser(KasperID kasperID);
+    Optional<User> getUser(KasperID kasperID);
 
-    List<User> getAllUsers();
+    Optional<List<User>> getAllUsers();
 
-    List<Role> getRolesHavingPermission(KasperID permissionId);
+    Optional<List<Role>> getRolesHavingPermission(KasperID permissionId);
 
-    List<Group> getGroupsHavingRole(KasperID roleId);
+    Optional<List<Group>> getGroupsHavingRole(KasperID roleId);
 
-    List<Group> getGroupsHavingPermission(KasperID permissionId);
+    Optional<List<Group>> getGroupsHavingPermission(KasperID permissionId);
 
-    List<Group> getGroupsHavingUser(KasperID userId);
+    Optional<List<Group>> getGroupsHavingUser(KasperID userId);
 
-    List<User> getUsersHavingRole(KasperID roleId);
+    Optional<List<User>> getUsersHavingRole(KasperID roleId);
 
-    List<User> getUsersHavingPermission(KasperID permissionId);
+    Optional<List<User>> getUsersHavingPermission(KasperID permissionId);
 
 }

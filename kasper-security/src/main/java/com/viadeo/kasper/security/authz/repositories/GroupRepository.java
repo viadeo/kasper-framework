@@ -30,7 +30,7 @@ public class GroupRepository extends Repository<Group> {
 
     @Override
     protected Optional<Group> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {
-        return Optional.of(authorizationStorage.getGroup(aggregateIdentifier));
+        return authorizationStorage.getGroup(aggregateIdentifier);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class GroupRepository extends Repository<Group> {
         authorizationStorage.deleteGroup(aggregate);
     }
 
-    public List<Group> getAllGroups(){
+    public Optional<List<Group>> getAllGroups(){
         return authorizationStorage.getAllGroups();
     }
 

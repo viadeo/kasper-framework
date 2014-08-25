@@ -16,15 +16,15 @@ Some examples of permission statements :
 - write
 - read
 
-To define permissions for Command or/and a Query just add `XKaspeRequirePermissions` annotation in specifying which permissions you want to
+To define permissions for Command or/and a Query just add `XKasperRequirePermissions` annotation in specifying which permissions you want to
 check for the resource.
 
 .. code-block:: java
     :linenos:
 
-    import com.viadeo.kasper.security.annotation.XKaspeRequirePermissions;
+    import com.viadeo.kasper.security.annotation.XKasperRequirePermissions;
 
-    @XKaspeRequirePermissions(values = {"delete", "write"})
+    @XKasperRequirePermissions(values = {"delete", "write"})
     public class CreateStuffCommand implements Command {
         ...
     }
@@ -37,15 +37,15 @@ Roles
 
 A Role represents a list of permissions. For example, an administrator Role can have delete, read and write permissions.
 
-To define roles for Command or/and a Query just add `XKaspeRequireRoless` annotation in specifying which roles you want to
+To define roles for Command or/and a Query just add `XKasperRequireRoles` annotation in specifying which roles you want to
 check for the resource.
 
 .. code-block:: java
     :linenos:
 
-    import com.viadeo.kasper.security.annotation.XKaspeRequireRoles;
+    import com.viadeo.kasper.security.annotation.XKasperRequireRoles;
 
-    @XKaspeRequireRoles(values = {"admin", "reader"})
+    @XKasperRequireRoles(values = {"admin", "reader"})
     public class CreateStuffCommand implements Command {
         ...
     }

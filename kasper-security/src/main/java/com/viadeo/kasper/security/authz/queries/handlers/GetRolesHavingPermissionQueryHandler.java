@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.queries.handlers;
 
+import com.google.common.base.Optional;
+import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryMessage;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
@@ -29,8 +31,12 @@ public class GetRolesHavingPermissionQueryHandler extends QueryHandler<GetRolesH
     }
 
     public QueryResponse<RolesResult> retrieve(final QueryMessage<GetRolesHavingPermissionQuery> message) {
-        List<Role> roles = this.authorizationStorage.getRolesHavingPermission(message.getQuery().getPermissionId());
-        return QueryResponse.of(new RolesResult(RoleResult.getRoleResults(roles)));
+        Optional<List<Role>> roles = this.authorizationStorage.getRolesHavingPermission(message.getQuery().getPermissionId());
+        if (roles.isPresent()) {
+            return QueryResponse.of(new RolesResult(RoleResult.getRoleResults(roles.get())));
+        } else {
+            return QueryResponse.error(CoreReasonCode.INVALID_INPUT);
+        }
     }
 }
 

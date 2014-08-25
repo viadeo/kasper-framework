@@ -30,7 +30,7 @@ public class RoleRepository extends Repository<Role> {
 
     @Override
     protected Optional<Role> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {
-        return Optional.of(authorizationStorage.getRole(aggregateIdentifier));
+        return authorizationStorage.getRole(aggregateIdentifier);
     }
 
     @Override
@@ -43,7 +43,7 @@ public class RoleRepository extends Repository<Role> {
         authorizationStorage.deleteRole(aggregate);
     }
 
-    public List<Role> getAllRoles(){
+    public Optional<List<Role>> getAllRoles(){
         return authorizationStorage.getAllRoles();
     }
 
