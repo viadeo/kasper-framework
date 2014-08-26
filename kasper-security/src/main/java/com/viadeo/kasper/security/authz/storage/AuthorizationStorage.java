@@ -42,29 +42,29 @@ public interface AuthorizationStorage {
 
     /****************************** add/remove **********************************/
 
-    Optional<Role> addPermissionToRole(Role_has_Permission role_has_permission);
+    boolean addPermissionToRole(Role_has_Permission role_has_permission);
 
-    Optional<Role> removePermissionFromRole(Role_has_Permission role_has_permission);
+    boolean removePermissionFromRole(Role_has_Permission role_has_permission);
 
-    Optional<User> addPermissionToUser(User_has_Permission user_has_Permission);
+    boolean addPermissionToUser(User_has_Permission user_has_Permission);
 
-    Optional<User> removePermissionFromUser(User_has_Permission user_has_Permission);
+    boolean removePermissionFromUser(User_has_Permission user_has_Permission);
 
-    Optional<Group> addPermissionToGroup(Group_has_Permission group_has_permission);
+    boolean addPermissionToGroup(Group_has_Permission group_has_permission);
 
-    Optional<Group> removePermissionFromGroup(Group_has_Permission group_has_permission);
+    boolean removePermissionFromGroup(Group_has_Permission group_has_permission);
 
-    Optional<User> addRoleToUser(User_has_Role user_has_role);
+    boolean addRoleToUser(User_has_Role user_has_role);
 
-    Optional<User> removeRoleFromUser(User_has_Role user_has_role);
+    boolean removeRoleFromUser(User_has_Role user_has_role);
 
-    Optional<Group> addRoleToGroup(Group_has_Role group_has_role);
+    boolean addRoleToGroup(Group_has_Role group_has_role);
 
-    Optional<Group> removeRoleFromGroup(Group_has_Role group_has_role);
+    boolean removeRoleFromGroup(Group_has_Role group_has_role);
 
-    Optional<Group> addUserToGroup(Group_has_User group_has_user);
+    boolean addUserToGroup(Group_has_User group_has_user);
 
-    Optional<Group> removeUserFromGroup(Group_has_User group_has_user);
+    boolean removeUserFromGroup(Group_has_User group_has_user);
 
     /************************************* gets ****************************/
 

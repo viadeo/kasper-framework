@@ -8,6 +8,7 @@ package com.viadeo.kasper.security.authz.repositories;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.security.authz.entities.relations.User_has_Role;
 import com.viadeo.kasper.security.authz.storage.AuthorizationStorage;
@@ -33,12 +34,18 @@ public class RoleAddedToUserRepository extends Repository<User_has_Role> {
 
     @Override
     protected void doSave(final User_has_Role aggregate) {
-        authorizationStorage.addRoleToUser(aggregate);
+        final boolean added = authorizationStorage.addRoleToUser(aggregate);
+        if (!added) {
+            throw new KasperCommandException("Unable to add Role [" + aggregate.getRole().getName() + "] to User [" + aggregate.getUser().getLastName() + "]");
+        }
     }
 
     @Override
     protected void doDelete(final User_has_Role aggregate) {
-        authorizationStorage.removeRoleFromUser(aggregate);
+        final boolean deleted = authorizationStorage.removeRoleFromUser(aggregate);
+        if (!deleted) {
+            throw new KasperCommandException("Unable to delete Role [" + aggregate.getRole().getName() + "] from User [" + aggregate.getUser().getLastName() + "]");
+        }
     }
 
 }

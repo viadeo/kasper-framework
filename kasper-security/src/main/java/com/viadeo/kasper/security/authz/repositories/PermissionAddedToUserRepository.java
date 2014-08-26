@@ -8,6 +8,7 @@ package com.viadeo.kasper.security.authz.repositories;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.security.authz.entities.relations.User_has_Permission;
 import com.viadeo.kasper.security.authz.storage.AuthorizationStorage;
@@ -33,12 +34,18 @@ public class PermissionAddedToUserRepository extends Repository<User_has_Permiss
 
     @Override
     protected void doSave(final User_has_Permission aggregate) {
-        authorizationStorage.addPermissionToUser(aggregate);
+        final boolean added = authorizationStorage.addPermissionToUser(aggregate);
+        if (!added) {
+            throw new KasperCommandException("Unable to add permission [" + aggregate.getPermission().toString() + "] to User [" + aggregate.getUser().getLastName() + "]");
+        }
     }
 
     @Override
     protected void doDelete(final User_has_Permission aggregate) {
-        authorizationStorage.removePermissionFromUser(aggregate);
+        final boolean deleted = authorizationStorage.removePermissionFromUser(aggregate);
+        if (!deleted) {
+            throw new KasperCommandException("Unable to delete permission [" + aggregate.getPermission().toString() + "] from User [" + aggregate.getUser().getLastName() + "]");
+        }
     }
 
 }

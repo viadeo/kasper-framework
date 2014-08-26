@@ -8,6 +8,7 @@ package com.viadeo.kasper.security.authz.repositories;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.security.authz.entities.actor.Group;
 import com.viadeo.kasper.security.authz.storage.AuthorizationStorage;
@@ -35,15 +36,21 @@ public class GroupRepository extends Repository<Group> {
 
     @Override
     protected void doSave(final Group aggregate) {
-        authorizationStorage.createGroup(aggregate);
+        final boolean saved = authorizationStorage.createGroup(aggregate);
+        if (!saved) {
+            throw new KasperCommandException("Unable to create Group [" + aggregate.getName() + "]");
+        }
     }
 
     @Override
     protected void doDelete(final Group aggregate) {
-        authorizationStorage.deleteGroup(aggregate);
+        final boolean deleted = authorizationStorage.deleteGroup(aggregate);
+        if (!deleted) {
+            throw new KasperCommandException("Unable to delete Group [" + aggregate.getName() + "]");
+        }
     }
 
-    public Optional<List<Group>> getAllGroups(){
+    public Optional<List<Group>> getAllGroups() {
         return authorizationStorage.getAllGroups();
     }
 

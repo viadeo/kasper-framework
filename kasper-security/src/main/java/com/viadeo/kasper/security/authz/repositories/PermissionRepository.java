@@ -8,6 +8,7 @@ package com.viadeo.kasper.security.authz.repositories;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 import com.viadeo.kasper.security.authz.storage.AuthorizationStorage;
@@ -35,7 +36,10 @@ public class PermissionRepository extends Repository<WildcardPermission> {
 
     @Override
     protected void doSave(final WildcardPermission aggregate) {
-        authorizationStorage.createPermission(aggregate);
+        final boolean saved = authorizationStorage.createPermission(aggregate);
+        if (!saved) {
+            throw new KasperCommandException("Unable to create Permission [" + aggregate.toString() + "]");
+        }
     }
 
     @Override
@@ -45,12 +49,15 @@ public class PermissionRepository extends Repository<WildcardPermission> {
 
     @Override
     protected void doDelete(final WildcardPermission aggregate) {
-        authorizationStorage.deletePermission(aggregate);
+        final boolean deleted = authorizationStorage.deletePermission(aggregate);
+        if (!deleted) {
+            throw new KasperCommandException("Unable to delete Permission [" + aggregate.toString() + "]");
+        }
     }
 
     // ------------------------------------------------------------------------
 
-    public Optional<List<WildcardPermission>> getAllPermissions(){
+    public Optional<List<WildcardPermission>> getAllPermissions() {
         return authorizationStorage.getAllPermissions();
     }
 

@@ -8,6 +8,7 @@ package com.viadeo.kasper.security.authz.repositories;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.security.authz.entities.actor.User;
 import com.viadeo.kasper.security.authz.storage.AuthorizationStorage;
@@ -35,15 +36,21 @@ public class UserRepository extends Repository<User> {
 
     @Override
     protected void doSave(final User aggregate) {
-        authorizationStorage.createUser(aggregate);
+        final boolean saved = authorizationStorage.createUser(aggregate);
+        if (!saved) {
+            throw new KasperCommandException("Unable to create User [" + aggregate.getLastName() + "]");
+        }
     }
 
     @Override
     protected void doDelete(final User aggregate) {
-        authorizationStorage.deleteUser(aggregate);
+        final boolean deleted = authorizationStorage.deleteUser(aggregate);
+        if (!deleted) {
+            throw new KasperCommandException("Unable to delete User [" + aggregate.getLastName() + "]");
+        }
     }
 
-    public Optional<List<User>> getAllUsers(){
+    public Optional<List<User>> getAllUsers() {
         return authorizationStorage.getAllUsers();
     }
 

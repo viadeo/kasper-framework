@@ -8,6 +8,7 @@ package com.viadeo.kasper.security.authz.repositories;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.security.authz.entities.relations.Group_has_User;
 import com.viadeo.kasper.security.authz.storage.AuthorizationStorage;
@@ -33,12 +34,18 @@ public class UserAddedToGroupRepository extends Repository<Group_has_User> {
 
     @Override
     protected void doSave(final Group_has_User aggregate) {
-        authorizationStorage.addUserToGroup(aggregate);
+        final boolean added = authorizationStorage.addUserToGroup(aggregate);
+        if (!added) {
+            throw new KasperCommandException("Unable to add User [" + aggregate.getUser().getLastName() + "] to Group [" + aggregate.getGroup().getName() + "]");
+        }
     }
 
     @Override
     protected void doDelete(final Group_has_User aggregate) {
-        authorizationStorage.removeUserFromGroup(aggregate);
+        final boolean deleted = authorizationStorage.removeUserFromGroup(aggregate);
+        if (!deleted) {
+            throw new KasperCommandException("Unable to delete User [" + aggregate.getUser().getLastName() + "] from Group [" + aggregate.getGroup().getName() + "]");
+        }
     }
 
 }
