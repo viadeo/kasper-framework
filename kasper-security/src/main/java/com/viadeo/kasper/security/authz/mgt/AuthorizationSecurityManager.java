@@ -14,14 +14,14 @@ import java.util.List;
 
 public interface AuthorizationSecurityManager {
 
-    Permission resolvePermission(String permission);
+    Permission resolvePermission(final String permission);
 
-    void checkRole(String role, Actor actor) throws KasperUnauthorizedException;
+    void checkRole(final String role, final Actor actor) throws KasperUnauthorizedException;
 
-    void checkRoles(List<String> roles, Actor actor) throws KasperUnauthorizedException;
+    void checkRoles(final List<String> roles, final Actor actor) throws KasperUnauthorizedException;
 
-    void checkPermission(String perm, Actor actor) throws KasperUnauthorizedException;
+    void checkPermission(final String perm, final Actor actor) throws KasperUnauthorizedException;
 
-    void checkPermissions(List<String> permissions, Actor actor) throws KasperUnauthorizedException;
+    void checkPermissions(final List<String> permissions, final Actor actor) throws KasperUnauthorizedException;
 
 }

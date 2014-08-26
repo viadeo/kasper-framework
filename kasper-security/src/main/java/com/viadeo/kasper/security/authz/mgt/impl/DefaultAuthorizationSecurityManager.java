@@ -43,7 +43,6 @@ public class DefaultAuthorizationSecurityManager implements AuthorizationSecurit
     }
 
     public void checkPermission(final String perm, final Actor actor) throws KasperUnauthorizedException {
-
         final Permission permission = resolvePermission(perm);
         if ( ! actor.isPermitted(permission)) {
             throw new KasperUnauthorizedException(
