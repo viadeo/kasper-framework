@@ -31,11 +31,7 @@ public class GetGroupsHavingPermissionQueryHandler extends QueryHandler<GetGroup
     }
 
     public QueryResponse<GroupsResult> retrieve(final QueryMessage<GetGroupsHavingPermissionQuery> message) {
-        final Optional<List<Group>> groups = this.authorizationStorage.getGroupsHavingPermission(message.getQuery().getPermissionId());
-        if (groups.isPresent()) {
-            return QueryResponse.of(new GroupsResult(GroupResult.getGroupResults(groups.get())));
-        } else {
-            return QueryResponse.error(CoreReasonCode.INVALID_INPUT);
-        }
+        final List<Group> groups = this.authorizationStorage.getGroupsHavingPermission(message.getQuery().getPermissionId());
+        return QueryResponse.of(new GroupsResult(GroupResult.getGroupResults(groups)));
     }
 }

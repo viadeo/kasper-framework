@@ -63,43 +63,43 @@ public abstract class Actor extends Concept {
 
     // ------------------------------------------------------------------------
 
-    protected void setRoles(final List<Role> roles) {
+    public void setRoles(final List<Role> roles) {
         this.roles = checkNotNull(roles);
     }
 
-    protected void addRole(final Role role) {
+    public void addRole(final Role role) {
         this.roles.add(checkNotNull(role));
     }
 
-    protected void removeRole(final Role role) {
+    public void removeRole(final Role role) {
         this.roles.remove(checkNotNull(role));
     }
 
-    protected void addRoles(final Collection<Role> roles){
+    public void addRoles(final Collection<Role> roles){
         this.roles.addAll(checkNotNull(roles));
     }
 
-    protected void removeRoles(final Collection<Role> roles){
+    public void removeRoles(final Collection<Role> roles){
         this.roles.removeAll(checkNotNull(roles));
     }
 
-    protected void setPermissions(final List<WildcardPermission> permissions) {
+    public void setPermissions(final List<WildcardPermission> permissions) {
         this.permissions = checkNotNull(permissions);
     }
 
-    protected void addPermission(final WildcardPermission permission) {
+    public void addPermission(final WildcardPermission permission) {
         this.permissions.add(checkNotNull(permission));
     }
 
-    protected void removePermission(final WildcardPermission permission) {
+    public void removePermission(final WildcardPermission permission) {
         this.permissions.remove(checkNotNull(permission));
     }
 
-    protected void addPermissions(final Collection<WildcardPermission> permissions) {
+    public void addPermissions(final Collection<WildcardPermission> permissions) {
         this.permissions.addAll(checkNotNull(permissions));
     }
 
-    protected void removePermissions(final Collection<WildcardPermission> permissions) {
+    public void removePermissions(final Collection<WildcardPermission> permissions) {
         this.permissions.removeAll(checkNotNull(permissions));
     }
 

@@ -75,19 +75,19 @@ public class Group extends Actor {
 
     // ------------------------------------------------------------------------
 
-    protected void setName(final String name) {
+    public void setName(final String name) {
         this.name = checkNotNull(name);
     }
 
-    protected void setUsers(final List<User> users) {
+    public void setUsers(final List<User> users) {
         this.users = checkNotNull(users);
     }
 
-    protected void addUser(final User user) {
+    public void addUser(final User user) {
         users.add(checkNotNull(user));
     }
 
-    protected void removeUser(final User user) {
+    public void removeUser(final User user) {
         users.remove(checkNotNull(user));
     }
 

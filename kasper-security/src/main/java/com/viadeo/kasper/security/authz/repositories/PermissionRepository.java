@@ -57,7 +57,7 @@ public class PermissionRepository extends Repository<WildcardPermission> {
 
     // ------------------------------------------------------------------------
 
-    public Optional<List<WildcardPermission>> getAllPermissions() {
+    public List<WildcardPermission> getAllPermissions() {
         return authorizationStorage.getAllPermissions();
     }
 

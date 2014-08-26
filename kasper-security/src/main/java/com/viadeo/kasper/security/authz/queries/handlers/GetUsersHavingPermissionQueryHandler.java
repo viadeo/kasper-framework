@@ -31,12 +31,8 @@ public class GetUsersHavingPermissionQueryHandler extends QueryHandler<GetUsersH
     }
 
     public QueryResponse<UsersResult> retrieve(final QueryMessage<GetUsersHavingPermissionQuery> message) {
-        final Optional<List<User>> users = this.authorizationStorage.getUsersHavingPermission(message.getQuery().getPermissionId());
-        if (users.isPresent()) {
-            return QueryResponse.of(new UsersResult(UserResult.getUserResults(users.get())));
-        } else {
-            return QueryResponse.error(CoreReasonCode.INVALID_INPUT);
-        }
+        final List<User> users = this.authorizationStorage.getUsersHavingPermission(message.getQuery().getPermissionId());
+        return QueryResponse.of(new UsersResult(UserResult.getUserResults(users)));
     }
 }
 

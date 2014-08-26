@@ -70,30 +70,30 @@ public interface AuthorizationStorage {
 
     Optional<WildcardPermission> getPermission(KasperID kasperID);
 
-    Optional<List<WildcardPermission>> getAllPermissions();
+    List<WildcardPermission> getAllPermissions();
 
     Optional<Role> getRole(KasperID kasperID);
 
-    Optional<List<Role>> getAllRoles();
+    List<Role> getAllRoles();
 
     Optional<Group> getGroup(KasperID kasperID);
 
-    Optional<List<Group>> getAllGroups();
+    List<Group>getAllGroups();
 
     Optional<User> getUser(KasperID kasperID);
 
-    Optional<List<User>> getAllUsers();
+    List<User> getAllUsers();
 
-    Optional<List<Role>> getRolesHavingPermission(KasperID permissionId);
+    List<Role> getRolesHavingPermission(KasperID permissionId);
 
-    Optional<List<Group>> getGroupsHavingRole(KasperID roleId);
+    List<Group> getGroupsHavingRole(KasperID roleId);
 
-    Optional<List<Group>> getGroupsHavingPermission(KasperID permissionId);
+    List<Group> getGroupsHavingPermission(KasperID permissionId);
 
-    Optional<List<Group>> getGroupsHavingUser(KasperID userId);
+    List<Group> getGroupsHavingUser(KasperID userId);
 
-    Optional<List<User>> getUsersHavingRole(KasperID roleId);
+    List<User> getUsersHavingRole(KasperID roleId);
 
-    Optional<List<User>> getUsersHavingPermission(KasperID permissionId);
+    List<User> getUsersHavingPermission(KasperID permissionId);
 
 }

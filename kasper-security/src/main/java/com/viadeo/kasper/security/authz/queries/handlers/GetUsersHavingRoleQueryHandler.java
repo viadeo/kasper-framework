@@ -31,12 +31,8 @@ public class GetUsersHavingRoleQueryHandler extends QueryHandler<GetUsersHavingR
     }
 
     public QueryResponse<UsersResult> retrieve(final QueryMessage<GetUsersHavingRoleQuery> message) {
-        final Optional<List<User>> users = this.authorizationStorage.getUsersHavingRole(message.getQuery().getRoleId());
-        if (users.isPresent()) {
-            return QueryResponse.of(new UsersResult(UserResult.getUserResults(users.get())));
-        } else {
-            return QueryResponse.error(CoreReasonCode.INVALID_INPUT);
-        }
+        final List<User> users = this.authorizationStorage.getUsersHavingRole(message.getQuery().getRoleId());
+        return QueryResponse.of(new UsersResult(UserResult.getUserResults(users)));
     }
 }
 

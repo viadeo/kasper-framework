@@ -31,11 +31,7 @@ public class GetRolesQueryHandler extends QueryHandler<GetRolesQuery, RolesResul
     }
 
     public QueryResponse<RolesResult> retrieve(final QueryMessage<GetRolesQuery> message) {
-        Optional<List<Role>> roles = this.authorizationStorage.getAllRoles();
-        if (roles.isPresent()) {
-            return QueryResponse.of(new RolesResult(RoleResult.getRoleResults(roles.get())));
-        } else {
-            return QueryResponse.error(CoreReasonCode.INVALID_INPUT);
-        }
+        List<Role> roles = this.authorizationStorage.getAllRoles();
+        return QueryResponse.of(new RolesResult(RoleResult.getRoleResults(roles)));
     }
 }

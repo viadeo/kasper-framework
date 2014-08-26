@@ -33,11 +33,7 @@ public class GetUsersQueryHandler extends QueryHandler<GetUsersQuery, UsersResul
     }
 
     public QueryResponse<UsersResult> retrieve(final QueryMessage<GetUsersQuery> message) {
-        final Optional<List<User>> users = authorizationStorage.getAllUsers();
-        if (users.isPresent()) {
-            return QueryResponse.of(new UsersResult(UserResult.getUserResults(users.get())));
-        } else {
-            return QueryResponse.error(CoreReasonCode.INVALID_INPUT);
-        }
+        final List<User> users = authorizationStorage.getAllUsers();
+        return QueryResponse.of(new UsersResult(UserResult.getUserResults(users)));
     }
 }

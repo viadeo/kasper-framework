@@ -50,7 +50,7 @@ public class GroupRepository extends Repository<Group> {
         }
     }
 
-    public Optional<List<Group>> getAllGroups() {
+    public List<Group> getAllGroups() {
         return authorizationStorage.getAllGroups();
     }
 

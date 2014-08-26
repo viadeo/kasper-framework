@@ -50,7 +50,7 @@ public class UserRepository extends Repository<User> {
         }
     }
 
-    public Optional<List<User>> getAllUsers() {
+    public List<User> getAllUsers() {
         return authorizationStorage.getAllUsers();
     }
 

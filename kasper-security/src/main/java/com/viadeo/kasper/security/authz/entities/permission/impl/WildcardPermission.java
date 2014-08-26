@@ -56,7 +56,7 @@ public class WildcardPermission extends Concept implements Permission, Serializa
 
     public WildcardPermission() { }
 
-    protected WildcardPermission(final KasperID kasperId) {
+    public WildcardPermission(final KasperID kasperId) {
         apply(new PermissionCreatedEvent(kasperId));
     }
 
@@ -96,11 +96,11 @@ public class WildcardPermission extends Concept implements Permission, Serializa
 
     // ------------------------------------------------------------------------
 
-    protected void setParts(final String wildcardString) {
+    public void setParts(final String wildcardString) {
         setParts(wildcardString, DEFAULT_CASE_SENSITIVE);
     }
 
-    protected void setParts(final String wildcardString, final boolean caseSensitive) {
+    public void setParts(final String wildcardString, final boolean caseSensitive) {
         if ((null == wildcardString) || (0 == wildcardString.trim().length())) {
             throw new IllegalArgumentException("Wildcard string cannot be null or empty.");
         }

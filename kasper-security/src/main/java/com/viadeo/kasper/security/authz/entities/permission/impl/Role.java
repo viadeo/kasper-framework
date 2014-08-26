@@ -108,13 +108,13 @@ public class Role extends Concept {
         return permissions;
     }
 
-    protected void setPermissions(final List<WildcardPermission> permissions) {
+    public void setPermissions(final List<WildcardPermission> permissions) {
         this.permissions = checkNotNull(permissions);
     }
 
     // ------------------------------------------------------------------------
 
-    protected void add(final WildcardPermission permission) {
+    public void add(final WildcardPermission permission) {
         checkNotNull(permission);
         if (null == this.permissions) {
             this.permissions = Lists.newArrayList();
@@ -122,14 +122,14 @@ public class Role extends Concept {
         this.permissions.add(permission);
     }
 
-    protected void remove(final Permission permission) {
+    public void remove(final Permission permission) {
         checkNotNull(permission);
         if (null != this.permissions) {
             this.permissions.remove(permission);
         }
     }
 
-    protected void addAll(final Collection<WildcardPermission> perms) {
+    public void addAll(final Collection<WildcardPermission> perms) {
         if ((null != perms) && (!perms.isEmpty())) {
             if (null == this.permissions) {
                 this.permissions = new ArrayList<WildcardPermission>(perms.size());
@@ -138,7 +138,7 @@ public class Role extends Concept {
         }
     }
 
-    protected void removeAll(final Collection<Permission> perms) {
+    public void removeAll(final Collection<Permission> perms) {
         if ((null != perms) && (!perms.isEmpty())) {
             if (null != this.permissions) {
                 permissions.removeAll(perms);

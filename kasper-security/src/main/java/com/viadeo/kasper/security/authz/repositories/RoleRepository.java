@@ -50,7 +50,7 @@ public class RoleRepository extends Repository<Role> {
         }
     }
 
-    public Optional<List<Role>> getAllRoles(){
+    public List<Role> getAllRoles(){
         return authorizationStorage.getAllRoles();
     }
 
