@@ -114,6 +114,11 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
     }
 
     @Override
+    protected CommandResponse createRefusedResponse(final CoreReasonCode code, final List<String> reasons) {
+        return CommandResponse.refused(new KasperReason(code, reasons));
+    }
+
+    @Override
     protected boolean isManageable(final String inputName) {
         return exposedCommands.containsKey(checkNotNull(inputName));
     }

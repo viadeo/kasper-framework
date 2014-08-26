@@ -9,15 +9,10 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.KasperRelationID;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,18 +59,8 @@ public final class ObjectMapperProvider {
         mapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.ANY);
 
         /* Register a specific module for Kasper Ser/Deser */
-        final SimpleModule kasperClientModule = new SimpleModule()
-                .addSerializer(KasperID.class, new KasperIdSerializer())
-                .addDeserializer(KasperID.class, new KasperIdDeserializer())
-                .addSerializer(KasperRelationID.class, new KasperRelationIdSerializer())
-                .addDeserializer(KasperRelationID.class, new KasperRelationIdDeserializer())
-                .addSerializer(CommandResponse.class, new CommandResponseSerializer())
-                .addSerializer(QueryResponse.class, new QueryResponseSerializer())
-                .addDeserializer(CommandResponse.class, new CommandResponseDeserializer());
-
-        kasperClientModule.setDeserializers(new CommandQueryResponseDeserializerAdapter());
-
-        mapper.registerModule(kasperClientModule);
+        mapper.registerModule(new KasperIdModule());
+        mapper.registerModule(new KasperResponseModule());
         mapper.registerModule(new KasperImmutabilityParanamerModule());
         
 
@@ -87,7 +72,7 @@ public final class ObjectMapperProvider {
         mapper.registerModule(new JodaMoneyModule());
     }
 
-    public static final ObjectMapperProvider defaults() {
+    public static ObjectMapperProvider defaults() {
         return ObjectMapperProvider.INSTANCE;
     }
 
