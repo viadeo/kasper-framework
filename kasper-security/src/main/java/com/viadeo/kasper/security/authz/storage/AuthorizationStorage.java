@@ -20,7 +20,7 @@ import java.util.List;
 
 public interface AuthorizationStorage {
 
-    Optional<Actor> getActor(Context context);
+    Optional<? extends Actor> getActor(Context context);
 
     /********************************* Backoffice methods ***********************************/
 

@@ -43,7 +43,7 @@ public class DefaultAuthorizationValidator implements AuthorizationValidator {
         checkNotNull(context);
         checkNotNull(clazz);
 
-        final Optional<Actor> actor = this.authorizationStorage.getActor(context);
+        final Optional<? extends Actor> actor = this.authorizationStorage.getActor(context);
         if(actor.isPresent()) {
             this.authorizationSecurityManager.checkRoles(extractRoles(clazz), actor.get());
             this.authorizationSecurityManager.checkPermissions(extractPermissions(clazz), actor.get());
