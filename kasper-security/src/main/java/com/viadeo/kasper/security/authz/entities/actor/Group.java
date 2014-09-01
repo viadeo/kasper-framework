@@ -9,6 +9,7 @@ package com.viadeo.kasper.security.authz.entities.actor;
 
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
+import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.security.authz.Authorization;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
 import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
@@ -29,6 +30,10 @@ public class Group extends Actor {
     // ------------------------------------------------------------------------
 
     public Group() { }
+
+    public Group(final String name) {
+        apply(new AuthorizationGroupCreatedEvent(new DefaultKasperId(), name));
+    }
 
     public Group(final KasperID kasperID, final String name) {
         apply(new AuthorizationGroupCreatedEvent(kasperID, name));

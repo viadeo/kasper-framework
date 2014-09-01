@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.security.interceptor;
+package com.viadeo.kasper.security.strategy.impl;
 
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -12,8 +12,6 @@ import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
 import com.viadeo.kasper.security.callback.*;
 import com.viadeo.kasper.security.configuration.SecurityConfiguration;
 import com.viadeo.kasper.security.strategy.SecurityStrategy;
-import com.viadeo.kasper.security.strategy.impl.DefaultPublicSecurityStrategy;
-import com.viadeo.kasper.security.strategy.impl.DefaultSecurityStrategy;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -66,7 +64,7 @@ public class SecurityStrategyUTest {
             throws Exception {
 
         // Given
-        final SecurityStrategy securityStrategy = new DefaultSecurityStrategy(securityConfiguration, QueryHandler.class);
+        final com.viadeo.kasper.security.strategy.SecurityStrategy securityStrategy = new SecurityStrategy(securityConfiguration, QueryHandler.class);
         final Context context = mock(Context.class);
 
         // When
@@ -85,7 +83,7 @@ public class SecurityStrategyUTest {
             throws Exception {
 
         // Given
-        final SecurityStrategy securityStrategy = new DefaultPublicSecurityStrategy(securityConfiguration, QueryHandler.class);
+        final com.viadeo.kasper.security.strategy.SecurityStrategy securityStrategy = new SecurityStrategy(securityConfiguration, QueryHandler.class);
         final Context context = mock(Context.class);
 
         // When

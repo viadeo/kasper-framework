@@ -8,6 +8,7 @@ package com.viadeo.kasper.cqrs.command;
 
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import org.axonframework.commandhandling.gateway.Timeout;
 import org.axonframework.common.annotation.MetaData;
 
@@ -141,8 +142,7 @@ public interface CommandGateway {
     /**
      * Register an interceptor factory to the gateway
      *
-     * @param interceptorFactory the query interceptor factory to register
+     * @param interceptorFactory the interceptor factory to register
      */
-    void register(final CommandInterceptorFactory interceptorFactory);
-
+    void register(InterceptorFactory interceptorFactory);
 }

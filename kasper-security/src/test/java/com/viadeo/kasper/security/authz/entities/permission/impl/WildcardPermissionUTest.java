@@ -26,7 +26,7 @@
 
 // copied from apache shiro
 
-package com.viadeo.kasper.security.authz.permission.impl;
+package com.viadeo.kasper.security.authz.entities.permission;
 
 import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 import org.junit.Test;
@@ -37,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 /**
  * @since 0.9
  */
-public class WildcardPermissionTest {
+public class WildcardPermissionUTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void testEmpty() {

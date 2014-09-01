@@ -4,7 +4,7 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.security.authz.permission.impl;
+package com.viadeo.kasper.security.authz.entities.permission.impl;
 
 import com.viadeo.kasper.security.authz.entities.permission.Permission;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import static junit.framework.Assert.*;
 
-public class RoleTest {
+public class RoleUTest {
 
     private class OpenRole extends Role {
         public OpenRole(String name) {

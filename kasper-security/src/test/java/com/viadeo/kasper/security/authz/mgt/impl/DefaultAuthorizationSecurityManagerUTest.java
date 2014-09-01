@@ -21,7 +21,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
 
-public class DefaultAuthorizationSecurityManagerTest {
+public class DefaultAuthorizationSecurityManagerUTest {
 
     private DefaultAuthorizationSecurityManager defaultAuthorizationSecurityManager;
 

@@ -13,6 +13,7 @@ import com.netflix.hystrix.HystrixCommandProperties;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -209,7 +210,7 @@ public class HystrixCommandGateway extends HystrixGateway implements CommandGate
     }
 
     @Override
-    public void register(final CommandInterceptorFactory interceptorFactory) {
+    public void register(final InterceptorFactory interceptorFactory) {
         commandGateway.register(interceptorFactory);
     }
 

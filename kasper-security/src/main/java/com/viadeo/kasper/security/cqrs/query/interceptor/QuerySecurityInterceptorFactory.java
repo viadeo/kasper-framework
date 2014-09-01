@@ -7,7 +7,6 @@
 package com.viadeo.kasper.security.cqrs.query.interceptor;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
@@ -17,25 +16,20 @@ import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.security.annotation.XKasperPublic;
-import com.viadeo.kasper.security.configuration.SecurityConfiguration;
+import com.viadeo.kasper.security.cqrs.ApplicationIdInterceptor;
 import com.viadeo.kasper.security.strategy.SecurityStrategy;
-import com.viadeo.kasper.security.strategy.impl.DefaultPublicSecurityStrategy;
-import com.viadeo.kasper.security.strategy.impl.DefaultSecurityStrategy;
 
-import java.util.Map;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class QuerySecurityInterceptorFactory extends QueryInterceptorFactory {
 
-    private final SecurityConfiguration securityConfiguration;
-    private final Map<Class, SecurityStrategy> strategies = Maps.newHashMap();
+    private SecurityStrategy securityStrategy;
 
     // ------------------------------------------------------------------------
 
-    public QuerySecurityInterceptorFactory(final SecurityConfiguration securityConfiguration) {
-        this.securityConfiguration = checkNotNull(securityConfiguration);
+    public QuerySecurityInterceptorFactory() {
     }
 
     // ------------------------------------------------------------------------
@@ -44,21 +38,16 @@ public class QuerySecurityInterceptorFactory extends QueryInterceptorFactory {
     @Override
     public Optional<InterceptorChain<Query, QueryResponse<QueryResult>>> create(final TypeToken<?> type) {
         final Class<? extends Query> queryClass = extractQueryClassFromTypeToken(type);
-        final SecurityStrategy securityStrategy;
 
-        if (strategies.containsKey(queryClass)) {
-            securityStrategy = strategies.get(queryClass);
-        } else {
-            if (queryClass.isAnnotationPresent(XKasperPublic.class)) {
-                securityStrategy = new DefaultPublicSecurityStrategy(securityConfiguration, queryClass);
-            } else {
-                securityStrategy = new DefaultSecurityStrategy(securityConfiguration, queryClass);
-            }
-            strategies.put(queryClass, securityStrategy);
+        if (null == this.securityStrategy) {
+            this.securityStrategy = new SecurityStrategy(queryClass);
         }
 
+        ApplicationIdInterceptor applicationIdInterceptor = new ApplicationIdInterceptor();
+        //applicationIdInterceptor.process(queryClass, );
+
         final Interceptor<Query, QueryResponse<QueryResult>> interceptor =
-                new QuerySecurityInterceptor<>(securityStrategy);
+                new QuerySecurityInterceptor<>(this.securityStrategy);
         return Optional.of(InterceptorChain.makeChain(interceptor));
     }
 

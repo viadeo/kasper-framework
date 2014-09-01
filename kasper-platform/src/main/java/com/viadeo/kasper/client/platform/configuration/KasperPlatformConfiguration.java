@@ -27,7 +27,6 @@ import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryValidationInterceptorFactory;
 import com.viadeo.kasper.resilience.HystrixGateway;
-import com.viadeo.kasper.security.configuration.SecurityConfiguration;
 import com.viadeo.kasper.security.cqrs.command.interceptor.CommandSecurityInterceptorFactory;
 import com.viadeo.kasper.security.cqrs.query.interceptor.QuerySecurityInterceptorFactory;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
@@ -57,10 +56,6 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     public KasperPlatformConfiguration() {
-        this(new SecurityConfiguration.Builder().build());
-    }
-
-    public KasperPlatformConfiguration(SecurityConfiguration securityConfiguration) {
         this.eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
         this.metricRegistry = new MetricRegistry();
         this.extraComponents = Maps.newHashMap();
@@ -79,12 +74,12 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         }
 
         this.commandInterceptorFactories = Lists.<CommandInterceptorFactory>newArrayList(
-                new CommandSecurityInterceptorFactory(securityConfiguration),
+                new CommandSecurityInterceptorFactory(),
                 new CommandValidationInterceptorFactory()
         );
 
         this.queryInterceptorFactories = Lists.newArrayList(
-                new QuerySecurityInterceptorFactory(securityConfiguration),
+                new QuerySecurityInterceptorFactory(),
                 new CacheInterceptorFactory(),
                 new QueryValidationInterceptorFactory(),
                 new QueryFilterInterceptorFactory()

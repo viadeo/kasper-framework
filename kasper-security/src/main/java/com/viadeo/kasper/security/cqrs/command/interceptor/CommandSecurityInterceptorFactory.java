@@ -14,11 +14,7 @@ import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.security.annotation.XKasperPublic;
-import com.viadeo.kasper.security.configuration.SecurityConfiguration;
 import com.viadeo.kasper.security.strategy.SecurityStrategy;
-import com.viadeo.kasper.security.strategy.impl.DefaultPublicSecurityStrategy;
-import com.viadeo.kasper.security.strategy.impl.DefaultSecurityStrategy;
 
 import java.util.Map;
 
@@ -26,13 +22,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CommandSecurityInterceptorFactory extends CommandInterceptorFactory {
 
-    private SecurityConfiguration securityConfiguration;
-    private final Map<Class, SecurityStrategy> strategies = Maps.newHashMap();
+    private SecurityStrategy securityStrategy;
 
     // ------------------------------------------------------------------------
 
-    public CommandSecurityInterceptorFactory(final SecurityConfiguration securityConfiguration) {
-        this.securityConfiguration = checkNotNull(securityConfiguration);
+    public CommandSecurityInterceptorFactory() {
     }
 
     // ------------------------------------------------------------------------
@@ -42,17 +36,8 @@ public class CommandSecurityInterceptorFactory extends CommandInterceptorFactory
     public Optional<InterceptorChain<Command, CommandResponse>> create(final TypeToken<?> type) {
         final Class<?> commandClass = checkNotNull(type).getRawType();
 
-        final SecurityStrategy securityStrategy;
-
-        if (strategies.containsKey(commandClass)) {
-            securityStrategy = strategies.get(commandClass);
-        } else {
-            if (commandClass.isAnnotationPresent(XKasperPublic.class)) {
-                securityStrategy = new DefaultPublicSecurityStrategy(securityConfiguration, commandClass);
-            } else {
-                securityStrategy = new DefaultSecurityStrategy(securityConfiguration, commandClass);
-            }
-            strategies.put(commandClass, securityStrategy);
+        if (null == this.securityStrategy) {
+            this.securityStrategy = new SecurityStrategy(commandClass);
         }
 
         final Interceptor<Command, CommandResponse> interceptor =

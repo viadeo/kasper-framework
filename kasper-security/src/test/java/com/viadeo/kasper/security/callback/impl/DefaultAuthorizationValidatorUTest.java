@@ -12,20 +12,24 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.security.annotation.XKasperRequirePermissions;
 import com.viadeo.kasper.security.annotation.XKasperRequireRoles;
-import com.viadeo.kasper.security.authz.entities.actor.Actor;
 import com.viadeo.kasper.security.authz.entities.actor.User;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
 import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 import com.viadeo.kasper.security.authz.mgt.AuthorizationSecurityManager;
 import com.viadeo.kasper.security.authz.mgt.impl.DefaultAuthorizationSecurityManager;
 import com.viadeo.kasper.security.authz.storage.AuthorizationStorage;
+import com.viadeo.kasper.security.callback.*;
+import com.viadeo.kasper.security.configuration.SecurityConfiguration;
 import com.viadeo.kasper.security.exception.KasperSecurityException;
 import com.viadeo.kasper.security.exception.KasperUnauthorizedException;
+import com.viadeo.kasper.security.strategy.SecurityStrategy;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.runners.MockitoJUnitRunner;
 
@@ -34,11 +38,11 @@ import java.util.Collection;
 import java.util.List;
 
 import static junit.framework.Assert.assertEquals;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 @RunWith(MockitoJUnitRunner.class)
-public class DefaultAuthorizationValidatorTest {
+public class DefaultAuthorizationValidatorUTest {
 
     @MockitoAnnotations.Mock
     AuthorizationSecurityManager authorizationSecurityManager;
@@ -237,4 +241,82 @@ public class DefaultAuthorizationValidatorTest {
         return Optional.of(actor);
     }
 
+    public static class SecurityStrategyUTest {
+
+        @Mock
+        SecurityTokenValidator tokenValidator;
+
+        @Mock
+        IdentityContextProvider identityProvider;
+
+        @Mock
+        ApplicationIdValidator applicationIdValidator;
+
+        @Mock
+        IpAddressValidator ipAddressValidator;
+
+        @Mock
+        AuthorizationValidator authorizationValidator;
+
+        @Mock
+        AuthorizationSecurityManager authorizationSecurityManager;
+
+        SecurityConfiguration securityConfiguration;
+
+
+        // ------------------------------------------------------------------------
+
+        @Before
+        public void setup() {
+            initMocks(this);
+            securityConfiguration = new SecurityConfiguration.Builder()
+                    .withSecurityTokenValidator(tokenValidator)
+                    .withIdentityProvider(identityProvider)
+                    .withApplicationIdValidator(applicationIdValidator)
+                    .withIpAddressValidator(ipAddressValidator)
+                    .withAuthorizationValidator(authorizationValidator)
+                    .build();
+        }
+
+        // ------------------------------------------------------------------------
+
+        @Test
+        public void applySecurityBeforeRequest_onNonPublicRequest_shouldInvokeAuthenticationCallbacks()
+                throws Exception {
+
+            // Given
+            final com.viadeo.kasper.security.strategy.SecurityStrategy securityStrategy = new SecurityStrategy(securityConfiguration, QueryHandler.class);
+            final Context context = mock(Context.class);
+
+            // When
+            securityStrategy.beforeRequest(context);
+
+            // Then
+            verify(tokenValidator).validate(refEq(context.getSecurityToken()));
+            verify(identityProvider).provideIdentity(refEq(context));
+            verify(applicationIdValidator).validate(context.getApplicationId());
+            verify(ipAddressValidator).validate(context.getIpAddress());
+            verify(authorizationValidator).validate(context, QueryHandler.class);
+        }
+
+        @Test
+        public void applySecurityBeforeRequest_onPublicRequest_shouldNotInvokeAuthenticationCallbacks()
+                throws Exception {
+
+            // Given
+            final com.viadeo.kasper.security.strategy.SecurityStrategy securityStrategy = new SecurityStrategy(securityConfiguration, QueryHandler.class);
+            final Context context = mock(Context.class);
+
+            // When
+            securityStrategy.beforeRequest(context);
+
+            // Then
+            verifyZeroInteractions(tokenValidator);
+            verify(identityProvider).provideIdentity(refEq(context));
+            verify(applicationIdValidator).validate(context.getApplicationId());
+            verify(ipAddressValidator).validate(context.getIpAddress());
+            verify(authorizationValidator).validate(context, QueryHandler.class);
+        }
+
+    }
 }
