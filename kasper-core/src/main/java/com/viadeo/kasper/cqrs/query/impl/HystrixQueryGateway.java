@@ -10,7 +10,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.netflix.hystrix.HystrixCommand;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.resilience.HystrixCommandWithExceptionPolicy;
 import com.viadeo.kasper.resilience.HystrixGateway;
@@ -77,7 +77,7 @@ public class HystrixQueryGateway extends HystrixGateway implements QueryGateway{
     }
 
     @Override
-    public void register(final QueryInterceptorFactory interceptorFactory) {
+    public void register(final InterceptorFactory interceptorFactory) {
         queryGateway.register(interceptorFactory);
     }
 

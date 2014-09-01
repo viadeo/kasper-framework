@@ -7,7 +7,7 @@
 package com.viadeo.kasper.cqrs.query;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
@@ -42,7 +42,7 @@ public interface QueryGateway {
      *
      * @param interceptorFactory the query interceptor factory to register
      */
-    void register(final QueryInterceptorFactory interceptorFactory);
+    void register(final InterceptorFactory interceptorFactory);
 
     /**
      * Register a query handler to the gateway
