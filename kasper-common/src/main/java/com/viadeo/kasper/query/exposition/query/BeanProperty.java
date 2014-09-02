@@ -16,14 +16,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BeanProperty {
 
     private final String name;
-    private final Class<?> declaringClass;
+    private final Class declaringClass;
     private final Annotation[] annotations;
-    private final TypeToken<?> typeToken;
+    private final TypeToken typeToken;
 
     // ------------------------------------------------------------------------
 
-    public BeanProperty(final String name, final Class<?> declaringClass,
-                        final Annotation[] annotations, final TypeToken<?> typeToken) {
+    public BeanProperty(final String name, final Class declaringClass,
+                        final Annotation[] annotations, final TypeToken typeToken) {
         super();
 
         this.name = checkNotNull(name);
@@ -38,7 +38,7 @@ public class BeanProperty {
         return name;
     }
 
-    public Class<?> getDeclaringClass() {
+    public Class getDeclaringClass() {
         return declaringClass;
     }
 
@@ -46,7 +46,7 @@ public class BeanProperty {
         return Arrays.copyOf(annotations, annotations.length);
     }
 
-    public TypeToken<?> getTypeToken() {
+    public TypeToken getTypeToken() {
         return typeToken;
     }
 
@@ -64,7 +64,7 @@ public class BeanProperty {
         if (null == obj) {
             return false;
         }
-        if (!getClass().equals(obj.getClass())) {
+        if ( ! getClass().equals(obj.getClass())) {
             return false;
         }
 
@@ -79,4 +79,5 @@ public class BeanProperty {
 
         return true;
     }
+
 }

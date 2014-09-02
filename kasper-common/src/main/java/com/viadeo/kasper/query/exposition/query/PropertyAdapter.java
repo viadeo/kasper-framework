@@ -19,7 +19,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 class PropertyAdapter {
 
-    private static final Map<Class<?>, Object> DEFAULT_VALUES_FOR_PRIMITIVES = Maps.newHashMap();
+    private static final Map<Class, Object> DEFAULT_VALUES_FOR_PRIMITIVES = Maps.newHashMap();
     {
         DEFAULT_VALUES_FOR_PRIMITIVES.put(int.class, 0);
         DEFAULT_VALUES_FOR_PRIMITIVES.put(double.class, 0d);
@@ -33,23 +33,29 @@ class PropertyAdapter {
     private final Method accessor;
     private final BeanProperty property;
     private final TypeAdapter<Object> adapter;
+
     // it is a bit ugly to use it to distinguish between typeadapter and beanadapter, 
     // but it does the work with less code & anyway PropertyAdapter is an internal class 
     private final boolean handleName;
 
     // ------------------------------------------------------------------------
 
-    public PropertyAdapter(final BeanProperty property, final Method accessor, final Method mutator, final TypeAdapter<Object> adapter, final boolean handleName) {
+    public PropertyAdapter(final BeanProperty property,
+                           final Method accessor,
+                           final Method mutator,
+                           final TypeAdapter<Object> adapter,
+                           final boolean handleName)
+    {
         this.property = checkNotNull(property);
         this.accessor = checkNotNull(accessor);
 
-        // allow null as it could be a ctr param
-        this.mutator = mutator;
+        this.mutator = mutator; /* null allowed as could be a ctr param */
         this.adapter = checkNotNull(adapter);
 
-        if (mutator != null) {
+        if (null != mutator) {
             this.mutator.setAccessible(true);
         }
+
         this.accessor.setAccessible(true);
         this.handleName = handleName;
     }
@@ -77,7 +83,7 @@ class PropertyAdapter {
     }
 
     public Object adapt(final QueryParser parser) throws Exception {
-        final Class<?> rawClass = property.getTypeToken().getRawType();
+        final Class rawClass = property.getTypeToken().getRawType();
 
         /*
          * ok it is ugly but for the moment we have to do that in order to
@@ -124,20 +130,32 @@ class PropertyAdapter {
     }
     
     public boolean existsInQuery(QueryParser parser) {
-        return parser.exists(getName()) || !handleName;
+        return parser.exists(getName()) || ( ! handleName);
     }
 
     // ------------------------------------------------------------------------
 
     private KasperQueryAdapterException cannotGetPropertyValue(final Exception e) {
-        return new KasperQueryAdapterException("Unable to get value of property " + property.getName() + " from bean "
-                + accessor.getDeclaringClass(), e);
+        return new KasperQueryAdapterException(
+            String.format(
+                "Unable to get value of property %s from bean %s",
+                property.getName(),
+                accessor.getDeclaringClass()
+            ),
+            e
+        );
     }
 
     private KasperQueryAdapterException cannotSetPropertyValue(final Object value, final Exception e) {
         return new KasperQueryAdapterException(
-                String.format("Unable to set property %s from bean %s with value %s",
-                property.getName(), accessor.getDeclaringClass(), value), e);
+                String.format(
+                    "Unable to set property %s from bean %s with value %s",
+                    property.getName(),
+                    accessor.getDeclaringClass(),
+                    value
+                ),
+                e
+        );
     }
 
     // ------------------------------------------------------------------------

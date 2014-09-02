@@ -8,6 +8,9 @@ package com.viadeo.kasper.query.exposition.query;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Arrays;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 class BeanConstructorProperty {
 
@@ -22,9 +25,9 @@ class BeanConstructorProperty {
     public BeanConstructorProperty(final int position, final Annotation[] annotations,
                                    final String name, final Type type) {
         this.position = position;
-        this.annotations = annotations;
-        this.name = name;
-        this.type = type;
+        this.annotations = Arrays.copyOf(checkNotNull(annotations), annotations.length);;
+        this.name = checkNotNull(name);
+        this.type = checkNotNull(type);
     }
 
     // ------------------------------------------------------------------------
@@ -33,7 +36,7 @@ class BeanConstructorProperty {
         return position;
     }
 
-    public Annotation[] annotations(){
+    public Annotation[] annotations() {
         return annotations;
     }
 

@@ -7,25 +7,29 @@
 
 package com.viadeo.kasper.client.platform.components.eventbus;
 
-import com.google.common.base.Preconditions;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.AbstractContext;
-import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.EventUtils;
+import com.viadeo.kasper.core.context.CurrentContext;
+import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.*;
 import org.axonframework.eventhandling.async.*;
-import org.axonframework.unitofwork.CurrentUnitOfWork;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.NoTransactionManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.concurrent.SynchronousQueue;
+import java.util.Set;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -39,14 +43,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  */
 public class KasperEventBus extends ClusteringEventBus {
-    private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBus.class);
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(KasperEventBus.class);
     private static final String KASPER_CLUSTER_NAME = "kasper";
 
-    private static final int CORE_POOL_SIZE = 2;
-    private static final int MAXIMUM_POOL_SIZE = 10;
-    private static final long KEEP_ALIVE_TIME = 60L;
-    private static final TimeUnit TIME_UNIT = TimeUnit.MINUTES;
+    /* FIXME: make it configurable */
+    private static final int CORE_POOL_SIZE = 50;
+    private static final int MAXIMUM_POOL_SIZE = 500;
+    private static final long KEEP_ALIVE_TIME = 30L;
+    private static final TimeUnit TIME_UNIT = TimeUnit.SECONDS;
 
     public static enum Policy {
         SYNCHRONOUS, ASYNCHRONOUS, USER
@@ -54,6 +59,15 @@ public class KasperEventBus extends ClusteringEventBus {
     private static final Policy DEFAULT_POLICY = Policy.SYNCHRONOUS;
 
     private final Policy currentPolicy;
+    private final Optional<KasperProcessorDownLatch> optionalProcessorDownLatch;
+    private final List<PublicationHandler> publicationHandlers = Lists.newLinkedList();
+
+    // ------------------------------------------------------------------------
+
+    public interface PublicationHandler {
+        void handlePublication(EventMessage eventMessage);
+        void shutdown();
+    }
 
     // ------------------------------------------------------------------------
 
@@ -62,49 +76,60 @@ public class KasperEventBus extends ClusteringEventBus {
      */
     public static ErrorHandler getDefaultErrorHandler() {
         return new DefaultErrorHandler(RetryPolicy.proceed()) {
-                        @Override
-                        public RetryPolicy handleError(final Throwable exception,
-                                                       final EventMessage<?> eventMessage,
-                                                       final EventListener eventListener) {
-                            /* TODO: store the error, generate error event */
-                            LOGGER.error(String.format("Error %s occured during processing of event %s in listener %s ",
-                                        exception.getMessage(),
-                                        eventMessage.getPayload().getClass().getName(),
-                                        eventListener.getClass().getName()
-                            ));
-                            return super.handleError(exception, eventMessage, eventListener);
-                        }
-                   };
-    }
-
-    /*
-     * Return a default cluster selector
-     */
-    public static ClusterSelector getCluster(final Policy busPolicy) {
-        return getCluster(busPolicy, getDefaultErrorHandler());
+            @Override
+            public RetryPolicy handleError(final Throwable exception,
+                                           final EventMessage eventMessage,
+                                           final EventListener eventListener) {
+                /* TODO: store the error, generate error event */
+                LOGGER.error(String.format(
+                    "Error %s occured during processing of event %s in listener %s ",
+                    exception.getMessage(),
+                    eventMessage.getPayload().getClass().getName(),
+                    eventListener.getClass().getName()
+                ));
+                return super.handleError(exception, eventMessage, eventListener);
+            }
+        };
     }
 
     /*
      * Return a default cluster selector using the specified error handler
-     * FIXME: eventually manage with a correct transaction manager
+     * FIXME: eventually manage with a complete transaction manager
      */
-    public static ClusterSelector getCluster(final Policy busPolicy, final ErrorHandler errorHandler) {
+    public static ClusterSelector getCluster(
+            final Policy busPolicy,
+            final ErrorHandler errorHandler,
+            final KasperProcessorDownLatch processorDownLatch) {
 
         if (Policy.ASYNCHRONOUS.equals(busPolicy)) {
+            final BlockingQueue<Runnable> busQueue = new LinkedBlockingQueue<Runnable>();
+
             return new DefaultClusterSelector(
                 new AsynchronousCluster(
                     KASPER_CLUSTER_NAME,
                     new ThreadPoolExecutor(
-                            CORE_POOL_SIZE,
-                            MAXIMUM_POOL_SIZE,
-                            KEEP_ALIVE_TIME,
-                            TIME_UNIT,
-                            new SynchronousQueue<Runnable>(true)
+                        CORE_POOL_SIZE,
+                        MAXIMUM_POOL_SIZE,
+                        KEEP_ALIVE_TIME,
+                        TIME_UNIT,
+                        busQueue
                     ),
                     new DefaultUnitOfWorkFactory(new NoTransactionManager()),
                     new SequentialPolicy(),
                     errorHandler
-                )
+                ) {
+                    @Override
+                    protected EventProcessor newProcessingScheduler(EventProcessor.ShutdownCallback shutDownCallback, Set<EventListener> eventListeners,
+                                                                    MultiplexingEventProcessingMonitor eventProcessingMonitor) {
+                        final EventProcessor eventProcessor = super.newProcessingScheduler(
+                            new KasperShutdownCallback(processorDownLatch, shutDownCallback),
+                            eventListeners,
+                            eventProcessingMonitor
+                        );
+                        processorDownLatch.process(eventProcessor);
+                        return eventProcessor;
+                    }
+                }
             );
         }
 
@@ -121,16 +146,14 @@ public class KasperEventBus extends ClusteringEventBus {
      * Build a default synchronous event bus
      */
     public KasperEventBus() {
-        super(getCluster(DEFAULT_POLICY));
-        this.currentPolicy = DEFAULT_POLICY;
+        this(DEFAULT_POLICY);
     }
 
     /*
      * Build a Kasper event bus using the specified policy
      */
     public KasperEventBus(final Policy busPolicy) {
-        super(getCluster(checkNotNull(busPolicy)));
-        this.currentPolicy = busPolicy;
+        this(busPolicy, new KasperProcessorDownLatch());
     }
 
     /*
@@ -139,6 +162,7 @@ public class KasperEventBus extends ClusteringEventBus {
     public KasperEventBus(final ClusterSelector axonClusterSelector) {
         super(checkNotNull(axonClusterSelector));
         this.currentPolicy = Policy.USER;
+        this.optionalProcessorDownLatch = Optional.absent();
     }
 
     /*
@@ -147,14 +171,40 @@ public class KasperEventBus extends ClusteringEventBus {
     public KasperEventBus(final Cluster cluster) {
         super(new DefaultClusterSelector(checkNotNull(cluster)));
         this.currentPolicy = Policy.USER;
+        this.optionalProcessorDownLatch = Optional.absent();
     }
 
     /*
      * Build an asynchronous Kasper event bus with the specified error handler
      */
     public KasperEventBus(final ErrorHandler errorHandler) {
-        super(getCluster(Policy.ASYNCHRONOUS, errorHandler));
-        this.currentPolicy = Policy.ASYNCHRONOUS;
+        this(Policy.ASYNCHRONOUS, errorHandler, new KasperProcessorDownLatch());
+    }
+
+    public KasperEventBus(final Policy busPolicy, final KasperProcessorDownLatch processorDownLatch) {
+        this(busPolicy, getDefaultErrorHandler(), processorDownLatch);
+    }
+
+    public KasperEventBus(
+            final Policy busPolicy,
+            final ErrorHandler errorHandler,
+            final KasperProcessorDownLatch processorDownLatch
+    ) {
+        super(getCluster(checkNotNull(busPolicy), checkNotNull(errorHandler), checkNotNull(processorDownLatch)));
+        this.currentPolicy = busPolicy;
+        this.optionalProcessorDownLatch = Optional.of(processorDownLatch);
+    }
+
+    // ------------------------------------------------------------------------
+
+    public void onEventPublished(final PublicationHandler publicationHandler) {
+        this.publicationHandlers.add(publicationHandler);
+    }
+
+    protected void noticePublicationHandlers(final EventMessage event) {
+        for (final PublicationHandler publicationHandler : publicationHandlers) {
+            publicationHandler.handlePublication(event);
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -165,21 +215,77 @@ public class KasperEventBus extends ClusteringEventBus {
 
     // ------------------------------------------------------------------------
 
-    /*
-     * Publish a contextualized Kasper event
-     */
-    public void publish(final Event event) {
-        checkNotNull(event);
-        publish(EventUtils.KasperEvent2AxonMessage(event));
+    @Override
+    public void publish(final EventMessage... messages) {
+        final EventMessage[] newMessages;
+
+        /* Add the context to messages if required */
+        if (CurrentContext.value().isPresent()) {
+            newMessages = new EventMessage[messages.length];
+            for (int i = 0 ; i < messages.length ; i++) {
+                final EventMessage message = messages[i];
+                if ( ! message.getMetaData().containsKey(Context.METANAME)) {
+                    final Map<String, Object> metaData = Maps.newHashMap();
+                    metaData.put(Context.METANAME, CurrentContext.value().get());
+                    newMessages[i] = message.andMetaData(metaData);
+                } else {
+                    newMessages[i] = message;
+                }
+            }
+        } else {
+            newMessages = messages;
+        }
+
+        /* Publish to Axon bus implementation */
+        this.publishToSuper(newMessages);
+
+        /* Notice handlers about event publication */
+        for (final EventMessage message : newMessages) {
+            this.noticePublicationHandlers(message);
+        }
     }
 
-    /*
-     * Publish a Kasper event using the specified context
-     * Warning : The provided context will override eventually set one of the provided event
-     */
-    public void publish(final Event event, final Context context) {
-        checkNotNull(event).setContext(checkNotNull(context));
-        this.publish(event);
+    @VisibleForTesting
+    void publishToSuper(final EventMessage... messages) {
+        super.publish(messages);
+    }
+
+    public void publish(final IEvent event) {
+        this.publish(GenericEventMessage.asEventMessage(event));
+    }
+
+    public void publishEvent(final Context context, final IEvent event) {
+        this.publish(
+            new GenericEventMessage<>(
+                checkNotNull(event),
+                new HashMap<String, Object>() {{
+                    this.put(Context.METANAME, context);
+                }}
+            )
+        );
+    }
+
+    // ------------------------------------------------------------------------
+
+    public Optional<Runnable> getShutdownHook(){
+        final KasperEventBus that = this;
+        if (optionalProcessorDownLatch.isPresent()) {
+            return Optional.<Runnable>of(new Runnable() {
+                @Override
+                public void run() {
+                    LOGGER.info("Starting shutdown : Publication handlers");
+                    for (final PublicationHandler handler : that.publicationHandlers) {
+                        handler.shutdown();
+                    }
+                    LOGGER.info("Shutdown complete : Publication handlers");
+
+                    LOGGER.info("Starting shutdown : Event Processing");
+                    optionalProcessorDownLatch.get().await();
+                    LOGGER.info("Shutdown complete : Event Processing");
+                }
+            });
+        }
+        return Optional.absent();
     }
 
 }

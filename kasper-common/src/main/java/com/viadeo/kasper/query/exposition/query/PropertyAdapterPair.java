@@ -7,13 +7,18 @@
 package com.viadeo.kasper.query.exposition.query;
 
 class PropertyAdapterPair<F extends PropertyAdapter, S> {
+
     private F firstValue;
     private S secondValue;
+
+    // ------------------------------------------------------------------------
 
     public PropertyAdapterPair(final F firstValue, final S secondValue) {
         this.firstValue = firstValue;
         this.secondValue = secondValue;
     }
+
+    // ------------------------------------------------------------------------
 
     public F firstValue() {
         return firstValue;

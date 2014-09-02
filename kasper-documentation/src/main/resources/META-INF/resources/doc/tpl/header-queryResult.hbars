@@ -1,0 +1,23 @@
+
+<div class="well well-small">
+    <h2>Query Handlers</h2>
+    {{#if node.queryHandlers}}
+    <ul>
+        {{#each node.queryHandlers}}
+            <li><a class="klink" href="#{{this.name}}">{{this.label}}</a></li>
+        {{/each}}
+    </ul>
+    {{else}}
+    <i>nothing declared</i>
+    {{/if}}
+</div>
+
+{{#if node.element}}
+<div class="row-fluid">
+    <div class="well well-small">
+        <h2>
+            <small>Element :</small>
+            <a class="klink" href="#{{node.element.name}}">{{node.element.label}}</a></h2>
+    </div>
+</div>
+{{/if}}

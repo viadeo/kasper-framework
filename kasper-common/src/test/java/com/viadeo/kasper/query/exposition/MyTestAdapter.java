@@ -9,14 +9,14 @@ package com.viadeo.kasper.query.exposition;
 import com.viadeo.kasper.query.exposition.query.QueryBuilder;
 import com.viadeo.kasper.query.exposition.query.QueryParser;
 
-public class MyTestAdapter implements TypeAdapter<MyTestAdapter.MyTestPayload> {
+public class MyTestAdapter implements TypeAdapter<MyTestAdapter.MyTestResult> {
 
-    static class MyTestPayload {}
-
-	@Override
-	public void adapt(final MyTestPayload value, final QueryBuilder builder) { }
+    static class MyTestResult {}
 
 	@Override
-	public MyTestPayload adapt(final QueryParser parser) { return null; }
+	public void adapt(final MyTestResult value, final QueryBuilder builder) { }
+
+	@Override
+	public MyTestResult adapt(final QueryParser parser) { return null; }
 
 }

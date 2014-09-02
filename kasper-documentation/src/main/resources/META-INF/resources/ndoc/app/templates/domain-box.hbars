@@ -1,0 +1,10 @@
+<tr id="domain-{{node.label}}-btn" class="clickable-row domain-box" href="#{{node.label}}">
+  <td class="domain-box-selector col-md-3"><strong>{{node.label}}</strong></td>
+  <td class="col-md-7">{{limit_text node.description 140}}</td>
+  <td class="col-md-2">
+      <span class="badge"><span class="glyphicon glyphicon-log-in"/>{{node.commands.length}}</span>
+      <span class="badge"><span class="glyphicon glyphicon-log-out"/>{{node.queries.length}}</span>
+      <span class="badge"><span class="glyphicon glyphicon-new-window"/>{{node.events.length}}</span>
+  </td>
+</tr>
+

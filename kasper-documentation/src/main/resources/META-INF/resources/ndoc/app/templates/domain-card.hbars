@@ -1,0 +1,21 @@
+<div class="row">
+  <ol class="breadcrumb">
+    <li><a id="home-from-{{node.label}}" href="#">Home</a></li>
+    <li class="active">{{node.label}}</li>
+  </ol>
+</div>
+
+<div class="row">
+  <div class="panel panel-default">
+      <h2 class="panel-heading"><span class="glyphicon glyphicon-unchecked"/>{{node.label}}<span class="pull-right"><a href="../kasper/doc{{node.url}}" target="_blank"><small>[json]</small></a></span></h2>
+      <p class="panel-description text-justify">{{node.description}}</p>
+      <div class="panel-body">
+        {{#if node.owner}}
+        <dl class="block-content dl-horizontal">
+            <dt>Referent</dt>
+            <dd>{{mail_to node.owner}}</dd>
+        </dl>
+        {{/if}}
+      </div>     
+  </div>  
+</div>

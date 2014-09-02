@@ -9,13 +9,10 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.*;
-import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.viadeo.kasper.KasperError;
-import com.viadeo.kasper.cqrs.command.CommandResult;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.KasperReason;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,14 +20,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public final class ObjectMapperProvider {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class);
 
+    static final String ID = "id";
+    static final String REASON = "reason";
+    static final String REASONS = "reasons";
     static final String ERROR = "error";
     static final String ERRORS = "errors";
     static final String MESSAGE = "message";
     static final String CODE = "code";
-    static final String USERMESSAGE = "userMessage";
+    static final String LABEL = "label";
     static final String STATUS = "status";
-    private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class); 
 
     public static final ObjectMapperProvider INSTANCE = new ObjectMapperProvider();
 
@@ -38,7 +38,7 @@ public final class ObjectMapperProvider {
 
     // ------------------------------------------------------------------------
 
-    private ObjectMapperProvider() {
+    public ObjectMapperProvider() {
         mapper = new ObjectMapper();
 
         /* Generic features */
@@ -59,27 +59,30 @@ public final class ObjectMapperProvider {
         mapper.setVisibility(PropertyAccessor.CREATOR, JsonAutoDetect.Visibility.ANY);
 
         /* Register a specific module for Kasper Ser/Deser */
-        final SimpleModule kasperClientModule = new SimpleModule()
-                .addSerializer(CommandResult.class, new CommandResultSerializer())
-                .addDeserializer(CommandResult.class, new CommandResultDeserializer())
-                .addSerializer(QueryResult.class, new QueryResultSerializer());
-
-        kasperClientModule.setDeserializers(new CommandQueryResultDeserializerAdapter());
-
-        mapper.registerModule(kasperClientModule);
+        mapper.registerModule(new KasperIdModule());
+        mapper.registerModule(new KasperResponseModule());
+        mapper.registerModule(new KasperImmutabilityParanamerModule());
+        
 
         /* Third-party modules */
         mapper.registerModule(new GuavaModule());
         mapper.registerModule(new JodaModule());
+
+        /* Kasper extra modules */
+        mapper.registerModule(new JodaMoneyModule());
+    }
+
+    public static ObjectMapperProvider defaults() {
+        return ObjectMapperProvider.INSTANCE;
     }
 
     // ------------------------------------------------------------------------
 
-    static KasperError translateOldErrorToKasperError(final ObjectNode root) {
+    static KasperReason translateOldErrorToKasperReason(final ObjectNode root) {
         final String globalCode = root.get(ObjectMapperProvider.MESSAGE).asText();
         final List<String> messages = new ArrayList<String>();
 
-        for (final JsonNode node : root.get(ObjectMapperProvider.ERRORS)) {
+        for (final JsonNode node : root.get(ObjectMapperProvider.REASONS)) {
             final String code = node.get(ObjectMapperProvider.CODE).asText();
             final String message = node.get(ObjectMapperProvider.MESSAGE).asText();
 
@@ -90,9 +93,10 @@ public final class ObjectMapperProvider {
                             globalCode, code, message);
             }
         }
-        return new KasperError(globalCode, messages);
+
+        return new KasperReason(globalCode, messages);
     }
-    
+
     /**
      * @return the configured instance of ObjectWriter to use.
      */

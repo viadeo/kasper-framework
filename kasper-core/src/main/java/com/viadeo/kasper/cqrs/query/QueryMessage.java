@@ -8,23 +8,36 @@ package com.viadeo.kasper.cqrs.query;
 
 import com.viadeo.kasper.context.Context;
 
-import java.io.Serializable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- * The message used to pass a query to the kasper platform
+ * The kasper query message base implementation
  *
- * @param <Q> the encapsulated query class
+ * @param <Q> the enclosed query type
  */
-public interface QueryMessage<Q extends Query> extends Serializable {
+public class QueryMessage<Q extends Query> {
 
-	/**
-	 * @return the encapsulated query
-	 */
-	Q getQuery();
+	private static final long serialVersionUID = 8648752933168387124L;
+	private final Context context;
+	private final Q query;
 
-	/**
-	 * @return the query execution context
-	 */
-	Context getContext();
+	// -----------------------------------------------------------------------
+
+	public QueryMessage(final Context context, final Q query) {
+		this.context = checkNotNull(context);
+		this.query = checkNotNull(query);
+	}
+
+	// -----------------------------------------------------------------------
+
+	public Q getQuery() {
+		return this.query;
+	}
+
+	// -----------------------------------------------------------------------
+
+	public Context getContext() {
+		return this.context;
+	}
 
 }

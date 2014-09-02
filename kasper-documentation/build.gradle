@@ -10,6 +10,7 @@ dependencies {
 
     // Projects
     compile project(':kasper-core')
+    compile project(':kasper-platform')
 
     // Third party dependencies
     compile libraries.SPRING_CONTEXT

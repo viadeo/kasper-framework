@@ -8,6 +8,8 @@ package com.viadeo.kasper.query.exposition.adapters;
 
 import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.query.QueryBuilder;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
@@ -22,8 +24,7 @@ public final class DefaultTypeAdapters {
 
     static final Integer PARSER_ARRAY_STARTING_SIZE = 10;
 
-	private DefaultTypeAdapters() { /* singleton */
-	}
+	private DefaultTypeAdapters() { /* singleton */ }
 
 	// ------------------------------------------------------------------------
 
@@ -133,7 +134,7 @@ public final class DefaultTypeAdapters {
 
 		@Override
 		public Date adapt(final QueryParser parser) {
-			return parse(parser).toDate();
+			return parseDate(parser).toDate();
 		}
 	};
 
@@ -147,11 +148,11 @@ public final class DefaultTypeAdapters {
 
 		@Override
 		public DateTime adapt(final QueryParser parser) {
-			return parse(parser);
+			return parseDate(parser);
 		}
 	};
 	
-	private static DateTime parse(final QueryParser parser) {
+	private static DateTime parseDate(final QueryParser parser) {
 	    try {
 	        return new DateTime(parser.longValue());
 	    } catch (final NumberFormatException nfe) {
@@ -166,15 +167,19 @@ public final class DefaultTypeAdapters {
 		public Optional<TypeAdapter<Object>> create(
 				final TypeToken<Object> typeToken,
 				final QueryFactory adapterFactory) {
-			final Class<?> rawClass = typeToken.getRawType();
+			final Class rawClass = typeToken.getRawType();
 
 			if (rawClass.isArray()) {
-				final TypeAdapter<?> elementAdapter = adapterFactory
-						.create(TypeToken.of(rawClass.getComponentType()));
+				final TypeAdapter elementAdapter = adapterFactory
+						.create(
+                            TypeToken.of(rawClass.getComponentType())
+                        );
 
 				@SuppressWarnings({ "unchecked" })
 				final TypeAdapter<Object> adapter = new ArrayAdapter(
-						(TypeAdapter<Object>) elementAdapter, rawClass.getComponentType());
+						(TypeAdapter<Object>) elementAdapter,
+                        rawClass.getComponentType()
+                );
 				return Optional.fromNullable(adapter);
 			}
 
@@ -184,21 +189,24 @@ public final class DefaultTypeAdapters {
 
     // --
 
-	public static final TypeAdapterFactory<Collection<?>> COLLECTION_ADAPTER_FACTORY = new TypeAdapterFactory<Collection<?>>() {
+	public static final TypeAdapterFactory<Collection> COLLECTION_ADAPTER_FACTORY = new TypeAdapterFactory<Collection>() {
 		@Override
-		public Optional<TypeAdapter<Collection<?>>> create(
-				final TypeToken<Collection<?>> typeToken,
+		public Optional<TypeAdapter<Collection>> create(
+				final TypeToken<Collection> typeToken,
 				final QueryFactory adapterFactory) {
-			final Class<?> rawClass = typeToken.getRawType();
+			final Class rawClass = typeToken.getRawType();
 
 			if (Collection.class.isAssignableFrom(rawClass)) {
 
-				final Class<?> elementType = ReflectionGenericsResolver
-						.getParameterTypeFromClass(typeToken.getType(),	Collection.class, 0).get();
-				final TypeAdapter<?> elementAdapter = adapterFactory.create(TypeToken.of(elementType));
+				final Class elementType = ReflectionGenericsResolver
+						.getParameterTypeFromClass(
+                            typeToken.getType(),
+                            Collection.class, 0
+                        ).get();
+				final TypeAdapter elementAdapter = adapterFactory.create(TypeToken.of(elementType));
 
 				@SuppressWarnings({ "unchecked", "rawtypes" })
-				final TypeAdapter<Collection<?>> adapter = new CollectionAdapter(elementAdapter);
+				final TypeAdapter<Collection> adapter = new CollectionAdapter(elementAdapter);
 
 				return Optional.fromNullable(adapter);
 			}
@@ -209,14 +217,14 @@ public final class DefaultTypeAdapters {
 
 	// --
 
-    public static final TypeAdapterFactory<Enum<?>> ENUM_ADAPTER_FACTORY = new TypeAdapterFactory<Enum<?>>() {
+    public static final TypeAdapterFactory<Enum> ENUM_ADAPTER_FACTORY = new TypeAdapterFactory<Enum>() {
 
 		@SuppressWarnings({ "rawtypes", "unchecked" })
 		@Override
-		public Optional<TypeAdapter<Enum<?>>> create(
-				TypeToken<Enum<?>> typeToken, QueryFactory adapterFactory) {
-			final Class<?> rawClass = typeToken.getRawType();
-			final TypeAdapter<Enum<?>> adapter;
+		public Optional<TypeAdapter<Enum>> create(
+				TypeToken<Enum> typeToken, QueryFactory adapterFactory) {
+			final Class rawClass = typeToken.getRawType();
+			final TypeAdapter<Enum> adapter;
 
 			if (rawClass.isEnum() || Enum.class.isAssignableFrom(rawClass)) {
 				adapter = new EnumAdapter(rawClass);
@@ -227,5 +235,17 @@ public final class DefaultTypeAdapters {
 			return Optional.fromNullable(adapter);
 		}
 	};
+
+	public static final TypeAdapter<KasperID> KASPERID_ADAPTER = new TypeAdapter<KasperID>() {
+        @Override
+        public void adapt(final KasperID value, final QueryBuilder builder) {
+            builder.add(value.toString());
+        }
+
+        @Override
+        public KasperID adapt(final QueryParser parser) {
+            return new DefaultKasperId(parser.value());
+        }
+    };
 
 }

@@ -3,12 +3,10 @@ rootProject.name = 'kasper-framework'
 
 include ':kasper-api', 
         ':kasper-core', 
-        ':kasper-platform', 
-        ':kasper-security', 
-        ':kasper-web',
+        ':kasper-platform',
+        ':kasper-exposition',
         ':kasper-client', 
         ':kasper-common', 
         ':kasper-test', 
-        ':kasper-documentation',
-        ':kasper-hadoop'
+        ':kasper-documentation'
 

@@ -6,27 +6,81 @@
 // ============================================================================
 package com.viadeo.kasper.event;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.annotation.Immutable;
-import com.viadeo.kasper.context.Context;
 
-import java.io.Serializable;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  *
  * The Kasper event
  *
  */
-public interface Event extends Serializable, Immutable {
+public abstract class Event implements IEvent {
 
-	/**
-	 * @return the event's context
-	 */
-	Optional<Context> getContext();
+    /**
+     * Optional Unit Of Work macro event parent id
+     * ( set during uow commit() )
+     */
+    private transient String uowEventId;
 
-	/**
-	 * @param context the event's context
-	 */
-	<E extends Event> E setContext(Context context);
+    /**
+     * Event type, can be set by the repository before persisting
+     */
+    private transient PersistencyType persistencyType = PersistencyType.UNKNOWN;
+
+    // ------------------------------------------------------------------------
+
+    public enum PersistencyType {
+        UNKNOWN,       /* not yet assigned */
+        EVENT_SOURCE,  /* event is used by event sourcing strategy repository */
+        EVENT_INFO     /* event is used by entity store strategy repository */
+    }
+
+    // ------------------------------------------------------------------------
+
+    public void setPersistencyType(final PersistencyType type) {
+        this.persistencyType = checkNotNull(type);
+    }
+
+    public PersistencyType getPersistencyType() {
+        return this.persistencyType;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public Optional<String> getUOWEventId() {
+        return Optional.fromNullable(this.uowEventId);
+    }
+
+    public void setUOWEventId(final String uowEventId) {
+        this.uowEventId = uowEventId;
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public int hashCode() {
+        return 0;
+    }
+
+    @Override
+    public boolean equals(final Object obj) {
+        if (this == checkNotNull(obj)) {
+            return true;
+        }
+        if ( ! getClass().equals(obj.getClass())) {
+            return false;
+        }
+
+        return true;
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .addValue(this.persistencyType)
+                .toString();
+    }
 
 }

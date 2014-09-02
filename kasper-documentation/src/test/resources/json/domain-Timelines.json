@@ -1,91 +1,46 @@
 {
+  "commandHandlers": [],
   "commands": [],
   "concepts": [
     {
-      "description": "The Media concept",
-      "label": "StatusMedia",
-      "name": "Media",
-      "type": "concept",
-      "typePlural": "concepts",
-      "url": "/domain/Timelines/concept/Media"
-    },
-    {
-      "description": "The Status concept",
-      "label": "TimelineStatus",
-      "name": "Status",
-      "type": "concept",
-      "typePlural": "concepts",
-      "url": "/domain/Timelines/concept/Status"
-    },
-    {
-      "description": "The Timeline concept",
+      "description": "The MemberTimeline concept",
       "label": "MemberTimeline",
       "name": "Timeline",
       "type": "concept",
       "typePlural": "concepts",
       "url": "/domain/Timelines/concept/Timeline"
+    },
+    {
+      "description": "The TimelineStatus concept",
+      "label": "TimelineStatus",
+      "name": "Status",
+      "type": "concept",
+      "typePlural": "concepts",
+      "url": "/domain/Timelines/concept/Status"
     }
   ],
-  "description": "",
+  "description": "The Timelines domain",
+  "eventListeners": [],
   "events": [],
-  "handlers": [],
   "label": "Timelines",
-  "listeners": [],
   "name": "Timelines",
-  "parent": {
-    "description": "Root Facebook domain",
-    "label": "Facebook",
-    "name": "Facebook",
-    "type": "domain",
-    "typePlural": "domains",
-    "url": "/domain/Facebook"
-  },
   "prefix": "tm",
-  "queryServices": [],
-  "relations": [
-    {
-      "description": "A status is attached to one timeline",
-      "label": "attached_to",
-      "name": "Status_attachedTo_Timeline",
-      "sourceConceptName": "Status",
-      "targetConceptName": "Timeline",
-      "type": "relation",
-      "typePlural": "relations",
-      "url": "/domain/Timelines/relation/Status_attachedTo_Timeline"
-    },
-    {
-      "description": "A status is published by a Member",
-      "label": "published_by",
-      "name": "Status_publishedBy_Member",
-      "sourceConceptName": "Status",
-      "targetConceptName": "Member",
-      "type": "relation",
-      "typePlural": "relations",
-      "url": "/domain/Timelines/relation/Status_publishedBy_Member"
-    },
-    {
-      "description": "The published_by relation between Timeline and Member",
-      "label": "published_by",
-      "name": "Timeline_ownedBy_Member",
-      "sourceConceptName": "Timeline",
-      "targetConceptName": "Member",
-      "type": "relation",
-      "typePlural": "relations",
-      "url": "/domain/Timelines/relation/Timeline_ownedBy_Member"
-    }
-  ],
+  "queries": [],
+  "queryHandlers": [],
+  "queryResults": [],
+  "relations": [],
   "repositories": [
     {
-      "description": "The repository for Status aggregates",
-      "label": "StatusRepository",
+      "description": "The repository for TimelineStatus aggregates",
+      "label": "Status",
       "name": "StatusRepository",
       "type": "repository",
       "typePlural": "repositories",
       "url": "/domain/Timelines/repository/StatusRepository"
     },
     {
-      "description": "The repository for Timeline aggregates",
-      "label": "TimelineRepository",
+      "description": "The repository for MemberTimeline aggregates",
+      "label": "Timeline",
       "name": "TimelineRepository",
       "type": "repository",
       "typePlural": "repositories",

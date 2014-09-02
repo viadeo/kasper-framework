@@ -22,6 +22,8 @@ public class TestTypeAdapterRoundTrips {
 
 	private QueryFactory factory = new QueryFactoryBuilder().create();
 
+    // ------------------------------------------------------------------------
+
     @Test
     public void testNoExceptionOnBeanWithNoDiscoveredProperties() {
         factory.create(TypeToken.of(EmptyBean.class));
@@ -45,6 +47,7 @@ public class TestTypeAdapterRoundTrips {
         // Given
 		final PrimitiveArrayQuery expected = new PrimitiveArrayQuery();
 		expected.array = new int[]{1, 2, 3};
+
 		final TypeAdapter<PrimitiveArrayQuery> adapter = factory.create(TypeToken.of(PrimitiveArrayQuery.class));
 		final QueryBuilder qBuilder = new QueryBuilder();
 
@@ -52,7 +55,7 @@ public class TestTypeAdapterRoundTrips {
 		adapter.adapt(expected, qBuilder);
 
         //  Adapt a new mutable map
-		PrimitiveArrayQuery actual = adapter.adapt(new QueryParser(
+		final PrimitiveArrayQuery actual = adapter.adapt(new QueryParser(
                 LinkedHashMultimap.create(qBuilder.build())));
 
         // Then
@@ -74,7 +77,7 @@ public class TestTypeAdapterRoundTrips {
             return value;
         }
 
-        public void setValue(int value) {
+        public void setValue(final int value) {
             this.value = value;
         }
 	}

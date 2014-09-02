@@ -28,5 +28,7 @@ dependencies {
     // Test dependencies
     testCompile libraries.JERSEY_TEST_CORE
     testCompile libraries.JERSEY_TEST_HTTP
+    testCompile libraries.POWER_MOCK
+    testCompile files('src/test/resources/libs/testManifest.jar')
 
 }

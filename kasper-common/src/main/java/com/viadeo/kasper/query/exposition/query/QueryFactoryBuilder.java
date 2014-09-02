@@ -10,6 +10,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.reflect.TypeToken;
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.query.exposition.Bundle;
 import com.viadeo.kasper.query.exposition.FeatureConfiguration;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
@@ -30,9 +31,9 @@ import static com.viadeo.kasper.query.exposition.adapters.NullSafeTypeAdapter.nu
 
 public class QueryFactoryBuilder {
 
-	private ConcurrentMap<Type, TypeAdapter<?>> adapters = Maps.newConcurrentMap();
-	private ConcurrentMap<Type, BeanAdapter<?>> beanAdapters = Maps.newConcurrentMap();
-	private List<TypeAdapterFactory<?>> factories = Lists.newArrayList();
+	private ConcurrentMap<Type, TypeAdapter> adapters = Maps.newConcurrentMap();
+	private ConcurrentMap<Type, BeanAdapter> beanAdapters = Maps.newConcurrentMap();
+	private List<TypeAdapterFactory> factories = Lists.newArrayList();
 	private VisibilityFilter visibilityFilter = VisibilityFilter.PACKAGE_PUBLIC;
 	private List<Bundle> bundles = new ArrayList<Bundle>();
 	private FeatureConfiguration features = new FeatureConfiguration();
@@ -47,28 +48,29 @@ public class QueryFactoryBuilder {
 	}
 
 	@SuppressWarnings("unchecked")
-	public QueryFactoryBuilder use(final TypeAdapter<?> adapter) {
+	public QueryFactoryBuilder use(final TypeAdapter adapter) {
 		checkNotNull(adapter);
 
-		final TypeToken<?> adapterForType = TypeToken.of(adapter.getClass())
+		final TypeToken adapterForType = TypeToken.of(adapter.getClass())
 				.getSupertype(TypeAdapter.class)
 				.resolveType(TypeAdapter.class.getTypeParameters()[0]);
 
 		adapters.putIfAbsent(adapterForType.getType(), new NullSafeTypeAdapter<Object>(
-				(TypeAdapter<Object>) adapter));
+				(TypeAdapter<Object>) adapter)
+        );
 
 		return this;
 	}
 
-	public QueryFactoryBuilder use(final TypeAdapterFactory<?> factory) {
+	public QueryFactoryBuilder use(final TypeAdapterFactory factory) {
 		factories.add(checkNotNull(factory));
 		return this;
 	}
 	
-	public QueryFactoryBuilder use(final BeanAdapter<?> beanAdapter) {
+	public QueryFactoryBuilder use(final BeanAdapter beanAdapter) {
 	    checkNotNull(beanAdapter);
 	    
-	    final TypeToken<?> adapterForType = TypeToken.of(beanAdapter.getClass())
+	    final TypeToken adapterForType = TypeToken.of(beanAdapter.getClass())
                 .getSupertype(BeanAdapter.class)
                 .resolveType(BeanAdapter.class.getTypeParameters()[0]);
 
@@ -91,15 +93,15 @@ public class QueryFactoryBuilder {
 
 	public QueryFactory create() {
 
-		for (final TypeAdapter<?> adapter : loadServices(TypeAdapter.class)) {
+		for (final TypeAdapter adapter : loadServices(TypeAdapter.class)) {
 			use(adapter);
         }
 		
-		for (final BeanAdapter<?> beanAdapter : loadServices(BeanAdapter.class)) {
+		for (final BeanAdapter beanAdapter : loadServices(BeanAdapter.class)) {
             use(beanAdapter);
         }
 		
-		for (final TypeAdapterFactory<?> adapterFactory : loadServices(TypeAdapterFactory.class)) {
+		for (final TypeAdapterFactory adapterFactory : loadServices(TypeAdapterFactory.class)) {
             use(adapterFactory);
         }
 		
@@ -126,6 +128,8 @@ public class QueryFactoryBuilder {
 		adapters.putIfAbsent(Date.class, nullSafe(DefaultTypeAdapters.DATE_ADAPTER));
 		adapters.putIfAbsent(DateTime.class, nullSafe(DefaultTypeAdapters.DATETIME_ADAPTER));
 
+        adapters.putIfAbsent(KasperID.class, nullSafe(DefaultTypeAdapters.KASPERID_ADAPTER));
+
 		factories.add(DefaultTypeAdapters.COLLECTION_ADAPTER_FACTORY);
 		factories.add(DefaultTypeAdapters.ARRAY_ADAPTER_FACTORY);
 		factories.add(DefaultTypeAdapters.ENUM_ADAPTER_FACTORY);
@@ -137,8 +141,10 @@ public class QueryFactoryBuilder {
 
 	@VisibleForTesting
     public <T> List<T> loadServices(final Class<T> serviceClass) {
-	    final ServiceLoader<T> serviceLoader =
-                ServiceLoader.load(serviceClass, serviceClass.getClassLoader());
+	    final ServiceLoader<T> serviceLoader = ServiceLoader.load(
+                serviceClass,
+                serviceClass.getClassLoader()
+        );
 
         return Lists.newArrayList(serviceLoader.iterator());
 	}

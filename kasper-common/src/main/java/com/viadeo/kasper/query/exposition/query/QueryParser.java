@@ -48,7 +48,7 @@ public class QueryParser implements Iterable<QueryParser> {
     public QueryParser begin(final String key) {
         final Collection<String> values = queryMap.get(key);
 
-        if (values == null) {
+        if (null == values) {
             throw new NoSuchElementException("No value found for key[" + key + "].");
         }
 
@@ -105,18 +105,18 @@ public class QueryParser implements Iterable<QueryParser> {
     }
 
     public boolean hasNext() {
-        if (!ctx.isEmpty()) {
-            return !ctx.peek().actualValues.isEmpty();
+        if ( ! ctx.isEmpty()) {
+            return ! ctx.peek().actualValues.isEmpty();
         } else {
-            return !queryMap.isEmpty();
+            return ! queryMap.isEmpty();
         }
     }
 
     public QueryParser next() {
-        if (!hasNext()) {
+        if ( ! hasNext()) {
             throw new NoSuchElementException();
         }
-        if (!ctx.isEmpty()) {
+        if ( ! ctx.isEmpty()) {
             actualValue = ctx.peek().actualValues.pop();
         }
         /* else --

@@ -9,13 +9,41 @@ package com.viadeo.kasper.test.doc.web;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.base.Charsets;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
+import com.viadeo.kasper.client.platform.domain.descriptor.*;
+import com.viadeo.kasper.doc.element.DocumentedPlatform;
+import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
+import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.test.applications.Applications;
+import com.viadeo.kasper.test.applications.entities.Application;
+import com.viadeo.kasper.test.applications.entities.Member_fanOf_Application;
+import com.viadeo.kasper.test.applications.repositories.ApplicationMemberFansRepository;
+import com.viadeo.kasper.test.applications.repositories.ApplicationRepository;
+import com.viadeo.kasper.test.root.Facebook;
+import com.viadeo.kasper.test.root.commands.AddConnectionToMemberCommand;
+import com.viadeo.kasper.test.root.entities.Member;
+import com.viadeo.kasper.test.root.entities.Member_connectedTo_Member;
+import com.viadeo.kasper.test.root.events.FacebookEvent;
+import com.viadeo.kasper.test.root.events.FacebookMemberEvent;
+import com.viadeo.kasper.test.root.events.MemberCreatedEvent;
+import com.viadeo.kasper.test.root.events.NewMemberConnectionEvent;
+import com.viadeo.kasper.test.root.handlers.AddConnectionToMemberHandler;
+import com.viadeo.kasper.test.root.listeners.MemberCreatedEventListener;
+import com.viadeo.kasper.test.root.queries.GetMembersQueryHandler;
+import com.viadeo.kasper.test.root.repositories.MemberConnectionsRepository;
+import com.viadeo.kasper.test.root.repositories.MemberRepository;
+import com.viadeo.kasper.test.timelines.Timelines;
+import com.viadeo.kasper.test.timelines.entities.Status;
+import com.viadeo.kasper.test.timelines.entities.Timeline;
+import com.viadeo.kasper.test.timelines.repositories.StatusRepository;
+import com.viadeo.kasper.test.timelines.repositories.TimelineRepository;
 import difflib.Delta;
 import difflib.DiffUtils;
 import difflib.Patch;
@@ -49,12 +77,12 @@ import static org.junit.Assert.fail;
 /**
  * This class manage with automated testing of KasperDocumentation HTTP/JSON endpoints
  * 
- * Add your JSON test result in src/test/resources/json
+ * Add your JSON test response in src/test/resources/json
  * Just name it with the path ofthe resource to request, replacing slashes '/' by underscores '_'
  * Ex:
  *     "json/domain_Facebook_concept_Member.json"
  *     will request the kasper doc HTTP endpoint for /domain/Facebook/concept/Member and it will
- *     apply a simple JSON comparison of the result to the contents of the json test file
+ *     apply a simple JSON comparison of the response to the contents of the json test file
  *
  */
 public class KasperDocResourceTest extends JerseyTest {
@@ -66,11 +94,6 @@ public class KasperDocResourceTest extends JerseyTest {
 	 * Set to true for ONLY ONE LAUNCH if you are sure of what you're doing, then switch it back to false
 	 */
 	private static final boolean UPDATE_TESTS = false;
-
-    /**
-     * Used to boot Kasper platform for documentation capabilities testing
-     */
-    private static final KasperConfigurator kasperConfigurator = new KasperConfigurator();
 
     // ------------------------------------------------------------------------
 
@@ -86,15 +109,91 @@ public class KasperDocResourceTest extends JerseyTest {
 
         @Path("/")
         public KasperDocResource delegate() {
-            final KasperDocResource res = new KasperDocResource();
-            res.setKasperLibrary(kasperConfigurator.getKasperLibrary());
-            return res;
+
+            final DomainDescriptor facebookDomainDescriptor = new DomainDescriptor(
+                Facebook.NAME,
+                Facebook.class,
+                ImmutableList.<QueryHandlerDescriptor>of(new QueryHandlerDescriptor(
+                    GetMembersQueryHandler.class,
+                    GetMembersQueryHandler.GetMembersQuery.class,
+                    GetMembersQueryHandler.MembersResult.class
+                )),
+                ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(
+                    AddConnectionToMemberHandler.class,
+                    AddConnectionToMemberCommand.class)
+                ),
+                ImmutableList.<RepositoryDescriptor>of(
+                    new RepositoryDescriptor(
+                        MemberRepository.class,
+                        DomainDescriptorFactory.toAggregateDescriptor(Member.class)
+                    ),
+                    new RepositoryDescriptor(
+                        MemberConnectionsRepository.class,
+                        DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class)
+                    )
+                ),
+                ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(
+                    MemberCreatedEventListener.class,
+                    MemberCreatedEvent.class
+                )),
+                ImmutableList.<Class<? extends IEvent>>of(
+                        FacebookEvent.class,
+                        FacebookMemberEvent.class,
+                        MemberCreatedEvent.class,
+                        NewMemberConnectionEvent.class
+                )
+            );
+
+            final DomainDescriptor applicationDomainDescriptor = new DomainDescriptor(
+                Applications.NAME,
+                Applications.class,
+                ImmutableList.<QueryHandlerDescriptor>of(),
+                ImmutableList.<CommandHandlerDescriptor>of(),
+                ImmutableList.<RepositoryDescriptor>of(
+                    new RepositoryDescriptor(
+                        ApplicationRepository.class,
+                        DomainDescriptorFactory.toAggregateDescriptor(Application.class)
+                    ),
+                    new RepositoryDescriptor(
+                        ApplicationMemberFansRepository.class,
+                        DomainDescriptorFactory.toAggregateDescriptor(Member_fanOf_Application.class)
+                    )
+                ),
+                ImmutableList.<EventListenerDescriptor>of(),
+                ImmutableList.<Class<? extends IEvent>>of()
+            );
+
+            final DomainDescriptor timelinesDomainDescriptor = new DomainDescriptor(
+                Timeline.NAME,
+                Timelines.class,
+                ImmutableList.<QueryHandlerDescriptor>of(),
+                ImmutableList.<CommandHandlerDescriptor>of(),
+                ImmutableList.<RepositoryDescriptor>of(
+                    new RepositoryDescriptor(
+                        StatusRepository.class,
+                        DomainDescriptorFactory.toAggregateDescriptor(Status.class)
+                    ),
+                    new RepositoryDescriptor(
+                        TimelineRepository.class,
+                        DomainDescriptorFactory.toAggregateDescriptor(Timeline.class)
+                    )
+                ),
+                ImmutableList.<EventListenerDescriptor>of(),
+                ImmutableList.<Class<? extends IEvent>>of()
+            );
+
+            final DocumentedPlatform documentedPlatform = new DocumentedPlatform();
+            documentedPlatform.registerDomain(Facebook.NAME, facebookDomainDescriptor);
+            documentedPlatform.registerDomain(Applications.NAME, applicationDomainDescriptor);
+            documentedPlatform.registerDomain(Timelines.NAME, timelinesDomainDescriptor);
+            documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
+
+            return new KasperDocResource(documentedPlatform);
         }
 
     }
 
     static class TestConfiguration extends DefaultResourceConfig {
-
         public TestConfiguration() {
             super(WrappedDocResource.class);
             getProviderSingletons().add(new JacksonJsonProvider(new ObjectMapperKasperResolver().getContext(null)));
@@ -108,11 +207,11 @@ public class KasperDocResourceTest extends JerseyTest {
     }
 
     // ------------------------------------------------------------------------
-	
+
 	/**
 	 * Main run test method
 	 * 
-	 * Scans all available json files, makethe request to a standalone HTTP server and compare
+	 * Scans all available json files, make the request to a standalone HTTP server and compare
 	 * expected and retrieved results
 	 * @throws URISyntaxException 
 	 * 
@@ -121,26 +220,28 @@ public class KasperDocResourceTest extends JerseyTest {
     @Test
     public void test() throws IOException, JSONException, URISyntaxException {
     	
-    	// Traverse available json results ------------------------------------
+    	// Traverse available json responses ------------------------------------
         final Predicate<String> filter = new FilterBuilder().include(".*\\.json");
-        final Reflections reflections = new Reflections(new ConfigurationBuilder()
+        final Reflections reflections = new Reflections(
+            new ConfigurationBuilder()
                 .filterInputsBy(filter)
                 .setScanners(new ResourcesScanner())
-                .setUrls(Arrays.asList(ClasspathHelper.forClass(this.getClass()))));
+                .setUrls(Arrays.asList(ClasspathHelper.forClass(this.getClass())))
+        );
 
         final Set<String> resolved = reflections.getResources(Pattern.compile(".*"));
     	
         // Execute against Kasper documentation -------------------------------
         boolean failed = false;
     	for (final String jsonFilename : resolved) {
-			LOGGER.info("** Test result file " + jsonFilename);
+			LOGGER.info("** Test response file " + jsonFilename);
 			
     		final String json = getJson(jsonFilename);
     		
     		final String path = jsonFilename
-    				.replaceAll("json/", "")
-    				.replaceAll("-", "/")
-    				.replaceAll("\\.json", "");
+                                    .replaceAll("json/", "")
+                                    .replaceAll("-", "/")
+                                    .replaceAll("\\.json", "");
 	
 			final WebResource webResource = resource();
 	        final String responseMsg = webResource.path("/" + path).get(String.class);
@@ -152,8 +253,9 @@ public class KasperDocResourceTest extends JerseyTest {
 	        } catch (final JSONException e) {	 
 	        	LOGGER.info("\t--> ERROR");
 	        	throw e;
+
 	        } catch (final AssertionError e) {
-	        	if (!UPDATE_TESTS) {
+	        	if ( ! UPDATE_TESTS) {
 	        		LOGGER.debug("*** RETURNED RESULT :");
 	        		LOGGER.debug(new JSONObject(responseMsg).toString(2));
 	        		LOGGER.info("\t--> ERROR");
@@ -192,7 +294,7 @@ public class KasperDocResourceTest extends JerseyTest {
     	final InputStream jsonStream = ClassLoader.getSystemResourceAsStream(jsonFilename);
     	
     	if (null == jsonStream) {
-    		fail(String.format("Unable to find result file %s", jsonFilename));
+    		fail(String.format("Unable to find response file %s", jsonFilename));
     	}
     	
     	final String jsonString = IOUtils.toString(jsonStream, "UTF-8"); // Check jsonStream null
@@ -218,6 +320,7 @@ public class KasperDocResourceTest extends JerseyTest {
     	
     	try {
     		jsonAA = new JSONObject(jsonA).toString(2);
+
     	} catch (final JSONException e) {
         	LOGGER.debug("*** BAD JSON :");
         	LOGGER.debug(jsonA);
@@ -226,6 +329,7 @@ public class KasperDocResourceTest extends JerseyTest {
     	
     	try {
     		jsonBB = new JSONObject(jsonB).toString(2);
+
     	} catch (final JSONException e) {
         	LOGGER.debug("*** BAD JSON :");
         	LOGGER.debug(jsonB);
@@ -233,7 +337,11 @@ public class KasperDocResourceTest extends JerseyTest {
     	}
     	
     	try {
-    		assertEquals(jsonAA.replaceAll("[\\s\\n]", ""), jsonBB.replaceAll("[\\s\\n]", ""));
+    		assertEquals(
+                    jsonAA.replaceAll("[\\s\\n]", ""),
+                    jsonBB.replaceAll("[\\s\\n]", "")
+            );
+
     	} catch (final AssertionError e) {
     		LOGGER.debug("*** DIFF RESULT (RESPONSE vs EXPECTED) :");
     		new StringLinesDiffer().output(jsonBB, jsonAA);
@@ -248,20 +356,20 @@ public class KasperDocResourceTest extends JerseyTest {
      */
     public class StringLinesDiffer {
     	
-            private List<String> stringToLines(final String data) {
-            		return Lists.newArrayList(data.split("\\r?\\n"));
-            }
+        private List<String> stringToLines(final String data) {
+            return Lists.newArrayList(data.split("\\r?\\n"));
+        }
 
-            public void output(final String strA, final String strB) {
-                    final List<String> original = stringToLines(strA);
-                    final List<String> revised  = stringToLines(strB);
-                    
-                    final Patch patch = DiffUtils.diff(original, revised);
+        public void output(final String strA, final String strB) {
+            final List<String> original = stringToLines(strA);
+            final List<String> revised  = stringToLines(strB);
 
-                    for (Delta delta: patch.getDeltas()) {
-                            LOGGER.debug(delta.toString());
-                    }
+            final Patch patch = DiffUtils.diff(original, revised);
+
+            for (Delta delta: patch.getDeltas()) {
+                    LOGGER.debug(delta.toString());
             }
+        }
     }    
     
 }

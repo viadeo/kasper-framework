@@ -72,7 +72,8 @@ public final class VisibilityFilter {
             if ((m & JAVA_MODIFIERS) == 0) {
                 throw new IllegalArgumentException(
                         "One of the modifiers is not a standard java modifier : "
-                        + Modifier.toString(m));
+                        + Modifier.toString(m)
+                );
             }
             
             filter = filter | m;

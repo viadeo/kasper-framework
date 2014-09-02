@@ -11,10 +11,8 @@ KASPER - Kasper is the treasure keeper
 * **kasper-core**                   : Kasper core : bootstrap, DDD modelisation, CQRS framework
 * **kasper-documentation**          : Automated documentation
 * **kasper-platform**               : The Kasper platform
-* **kasper-security**               : Security framework
 * **kasper-test**                   : Functional/Integration end to end testing
-* **kasper-web**                    : Web exposition and helpers
-* **kasper-hadoop**                 : Query indexes management with Hadoop
+* **kasper-exposition**             : Web exposition and helpers
 * **doc**                           : Kasper developers documentation (cf README)
 * **tools**                         : Some Kasper developer tools
 
@@ -25,5 +23,7 @@ KASPER - Kasper is the treasure keeper
 2. Make your changes in a separate branch
 3. Rebase your branch on viadeo **develop** branch
 4. Submit a pull request on **develop** branch
+5. Edit the CHANGES.md
 
-[Access lastest master Kasper framework documentation](http://doc01.infra.paris.apvo/kasper-framework/latest/)
+* [Access to changes](./CHANGES.md)
+* [Access lastest master Kasper framework documentation](http://doc01.infra.paris.apvo/kasper-framework/latest/)

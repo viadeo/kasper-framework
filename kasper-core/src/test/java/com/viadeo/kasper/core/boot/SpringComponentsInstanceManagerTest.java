@@ -31,7 +31,7 @@ public class SpringComponentsInstanceManagerTest {
         this.sman.setApplicationContext(this.ctx);
     }
 
-    private void registerSingletonBeanFromClass(final Class<?> clazz) {
+    private void registerSingletonBeanFromClass(final Class clazz) {
         final BeanDefinitionBuilder builder = BeanDefinitionBuilder
                 .rootBeanDefinition(clazz)
                 .setScope(BeanDefinition.SCOPE_SINGLETON);

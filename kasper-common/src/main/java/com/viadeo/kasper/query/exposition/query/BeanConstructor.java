@@ -12,6 +12,8 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 class BeanConstructor {
 
     private final Constructor<Object> ctr;
@@ -21,8 +23,8 @@ class BeanConstructor {
 
     public BeanConstructor(final Constructor<Object> ctr,
                            final Map<String, BeanConstructorProperty> parameters) {
-        this.ctr = ctr;
-        this.parameters = parameters;
+        this.ctr = checkNotNull(ctr);
+        this.parameters = checkNotNull(parameters);
     }
 
     // ------------------------------------------------------------------------
@@ -45,7 +47,9 @@ class BeanConstructor {
 
     private KasperQueryAdapterException couldNotInstantiateQuery(final Exception e) {
         return new KasperQueryAdapterException(
-                "Failed to instantiate query of type " + ctr.getDeclaringClass(), e);
+            "Failed to instantiate query of type " + ctr.getDeclaringClass(),
+            e
+        );
     }
 
     public Map<String, BeanConstructorProperty> parameters() {

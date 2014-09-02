@@ -32,9 +32,9 @@ public class QueryParserTest {
                             .put("key2", "1")
                             .build()));
 
-        for (String name : parser.names()) {
+        for (final String name : parser.names()) {
             if (name.startsWith("key_")) {
-                for (QueryParser next : parser.begin(name)) {
+                for (final QueryParser next : parser.begin(name)) {
                     next.value();
                 }
                 parser.end();
@@ -51,7 +51,9 @@ public class QueryParserTest {
                     new ImmutableSetMultimap.Builder<String, String>()
                         .put("someKey", "foo")
                         .put("someKey", "bar")
-                    .build()));
+                    .build()
+                )
+        );
 
         assertTrue(parser.exists("someKey"));
         assertFalse(parser.exists("doesNotExist"));
@@ -64,7 +66,9 @@ public class QueryParserTest {
                     new ImmutableSetMultimap.Builder<String, String>()
                             .put("someKey", "foo")
                             .put("someKey", "bar")
-                            .build()));
+                            .build()
+                )
+        );
 
         assertTrue(parser.names().contains("someKey"));
     }
@@ -76,7 +80,9 @@ public class QueryParserTest {
                 LinkedHashMultimap.create(
                         new ImmutableSetMultimap.Builder<String, String>()
                                 .putAll("someKey", expected)
-                                .build()));
+                                .build()
+                )
+        );
 
         final List<String> values = new ArrayList<String>();
         for (final QueryParser next : parser.begin("someKey")) {
@@ -95,7 +101,9 @@ public class QueryParserTest {
                 LinkedHashMultimap.create(
                     new ImmutableSetMultimap.Builder<String, String>()
                             .putAll("someKey", Arrays.asList("foobar"))
-                            .build()));
+                            .build()
+                )
+        );
 
         assertTrue(parser.hasNext());
 
@@ -117,7 +125,9 @@ public class QueryParserTest {
                 LinkedHashMultimap.create(
                     new ImmutableSetMultimap.Builder<String, String>()
                             .putAll("someKey", Arrays.asList("foobar"))
-                            .build()));
+                            .build()
+                )
+        );
         parser.end();
     }
 

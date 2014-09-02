@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Kasper Auto Documentation</title>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="shortcut icon" href="public/assets/ico/favicon.ico">
+    <!-- Bootstrap core CSS -->
+    <link href="public/css/bootstrap.min.css" rel="stylesheet">
+    <!-- JQuery UI -->
+    <link href="public/css/jquery-ui-1.10.4.custom.min.css" rel="stylesheet">
+    <!-- Custom CSS -->
+    <link href="public/css/custom-theme.css" rel="stylesheet">
+
+    <!-- Just for debugging purposes. Don't actually copy this line! -->
+    <!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+
+    <!-- HTML5 shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
+    <script src="public/js/bootstrap.js"></script>
+    <script src="app/js/handlebars.js"></script>
+    <script src="app/js/jquery.searchable.js"></script>
+    <script src="app/js/jquery-ui-1.10.4.custom.min.js"></script>
+    <script>
+      $.fn.exists = function () {
+        return this.length !== 0;
+      }
+    </script>
+    <script>
+      Handlebars.registerHelper('ifCond', function (value1, value2, options) {
+        if(value1 === value2) {
+          return options.fn(this);
+        }
+        return options.inverse(this);
+      });
+
+      Handlebars.registerHelper('mail_to', function (value) {
+        if (value !== "unknown") {
+          return new Handlebars.SafeString('<a href="mailto:' + value + '">' + value + '</a>');
+        }
+        return new Handlebars.SafeString(value);
+      });
+
+      Handlebars.registerHelper('limit_text', function (text, limit) {
+        if (text.length <= limit) {
+          return new Handlebars.SafeString(text);
+        }
+        return new Handlebars.SafeString(text.substring(0, limit) + "...");
+      });
+
+      Handlebars.registerHelper('flatten', function (list, separator, key) {
+        return new Handlebars.SafeString(flatten(list, separator, key));
+      });
+
+      function flatten (list, separator, key) {
+        var flatten_list = "";
+
+        for (var i = 0; i < list.length; i++) {
+          if("toString" == key) {
+            flatten_list += list[i];
+          } else {
+            flatten_list += list[i][key];
+          }
+          if( i != list.length - 1 ) {
+            flatten_list += separator;
+          }
+        }
+
+        return flatten_list;
+      }
+
+      Handlebars.registerHelper('component_h3_title', function (title) {
+        var h3_title = "";
+        if( title == "Commands" ) {
+          h3_title ='<h3 id="commands" class="section-heading"><span class="glyphicon glyphicon-log-in"/>' + title + '</h3>';
+        }
+        if( title == "Queries" ) {
+          h3_title = '<h3 id="queries" class="section-heading"><span class="glyphicon glyphicon-log-out"/>' + title + '</h3>';
+        }
+        if( title == "Events" ) {
+          h3_title = '<h3 id="events" class="section-heading"><span class="glyphicon glyphicon-new-window"/>' + title + '</h3>';
+        }
+        if( title == "Domain" ) {
+          h3_title = '<h3 id="domain" class="section-heading"><span class="glyphicon glyphicon-th"/>' + title + '</h3>';
+        }
+        return new Handlebars.SafeString(h3_title);
+      });
+    </script>
+    <script>
+        var OFFSET_TOP_NAV = -65;
+
+        var DOMAIN_TEMPLATE_KEY = "domain-template-key";
+        var COMPONENT_TEMPLATE_KEY = "component-template-key";
+        var SIDE_BAR_TEMPLATE_KEY = "sidebar-template-key";
+        var PANEL_CONTENT_TEMPLATE_KEY = "component-panel-content-template-key";        
+        var PANEL_TEMPLATE_KEY = "component-panel-template-key";      
+
+        var cache_templates = {};
+        var nodes = {};
+        var component_urls_per_domain = {};
+
+        /** VARIOUS **/
+
+        function execute(expected, actual, f) {
+          if(expected == actual) {
+            f();
+          }
+        }
+
+        function sort_on(property) {
+          return function(value1, value2) {
+            var name1 = value1[property].toLowerCase();
+            var name2 = value2[property].toLowerCase();
+            return name1 < name2 ? -1 : 1;
+          }
+        }
+
+        function expand_panel(anchor) {
+          if ( $("#" + anchor + " a").hasClass("collapsed") ) {
+            $("#" + anchor + " a").trigger("click");
+          }
+        }
+
+        function scroll_to_anchor(anchor, offset) {
+          var new_position = $('#'+anchor).offset();
+          var new_top_position = new_position.top + offset;
+
+          $('html, body').animate( { scrollTop:new_top_position }, 'slow');  
+        }
+
+        function get_anchor(href) {
+          return href.substring(1, href.length);
+        }
+
+        /** SEARCH **/
+
+        function initialize_home_search() {
+          console.log("initialize home search!");
+
+          $( '#searchable-domain-box' ).searchable({
+            searchField: '#search-domain-box',
+            selector: '.domain-box',
+            childSelector: '.domain-box-selector',
+            show: function( elem ) {
+                elem.slideDown(100);
+            },
+            hide: function( elem ) {
+                elem.slideUp( 100 );
+            }
+          });
+        }
+
+        function initialize_global_search(data) {
+          console.log("initialize global search!");
+
+          $( "#search" ).autocomplete({
+              source: data,
+              select: function( event, ui ) {
+                if (ui.item.is_aliased) {
+                  $("#search").val(ui.item.alias);
+                } else {
+                  $("#search").val(ui.item.label);
+                }
+                $("#search_type").val(ui.item.type);
+                $("#search_domain").val(ui.item.domain);
+                $("#search_original").val(ui.item.label);
+                return false;
+              }
+            }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
+              /* ensure to be on the navigation bar*/
+              ul.css("z-index", "2000");
+              ul.id = "search-autocomplete";
+              var prefix = '';
+              var suffix = '';
+
+              if (item.alias) {
+                  prefix = '<span class="glyphicon glyphicon-tags"/>';
+                  return $( "<li>" )
+                          .append( '<a>' + prefix + item.alias + '</a>' )
+                          .appendTo( ul );
+              }
+
+              if(item.type == "domain") {
+                prefix = '<span class="glyphicon glyphicon-unchecked"/>';
+              } else if(item.type == "commands"){
+                prefix = '<span class="glyphicon glyphicon-log-in"/>';
+              } else if(item.type == "queries"){
+                prefix = '<span class="glyphicon glyphicon-log-out"/>';
+              } else if(item.type == "events"){
+                prefix = '<span class="glyphicon glyphicon-new-window"/>';
+              } else if(item.type == "concepts" || item.type == "relations"){
+                prefix = '<span class="glyphicon glyphicon-stop"/>';
+                suffix = ' (' + item.domain + ')';
+              }
+              return $( "<li>" )
+                .append( '<a>' + prefix + item.label + suffix + '</a>' )
+                .appendTo( ul );
+            };
+
+            $("#search").keyup(function (e) {
+              if (e.keyCode == 13) {
+                // Do something
+                var type = $("#search_type").get(0).value;
+                var domain = $("#search_domain").get(0).value;
+                var name = $("#search_original").get(0).value;
+
+                console.log("search", type, name, domain);
+
+                if(type != "domain") {
+                  go_dyn(nodes[domain], type + "_" + name);
+                } else {
+                  go_dyn(nodes[domain]);
+                }
+              }
+            });
+
+        }
+
+        /** NAVIGATION **/
+
+        function go_home() {
+          console.log("go home!");
+
+          $("#contents > div").hide();
+          $(".nav > li").removeClass("active");
+          $("#contents_home").show();
+          $("#home").parent().addClass("active");
+        }
+
+        function go_about() {
+          console.log("go about!");
+
+          $("#contents > div").hide();
+          $(".nav > li").removeClass("active");
+          $("#contents_about").fadeIn("slow");
+          $("#about").parent().addClass("active");
+        }
+
+        function go_contact() {
+          console.log("go contact!");
+
+          $("#contents > div").hide();
+          $(".nav > li").removeClass("active");
+          $("#contents_contact").fadeIn("slow");
+          $("#contact").parent().addClass("active");
+        }
+
+        function go_dyn(domain, hash) {
+          console.log("go dyn", domain.label);
+
+          $("#contents_dyn").empty();
+          $(".nav > li").removeClass("active");
+
+          load_dyn(domain, hash);
+
+          $("#contents > div").hide();
+          $("#contents_dyn").fadeIn("slow");
+
+          window.location.hash = "#" + domain.label;
+        }
+
+        function show_message(level, message, append) {
+          if ( ! append) {
+            $("#message").empty();
+          }
+
+          switch(level) {
+            case 'success':
+              $("#message").append('<div class="alert alert-success">' + message + '</div>');
+              break;
+            case 'info':
+              $("#message").append('<div class="alert alert-info">' + message + '</div>');
+              break;
+            case 'warn':
+              $("#message").append('<div class="alert alert-warning"><span class="glyphicon glyphicon-warning-sign"/>' + message + '</div>');
+              break;
+            case 'error':
+              $("#message").append('<div class="alert alert-danger"><span class="glyphicon glyphicon-warning-sign"/>' + message + '</div>');
+              break;
+          }
+
+          $(".sidebar-contents-dyn").css("margin-top", "80px");
+        }
+
+        function initialize_nav() {
+          console.log("initialize navigation!");
+
+          $("#contents > div").hide();
+          $("#contents_home").show();
+        }
+
+        function return_to_window_location_hash() {
+          switch(window.location.hash) {
+            case '':
+            case '#':
+            case '#home':
+              go_home();
+              break;
+            case '#contact':
+              go_contact();
+              break;
+            case '#about':
+              go_about();
+              break;
+            default:
+              if(window.location.hash.length > 1) {
+                var anchor = get_anchor(window.location.hash);
+                go_dyn(nodes[anchor]);
+              }
+              break;
+          } 
+        }
+
+        /** TEMPLATES **/
+
+        function load_templates() {
+          function Template(name, url, initializedFunction) {
+            this.name = name;
+            this.url = url;
+            this.initialized = function(source) {
+              console.log("initialized template ", this);
+              if(initializedFunction) {
+                initializedFunction(source);
+              }
+            }
+          }
+
+          var template_descritors = [
+            new Template(SIDE_BAR_TEMPLATE_KEY, "app/templates/sidebar.hbars"),
+            new Template(DOMAIN_TEMPLATE_KEY, "app/templates/domain-card.hbars"),
+            new Template(COMPONENT_TEMPLATE_KEY, "app/templates/component-card.hbars"),
+            new Template(PANEL_CONTENT_TEMPLATE_KEY, "app/templates/component-panel-content.hbars"),
+            new Template(PANEL_TEMPLATE_KEY, "app/templates/component-panel.hbars"),
+            new Template(DOMAIN_TEMPLATE_KEY, "app/templates/domain-card.hbars"),
+            new Template("domain-box-key", "app/templates/domain-box.hbars", function(template) {
+              load_home_page(template);
+            })
+          ];
+
+          template_descritors.forEach(function(template_descritor) {
+            $.get(template_descritor.url)
+                .done( function(source) {
+                  var template= Handlebars.compile(source);
+                  template_descritor.initialized(template);
+                  cache_templates[template_descritor.name] = template;
+                })
+                .fail(function() {
+                  show_message("error", "Service is temporarily not available please try again later", false)
+                  console.log("failed to load template '" + template_descritor.url + "'");
+                });
+          });
+        }
+
+        /** HOME PAGE **/
+
+        function load_home_page(template) {
+          $.get("/kasper/doc/domains")
+              .done(function(data) {
+
+                if (data.list) {
+                  var searchData = [];
+
+                  /* Populate the home page */
+                  $.each(data.list.sort(sort_on("label")), function(n, domain) {
+
+                    /* Retrieve search data */
+                    searchData = searchData.concat(compute_search_data(domain));
+
+                    /* Reference node*/
+                    component_urls_per_domain[domain.name] = get_url_per_components(domain);
+                    nodes[domain.label] = domain;
+
+                    $("#contents_home .page tbody").append(template({ node: domain }))
+
+                    $("#domain-" + domain.label + "-btn").click(function(){
+                      //go_dyn(domain);
+                      window.location.hash = "#" + domain.label;
+                    });
+
+                    if(n == data.list.length - 1) {
+                      initialize_home_search();
+                      initialize_global_search(searchData);
+                      return_to_window_location_hash();
+                    }
+                  });
+                }
+              })
+              .fail(function() {
+                show_message("error", "Service is temporarily not available please try again later", false)
+                console.log("failed to load template '" + template_descritor.url + "'");
+              });
+        }
+
+        /** DYNAMIC PAGE **/
+
+        var results = {};
+
+        Handlebars.registerHelper('tr', function (list, keysToString) {
+          var keys = jQuery.parseJSON( keysToString );
+          var res = get_tr(0, list, keys, results);
+          return new Handlebars.SafeString(res);
+        });
+
+        function get_tr(level, properties, keys, query_results) {
+          var res = "";
+          var query_result_name = null;
+
+          for (var i = 0; i < properties.length; i++) {
+            res += "<tr class=level_" + level + ">";
+            var has_subtype = false;
+
+            if(properties[i]["queryResult"]) {
+              has_subtype = true;
+              query_result_name = properties[i]["type"];
+            }
+
+            for (var j = 0; j < keys.length; j++) {
+              var key = keys[j];
+              var value = properties[i][key];
+
+              if( value === null || value.length === 0 ) {
+                value = "-";
+              }
+
+              if(typeof value === 'object') {
+                var new_value = "<ul>";
+                for (var o = 0; o < value.length; o++) {
+                  new_value = "<li>" + value[o]["message"] + "</li>";
+                }
+                new_value += "</ul>"
+                value = new_value;
+              }
+
+              if (properties[i]["linkedConcept"] && key === "type") {
+                var linked_concept = '<a class="link in" href="#concepts_' + value + '">' + value + '</a>';
+                
+                if (value === "unknown") {
+                  linked_concept = "unknown";
+                }
+
+                value = "LinkedConcept(" + linked_concept + ")";
+              }
+
+              if (properties[i]["list"] && key === "type") {
+                value = "List(" + value + ")";
+              }
+
+              if (key === "type") {
+                value = "<em>" + value + "</em>";
+              }
+
+              if (key === "name") {
+                value = "<code>" + value + "</code>";
+              }
+
+              if( level > 0 && j === 0 ) {
+                res += '<td><span class="level n' + level + '"/>' + value + '</td>';
+              } else {
+                res += '<td>' + value + '</td>';
+              }
+            }
+
+            res += "</tr>";
+
+            if( has_subtype ) {
+              var level_up = level + 1;
+              if (typeof query_results[query_result_name] !== 'undefined') {
+                res += get_tr(level_up, query_results[query_result_name].properties, keys, query_results);
+              }
+            }
+          }
+
+          return res;
+        }
+
+
+        function load_dyn(domain, hash) {
+          $("#contents_dyn").append('<div id="wrapper_contents_dyn" class="col-md-9" role="main"></div>');
+          $("#contents_dyn").append('<div id="sidebar_contents_dyn" class="col-md-3" role="main"></div>');
+
+          $("#sidebar_contents_dyn").append(cache_templates[SIDE_BAR_TEMPLATE_KEY]({ node: domain }));
+
+          $("#wrapper_contents_dyn").append(cache_templates[DOMAIN_TEMPLATE_KEY]({ node: domain }));
+          $("#wrapper_contents_dyn").append('<div id="commands-container" class="row"></div>');
+          $("#wrapper_contents_dyn").append('<div id="queries-container" class="row"></div>');
+          $("#wrapper_contents_dyn").append('<div id="events-container" class="row"></div>');
+          $("#wrapper_contents_dyn").append('<div id="domain-container" class="row"></div>');
+          
+          function PanelContent(url, init) {
+            this.url = url;
+            this.init = init;
+          }
+
+          function append_domain_component(data) {
+            if (data.list.length > 0) {
+              if( $("#domain-container .panel").length == 0 ) {
+                $("#domain-container").append(cache_templates[PANEL_TEMPLATE_KEY]( {title: "Domain"} ));
+              }
+              $("#domain-container .list-group").append(cache_templates[PANEL_CONTENT_TEMPLATE_KEY]( { data: data.list.sort(sort_on("label"))} ));
+            }
+          }
+
+          var panel_contents = [
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/commands", function(data) {
+              if (data.list.length > 0) {
+                $("#commands-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Commands", data: data.list.sort(sort_on("label")),  result: results } ));
+              }
+            }),
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/queryResults", function(data) {
+              if (data.list.length > 0) {
+                data.list.forEach(function(query_result) {
+                  results[query_result.name] = query_result;
+                });
+              }
+            }),
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/queries", function(data) {
+              if (data.list.length > 0) {
+                $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data.list.sort(sort_on("label")) } ));
+              }
+            }),
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/events", function(data) {
+              if (data.list.length > 0) {
+                $("#events-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Events", data: data.list.sort(sort_on("label"))} ));
+              }
+            }),
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/concepts", function(data) {
+              append_domain_component(data);
+            }),
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/relations", function(data) {
+              append_domain_component(data);
+            })
+          ];
+
+          var actualLoad = 0;
+          var f = function() {
+            $('.link').click(function(event) {
+              if( $(this).hasClass("in") ) {
+                event.preventDefault();
+
+                var anchor = get_anchor($(this).attr("href"));
+                
+                expand_panel(anchor);
+                scroll_to_anchor(anchor, OFFSET_TOP_NAV);
+              } else if( $(this).hasClass("out") ) {
+                event.preventDefault();
+                go_dyn(nodes[$(this).attr("domain")], get_anchor($(this).attr("href")));
+              } else {
+                scroll_to_anchor(hash, -60); 
+              }
+            });
+
+            if(hash) {
+              $("#" + hash + " a").trigger("click");
+              scroll_to_anchor(hash, -60);
+            } 
+          };
+
+          panel_contents.forEach(function(panel_content) {
+            $.get(panel_content.url)
+              .done(function(data) {
+                panel_content.init(data);
+                execute(panel_contents.length, ++actualLoad, f);
+              })
+              .fail(function(){
+                show_message("error", "Service is temporarily not available please try again later", false)
+                console.log("failed to load components '" + panel_content.url + "'");
+              });
+          });
+          
+          $("#home-from-" + domain.label).click(function() {
+            go_home();
+          });
+
+          initialize_content_dyn_nav();
+        }
+
+        function initialize_content_dyn_nav() {
+          $('.sidebar-contents-dyn a').click(function(event) {
+            console.log("click on link in the sidebar");
+            if( $(this).parent().hasClass("component-category") ) {
+              event.preventDefault();
+
+              $(".component-category").removeClass("active");
+              $(".component-item").removeClass("active");
+
+              $(this).parent().addClass("active");
+
+              var anchor = get_anchor($(this).attr("href"));
+              expand_panel(anchor);
+              scroll_to_anchor(anchor, OFFSET_TOP_NAV);
+
+            } else if( $(this).parent().hasClass("component-item") ) {
+              event.preventDefault();
+
+              $(".component-item").removeClass("active");
+
+              $(this).parent().addClass("active");
+
+              var anchor = get_anchor($(this).attr("href"));
+              expand_panel(anchor);
+              scroll_to_anchor(anchor, OFFSET_TOP_NAV);
+
+            } else if( $(this).hasClass("back-to-top") ) {
+              $(".component-category").removeClass("active");
+              scroll_to_anchor("top", OFFSET_TOP_NAV);
+            } else {
+              $(".component-category").removeClass("active");
+            }
+          });
+        }
+
+        /** DATA **/
+        function get_search_raw(type, label, domain) {
+            return {
+                "type":type,
+                "label":label,
+                "domain":domain,
+                "is_aliased": false
+            };
+        }
+
+        function get_search_raw(type, label, domain, alias) {
+          return {
+            "type":type,
+            "label":label,
+            "domain":domain,
+            "alias":alias,
+            "is_aliased": true
+          };
+        }
+
+        function compute_search_data(domain) {
+          var data = [];
+
+          data.push(get_search_raw("domain", domain.label, domain.label));
+
+          $.each(domain.commands, function(n, command) {
+            data.push(get_search_raw("commands", command.label, domain.label));
+            $.each(command.aliases, function(n, alias) {
+              data.push(get_search_raw("commands", command.label, domain.label, alias));
+            });
+          });
+
+          $.each(domain.queries, function(n, query) {
+            data.push(get_search_raw("queries", query.label, domain.label));
+            $.each(query.aliases, function(n, alias) {
+              data.push(get_search_raw("queries", query.label, domain.label, alias));
+            });
+          });
+
+          $.each(domain.events, function(n, c_event) {
+            data.push(get_search_raw("events", c_event.label, domain.label));
+            $.each(c_event.aliases, function(n, alias) {
+              data.push(get_search_raw("events", c_event.label, domain.label, alias));
+            });
+          });
+
+          $.each(domain.concepts, function(n, concept) {
+            data.push(get_search_raw("concepts", concept.name, domain.label));
+          });
+
+          $.each(domain.relations, function(n, relation) {
+            data.push(get_search_raw("relations", relation.name, domain.label));
+          });
+
+          return data;
+        }
+
+        function get_url_per_components(domain) {
+          var url_per_components = {};
+
+          $.each(domain.commands, function(n, command) {
+            url_per_components[command.name] = command.url;
+          });
+
+          $.each(domain.queries, function(n, query) {
+            url_per_components[query.name] = query.url;
+          });
+
+          $.each(domain.events, function(n, event) {
+            url_per_components[event.name] = event.url;
+          });
+
+          return url_per_components;
+        }
+
+        /** END **/
+
+        window.onhashchange = function(e) {
+          return_to_window_location_hash();
+        }
+
+        $(document).ready(function() {
+          initialize_nav();
+          load_templates();
+        });
+
+    </script>
+  </head>
+
+  <body>
+
+    <!-- Fixed navbar -->
+    <header class="navbar navbar-default navbar-fixed-top" role="navigation">
+      <div class="container">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a id="brand" class="navbar-brand" href="#home">autodoc</a>
+        </div>
+
+        <div class="navbar-collapse collapse">
+
+          <div id="search-container" class="nav navbar-nav navbar-right col-md-4">
+            <div class="input-group">
+              <span class="input-group-addon"><span class="glyphicon glyphicon-search"></span></span>
+              <input id="search" class="form-control"/>
+              <input id="search_type" type="hidden"/>
+              <input id="search_domain" type="hidden"/>
+              <input id="search_original" type="hidden"/>
+            </div>
+          </div>
+
+          <ul class="nav navbar-nav navbar-left">
+            <li class="active"><a id="home" href="#home">Home</a></li>
+            <li><a id="about" href="#about">About</a></li>
+            <li><a id="contact" href="#contact">Contact</a></li>
+          </ul>
+          
+        </div>
+      </div>
+    </header>
+
+    <div id = "top" class="main-container">
+
+      <!-- Message -->
+      <div id="message" class="container"></div>
+
+      <!-- Content -->
+      <div id="contents">
+
+        <!-- Home page -->
+        <div id="contents_home" class="hero-unit">
+          <div class="container">
+            <ol class="breadcrumb">
+              <li class="active">Home</li>
+            </ol>
+          </div>
+
+          <div class="container panel">
+            <div class="input-group panel-body">
+              <span class="input-group-addon"><span class="glyphicon glyphicon-filter"></span></span>
+              <input class="form-control" id="search-domain-box" type="text" placeholder=""/>
+            </div>
+
+            <table class="container page table table-hover" id="searchable-domain-box">
+              <thead>
+                <tr>
+                  <th class="col-md-3">Name</th>
+                  <th class="col-md-7">Description</th>
+                  <th class="col-md-2">Overview</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+
+          </div>          
+        </div>
+
+        <!-- About page -->
+        <div id="contents_about" class="hero-unit">
+          <div class="container">
+            <ol class="breadcrumb">
+              <li><a class="home" href="#home">Home</a></li>
+              <li class="active">About</li>
+            </ol>
+          </div>
+          <div class="container page">
+            <div class="panel panel-default">
+              <h2 class="panel-heading"><span class="glyphicon glyphicon-align-justify"/>About</h2>
+              <div class="panel-body">
+                ...
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact page -->
+        <div id="contents_contact" class="hero-unit">
+          <div class="container">
+            <ol class="breadcrumb">
+              <li><a class="home" href="#home">Home</a></li>
+              <li class="active">Contact</li>
+            </ol>
+          </div>
+          <div class="container page">
+            <div class="panel panel-default">
+              <h2 class="panel-heading"><span class="glyphicon glyphicon-envelope"/>Contact</h2>
+              <div class="panel-body">
+                About general Kasper purposes : Viadeo architecture team &lt;<a href="mailto: architecture@viadeoteam.com">architecture@viadeoteam.com</a>&gt;
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Dynamic page -->
+        <div id="contents_dyn" class="hero-unit container" data-spy="scroll" data-target=".sidebar-contents-dyn">
+        </div>
+
+      </div>
+    </div>
+
+    <footer class="navbar-default">
+      <div class="container">
+        <ul class="list-unstyled list-inline text-center">
+          <li><a href="https://github.com/viadeo/kasper-framework">GitHub</a></li>
+          <li>·</li>
+          <li><a href="https://github.com/viadeo/kasper-framework/issues?state=open">Issues</a></li>
+          <li>·</li>
+          <li><a href="https://github.com/viadeo/kasper-framework/releases">Releases</a></li>
+          <li>·</li>
+          <li><a href="https://github.com/viadeo/kasper-framework/blob/master/CHANGES.md">Changes</a></li>
+        </ul>
+      </div>
+    </footer>
+    
+  </body>
+</html>

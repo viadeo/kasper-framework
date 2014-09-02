@@ -12,22 +12,25 @@ import com.viadeo.kasper.query.exposition.query.QueryParser;
 
 import java.lang.reflect.Array;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static java.lang.System.arraycopy;
 
 public final class ArrayAdapter implements TypeAdapter<Object> {
-    private final TypeAdapter<Object> componentAdapter;
-    private final Class<?> componentClass;
+
+    private final TypeAdapter componentAdapter;
+    private final Class componentClass;
 
     // ------------------------------------------------------------------------
 
-    public ArrayAdapter(final TypeAdapter<Object> componentAdapter, final Class<?> componentClass) {
-        this.componentAdapter = componentAdapter;
-        this.componentClass = componentClass;
+    public ArrayAdapter(final TypeAdapter componentAdapter, final Class componentClass) {
+        this.componentAdapter = checkNotNull(componentAdapter);
+        this.componentClass = checkNotNull(componentClass);
     }
 
     // ------------------------------------------------------------------------
 
     @Override
+    @SuppressWarnings("unchecked")
     public void adapt(final Object array, final QueryBuilder builder) throws Exception {
         final int len = Array.getLength(array);
 
@@ -39,6 +42,7 @@ public final class ArrayAdapter implements TypeAdapter<Object> {
 
     @Override
     public Object adapt(final QueryParser parser) throws Exception {
+
         int size = DefaultTypeAdapters.PARSER_ARRAY_STARTING_SIZE;
         Object array = Array.newInstance(componentClass, size);
         int idx = 0;
@@ -50,9 +54,11 @@ public final class ArrayAdapter implements TypeAdapter<Object> {
             }
             Array.set(array, idx++, componentAdapter.adapt(nextParser));
         }
+
         if (idx < size) {
             array = expandArray(array, idx, idx);
         }
+
         return array;
     }
 

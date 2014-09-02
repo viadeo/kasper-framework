@@ -10,9 +10,9 @@ import com.google.common.collect.ImmutableSet;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 class BeanQueryMapper implements TypeAdapter<Query> {
 
@@ -22,8 +22,8 @@ class BeanQueryMapper implements TypeAdapter<Query> {
     // ------------------------------------------------------------------------
 
     public BeanQueryMapper(final BeanConstructor queryCtr, final Set<PropertyAdapter> adapters) {
-        this.adapters = ImmutableSet.copyOf(adapters);
-        this.queryCtr = queryCtr;
+        this.adapters = ImmutableSet.copyOf(sortPropertyAdapterSet(checkNotNull(adapters)));
+        this.queryCtr = checkNotNull(queryCtr);
     }
 
     // ------------------------------------------------------------------------
@@ -51,11 +51,13 @@ class BeanQueryMapper implements TypeAdapter<Query> {
             final Object value = adapter.adapt(parser);
             final BeanConstructorProperty ctrParam = queryCtr.parameters().get(adapter.getName());
 
-            if (ctrParam != null) {
+            if (null != ctrParam) {
                 ctrParams[ctrParam.position()] = value;
             } else {
                 if (exists) {
-                    valuesToSet.add(new PropertyAdapterPair<PropertyAdapter, Object>(adapter, value));
+                    valuesToSet.add(
+                            new PropertyAdapterPair<PropertyAdapter, Object>(adapter, value)
+                    );
                 }
             }
         }
@@ -66,6 +68,19 @@ class BeanQueryMapper implements TypeAdapter<Query> {
         }
 
         return (Query) queryInstance;
+    }
+
+    private SortedSet<PropertyAdapter> sortPropertyAdapterSet(final Set<PropertyAdapter> propertyAdapters) {
+        final SortedSet<PropertyAdapter> sorted = new TreeSet<PropertyAdapter>(new Comparator<PropertyAdapter>() {
+            @Override
+            public int compare(PropertyAdapter o1, PropertyAdapter o2) {
+                return o1.getName().compareTo(o2.getName());
+            }
+        });
+        for (PropertyAdapter propertyAdapter : propertyAdapters) {
+            sorted.add(propertyAdapter);
+        }
+        return sorted;
     }
 
 }

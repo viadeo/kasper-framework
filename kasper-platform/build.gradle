@@ -12,5 +12,7 @@ dependencies {
     compile project(':kasper-core')
 
     // Third perty dependencies
-    compile libraries.AXON_MONGO
+    compile libraries.TYPESAFE_CONFIG
+
+    testCompile libraries.HIBERNATE_VALIDATOR
 }

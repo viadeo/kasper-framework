@@ -1,34 +1,26 @@
 package com.viadeo.kasper.test.root.repositories;
 
-import com.viadeo.kasper.ddd.IRepository;
+import com.google.common.base.Optional;
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
+import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.test.root.entities.Member_connectedTo_Member;
 
 @XKasperRepository
-public class MemberConnectionsRepository implements IRepository<Member_connectedTo_Member> {
+public class MemberConnectionsRepository extends Repository<Member_connectedTo_Member> {
 
-	@Override
-	public void add(Member_connectedTo_Member arg0) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    protected Optional<Member_connectedTo_Member> doLoad(KasperID aggregateIdentifier, Long expectedVersion) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Member_connectedTo_Member load(Object arg0) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    protected void doSave(Member_connectedTo_Member aggregate) {
+        throw new UnsupportedOperationException();
+    }
 
-	@Override
-	public Member_connectedTo_Member load(Object arg0, Long arg1) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void init() {
-		// TODO Auto-generated method stub
-		
-	}
-
+    @Override
+    protected void doDelete(Member_connectedTo_Member aggregate) {
+        throw new UnsupportedOperationException();
+    }
 }

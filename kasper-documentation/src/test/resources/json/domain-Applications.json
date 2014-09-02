@@ -1,4 +1,5 @@
 {
+  "commandHandlers": [],
   "commands": [],
   "concepts": [{
     "description": "The Application concept",
@@ -9,59 +10,40 @@
     "url": "/domain/Applications/concept/Application"
   }],
   "description": "Applications domain",
+  "eventListeners": [],
   "events": [],
-  "handlers": [],
   "label": "Applications",
-  "listeners": [],
   "name": "Applications",
-  "parent": {
-    "description": "Root Facebook domain",
-    "label": "Facebook",
-    "name": "Facebook",
-    "type": "domain",
-    "typePlural": "domains",
-    "url": "/domain/Facebook"
-  },
   "prefix": "apps",
-  "queryServices": [],
-  "relations": [
-    {
-      "description": "The created_by relation between Application and Member",
-      "label": "created_by",
-      "name": "Application_createdBy_Member",
-      "sourceConceptName": "Application",
-      "targetConceptName": "Member",
-      "type": "relation",
-      "typePlural": "relations",
-      "url": "/domain/Applications/relation/Application_createdBy_Member"
-    },
-    {
-      "description": "Tha Member is a big fan of this application",
-      "label": "fan_of",
-      "name": "Member_fanOf_Application",
-      "sourceConceptName": "Member",
-      "targetConceptName": "Application",
-      "type": "relation",
-      "typePlural": "relations",
-      "url": "/domain/Applications/relation/Member_fanOf_Application"
-    }
-  ],
+  "queries": [],
+  "queryHandlers": [],
+  "queryResults": [],
+  "relations": [{
+    "description": "Tha Member is a big fan of this application",
+    "label": "fan_of",
+    "name": "Member_fanOf_Application",
+    "sourceConceptName": "Member",
+    "targetConceptName": "Application",
+    "type": "relation",
+    "typePlural": "relations",
+    "url": "/domain/Applications/relation/Member_fanOf_Application"
+  }],
   "repositories": [
     {
-      "description": "The repository for Member_fanOf_Application aggregates",
-      "label": "ApplicationMemberFansRepository",
-      "name": "ApplicationMemberFansRepository",
-      "type": "repository",
-      "typePlural": "repositories",
-      "url": "/domain/Applications/repository/ApplicationMemberFansRepository"
-    },
-    {
       "description": "The applications repository",
-      "label": "ApplicationRepository",
+      "label": "Application",
       "name": "ApplicationRepository",
       "type": "repository",
       "typePlural": "repositories",
       "url": "/domain/Applications/repository/ApplicationRepository"
+    },
+    {
+      "description": "The repository for fan_of aggregates",
+      "label": "ApplicationMemberFans",
+      "name": "ApplicationMemberFansRepository",
+      "type": "repository",
+      "typePlural": "repositories",
+      "url": "/domain/Applications/repository/ApplicationMemberFansRepository"
     }
   ],
   "type": "domain",

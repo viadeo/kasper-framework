@@ -6,32 +6,100 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class DocumentedProperty {
 
 	private final String name;
+    private final String description;
 	private final String type;
-	private final Boolean isList;
+    private final String defaultValues;
+    private final Boolean isList;
+    private final Boolean isLinkedConcept;
+    private final Boolean isQueryResult;
+    private final Set<DocumentedConstraint> constraints;
+
+    private String elemType;
+    private Boolean mandatory = false; /** javax.validation.constraints.NotNull */
 	
-	// ------------------------------------------------------------------------
-	
-	DocumentedProperty(final String name, final String type, final Boolean isList) {
+    // ------------------------------------------------------------------------
+
+	public DocumentedProperty(
+            final String name,
+            final String description,
+            final String type,
+            final String defaultValues,
+            final Boolean isList,
+            final Boolean isLinkedConcept,
+            final Boolean isQueryResult,
+            HashSet<DocumentedConstraint> constraints
+    ) {
 		this.name = name;
+		this.description = description;
 		this.type = type;
-		this.isList = isList;
-	}
+        this.defaultValues = defaultValues;
+        this.isList = isList;
+        this.isLinkedConcept = isLinkedConcept;
+        this.isQueryResult = isQueryResult;
+        this.constraints = constraints;
+    }
 	
 	// ------------------------------------------------------------------------
 
 	public String getName() {
 		return this.name;
 	}
-	
-	public String getType() {
+
+    public String getDescription() {
+        return description;
+    }
+
+    public String getType() {
 		return this.type;
 	}
-	
-	public Boolean isList() {
-		return this.isList;
+
+    public String getDefaultValues() {
+        return defaultValues;
+    }
+
+    public Boolean isList() {
+		return isList;
 	}
-	
+
+    public Boolean getLinkedConcept() {
+        return isLinkedConcept;
+    }
+
+    public Boolean isQueryResult() {
+        return isQueryResult;
+    }
+
+    public Boolean isMandatory() {
+        return mandatory;
+    }
+
+    public Set<DocumentedConstraint> getConstraints() {
+        return constraints;
+    }
+
+    public String getElemType() {
+        return elemType;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public void setMandatory(final Boolean mandatory) {
+        this.mandatory = mandatory;
+    }
+
+
+    public void appendConstraint(final String type, final String constraint) {
+        constraints.add(new DocumentedConstraint(type, constraint));
+    }
+
+    public void setElemType(final String elemType){
+        this.elemType = elemType;
+    }
+
 }

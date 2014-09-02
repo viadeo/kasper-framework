@@ -6,10 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.impl;
 
-import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
 
 import java.io.Serializable;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Simple IKasperID parameterizable implementation
@@ -22,20 +23,24 @@ public abstract class AbstractKasperID<T extends Serializable> implements Kasper
 	private T id;
 	
 	// ------------------------------------------------------------------------
-	
+
+    protected AbstractKasperID() {
+
+    }
+
 	protected AbstractKasperID(final T id) {
-		this.id = id;
+		this.id = checkNotNull(id);
 	}	
 	
 	protected void setId(final T id) {
-		this.id = id;
+		this.id = checkNotNull(id);
 	}
 	
 	// ------------------------------------------------------------------------
 	
 	@Override
 	public boolean equals(final Object otherId) {
-		if (this == Preconditions.checkNotNull(otherId)) {
+		if (this == checkNotNull(otherId)) {
 			return true;
 		}
 		if (KasperID.class.isAssignableFrom(otherId.getClass())) {

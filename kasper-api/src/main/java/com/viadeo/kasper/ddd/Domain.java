@@ -17,7 +17,7 @@ package com.viadeo.kasper.ddd;
  * - sending domain events
  * - listening domain or external events
  *
- * In Kasper, query services are also binded to a domain, which can be the same than a command
+ * In Kasper, query handlers are also binded to a domain, which can be the same than a command
  * domain, or can be a query-only dedicated domain.
  *
  ******

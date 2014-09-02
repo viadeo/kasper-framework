@@ -28,11 +28,16 @@ public @interface XKasperDomain {
 	/**
 	 * @return the domain's label
 	 */
-	String label();
+	String label() default "";
 	
 	/**
 	 * @return the domain's description
 	 */
 	String description() default "";
+
+ 	/**
+	 * @return the domain's owner (suggested syntax: 'Firstname Lastname <user@domain.dtd>')
+	 */
+	String owner() default "";
 	
 }

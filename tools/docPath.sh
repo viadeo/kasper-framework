@@ -1,10 +1,14 @@
-#!/bin/sh
+#!/bin/bash
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 cd $DIR/..
 
-web_path="/var/www"
+if [[ $1 == "new" ]]; then
+	web_path="/var/www/kasper-doc"
+else
+	web_path="/var/www"
+fi
 
 project=$(cat settings.gradle| grep 'rootProject.name' | cut -d "'" -f 2)
 version=$(cat build.gradle| grep -E 'version.*=' | cut -d "'" -f 2)

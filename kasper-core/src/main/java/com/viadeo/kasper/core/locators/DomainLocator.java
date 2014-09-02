@@ -9,10 +9,8 @@ package com.viadeo.kasper.core.locators;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
-import com.viadeo.kasper.ddd.IRepository;
 
 import java.util.Collection;
 import java.util.Set;
@@ -20,7 +18,7 @@ import java.util.Set;
 /**
  *
  * The domain locator interface
- * - record domains, entities, repositories and services
+ * - record domains, entities, repositories and handlers
  * 
  * TODO: terminate javadoc
  * 
@@ -30,12 +28,17 @@ public interface DomainLocator {
     /**
      * Register a new commandHandler
      */
-    void registerHandler(CommandHandler<? extends Command> commandHandler);
+    void registerHandler(CommandHandler commandHandler);
 
     /**
      * Get all registered command handlers
      */
-    Collection<CommandHandler<? extends Command>> getHandlers();
+    Collection<CommandHandler> getHandlers();
+
+    /**
+     * @return an optional handler for the specified command class
+     */
+    Optional<CommandHandler> getHandlerForCommandClass(Class<? extends Command> commandClass);
 
 	/**
 	 * Register a new domain to the locator
@@ -106,29 +109,5 @@ public interface DomainLocator {
 	 * @return a set with all entities related to this domain class
 	 */
 	<D extends Domain> Set<? extends Entity> getDomainEntities(Class<D> domain);
-
-
-	/**
-	 * Register a new domain repository
-	 * 
-	 * @param repository the repository to register
-	 */
-	void registerRepository(IRepository<?> repository);
-
-	/**
-	 * Get the repository for an entity
-	 * 
-	 * @param entity the entity
-	 * @return the repository responsible for storing this entity
-	 */
-	<E extends AggregateRoot> Optional<IRepository<E>> getEntityRepository(E entity);
-
-	/**
-	 * Get the repository for an entity class
-	 * 
-	 * @param entityClass the entity class
-	 * @return the repository responsible for storing this class of entities
-	 */
-	<E extends AggregateRoot> Optional<IRepository<E>> getEntityRepository(Class<E> entityClass);
 
 }
