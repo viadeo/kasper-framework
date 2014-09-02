@@ -13,16 +13,25 @@ dependencies {
 
     // Third-party dependencies
     compile libraries.METRICS_JSON
+    compile libraries.METRICS_JETTY
+    compile libraries.METRICS_SERVLET
+    compile libraries.METRICS_HEALTHCHECK
+
     compile libraries.JERSEY_CORE
     compile libraries.SPRING_WEB
     compile libraries.SERVLET
     compile libraries.JSON_SIMPLE
 
+    compile libraries.JETTY
+    compile libraries.JETTY_MANAGEMENT
+    compile libraries.JERSEY_SERVLET
+
     // Test projects
     testCompile project(':kasper-client')
+    testCompile project(':kasper-documentation')
 
     // Test dependencies
-    testCompile libraries.JETTY_SERVLET
+    testCompile libraries.JETTY
     testCompile libraries.GLASSFISH_EXPR_LANG
     testCompile libraries.HIBERNATE_VALIDATOR
     testCompile libraries.TYPESAFE_CONFIG
