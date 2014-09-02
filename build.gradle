@@ -38,7 +38,7 @@ allprojects  {
   apply plugin: 'idea'
 
   group = 'com.viadeo.kasper'
-  version = '0.6.7'
+  version = '0.6.8'
 
   idea {
     module {
