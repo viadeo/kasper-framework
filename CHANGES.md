@@ -1,37 +1,8 @@
 # Kasper Releases #
 
+### Version 0.6.8 (02/09/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.8~~))###
 
-## Snapshot 0.8-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8-SNAPSHOT~~))###
-
-* Produces a warning instead of an error when the exposure manages a refused response
-* Review SerDe of a KasperID:
-  - unlink serializer / deserializer to `KasperID` interface
-  - link DefaultKasperId<Serializer|deserializer> to `DefaultKasperID`
-  - link DefaultKasperRelationId<Serializer|deserializer> to `DefaultKasperRelationID`
-  - provide an adapter in order to try to deserialize `KasperID` with `DefaultKasperId` in order to ensure retro-compatibility
-
-
-## Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~))###
-
-* [Pull 228](https://github.com/viadeo/kasper-framework/pull/228) Migrated to Axon framework 2.2
-* [Pull 211](https://github.com/viadeo/kasper-framework/pull/211) Ensure to add only one RetryFilter on  the Kasper client in order to avoid stack overflow
-* [Bug 220](https://github.com/viadeo/kasper-framework/pull/220) (auto-doc) List every events instead of event referenced by aggregate and/or listener
-* [Bug 216](https://github.com/viadeo/kasper-framework/pull/216) (auto-doc) Propose aliases in the result of the auto-completion
-* (auto-doc) Review the navigation and particular the behavior with back and previous
-* (auto-doc) Fix trouble with collapsible component block
-* [Pull 223](https://github.com/viadeo/kasper-framework/pull/223) Hystrix feature on command and query gateways
-* [Pull 214](https://github.com/viadeo/kasper-framework/pull/214) Reduce log level of DomainHelper to debug 
-* [Pull 205](https://github.com/viadeo/kasper-framework/pull/205) Use ObjectMapper implementation to ser/deser query
-* [Pull 201](https://github.com/viadeo/kasper-framework/pull/201) Provide a deserializer of enum allowing to manage with unsensitive case
-* [Pull 195](https://github.com/viadeo/kasper-framework/pull/195) Improve platform fixture
-  - allow to verify that a listener is notified 
-  - allow to verify that no listeners are notified
-  - allow to verify from an emitted event that a sequence of commands are sent
-  - allow to verify from an sent command that a sequence of commands are sent
-* [Pull 207](https://github.com/viadeo/kasper-framework/pull/207) Expose the kasper version :
-  - set as attribute in the header when we use the kasper client
-  - set in the MDC wen we process an HTTP request in the exposition layer
-
+* generalized InterceptorFactories register methodes
 
 ### Version 0.6.7 (19/08/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.7~~))###
 
@@ -45,15 +16,13 @@
 ### Version 0.6.6 (18/08/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.6~~))###
 
 * Produces a warning instead of an error when the exposure manages a refused response
- 
 
 ### Version 0.6.5 (08/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.5~~))###
-
 * [Pull 221](https://github.com/viadeo/kasper-framework/pull/221) Add authentication's CoreReasonCodes
 * Remove 'println' during the shutdown the event bus
 * Call shutdown on publication handlers
 * Set 'uowEventId' and 'persistencyType' as transient fields in Event
- 
+
 
 ### Version 0.6.4 (06/04/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.4~~))###
 * [Improvement] Enrich light documentation with aliases
@@ -71,7 +40,8 @@
 * [Improvement] Allow platform user to register publication handlers for events in the KasperEventBus
 
 
-### Snapshot 0.6 (04/09/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6~~))###
+### Version 0.6 (04/09/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6~~))###
+
 * [Bug 198](https://github.com/viadeo/kasper-framework/pull/198) Fix issue around the validation of the CoreReasonCode in the fixture
 * [Pull 196](https://github.com/viadeo/kasper-framework/pull/196), [Pull 199](https://github.com/viadeo/kasper-framework/pull/199), [Pull 202](https://github.com/viadeo/kasper-framework/pull/202) New user interface of the auto documentation
 * [Pull 191](https://github.com/viadeo/kasper-framework/pull/191) enrich MDC, normalize hierarcy of default security strategy

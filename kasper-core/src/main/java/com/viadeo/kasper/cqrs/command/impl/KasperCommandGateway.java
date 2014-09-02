@@ -244,7 +244,11 @@ public class KasperCommandGateway implements CommandGateway {
         );
     }
 
-    @Override
+    /**
+     * Register an interceptor factory to the gateway
+     *
+     * @param interceptorFactory the query interceptor factory to register
+     */
     public void register(final InterceptorFactory interceptorFactory) {
         checkNotNull(interceptorFactory);
         LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
