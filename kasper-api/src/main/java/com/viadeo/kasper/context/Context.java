@@ -38,13 +38,13 @@ public interface Context extends Serializable  {
 
     KasperID DEFAULT_KASPERCORR_ID = DEFAULT_KASPER_ID;
 
-    String DEFAULT_APPLICATION_ID = "";
+    String DEFAULT_APPLICATION_ID = "UNKNOWN";
     String DEFAULT_SECURITY_TOKEN = "";
 
     String DEFAULT_FUNNEL_NAME = "";
     String DEFAULT_FUNNEL_VERSION = "";
 
-    String DEFAULT_IP_ADDRESS = "";
+    String DEFAULT_IP_ADDRESS = "0.0.0.0";
 
     // ------------------------------------------------------------------------
 

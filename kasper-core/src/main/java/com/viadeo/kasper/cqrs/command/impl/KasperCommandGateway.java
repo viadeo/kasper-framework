@@ -10,6 +10,7 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
+import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
@@ -260,7 +261,7 @@ public class KasperCommandGateway implements CommandGateway {
      *
      * @param interceptorFactory the query interceptor factory to register
      */
-    public void register(final CommandInterceptorFactory interceptorFactory) {
+    public void register(final InterceptorFactory interceptorFactory) {
         checkNotNull(interceptorFactory);
         LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
 

@@ -12,7 +12,7 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
-import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
@@ -164,7 +164,7 @@ public class KasperQueryGateway implements QueryGateway {
      *
      * @param interceptorFactory the query interceptor factory to register
      */
-    public void register(final QueryInterceptorFactory interceptorFactory) {
+    public void register(final InterceptorFactory interceptorFactory) {
         checkNotNull(interceptorFactory);
         LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
 
