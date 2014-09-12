@@ -32,7 +32,7 @@ public class GetRoleQueryHandler extends QueryHandler<GetRoleQuery, RoleResult> 
         if (role.isPresent()) {
             return QueryResponse.of(new RoleResult(role.get()));
         } else {
-            return QueryResponse.error(CoreReasonCode.INVALID_INPUT);
+            return QueryResponse.error(CoreReasonCode.NOT_FOUND);
         }
     }
 }

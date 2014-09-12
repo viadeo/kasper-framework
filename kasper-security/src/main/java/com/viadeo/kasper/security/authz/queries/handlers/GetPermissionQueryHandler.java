@@ -13,27 +13,26 @@ import com.viadeo.kasper.cqrs.query.QueryMessage;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.security.authz.Authorization;
-import com.viadeo.kasper.security.authz.entities.actor.Group;
-import com.viadeo.kasper.security.authz.queries.GetGroupQuery;
-import com.viadeo.kasper.security.authz.queries.results.GroupResult;
+import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
+import com.viadeo.kasper.security.authz.queries.GetPermissionQuery;
+import com.viadeo.kasper.security.authz.queries.results.PermissionResult;
 import com.viadeo.kasper.security.authz.storage.AuthorizationStorage;
 
-@XKasperQueryHandler(domain = Authorization.class, description = "get authorization's group query handler")
-public class GetGroupQueryHandler extends QueryHandler<GetGroupQuery, GroupResult> {
+@XKasperQueryHandler(domain = Authorization.class, description = "get authorization's permission query handler")
+public class GetPermissionQueryHandler extends QueryHandler<GetPermissionQuery, PermissionResult> {
 
     private final AuthorizationStorage authorizationStorage;
 
-    public GetGroupQueryHandler(AuthorizationStorage authorizationStorage) {
+    public GetPermissionQueryHandler(AuthorizationStorage authorizationStorage) {
         this.authorizationStorage = authorizationStorage;
     }
 
-    public QueryResponse<GroupResult> retrieve(final QueryMessage<GetGroupQuery> message) {
-        final Optional<Group> group = this.authorizationStorage.getGroup(message.getQuery().getGroupId());
-        if (group.isPresent()) {
-            return QueryResponse.of(GroupResult.getGroupResult(group.get()));
+    public QueryResponse<PermissionResult> retrieve(final QueryMessage<GetPermissionQuery> message) {
+        final Optional<WildcardPermission> permission = this.authorizationStorage.getPermission(message.getQuery().getPermissionId());
+        if (permission.isPresent()) {
+            return QueryResponse.of(PermissionResult.getPermissionResult(permission.get()));
         } else {
             return QueryResponse.error(CoreReasonCode.NOT_FOUND);
         }
-
     }
 }

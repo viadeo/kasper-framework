@@ -34,7 +34,7 @@ public class GetUserQueryHandler extends QueryHandler<GetUserQuery, UserResult> 
         if (user.isPresent()) {
             return QueryResponse.of(UserResult.getUserResult(user.get()));
         } else {
-            return QueryResponse.error(CoreReasonCode.INVALID_INPUT);
+            return QueryResponse.error(CoreReasonCode.NOT_FOUND);
         }
     }
 }
