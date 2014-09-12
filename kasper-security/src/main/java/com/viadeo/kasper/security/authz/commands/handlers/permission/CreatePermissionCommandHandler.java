@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.commands.handlers.permission;
 
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
@@ -21,13 +19,12 @@ public class CreatePermissionCommandHandler extends EntityCommandHandler<CreateP
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<CreatePermissionCommand> message) throws Exception {
-        try {
-            final WildcardPermission permission = new WildcardPermission(message.getCommand().getPermission());
-            this.getRepository().add(permission);
-            return CommandResponse.ok();
-        } catch (Exception e) {
-            return CommandResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, "unable to create permission [" + message.getCommand().getPermission() + "]"));
-        }
+        final WildcardPermission permission = new WildcardPermission(
+                message.getCommand().getIdToUse(),
+                message.getCommand().getPermission()
+        );
+        this.getRepository().add(permission);
+        return CommandResponse.ok();
     }
 
 }

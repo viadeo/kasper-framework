@@ -14,6 +14,7 @@ import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.ddd.repository.ClientRepository;
+import com.viadeo.kasper.impl.DefaultKasperRelationId;
 import com.viadeo.kasper.security.authz.Authorization;
 import com.viadeo.kasper.security.authz.commands.permission.RemovePermissionFromRoleCommand;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
@@ -29,9 +30,13 @@ public class RemovePermissionFromRoleCommandHandler extends EntityCommandHandler
         final Optional<WildcardPermission> permission = this.getPermission(message.getCommand().getPermissionId());
         final Optional<Role> role = this.getRole(message.getCommand().getRoleId());
         if (role.isPresent() && permission.isPresent()) {
-            final Role_has_Permission roleHasPermission = new Role_has_Permission(role.get(), permission.get());
-            roleHasPermission.delete();
-            return CommandResponse.ok();
+            final Optional<Role_has_Permission> roleHasPermission = this.getRepository().load(new DefaultKasperRelationId(role.get().getEntityId(), permission.get().getEntityId()));
+            if(roleHasPermission.isPresent()) {
+                roleHasPermission.get().delete();
+                return CommandResponse.ok();
+            }else{
+                return CommandResponse.error(CoreReasonCode.NOT_FOUND);
+            }
         } else {
             return CommandResponse.error(CoreReasonCode.INVALID_INPUT);
         }

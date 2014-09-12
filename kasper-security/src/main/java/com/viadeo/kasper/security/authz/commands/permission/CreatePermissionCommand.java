@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.commands.permission;
 
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.command.CreateCommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.impl.DefaultKasperId;
@@ -20,8 +21,9 @@ public class CreatePermissionCommand extends CreateCommand {
     @NotNull
     private final String permission;
 
-    public CreatePermissionCommand(final String permission) {
-        super(new DefaultKasperId());
+    public CreatePermissionCommand(final KasperID kasperID,
+                                   final String permission) {
+        super(kasperID);
         this.permission = checkNotNull(permission);
     }
 

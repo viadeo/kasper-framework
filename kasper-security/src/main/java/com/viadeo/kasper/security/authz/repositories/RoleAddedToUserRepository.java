@@ -10,6 +10,7 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.ddd.repository.Repository;
+import com.viadeo.kasper.impl.DefaultKasperRelationId;
 import com.viadeo.kasper.security.authz.entities.relations.User_has_Role;
 import com.viadeo.kasper.security.authz.storage.AuthorizationStorage;
 
@@ -29,7 +30,8 @@ public class RoleAddedToUserRepository extends Repository<User_has_Role> {
 
     @Override
     protected Optional<User_has_Role> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {
-        throw new UnsupportedOperationException();
+        DefaultKasperRelationId defaultKasperRelationId = (DefaultKasperRelationId) aggregateIdentifier;
+        return Optional.of(authorizationStorage.getUserHasRole(defaultKasperRelationId.getSourceId(), defaultKasperRelationId.getTargetId()));
     }
 
     @Override

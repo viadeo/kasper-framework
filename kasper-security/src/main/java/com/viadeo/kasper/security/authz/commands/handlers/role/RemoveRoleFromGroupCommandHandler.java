@@ -14,10 +14,12 @@ import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.ddd.repository.ClientRepository;
+import com.viadeo.kasper.impl.DefaultKasperRelationId;
 import com.viadeo.kasper.security.authz.Authorization;
 import com.viadeo.kasper.security.authz.commands.role.RemoveRoleFromGroupCommand;
 import com.viadeo.kasper.security.authz.entities.actor.Group;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
+import com.viadeo.kasper.security.authz.entities.relations.Group_has_Permission;
 import com.viadeo.kasper.security.authz.entities.relations.Group_has_Role;
 import org.axonframework.repository.AggregateNotFoundException;
 
@@ -29,9 +31,13 @@ public class RemoveRoleFromGroupCommandHandler extends EntityCommandHandler<Remo
         final Optional<Group> group = this.getGroup(message.getCommand().getGroupId());
         final Optional<Role> role = this.getRole(message.getCommand().getRoleId());
         if (role.isPresent() && group.isPresent()) {
-            final Group_has_Role groupHasRole = new Group_has_Role(group.get(), role.get());
-            groupHasRole.delete();
-            return CommandResponse.ok();
+            final Optional<Group_has_Role> groupHasRole = this.getRepository().load(new DefaultKasperRelationId(group.get().getEntityId(), role.get().getEntityId()));
+            if(groupHasRole.isPresent()) {
+                groupHasRole.get().delete();
+                return CommandResponse.ok();
+            }else{
+                return CommandResponse.error(CoreReasonCode.NOT_FOUND);
+            }
         } else {
             return CommandResponse.error(CoreReasonCode.INVALID_INPUT);
         }

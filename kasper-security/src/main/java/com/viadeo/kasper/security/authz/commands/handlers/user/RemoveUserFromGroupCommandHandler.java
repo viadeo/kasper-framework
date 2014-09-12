@@ -14,11 +14,13 @@ import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.ddd.repository.ClientRepository;
+import com.viadeo.kasper.impl.DefaultKasperRelationId;
 import com.viadeo.kasper.security.authz.Authorization;
 import com.viadeo.kasper.security.authz.commands.user.RemoveUserFromGroupCommand;
 import com.viadeo.kasper.security.authz.entities.actor.Group;
 import com.viadeo.kasper.security.authz.entities.actor.User;
 import com.viadeo.kasper.security.authz.entities.relations.Group_has_User;
+import com.viadeo.kasper.security.authz.entities.relations.User_has_Role;
 import org.axonframework.repository.AggregateNotFoundException;
 
 @XKasperCommandHandler(domain = Authorization.class, description = "Remove a user from a group for authorizations")
@@ -29,9 +31,13 @@ public class RemoveUserFromGroupCommandHandler extends EntityCommandHandler<Remo
         final Optional<User> user = this.getUser(message.getCommand().getUserId());
         final Optional<Group> group = this.getGroup(message.getCommand().getGroupId());
         if (user.isPresent() && group.isPresent()) {
-            final Group_has_User groupHasUser = new Group_has_User(group.get(), user.get());
-            groupHasUser.delete();
-            return CommandResponse.ok();
+            final Optional<Group_has_User> groupHasUser = this.getRepository().load(new DefaultKasperRelationId(group.get().getEntityId(), user.get().getEntityId()));
+            if(groupHasUser.isPresent()) {
+                groupHasUser.get().delete();
+                return CommandResponse.ok();
+            }else{
+                return CommandResponse.error(CoreReasonCode.NOT_FOUND);
+            }
         } else {
             return CommandResponse.error(CoreReasonCode.INVALID_INPUT);
         }

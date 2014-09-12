@@ -96,4 +96,19 @@ public interface AuthorizationStorage {
 
     List<User> getUsersHavingPermission(KasperID permissionId);
 
+    /*************************** relations *********************/
+
+    Role_has_Permission getRoleHasPermission(KasperID roleId, KasperID permissionId);
+
+    User_has_Permission getUserHasPermission(KasperID userId, KasperID permissionId);
+
+    Group_has_Permission getGroupHasPermission(KasperID groupId, KasperID permissionId);
+
+    Group_has_Role getGroupHasRole(KasperID groupId, KasperID roleId);
+
+    Group_has_User getGroupHasUser(KasperID groupId, KasperID userId);
+
+    User_has_Role getUserHasRole(KasperID userId, KasperID roleId);
+
+
 }

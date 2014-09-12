@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.commands.handlers.role;
 
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
@@ -21,13 +19,12 @@ public class CreateRoleCommandHandler extends EntityCommandHandler<CreateRoleCom
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<CreateRoleCommand> message) throws Exception {
-        try {
-            final Role role = new Role(message.getCommand().getName());
-            this.getRepository().add(role);
-            return CommandResponse.ok();
-        } catch (Exception e) {
-            return CommandResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, "unable to create role [" + message.getCommand().getName() + "]"));
-        }
+        final Role role = new Role(
+                message.getCommand().getIdToUse(),
+                message.getCommand().getName()
+        );
+        this.getRepository().add(role);
+        return CommandResponse.ok();
     }
 
 }

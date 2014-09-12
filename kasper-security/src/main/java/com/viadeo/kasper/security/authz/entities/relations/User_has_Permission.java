@@ -13,8 +13,8 @@ import com.viadeo.kasper.security.authz.Authorization;
 import com.viadeo.kasper.security.authz.entities.actor.User;
 import com.viadeo.kasper.security.authz.entities.permission.impl.WildcardPermission;
 import com.viadeo.kasper.security.authz.entities.relations.ids.UserPermissionAssociationId;
-import com.viadeo.kasper.security.authz.events.permission.PermissionAddedToUserEvent;
-import com.viadeo.kasper.security.authz.events.permission.PermissionRemovedFromUserEvent;
+import com.viadeo.kasper.security.authz.events.permission.AuthorizationPermissionAddedToUserEvent;
+import com.viadeo.kasper.security.authz.events.permission.AuthorizationPermissionRemovedFromUserEvent;
 import org.axonframework.eventhandling.annotation.EventHandler;
 
 @XKasperRelation(domain = Authorization.class, label = "")
@@ -25,14 +25,15 @@ public class User_has_Permission extends Relation<User, WildcardPermission> {
 
     // ------------------------------------------------------------------------
 
-    public User_has_Permission() { }
+    protected User_has_Permission() { }
 
     public User_has_Permission(final User user, final WildcardPermission permission) {
-        apply(new PermissionAddedToUserEvent(new UserPermissionAssociationId(user.getEntityId(), permission.getEntityId()), user, permission));
+        UserPermissionAssociationId userPermissionAssociationId = new UserPermissionAssociationId(user.getEntityId(), permission.getEntityId());
+        apply(new AuthorizationPermissionAddedToUserEvent(userPermissionAssociationId, user, permission));
     }
 
     @EventHandler
-    public void onCreated(final PermissionAddedToUserEvent event) {
+    public void onCreated(final AuthorizationPermissionAddedToUserEvent event) {
         setId((KasperRelationID) event.getEntityId());
         this.user = event.getUser();
         this.permission = event.getPermission();
@@ -41,12 +42,12 @@ public class User_has_Permission extends Relation<User, WildcardPermission> {
     // ------------------------------------------------------------------------
 
     public User_has_Permission delete() {
-        apply(new PermissionRemovedFromUserEvent(getEntityId()));
+        apply(new AuthorizationPermissionRemovedFromUserEvent(getEntityId()));
         return this;
     }
 
     @EventHandler
-    protected void onDeleted(final PermissionRemovedFromUserEvent event) {
+    protected void onDeleted(final AuthorizationPermissionRemovedFromUserEvent event) {
         this.markDeleted();
     }
 
@@ -60,4 +61,20 @@ public class User_has_Permission extends Relation<User, WildcardPermission> {
         return permission;
     }
 
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public void setPermission(WildcardPermission permission) {
+        this.permission = permission;
+    }
+
+    public static final User_has_Permission build(final User user, final WildcardPermission permission){
+        UserPermissionAssociationId userPermissionAssociationId = new UserPermissionAssociationId(user.getEntityId(), permission.getEntityId());
+        User_has_Permission user_has_permission = new User_has_Permission();
+        user_has_permission.setId(userPermissionAssociationId);
+        user_has_permission.setPermission(permission);
+        user_has_permission.setUser(user);
+        return user_has_permission;
+    }
 }

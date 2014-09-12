@@ -23,12 +23,5 @@ public class RolePermissionAssociationId extends DefaultKasperRelationId {
         return (KasperID) this.getTargetId().getId();
     }
 
-    @Override
-    public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("roleId", this.getRoleId().toString())
-                .add("permissionId", this.getPermissionId().toString()).toString();
-    }
-
 }
 

@@ -35,8 +35,8 @@ import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.security.authz.Authorization;
 import com.viadeo.kasper.security.authz.entities.permission.Permission;
-import com.viadeo.kasper.security.authz.events.permission.PermissionCreatedEvent;
-import com.viadeo.kasper.security.authz.events.permission.PermissionDeletedEvent;
+import com.viadeo.kasper.security.authz.events.permission.AuthorizationPermissionCreatedEvent;
+import com.viadeo.kasper.security.authz.events.permission.AuthorizationPermissionDeletedEvent;
 import org.axonframework.eventhandling.annotation.EventHandler;
 
 import java.io.Serializable;
@@ -57,27 +57,27 @@ public class WildcardPermission extends Concept implements Permission, Serializa
     public WildcardPermission() { }
 
     public WildcardPermission(final KasperID kasperId) {
-        apply(new PermissionCreatedEvent(kasperId));
+        apply(new AuthorizationPermissionCreatedEvent(kasperId));
     }
 
     public WildcardPermission(final String wildcardString) {
-        apply(new PermissionCreatedEvent(new DefaultKasperId(), wildcardString, DEFAULT_CASE_SENSITIVE));
+        apply(new AuthorizationPermissionCreatedEvent(new DefaultKasperId(), wildcardString, DEFAULT_CASE_SENSITIVE));
     }
 
     public WildcardPermission(final KasperID kasperId, final String wildcardString) {
-        apply(new PermissionCreatedEvent(kasperId, wildcardString, DEFAULT_CASE_SENSITIVE));
+        apply(new AuthorizationPermissionCreatedEvent(kasperId, wildcardString, DEFAULT_CASE_SENSITIVE));
     }
 
     public WildcardPermission(final String wildcardString, final boolean caseSensitive) {
-        apply(new PermissionCreatedEvent(new DefaultKasperId(), wildcardString, caseSensitive));
+        apply(new AuthorizationPermissionCreatedEvent(new DefaultKasperId(), wildcardString, caseSensitive));
     }
 
     public WildcardPermission(final KasperID kasperId, final String wildcardString, final boolean caseSensitive) {
-        apply(new PermissionCreatedEvent(kasperId, wildcardString, caseSensitive));
+        apply(new AuthorizationPermissionCreatedEvent(kasperId, wildcardString, caseSensitive));
     }
 
     @EventHandler
-    public void onCreated(PermissionCreatedEvent event) {
+    public void onCreated(AuthorizationPermissionCreatedEvent event) {
         setId(event.getEntityId());
         setParts(event.getWildcardString(), event.isCaseSensitive());
     }
@@ -85,12 +85,12 @@ public class WildcardPermission extends Concept implements Permission, Serializa
     // ------------------------------------------------------------------------
 
     public WildcardPermission delete() {
-        apply(new PermissionDeletedEvent(getEntityId()));
+        apply(new AuthorizationPermissionDeletedEvent(getEntityId()));
         return this;
     }
 
     @EventHandler
-    public void onDeleted(final PermissionDeletedEvent e) {
+    public void onDeleted(final AuthorizationPermissionDeletedEvent e) {
         this.markDeleted();
     }
 
@@ -204,6 +204,23 @@ public class WildcardPermission extends Concept implements Permission, Serializa
 
     public int hashCode() {
         return parts.hashCode();
+    }
+
+    public static final WildcardPermission build(final KasperID kasperID,
+                                    final String perm) {
+        WildcardPermission permission = new WildcardPermission();
+        permission.setId(kasperID);
+        permission.setParts(perm, false);
+        return permission;
+    }
+
+    public static final WildcardPermission build(final KasperID kasperID,
+                                                 final String perm,
+                                                 final boolean caseSensitive) {
+        WildcardPermission permission = new WildcardPermission();
+        permission.setId(kasperID);
+        permission.setParts(perm, caseSensitive);
+        return permission;
     }
 
 }

@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.commands.role;
 
+import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.command.CreateCommand;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
-import com.viadeo.kasper.impl.DefaultKasperId;
 
 import javax.validation.constraints.NotNull;
 
@@ -18,8 +18,8 @@ public class CreateRoleCommand extends CreateCommand {
     @NotNull
     private final String name;
 
-    public CreateRoleCommand(final String name) {
-        super(new DefaultKasperId());
+    public CreateRoleCommand(final KasperID kasperID, final String name) {
+        super(kasperID);
         this.name = name;
     }
 

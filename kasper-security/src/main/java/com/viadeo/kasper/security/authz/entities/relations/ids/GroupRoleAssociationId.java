@@ -23,12 +23,5 @@ public class GroupRoleAssociationId extends DefaultKasperRelationId {
         return (KasperID) this.getTargetId().getId();
     }
 
-    @Override
-    public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("groupId", this.getGroupId().toString())
-                .add("roleId", this.getRoleId().toString()).toString();
-    }
-
 }
 

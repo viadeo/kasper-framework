@@ -29,7 +29,8 @@ public class Group extends Actor {
 
     // ------------------------------------------------------------------------
 
-    public Group() { }
+    public Group() {
+    }
 
     public Group(final String name) {
         apply(new AuthorizationGroupCreatedEvent(new DefaultKasperId(), name));
@@ -107,6 +108,21 @@ public class Group extends Actor {
             return (getEntityId() != null ? getEntityId().equals(sr.getEntityId()) : sr.getEntityId() == null);
         }
         return false;
+    }
+
+
+    public static final Group build(final KasperID kasperID,
+                                    final String name,
+                                    final List<Role> roles,
+                                    final List<WildcardPermission> permissions,
+                                    final List<User> users) {
+        Group group = new Group();
+        group.setId(kasperID);
+        group.setName(name);
+        group.setRoles(roles);
+        group.setPermissions(permissions);
+        group.setUsers(users);
+        return group;
     }
 
 }

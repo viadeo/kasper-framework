@@ -35,8 +35,8 @@ import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import com.viadeo.kasper.security.authz.Authorization;
 import com.viadeo.kasper.security.authz.entities.permission.Permission;
-import com.viadeo.kasper.security.authz.events.role.RoleCreatedEvent;
-import com.viadeo.kasper.security.authz.events.role.RoleDeletedEvent;
+import com.viadeo.kasper.security.authz.events.role.AuthorizationRoleCreatedEvent;
+import com.viadeo.kasper.security.authz.events.role.AuthorizationRoleDeletedEvent;
 import org.axonframework.eventhandling.annotation.EventHandler;
 
 import java.util.ArrayList;
@@ -53,30 +53,31 @@ public class Role extends Concept {
 
     // ------------------------------------------------------------------------
 
-    public Role() { }
+    public Role() {
+    }
 
     public Role(final KasperID kasperId) {
-        apply(new RoleCreatedEvent(kasperId));
+        apply(new AuthorizationRoleCreatedEvent(kasperId));
     }
 
     public Role(final String name) {
-        apply(new RoleCreatedEvent(new DefaultKasperId(), name));
+        apply(new AuthorizationRoleCreatedEvent(new DefaultKasperId(), name));
     }
 
     public Role(final KasperID kasperId, final String name) {
-        apply(new RoleCreatedEvent(kasperId, name));
+        apply(new AuthorizationRoleCreatedEvent(kasperId, name));
     }
 
     public Role(final String name, final List<WildcardPermission> permissions) {
-        apply(new RoleCreatedEvent(new DefaultKasperId(), name, permissions));
+        apply(new AuthorizationRoleCreatedEvent(new DefaultKasperId(), name, permissions));
     }
 
     public Role(final KasperID kasperId, final String name, final List<WildcardPermission> permissions) {
-        apply(new RoleCreatedEvent(kasperId, name, permissions));
+        apply(new AuthorizationRoleCreatedEvent(kasperId, name, permissions));
     }
 
     @EventHandler
-    public void onCreated(RoleCreatedEvent event) {
+    public void onCreated(AuthorizationRoleCreatedEvent event) {
         setId(event.getEntityId());
         setName(event.getName());
         setPermissions(event.getPermissions());
@@ -85,12 +86,12 @@ public class Role extends Concept {
     // ------------------------------------------------------------------------
 
     public Role delete() {
-        apply(new RoleDeletedEvent(getEntityId()));
+        apply(new AuthorizationRoleDeletedEvent(getEntityId()));
         return this;
     }
 
     @EventHandler
-    public void onDeleted(final RoleDeletedEvent e) {
+    public void onDeleted(final AuthorizationRoleDeletedEvent e) {
         this.markDeleted();
     }
 
@@ -180,6 +181,17 @@ public class Role extends Concept {
 
     public String toString() {
         return getName();
+    }
+
+    public static final Role build(
+            final KasperID kasperID,
+            final String name,
+            final List<WildcardPermission> permissions) {
+        Role role = new Role();
+        role.setId(kasperID);
+        role.setName(name);
+        role.setPermissions(permissions);
+        return role;
     }
 
 }

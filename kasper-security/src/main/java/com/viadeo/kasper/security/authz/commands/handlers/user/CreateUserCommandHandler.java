@@ -6,8 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.security.authz.commands.handlers.user;
 
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.EntityCommandHandler;
 import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
@@ -21,13 +19,13 @@ public class CreateUserCommandHandler extends EntityCommandHandler<CreateUserCom
 
     @Override
     public CommandResponse handle(final KasperCommandMessage<CreateUserCommand> message) throws Exception {
-        try {
-            final User user = new User(message.getCommand().getIdToUse(), message.getCommand().getFirstName(), message.getCommand().getLastName());
-            this.getRepository().add(user);
-            return CommandResponse.ok();
-        } catch (Exception e) {
-            return CommandResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, "unable to create user [" + message.getCommand().getLastName() + "]"));
-        }
+        final User user = new User(
+                message.getCommand().getIdToUse(),
+                message.getCommand().getFirstName(),
+                message.getCommand().getLastName()
+        );
+        this.getRepository().add(user);
+        return CommandResponse.ok();
     }
 
 }

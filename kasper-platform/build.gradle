@@ -10,7 +10,6 @@ dependencies {
 
     // Projects
     compile project(':kasper-core')
-    compile project(':kasper-security')
 
     // Third perty dependencies
     compile libraries.TYPESAFE_CONFIG

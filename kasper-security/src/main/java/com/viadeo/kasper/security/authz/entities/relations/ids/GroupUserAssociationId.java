@@ -23,12 +23,5 @@ public class GroupUserAssociationId extends DefaultKasperRelationId {
         return (KasperID) this.getTargetId().getId();
     }
 
-    @Override
-    public String toString() {
-        return com.google.common.base.Objects.toStringHelper(this)
-                .add("groupId", this.getGroupId().toString())
-                .add("userId", this.getUserId().toString()).toString();
-    }
-
 }
 

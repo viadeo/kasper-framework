@@ -13,8 +13,8 @@ import com.viadeo.kasper.security.authz.Authorization;
 import com.viadeo.kasper.security.authz.entities.actor.Group;
 import com.viadeo.kasper.security.authz.entities.permission.impl.Role;
 import com.viadeo.kasper.security.authz.entities.relations.ids.GroupRoleAssociationId;
-import com.viadeo.kasper.security.authz.events.role.RoleAddedToGroupEvent;
-import com.viadeo.kasper.security.authz.events.role.RoleRemovedFromGroupEvent;
+import com.viadeo.kasper.security.authz.events.role.AuthorizationRoleAddedToGroupEvent;
+import com.viadeo.kasper.security.authz.events.role.AuthorizationRoleRemovedFromGroupEvent;
 import org.axonframework.eventhandling.annotation.EventHandler;
 
 @XKasperRelation(domain = Authorization.class, label = "Group_has_Role")
@@ -25,14 +25,15 @@ public class Group_has_Role extends Relation<Group, Role> {
 
     // ------------------------------------------------------------------------
 
-    public Group_has_Role() { }
+    protected Group_has_Role() { }
 
     public Group_has_Role(final Group group, final Role role) {
-        apply(new RoleAddedToGroupEvent(new GroupRoleAssociationId(group.getEntityId(), role.getEntityId()), group, role));
+        GroupRoleAssociationId groupRoleAssociationId = new GroupRoleAssociationId(group.getEntityId(), role.getEntityId());
+        apply(new AuthorizationRoleAddedToGroupEvent(groupRoleAssociationId, group, role));
     }
 
     @EventHandler
-    public void onCreated(final RoleAddedToGroupEvent event) {
+    public void onCreated(final AuthorizationRoleAddedToGroupEvent event) {
         setId((KasperRelationID) event.getEntityId());
         this.group = event.getGroup();
         this.role = event.getRole();
@@ -41,12 +42,12 @@ public class Group_has_Role extends Relation<Group, Role> {
     // ------------------------------------------------------------------------
 
     public Group_has_Role delete() {
-        apply(new RoleRemovedFromGroupEvent(getEntityId()));
+        apply(new AuthorizationRoleRemovedFromGroupEvent(getEntityId()));
         return this;
     }
 
     @EventHandler
-    protected void onDeleted(final RoleRemovedFromGroupEvent event) {
+    protected void onDeleted(final AuthorizationRoleRemovedFromGroupEvent event) {
         this.markDeleted();
     }
 
@@ -60,4 +61,20 @@ public class Group_has_Role extends Relation<Group, Role> {
         return role;
     }
 
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
+
+    public static final Group_has_Role build(final Group group, final Role role){
+        GroupRoleAssociationId groupRoleAssociationId = new GroupRoleAssociationId(group.getEntityId(), role.getEntityId());
+        Group_has_Role group_has_role = new Group_has_Role();
+        group_has_role.setId(groupRoleAssociationId);
+        group_has_role.setRole(role);
+        group_has_role.setGroup(group);
+        return group_has_role;
+    }
 }

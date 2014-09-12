@@ -10,6 +10,7 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
 import com.viadeo.kasper.ddd.repository.Repository;
+import com.viadeo.kasper.impl.DefaultKasperRelationId;
 import com.viadeo.kasper.security.authz.entities.relations.Group_has_User;
 import com.viadeo.kasper.security.authz.storage.AuthorizationStorage;
 
@@ -29,7 +30,8 @@ public class UserAddedToGroupRepository extends Repository<Group_has_User> {
 
     @Override
     protected Optional<Group_has_User> doLoad(final KasperID aggregateIdentifier, final Long expectedVersion) {
-        throw new UnsupportedOperationException();
+        DefaultKasperRelationId defaultKasperRelationId = (DefaultKasperRelationId) aggregateIdentifier;
+        return Optional.of(authorizationStorage.getGroupHasUser(defaultKasperRelationId.getSourceId(), defaultKasperRelationId.getTargetId()));
     }
 
     @Override

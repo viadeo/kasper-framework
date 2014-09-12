@@ -28,7 +28,8 @@ public class Group_has_User extends Relation<Group, User> {
     public Group_has_User() { }
 
     public Group_has_User(final Group group, final User user) {
-        apply(new AuthorizationUserAddedToGroupEvent(new GroupUserAssociationId(group.getEntityId(), user.getEntityId()), group, user));
+        GroupUserAssociationId groupUserAssociationId = new GroupUserAssociationId(group.getEntityId(), user.getEntityId());
+        apply(new AuthorizationUserAddedToGroupEvent(groupUserAssociationId, group, user));
     }
 
     @EventHandler
@@ -60,4 +61,20 @@ public class Group_has_User extends Relation<Group, User> {
         return user;
     }
 
+    public void setGroup(Group group) {
+        this.group = group;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public static final Group_has_User build(final Group group, final User user){
+        GroupUserAssociationId groupUserAssociationId = new GroupUserAssociationId(group.getEntityId(), user.getEntityId());
+        Group_has_User group_has_user = new Group_has_User();
+        group_has_user.setId(groupUserAssociationId);
+        group_has_user.setUser(user);
+        group_has_user.setGroup(group);
+        return group_has_user;
+    }
 }
