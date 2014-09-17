@@ -13,5 +13,4 @@ Defining a platform
         7_serialization_and_deserialization
         8_using_http_exposition
         9_using_auto_documentation
-        10_using_security
         11_using_authorization
