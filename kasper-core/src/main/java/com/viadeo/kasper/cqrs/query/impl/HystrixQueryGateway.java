@@ -11,7 +11,6 @@ import com.netflix.hystrix.HystrixCommand;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
-import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.resilience.HystrixCommandWithExceptionPolicy;
 import com.viadeo.kasper.resilience.HystrixGateway;

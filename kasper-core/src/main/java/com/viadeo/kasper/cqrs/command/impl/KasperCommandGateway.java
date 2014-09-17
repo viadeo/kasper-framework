@@ -8,7 +8,6 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DomainLocator;
