@@ -2,7 +2,8 @@
 General consideration
 ========================
 
-Naming practices
+-..  _Naming_practices:
+-
 --------------------------------
 
 It is heavily recommended to name your components using an explicit suffix :
