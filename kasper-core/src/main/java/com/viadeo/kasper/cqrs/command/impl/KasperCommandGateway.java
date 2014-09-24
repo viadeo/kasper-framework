@@ -247,9 +247,8 @@ public class KasperCommandGateway implements CommandGateway {
     @Override
     public void register(final InterceptorFactory interceptorFactory) {
         checkNotNull(interceptorFactory);
-        LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
+        LOGGER.info("Registering the interceptor factory : " + interceptorFactory.getClass().getSimpleName());
 
         interceptorChainRegistry.register(interceptorFactory);
     }
-
 }

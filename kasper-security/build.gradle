@@ -1,0 +1,29 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//            Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
+
+description = 'KASPER SECURITY'
+
+dependencies {
+
+    // Projects
+    compile project(':kasper-api')
+    compile project(':kasper-common')
+    compile project(':kasper-core')
+    compile project(':kasper-test')
+
+    // Third party dependencies
+    compile libraries.REFLECTIONS
+    compile libraries.SPRING_CONTEXT
+    compile libraries.AXON_CORE
+    compile libraries.YAMMER_METRICS
+    compile libraries.JCACHE
+    compile libraries.VALIDATION_API
+    compile libraries.GUAVA
+    compile libraries.MOCKITO
+
+    testCompile libraries.JCACHE_EHCACHE
+    testCompile libraries.HIBERNATE_VALIDATOR
+}

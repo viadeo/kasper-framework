@@ -36,7 +36,6 @@ public interface QueryGateway {
     @Deprecated
     void register(final String name, final  QueryHandlerAdapter adapter, final boolean global);
 
-
     /**
      * Register an interceptor factory to the gateway
      *

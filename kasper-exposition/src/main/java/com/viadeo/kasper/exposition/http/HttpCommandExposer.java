@@ -20,6 +20,7 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.exposition.alias.AliasRegistry;
+import com.viadeo.kasper.security.annotation.XKasperPublic;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.springframework.http.MediaType;
 
@@ -52,14 +53,14 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
     public HttpCommandExposer(final Platform platform,
                               final List<ExposureDescriptor<Command,CommandHandler>> descriptors) {
         this(
-            platform.getCommandGateway(),
-            platform.getMeta(),
-            descriptors,
-            new HttpContextDeserializer(),
-            ObjectMapperProvider.INSTANCE.mapper()
+                platform.getCommandGateway(),
+                platform.getMeta(),
+                descriptors,
+                new HttpContextDeserializer(),
+                ObjectMapperProvider.INSTANCE.mapper()
         );
     }
-    
+
     public HttpCommandExposer(final CommandGateway commandGateway,
                               final Meta meta,
                               final List<ExposureDescriptor<Command,CommandHandler>> descriptors,
@@ -138,8 +139,8 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
         if ((null == httpRequest.getContentType())
                 || ( ! httpRequest.getContentType().contains(MediaType.APPLICATION_JSON_VALUE))) {
             throw new HttpExposerException(
-                CoreReasonCode.UNSUPPORTED_MEDIA_TYPE,
-                "Accepting and producing only " + MediaType.APPLICATION_JSON_VALUE
+                    CoreReasonCode.UNSUPPORTED_MEDIA_TYPE,
+                    "Accepting and producing only " + MediaType.APPLICATION_JSON_VALUE
             );
         }
     }
@@ -173,16 +174,17 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
         final String commandPath = commandToPath(commandClass);
         final List<String> aliases = AliasRegistry.aliasesFrom(commandClass);
         final String commandName = commandClass.getSimpleName();
+        final String isPublicResource = commandClass.getAnnotation(XKasperPublic.class) != null ? "public " : "protected ";
 
-        LOGGER.info("-> Exposing command[{}] at path[/{}]",
-            commandName,
-            getServletContext().getContextPath() + commandPath
+        LOGGER.info("-> Exposing " + isPublicResource + "command[{}] at path[/{}]",
+                commandName,
+                getServletContext().getContextPath() + commandPath
         );
 
         for (final String alias : aliases) {
-            LOGGER.info("-> Exposing command[{}] at path[/{}]",
-                commandName,
-                getServletContext().getContextPath() + alias
+            LOGGER.info("-> Exposing " + isPublicResource + "command[{}] at path[/{}]",
+                    commandName,
+                    getServletContext().getContextPath() + alias
             );
         }
 
