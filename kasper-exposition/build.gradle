@@ -21,6 +21,8 @@ dependencies {
     testCompile project(':kasper-client')
 
     // Test dependencies
+    testCompile libraries.JUNIT
+    testCompile libraries.MOCKITO
     testCompile libraries.JETTY_SERVLET
     testCompile libraries.GLASSFISH_EXPR_LANG
     testCompile libraries.HIBERNATE_VALIDATOR

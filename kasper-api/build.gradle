@@ -6,12 +6,17 @@
 
 description = 'KASPER CQRS : API'
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
 dependencies {
+
+    compile libraries.GUAVA
+    compile libraries.JODA_TIME
+    compile libraries.JODA_MONEY
     compile libraries.VALIDATION_API
     compile libraries.JAVAX_EL
     compile libraries.JERSEY_CORE
     compile libraries.JACKSON_ANNOTATIONS
+    compile libraries.JODA_TIME
+    compile libraries.JODA_MONEY
+
+    testCompile libraries.JUNIT
 }

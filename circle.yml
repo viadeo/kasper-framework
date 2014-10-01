@@ -1,0 +1,27 @@
+machine:
+  environment:
+    TERM: dumb
+  timezone:
+    Europe/Paris
+  hosts:
+    nexus01.infra.paris.apvo: 83.167.37.151
+
+dependencies:
+  cache_directories:
+    - "~/.gradle"
+
+  override:
+    - ./gradlew assemble --parallel-threads=2:
+        timeout: 300
+
+test:
+  override:
+    - ./gradlew check:
+        parallel: true
+
+deployment:
+  nexus:
+    branch: develop
+    owner: viadeo
+    commands:
+      - ./gradlew build uploadArchives --parallel-threads=2

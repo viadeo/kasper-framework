@@ -6,9 +6,6 @@
 
 description = 'KASPER CLIENT'
 
-sourceCompatibility = 1.6
-targetCompatibility = 1.6
-
 dependencies {
 
     // Projects
@@ -16,6 +13,7 @@ dependencies {
     compile project(':kasper-common')
 
     // Third party dependencies
+    compile libraries.SLF4J
     compile libraries.JERSEY_CLIENT
     compile libraries.JERSEY_SERVER
     compile libraries.JERSEY_CORE
@@ -26,6 +24,8 @@ dependencies {
     compile libraries.JACKSON_DATABIND
 
     // Test dependencies
+    testCompile libraries.JUNIT
+    testCompile libraries.MOCKITO
     testCompile libraries.JERSEY_TEST_CORE
     testCompile libraries.JERSEY_TEST_HTTP
 

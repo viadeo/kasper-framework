@@ -28,7 +28,6 @@ import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.exposition.http.HttpCommandExposerPlugin;
-import lombok.Data;
 import org.junit.Test;
 
 import javax.validation.Valid;
@@ -102,14 +101,12 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         }
     }
 
-    @Data
     public static class NeedValidationCommand implements Command {
         private static final long serialVersionUID = -6767141217213758937L;
         @NotNull @Size(min = 1) public String str;
         @Valid @NotNull public InnerObject innerObject;
     }
 
-    @Data
     public static class InnerObject {
         @Min(2) @Max(5) private int age;
     }
