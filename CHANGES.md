@@ -2,7 +2,7 @@
 
 ## Snapshot 0.8.0-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.1-SNAPSHOT~~))###
 
-## Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandonned_###
+## Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandoned_###
 
 * [Pull 228](https://github.com/viadeo/kasper-framework/pull/228) Migrated to Axon framework 2.2
 * [Pull 211](https://github.com/viadeo/kasper-framework/pull/211) Ensure to add only one RetryFilter on  the Kasper client in order to avoid stack overflow
@@ -29,7 +29,7 @@
 * generalized InterceptorFactories register methodes
 
 
-### Version 0.6.8 (19/08/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.8~~)) _:warning: abandonned_###
+### Version 0.6.8 (19/08/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.8~~)) _:warning: abandoned_###
 
 
 ### Version 0.6.7 (19/08/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.7~~))###
