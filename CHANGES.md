@@ -2,6 +2,10 @@
 
 ## Snapshot 0.8.0-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.1-SNAPSHOT~~))###
 
+* Migrated to Gradle 2.1
+* Ready to be used with circle-ci
+
+
 ## Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandoned_###
 
 * [Pull 228](https://github.com/viadeo/kasper-framework/pull/228) Migrated to Axon framework 2.2
