@@ -1,15 +1,40 @@
 # Kasper Releases #
 
+## Snapshot 0.8.0-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.1-SNAPSHOT~~))###
+
+## Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandonned_###
+
+* [Pull 228](https://github.com/viadeo/kasper-framework/pull/228) Migrated to Axon framework 2.2
+* [Pull 211](https://github.com/viadeo/kasper-framework/pull/211) Ensure to add only one RetryFilter on  the Kasper client in order to avoid stack overflow
+* [Bug 220](https://github.com/viadeo/kasper-framework/pull/220) (auto-doc) List every events instead of event referenced by aggregate and/or listener
+* [Bug 216](https://github.com/viadeo/kasper-framework/pull/216) (auto-doc) Propose aliases in the result of the auto-completion
+* (auto-doc) Review the navigation and particular the behavior with back and previous
+* (auto-doc) Fix trouble with collapsible component block
+* [Pull 223](https://github.com/viadeo/kasper-framework/pull/223) Hystrix feature on command and query gateways
+* [Pull 214](https://github.com/viadeo/kasper-framework/pull/214) Reduce log level of DomainHelper to debug 
+* [Pull 205](https://github.com/viadeo/kasper-framework/pull/205) Use ObjectMapper implementation to ser/deser query
+* [Pull 201](https://github.com/viadeo/kasper-framework/pull/201) Provide a deserializer of enum allowing to manage with unsensitive case
+* [Pull 195](https://github.com/viadeo/kasper-framework/pull/195) Improve platform fixture
+  - allow to verify that a listener is notified 
+  - allow to verify that no listeners are notified
+  - allow to verify from an emitted event that a sequence of commands are sent
+  - allow to verify from an sent command that a sequence of commands are sent
+* [Pull 207](https://github.com/viadeo/kasper-framework/pull/207) Expose the kasper version :
+  - set as attribute in the header when we use the kasper client
+  - set in the MDC wen we process an HTTP request in the exposition layer
+
+
 ### Version 0.6.9 (02/09/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.9~~))###
 
 * generalized InterceptorFactories register methodes
 
-### Version 0.6.8 (19/08/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.8~~))###
 
-* abandonned
+### Version 0.6.8 (19/08/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.8~~)) _:warning: abandonned_###
+
 
 ### Version 0.6.7 (19/08/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.6.7~~))###
 
+* Produces a warning instead of an error when the exposure manages a refused response
 * Review SerDe of a KasperID:
   - unlink serializer / deserializer to `KasperID` interface
   - link DefaultKasperId<Serializer|deserializer> to `DefaultKasperID`
