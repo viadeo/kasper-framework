@@ -1,6 +1,7 @@
 # Kasper Releases #
 
-## Snapshot 0.8.0-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.1-SNAPSHOT~~))###
+## Snapshot 0.8.0-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.1-SNAPSHOT~~))### 
+_(based on 0.6.9, the recovery from the 0.7 is in progress)_
 
 * Migrated to Gradle 2.1
 * Ready to be used with circle-ci
