@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.tools;
 
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
 import com.viadeo.kasper.cqrs.query.IndexedEntity;
@@ -18,6 +19,7 @@ import org.joda.time.DateTimeZone;
 import org.junit.Test;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.tools.KasperMatcher.*;
@@ -48,14 +50,22 @@ public class KasperMatcherTest {
 
     }
 
-    public class HelloMessagesResult extends CollectionQueryResult<HelloMessageResult> { }
+    public class HelloMessagesResult extends CollectionQueryResult<HelloMessageResult> {
+        public HelloMessagesResult() {
+            this(Lists.<HelloMessageResult>newArrayList());
+        }
+
+        public HelloMessagesResult(Collection<HelloMessageResult> list) {
+            super(list);
+        }
+    }
 
     private static final KasperID HELLO_ID = DefaultKasperId.random();
     private static final String MESSAGE = "hello world";
 
     // ------------------------------------------------------------------------
 
-     final Object hello_1 = new HelloMessagesResult().<HelloMessagesResult>withList(
+     final Object hello_1 = new HelloMessagesResult(
             new ArrayList<HelloMessageResult>() {{
                 this.add(new HelloMessageResult(
                     HELLO_ID,
@@ -66,7 +76,7 @@ public class KasperMatcherTest {
             }}
     );
 
-    final Object hello_2 = new HelloMessagesResult().<HelloMessagesResult>withList(
+    final Object hello_2 = new HelloMessagesResult(
             new ArrayList<HelloMessageResult>() {{
                 this.add(new HelloMessageResult(
                     HELLO_ID,
@@ -77,7 +87,7 @@ public class KasperMatcherTest {
             }}
     );
 
-    final Object hello_3 = new HelloMessagesResult().<HelloMessagesResult>withList(
+    final Object hello_3 = new HelloMessagesResult(
             new ArrayList<HelloMessageResult>() {{
                 this.add(new HelloMessageResult(
                     HELLO_ID,
@@ -88,7 +98,7 @@ public class KasperMatcherTest {
             }}
     );
 
-    final Object hello_4 = new HelloMessagesResult().<HelloMessagesResult>withList(
+    final Object hello_4 = new HelloMessagesResult(
         new ArrayList<HelloMessageResult>()
     );
 

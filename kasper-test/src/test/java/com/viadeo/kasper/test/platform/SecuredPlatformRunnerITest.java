@@ -158,7 +158,6 @@ public class SecuredPlatformRunnerITest {
     @XKasperCommandHandler(domain = SecuredDomain.class)
     private static class TestCommandHandler extends CommandHandler<TestCommand> {
         public CommandResponse handle(final TestCommand command) {
-            final Context context = getContext();
             return CommandResponse.ok();
         }
     }
@@ -177,14 +176,18 @@ public class SecuredPlatformRunnerITest {
 
         @Override
         public List<CommandHandler> getCommandHandlers() {
-            return Arrays.asList((CommandHandler) new TestCommandHandler(),
-                    (CommandHandler) new TestPublicCommandHandler());
+            return Arrays.<CommandHandler>asList(
+                    new TestCommandHandler(),
+                    new TestPublicCommandHandler()
+            );
         }
 
         @Override
         public List<QueryHandler> getQueryHandlers() {
-            return Arrays.asList((QueryHandler) new TestQueryHandler(),
-                    (QueryHandler) new TestPublicQueryHandler());
+            return Arrays.<QueryHandler>asList(
+                    new TestQueryHandler(),
+                    new TestPublicQueryHandler()
+            );
         }
 
     }
@@ -344,7 +347,6 @@ public class SecuredPlatformRunnerITest {
     public void issuingPublicQuery_withSecurityToken_shouldSetSecurityIdentityInContext() throws Exception {
         // Given
         final Context authenticatedContext = getContext(flag_withSecurityToken + flag_withApplicationId + flag_withIpAddress);
-        String previousUserId = authenticatedContext.getUserId();
 
         // When
         final QueryResponse<TestResult> response = sendPublicQuery(authenticatedContext);
@@ -387,11 +389,11 @@ public class SecuredPlatformRunnerITest {
         return commandGateway.sendCommandAndWaitForAResponse(new TestPublicCommand(), context);
     }
 
-    private QueryResponse sendQuery(final Context context) throws Exception {
+    private QueryResponse<TestResult> sendQuery(final Context context) throws Exception {
         return queryGateway.retrieve(new TestQuery(), context);
     }
 
-    private QueryResponse sendPublicQuery(final Context context) throws Exception {
+    private QueryResponse<TestResult> sendPublicQuery(final Context context) throws Exception {
         return queryGateway.retrieve(new TestPublicQuery(), context);
     }
 

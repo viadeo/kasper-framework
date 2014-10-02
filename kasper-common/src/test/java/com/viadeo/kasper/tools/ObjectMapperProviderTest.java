@@ -26,6 +26,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.Arrays;
+import java.util.Collection;
 
 import static org.junit.Assert.*;
 
@@ -55,6 +56,10 @@ public class ObjectMapperProviderTest {
 
     static class SomeCollectionResponse extends CollectionQueryResult<SomeResult> {
         private static final long serialVersionUID = 7698126469953546332L;
+
+        SomeCollectionResponse(Collection<SomeResult> list) {
+            super(list);
+        }
     }
 
     public static class ImmutableQuery implements Query {
@@ -192,8 +197,9 @@ public class ObjectMapperProviderTest {
     @Test
     public void dontFailOnUnknownProperty() throws IOException {
         // Given
-        final SomeCollectionResponse response = new SomeCollectionResponse();
-        response.setList(Arrays.asList(new SomeResult("foo"), new SomeResult("bar")));
+        final SomeCollectionResponse response = new SomeCollectionResponse(
+                Arrays.asList(new SomeResult("foo"), new SomeResult("bar"))
+        );
 
         // When
         final String json = ObjectMapperProvider.INSTANCE.objectWriter().writeValueAsString(response);

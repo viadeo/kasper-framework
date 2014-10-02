@@ -179,10 +179,11 @@ public class DomainDescriptorFactory {
         return listenedSourceEvents;
     }
 
+    @SuppressWarnings("unchecked")
     public static Map<Class, Class<? extends Domain>> mapToDomainClassByComponentClass(final DomainDescriptor domainDescriptor){
         final Map<Class, Class<? extends Domain>> domainClassByComponentClass = Maps.newHashMap();
 
-        final Class domainClass = domainDescriptor.getDomainClass();
+        final Class<? extends Domain> domainClass = domainDescriptor.getDomainClass();
 
         for(final CommandHandlerDescriptor descriptor : domainDescriptor.getCommandHandlerDescriptors()){
             domainClassByComponentClass.put(descriptor.getReferenceClass(), domainClass);

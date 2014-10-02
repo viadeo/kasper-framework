@@ -37,10 +37,9 @@ public class HttpEventExposerUTest {
     @Test
     public void init_withTwoEventListeners_listeningTheSameEvent_isOk() throws Exception {
         // Given
-        final List<ExposureDescriptor<Event, EventListener>> descriptors = Lists.newArrayList(
-                new ExposureDescriptor<Event, EventListener>(AEvent.class, EventListenerA.class),
-                new ExposureDescriptor<Event, EventListener>(AEvent.class, EventListenerB.class)
-        );
+        final List<ExposureDescriptor<Event, EventListener>> descriptors = Lists.newArrayList();
+        descriptors.add(new ExposureDescriptor<Event, EventListener>(AEvent.class, EventListenerA.class));
+        descriptors.add(new ExposureDescriptor<Event, EventListener>(AEvent.class, EventListenerB.class));
 
         final ServletContext servletContext = mock(ServletContext.class);
         when(servletContext.getContextPath()).thenReturn("");

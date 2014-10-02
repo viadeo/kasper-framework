@@ -52,7 +52,7 @@ public class TestFixtureAxonTest {
         });
     }
 
-    public TestFixtureAxonTest(final IRepository testRepository) {
+    public TestFixtureAxonTest(final IRepository<TestAggregate> testRepository) {
         if (null != testRepository) {
             this.testRepository = testRepository;
         }

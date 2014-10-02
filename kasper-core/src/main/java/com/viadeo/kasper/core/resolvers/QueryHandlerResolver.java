@@ -92,6 +92,7 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     public Class<? extends Query> getQueryClass(final Class<? extends QueryHandler> clazz) {
 
         if (QUERY_CACHE.containsKey(checkNotNull(clazz))) {
@@ -117,6 +118,7 @@ public class QueryHandlerResolver extends AbstractResolver<QueryHandler> {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     public Class<? extends QueryResult> getQueryResultClass(final Class<? extends QueryHandler> clazz) {
 
         if (RESULT_CACHE.containsKey(checkNotNull(clazz))) {

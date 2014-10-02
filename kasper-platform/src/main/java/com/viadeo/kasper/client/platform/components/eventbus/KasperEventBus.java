@@ -81,7 +81,7 @@ public class KasperEventBus extends ClusteringEventBus {
                                            final EventListener eventListener) {
                 /* TODO: store the error, generate error event */
                 LOGGER.error(String.format(
-                    "Error %s occured during processing of event %s in listener %s ",
+                    "Error %s occurred during processing of event %s in listener %s ",
                     exception.getMessage(),
                     eventMessage.getPayload().getClass().getName(),
                     eventListener.getClass().getName()
@@ -211,6 +211,7 @@ public class KasperEventBus extends ClusteringEventBus {
 
     // ------------------------------------------------------------------------
 
+    @SuppressWarnings("unchecked")
     @Override
     public void publish(final EventMessage... messages) {
         final EventMessage[] newMessages;

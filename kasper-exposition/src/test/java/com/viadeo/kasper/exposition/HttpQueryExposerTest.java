@@ -45,6 +45,10 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
     public static class SomeCollectionResponse extends CollectionQueryResult<SomeResponse> {
         private static final long serialVersionUID = 1433643086186132048L;
+
+        public SomeCollectionResponse(Collection<SomeResponse> list) {
+            super(list);
+        }
     }
 
     @XKasperQueryHandler(domain = AccountDomain.class)
@@ -52,18 +56,14 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         @Override
         public QueryResponse<SomeCollectionResponse> retrieve(final QueryMessage<SomeCollectionQuery> message) throws KasperQueryException {
             final SomeQuery q = message.getQuery();
-            final SomeCollectionResponse list = new SomeCollectionResponse();
-            final SomeResponse response = new SomeResponse();
 
+            final SomeResponse response = new SomeResponse();
             response.setQuery(q);
-            list.setList(Arrays.asList(response));
+
+            final SomeCollectionResponse list = new SomeCollectionResponse(Arrays.asList(response));
 
             return QueryResponse.of(list);
         }
-    }
-
-    public static class UnknownQuery implements Query {
-        private static final long serialVersionUID = 3548447022174239091L;
     }
 
     public static class SomeQuery implements Query {
@@ -283,7 +283,10 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         assertFalse(actual.isOK());
         assertEquals(query.getAValue(), actual.getReason().getCode());
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, actual.asHttp().getHTTPStatus());
-        final String[] actualMessages = actual.getReason().getMessages().toArray(new String[0]);
+
+        Collection<String> messages = actual.getReason().getMessages();
+        final String[] actualMessages = messages.toArray(new String[messages.size()]);
+
         for (int i = 0; i < query.getErrorCodes().size(); i++) {
             assertEquals(query.getErrorCodes().get(i), actualMessages[i]);
         }

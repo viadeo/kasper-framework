@@ -9,6 +9,8 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectReader;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperRelationID;
@@ -24,7 +26,9 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 
@@ -88,21 +92,18 @@ public class SerDeserTests {
     private <T> T serDeserTest(final T object, Class<T> clazz) throws IOException {
         final String json = omProvider.objectWriter().writeValueAsString(object);
         final ObjectReader objectReader = omProvider.objectReader();
-        final T actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), clazz);
-        return actualResponse;
+        return objectReader.readValue(objectReader.getFactory().createParser(json), clazz);
     }
 
     private <T> String deserSerTest(final String json, Class<T> clazz) throws IOException {
         final ObjectReader objectReader = omProvider.objectReader();
-        final T actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), clazz);
-        final String new_json = omProvider.objectWriter().writeValueAsString(actualResponse);
-        return new_json;
+        final T actualResponse = objectReader.readValue(objectReader.getFactory().createParser(json), clazz);
+        return omProvider.objectWriter().writeValueAsString(actualResponse);
     }
 
     private <T> T deserTest(final String json, Class<T> clazz) throws IOException {
         final ObjectReader objectReader = omProvider.objectReader();
-        final T actualResponse = objectReader.readValue(objectReader.getFactory().createJsonParser(json), clazz);
-        return actualResponse;
+        return objectReader.readValue(objectReader.getFactory().createParser(json), clazz);
     }
 
     // -- test results --------------------------------------------------------
@@ -118,9 +119,25 @@ public class SerDeserTests {
         }
     }
 
-    public static class TestCollectionResult extends CollectionQueryResult<TestResult> {}
+    public static class TestCollectionResult extends CollectionQueryResult<TestResult> {
+        public TestCollectionResult() {
+            this(Lists.<TestResult>newArrayList());
+        }
 
-    public static class TestMapResult extends MapQueryResult<TestResult> {}
+        public TestCollectionResult(Collection<TestResult> list) {
+            super(list);
+        }
+    }
+
+    public static class TestMapResult extends MapQueryResult<TestResult> {
+        public TestMapResult() {
+            this(Maps.<String,TestResult>newHashMap());
+        }
+
+        public TestMapResult(Map<String, TestResult> map) {
+            super(map);
+        }
+    }
 
     // ------------------------------------------------------------------------
 
@@ -178,7 +195,7 @@ public class SerDeserTests {
     public void test_CollectionResultSingle() throws IOException {
         // Given
         final TestResult result = new TestResult("42");
-        final TestCollectionResult collect = new TestCollectionResult().withList(
+        final TestCollectionResult collect = new TestCollectionResult(
             new ArrayList<TestResult>() {{
                 this.add(result);
             }}
@@ -196,7 +213,7 @@ public class SerDeserTests {
         // Given
         final TestResult result = new TestResult("42");
         final TestResult result2 = new TestResult("24");
-        final TestCollectionResult collect = new TestCollectionResult().withList(
+        final TestCollectionResult collect = new TestCollectionResult(
             new ArrayList<TestResult>() {{
                 this.add(result);
                 this.add(result2);
@@ -213,7 +230,7 @@ public class SerDeserTests {
     @Test
     public void test_CollectionResultEmpty_1() throws IOException {
         // Given
-        final TestCollectionResult collect = new TestCollectionResult().withList(
+        final TestCollectionResult collect = new TestCollectionResult(
             new ArrayList<TestResult>()
         );
 
@@ -239,7 +256,7 @@ public class SerDeserTests {
     @Test
     public void test_MapResultSingle() throws IOException {
         // Given
-        final TestMapResult map = new TestMapResult().withMap(
+        final TestMapResult map = new TestMapResult(
             new HashMap<String, TestResult>() {{
                 this.put("r1", new TestResult("42"));
             }}
@@ -255,7 +272,7 @@ public class SerDeserTests {
     @Test
     public void test_MapResultMultiple() throws IOException {
         // Given
-        final TestMapResult map = new TestMapResult().withMap(
+        final TestMapResult map = new TestMapResult(
             new HashMap<String, TestResult>() {{
                 this.put("r1", new TestResult("42"));
                 this.put("r2", new TestResult("43"));
@@ -272,7 +289,7 @@ public class SerDeserTests {
     @Test
     public void test_MapResultEmpty() throws IOException {
         // Given
-        final TestMapResult map = new TestMapResult().withMap(
+        final TestMapResult map = new TestMapResult(
             new HashMap<String, TestResult>()
         );
 
