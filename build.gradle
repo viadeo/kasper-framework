@@ -11,8 +11,6 @@ ext.nexusCredentials = {
 
 wrapper.gradleVersion = '2.1'
 
-apply from: 'libraries.gradle'
-
 configure(allprojects) {
     apply plugin: 'idea'
     apply plugin: 'maven'
@@ -33,6 +31,7 @@ configure(rootProject) {
 
 configure(subprojects) {
     apply plugin: 'java'
+    apply from: "${rootProject.rootDir}/libraries.gradle"
 
     group = 'com.viadeo.kasper'
     version = '0.8.0-SNAPSHOT'
