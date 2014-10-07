@@ -8,6 +8,8 @@ package com.viadeo.kasper.client;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.config.DefaultClientConfig;
 import com.viadeo.kasper.exception.KasperException;
@@ -36,8 +38,8 @@ public class KasperClientBuilder {
 
     private final QueryFactoryBuilder qFactoryBuilder = new QueryFactoryBuilder();
 
-    private boolean addedRetryFilter = false;
-    private int numberOfRetries = 3;
+    private int numberOfRetries;
+    private Optional<RetryFilter> optionalRetryFilter;
 
     private Client client;
     private ObjectMapper mapper;
@@ -46,7 +48,7 @@ public class KasperClientBuilder {
     private URL eventBaseLocation;
     private QueryFactory queryFactory;
     private HttpContextSerializer contextSerializer;
-    private KasperClient.Flags flags = KasperClient.Flags.defaults();
+    private KasperClient.Flags flags;
 
     // ------------------------------------------------------------------------
 
@@ -55,6 +57,12 @@ public class KasperClientBuilder {
     public static final String DEFAULT_EVENT_URL = "http://localhost:8080/event";
 
     // ------------------------------------------------------------------------
+
+    public KasperClientBuilder() {
+        this.numberOfRetries = 3;
+        this.optionalRetryFilter = Optional.of(new RetryFilter(numberOfRetries));
+        this.flags = KasperClient.Flags.defaults();
+    }
 
     /**
      * Registers an adapter for its parameterized type for query ser/deser. Registration of adapters should be done in
@@ -110,6 +118,15 @@ public class KasperClientBuilder {
     public KasperClientBuilder numberOfRetries(final int numberOfRetries) {
         checkArgument(numberOfRetries > 0);
         this.numberOfRetries = numberOfRetries;
+
+        final RetryFilter retryFilter = new RetryFilter(numberOfRetries);
+
+        if (optionalRetryFilter.isPresent() && null != client) {
+            client.removeFilter(optionalRetryFilter.get());
+            client.addFilter(retryFilter);
+        }
+
+        this.optionalRetryFilter = Optional.of(retryFilter);
         return this;
     }
 
@@ -196,6 +213,11 @@ public class KasperClientBuilder {
 
     public KasperClientBuilder client(final Client client) {
         this.client = checkNotNull(client);
+
+        if (optionalRetryFilter.isPresent() && ! client.isFilterPreset(optionalRetryFilter.get())) {
+            this.client.addFilter(optionalRetryFilter.get());
+        }
+
         return this;
     }
 
@@ -234,11 +256,10 @@ public class KasperClientBuilder {
             final DefaultClientConfig cfg = new DefaultClientConfig();
             cfg.getSingletons().add(new JacksonJsonProvider(mapper));
             client = Client.create(cfg);
-        }
 
-        if ((numberOfRetries > 0) && ( ! addedRetryFilter)) {
-            addedRetryFilter = true;
-            client.addFilter(new RetryFilter(numberOfRetries));
+            if (optionalRetryFilter.isPresent()) {
+                client.addFilter(optionalRetryFilter.get());
+            }
         }
 
         return new KasperClient(
@@ -271,4 +292,10 @@ public class KasperClientBuilder {
         return ObjectMapperProvider.INSTANCE.mapper();
     }
 
+    // ------------------------------------------------------------------------
+
+    @VisibleForTesting
+    protected Optional<RetryFilter> getOptionalRetryFilter() {
+        return optionalRetryFilter;
+    }
 }

@@ -1,10 +1,12 @@
 
-Commands and Queries Validation
-===============================
+Using validation
+========================
 
 Kasper provides Command and Query validation through `JSR 303 Bean Validation <http://beanvalidation.org/1.0/spec/>`_.
 
 To enable bean validation just add to your classpath an implementation like `hibernate-validator <http://www.hibernate.org/subprojects/validator.html>`_ and you are ready to go!
+
+Currently by default we use `hibernate-validator <http://www.hibernate.org/subprojects/validator.html>`.
 
 The framework will take care of everything, it will ensure that the commands & queries are valid before submitting it to your
 command handler or query handler. If they are not valid, the framework will constructor a QueryResponse error, with the list of
@@ -19,7 +21,7 @@ violations as error messages.
         ...
     }
 
-    public class AddressQueryResult implements QueryResult {
+    public class AddressQuery implements Query {
         @NotNull private String street;
         ...
     }

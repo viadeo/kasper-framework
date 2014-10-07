@@ -8,6 +8,7 @@ package com.viadeo.kasper.client.platform.domain.descriptor;
 
 import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.event.IEvent;
 
 import java.util.Collection;
 
@@ -21,6 +22,7 @@ public class DomainDescriptor implements KasperComponentDescriptor {
     private final ImmutableList<CommandHandlerDescriptor> commandHandlerDescriptors;
     private final ImmutableList<RepositoryDescriptor> repositoryDescriptor;
     private final ImmutableList<EventListenerDescriptor> eventListenerDescriptor;
+    private final ImmutableList<Class<? extends IEvent>> eventClasses;
 
     // ------------------------------------------------------------------------
 
@@ -29,13 +31,16 @@ public class DomainDescriptor implements KasperComponentDescriptor {
                             final Collection<QueryHandlerDescriptor> queryHandlerDescriptors,
                             final Collection<CommandHandlerDescriptor> commandHandlerDescriptors,
                             final Collection<RepositoryDescriptor> repositoryDescriptor,
-                            final Collection<EventListenerDescriptor> eventListenerDescriptor) {
+                            final Collection<EventListenerDescriptor> eventListenerDescriptor,
+                            final Collection<Class<? extends IEvent>> eventClasses
+    ) {
         this.domainName = checkNotNull(domainName);
         this.domainClass = checkNotNull(domainClass);
         this.queryHandlerDescriptors = ImmutableList.copyOf(checkNotNull(queryHandlerDescriptors));
         this.commandHandlerDescriptors = ImmutableList.copyOf(checkNotNull(commandHandlerDescriptors));
         this.repositoryDescriptor = ImmutableList.copyOf(checkNotNull(repositoryDescriptor));
         this.eventListenerDescriptor = ImmutableList.copyOf(checkNotNull(eventListenerDescriptor));
+        this.eventClasses = ImmutableList.copyOf(checkNotNull(eventClasses));
     }
 
     // ------------------------------------------------------------------------
@@ -58,6 +63,10 @@ public class DomainDescriptor implements KasperComponentDescriptor {
 
     public Collection<EventListenerDescriptor> getEventListenerDescriptors() {
         return eventListenerDescriptor;
+    }
+
+    public ImmutableList<Class<? extends IEvent>> getEventClasses() {
+        return eventClasses;
     }
 
     @Override
