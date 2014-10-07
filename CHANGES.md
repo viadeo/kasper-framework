@@ -5,18 +5,26 @@ _(based on 0.6.9, the recovery from the 0.7 is in progress)_
 
 * Migrated to Gradle 2.1
 * Ready to be used with circle-ci
+* [Pull 233](https://github.com/viadeo/kasper-framework/pull/233) New documentation
+* [Pull 234](https://github.com/viadeo/kasper-framework/pull/234) Various bug fix on auto documentation
+  - List every events instead of event referenced by aggregate and/or listener
+  - Propose aliases in the result of the auto-completion
+  - Review the navigation and particular the behavior with back and previous
+  - Fix trouble with collapsible component block
+* [Pull 235](https://github.com/viadeo/kasper-framework/pull/235) Ensure to add only one RetryFilter on  the Kasper client in order to avoid stack overflow
+* [Pull 236](https://github.com/viadeo/kasper-framework/pull/236) Reduce log level of DomainHelper to debug
 
 
 ## Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandoned_###
 
 * [Pull 228](https://github.com/viadeo/kasper-framework/pull/228) Migrated to Axon framework 2.2
-* [Pull 211](https://github.com/viadeo/kasper-framework/pull/211) Ensure to add only one RetryFilter on  the Kasper client in order to avoid stack overflow
-* [Bug 220](https://github.com/viadeo/kasper-framework/pull/220) (auto-doc) List every events instead of event referenced by aggregate and/or listener
-* [Bug 216](https://github.com/viadeo/kasper-framework/pull/216) (auto-doc) Propose aliases in the result of the auto-completion
-* (auto-doc) Review the navigation and particular the behavior with back and previous
-* (auto-doc) Fix trouble with collapsible component block
+* [Pull 211](https://github.com/viadeo/kasper-framework/pull/211) Ensure to add only one RetryFilter on  the Kasper client in order to avoid stack overflow :white_check_mark:
+* [Bug 220](https://github.com/viadeo/kasper-framework/pull/220) (auto-doc) List every events instead of event referenced by aggregate and/or listener :white_check_mark:
+* [Bug 216](https://github.com/viadeo/kasper-framework/pull/216) (auto-doc) Propose aliases in the result of the auto-completion :white_check_mark:
+* (auto-doc) Review the navigation and particular the behavior with back and previous :white_check_mark:
+* (auto-doc) Fix trouble with collapsible component block :white_check_mark:
 * [Pull 223](https://github.com/viadeo/kasper-framework/pull/223) Hystrix feature on command and query gateways
-* [Pull 214](https://github.com/viadeo/kasper-framework/pull/214) Reduce log level of DomainHelper to debug 
+* [Pull 214](https://github.com/viadeo/kasper-framework/pull/214) Reduce log level of DomainHelper to debug :white_check_mark:
 * [Pull 205](https://github.com/viadeo/kasper-framework/pull/205) Use ObjectMapper implementation to ser/deser query
 * [Pull 201](https://github.com/viadeo/kasper-framework/pull/201) Provide a deserializer of enum allowing to manage with unsensitive case
 * [Pull 195](https://github.com/viadeo/kasper-framework/pull/195) Improve platform fixture
