@@ -1,72 +1,17 @@
 
-Kasper: General considerations
-==============================
+General consideration
+========================
 
-Kasper components implementation
---------------------------------
-
-Kasper generally asks you to implements its building blocks :
-
-- implementing one or several interfaces or abstract classes
-
-**and**
-
-- optionally annotating your classes with an **@XKasperXXXX** java annotation
-
-Like one command handler :
-
-.. code-block:: java
-    :linenos:
-
-    @XKasperCommandHandler( domain = MyDomain.class )
-    public class DoSomethingCommandHandler extends CommandHandler<DoSomethingCommand> {
-        public Object handle(final DoSomethingCommand command) {
-            ...
-        }
-    }
-
-Kasper generally also provides you some abstract classes in order to ease your day-to-day work :
-
-.. code-block:: java
-    :linenos:
-
-    @XKasperCommandHandler( domain = MyDomain.class )
-    public class DoSomethingCommandHandler extends CommandHandler<DoSomethingCommand> {
-        public CommandResponse handle(final DoSomethingCommand command) {
-            ...
-        }
-    }
-
-Available Kasper annotations
-----------------------------
-
-The following annotations are currently used by the framework :
-
-- **XKasperEventListener**
-- **XKasperServiceAdapter**
-- **XKasperQueryHandler**
-- **XKasperCommandHandler**
-- **XKasperRepository**
-- **XKasperRelation**
-- **XKasperConcept**
-- XKasperCommand
-- XKasperDomain
-- XKasperEvent
-- XKasperQuery
-- XKasperPublic
-
-Some are mandatory (**here in bold**) for discovery and registering, other are optional, for adding metadata to your components.
-
-You can create unregistered components adding the **@XKasperUnregistered** annotation.
+..  _Naming_practices:
 
 Naming practices
-----------------
+--------------------------------
 
 It is heavily recommended to name your components using an explicit suffix :
 
 - ServiceAdapter
-- QueryHandler
-- DomainService
+- [Query]Handler
+- [Domain]Service
 - [Command]Handler
 - [Event]Listener
 - Repository
@@ -74,6 +19,7 @@ It is heavily recommended to name your components using an explicit suffix :
 - Event
 - Query
 - Domain
+- ...
 
 Except for domain elements like **concepts** where it is more readable to directly use the ubiquitous language
 names *(eg. User, Member, Group, ...)* or **relations** where the Kasper convention *<Concept>_<verb>_<Concept>*
@@ -82,23 +28,26 @@ is encouraged *(eg. Member_isConnectedTo_Member, ..)*.
 Concerning Commands/Handlers, Queries/Handlers, Responses and Events/Listeners the rule is **Intention Revealing Interfaces**,
 reflecting directly your ubiquitous language elements, eg:
 
-- SetMemberAsPremiumForOneYear*Command* / SetMemberAsPremiumForOneYear*CommandHandler*
-- FindNameOfMembersFromIds*Query* / FindNameOfMembersFromIds*QueryHandler*
-- ListOfMembersWithNames*Response*
-- MemberHasBeenSetAsPremiumForOneYear*Event* / MemberHasBeenSetAsPremiumForOneYear*EventListener*
+- SetMemberAsPremiumForOneYearCommand / SetMemberAsPremiumForOneYearCommandHandler
+- FindNameOfMembersFromIdsQuery / FindNameOfMembersFromIdsQueryHandler
+- ListOfMembersWithNamesResponse
+- MemberHasBeenSetAsPremiumForOneYearEvent / MemberHasBeenSetAsPremiumForOneYearEventListener
 
 instead of (**the following are bad practices**) :
 
-- UpdateMember*Command* / ChangeMemberProperties*Handler*
-- GetMembers*Query* / GetMembers*Service*
+- UpdateMemberCommand / ChangeMemberPropertiesHandler
+- GetMembersQuery / GetMembersService
 - MembersDTO
-- MemberUpdate*Event*
+- MemberUpdateEvent
 
-Do not miss that **you will not be the only person to handle with your objects** : they are auto-exposed, auto-documented,
-your events will be listened by other domains, some subsystems, the business intelligence datawarehouse, etc..
+Do not miss that **you will not be the only person to handle your objects** : they are auto-exposed, auto-documented,
+your events will be listened by other domains, some subsystems, etc..
+
+
+..  _Packages_names:
 
 Packages names
---------------
+--------------------------------
 
 Considering a root package called **com.viadeo.platform** (choose yours..), we recommend you follow the following
 packages hierarchy :
@@ -134,9 +83,4 @@ packages hierarchy :
 +----------------------------------+----------+---------------+--------------------------------------------------------+
 | Repositories                     |   DATA   |    COMMAND    |  *com.viadeo.platform*.<domain>.command.data.          |
 +----------------------------------+----------+---------------+--------------------------------------------------------+
-| MyBatis mappers                  |   DATA   |    ALL        |  *com.viadeo.platform*.<domain>.<area>.data.mapper     |
-+----------------------------------+----------+---------------+--------------------------------------------------------+
-
-
-
 

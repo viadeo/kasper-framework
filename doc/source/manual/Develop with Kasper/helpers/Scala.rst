@@ -1,4 +1,0 @@
-Kasper with scala
-=================
-
-
