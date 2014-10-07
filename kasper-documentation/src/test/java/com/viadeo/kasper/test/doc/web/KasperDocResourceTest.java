@@ -20,6 +20,7 @@ import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
+import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.test.applications.Applications;
 import com.viadeo.kasper.test.applications.entities.Application;
 import com.viadeo.kasper.test.applications.entities.Member_fanOf_Application;
@@ -29,7 +30,10 @@ import com.viadeo.kasper.test.root.Facebook;
 import com.viadeo.kasper.test.root.commands.AddConnectionToMemberCommand;
 import com.viadeo.kasper.test.root.entities.Member;
 import com.viadeo.kasper.test.root.entities.Member_connectedTo_Member;
+import com.viadeo.kasper.test.root.events.FacebookEvent;
+import com.viadeo.kasper.test.root.events.FacebookMemberEvent;
 import com.viadeo.kasper.test.root.events.MemberCreatedEvent;
+import com.viadeo.kasper.test.root.events.NewMemberConnectionEvent;
 import com.viadeo.kasper.test.root.handlers.AddConnectionToMemberHandler;
 import com.viadeo.kasper.test.root.listeners.MemberCreatedEventListener;
 import com.viadeo.kasper.test.root.queries.GetMembersQueryHandler;
@@ -131,7 +135,13 @@ public class KasperDocResourceTest extends JerseyTest {
                 ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(
                     MemberCreatedEventListener.class,
                     MemberCreatedEvent.class
-                ))
+                )),
+                ImmutableList.<Class<? extends IEvent>>of(
+                        FacebookEvent.class,
+                        FacebookMemberEvent.class,
+                        MemberCreatedEvent.class,
+                        NewMemberConnectionEvent.class
+                )
             );
 
             final DomainDescriptor applicationDomainDescriptor = new DomainDescriptor(
@@ -149,7 +159,8 @@ public class KasperDocResourceTest extends JerseyTest {
                         DomainDescriptorFactory.toAggregateDescriptor(Member_fanOf_Application.class)
                     )
                 ),
-                ImmutableList.<EventListenerDescriptor>of()
+                ImmutableList.<EventListenerDescriptor>of(),
+                ImmutableList.<Class<? extends IEvent>>of()
             );
 
             final DomainDescriptor timelinesDomainDescriptor = new DomainDescriptor(
@@ -167,7 +178,8 @@ public class KasperDocResourceTest extends JerseyTest {
                         DomainDescriptorFactory.toAggregateDescriptor(Timeline.class)
                     )
                 ),
-                ImmutableList.<EventListenerDescriptor>of()
+                ImmutableList.<EventListenerDescriptor>of(),
+                ImmutableList.<Class<? extends IEvent>>of()
             );
 
             final DocumentedPlatform documentedPlatform = new DocumentedPlatform();

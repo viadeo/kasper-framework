@@ -125,6 +125,8 @@ public class MyCustomDomainBox {
 
     public static class MyCustomEvent extends Event { }
 
+    public static abstract class AbstractMyCustomEvent extends Event { }
+
     public static class MyCustomDomainEvent implements DomainEvent<MyCustomDomain> { }
 
     public static class MyCustomMalformedDomainEvent implements DomainEvent { }

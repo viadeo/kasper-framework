@@ -10,7 +10,7 @@
         {{/ifCond}}        
           <div class="panel-heading">
             <h4 class="panel-title" id="{{this.typePlural}}_{{this.label}}">
-              <a data-toggle="collapse" href="#component-{{this.label}}-collapse" class="collapsed">
+              <a data-toggle="collapse" href="#component-{{this.type}}-{{this.label}}-collapse" class="collapsed">
                   {{#ifCond this.publicAccess false}}<span class="glyphicon glyphicon-lock"/>{{/ifCond}}<b>{{this.label}}</b>
               </a>
               <span class="pull-right">
@@ -21,7 +21,7 @@
           <p class="panel-description text-justify">
             {{#ifCond this.deprecated true}}<span class="glyphicon glyphicon-warning-sign"/><strong>Deprecated.</strong>&nbsp;{{/ifCond}}{{this.description}}
           </p>
-          <div id="component-{{this.label}}-collapse" class="panel-collapse collapse">
+          <div id="component-{{this.type}}-{{this.label}}-collapse" class="panel-collapse collapse">
             <div class="panel-body">
               {{#if this.properties}}
                 <dl class="block-content">

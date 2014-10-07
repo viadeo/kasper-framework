@@ -6,7 +6,7 @@
   {{/ifCond}}    
     <div class="panel-heading">
       <h4 class="panel-title" id="{{this.typePlural}}_{{this.name}}">
-        <a data-toggle="collapse" data-parent="#accordion-domain" href="#component-{{this.name}}-collapse" class="collapsed">
+        <a data-toggle="collapse" data-parent="#accordion-domain" href="#component-{{this.type}}-{{this.name}}-collapse" class="collapsed">
             <span class="glyphicon glyphicon-stop"/>
             <b>{{this.name}}</b>
         </a>
@@ -16,7 +16,7 @@
     <p class="panel-description text-justify">
       {{#ifCond this.deprecated true}}<span class="glyphicon glyphicon-warning-sign"/><strong>Deprecated.</strong>&nbsp;{{/ifCond}}{{this.description}}
     </p>
-    <div id="component-{{this.name}}-collapse" class="panel-collapse collapse">
+    <div id="component-{{this.type}}-{{this.name}}-collapse" class="panel-collapse collapse">
       <div class="panel-body">
         {{#if this.properties}}
           <dl class="block-content">
