@@ -37,10 +37,10 @@ ext.libraries = [
         YAMMER_METRICS: 'com.codahale.metrics:metrics-core:3.1.0-VIADEO-0.1',
         METRICS_JSON: 'com.codahale.metrics:metrics-json:3.1.0-VIADEO-0.1',
 
-        AXON_TEST: 'org.axonframework:axon-test:2.0.5',
+        AXON_TEST: 'org.axonframework:axon-test:2.2',
         AXON_CORE: [
                 'javax.persistence:persistence-api:1.0',
-                'org.axonframework:axon-core:2.0.5'
+                'org.axonframework:axon-core:2.2'
         ],
         JCACHE: 'javax.cache:cache-api:0.5',
         JCACHE_EHCACHE: 'net.sf.ehcache:ehcache-jcache:1.5.0-0.5',
