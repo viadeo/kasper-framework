@@ -13,11 +13,12 @@ _(based on 0.6.9, the recovery from the 0.7 is in progress)_
   - Fix trouble with collapsible component block
 * [Pull 235](https://github.com/viadeo/kasper-framework/pull/235) Ensure to add only one RetryFilter on  the Kasper client in order to avoid stack overflow
 * [Pull 236](https://github.com/viadeo/kasper-framework/pull/236) Reduce log level of DomainHelper to debug
+* [Pull 238](https://github.com/viadeo/kasper-framework/pull/238) Migrated to Axon framework 2.2
 
 
 ## Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandoned_###
 
-* [Pull 228](https://github.com/viadeo/kasper-framework/pull/228) Migrated to Axon framework 2.2
+* :white_check_mark: [Pull 228](https://github.com/viadeo/kasper-framework/pull/228) Migrated to Axon framework 2.2
 * :white_check_mark: [Pull 211](https://github.com/viadeo/kasper-framework/pull/211) Ensure to add only one RetryFilter on  the Kasper client in order to avoid stack overflow
 * :white_check_mark: [Bug 220](https://github.com/viadeo/kasper-framework/pull/220) (auto-doc) List every events instead of event referenced by aggregate and/or listener
 * :white_check_mark: [Bug 216](https://github.com/viadeo/kasper-framework/pull/216) (auto-doc) Propose aliases in the result of the auto-completion
