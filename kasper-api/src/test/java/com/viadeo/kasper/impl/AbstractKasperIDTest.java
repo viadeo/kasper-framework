@@ -6,10 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.impl;
 
-import junit.framework.TestCase;
 import org.junit.Test;
 
-public class AbstractKasperIDTest extends TestCase {
+import static org.junit.Assert.*;
+
+public class AbstractKasperIDTest {
 
 	private static final int INT_ID_A = 42;
 	private static final int INT_ID_B = 24;

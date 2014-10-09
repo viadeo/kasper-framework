@@ -27,10 +27,7 @@ import com.viadeo.kasper.ddd.Domain;
 import org.junit.After;
 import org.junit.Test;
 
-import static junit.framework.Assert.assertEquals;
-import static junit.framework.Assert.assertNotNull;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.*;
 
