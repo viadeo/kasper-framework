@@ -10,9 +10,7 @@ import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
-import com.viadeo.kasper.core.interceptor.InterceptorFactory;
+import com.viadeo.kasper.core.interceptor.*;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
@@ -211,4 +209,11 @@ public class KasperQueryGateway implements QueryGateway {
         );
     }
 
+    @Override
+    public void register(QueryInterceptorFactory interceptorFactory) {
+        checkNotNull(interceptorFactory);
+        LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
+
+        interceptorChainRegistry.register(interceptorFactory);
+    }
 }
