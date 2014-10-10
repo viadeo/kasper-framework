@@ -131,7 +131,7 @@ public class HystrixCommandGateway extends HystrixGateway implements CommandGate
      * @throws com.netflix.hystrix.exception.HystrixBadRequestException if an exception is thrown by an interceptor
      */
     @Override
-    public void sendCommandAndWait(@NotNull final Command command, @MetaData(Context.METANAME) final Context context, long timeout, TimeUnit unit) {
+    public void sendCommandAndWait(@NotNull final Command command, @MetaData(Context.METANAME) final Context context, final long timeout, final TimeUnit unit) {
 
         long timeoutInMs = TimeUnit.MILLISECONDS.convert(timeout, unit);
 
@@ -149,7 +149,7 @@ public class HystrixCommandGateway extends HystrixGateway implements CommandGate
 
             @Override
             protected Void runWithException() throws Exception {
-                commandGateway.sendCommand(command, context);
+                commandGateway.sendCommandAndWait(command, context, timeout, unit);
                 return null;
             }
 
