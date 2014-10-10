@@ -10,9 +10,7 @@ import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
-import com.viadeo.kasper.core.interceptor.InterceptorFactory;
+import com.viadeo.kasper.core.interceptor.*;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultQueryHandlersLocator;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
@@ -34,11 +32,6 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 public class KasperQueryGateway implements QueryGateway {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperQueryGateway.class);
-
-    public static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryGateway.class, "requests-time");
-    public static final String GLOBAL_METER_REQUESTS_NAME = name(QueryGateway.class, "requests");
-    public static final String GLOBAL_METER_ERRORS_NAME = name(QueryGateway.class, "errors");
-
     private final QueryHandlersLocator queryHandlersLocator;
     private final InterceptorChainRegistry<Query, QueryResponse<QueryResult>> interceptorChainRegistry;
 
@@ -143,12 +136,7 @@ public class KasperQueryGateway implements QueryGateway {
     // ------------------------------------------------------------------------
 
     /**
-     * Register a query handler adapter to the gateway
-     *
-     * @param name the name of the adapter
-     * @param adapter the query handler adapter to register
-     * @param global the kind of the adapter. If true then the adapter will be applied to every query handler component.
-     *               Otherwise the  adapter will be applied only on the component whose reference it
+     * {@inheritDoc}
      */
     @Deprecated
     public void register(final String name, final  QueryHandlerAdapter adapter, final boolean global) {
@@ -160,9 +148,7 @@ public class KasperQueryGateway implements QueryGateway {
     }
 
     /**
-     * Register an interceptor factory to the gateway
-     *
-     * @param interceptorFactory the query interceptor factory to register
+     * {@inheritDoc}
      */
     public void register(final InterceptorFactory interceptorFactory) {
         checkNotNull(interceptorFactory);
@@ -172,9 +158,7 @@ public class KasperQueryGateway implements QueryGateway {
     }
 
     /**
-     * Register a query handler to the gateway
-     *
-     * @param queryHandler the query handler to register
+     * {@inheritDoc}
      */
     @SuppressWarnings("unchecked")
     public void register(final QueryHandler queryHandler) {
@@ -225,4 +209,11 @@ public class KasperQueryGateway implements QueryGateway {
         );
     }
 
+    @Override
+    public void register(QueryInterceptorFactory interceptorFactory) {
+        checkNotNull(interceptorFactory);
+        LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
+
+        interceptorChainRegistry.register(interceptorFactory);
+    }
 }

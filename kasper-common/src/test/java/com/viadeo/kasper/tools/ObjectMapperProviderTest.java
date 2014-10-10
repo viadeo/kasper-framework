@@ -315,5 +315,4 @@ public class ObjectMapperProviderTest {
         assertEquals("foobar", actual.getName());
         assertEquals((Integer)42, actual.getValue());
     }
-
 }
