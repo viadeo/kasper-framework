@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.tools;
 
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.impl.StringKasperId;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;
@@ -82,6 +84,11 @@ public class KasperMatcher extends BaseMatcher<Object> {
 
         if (DateTime.class.isAssignableFrom(actual.getClass())
                 && (expected == anyDate())) {
+            return record(done, expected, actual, true);
+        }
+
+        if (KasperID.class.isAssignableFrom(actual.getClass())
+                && (expected == anyKasperId())) {
             return record(done, expected, actual, true);
         }
 
@@ -288,11 +295,19 @@ public class KasperMatcher extends BaseMatcher<Object> {
         return SECURITY_TOKEN;
     }
 
+    private static final KasperID KASPER_ID = new StringKasperId("wildcard");
+
+    /**
+     * @return a Kasper id wildcard
+     */
+    public static KasperID anyKasperId() {
+        return KASPER_ID;
+    }
+
     // ------------------------------------------------------------------------
-    
+
     @Factory
     public static KasperMatcher equalTo(final Object expected) {
         return new KasperMatcher(expected);
     }
-    
 }

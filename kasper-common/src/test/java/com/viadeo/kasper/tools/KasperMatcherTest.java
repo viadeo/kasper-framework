@@ -235,4 +235,17 @@ public class KasperMatcherTest {
         assertFalse(anySecurityToken().equals(value));
     }
 
+    @Test
+    public void testAnyKasperId() {
+        // Given
+        final KasperID id = DefaultKasperId.random();
+
+        // When
+        final boolean matches = equalTo(anyKasperId()).matches(id);
+
+        // Then
+        assertTrue(matches);
+        assertFalse(anyKasperId().equals(id));
+    }
+
 }

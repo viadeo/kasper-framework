@@ -59,4 +59,29 @@ public class FixtureUseCaseSpringConfiguration {
         return new TestCoreReasonCodeQueryHandler();
     }
 
+    @Bean
+    public TestCreatedEventListener createdEventListener() {
+        return new TestCreatedEventListener();
+    }
+
+    @Bean
+    public TestFirstNameChangedEventListener firstNameChangedEventListener() {
+        return new TestFirstNameChangedEventListener();
+    }
+
+    @Bean
+    public TestLastNameChangedEventListener lastNameChangedEventListener() {
+        return new TestLastNameChangedEventListener();
+    }
+
+    @Bean
+    public DoSyncUserEventListener doSyncUserEventListener() {
+        return new DoSyncUserEventListener();
+    }
+
+    @Bean
+    public TestCreateUserCommandHandler createUserCommandHandler() {
+        return new TestCreateUserCommandHandler();
+    }
+
 }
