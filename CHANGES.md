@@ -1,6 +1,7 @@
 # Kasper Releases #
 
-## Snapshot 0.8.0-SNAPSHOT ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.1-SNAPSHOT~~))### 
+### Snapshot 0.8.0-pre4 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre4~~)) 
+
 _(based on 0.6.9, the recovery from the 0.7 is in progress)_
 
 * Migrated to Gradle 2.1
@@ -14,9 +15,17 @@ _(based on 0.6.9, the recovery from the 0.7 is in progress)_
 * [Pull 235](https://github.com/viadeo/kasper-framework/pull/235) Ensure to add only one RetryFilter on  the Kasper client in order to avoid stack overflow
 * [Pull 236](https://github.com/viadeo/kasper-framework/pull/236) Reduce log level of DomainHelper to debug
 * [Pull 238](https://github.com/viadeo/kasper-framework/pull/238) Migrated to Axon framework 2.2
+* [Pull 241](https://github.com/viadeo/kasper-framework/pull/241) Improve platform fixture
+  - allow to verify that a listener is notified 
+  - allow to verify that no listeners are notified
+  - allow to verify from an emitted event that a sequence of commands are sent
+  - allow to verify from an sent command that a sequence of commands are sent
+* [Pull 239](https://github.com/viadeo/kasper-framework/pull/239) Expose the kasper version :
+  - set as attribute in the header when we use the kasper client
+  - set in the MDC wen we process an HTTP request in the exposition layer
 
 
-## Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandoned_###
+### Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandoned_###
 
 * :white_check_mark: [Pull 228](https://github.com/viadeo/kasper-framework/pull/228) Migrated to Axon framework 2.2
 * :white_check_mark: [Pull 211](https://github.com/viadeo/kasper-framework/pull/211) Ensure to add only one RetryFilter on  the Kasper client in order to avoid stack overflow
@@ -28,12 +37,12 @@ _(based on 0.6.9, the recovery from the 0.7 is in progress)_
 * :white_check_mark: [Pull 214](https://github.com/viadeo/kasper-framework/pull/214) Reduce log level of DomainHelper to debug
 * [Pull 205](https://github.com/viadeo/kasper-framework/pull/205) Use ObjectMapper implementation to ser/deser query
 * [Pull 201](https://github.com/viadeo/kasper-framework/pull/201) Provide a deserializer of enum allowing to manage with unsensitive case
-* [Pull 195](https://github.com/viadeo/kasper-framework/pull/195) Improve platform fixture
+* :white_check_mark: [Pull 195](https://github.com/viadeo/kasper-framework/pull/195) Improve platform fixture
   - allow to verify that a listener is notified 
   - allow to verify that no listeners are notified
   - allow to verify from an emitted event that a sequence of commands are sent
   - allow to verify from an sent command that a sequence of commands are sent
-* [Pull 207](https://github.com/viadeo/kasper-framework/pull/207) Expose the kasper version :
+* :white_check_mark: [Pull 207](https://github.com/viadeo/kasper-framework/pull/207) Expose the kasper version :
   - set as attribute in the header when we use the kasper client
   - set in the MDC wen we process an HTTP request in the exposition layer
 
