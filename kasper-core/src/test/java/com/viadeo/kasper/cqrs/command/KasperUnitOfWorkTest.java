@@ -149,7 +149,7 @@ public class KasperUnitOfWorkTest {
         doReturn(metadata).when(message).getMetaData();
 
         // When
-        uow.registerForPublication(message, eventBus);
+        uow.registerForPublication(message, eventBus, false);
         uow.publishEvents();
 
         // Then
@@ -192,8 +192,8 @@ public class KasperUnitOfWorkTest {
         // doReturn(context).when(context).child();
 
         // When
-        uow.registerForPublication(message1, eventBus);
-        uow.registerForPublication(message2, eventBus);
+        uow.registerForPublication(message1, eventBus, false);
+        uow.registerForPublication(message2, eventBus, false);
         uow.publishEvents();
 
         // Then UOW event is set to previous events
@@ -202,7 +202,7 @@ public class KasperUnitOfWorkTest {
 
         // Then UOW event is registered to publication
         final ArgumentCaptor<EventMessage> argMessage = ArgumentCaptor.forClass(EventMessage.class);
-        verify(uow, times(3)).registerForPublication(argMessage.capture(), eq(eventBus));
+        verify(uow, times(3)).registerForPublication(argMessage.capture(), eq(eventBus), eq(false));
 
         // Then UOW event contains all previously sent events
         final EventMessage uowEventMessage = argMessage.getAllValues().get(2);

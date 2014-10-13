@@ -13,6 +13,7 @@ dependencies {
 
     // Third perty dependencies
     compile libraries.TYPESAFE_CONFIG
-    compile libraries.JUNIT
-    compile libraries.MOCKITO
+    
+    testCompile libraries.JUNIT
+    testCompile libraries.MOCKITO
 }

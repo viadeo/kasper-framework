@@ -7,12 +7,13 @@
 package com.viadeo.kasper.context.impl;
 
 import com.viadeo.kasper.context.Context;
-import junit.framework.TestCase;
 import org.junit.Test;
 
 import java.util.Locale;
 
-public class KasperDefaultContextBuilderTest extends TestCase {
+import static org.junit.Assert.assertEquals;
+
+public class KasperDefaultContextBuilderTest {
 
 	@Test
 	public void testDeterministicId() {

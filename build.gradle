@@ -34,7 +34,7 @@ configure(subprojects) {
     apply from: "${rootProject.rootDir}/libraries.gradle"
 
     group = 'com.viadeo.kasper'
-    version = '0.8.0-pre1'
+    version = '0.8.0-pre4'
 
     if (project.name =~ /kasper-api|kasper-client|kasper-common/) {
         sourceCompatibility = 1.6
@@ -91,6 +91,15 @@ configure(subprojects) {
     artifacts {
         archives sourcesJar
         archives javadocJar
+    }
+
+    jar {
+        manifest {
+            attributes(
+                    "Manifest-Version"    : "1.0",
+                    "Kasper-Version"    : version
+            )
+        }
     }
 
     // -----------------------------------------------------------------------------------------------------------------

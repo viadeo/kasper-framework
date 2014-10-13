@@ -16,7 +16,7 @@ import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.Field;
 
-import static junit.framework.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
 
 public class PropertyValidationProcessorUTest {
 
