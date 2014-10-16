@@ -17,14 +17,11 @@ import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandBus;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
-import com.viadeo.kasper.cqrs.command.interceptor.CommandSecurityInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandValidationInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
-import com.viadeo.kasper.cqrs.query.interceptor.QuerySecurityInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryValidationInterceptorFactory;
-import com.viadeo.kasper.security.SecurityConfiguration;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 
@@ -52,10 +49,6 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     // ------------------------------------------------------------------------
 
     public KasperPlatformConfiguration() {
-        this(new SecurityConfiguration.Builder().build());
-    }
-
-    public KasperPlatformConfiguration(SecurityConfiguration securityConfiguration) {
         this.eventBus = new KasperEventBus(Policy.ASYNCHRONOUS);
         this.queryGateway = new KasperQueryGateway();
         this.metricRegistry = new MetricRegistry();
@@ -69,12 +62,10 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         this.commandGateway = new KasperCommandGateway(commandBus);
 
         this.commandInterceptorFactories = Lists.<CommandInterceptorFactory>newArrayList(
-            new CommandSecurityInterceptorFactory(securityConfiguration),
             new CommandValidationInterceptorFactory()
         );
 
         this.queryInterceptorFactories =  Lists.newArrayList(
-            new QuerySecurityInterceptorFactory(securityConfiguration),
             new CacheInterceptorFactory(),
             new QueryValidationInterceptorFactory(),
             new QueryFilterInterceptorFactory()

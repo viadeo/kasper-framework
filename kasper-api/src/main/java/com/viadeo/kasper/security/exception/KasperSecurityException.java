@@ -11,13 +11,10 @@ import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.exception.KasperException;
 
 public class KasperSecurityException extends KasperException {
-
     private static final long serialVersionUID = 4329882967999237383L;
-
     private final KasperReason kasperReason;
 
     // ------------------------------------------------------------------------
-
     public KasperSecurityException(final String message, final CoreReasonCode coreReasonCode) {
         super(message);
         kasperReason = new KasperReason(coreReasonCode, message);
@@ -31,5 +28,4 @@ public class KasperSecurityException extends KasperException {
     public KasperReason getKasperReason() {
         return kasperReason;
     }
-
 }

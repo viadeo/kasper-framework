@@ -154,3 +154,11 @@ public or not.
 
 This annotation must be used on command, query  declaration of command, query, event or result. It allows to list aliases
 for each input (command|query|event)
+
+**`XKasperRequirePermissions` annotation**
+
+This annotation must be used on command or query handler class definition. It restricts the access to User having required permission.
+
+**`XKasperRequireRoles` annotation**
+
+This annotation must be used on command or query handler class definition. It restricts the access to User having required role.
