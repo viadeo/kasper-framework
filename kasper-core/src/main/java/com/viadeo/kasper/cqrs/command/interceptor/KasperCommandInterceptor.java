@@ -12,6 +12,7 @@ import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.command.impl.KasperCommandBus;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.unitofwork.UnitOfWork;
 
@@ -20,10 +21,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class KasperCommandInterceptor implements org.axonframework.commandhandling.CommandHandlerInterceptor {
 
     private final InterceptorChainRegistry<Command, CommandResponse> interceptorChainRegistry;
+    private final KasperCommandBus commandBus;
 
     // ------------------------------------------------------------------------
 
-    public KasperCommandInterceptor(final InterceptorChainRegistry<Command, CommandResponse> interceptorChainRegistry) {
+    public KasperCommandInterceptor(final KasperCommandBus commandBus, final InterceptorChainRegistry<Command, CommandResponse> interceptorChainRegistry) {
+        this.commandBus = checkNotNull(commandBus);
         this.interceptorChainRegistry = checkNotNull(interceptorChainRegistry);
     }
 
@@ -42,7 +45,7 @@ public class KasperCommandInterceptor implements org.axonframework.commandhandli
             chain = optionalInterceptorChain.get();
         } else {
             chain = interceptorChainRegistry.create(
-                    commandMessage.getPayloadType(),
+                    commandBus.findCommandHandlerClassFor(commandMessage),
                     new CommandHandlerInterceptorFactory()
             ).get();
         }

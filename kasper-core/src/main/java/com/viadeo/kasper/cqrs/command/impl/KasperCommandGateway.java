@@ -8,7 +8,6 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -111,7 +110,7 @@ public class KasperCommandGateway implements CommandGateway {
         commandGatewayFactoryBean.setCommandDispatchInterceptors(Lists.newArrayList(commandDispatchInterceptors));
 
         this.commandBus.setHandlerInterceptors(Lists.<CommandHandlerInterceptor>newArrayList(
-            new KasperCommandInterceptor(interceptorChainRegistry)
+            new KasperCommandInterceptor(commandBus, interceptorChainRegistry)
         ));
 
         try {
@@ -251,7 +250,7 @@ public class KasperCommandGateway implements CommandGateway {
 
         // create immediately the interceptor chain instead of lazy mode
         interceptorChainRegistry.create(
-                commandClass,
+                commandHandler.getClass(),
                 new CommandHandlerInterceptorFactory()
         );
     }
