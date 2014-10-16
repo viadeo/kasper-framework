@@ -51,6 +51,21 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
         public void accept(final DocumentedElementVisitor visitor) {
             visitor.visit(this);
         }
+
+        @Override
+        public boolean isPublicAccess() {
+            return queryHandler.isPublicAccess();
+        }
+
+        @Override
+        public List<String> getRoles() {
+            return queryHandler.getRoles();
+        }
+
+        @Override
+        public List<String> getPermissions() {
+            return queryHandler.getPermissions();
+        }
     }
 
     public static class DocumentedQueryResult extends AbstractPropertyDomainElement {
