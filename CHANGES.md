@@ -23,6 +23,7 @@ _(based on 0.6.9, the recovery from the 0.7 is in progress)_
 * [Pull 239](https://github.com/viadeo/kasper-framework/pull/239) Expose the kasper version :
   - set as attribute in the header when we use the kasper client
   - set in the MDC wen we process an HTTP request in the exposition layer
+* [Pull 237](https://github.com/viadeo/kasper-framework/pull/237) Clean security configuration and added authorization's annotations
 
 
 ### Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandoned_###
