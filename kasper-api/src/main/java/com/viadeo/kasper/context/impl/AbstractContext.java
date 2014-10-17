@@ -175,22 +175,22 @@ public abstract class AbstractContext implements Context {
 
     @Override
     public Map<String, String> asMap(final Map<String, String> origMap) {
-
         final Map<String, String> retMap;
+
         if (null == origMap) {
             retMap = Maps.newHashMap();
         } else {
             retMap = origMap;
         }
 
-        retMap.put(KASPER_CID_SHORTNAME, safeStringObject(this.kasperCorrelationId));
-        retMap.put(SEQ_INC_SHORTNAME, safeStringObject(this.sequenceIncrement));
-
         if ( null != this.properties ) {
             for (final Map.Entry<String, Serializable> entry : this.properties.entrySet()) {
-                retMap.put("_" + entry.getKey(), safeStringObject(entry.getValue()));
+                retMap.put(entry.getKey(), safeStringObject(entry.getValue()));
             }
         }
+
+        retMap.put(KASPER_CID_SHORTNAME, safeStringObject(this.kasperCorrelationId));
+        retMap.put(SEQ_INC_SHORTNAME, safeStringObject(this.sequenceIncrement));
 
         return retMap;
     }
@@ -231,7 +231,7 @@ public abstract class AbstractContext implements Context {
             if ( ! other.hasProperty(entry.getKey())) {
                 return false;
             }
-            if ( ! other.getProperty(entry.getKey()).equals(entry.getValue())) {
+            if ( ! other.getProperty(entry.getKey()).get().equals(entry.getValue())) {
                 return false;
             }
         }

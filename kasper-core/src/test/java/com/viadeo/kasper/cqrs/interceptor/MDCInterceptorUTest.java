@@ -47,6 +47,6 @@ public class MDCInterceptorUTest {
 
         // Then
         Assert.assertEquals("myApplicationId", MDC.get("appId"));
-        Assert.assertEquals("MyPropertyValue", MDC.get("_myPropertyKey"));
+        Assert.assertEquals("MyPropertyValue", MDC.get("myPropertyKey"));
     }
 }
