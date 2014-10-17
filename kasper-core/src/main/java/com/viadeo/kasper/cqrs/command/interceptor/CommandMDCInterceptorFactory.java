@@ -1,0 +1,23 @@
+package com.viadeo.kasper.cqrs.command.interceptor;
+
+import com.google.common.base.Optional;
+import com.google.common.reflect.TypeToken;
+import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
+import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.interceptor.MDCInterceptor;
+
+public class CommandMDCInterceptorFactory extends CommandInterceptorFactory {
+
+    private final MDCInterceptor<Command,CommandResponse> interceptor;
+
+    public CommandMDCInterceptorFactory() {
+        this.interceptor = new MDCInterceptor<>();
+    }
+
+    @Override
+    public Optional<InterceptorChain<Command, CommandResponse>> create(TypeToken<?> type) {
+        return Optional.of(InterceptorChain.makeChain(interceptor));
+    }
+}

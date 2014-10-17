@@ -17,11 +17,10 @@ import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandBus;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
+import com.viadeo.kasper.cqrs.command.interceptor.CommandMDCInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandValidationInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
-import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
-import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
-import com.viadeo.kasper.cqrs.query.interceptor.QueryValidationInterceptorFactory;
+import com.viadeo.kasper.cqrs.query.interceptor.*;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 
@@ -62,10 +61,12 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         this.commandGateway = new KasperCommandGateway(commandBus);
 
         this.commandInterceptorFactories = Lists.<CommandInterceptorFactory>newArrayList(
+            new CommandMDCInterceptorFactory(),
             new CommandValidationInterceptorFactory()
         );
 
         this.queryInterceptorFactories =  Lists.newArrayList(
+            new QueryMDCInterceptorFactory(),
             new CacheInterceptorFactory(),
             new QueryValidationInterceptorFactory(),
             new QueryFilterInterceptorFactory()

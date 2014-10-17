@@ -22,6 +22,8 @@ dependencies {
     compile libraries.GUAVA
     compile libraries.LOG4J_OVER_SLF4J
 
+
+    testCompile libraries.LOGBACK
     testCompile libraries.JUNIT
     testCompile libraries.MOCKITO
     testCompile libraries.JCACHE_EHCACHE
