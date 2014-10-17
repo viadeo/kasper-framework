@@ -119,10 +119,10 @@ configure(subprojects) {
     uploadArchives {
         repositories.mavenDeployer {
             configuration = configurations.deployerJars
-            repository(url: "http://nexus01.infra.paris.apvo/content/repositories/kasper-releases") {
+            repository(url: "http://${nexus_host}content/repositories/kasper-releases") {
                 authentication(userName: nexus_username, password: nexus_password)
             }
-            snapshotRepository(url: "http://nexus01.infra.paris.apvo/content/repositories/kasper-snapshots") {
+            snapshotRepository(url: "http://${nexus_host}/content/repositories/kasper-snapshots") {
                 authentication(userName: nexus_username, password: nexus_password)
             }
         }
@@ -135,18 +135,20 @@ configure(subprojects) {
     sonar {
         project {
             sourceEncoding = "UTF-8"
+            dynamicAnalysis = true
         }
         server {
-            url = "http://${nexus_host}:8080/sonar/"
+            url = "http://${sonar_host}:8080/sonar/"
         }
         database {
-            url = "jdbc:mysql://${nexus_host}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8"
+            url = "jdbc:mysql://${sonar_host}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8"
             driverClassName = "com.mysql.jdbc.Driver"
             username = "sonar"
             password = "sonar"
-
         }
     }
+
+    // -----------------------------------------------------------------------------------------------------------------
 
     apply plugin: 'findbugs'
 
