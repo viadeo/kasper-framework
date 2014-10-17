@@ -118,6 +118,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             /* 3) Extract the input from request */
             input = extractInput(httpRequest, requestToObject);
 
+            enrichContextAndMDC(context, "appRoute", input.getClass().getName());
+
             /* 4) Handle the request */
             response = handle(input, context);
 
@@ -234,15 +236,21 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
     ) throws IOException {
         final Context context = contextDeserializer.deserialize(httpRequest, kasperCorrelationUUID);
 
-        MDC.put("appServer", serverName());
-        MDC.put("appVersion", meta.getVersion());
-        MDC.put("appBuildingDate", meta.getBuildingDate().toString());
-        MDC.put("appDeploymentDate", meta.getDeploymentDate().toString());
+        MDC.setContextMap(context.asMap());
 
-        MDC.put("clientVersion", Objects.firstNonNull(httpRequest.getHeader(HttpContextHeaders.HEADER_CLIENT_VERSION), "undefined"));
-        MDC.put("clientId", Objects.firstNonNull(context.getApplicationId(), "undefined"));
+        enrichContextAndMDC(context, "appServer", serverName());
+        enrichContextAndMDC(context, "appVersion", meta.getVersion());
+        enrichContextAndMDC(context, "appBuildingDate", meta.getBuildingDate().toString());
+        enrichContextAndMDC(context, "appDeploymentDate", meta.getDeploymentDate().toString());
+        enrichContextAndMDC(context, "clientVersion", Objects.firstNonNull(httpRequest.getHeader(HttpContextHeaders.HEADER_CLIENT_VERSION), "undefined"));
+        enrichContextAndMDC(context, "clientId", Objects.firstNonNull(context.getApplicationId(), "undefined"));
 
         return context;
+    }
+
+    private void enrichContextAndMDC(final Context context, final String key, final String value) {
+        MDC.put(key, value);
+        context.setProperty(key, value);
     }
 
     protected INPUT extractInput(
@@ -263,7 +271,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
         /* 3) Resolve the input class*/
         final Class<INPUT> inputClass = getInputClass(requestName);
-        MDC.put("appRoute", inputClass.getName());
 
         /* 4) Extract to a known input */
         return httpRequestToObject.map(httpRequest, inputClass);

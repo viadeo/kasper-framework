@@ -104,10 +104,11 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest {
             if (message.getCommand().getContextName().contentEquals(CONTEXT_FULL)) {
 
                 /* Kasper correlation id is set by the gateway or auto-expo layer */
-                final DefaultContext clonedContext = ((DefaultContext) message.getContext()).child();
-                clonedContext.setKasperCorrelationId(context_full.getKasperCorrelationId());
+                final DefaultContext context = (DefaultContext) message.getContext();
+                final DefaultContext clonedContext = context.child();
+                clonedContext.setKasperCorrelationId(context.getKasperCorrelationId());
 
-                assertTrue(clonedContext.equals(context_full));
+                assertEquals(message.getContext(), clonedContext);
             }
             return CommandResponse.ok().withSecurityToken(RETURNED_SECURITY_TOKEN);
         }

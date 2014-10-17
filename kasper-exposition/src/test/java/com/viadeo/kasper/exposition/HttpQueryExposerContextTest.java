@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
-import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
@@ -28,6 +27,7 @@ import java.util.Locale;
 
 import static com.viadeo.kasper.exposition.TestContexts.CONTEXT_FULL;
 import static com.viadeo.kasper.exposition.TestContexts.context_full;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
@@ -102,10 +102,11 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
         public QueryResponse<ContextCheckResult> retrieve(final QueryMessage<ContextCheckQuery> message) throws Exception {
             if (message.getQuery().getContextName().contentEquals(CONTEXT_FULL)) {
                 /* Kasper correlation id is set by the gateway or auto-expo layer */
-                final Context copy_context_full = context_full.child();
-                ((DefaultContext) copy_context_full).setKasperCorrelationId(((DefaultContext) message.getContext()).getKasperCorrelationId());
+                final DefaultContext context = (DefaultContext) message.getContext();
+                final DefaultContext clonedContext = context.child();
+                clonedContext.setKasperCorrelationId(context.getKasperCorrelationId());
 
-                assertTrue(message.getContext().equals(copy_context_full));
+                assertEquals(message.getContext(), clonedContext);
             }
             return QueryResponse.of(new ContextCheckResult());
         }
