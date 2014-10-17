@@ -119,7 +119,7 @@ configure(subprojects) {
     uploadArchives {
         repositories.mavenDeployer {
             configuration = configurations.deployerJars
-            repository(url: "http://${nexus_host}content/repositories/kasper-releases") {
+            repository(url: "http://${nexus_host}/content/repositories/kasper-releases") {
                 authentication(userName: nexus_username, password: nexus_password)
             }
             snapshotRepository(url: "http://${nexus_host}/content/repositories/kasper-snapshots") {
