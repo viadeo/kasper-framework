@@ -24,6 +24,8 @@ public class CompositeInterceptorFactory<INPUT, OUTPUT> implements InterceptorFa
         this.factories = Lists.newArrayList(checkNotNull(factories));
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
     public Optional<InterceptorChain<INPUT, OUTPUT>> create(final TypeToken<?> type) {
         return create(checkNotNull(type), null);
