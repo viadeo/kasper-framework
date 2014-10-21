@@ -12,9 +12,11 @@ import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import org.slf4j.MDC;
 
 public class MDCInterceptor<INPUT, OUTPUT>  implements Interceptor<INPUT, OUTPUT> {
+
     @Override
-    public OUTPUT process(INPUT input, Context context, InterceptorChain<INPUT, OUTPUT> chain) throws Exception {
+    public OUTPUT process(final INPUT input, final Context context, final InterceptorChain<INPUT, OUTPUT> chain) throws Exception {
         MDC.setContextMap(context.asMap());
         return chain.next(input, context);
     }
+
 }

@@ -20,24 +20,29 @@ public class KasperCommandBus extends AsynchronousCommandBus {
 
     private final ConcurrentMap<String, CommandHandler<?>> subscriptions = new ConcurrentHashMap<String, CommandHandler<?>>();
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public <T> void subscribe(String commandName, CommandHandler<? super T> handler) {
+    public <T> void subscribe(final String commandName, final CommandHandler<? super T> handler) {
         subscriptions.put(commandName, handler);
         super.subscribe(commandName, handler);
     }
 
     @Override
-    public <T> boolean unsubscribe(String commandName, CommandHandler<? super T> handler) {
+    public <T> boolean unsubscribe(final String commandName, final CommandHandler<? super T> handler) {
         subscriptions.remove(commandName, handler);
         return super.unsubscribe(commandName, handler);
     }
 
-    public Class<? extends CommandHandler> findCommandHandlerClassFor(CommandMessage<?> command) {
+    public Class<? extends CommandHandler> findCommandHandlerClassFor(final CommandMessage<?> command) {
         final CommandHandler handler = subscriptions.get(command.getCommandName());
-        if (handler == null) {
-            throw new NoHandlerForCommandException(format("No handler was subscribed to command [%s]",
-                    command.getCommandName()));
+        if (null == handler) {
+            throw new NoHandlerForCommandException(format(
+                    "No handler was subscribed to command [%s]",
+                    command.getCommandName()
+            ));
         }
         return handler.getClass();
     }
+
 }

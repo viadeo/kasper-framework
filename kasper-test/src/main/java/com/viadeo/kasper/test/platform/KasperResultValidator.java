@@ -55,7 +55,7 @@ public class KasperResultValidator implements ResultValidator {
 
     @Override
     public ResultValidator expectReturnValue(final Object expectedReturnValue) {
-        if (expectedReturnValue == null) {
+        if (null == expectedReturnValue) {
             return expectReturnValue(CoreMatchers.nullValue());
         }
         return expectReturnValue(KasperMatcher.equalTo(expectedReturnValue));

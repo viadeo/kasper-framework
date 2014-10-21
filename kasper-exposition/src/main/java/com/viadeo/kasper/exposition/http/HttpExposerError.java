@@ -13,4 +13,5 @@ public class HttpExposerError extends Error {
     public HttpExposerError(final String message) {
         super(message);
     }
+
 }

@@ -12,10 +12,14 @@ public class MetricNameKey {
     private final MetricNameStyle kind;
     private final Class clazz;
 
+    // ------------------------------------------------------------------------
+
     public MetricNameKey(final MetricNameStyle kind, final Class clazz) {
         this.kind = kind;
         this.clazz = clazz;
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public int hashCode() {
@@ -41,4 +45,5 @@ public class MetricNameKey {
                 .add("clazz", clazz)
                 .toString();
     }
+
 }

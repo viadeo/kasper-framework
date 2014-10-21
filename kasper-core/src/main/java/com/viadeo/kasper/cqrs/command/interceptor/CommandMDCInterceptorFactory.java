@@ -16,14 +16,13 @@ import com.viadeo.kasper.cqrs.interceptor.MDCInterceptor;
 
 public class CommandMDCInterceptorFactory extends CommandInterceptorFactory {
 
-    private final MDCInterceptor<Command,CommandResponse> interceptor;
+    private final MDCInterceptor<Command,CommandResponse> interceptor = new MDCInterceptor<>();
 
-    public CommandMDCInterceptorFactory() {
-        this.interceptor = new MDCInterceptor<>();
-    }
+    // ------------------------------------------------------------------------
 
     @Override
-    public Optional<InterceptorChain<Command, CommandResponse>> create(TypeToken<?> type) {
+    public Optional<InterceptorChain<Command, CommandResponse>> create(final TypeToken<?> type) {
         return Optional.of(InterceptorChain.makeChain(interceptor));
     }
+
 }

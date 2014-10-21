@@ -23,12 +23,15 @@ public abstract class HttpServletRequestToObject {
 
     protected final ObjectReader reader;
 
+    // ------------------------------------------------------------------------
+
     protected HttpServletRequestToObject(final ObjectMapper objectMapper) {
         this.reader = objectMapper.reader();
     }
 
-    public abstract <T> T map(final HttpServletRequest request, final Class<T> clazz) throws IOException;
+    // ------------------------------------------------------------------------
 
+    public abstract <T> T map(final HttpServletRequest request, final Class<T> clazz) throws IOException;
 
     public static class StringRequestToObjectMapper extends HttpServletRequestToObject {
 
@@ -76,4 +79,5 @@ public abstract class HttpServletRequestToObject {
             }
         }
     }
+
 }

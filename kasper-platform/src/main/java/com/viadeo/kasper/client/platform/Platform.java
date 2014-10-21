@@ -223,12 +223,12 @@ public interface Platform {
 
         public Platform build() {
 
-            checkState(null != eventBus, "the event bus cannot be null");
-            checkState(null != commandGateway, "the command gateway cannot be null");
-            checkState(null != queryGateway, "the query gateway cannot be null");
-            checkState(null != configuration, "the configuration cannot be null");
-            checkState(null != repositoryManager, "the repository manager cannot be null");
-            checkState(null != metricRegistry, "the metric registry cannot be null");
+            checkState((null != eventBus), "the event bus cannot be null");
+            checkState((null != commandGateway), "the command gateway cannot be null");
+            checkState((null != queryGateway), "the query gateway cannot be null");
+            checkState((null != configuration), "the configuration cannot be null");
+            checkState((null != repositoryManager), "the repository manager cannot be null");
+            checkState((null != metricRegistry), "the metric registry cannot be null");
 
             this.meta = Objects.firstNonNull(meta, new Meta("unknown", DateTime.now(), DateTime.now()));
 
@@ -314,9 +314,6 @@ public interface Platform {
                 if (CommandEventListener.class.isAssignableFrom(eventListener.getClass())) {
                     final CommandEventListener commandEventListener = (CommandEventListener) eventListener;
                     commandEventListener.setCommandGateway(commandGateway);
-                } else if (QueryEventListener.class.isAssignableFrom(eventListener.getClass())) {
-                    final QueryEventListener queryEventListener = (QueryEventListener) eventListener;
-                    queryEventListener.setQueryGateway(queryGateway);
                 }
 
                 eventBus.subscribe(eventListener);

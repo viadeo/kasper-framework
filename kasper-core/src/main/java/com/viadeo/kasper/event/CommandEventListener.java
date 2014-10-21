@@ -15,9 +15,13 @@ public abstract class CommandEventListener<E extends IEvent> extends EventListen
 
     private CommandGateway commandGateway;
 
+    // ------------------------------------------------------------------------
+
     public void setCommandGateway(final CommandGateway commandGateway) {
         this.commandGateway = checkNotNull(commandGateway);
     }
+
+    // ------------------------------------------------------------------------
 
     protected Optional<CommandGateway> getCommandGateway() {
         return Optional.fromNullable(this.commandGateway);

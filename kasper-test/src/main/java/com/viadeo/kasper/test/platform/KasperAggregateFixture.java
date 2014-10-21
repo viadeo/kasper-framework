@@ -68,8 +68,12 @@ public final class KasperAggregateFixture<AGR extends AggregateRoot>
         this.repositoryManager.register(repository);
 
         Preconditions.checkState(
-                aggregateClass == repository.getAggregateClass()
-                , "The specified repository don't support the specified aggregate, <expected=" + repository.getAggregateClass() + "> <actual=" + aggregateClass + "> "
+                aggregateClass == repository.getAggregateClass(),
+                String.format(
+                        "The specified repository don't support the specified aggregate, <expected=%s> <actual=%s> ",
+                        repository.getAggregateClass(),
+                        aggregateClass
+                )
         );
 
         KasperMetrics.setMetricRegistry(new MetricRegistry());

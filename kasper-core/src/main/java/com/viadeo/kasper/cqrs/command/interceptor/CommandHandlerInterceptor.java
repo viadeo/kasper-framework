@@ -21,13 +21,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CommandHandlerInterceptor implements Interceptor<Command, CommandResponse> {
 
-    private final ThreadLocal<org.axonframework.commandhandling.InterceptorChain> axonInterceptorChain;
-
-    // ------------------------------------------------------------------------
-
-    public CommandHandlerInterceptor() {
-        this.axonInterceptorChain = new ThreadLocal<>();
-    }
+    private final ThreadLocal<org.axonframework.commandhandling.InterceptorChain> axonInterceptorChain = new ThreadLocal<>();
 
     // ------------------------------------------------------------------------
 

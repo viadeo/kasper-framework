@@ -17,6 +17,7 @@ import com.viadeo.kasper.test.platform.executor.KasperFixtureCommandExecutor;
 import com.viadeo.kasper.test.platform.executor.KasperFixtureEventExecutor;
 import com.viadeo.kasper.test.platform.executor.KasperFixtureQueryExecutor;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.test.platform.KasperPlatformFixture.RecordingPlatform;
 
 public class KasperPlatformExecutor implements
@@ -29,7 +30,7 @@ public class KasperPlatformExecutor implements
     // ------------------------------------------------------------------------
 
     KasperPlatformExecutor(final RecordingPlatform platform) {
-        this.platform = platform;
+        this.platform = checkNotNull(platform);
     }
 
     // ------------------------------------------------------------------------

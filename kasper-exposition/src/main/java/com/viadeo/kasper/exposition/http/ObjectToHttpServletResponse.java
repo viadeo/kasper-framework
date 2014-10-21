@@ -19,16 +19,20 @@ public class ObjectToHttpServletResponse {
 
     protected final ObjectWriter writer;
 
+    // ------------------------------------------------------------------------
+
     protected ObjectToHttpServletResponse(final ObjectMapper objectMapper) {
         this.writer = objectMapper.writer();
     }
+
+    // ------------------------------------------------------------------------
 
     public HttpServletResponse map(
             final HttpServletResponse httpResponse,
             final KasperResponse response,
             final Response.Status status
     ) throws IOException {
-        try (JsonGenerator generator = writer.getFactory().createGenerator(httpResponse.getOutputStream())) {
+        try (final JsonGenerator generator = writer.getFactory().createGenerator(httpResponse.getOutputStream())) {
             httpResponse.setStatus(status.getStatusCode());
             writer.writeValue(generator, response);
         }

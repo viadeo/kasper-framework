@@ -96,8 +96,7 @@ public class CacheInterceptorFactory extends QueryInterceptorFactory {
 
                 final Cache<Serializable, QueryResult> cache =
                         cacheManager
-                                .<Serializable, QueryResult>
-                                        createCacheBuilder(queryClass.getName())
+                                .<Serializable, QueryResult> createCacheBuilder(queryClass.getName())
                                 .setStoreByValue(false)
                                 .setExpiry(CacheConfiguration.ExpiryType.MODIFIED,
                                     new CacheConfiguration.Duration(

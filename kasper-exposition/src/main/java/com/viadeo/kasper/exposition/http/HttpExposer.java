@@ -57,6 +57,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     private Optional<String> serverName = Optional.absent();
 
+    // ------------------------------------------------------------------------
+
     protected HttpExposer(final HttpContextDeserializer contextDeserializer, final Meta meta) {
         this.meta = meta;
         this.metricNames = new MetricNames(getClass());
@@ -66,6 +68,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         this.requestLogger = LoggerFactory.getLogger(getClass());
     }
 
+    // ------------------------------------------------------------------------
+
     protected abstract RESPONSE createErrorResponse(final CoreReasonCode code, final List<String> reasons);
 
     protected abstract RESPONSE createRefusedResponse(final CoreReasonCode code, final List<String> reasons);
@@ -73,6 +77,10 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
     protected abstract boolean isManageable(final String requestName);
 
     protected abstract <T extends INPUT> Class<T> getInputClass(final String inputName);
+
+    public abstract RESPONSE doHandle(final INPUT input, final Context context) throws Exception;
+
+    // ------------------------------------------------------------------------
 
     protected void checkMediaType(final HttpServletRequest httpRequest) throws HttpExposerException {
         // nothing
@@ -215,8 +223,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             globalInputHandleTime.stop();
         }
     }
-
-    public abstract RESPONSE doHandle(final INPUT input, final Context context) throws Exception;
 
     protected void flushBuffer(final HttpServletResponse httpResponse){
         /*
@@ -445,4 +451,5 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             return requestsHandleTimeName;
         }
     }
+
 }

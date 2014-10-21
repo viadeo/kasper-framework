@@ -310,4 +310,5 @@ public class KasperMatcher extends BaseMatcher<Object> {
     public static KasperMatcher equalTo(final Object expected) {
         return new KasperMatcher(expected);
     }
+
 }

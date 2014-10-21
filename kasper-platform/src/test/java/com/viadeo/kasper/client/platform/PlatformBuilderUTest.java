@@ -537,7 +537,6 @@ public class PlatformBuilderUTest {
         assertNotNull(platform);
         verify(eventBus).subscribe(refEq(eventListener));
         verify(eventListener).setEventBus(refEq(eventBus));
-        verify(eventListener).setQueryGateway(refEq(queryGateway));
         verifyNoMoreInteractions(eventListener);
     }
 

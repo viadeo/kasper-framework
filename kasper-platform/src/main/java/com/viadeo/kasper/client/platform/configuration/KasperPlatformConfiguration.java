@@ -54,8 +54,8 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         this.extraComponents = Maps.newHashMap();
         this.configuration = ConfigFactory.empty();
 
-        UnitOfWorkFactory uowFactory = new DefaultUnitOfWorkFactory();
-        KasperCommandBus commandBus = new KasperCommandBus();
+        final UnitOfWorkFactory uowFactory = new DefaultUnitOfWorkFactory();
+        final KasperCommandBus commandBus = new KasperCommandBus();
         commandBus.setUnitOfWorkFactory(uowFactory);
 
         this.commandGateway = new KasperCommandGateway(commandBus);

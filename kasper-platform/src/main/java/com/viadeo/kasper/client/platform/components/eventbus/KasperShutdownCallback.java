@@ -29,6 +29,8 @@ public class KasperShutdownCallback implements EventProcessor.ShutdownCallback {
         this.shutdownCallback = checkNotNull(shutdownCallback);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
     public void afterShutdown(final EventProcessor scheduler) {
         checkNotNull(scheduler);

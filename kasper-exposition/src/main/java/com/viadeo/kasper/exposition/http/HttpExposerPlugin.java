@@ -21,6 +21,8 @@ public abstract class HttpExposerPlugin<EXPOSER extends HttpServlet> implements 
 
     private EXPOSER exposer;
 
+    // ------------------------------------------------------------------------
+
     public HttpExposerPlugin(
             final HttpContextDeserializer contextDeserializer,
             final ObjectMapper mapper
@@ -30,7 +32,9 @@ public abstract class HttpExposerPlugin<EXPOSER extends HttpServlet> implements 
         this.mapper = checkNotNull(mapper);
     }
 
-    protected void initialize(EXPOSER exposer) {
+    // ------------------------------------------------------------------------
+
+    protected void initialize(final EXPOSER exposer) {
         this.exposer = checkNotNull(exposer);
     }
 

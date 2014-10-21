@@ -119,8 +119,10 @@ public class KasperEventBus extends ClusteringEventBus {
                     errorHandler
                 ) {
                     @Override
-                    protected EventProcessor newProcessingScheduler(EventProcessor.ShutdownCallback shutDownCallback, Set<EventListener> eventListeners,
-                                                                    MultiplexingEventProcessingMonitor eventProcessingMonitor) {
+                    protected EventProcessor newProcessingScheduler(
+                            final EventProcessor.ShutdownCallback shutDownCallback,
+                            final Set<EventListener> eventListeners,
+                            final MultiplexingEventProcessingMonitor eventProcessingMonitor) {
                         final EventProcessor eventProcessor = super.newProcessingScheduler(
                             new KasperShutdownCallback(processorDownLatch, shutDownCallback),
                             eventListeners,
