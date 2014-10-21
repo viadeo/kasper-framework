@@ -27,7 +27,6 @@ import java.util.concurrent.TimeUnit;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.refEq;
-import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.*;
 
 public class KasperCommandGatewayUTest {
@@ -176,7 +175,7 @@ public class KasperCommandGatewayUTest {
         verify(commandHandler).getCommandClass();
         verifyNoMoreInteractions(commandHandler);
 
-        verify(interceptorChainRegistry).create(eq(Command.class), any(CommandInterceptorFactory.class));
+        verify(interceptorChainRegistry).create(eq(commandHandler.getClass()), any(CommandInterceptorFactory.class));
         verifyNoMoreInteractions(interceptorChainRegistry);
     }
 
