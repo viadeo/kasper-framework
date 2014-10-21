@@ -1,6 +1,6 @@
 # Kasper Releases #
 
-### Snapshot 0.8.0-pre5 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre5~~)) 
+### Snapshot 0.8.0-pre6 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre6~~)) 
 
 _(based on 0.6.9, the recovery from the 0.7 is in progress)_
 
@@ -25,6 +25,8 @@ _(based on 0.6.9, the recovery from the 0.7 is in progress)_
   - set in the MDC wen we process an HTTP request in the exposition layer
 * [Pull 237](https://github.com/viadeo/kasper-framework/pull/237) Clean security configuration and added authorization's annotations
 * [Pull 244](https://github.com/viadeo/kasper-framework/pull/244) Deal the context properly in the MDC
+* [Pull 243](https://github.com/viadeo/kasper-framework/pull/243) Improve security autodoc
+* [Pull 242](https://github.com/viadeo/kasper-framework/pull/242) Refactoring interceptor responsability chain in order to homogenize the way to retrieve security information. All security information must have on handler.
 
 
 ### Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandoned_###
