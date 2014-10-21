@@ -11,6 +11,8 @@ import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 import com.viadeo.kasper.doc.nodes.DocumentedBean;
 
+import java.util.List;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DocumentedCommandHandler extends AbstractDomainElement {
@@ -26,6 +28,7 @@ public class DocumentedCommandHandler extends AbstractDomainElement {
                                  final DocumentedCommandHandler documentedCommandHandler,
                                  final Class commandClass) {
             super(domain, DocumentedElementType.COMMAND, commandClass);
+
             this.documentedCommandHandler = documentedCommandHandler;
             this.response = new DocumentedBean(CommandResponse.class);
         }
@@ -46,6 +49,21 @@ public class DocumentedCommandHandler extends AbstractDomainElement {
         @Override
         public void accept(final DocumentedElementVisitor visitor) {
             visitor.visit(this);
+        }
+
+        @Override
+        public boolean isPublicAccess() {
+            return documentedCommandHandler.isPublicAccess();
+        }
+
+        @Override
+        public List<String> getRoles() {
+            return documentedCommandHandler.getRoles();
+        }
+
+        @Override
+        public List<String> getPermissions() {
+            return documentedCommandHandler.getPermissions();
         }
     }
 
