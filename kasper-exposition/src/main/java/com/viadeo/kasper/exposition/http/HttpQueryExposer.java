@@ -161,7 +161,8 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
         final String queryPath = queryToPath(queryClass);
         final List<String> aliases = AliasRegistry.aliasesFrom(queryClass);
         final String queryName = queryClass.getSimpleName();
-        final String isPublicResource = queryClass.getAnnotation(XKasperPublic.class) != null ? "public " : "protected ";
+
+        final String isPublicResource = descriptor.getHandler().getAnnotation(XKasperPublic.class) != null ? "public " : "protected ";
 
         LOGGER.info("-> Exposing " + isPublicResource + "query[{}] at path[/{}]", queryName,
                     getServletContext().getContextPath() + queryPath);

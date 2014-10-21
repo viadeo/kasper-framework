@@ -172,7 +172,8 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
         final String commandPath = commandToPath(commandClass);
         final List<String> aliases = AliasRegistry.aliasesFrom(commandClass);
         final String commandName = commandClass.getSimpleName();
-        final String isPublicResource = commandClass.getAnnotation(XKasperPublic.class) != null ? "public " : "protected ";
+
+        final String isPublicResource = descriptor.getHandler().getAnnotation(XKasperPublic.class) != null ? "public " : "protected ";
 
         LOGGER.info("-> Exposing " + isPublicResource + "command[{}] at path[/{}]",
                 commandName,
