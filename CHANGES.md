@@ -1,6 +1,6 @@
 # Kasper Releases #
 
-### Snapshot 0.8.0-pre7 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre7~~)) 
+### Snapshot 0.8.0-pre8 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre8~~)) 
 
 _(based on 0.6.9, the recovery from the 0.7 is in progress)_
 
@@ -27,6 +27,7 @@ _(based on 0.6.9, the recovery from the 0.7 is in progress)_
 * [Pull 244](https://github.com/viadeo/kasper-framework/pull/244) Deal the context properly in the MDC
 * [Pull 243](https://github.com/viadeo/kasper-framework/pull/243) Improve security autodoc
 * [Pull 242](https://github.com/viadeo/kasper-framework/pull/242) Refactoring interceptor responsability chain in order to homogenize the way to retrieve security information. All security information must have on handler.
+* [Pull 247](https://github.com/viadeo/kasper-framework/pull/247) Added `ID` as new implementation of `KasperID`
 
 
 ### Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandoned_###
