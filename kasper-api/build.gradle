@@ -19,4 +19,5 @@ dependencies {
     compile libraries.JODA_MONEY
 
     testCompile libraries.JUNIT
+    testCompile libraries.MOCKITO
 }

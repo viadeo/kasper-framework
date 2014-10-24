@@ -8,6 +8,7 @@ package com.viadeo.kasper.context;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.api.ID;
 import com.viadeo.kasper.impl.DefaultKasperId;
 
 import java.io.Serializable;
@@ -48,6 +49,7 @@ public interface Context extends Serializable  {
 
     // ------------------------------------------------------------------------
 
+    String USER_ID_SHORTNAME = "userID";
     String UID_SHORTNAME = "userId";
     String ULANG_SHORTNAME = "userLang";
     String UCOUNTRY_SHORTNAME = "userCountry";
@@ -82,15 +84,30 @@ public interface Context extends Serializable  {
 
     // ------------------------------------------------------------------------
 
+    /**
+     * @return the associated ID of the current user
+     */
+    Optional<ID> getUserID();
+
+    /**
+     * @param id the associated ID of the current user
+     * @return the current {@link Context} instance
+     */
+    Context setUserID(ID id);
+
 	/**
 	 * @return the associated ID of the current user
+     * @deprecated use {@link #getUserID()} instead.
 	 */
+    @Deprecated
 	String getUserId();
 	
 	/**
 	 * @param userId the associated ID of the current user
 	 * @return the current {@link Context} instance
+     * @deprecated use {@link #setUserID(com.viadeo.kasper.api.ID)}()} instead.
 	 */
+    @Deprecated
 	Context setUserId(String userId);
 
     // ------------------------------------------------------------------------

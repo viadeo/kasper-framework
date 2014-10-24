@@ -7,7 +7,9 @@
 package com.viadeo.kasper.context.impl;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.api.ID;
 import com.viadeo.kasper.context.Context;
 
 import java.util.HashMap;
@@ -28,6 +30,7 @@ public class DefaultContext extends AbstractContext {
     // ------------------------------------------------------------------------
 
     private String userId;
+    private ID userID;
     private String userLang;
     private String userCountry;
 
@@ -49,6 +52,7 @@ public class DefaultContext extends AbstractContext {
     public DefaultContext() {
         super();
 
+        this.userID = null;
         this.userId = DEFAULT_USER_ID;
         this.userLang = DEFAULT_USER_LANG;
         this.userCountry = DEFAULT_USER_COUNTRY;
@@ -83,6 +87,17 @@ public class DefaultContext extends AbstractContext {
     @Override
     public DefaultContext setUserId(final String userId) {
         this.userId = checkNotNull(userId);
+        return this;
+    }
+
+    @Override
+    public Optional<ID> getUserID() {
+        return Optional.fromNullable(userID);
+    }
+
+    @Override
+    public Context setUserID(ID id) {
+        this.userID = id;
         return this;
     }
 
@@ -197,6 +212,7 @@ public class DefaultContext extends AbstractContext {
     public <C extends Context> C child() {
         final DefaultContext newContext = (DefaultContext) super.child();
 
+        newContext.userID = this.userID;
         newContext.userId = this.userId;
         newContext.userLang = this.userLang;
         newContext.userCountry = this.userCountry;
@@ -227,6 +243,7 @@ public class DefaultContext extends AbstractContext {
     public Map<String, String> asMap(final Map<String, String> origMap) {
         final Map<String, String> retMap = super.asMap(origMap);
 
+        retMap.put(USER_ID_SHORTNAME, safeStringObject(this.userID));
         retMap.put(UID_SHORTNAME, safeStringObject(this.userId));
         retMap.put(ULANG_SHORTNAME, safeStringObject(this.userLang));
         retMap.put(UCOUNTRY_SHORTNAME, safeStringObject(this.userCountry));
@@ -269,6 +286,7 @@ public class DefaultContext extends AbstractContext {
                 && Objects.equal(this.sessionCorrelationId, other.sessionCorrelationId)
                 && Objects.equal(this.funnelCorrelationId, other.funnelCorrelationId)
                 && Objects.equal(this.requestCorrelationId, other.requestCorrelationId)
+                && Objects.equal(this.userID, other.userID)
                 && Objects.equal(this.userId, other.userId)
                 && Objects.equal(this.userLang, other.userLang)
                 && Objects.equal(this.userCountry, other.userCountry)
@@ -289,6 +307,7 @@ public class DefaultContext extends AbstractContext {
                 this.applicationId,
                 this.funnelName,
                 this.funnelVersion,
+                this.userID,
                 this.userId,
                 this.userLang,
                 this.userCountry,
@@ -304,6 +323,7 @@ public class DefaultContext extends AbstractContext {
                 .addValue(this.sessionCorrelationId)
                 .addValue(this.funnelCorrelationId)
                 .addValue(this.requestCorrelationId)
+                .addValue(this.userID)
                 .addValue(this.userId)
                 .addValue(this.userLang)
                 .addValue(this.userCountry)
@@ -316,3 +336,4 @@ public class DefaultContext extends AbstractContext {
     }
 
 }
+
