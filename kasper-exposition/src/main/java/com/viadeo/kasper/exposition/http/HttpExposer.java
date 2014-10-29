@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperResponse;
@@ -279,7 +280,13 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         final Class<INPUT> inputClass = getInputClass(requestName);
 
         /* 4) Extract to a known input */
-        return httpRequestToObject.map(httpRequest, inputClass);
+        try {
+            return httpRequestToObject.map(httpRequest, inputClass);
+        } catch (Throwable t) {
+            throw Throwables.propagate(
+                    new RuntimeException(String.format("Failed to extract input : %s", requestName), t)
+            );
+        }
     }
 
     protected String getInputTypeName() {
