@@ -8,10 +8,7 @@ package com.viadeo.kasper.common.serde;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.DeserializationContext;
-import com.fasterxml.jackson.databind.JsonDeserializer;
-import com.fasterxml.jackson.databind.JsonSerializer;
-import com.fasterxml.jackson.databind.SerializerProvider;
+import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.viadeo.kasper.api.ID;
 import com.viadeo.kasper.api.IDBuilder;
@@ -22,7 +19,9 @@ public class IDModule extends SimpleModule {
 
     public IDModule(final IDBuilder builder) {
         addSerializer(ID.class, new IDSerializer());
+        addKeySerializer(ID.class, new IDKeySerializer());
         addDeserializer(ID.class, new IDDeserializer(builder));
+        addKeyDeserializer(ID.class, new IDKeyDeserializer(builder));
     }
 
     private static class IDSerializer extends JsonSerializer<ID> {
@@ -45,6 +44,27 @@ public class IDModule extends SimpleModule {
         @Override
         public ID deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException {
             return builder.build(jp.getText());
+        }
+    }
+
+    private static class IDKeySerializer extends JsonSerializer<ID> {
+
+        @Override
+        public void serialize(final ID value, final JsonGenerator jgen, final SerializerProvider provider) throws IOException {
+            jgen.writeFieldName(value.toString());
+        }
+    }
+
+    private static class IDKeyDeserializer extends KeyDeserializer {
+        private IDBuilder builder;
+
+        public IDKeyDeserializer(IDBuilder builder) {
+            this.builder = builder;
+        }
+
+        @Override
+        public Object deserializeKey(String key, DeserializationContext ctxt) throws IOException {
+            return builder.build(key);
         }
     }
 }
