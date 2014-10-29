@@ -32,7 +32,9 @@ public class SimpleIDBuilder implements IDBuilder {
         final Matcher matcher = URN_PATTERN.matcher(urn);
 
         if ( ! matcher.find()) {
-            throw new IllegalArgumentException("Invalid URN layout");
+            throw new IllegalArgumentException(
+                    String.format("Invalid URN layout, <URN=%s>", urn)
+            );
         }
 
         final String formatAsString = checkNotNull(matcher.group(3));
