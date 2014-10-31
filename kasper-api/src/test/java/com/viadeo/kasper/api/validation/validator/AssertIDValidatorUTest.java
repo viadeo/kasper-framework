@@ -6,13 +6,17 @@
 // ============================================================================
 package com.viadeo.kasper.api.validation.validator;
 
-import com.viadeo.kasper.api.*;
+import com.viadeo.kasper.api.ID;
+import com.viadeo.kasper.api.IDBuilder;
+import com.viadeo.kasper.api.SimpleIDBuilder;
 import com.viadeo.kasper.api.validation.AssertID;
 import org.junit.Before;
 import org.junit.Test;
 
 import javax.validation.ConstraintValidatorContext;
 
+import static com.viadeo.kasper.api.TestFormats.DB_ID;
+import static com.viadeo.kasper.api.TestFormats.UUID;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
@@ -20,22 +24,6 @@ import static org.mockito.Mockito.when;
 
 public class AssertIDValidatorUTest {
 
-    private static final Format DB_ID = new FormatAdapter("db-id", Integer.class) {
-        @SuppressWarnings("unchecked")
-        @Override
-        public <E> E parseIdentifier(String identifier) {
-            return (E) new Integer(identifier);
-        }
-    };
-
-    private static final Format UUID = new FormatAdapter("uuid", java.util.UUID.class) {
-        @SuppressWarnings("unchecked")
-        @Override
-        public <E> E parseIdentifier(String identifier) {
-            return (E) java.util.UUID.fromString(identifier);
-        }
-    };
-    
     private AssertIDValidator validator;
     private AssertID assertID;
     private IDBuilder builder;

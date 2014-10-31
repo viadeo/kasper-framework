@@ -7,6 +7,7 @@
 package com.viadeo.kasper.api;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
 
 import static com.google.common.base.Preconditions.checkArgument;
@@ -122,6 +123,48 @@ public class ID implements KasperID {
     @Override
     public Object getId() {
         return getIdentifier();
+    }
+
+    /**
+     * Ensures that this instance of <code>ID</code> match the vendor specified as a parameter.
+     *
+     * @param expectedVendor the expected vendor for which this instance should match
+     * @exception IllegalStateException if the specified vendor doesn't match the vendor of this instance of <code>ID</code>
+     */
+    public ID checkVendor(final String expectedVendor) {
+        Preconditions.checkState(
+                this.vendor.equals(expectedVendor),
+                String.format("Unexpected vendor, expected:<%s> but was:<%s>", expectedVendor, vendor)
+        );
+        return this;
+    }
+
+    /**
+     * Ensures that this instance of <code>ID</code> match the object type specified as a parameter.
+     *
+     * @param expectedType the expected object type for which this instance should match
+     * @exception IllegalStateException if the specified vendor doesn't match the type of this instance of <code>ID</code>
+     */
+    public ID checkType(final String expectedType) {
+        Preconditions.checkState(
+                this.type.equals(expectedType),
+                String.format("Unexpected type, expected:<%s> but was:<%s>", expectedType, type)
+        );
+        return this;
+    }
+
+    /**
+     * Ensures that this instance of <code>ID</code> match the format specified as a parameter.
+     *
+     * @param expectedFormat the expected object type for which this instance should match
+     * @exception IllegalStateException if the specified format doesn't match the format of this instance of <code>ID</code>
+     */
+    public ID checkFormat(final Format expectedFormat) {
+        Preconditions.checkState(
+                this.format.equals(expectedFormat),
+                String.format("Unexpected format, expected:<%s> but was:<%s>", expectedFormat, format)
+        );
+        return this;
     }
 
     @Override
