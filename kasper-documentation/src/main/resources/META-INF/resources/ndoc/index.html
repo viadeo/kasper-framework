@@ -525,11 +525,26 @@
                   results[query_result.name] = query_result;
                 });
               }
-            }),
-            new PanelContent("/kasper/doc/domain/" + domain.label + "/queries", function(data) {
-              if (data.list.length > 0) {
-                $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data.list.sort(sort_on("label")) } ));
-              }
+
+                // We load queries after queryResults in order to be able to display every details otherwise we can
+                // have some trouble due to our concurrency calls
+                var pc = new PanelContent("/kasper/doc/domain/" + domain.label + "/queries", function(data) {
+                    if (data.list.length > 0) {
+                        $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data.list.sort(sort_on("label")) } ));
+                    }
+                })
+
+                $.get(pc.url)
+                        .done(function(data) {
+                            pc.init(data);
+                            execute(pc.length, ++actualLoad, f);
+                        })
+                        .fail(function(){
+                            show_message("error", "Service is temporarily not available please try again later", false)
+                            console.log("failed to load components '" + pc.url + "'");
+                        }
+                );
+
             }),
             new PanelContent("/kasper/doc/domain/" + domain.label + "/events", function(data) {
               if (data.list.length > 0) {
@@ -577,7 +592,8 @@
               .fail(function(){
                 show_message("error", "Service is temporarily not available please try again later", false)
                 console.log("failed to load components '" + panel_content.url + "'");
-              });
+              }
+            );
           });
           
           $("#home-from-" + domain.label).click(function() {
