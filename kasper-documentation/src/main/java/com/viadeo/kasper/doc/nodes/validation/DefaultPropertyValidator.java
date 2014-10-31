@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes.validation;
 
+import com.google.common.base.Joiner;
+import com.viadeo.kasper.api.validation.AssertID;
 import com.viadeo.kasper.doc.nodes.DocumentedProperty;
 
 import javax.validation.constraints.*;
@@ -90,6 +92,32 @@ public class DefaultPropertyValidator implements PropertyValidator {
         );
     }
 
+    @Override
+    public void validate(final AssertID annotation, final DocumentedProperty property) {
+        String urnLayout = "urn:<vendor>:<type>:<format>:<identifier>";
+
+        if ( ! annotation.format().isEmpty()) {
+            urnLayout = urnLayout.replace("<format>", annotation.format());
+        }
+
+        if (! annotation.vendor().isEmpty()) {
+            urnLayout = urnLayout.replace("<vendor>", annotation.vendor());
+        }
+
+        if ( annotation.type().length > 0) {
+            Joiner joiner = Joiner.on("|");
+
+            if (annotation.type().length == 1) {
+                urnLayout = urnLayout.replace("<type>", joiner.join(annotation.type()));
+            } else {
+                urnLayout = urnLayout.replace("<type>", "[" + joiner.join(annotation.type()) + "]");
+            }
+        }
+
+        property.setMandatory(true);
+        property.appendConstraint("AssertID", "must be `" + urnLayout + "`");
+    }
+
     // ------------------------------------------------------------------------
 
     @Override
@@ -120,6 +148,8 @@ public class DefaultPropertyValidator implements PropertyValidator {
             validate((DecimalMin) annotation, property);
         } else if (Digits.class.isAssignableFrom(annotation.getClass())) {
             validate((Digits) annotation, property);
+        } else if (AssertID.class.isAssignableFrom(annotation.getClass())) {
+            validate((AssertID) annotation, property);
         }
     }
 

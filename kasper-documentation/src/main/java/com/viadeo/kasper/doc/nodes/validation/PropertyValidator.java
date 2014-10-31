@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes.validation;
 
+import com.viadeo.kasper.api.validation.AssertID;
 import com.viadeo.kasper.doc.nodes.DocumentedProperty;
 
 import javax.validation.constraints.*;
@@ -26,6 +27,7 @@ public interface PropertyValidator {
     void validate(DecimalMax annotation, DocumentedProperty property);
     void validate(DecimalMin annotation, DocumentedProperty property);
     void validate(Digits annotation, DocumentedProperty property);
+    void validate(AssertID annotation, DocumentedProperty property);
     void validate(Annotation annotation, DocumentedProperty property);
 
 }

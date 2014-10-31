@@ -435,7 +435,10 @@
               if(typeof value === 'object') {
                 var new_value = "<ul>";
                 for (var o = 0; o < value.length; o++) {
-                  new_value = "<li>" + value[o]["message"] + "</li>";
+                    var text = value[o]["message"];
+                    if (typeof text !== 'undefined') {
+                        new_value += "<li>" + text.replace(new RegExp("\\<", "g"), '&lt;').replace(new RegExp("\\>", "g"), '&gt;') + "</li>";
+                    }
                 }
                 new_value += "</ul>"
                 value = new_value;

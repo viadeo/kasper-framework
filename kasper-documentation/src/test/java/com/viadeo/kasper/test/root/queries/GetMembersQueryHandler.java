@@ -7,6 +7,8 @@
 package com.viadeo.kasper.test.root.queries;
 
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.api.ID;
+import com.viadeo.kasper.api.validation.AssertID;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResult;
@@ -26,6 +28,12 @@ public class GetMembersQueryHandler extends QueryHandler<GetMembersQueryHandler.
         @NotNull
         @Min(3)
 		public String name;
+
+        @AssertID
+        public ID id;
+
+        @AssertID(vendor = "viadeo", type = "member", format = "db-id")
+        public ID id2;
 	}
 	
 	@XKasperQueryResult
