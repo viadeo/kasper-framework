@@ -12,6 +12,8 @@ _(based on 0.6.9, the recovery from the 0.7 is in progress)_
   - Propose aliases in the result of the auto-completion
   - Review the navigation and particular the behavior with back and previous
   - Fix trouble with collapsible component block
+  - Ensure to load query results before queries
+  - Be able to provide detail of an object in more of query result 
 * [Pull 235](https://github.com/viadeo/kasper-framework/pull/235) Ensure to add only one RetryFilter on  the Kasper client in order to avoid stack overflow
 * [Pull 236](https://github.com/viadeo/kasper-framework/pull/236) Reduce log level of DomainHelper to debug
 * [Pull 238](https://github.com/viadeo/kasper-framework/pull/238) Migrated to Axon framework 2.2
