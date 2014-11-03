@@ -416,22 +416,21 @@
           var query_result_name = null;
 
           for (var i = 0; i < properties.length; i++) {
-            res += "<tr class=level_" + level + ">";
-            var has_subtype = false;
 
-            if(properties[i]["queryResult"]) {
-              has_subtype = true;
-              query_result_name = properties[i]["type"];
-            }
+
+            // Row
+            res += "<tr class=level_" + level + ">";
 
             for (var j = 0; j < keys.length; j++) {
               var key = keys[j];
               var value = properties[i][key];
 
+              // Column "Values"
               if( value === null || value.length === 0 ) {
                 value = "-";
               }
 
+              // Column "Constraints"
               if(typeof value === 'object') {
                 var new_value = "<ul>";
                 for (var o = 0; o < value.length; o++) {
@@ -444,24 +443,24 @@
                 value = new_value;
               }
 
-              if (properties[i]["linkedConcept"] && key === "type") {
-                var linked_concept = '<a class="link in" href="#concepts_' + value + '">' + value + '</a>';
-                
-                if (value === "unknown") {
-                  linked_concept = "unknown";
-                }
-
-                value = "LinkedConcept(" + linked_concept + ")";
-              }
-
-              if (properties[i]["list"] && key === "type") {
-                value = "List(" + value + ")";
-              }
-
+              // Column "Type"
               if (key === "type") {
-                value = "<em>" + value + "</em>";
+                  if (properties[i]["list"]) {
+                      value = "List(" + value + ")";
+                  } else if (properties[i]["linkedConcept"]) {
+                      var linked_concept = '<a class="link in" href="#concepts_' + value + '">' + value + '</a>';
+
+                      if (value === "unknown") {
+                          linked_concept = "unknown";
+                      }
+
+                      value = "LinkedConcept(" + linked_concept + ")";
+                  } else {
+                    value = "<em>" + value + "</em>";
+                  }
               }
 
+              // Column "Name"
               if (key === "name") {
                 value = "<code>" + value + "</code>";
               }
@@ -475,8 +474,16 @@
 
             res += "</tr>";
 
-            if( has_subtype ) {
-              var level_up = level + 1;
+            // Sub row
+            var level_up = level + 1;
+
+            if(properties[i]["properties"]) {
+                var sub_properties = properties[i]["properties"];
+                if($.isArray(sub_properties)) {
+                  res += get_tr(level_up, sub_properties, keys, query_results);
+                }
+            } else if(properties[i]["queryResult"]) {
+              query_result_name = properties[i]["type"];
               if (typeof query_results[query_result_name] !== 'undefined') {
                 res += get_tr(level_up, query_results[query_result_name].properties, keys, query_results);
               }

@@ -12,6 +12,8 @@ import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
 import com.viadeo.kasper.security.annotation.XKasperPublic;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
+import java.util.List;
 
 @XKasperCommand
 @XKasperAlias(values = {"AddConnection"})
@@ -23,5 +25,16 @@ public class AddConnectionToMemberCommand implements Command {
     public Integer id;
 
     @NotNull
+    public User user;
+
+    public List<User> users;
+
+    @NotNull
     public String type;
+
+
+    public static class User implements Serializable {
+        public String firstName;
+        public String lastName;
+    }
 }

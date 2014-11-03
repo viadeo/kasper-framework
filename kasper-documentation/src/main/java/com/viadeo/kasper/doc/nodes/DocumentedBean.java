@@ -38,7 +38,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
     public interface Extractor {
 
         boolean accept(Field field);
-        Optional<DocumentedProperty> extract(Field field, Class clazz);
+        Optional<DocumentedProperty> extract(Field field, Class clazz, int level);
 
     }
 
@@ -53,17 +53,17 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         }
 
         @Override
-        public final Optional<DocumentedProperty> extract(final Field field, final Class clazz) {
+        public final Optional<DocumentedProperty> extract(final Field field, final Class clazz, final int level) {
             if (accept(field)) {
-                return doExtract(field, clazz);
+                return doExtract(field, clazz, level);
             } else if (null == next) {
                 return Optional.absent();
             } else {
-                return next.extract(field, clazz);
+                return next.extract(field, clazz, level);
             }
         }
 
-        public abstract Optional<DocumentedProperty> doExtract(final Field field, final Class clazz);
+        public abstract Optional<DocumentedProperty> doExtract(final Field field, final Class clazz, final int level);
 
     }
 
@@ -81,7 +81,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         }
 
         @Override
-        public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
+        public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz, final int level) {
             return Optional.absent();
         }
     }
@@ -100,7 +100,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         }
 
         @Override
-        public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
+        public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz, final int level) {
             return Optional.absent();
         }
 
@@ -120,7 +120,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         }
 
         @Override
-        public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
+        public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz, final int level) {
             return Optional.absent();
         }
 
@@ -136,7 +136,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         }
 
         @Override
-        public  Optional<DocumentedProperty> extract(final Field field, final Class clazz) {
+        public  Optional<DocumentedProperty> extract(final Field field, final Class clazz, final int level) {
             final XKasperField annotation = field.getAnnotation(XKasperField.class);
             return Optional.of(
                     new DocumentedProperty(
@@ -147,7 +147,9 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                             false,
                             false,
                             QueryResult.class.isAssignableFrom(field.getType()),
-                            Sets.<DocumentedConstraint>newHashSet()
+                            Sets.<DocumentedConstraint>newHashSet(),
+                            field.getType(),
+                            level
                     )
             );
         }
@@ -168,7 +170,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         }
 
         @Override
-        public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
+        public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz, final int level) {
             final XKasperField annotation = field.getAnnotation(XKasperField.class);
             return Optional.of(
                     new DocumentedProperty(
@@ -179,7 +181,9 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                             false,
                             false,
                             false,
-                            Sets.<DocumentedConstraint>newHashSet()
+                            Sets.<DocumentedConstraint>newHashSet(),
+                            field.getType(),
+                            level
                     )
             );
         }
@@ -200,7 +204,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         }
 
         @Override
-        public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
+        public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz, final int level) {
             final Class<?> type;
 
             @SuppressWarnings("unchecked")
@@ -234,7 +238,9 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                             false,
                             true,
                             QueryResult.class.isAssignableFrom(type),
-                            Sets.<DocumentedConstraint>newHashSet()
+                            Sets.<DocumentedConstraint>newHashSet(),
+                            field.getType(),
+                            level
                     )
             );
         }
@@ -255,7 +261,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         }
 
         @Override
-        public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
+        public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz, final int level) {
             final XKasperField annotation = field.getAnnotation(XKasperField.class);
 
             if (field.getGenericType() instanceof ParameterizedType) {
@@ -279,7 +285,9 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                                         true,
                                         true,
                                         QueryResult.class.isAssignableFrom(subParamClass),
-                                        Sets.<DocumentedConstraint>newHashSet()
+                                        Sets.<DocumentedConstraint>newHashSet(),
+                                        field.getType(),
+                                        level
                                 )
                         );
                     } else {
@@ -292,7 +300,9 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                                 true,
                                 false,
                                 QueryResult.class.isAssignableFrom(paramClass),
-                                Sets.<DocumentedConstraint>newHashSet()
+                                Sets.<DocumentedConstraint>newHashSet(),
+                                paramClass,
+                                level
                             )
                         );
                     }
@@ -311,7 +321,8 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                                         true,
                                         false,
                                         QueryResult.class.isAssignableFrom(optType.get()),
-                                        Sets.<DocumentedConstraint>newHashSet()
+                                        Sets.<DocumentedConstraint>newHashSet(),
+                                        field.getType()
                                 )
                         );
                     } else {
@@ -324,7 +335,8 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                                         true,
                                         false,
                                         false,
-                                        Sets.<DocumentedConstraint>newHashSet()
+                                        Sets.<DocumentedConstraint>newHashSet(),
+                                        field.getType()
                                 )
                         );
                     }
@@ -350,7 +362,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         }
 
         @Override
-        public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
+        public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz, final int level) {
             final Class<?> type;
 
             @SuppressWarnings("unchecked")
@@ -379,7 +391,9 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                             true,
                             false,
                             QueryResult.class.isAssignableFrom(type),
-                            Sets.<DocumentedConstraint>newHashSet()
+                            Sets.<DocumentedConstraint>newHashSet(),
+                            field.getType(),
+                            level
                     )
             );
         }
@@ -390,15 +404,27 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
     public DocumentedBean(final Class componentClazz) {
         this(componentClazz,
+                new NoThisDollarInFieldName(new NoTransient(new NoConstant(
+                        new CollectionExtractor(new MapExtractor(new LinkedConceptExtractor(new EnumExtractor(
+                                new FieldExtractor()
+                        ))))
+                ))),
+                0
+        );
+    }
+
+    public DocumentedBean(final Class componentClazz, final int level) {
+        this(componentClazz,
             new NoThisDollarInFieldName(new NoTransient(new NoConstant(
                 new CollectionExtractor(new MapExtractor(new LinkedConceptExtractor(new EnumExtractor(
                     new FieldExtractor()
                 ))))
-            )))
+            ))),
+            level
         );
     }
 
-    public DocumentedBean(final Class componentClazz, final Extractor extractor) {
+    public DocumentedBean(final Class componentClazz, final Extractor extractor, final int level) {
         final List<Field> properties = Lists.newArrayList();
         getAllFields(properties, componentClazz);
 
@@ -407,7 +433,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         for (final Field field : properties) {
             field.setAccessible(true);
 
-            final Optional<DocumentedProperty> optionalDocumentedProperty = extractor.extract(field, componentClazz);
+            final Optional<DocumentedProperty> optionalDocumentedProperty = extractor.extract(field, componentClazz, level);
 
             if (optionalDocumentedProperty.isPresent()) {
                 final DocumentedProperty documentedProperty = optionalDocumentedProperty.get();

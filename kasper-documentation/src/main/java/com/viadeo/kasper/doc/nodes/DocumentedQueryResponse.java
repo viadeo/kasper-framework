@@ -38,7 +38,7 @@ public class DocumentedQueryResponse extends DocumentedBean {
         }
 
         @Override
-        public Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
+        public Optional<DocumentedProperty> doExtract(final Field field, final Class clazz, final int level) {
             final XKasperField annotation = field.getAnnotation(XKasperField.class);
 
             return Optional.of(
@@ -50,7 +50,9 @@ public class DocumentedQueryResponse extends DocumentedBean {
                     false,
                     false,
                     true,
-                    Sets.<DocumentedConstraint>newHashSet()
+                    Sets.<DocumentedConstraint>newHashSet(),
+                    field.getType(),
+                    level
                 )
             );
         }
@@ -74,7 +76,7 @@ public class DocumentedQueryResponse extends DocumentedBean {
         }
 
         @Override
-        public Optional<DocumentedProperty> doExtract(final Field field, final Class clazz) {
+        public Optional<DocumentedProperty> doExtract(final Field field, final Class clazz, final int level) {
             final XKasperField annotation = field.getAnnotation(XKasperField.class);
             final ParameterizedType genericSuperclass = (ParameterizedType) queryResultClass.getGenericSuperclass();
             final Type[] parameters = genericSuperclass.getActualTypeArguments();
@@ -84,7 +86,9 @@ public class DocumentedQueryResponse extends DocumentedBean {
                     annotation == null ? "" : annotation.description(),
                     queryResultClass.getSimpleName(),
                     null, false, false, true,
-                    Sets.<DocumentedConstraint>newHashSet()
+                    Sets.<DocumentedConstraint>newHashSet(),
+                    field.getType(),
+                    level
             );
             documentedProperty.setElemType(((Class) parameters[0]).getSimpleName());
 
@@ -95,12 +99,17 @@ public class DocumentedQueryResponse extends DocumentedBean {
     // ------------------------------------------------------------------------
 
     public DocumentedQueryResponse(Class queryResultClass) {
+        this(queryResultClass, 0);
+    }
+
+    public DocumentedQueryResponse(Class queryResultClass, int level) {
         super(QueryResponse.class,
             new NoThisDollarInFieldName(new NoTransient(new NoConstant(
                 new CollectionExtractor(new MapExtractor(new LinkedConceptExtractor(new EnumExtractor(
                     new CollectionQueryResultExtractor(new QueryResultExtractor(new FieldExtractor(), queryResultClass), queryResultClass)
                 ))))
-            )))
+            ))),
+            level
         );
     }
 

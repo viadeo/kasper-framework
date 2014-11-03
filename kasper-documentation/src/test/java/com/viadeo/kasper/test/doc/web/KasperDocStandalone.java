@@ -93,7 +93,10 @@ public class KasperDocStandalone {
                 Applications.NAME,
                 Applications.class,
                 Lists.<QueryHandlerDescriptor>newArrayList(),
-                Lists.<CommandHandlerDescriptor>newArrayList(),
+                ImmutableList.<CommandHandlerDescriptor>of(new CommandHandlerDescriptor(
+                        AddConnectionToMemberHandler.class,
+                        AddConnectionToMemberCommand.class)
+                ),
                 Lists.<RepositoryDescriptor>newArrayList(),
                 Lists.<EventListenerDescriptor>newArrayList(),
                 Lists.<Class<? extends IEvent>>newArrayList()

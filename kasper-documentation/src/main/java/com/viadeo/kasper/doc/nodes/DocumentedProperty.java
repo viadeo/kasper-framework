@@ -6,10 +6,22 @@
 // ============================================================================
 package com.viadeo.kasper.doc.nodes;
 
-import java.util.HashSet;
+import com.google.common.collect.Lists;
+import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.KasperResponse;
+import com.viadeo.kasper.cqrs.query.QueryResult;
+import org.joda.time.ReadableInstant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Date;
+import java.util.List;
 import java.util.Set;
 
 public class DocumentedProperty {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(DocumentedProperty.class);
 
 	private final String name;
     private final String description;
@@ -19,11 +31,27 @@ public class DocumentedProperty {
     private final Boolean isLinkedConcept;
     private final Boolean isQueryResult;
     private final Set<DocumentedConstraint> constraints;
+    private final int level;
+    private List<DocumentedProperty> properties;
 
     private String elemType;
     private Boolean mandatory = false; /** javax.validation.constraints.NotNull */
 	
     // ------------------------------------------------------------------------
+
+    public DocumentedProperty(
+            final String name,
+            final String description,
+            final String type,
+            final String defaultValues,
+            final Boolean isList,
+            final Boolean isLinkedConcept,
+            final Boolean isQueryResult,
+            final Set<DocumentedConstraint> constraints,
+            final Class<?> propertyClazz
+    ) {
+        this(name, description, type, defaultValues, isList, isLinkedConcept, isQueryResult, constraints, propertyClazz, 0);
+    }
 
 	public DocumentedProperty(
             final String name,
@@ -33,7 +61,9 @@ public class DocumentedProperty {
             final Boolean isList,
             final Boolean isLinkedConcept,
             final Boolean isQueryResult,
-            HashSet<DocumentedConstraint> constraints
+            final Set<DocumentedConstraint> constraints,
+            final Class<?> propertyClazz,
+            final int level
     ) {
 		this.name = name;
 		this.description = description;
@@ -43,6 +73,34 @@ public class DocumentedProperty {
         this.isLinkedConcept = isLinkedConcept;
         this.isQueryResult = isQueryResult;
         this.constraints = constraints;
+        this.level = level;
+
+        // Discover by reflection the detail of a complex type
+        try {
+
+            if (name.equals("users")) {
+                System.err.println(name + "->" + propertyClazz);
+            }
+
+        if (    ! propertyClazz.isPrimitive() && ! propertyClazz.isEnum() && ! propertyClazz.isInterface() &&
+                ! String.class.isAssignableFrom(propertyClazz) &&
+                ! Number.class.isAssignableFrom(propertyClazz) &&
+                ! Boolean.class.isAssignableFrom(propertyClazz) &&
+                ! ReadableInstant.class.isAssignableFrom(propertyClazz) &&
+                ! Date.class.isAssignableFrom(propertyClazz) &&
+                ! KasperID.class.isAssignableFrom(propertyClazz) &&
+                ! KasperResponse.class.isAssignableFrom(propertyClazz) &&
+                ! KasperReason.class.isAssignableFrom(propertyClazz) &&
+                ! QueryResult.class.isAssignableFrom(propertyClazz) &&
+                ! Throwable.class.isAssignableFrom(propertyClazz)
+            ) {
+
+            DocumentedBean properties = new DocumentedBean(propertyClazz, level + 1);
+            this.properties = Lists.newArrayList(properties);
+        }
+        } catch (StackOverflowError s) {
+            LOGGER.error("Failed to retrieve the detail of a complex type, <name={}> <class={}>", name, propertyClazz, s);
+        }
     }
 	
 	// ------------------------------------------------------------------------
@@ -85,6 +143,14 @@ public class DocumentedProperty {
 
     public String getElemType() {
         return elemType;
+    }
+
+    public List<DocumentedProperty> getProperties() {
+        return properties;
+    }
+
+    public int getLevel() {
+        return level;
     }
 
     // ------------------------------------------------------------------------
