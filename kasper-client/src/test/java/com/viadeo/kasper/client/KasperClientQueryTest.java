@@ -8,12 +8,14 @@ package com.viadeo.kasper.client;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.collect.Sets;
+import com.sun.jersey.api.client.AsyncWebResource;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
 import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.cqrs.query.Query;
@@ -40,6 +42,8 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -47,6 +51,7 @@ public class KasperClientQueryTest extends JerseyTest {
 
     private static int port;
     private KasperClient client;
+    private HttpContextSerializer contextSerializer;
 
     // ------------------------------------------------------------------------
 
@@ -172,8 +177,11 @@ public class KasperClientQueryTest extends JerseyTest {
 
     public KasperClientQueryTest() throws IOException {
         super(new LowLevelAppDescriptor.Builder(new TestConfiguration()).contextPath("/kasper/query").build());
-        
+
+        contextSerializer = spy(new HttpContextSerializer());
+
         client = new KasperClientBuilder()
+                .contextSerializer(contextSerializer)
                 .queryBaseLocation(new URL("http://localhost:" + port + "/kasper/query/"))
                 .create();
     }
@@ -195,13 +203,15 @@ public class KasperClientQueryTest extends JerseyTest {
 
         // Given
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
+        final Context context = DefaultContextBuilder.get();
 
         // When
         final QueryResponse<MemberResult> response = client.query(
-                DefaultContextBuilder.get(), query, MemberResult.class);
+                context, query, MemberResult.class);
 
         // Then
         checkRoundTrip(query, response);
+        verify(contextSerializer).serialize(eq(context), any(AsyncWebResource.Builder.class));
     }
 
     @Test
@@ -209,13 +219,15 @@ public class KasperClientQueryTest extends JerseyTest {
 
         // Given
         final GetMemberQuery query = new GetMemberQuery("foo bar", Arrays.asList(1, 2, 3));
+        final Context context = DefaultContextBuilder.get();
 
         // When 
         final QueryResponse<MemberResult> response = client.queryAsync(
-                DefaultContextBuilder.get(), query, MemberResult.class).get();
+                context, query, MemberResult.class).get();
 
         // Then
         checkRoundTrip(query, response);
+        verify(contextSerializer).serialize(eq(context), any(AsyncWebResource.Builder.class));
     }
 
     @SuppressWarnings({ "unchecked" })
@@ -233,14 +245,16 @@ public class KasperClientQueryTest extends JerseyTest {
         });
         @SuppressWarnings("rawtypes")
         final ArgumentCaptor<QueryResponse> response = ArgumentCaptor.forClass(QueryResponse.class);
+        final Context context = DefaultContextBuilder.get();
 
         // When
-        client.queryAsync(DefaultContextBuilder.get(), query, MemberResult.class, callback);
+        client.queryAsync(context, query, MemberResult.class, callback);
 
         // Then
         latch.await(5, TimeUnit.SECONDS);
         verify(callback).done(response.capture());
         checkRoundTrip(query, response.getValue());
+        verify(contextSerializer).serialize(eq(context), any(AsyncWebResource.Builder.class));
     }
 
     @Test public void testQueryUsingPost() throws MalformedURLException {

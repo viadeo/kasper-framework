@@ -211,6 +211,11 @@ public class KasperClientBuilder {
         return this;
     }
 
+    public KasperClientBuilder contextSerializer(final HttpContextSerializer contextSerializer) {
+        this.contextSerializer = contextSerializer;
+        return this;
+    }
+
     public KasperClientBuilder client(final Client client) {
         this.client = checkNotNull(client);
 

@@ -6,9 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.client;
 
+import com.sun.jersey.api.client.AsyncWebResource;
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.exception.KasperException;
@@ -35,6 +37,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sun.jersey.api.client.ClientResponse.Status;
 import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_USER_ID;
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -46,6 +49,7 @@ public class KasperClientEventTest {
     private static int port;
 
     private KasperClient client;
+    private HttpContextSerializer contextSerializer;
     private Client jerseyClient;
 
     @Captor
@@ -77,8 +81,11 @@ public class KasperClientEventTest {
         final Client object = new Client();
         jerseyClient = spy(object);
 
+        contextSerializer = spy(new HttpContextSerializer());
+
         client = new KasperClientBuilder()
                     .client(jerseyClient)
+                    .contextSerializer(contextSerializer)
                     .eventBaseLocation(new URL(HTTP_HOST + ":" + port + HTTP_PATH))
                     .create();
     }
@@ -93,9 +100,10 @@ public class KasperClientEventTest {
         final ClientResponse response = mock(ClientResponse.class);
         doReturn(Status.ACCEPTED).when(response).getClientResponseStatus();
         doReturn(response).when(jerseyClient).handle(requestArgumentCaptor.capture());
+        final Context context = DefaultContextBuilder.get().setUserId("boo");
 
         // When
-        client.emit(DefaultContextBuilder.get().setUserId("boo"), event);
+        client.emit(context, event);
 
         // Then
         final ClientRequest value = requestArgumentCaptor.getValue();
@@ -106,6 +114,7 @@ public class KasperClientEventTest {
         assertEquals(MediaType.APPLICATION_JSON, headers.getFirst(HttpHeaders.ACCEPT).toString());
         assertEquals("boo", headers.getFirst(HEADER_USER_ID).toString());
         assertEquals(event, value.getEntity());
+        verify(contextSerializer).serialize(eq(context), any(AsyncWebResource.Builder.class));
     }
 
     @Test

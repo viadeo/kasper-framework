@@ -499,8 +499,6 @@ public class KasperClient {
 
         final AsyncWebResource.Builder builder = configureBuilder(context, asyncWebResource);
 
-        contextSerializer.serialize(context, builder);
-
         final Future<ClientResponse> futureResponse;
 
         if (flags.usePostForQueries()) {
@@ -544,8 +542,6 @@ public class KasperClient {
         }
 
         final AsyncWebResource.Builder builder = configureBuilder(context, asyncWebResource);
-
-        contextSerializer.serialize(context, builder);
 
         final TypeListener<ClientResponse> typeListener = createTypeListener(query, mapTo, callback);
 

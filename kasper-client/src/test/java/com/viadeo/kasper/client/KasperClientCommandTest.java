@@ -8,6 +8,7 @@ package com.viadeo.kasper.client;
 
 import com.fasterxml.jackson.jaxrs.json.JacksonJsonProvider;
 import com.google.common.collect.ImmutableSet;
+import com.sun.jersey.api.client.AsyncWebResource;
 import com.sun.jersey.api.core.DefaultResourceConfig;
 import com.sun.jersey.core.spi.factory.ResponseBuilderImpl;
 import com.sun.jersey.test.framework.JerseyTest;
@@ -16,6 +17,7 @@ import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.TransportMode;
@@ -45,9 +47,9 @@ import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
 import static com.viadeo.kasper.KasperResponse.Status;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -55,6 +57,7 @@ public class KasperClientCommandTest extends JerseyTest {
 
     private static int port;
     private KasperClient client;
+    private HttpContextSerializer contextSerializer;
 
     private static final String SECURITY_TOKEN = "42-4242-24-2424";
 
@@ -168,8 +171,15 @@ public class KasperClientCommandTest extends JerseyTest {
     public KasperClientCommandTest() throws IOException {
         super(new LowLevelAppDescriptor.Builder(new TestConfiguration()).contextPath(
                 "/kasper/command").build());
-        client = new KasperClientBuilder().commandBaseLocation(
-                new URL("http://localhost:" + port + "/kasper/command/")).create();
+
+        contextSerializer = spy(new HttpContextSerializer());
+
+        client = new KasperClientBuilder()
+                .contextSerializer(contextSerializer)
+                .commandBaseLocation(
+                        new URL("http://localhost:" + port + "/kasper/command/")
+                )
+                .create();
     }
 
     @Override
@@ -184,14 +194,16 @@ public class KasperClientCommandTest extends JerseyTest {
 
         // Given
         final CreateMemberCommand command = new CreateMemberCommand(Status.REFUSED);
+        final Context context = DefaultContextBuilder.get();
 
         // When
-        final CommandResponse response = client.send(DefaultContextBuilder.get(), command);
+        final CommandResponse response = client.send(context, command);
 
         // Then
         assertEquals(Status.REFUSED, response.getStatus());
         assertTrue(response.getSecurityToken().isPresent());
         assertEquals(SECURITY_TOKEN, response.getSecurityToken().get());
+        verify(contextSerializer).serialize(eq(context), any(AsyncWebResource.Builder.class));
     }
 
     // --
@@ -202,12 +214,14 @@ public class KasperClientCommandTest extends JerseyTest {
 
         // Given
         final CreateMemberCommand command = new CreateMemberCommand(Status.ERROR);
+        final Context context = DefaultContextBuilder.get();
 
         // When
-        final Future<? extends CommandResponse> response = client.sendAsync(DefaultContextBuilder.get(), command);
+        final Future<? extends CommandResponse> response = client.sendAsync(context, command);
 
         // Then
         assertEquals(Status.ERROR, response.get().getStatus());
+        verify(contextSerializer).serialize(eq(context), any(AsyncWebResource.Builder.class));
     }
 
     @Test
@@ -224,14 +238,16 @@ public class KasperClientCommandTest extends JerseyTest {
             }
         });
         final ArgumentCaptor<CommandResponse> response = ArgumentCaptor.forClass(CommandResponse.class);
+        final Context context = DefaultContextBuilder.get();
 
         // When
-        client.sendAsync(DefaultContextBuilder.get(), command, callback);
+        client.sendAsync(context, command, callback);
 
         // Then
         latch.await(30, TimeUnit.SECONDS);
         verify(callback).done(response.capture());
         assertEquals(Status.OK, response.getValue().getStatus());
+        verify(contextSerializer).serialize(eq(context), any(AsyncWebResource.Builder.class));
     }
 
     @Test
