@@ -1,6 +1,6 @@
 # Kasper Releases #
 
-### Snapshot 0.8.0-pre8 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre8~~)) 
+### Snapshot 0.8.0-pre10 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre10~~)) 
 
 _(based on 0.6.9, the recovery from the 0.7 is in progress)_
 
