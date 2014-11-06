@@ -13,7 +13,7 @@ import com.viadeo.kasper.api.validation.AssertID;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-public class AssertIDValidator implements ConstraintValidator<AssertID, ID> {
+public class IDValidator implements ConstraintValidator<AssertID, ID> {
 
     private AssertID annotation;
 

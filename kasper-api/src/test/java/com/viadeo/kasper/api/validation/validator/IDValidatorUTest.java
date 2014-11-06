@@ -22,9 +22,9 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class AssertIDValidatorUTest {
+public class IDValidatorUTest {
 
-    private AssertIDValidator validator;
+    private IDValidator validator;
     private AssertID assertID;
     private IDBuilder builder;
 
@@ -32,7 +32,7 @@ public class AssertIDValidatorUTest {
     public void setUp() throws Exception {
         builder = new SimpleIDBuilder(DB_ID, UUID);
         
-        validator = new AssertIDValidator();
+        validator = new IDValidator();
         
         assertID = mock(AssertID.class);
         when(assertID.vendor()).thenReturn("");

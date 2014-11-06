@@ -20,4 +20,5 @@ dependencies {
 
     testCompile libraries.JUNIT
     testCompile libraries.MOCKITO
+    testCompile libraries.HIBERNATE_VALIDATOR
 }

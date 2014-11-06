@@ -6,7 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.api.validation;
 
-import com.viadeo.kasper.api.validation.validator.AssertIDValidator;
+import com.viadeo.kasper.api.validation.validator.CollectionOfIDValidator;
+import com.viadeo.kasper.api.validation.validator.IDValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -17,16 +18,38 @@ import java.lang.annotation.Target;
 import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
+/**
+ * The annotated element must be non null and must respect some additional constraints according to the specified parameters.
+ *
+ * <p> Additional constraints are on :
+ *   <ul>
+ *       <li>vendor</li>
+ *       <li>type</li>
+ *       <li>format</li>
+ *   </ul>
+ * </p>
+ */
 @Target({ FIELD })
 @Retention(RUNTIME)
 @Documented
-@Constraint(validatedBy = {AssertIDValidator.class})
+@Constraint(validatedBy = {IDValidator.class, CollectionOfIDValidator.class})
 public @interface AssertID {
     String message() default "Unexpected ID";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 
+    /**
+     * @return vendor if specified then the element must be equal to
+     */
     String vendor() default "";
+
+    /**
+     * @return type if specified then the element must be equal to one of
+     */
     String[] type() default {};
+
+    /**
+     * @return format if specified then the element must be equal to
+     */
     String format() default "";
 }
