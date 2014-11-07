@@ -39,7 +39,7 @@ public class HttpContextDeserializer {
         final String headerFunnelName = req.getHeader(HEADER_FUNNEL_NAME);
         final String headerFunnelVersion = req.getHeader(HEADER_FUNNEL_VERSION);
         final String headerIpAddress = req.getHeader(HEADER_REQUEST_IP_ADDRESS);
-        final String headerFireAndForget = req.getHeader(HEADER_FIRE_AND_FORGET);
+        final String headerCallType = req.getHeader(HEADER_CALL_TYPE);
 
         // --------------------------------------------------------------------
 
@@ -93,8 +93,8 @@ public class HttpContextDeserializer {
             context.setIpAddress(headerIpAddress);
         }
 
-        if (null != headerFireAndForget) {
-            context.setProperty(Context.FIRE_AND_FORGET, Boolean.TRUE);
+        if (null != headerCallType) {
+            context.setProperty(Context.CALL_TYPE, headerCallType);
         }
 
         return context;

@@ -7,6 +7,7 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.beans.Introspector;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,11 +132,27 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
 
     @Override
     public CommandResponse doHandle(final Command command, final Context context) throws Exception {
-        if (context.hasProperty(Context.FIRE_AND_FORGET)) {
-            commandGateway.sendCommand(command, context);
-            return CommandResponse.accepted();
+        CallTypes.CallType callType = CallTypes.SYNC;
+
+        final Optional<Serializable> optionalProperty = context.getProperty(Context.CALL_TYPE);
+
+        if (optionalProperty.isPresent()) {
+            final String callTypeAsString = String.valueOf(optionalProperty.get());
+
+            if (callTypeAsString.equals(CallTypes.SYNC.name())) {
+                callType = CallTypes.SYNC;
+            } else if (callTypeAsString.equals(CallTypes.ASYNC.name())) {
+                callType = CallTypes.ASYNC;
+            } else {
+                final Optional<CallTypes.CallType> optionalCallType = CallTypes.of(callTypeAsString);
+
+                if (optionalCallType.isPresent()) {
+                    callType = optionalCallType.get();
+                }
+            }
         }
-        return commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
+
+        return callType.doCall(commandGateway, command, context);
     }
 
     @Override
