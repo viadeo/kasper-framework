@@ -138,17 +138,10 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
 
         if (optionalProperty.isPresent()) {
             final String callTypeAsString = String.valueOf(optionalProperty.get());
+            final Optional<CallTypes.CallType> optionalCallType = CallTypes.of(callTypeAsString);
 
-            if (callTypeAsString.equals(CallTypes.SYNC.name())) {
-                callType = CallTypes.SYNC;
-            } else if (callTypeAsString.equals(CallTypes.ASYNC.name())) {
-                callType = CallTypes.ASYNC;
-            } else {
-                final Optional<CallTypes.CallType> optionalCallType = CallTypes.of(callTypeAsString);
-
-                if (optionalCallType.isPresent()) {
-                    callType = optionalCallType.get();
-                }
+            if (optionalCallType.isPresent()) {
+                callType = optionalCallType.get();
             }
         }
 

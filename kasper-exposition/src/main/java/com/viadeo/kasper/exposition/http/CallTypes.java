@@ -50,21 +50,17 @@ public final class CallTypes {
     public static Optional<CallType> of(final String type) {
         Optional<CallType> optionalCallType = Optional.absent();
 
-        switch (type) {
-            case "sync":
-                optionalCallType = Optional.of(SYNC);
-                break;
-            case "async":
-                optionalCallType = Optional.of(ASYNC);
-                break;
-            default:
-                final Matcher matcher = TimeCallType.TIME_PATTERN.matcher(type);
+        if (SYNC.name().equals(type)) {
+            optionalCallType = Optional.of(SYNC);
+        } else if (ASYNC.name().equals(type)) {
+            optionalCallType = Optional.of(ASYNC);
+        } else {
+            final Matcher matcher = TimeCallType.TIME_PATTERN.matcher(type);
 
-                if (matcher.find()) {
-                    String time = matcher.group(1);
-                    optionalCallType = Optional.<CallType>of(new TimeCallType(Long.parseLong(time)));
-                }
-                break;
+            if (matcher.find()) {
+                String time = matcher.group(1);
+                optionalCallType = Optional.<CallType>of(new TimeCallType(Long.parseLong(time)));
+            }
         }
 
         return optionalCallType;
