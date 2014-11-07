@@ -194,7 +194,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             sendResponse(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
 
             final String inputName = input.getClass().getSimpleName();
-            requestLogger.info("Request processed in {} [{}] : {}", getInputTypeName(), inputName);
+            requestLogger.info("Request processed in {} [{}] : {}", getInputTypeName(), inputName, input);
 
         } catch (final JsonGenerationException | JsonMappingException e) {
             sendError(
