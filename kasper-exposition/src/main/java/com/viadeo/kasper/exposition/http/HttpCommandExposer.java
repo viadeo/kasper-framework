@@ -130,6 +130,10 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
 
     @Override
     public CommandResponse doHandle(final Command command, final Context context) throws Exception {
+        if (context.hasProperty(Context.FIRE_AND_FORGET)) {
+            commandGateway.sendCommand(command, context);
+            return CommandResponse.accepted();
+        }
         return commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
     }
 

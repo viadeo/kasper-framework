@@ -15,6 +15,7 @@ import com.viadeo.kasper.KasperResponse.Status;
 import com.viadeo.kasper.annotation.XKasperAlias;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
@@ -192,6 +193,25 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         assertEquals(command.name, CreateAccountCommandHandler.createAccountCommandName);
         assertTrue(response.getSecurityToken().isPresent());
         assertEquals(SECURITY_TOKEN, response.getSecurityToken().get());
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void testFireCommandAndForgetResponse() throws Exception {
+        // Given valid input
+        final CreateAccountCommand command = new CreateAccountCommand();
+        command.name = "foo bar";
+
+        Context context = DefaultContextBuilder.get();
+        context.setProperty(Context.FIRE_AND_FORGET, Boolean.TRUE);
+
+        // When
+        final CommandResponse response = client().send(context, command);
+
+        // Then
+        assertEquals(Status.ACCEPTED, response.getStatus());
+        assertEquals(command.name, CreateAccountCommandHandler.createAccountCommandName);
     }
 
     // ------------------------------------------------------------------------

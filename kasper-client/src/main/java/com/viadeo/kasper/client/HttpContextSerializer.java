@@ -20,17 +20,21 @@ public class HttpContextSerializer {
     }
 
     public void serialize(final Context context, final RequestBuilder builder) {
-            setHeader(builder, HEADER_SESSION_CORRELATION_ID, context.getSessionCorrelationId());
-            setHeader(builder, HEADER_FUNNEL_CORRELATION_ID, context.getFunnelCorrelationId());
-            setHeader(builder, HEADER_REQUEST_CORRELATION_ID, context.getRequestCorrelationId());
-            setHeader(builder, HEADER_USER_ID, context.getUserId());
-            setHeader(builder, HEADER_USER_LANG, context.getUserLang());
-            setHeader(builder, HEADER_USER_COUNTRY, context.getUserCountry());
-            setHeader(builder, HEADER_APPLICATION_ID, context.getApplicationId());
-            setHeader(builder, HEADER_SECURITY_TOKEN, context.getSecurityToken());
-            setHeader(builder, HEADER_FUNNEL_NAME, context.getFunnelName());
-            setHeader(builder, HEADER_FUNNEL_VERSION, context.getFunnelVersion());
-            setHeader(builder, HEADER_REQUEST_IP_ADDRESS, context.getIpAddress());
+        setHeader(builder, HEADER_SESSION_CORRELATION_ID, context.getSessionCorrelationId());
+        setHeader(builder, HEADER_FUNNEL_CORRELATION_ID, context.getFunnelCorrelationId());
+        setHeader(builder, HEADER_REQUEST_CORRELATION_ID, context.getRequestCorrelationId());
+        setHeader(builder, HEADER_USER_ID, context.getUserId());
+        setHeader(builder, HEADER_USER_LANG, context.getUserLang());
+        setHeader(builder, HEADER_USER_COUNTRY, context.getUserCountry());
+        setHeader(builder, HEADER_APPLICATION_ID, context.getApplicationId());
+        setHeader(builder, HEADER_SECURITY_TOKEN, context.getSecurityToken());
+        setHeader(builder, HEADER_FUNNEL_NAME, context.getFunnelName());
+        setHeader(builder, HEADER_FUNNEL_VERSION, context.getFunnelVersion());
+        setHeader(builder, HEADER_REQUEST_IP_ADDRESS, context.getIpAddress());
+
+        if (context.hasProperty(Context.FIRE_AND_FORGET)) {
+            setHeader(builder, HEADER_FIRE_AND_FORGET, context.getProperty(Context.FIRE_AND_FORGET));
+        }
     }
 
 }
