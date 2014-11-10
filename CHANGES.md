@@ -30,6 +30,7 @@ _(based on 0.6.9, the recovery from the 0.7 is in progress)_
 * [Pull 243](https://github.com/viadeo/kasper-framework/pull/243) Improve security autodoc
 * [Pull 242](https://github.com/viadeo/kasper-framework/pull/242) Refactoring interceptor responsability chain in order to homogenize the way to retrieve security information. All security information must have on handler.
 * [Pull 247](https://github.com/viadeo/kasper-framework/pull/247) Added `ID` as new implementation of `KasperID`
+* [Pull 251](https://github.com/viadeo/kasper-framework/pull/251) Add request duration time to MDC logs
 
 
 ### Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandoned_###
