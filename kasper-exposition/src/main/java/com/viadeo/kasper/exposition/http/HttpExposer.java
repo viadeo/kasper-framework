@@ -98,7 +98,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         try {
             this.doHandleRequest(requestToObject, objectToHttpResponse, httpRequest, httpResponse);
         } finally {
-            timer.stop();
+            long duration = timer.stop();
+            MDC.put("duration", String.valueOf(duration));
             getMetricRegistry().meter(metricNames.getRequestsName()).mark();
         }
     }
