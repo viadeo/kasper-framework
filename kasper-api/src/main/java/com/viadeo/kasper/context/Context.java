@@ -61,6 +61,7 @@ public interface Context extends Serializable  {
     String FUNNEL_NAME_SHORTNAME = "funnelName";
     String FUNNEL_VERS_SHORTNAME = "funnelVersion";
     String IP_ADDRESS_SHORTNAME = "ipAddress";
+    String CALL_TYPE = "callType";
 
     // ------------------------------------------------------------------------
 

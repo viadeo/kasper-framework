@@ -7,6 +7,7 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Optional;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
@@ -29,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.beans.Introspector;
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -130,7 +132,20 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
 
     @Override
     public CommandResponse doHandle(final Command command, final Context context) throws Exception {
-        return commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
+        CallTypes.CallType callType = CallTypes.SYNC;
+
+        final Optional<Serializable> optionalProperty = context.getProperty(Context.CALL_TYPE);
+
+        if (optionalProperty.isPresent()) {
+            final String callTypeAsString = String.valueOf(optionalProperty.get());
+            final Optional<CallTypes.CallType> optionalCallType = CallTypes.of(callTypeAsString);
+
+            if (optionalCallType.isPresent()) {
+                callType = optionalCallType.get();
+            }
+        }
+
+        return callType.doCall(commandGateway, command, context);
     }
 
     @Override

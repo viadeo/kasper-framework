@@ -31,4 +31,6 @@ public final class HttpContextHeaders {
 
     public static final String HEADER_CLIENT_VERSION = "X-KASPER-CLIENT-VERSION";
 
+    public static final String HEADER_CALL_TYPE = "X-KASPER-CALL-TYPE";
+
 }

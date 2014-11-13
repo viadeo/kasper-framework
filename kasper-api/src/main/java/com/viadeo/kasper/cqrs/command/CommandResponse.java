@@ -60,6 +60,12 @@ public class CommandResponse extends KasperResponse {
 
     // ------------------------------------------------------------------------
 
+    public static CommandResponse accepted() {
+        return new CommandResponse(Status.ACCEPTED, new KasperReason("Acknowledge"));
+    }
+
+    // ------------------------------------------------------------------------
+
     public static CommandResponse ok() {
         return new CommandResponse(Status.OK, null);
     }

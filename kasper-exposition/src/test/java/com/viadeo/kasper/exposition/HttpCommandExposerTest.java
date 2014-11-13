@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.exposition;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.ClientResponse;
@@ -15,6 +16,7 @@ import com.viadeo.kasper.KasperResponse.Status;
 import com.viadeo.kasper.annotation.XKasperAlias;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
@@ -27,6 +29,7 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.exposition.http.CallTypes;
 import com.viadeo.kasper.exposition.http.HttpCommandExposerPlugin;
 import org.junit.Test;
 
@@ -53,10 +56,15 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
     public static class CreateAccountCommand implements Command {
         private static final long serialVersionUID = 424842094873929150L;
 
+        private Optional<Long> delay = Optional.absent();
         private String name;
         private boolean throwException;
         private String code;
         private List<String> messages;
+
+        public Optional<Long> getDelay() {
+            return delay;
+        }
 
         public String getName() {
             return this.name;
@@ -70,16 +78,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
             return code;
         }
 
-        public void setCode(String code) {
-            this.code = code;
-        }
-
         public List<String> getMessages() {
             return messages;
-        }
-
-        public void setMessages(List<String> messages) {
-            this.messages = messages;
         }
 
     }
@@ -92,6 +92,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
         @Override
         public CommandResponse handle(final CreateAccountCommand command) throws Exception {
+            if (command.getDelay().isPresent())
+                Thread.sleep(command.getDelay().get());
             if (command.isThrowException())
                 throw new KasperException("Something bad happened!");
             if (command.getCode() != null)
@@ -143,6 +145,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
     @Override
     protected DomainBundle getDomainBundle(){
+
         return new DefaultDomainBundle(
                   Lists.<CommandHandler>newArrayList(
                           new NeedValidationCommandHandler(),
@@ -192,6 +195,92 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         assertEquals(command.name, CreateAccountCommandHandler.createAccountCommandName);
         assertTrue(response.getSecurityToken().isPresent());
         assertEquals(SECURITY_TOKEN, response.getSecurityToken().get());
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Test
+    public void testCommand_withSyncCall_isOk() throws Exception {
+        // Given valid input
+        final CreateAccountCommand command = new CreateAccountCommand();
+        command.name = "foo bar";
+
+        Context context = DefaultContextBuilder.get();
+        context.setProperty(Context.CALL_TYPE, CallTypes.SYNC.name());
+
+        // When
+        final CommandResponse response = client().send(context, command);
+
+        // Then
+        assertEquals(Status.OK, response.getStatus());
+    }
+
+    @Test
+    public void testCommand_withAsyncCall_isAccepted() throws Exception {
+        // Given valid input
+        final CreateAccountCommand command = new CreateAccountCommand();
+        command.name = "foo bar";
+
+        Context context = DefaultContextBuilder.get();
+        context.setProperty(Context.CALL_TYPE, CallTypes.ASYNC.name());
+
+        // When
+        final CommandResponse response = client().send(context, command);
+
+        // Then
+        assertEquals(Status.ACCEPTED, response.getStatus());
+    }
+
+    @Test
+    public void testCommand_withTimeCall_isOk() throws Exception {
+        // Given valid input
+        final CreateAccountCommand command = new CreateAccountCommand();
+        command.name = "foo bar";
+
+        Context context = DefaultContextBuilder.get();
+        context.setProperty(Context.CALL_TYPE, "time(100)");
+
+        // When
+        final CommandResponse response = client().send(context, command);
+
+        // Then
+        assertEquals(Status.OK, response.getStatus());
+    }
+
+    @Test
+    public void testCommand_withExceededTimeCall_isAccepted() throws Exception {
+        // Given valid input
+        final CreateAccountCommand command = new CreateAccountCommand();
+        command.name = "foo bar";
+        command.delay = Optional.of(500L);
+
+        Context context = DefaultContextBuilder.get();
+        context.setProperty(Context.CALL_TYPE, "time(100)");
+
+        // When
+        final CommandResponse response = client().send(context, command);
+
+        // Then
+        assertEquals(Status.ACCEPTED, response.getStatus());
+    }
+
+    @Test
+    public void testCommand_withTimeCall_withUnexpectedExecutionException_isInError() throws Exception {
+        // Given valid input
+        final CreateAccountCommand command = new CreateAccountCommand();
+        command.name = "foo bar";
+
+        Context context = DefaultContextBuilder.get();
+        context.setProperty(Context.CALL_TYPE, "time(100)");
+        command.code = CoreReasonCode.CONFLICT.name();
+        command.messages = ImmutableList.of("ignored");
+
+        // When
+        final CommandResponse response = client().send(context, command);
+
+        // Then
+        assertEquals(Status.ERROR, response.getStatus());
+        assertEquals("ignored", response.getReason().getMessages().toArray()[0]);
     }
 
     // ------------------------------------------------------------------------
