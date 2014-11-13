@@ -11,10 +11,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Indicates that an input has one or more aliases for which it can be identified
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 public @interface XKasperAlias {
 
+    /**
+     * @return values an array of aliases
+     */
     String[] values();
 
 }

@@ -8,7 +8,6 @@ package com.viadeo.kasper.exposition.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
-import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.platform.Meta;
@@ -20,8 +19,6 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
-import com.viadeo.kasper.exposition.alias.AliasRegistry;
-import com.viadeo.kasper.security.annotation.XKasperPublic;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.springframework.http.MediaType;
 
@@ -31,9 +28,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.beans.Introspector;
 import java.io.IOException;
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -42,9 +37,7 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
 
     private static final long serialVersionUID = 8444284922303895624L;
 
-    private final Map<String, Class<? extends Command>> exposedCommands = new HashMap<>();
     private final transient List<ExposureDescriptor<Command,CommandHandler>> descriptors;
-
     private final transient CommandGateway commandGateway;
 
     private final ObjectToHttpServletResponse objectToHttpResponse;
@@ -86,10 +79,10 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
             expose(descriptor);
         }
 
-        if (exposedCommands.isEmpty()) {
-            LOGGER.warn("No Command has been exposed.");
-        } else {
-            LOGGER.info("Total exposed " + exposedCommands.size() + " commands.");
+        LOGGER.info("Total exposed {} commands.", getExposedInputs().size());
+
+        if ( ! getUnexposedInputs().isEmpty()) {
+            LOGGER.info("Total unexposed {} commands.", getUnexposedInputs().size());
         }
 
         LOGGER.info("=================================================\n");
@@ -117,17 +110,6 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
     @Override
     protected CommandResponse createRefusedResponse(final CoreReasonCode code, final List<String> reasons) {
         return CommandResponse.refused(new KasperReason(code, reasons));
-    }
-
-    @Override
-    protected boolean isManageable(final String inputName) {
-        return exposedCommands.containsKey(checkNotNull(inputName));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    protected Class<? extends Command> getInputClass(final String inputName) {
-        return exposedCommands.get(checkNotNull(inputName));
     }
 
     @Override
@@ -173,43 +155,8 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
 
     // ------------------------------------------------------------------------
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    HttpExposer expose(final ExposureDescriptor<Command,CommandHandler> descriptor) {
-        checkNotNull(descriptor);
-
-        final TypeToken<? extends CommandHandler> typeToken = TypeToken.of(descriptor.getHandler());
-
-        final Class<? super Command> commandClass = (Class<? super Command>) typeToken
-                .getSupertype(CommandHandler.class)
-                .resolveType(CommandHandler.class.getTypeParameters()[0])
-                .getRawType();
-
-        final String commandPath = commandToPath(commandClass);
-        final List<String> aliases = AliasRegistry.aliasesFrom(commandClass);
-        final String commandName = commandClass.getSimpleName();
-
-        final String isPublicResource = descriptor.getHandler().getAnnotation(XKasperPublic.class) != null ? "public " : "protected ";
-
-        LOGGER.info("-> Exposing " + isPublicResource + "command[{}] at path[/{}]",
-                commandName,
-                    getServletContext().getContextPath() + commandPath);
-
-        for (final String alias : aliases) {
-            LOGGER.info("-> Exposing " + isPublicResource + "command[{}] at path[/{}]",
-                    commandName,
-                    getServletContext().getContextPath() + alias);
-        }
-
-        putKey(commandPath, commandClass, exposedCommands);
-
-        getAliasRegistry().register(commandPath, aliases);
-
-        return this;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private String commandToPath(final Class<? super Command> exposedCommand) {
+    @Override
+    protected String toPath(final Class<? extends Command> exposedCommand) {
         return Introspector.decapitalize(exposedCommand.getSimpleName().replaceAll("Command", ""));
     }
 

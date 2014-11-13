@@ -11,10 +11,16 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Adds a textual description to the field definitions
+ */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.FIELD)
 public @interface XKasperField {
 
+    /**
+     * @return description the textual description to associate with the field definition
+     */
     String description();
 
 }
