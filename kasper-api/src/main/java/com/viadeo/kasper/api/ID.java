@@ -196,6 +196,11 @@ public class ID implements KasperID {
         this.transformer = transformer;
     }
 
+    public ID withTransformer(IDTransformer transformer) {
+        setIDTransformer(transformer);
+        return this;
+    }
+
     @Override
     public String toString() {
         return String.format("urn:%s:%s:%s:%s", vendor, type, format, identifier);
