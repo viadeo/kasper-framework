@@ -6,6 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.api;
 
+/**
+ * Implemented by objects that define a format.
+ */
 public interface Format {
 
     /**
@@ -15,21 +18,30 @@ public interface Format {
     boolean accept(Object identifier);
 
     /**
+     * Returns the type of the identifier that this format support.
+     *
      * @return the identifier type supported by this format
      */
     Class<?> identifierType();
 
     /**
+     * Returns the parsed identifier.
+     *
      * @param <E> the type of the identifier
      * @return the parsed value according to the <code>Format</code> of the specified identifier.
      */
     <E> E parseIdentifier(String identifier);
 
     /**
+     * Returns the name of this format.
+     *
      * @return the name of this format
      */
     String name();
 
+    /**
+     * @return an URN representation
+     */
     @Override
     String toString();
 }

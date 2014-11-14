@@ -2,6 +2,9 @@ package com.viadeo.kasper.api;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * An abstract adapter class for defining a format.
+ */
 public abstract class FormatAdapter implements Format {
 
     private final String name;

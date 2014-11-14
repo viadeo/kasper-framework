@@ -7,6 +7,7 @@
 package com.viadeo.kasper.api;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.viadeo.kasper.KasperID;
 
@@ -64,6 +65,8 @@ public class ID implements KasperID {
     private final Format format;
 
     private final String identifier;
+
+    private transient IDTransformer transformer;
 
     public ID(final String vendor, final String type, final Format format, final Object identifier) {
         checkNotNull(identifier);
@@ -165,6 +168,32 @@ public class ID implements KasperID {
                 String.format("Unexpected format, expected:<%s> but was:<%s>", expectedFormat, format)
         );
         return this;
+    }
+
+    /**
+     * Transform according to the specified <code>Format</code>
+     *
+     * @param format the targeted format
+     * @return a transformed id
+     */
+    public ID to(Format format) {
+        if (null == transformer) {
+            throw new UnsupportedOperationException("IDTransformer is not defined");
+        }
+        return transformer.to(format, this);
+    }
+
+    /**
+     * Returns an optional transformer
+     *
+     * @return the id transformer
+     */
+    public Optional<IDTransformer> getTransformer() {
+        return Optional.fromNullable(transformer);
+    }
+
+    public void setIDTransformer(IDTransformer transformer) {
+        this.transformer = transformer;
     }
 
     @Override

@@ -6,10 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.api;
 
+/**
+ * Implemented by objects that can be able to build an <code>ID</code> from an URN.
+ */
 public interface IDBuilder {
 
     /**
-     * @return an corresponding id from the specified URN
+     * @return a corresponding id from the specified URN
      */
     ID build(String urn);
 }

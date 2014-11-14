@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.api;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
 import java.util.Map;
@@ -29,6 +30,8 @@ public class SimpleIDBuilder implements IDBuilder {
     }
     @Override
     public ID build(final String urn) {
+        Preconditions.checkNotNull(urn);
+
         final Matcher matcher = URN_PATTERN.matcher(urn);
 
         if ( ! matcher.find()) {
