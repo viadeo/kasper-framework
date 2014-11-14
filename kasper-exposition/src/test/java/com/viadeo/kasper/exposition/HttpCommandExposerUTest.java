@@ -7,6 +7,7 @@
 package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.annotation.XKasperUnexposed;
 import com.viadeo.kasper.client.platform.Meta;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -20,6 +21,8 @@ import javax.servlet.ServletConfig;
 import javax.servlet.ServletContext;
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -33,8 +36,11 @@ public class HttpCommandExposerUTest {
 
     public static class CommandHandlerB extends CommandHandler<ACommand> { }
 
+    @XKasperUnexposed
+    public static class CommandHandlerC extends CommandHandler<ACommand> { }
+
     @Test(expected = HttpExposerError.class)
-    public void init_withTwoEventListeners_listeningTheSameEvent_isOk() throws Exception {
+    public void init_withTwoHandlers_handlingTheSameCommand_throwException() throws Exception {
         // Given
         final List<ExposureDescriptor<Command, CommandHandler>> descriptors = Lists.newArrayList(
                 new ExposureDescriptor<Command, CommandHandler>(ACommand.class, CommandHandlerA.class),
@@ -57,5 +63,53 @@ public class HttpCommandExposerUTest {
         commandExposer.init(servletConfig);
 
         // Then throw an exception
+    }
+
+    @Test
+    public void isExposable_withUnexposedAnnotation_returnFalse() {
+        // Given
+        final Platform platform = mock(Platform.class);
+        when(platform.getCommandGateway()).thenReturn(mock(CommandGateway.class));
+        when(platform.getMeta()).thenReturn(mock(Meta.class));
+
+        final HttpCommandExposer exposer = new HttpCommandExposer(
+                platform,
+                Lists.<ExposureDescriptor<Command, CommandHandler>>newArrayList()
+        );
+
+        // When
+        boolean exposable = exposer.isExposable(
+                new ExposureDescriptor<Command, Object>(
+                        ACommand.class,
+                        CommandHandlerC.class
+                )
+        );
+
+        // Then
+        assertFalse(exposable);
+    }
+
+    @Test
+    public void isExposable_withoutUnexposedAnnotation_returnTrue() {
+        // Given
+        final Platform platform = mock(Platform.class);
+        when(platform.getCommandGateway()).thenReturn(mock(CommandGateway.class));
+        when(platform.getMeta()).thenReturn(mock(Meta.class));
+
+        final HttpCommandExposer exposer = new HttpCommandExposer(
+                platform,
+                Lists.<ExposureDescriptor<Command, CommandHandler>>newArrayList()
+        );
+
+        // When
+        boolean exposable = exposer.isExposable(
+                new ExposureDescriptor<Command, Object>(
+                        ACommand.class,
+                        CommandHandlerB.class
+                )
+        );
+
+        // Then
+        assertTrue(exposable);
     }
 }

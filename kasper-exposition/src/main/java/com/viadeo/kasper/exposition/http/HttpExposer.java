@@ -15,10 +15,13 @@ import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperResponse;
+import com.viadeo.kasper.annotation.XKasperUnexposed;
 import com.viadeo.kasper.client.platform.Meta;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.HttpContextHeaders;
+import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.exposition.alias.AliasRegistry;
+import com.viadeo.kasper.security.annotation.XKasperPublic;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,10 +38,7 @@ import java.beans.Introspector;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
@@ -49,6 +49,9 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 	private static final long serialVersionUID = 8448984922303895424L;
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(HttpExposer.class);
+
+    private final Map<String, Class<INPUT>> exposedInputs;
+    private final Map<String, Class<INPUT>> unexposedInputs;
 
     private final HttpContextDeserializer contextDeserializer;
     private final AliasRegistry aliasRegistry;
@@ -67,6 +70,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         this.aliasRegistry = new AliasRegistry();
         this.serverName = Optional.absent();
         this.requestLogger = LoggerFactory.getLogger(getClass());
+        this.exposedInputs = new HashMap<>();
+        this.unexposedInputs = new HashMap<>();
     }
 
     // ------------------------------------------------------------------------
@@ -75,11 +80,9 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     protected abstract RESPONSE createRefusedResponse(final CoreReasonCode code, final List<String> reasons);
 
-    protected abstract boolean isManageable(final String requestName);
-
-    protected abstract <T extends INPUT> Class<T> getInputClass(final String inputName);
-
     public abstract RESPONSE doHandle(final INPUT input, final Context context) throws Exception;
+
+    protected abstract String toPath(final Class<? extends INPUT> exposedInput);
 
     // ------------------------------------------------------------------------
 
@@ -352,20 +355,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     // ------------------------------------------------------------------------
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	protected final void putKey(final String key, final Class newValue, final Map mapping) {
-		final Class value = (Class) mapping.get(key);
-
-		if (null != value) {
-			throw new HttpExposerError("Duplicate entry for name="
-					+ key + ", existing value is " + value.getName());
-        }
-
-		mapping.put(key, newValue);
-	}
-
-    // ------------------------------------------------------------------------
-
 	protected final String resourceName(final String uri) {
 		checkNotNull(uri);
 
@@ -402,6 +391,77 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     public AliasRegistry getAliasRegistry() {
         return aliasRegistry;
+    }
+
+    // ------------------------------------------------------------------------
+
+    public <HANDLER> HttpExposer<INPUT, RESPONSE> expose(final ExposureDescriptor<INPUT,HANDLER> descriptor) {
+        checkNotNull(descriptor);
+
+        final String isPublicResource = descriptor.getHandler().getAnnotation(XKasperPublic.class) != null ? "public" : "protected";
+        final List<String> aliases = AliasRegistry.aliasesFrom(descriptor.getInput());
+        @SuppressWarnings("unchecked")
+        final Class<INPUT> inputClass = (Class<INPUT>) descriptor.getInput();
+        final String path = toPath(inputClass);
+        final String name = inputClass.getSimpleName();
+
+        if ( ! isExposable(descriptor)) {
+            LOGGER.info("-> Unexposed {}[{}]", getInputTypeName(), name);
+            unexposedInputs.put(path, inputClass);
+            return this;
+        }
+
+        LOGGER.info("-> Exposing {} {}[{}] at path[/{}]",
+                isPublicResource,
+                getInputTypeName(),
+                name,
+                getServletContext().getContextPath() + path);
+
+        for (final String alias : aliases) {
+            LOGGER.info("-> Exposing {} {}[{}] at path[/{}]",
+                    isPublicResource,
+                    getInputTypeName(),
+                    name,
+                    getServletContext().getContextPath() + alias);
+        }
+
+        checkAvailabilityOfResourcePath(path);
+
+        exposedInputs.put(path, inputClass);
+
+        getAliasRegistry().register(path, aliases);
+
+        return this;
+    }
+
+    public <HANDLER> boolean isExposable(final ExposureDescriptor<INPUT,HANDLER> descriptor) {
+        return ! descriptor.getHandler().isAnnotationPresent(XKasperUnexposed.class);
+    }
+
+    protected void checkAvailabilityOfResourcePath(final String path) {
+        final Class exposedInput = (Class) exposedInputs.get(path);
+        if (null != exposedInput) {
+            throw new HttpExposerError(
+                    String.format("The resource path is already used by an another input, <path=%s> <input=%s>", path, exposedInput.getName())
+            );
+        }
+    }
+
+    protected boolean isManageable(final String requestName) {
+        return exposedInputs.containsKey(checkNotNull(requestName));
+    }
+
+    @SuppressWarnings("unchecked")
+    protected Class<INPUT> getInputClass(final String inputName) {
+        return exposedInputs.get(checkNotNull(inputName));
+    }
+
+    protected Map<String, Class<INPUT>> getExposedInputs() {
+        return exposedInputs;
+    }
+
+    protected Map<String, Class<INPUT>> getUnexposedInputs() {
+        return unexposedInputs;
     }
 
     // ------------------------------------------------------------------------

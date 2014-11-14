@@ -13,6 +13,7 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.annotation.XKasperAlias;
+import com.viadeo.kasper.annotation.XKasperUnexposed;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.HttpContextHeaders;
@@ -158,6 +159,19 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         }
     }
 
+    public static class UnexposedQuery implements Query {
+        private static final long serialVersionUID = -8083928873466120009L;
+    }
+
+    @XKasperUnexposed
+    @XKasperQueryHandler(domain = AccountDomain.class)
+    public static class UnexposedQueryHandler extends QueryHandler<UnexposedQuery, SomeResponse> {
+        @Override
+        public QueryResponse<SomeResponse> retrieve(UnexposedQuery query) throws Exception {
+            return QueryResponse.of(new SomeResponse());
+        }
+    }
+
     // ------------------------------------------------------------------------
     private boolean usePostForQueries;
 
@@ -188,7 +202,8 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
                 .with(
                         new SomeQueryHandler(),
                         new SomeCollectionQueryHandler(),
-                        new NeedValidationWithAliasQueryHandler()
+                        new NeedValidationWithAliasQueryHandler(),
+                        new UnexposedQueryHandler()
                 )
                 .build();
     }
@@ -346,5 +361,21 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         // Then
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         assertEquals(expectedServerName, response.getHeaders().getFirst(HttpContextHeaders.HEADER_SERVER_NAME));
+    }
+
+    @Test
+    public void testUnexposedCommandHandler() throws MalformedURLException, URISyntaxException {
+        // Given
+        final UnexposedQuery query = new UnexposedQuery();
+
+        // When
+        final ClientResponse response = httpClient()
+                .resource(new URL(new URL(url()), query.getClass().getSimpleName().replace("Query", "")).toURI())
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .get(ClientResponse.class);
+
+        // Then
+        assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
 }

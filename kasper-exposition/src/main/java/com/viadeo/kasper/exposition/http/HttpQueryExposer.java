@@ -7,8 +7,6 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.common.collect.Maps;
-import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.client.platform.Meta;
@@ -19,10 +17,8 @@ import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
-import com.viadeo.kasper.exposition.alias.AliasRegistry;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
 import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;
-import com.viadeo.kasper.security.annotation.XKasperPublic;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.springframework.http.MediaType;
 
@@ -32,14 +28,12 @@ import javax.servlet.http.HttpServletResponse;
 import java.beans.Introspector;
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
     private static final long serialVersionUID = 8448984922303895624L;
 
-    private final Map<String, Class<? extends Query>> exposedQueries = Maps.newHashMap();
     private final transient List<ExposureDescriptor<Query,QueryHandler>> descriptors;
     private final transient QueryGateway queryGateway;
 
@@ -86,10 +80,10 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
             expose(descriptor);
         }
 
-        if (exposedQueries.isEmpty()) {
-            LOGGER.warn("No Query has been exposed.");
-        } else {
-            LOGGER.info("Total exposed " + exposedQueries.size() + " queries.");
+        LOGGER.info("Total exposed {} queries.", getExposedInputs().size());
+
+        if ( ! getUnexposedInputs().isEmpty()) {
+            LOGGER.info("Total unexposed {} queries.", getUnexposedInputs().size());
         }
 
         LOGGER.info("=================================================\n");
@@ -131,58 +125,14 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
     }
 
     @Override
-    protected boolean isManageable(final String requestName) {
-       return exposedQueries.containsKey(checkNotNull(requestName));
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    protected Class<? extends Query> getInputClass(final String inputName) {
-        return exposedQueries.get(checkNotNull(inputName));
-    }
-
-    @Override
     public QueryResponse doHandle(Query query, Context context) throws Exception {
         return queryGateway.retrieve(query, context);
     }
 
     // ------------------------------------------------------------------------
 
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    protected HttpQueryExposer expose(final ExposureDescriptor<Query,QueryHandler> descriptor) {
-        checkNotNull(descriptor);
-
-        final TypeToken<? extends QueryHandler> typeToken = TypeToken.of(descriptor.getHandler());
-        final Class<? super Query> queryClass = (Class<? super Query>) typeToken
-                .getSupertype(QueryHandler.class)
-                .resolveType(QueryHandler.class.getTypeParameters()[0])
-                .getRawType();
-
-        final String queryPath = queryToPath(queryClass);
-        final List<String> aliases = AliasRegistry.aliasesFrom(queryClass);
-        final String queryName = queryClass.getSimpleName();
-
-        final String isPublicResource = descriptor.getHandler().getAnnotation(XKasperPublic.class) != null ? "public " : "protected ";
-
-        LOGGER.info("-> Exposing " + isPublicResource + "query[{}] at path[/{}]", queryName,
-                    getServletContext().getContextPath() + queryPath);
-
-        for (final String alias : aliases) {
-            LOGGER.info("-> Exposing " + isPublicResource + "query[{}] at path[/{}]",
-                    queryName,
-                    getServletContext().getContextPath() + alias);
-        }
-
-        putKey(queryPath, queryClass, exposedQueries);
-
-        getAliasRegistry().register(queryPath, aliases);
-
-        return this;
-    }
-
-    // ------------------------------------------------------------------------
-
-    private String queryToPath(final Class<? super Query> exposedQuery) {
+    @Override
+    protected String toPath(final Class<? extends Query> exposedQuery) {
         return Introspector.decapitalize(exposedQuery.getSimpleName().replaceAll("Query", ""));
     }
 

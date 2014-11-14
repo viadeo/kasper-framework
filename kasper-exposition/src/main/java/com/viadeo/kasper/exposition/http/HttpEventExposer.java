@@ -31,9 +31,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.core.Response;
 import java.beans.Introspector;
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -51,10 +49,8 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
 
     private static final long serialVersionUID = 3099102125586430908L;
 
-    private final Map<String, Class<? extends Event>> exposedEvents = new HashMap<>();
-    private final List<ExposureDescriptor<Event, EventListener>> descriptors;
-
-    private final KasperEventBus eventBus;
+    private final transient List<ExposureDescriptor<Event, EventListener>> descriptors;
+    private final transient KasperEventBus eventBus;
 
     private final ObjectToHttpServletResponse objectToHttpResponse;
     private final HttpServletRequestToObject httpRequestToObject;
@@ -109,12 +105,7 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
             expose(eventClass, aliases);
         }
 
-        if (exposedEvents.isEmpty()) {
-            LOGGER.warn("No Event has been exposed.");
-        } else {
-            LOGGER.info("Total exposed " + exposedEvents.size() + " events.");
-        }
-
+        LOGGER.info("Total exposed {} events.", getExposedInputs().size());
         LOGGER.info("=================================================\n");
     }
 
@@ -143,17 +134,6 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
     }
 
     @Override
-    protected boolean isManageable(final String requestName) {
-        return exposedEvents.containsKey(requestName);
-    }
-
-    @Override
-    @SuppressWarnings("unchecked")
-    protected Class<? extends Event> getInputClass(final String inputName) {
-        return exposedEvents.get(checkNotNull(inputName));
-    }
-
-    @Override
     public KasperResponse doHandle(final Event event, final Context context) throws Exception {
         eventBus.publishEvent(context, event);
         return new KasperResponse();
@@ -172,7 +152,7 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
         checkNotNull(eventClass);
         checkNotNull(aliases);
 
-        final String eventPath = eventToPath(eventClass);
+        final String eventPath = toPath(eventClass);
         final String eventName = eventClass.getSimpleName();
 
         LOGGER.info("-> Exposing event[{}] at path[/{}]",
@@ -185,7 +165,9 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
                     getServletContext().getContextPath() + alias);
         }
 
-        putKey(eventPath, eventClass, exposedEvents);
+        checkAvailabilityOfResourcePath(eventPath);
+
+        getExposedInputs().put(eventPath, (Class<Event>) eventClass);
 
         getAliasRegistry().register(eventPath, aliases);
 
@@ -194,8 +176,8 @@ public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
 
     // ------------------------------------------------------------------------
 
-    private String eventToPath(final Class<? extends Event> exposedEvent) {
+    @Override
+    protected String toPath(final Class<? extends Event> exposedEvent) {
         return Introspector.decapitalize(exposedEvent.getSimpleName().replaceAll("Event", ""));
     }
-
 }

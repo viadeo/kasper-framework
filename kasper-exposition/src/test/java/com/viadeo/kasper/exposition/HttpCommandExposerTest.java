@@ -14,6 +14,7 @@ import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.KasperResponse.Status;
 import com.viadeo.kasper.annotation.XKasperAlias;
+import com.viadeo.kasper.annotation.XKasperUnexposed;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
@@ -130,6 +131,17 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         }
     }
 
+    public static class UnexposedCommand implements Command {}
+
+    @XKasperUnexposed
+    @XKasperCommandHandler(domain = AccountDomain.class)
+    public static class UnexposedCommandHandler extends CommandHandler<UnexposedCommand> {
+        @Override
+        public CommandResponse handle(UnexposedCommand command) throws Exception {
+            return CommandResponse.ok();
+        }
+    }
+
     // ------------------------------------------------------------------------
 
     public HttpCommandExposerTest() {
@@ -150,7 +162,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
                   Lists.<CommandHandler>newArrayList(
                           new NeedValidationCommandHandler(),
                           new CreateAccountCommandHandler(),
-                          new NeedValidationWithAliasCommandHandler()
+                          new NeedValidationWithAliasCommandHandler(),
+                          new UnexposedCommandHandler()
                   )
                 , Lists.<QueryHandler>newArrayList()
                 , Lists.<Repository>newArrayList()
@@ -399,6 +412,20 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         // Then
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         assertEquals(expectedServerName, response.getHeaders().getFirst(HttpContextHeaders.HEADER_SERVER_NAME));
+    }
+
+    @Test
+    public void testUnexposedCommandHandler() {
+        // Given
+        final UnexposedCommand command = new UnexposedCommand();
+
+        // When
+        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
+
+        // Then
+        assertEquals(Status.ERROR, response.getStatus());
+        assertNotNull(response.getReason().getMessages().toArray()[0]);
+        assertFalse(response.getSecurityToken().isPresent());
     }
 
     // ------------------------------------------------------------------------
