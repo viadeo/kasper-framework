@@ -106,10 +106,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
         } finally {
             long duration = timer.stop();
-            MDC.put("duration", String.valueOf(duration));
-            if(context != null) {
-                context.setProperty("duration", duration);
-            }
+            enrichContextAndMDC(context, "duration", String.valueOf(duration));
             getMetricRegistry().meter(metricNames.getRequestsName()).mark();
         }
     }
@@ -197,7 +194,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
         try {
 
-            /* 5) Respond to the request */
+            /* 4) Respond to the request */
             sendResponse(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
 
             final String inputName = input.getClass().getSimpleName();
@@ -264,7 +261,9 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     private void enrichContextAndMDC(final Context context, final String key, final String value) {
         MDC.put(key, value);
-        context.setProperty(key, value);
+        if(context != null) {
+            context.setProperty(key, value);
+        }
     }
 
     protected INPUT extractInput(
