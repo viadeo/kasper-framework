@@ -302,14 +302,19 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
     protected Response.Status getStatusFrom(final RESPONSE response) {
         final Response.Status status;
 
-        if ( ! response.isOK()) {
-            if (null == response.getReason()) {
-                status = Response.Status.INTERNAL_SERVER_ERROR;
-            } else {
-                status = Response.Status.fromStatusCode(CoreReasonHttpCodes.toStatus(response.getReason().getCode()));
-            }
-        } else {
-            status = Response.Status.OK;
+        switch (response.getStatus()) {
+            case OK:
+                status = Response.Status.OK;
+                break;
+            case ACCEPTED:
+                status = Response.Status.ACCEPTED;
+                break;
+            default:
+                if (null == response.getReason()) {
+                    status = Response.Status.INTERNAL_SERVER_ERROR;
+                } else {
+                    status = Response.Status.fromStatusCode(CoreReasonHttpCodes.toStatus(response.getReason().getCode()));
+                }
         }
 
         return status;
