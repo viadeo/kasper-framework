@@ -46,7 +46,7 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
 public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extends HttpServlet {
 
-	private static final long serialVersionUID = 8448984922303895424L;
+    private static final long serialVersionUID = 8448984922303895424L;
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(HttpExposer.class);
 
@@ -97,12 +97,19 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final HttpServletResponse httpResponse
     ) throws IOException {
         final Timer.Context timer = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
+        final UUID kasperCorrelationUUID = UUID.randomUUID();
+        Context context = null;
 
         try {
-            this.doHandleRequest(requestToObject, objectToHttpResponse, httpRequest, httpResponse);
+            context = extractContext(httpRequest, kasperCorrelationUUID);
+            this.doHandleRequest(requestToObject, objectToHttpResponse, httpRequest, httpResponse, kasperCorrelationUUID, context);
+
         } finally {
             long duration = timer.stop();
             MDC.put("duration", String.valueOf(duration));
+            if(context != null) {
+                context.setProperty("duration", duration);
+            }
             getMetricRegistry().meter(metricNames.getRequestsName()).mark();
         }
     }
@@ -111,29 +118,25 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final HttpServletRequestToObject requestToObject,
             final ObjectToHttpServletResponse objectToHttpResponse,
             final HttpServletRequest httpRequest,
-            final HttpServletResponse httpResponse
+            final HttpServletResponse httpResponse,
+            final UUID kasperCorrelationUUID,
+            final Context context
     ) throws IOException {
 
         INPUT input = null;
         RESPONSE response;
-
-        /* 0) Create a request correlation id */
-        final UUID kasperCorrelationUUID = UUID.randomUUID();
 
         try {
 
             /* 1) Check that we support the requested media type*/
             checkMediaType(httpRequest);
 
-            /* 2) Extract the context from request */
-            final Context context = extractContext(httpRequest, kasperCorrelationUUID);
-
-            /* 3) Extract the input from request */
+            /* 2) Extract the input from request */
             input = extractInput(httpRequest, requestToObject);
 
             enrichContextAndMDC(context, "appRoute", input.getClass().getName());
 
-            /* 4) Handle the request */
+            /* 3) Handle the request */
             response = handle(input, context);
 
         } catch (HttpExposerException exposerException) {
