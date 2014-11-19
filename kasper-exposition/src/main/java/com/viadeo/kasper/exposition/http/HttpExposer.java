@@ -228,7 +228,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
             sendError(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
 
-            if (errorHandlingDescriptor.getState() == ErrorState.ERROR) {
+            if (errorHandlingDescriptor.getState() == ErrorState.REFUSED) {
                 requestLogger.warn("Refused {} [{}] : <reason={}> <input={}>",
                         getInputTypeName(), inputName, response.getReason(), input,
                         errorHandlingDescriptor.getThrowable()
