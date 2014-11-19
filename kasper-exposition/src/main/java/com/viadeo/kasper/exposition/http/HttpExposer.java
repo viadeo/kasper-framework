@@ -39,6 +39,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
@@ -174,7 +175,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             );
         } finally {
             long duration = timer.stop();
-            MDC.put("duration", String.valueOf(duration));
+            MDC.put("duration", String.valueOf(TimeUnit.MILLISECONDS.convert(duration, TimeUnit.NANOSECONDS)));
         }
 
         if (null == response && null == errorHandlingDescriptor) {
