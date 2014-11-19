@@ -97,16 +97,11 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final HttpServletResponse httpResponse
     ) throws IOException {
         final Timer.Context timer = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
-        final UUID kasperCorrelationUUID = UUID.randomUUID();
-        Context context = null;
 
         try {
-            context = extractContext(httpRequest, kasperCorrelationUUID);
-            this.doHandleRequest(requestToObject, objectToHttpResponse, httpRequest, httpResponse, kasperCorrelationUUID, context);
-
+            this.doHandleRequest(requestToObject, objectToHttpResponse, httpRequest, httpResponse);
         } finally {
-            long duration = timer.stop();
-            enrichContextAndMDC(context, "duration", String.valueOf(duration));
+            timer.stop();
             getMetricRegistry().meter(metricNames.getRequestsName()).mark();
         }
     }
@@ -115,37 +110,39 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final HttpServletRequestToObject requestToObject,
             final ObjectToHttpServletResponse objectToHttpResponse,
             final HttpServletRequest httpRequest,
-            final HttpServletResponse httpResponse,
-            final UUID kasperCorrelationUUID,
-            final Context context
+            final HttpServletResponse httpResponse
     ) throws IOException {
 
         INPUT input = null;
-        RESPONSE response;
+        RESPONSE response = null;
+        ErrorHandlingDescriptor errorHandlingDescriptor = null;
+
+        final Timer.Context timer = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
+        final UUID kasperCorrelationUUID = UUID.randomUUID();
 
         try {
 
             /* 1) Check that we support the requested media type*/
             checkMediaType(httpRequest);
 
-            /* 2) Extract the input from request */
+            /* 2) Extract the context from request */
+            final Context context = extractContext(httpRequest, kasperCorrelationUUID);
+
+            /* 3) Extract the input from request */
             input = extractInput(httpRequest, requestToObject);
 
             enrichContextAndMDC(context, "appRoute", input.getClass().getName());
 
-            /* 3) Handle the request */
+            /* 4) Handle the request */
             response = handle(input, context);
 
         } catch (HttpExposerException exposerException) {
-            sendError(
-                    httpResponse,
-                    objectToHttpResponse,
-                    createErrorResponse(exposerException.getCoreReasonCode(), Lists.newArrayList(exposerException.getMessage())),
-                    kasperCorrelationUUID,
-                    exposerException,
-                    Optional.fromNullable(input)
+            errorHandlingDescriptor = new ErrorHandlingDescriptor(
+                    ErrorState.ERROR,
+                    exposerException.getCoreReasonCode(),
+                    Lists.newArrayList(exposerException.getMessage()),
+                    exposerException
             );
-            return;
 
         } catch (final JSR303ViolationException validationException) {
             final List<String> errorMessages = new ArrayList<>();
@@ -153,67 +150,97 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                 errorMessages.add(violation.getPropertyPath() + " : " + violation.getMessage());
             }
 
-            sendError(
-                    httpResponse,
-                    objectToHttpResponse,
-                    createRefusedResponse(CoreReasonCode.INVALID_INPUT, errorMessages),
-                    kasperCorrelationUUID,
-                    validationException,
-                    Optional.fromNullable(input)
+            errorHandlingDescriptor = new ErrorHandlingDescriptor(
+                    ErrorState.REFUSED,
+                    CoreReasonCode.INVALID_INPUT,
+                    errorMessages,
+                    validationException
             );
-            return;
 
         } catch (final IOException e) {
-            sendError(
-                    httpResponse,
-                    objectToHttpResponse,
-                    createErrorResponse(
-                            CoreReasonCode.INVALID_INPUT,
-                            Lists.newArrayList((null == e.getMessage()) ? "Unknown" : e.getMessage())
-                    ),
-                    kasperCorrelationUUID,
-                    e,
-                    Optional.fromNullable(input)
+            errorHandlingDescriptor = new ErrorHandlingDescriptor(
+                    ErrorState.ERROR,
+                    CoreReasonCode.INVALID_INPUT,
+                    Lists.newArrayList((null == e.getMessage()) ? "Unknown" : e.getMessage()),
+                    e
             );
-            return;
 
         } catch (final Throwable th) {
-            sendError(
-                    httpResponse,
-                    objectToHttpResponse,
-                    createErrorResponse(
-                            CoreReasonCode.UNKNOWN_REASON,
-                            Lists.newArrayList((null == th.getMessage()) ? "Unknown" : th.getMessage())
-                    ),
-                    kasperCorrelationUUID,
-                    th,
-                    Optional.fromNullable(input)
+            errorHandlingDescriptor = new ErrorHandlingDescriptor(
+                    ErrorState.ERROR,
+                    CoreReasonCode.UNKNOWN_REASON,
+                    Lists.newArrayList((null == th.getMessage()) ? "Unknown" : th.getMessage()),
+                    th
             );
-            return;
+        } finally {
+            long duration = timer.stop();
+            MDC.put("duration", String.valueOf(duration));
         }
 
-        try {
-
-            /* 4) Respond to the request */
-            sendResponse(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
-
-            final String inputName = input.getClass().getSimpleName();
-            requestLogger.info("Request processed in {} [{}] : {}", getInputTypeName(), inputName, input);
-
-        } catch (final JsonGenerationException | JsonMappingException e) {
-            sendError(
-                    httpResponse,
-                    objectToHttpResponse,
-                    createErrorResponse(CoreReasonCode.UNKNOWN_REASON, Lists.newArrayList(String.format(
-                            "Error outputting response to JSON for command [%s] and response [%s]error = %s",
-                            input.getClass().getSimpleName(),
-                            response,
-                            e
-                    ))),
-                    kasperCorrelationUUID,
-                    e,
-                    Optional.fromNullable(input)
+        if (null == response && null == errorHandlingDescriptor) {
+            errorHandlingDescriptor = new ErrorHandlingDescriptor(
+                    ErrorState.ERROR,
+                    CoreReasonCode.INTERNAL_COMPONENT_ERROR,
+                    Lists.newArrayList("Failed to retrieved a response"),
+                    new IllegalStateException()
             );
+        }
+
+        if (null != response) {
+            try {
+
+                /* 5) Respond to the request */
+                sendResponse(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
+
+            } catch (final JsonGenerationException | JsonMappingException e) {
+                errorHandlingDescriptor = new ErrorHandlingDescriptor(
+                        ErrorState.ERROR,
+                        CoreReasonCode.UNKNOWN_REASON,
+                        Lists.newArrayList(
+                                String.format(
+                                        "Error outputting response to JSON for command [%s] and response [%s]error = %s",
+                                        input.getClass().getSimpleName(),
+                                        response,
+                                        e
+                                )
+                        ),
+                        e
+                );
+            }
+        }
+
+        final String inputName = input != null ? input.getClass().getSimpleName() : "undefined";
+
+        /* 5bis) Manage and respond an error to the request */
+        if (null != errorHandlingDescriptor) {
+            if (errorHandlingDescriptor.getState() == ErrorState.REFUSED) {
+                response = createRefusedResponse(
+                        errorHandlingDescriptor.getCode(),
+                        errorHandlingDescriptor.getMessages()
+                );
+            } else {
+                response = createErrorResponse(
+                        errorHandlingDescriptor.getCode(),
+                        errorHandlingDescriptor.getMessages()
+                );
+            }
+
+            sendError(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
+
+            if (errorHandlingDescriptor.getState() == ErrorState.ERROR) {
+                requestLogger.warn("Refused {} [{}] : <reason={}> <input={}>",
+                        getInputTypeName(), inputName, response.getReason(), input,
+                        errorHandlingDescriptor.getThrowable()
+                );
+            } else {
+                requestLogger.error("Error in {} [{}] : <reason={}> <input={}>",
+                        getInputTypeName(), inputName, response.getReason(), input,
+                        errorHandlingDescriptor.getThrowable()
+                );
+            }
+
+        } else {
+            requestLogger.info("Request processed in {} [{}]", getInputTypeName(), inputName);
         }
     }
 
@@ -341,22 +368,12 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final HttpServletResponse httpResponse,
             final ObjectToHttpServletResponse objectToHttpResponse,
             final RESPONSE response,
-            final UUID kasperCorrelationUUID,
-            final Throwable throwable,
-            final Optional<INPUT> input
+            final UUID kasperCorrelationUUID
     ) throws IOException {
         try {
             sendResponse(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
         } finally {
             getMetricRegistry().meter(metricNames.getErrorsName()).mark();
-
-            final String inputName = input.isPresent() ? input.get().getClass().getSimpleName() : "undefined";
-
-            if (response.getStatus() == KasperResponse.Status.REFUSED) {
-                requestLogger.warn("Refused {} [{}] : {}", getInputTypeName(), inputName, response.getReason(), throwable);
-            } else {
-                requestLogger.error("Error in {} [{}] : {}", getInputTypeName(), inputName, response.getReason(), throwable);
-            }
         }
     }
 
@@ -524,6 +541,45 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
         public String getRequestsHandleTimeName() {
             return requestsHandleTimeName;
+        }
+    }
+
+    // ------------------------------------------------------------------------
+
+    private static enum ErrorState {
+        ERROR, REFUSED
+    }
+
+    // ------------------------------------------------------------------------
+
+    private static class ErrorHandlingDescriptor {
+
+        private final ErrorState state;
+        private final CoreReasonCode code;
+        private final List<String> messages;
+        private final Throwable throwable;
+
+        public ErrorHandlingDescriptor(ErrorState state, CoreReasonCode code, List<String> messages, Throwable throwable) {
+            this.state = state;
+            this.code = code;
+            this.messages = messages;
+            this.throwable = throwable;
+        }
+
+        public ErrorState getState() {
+            return state;
+        }
+
+        public CoreReasonCode getCode() {
+            return code;
+        }
+
+        public List<String> getMessages() {
+            return messages;
+        }
+
+        public Throwable getThrowable() {
+            return throwable;
         }
     }
 
