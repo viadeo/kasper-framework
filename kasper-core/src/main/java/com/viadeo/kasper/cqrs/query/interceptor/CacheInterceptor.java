@@ -44,7 +44,7 @@ public class CacheInterceptor<Q extends Query, P extends QueryResult> implements
                                     final Context context,
                                     final InterceptorChain<Q, QueryResponse<P>> chain) throws Exception {
 
-        final Serializable key = keyGenerator.computeKey(cacheAnnotation, q);
+        final Serializable key = keyGenerator.computeKey(q, cacheAnnotation.keys());
 
         if (cache.containsKey(key) && (null != cache.get(key))) {
             return QueryResponse.of(cache.get(key));

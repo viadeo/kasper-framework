@@ -13,7 +13,6 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.query.exposition.query.VisibilityFilter;
 import org.reflections.ReflectionUtils;
@@ -88,11 +87,11 @@ public class QueryAttributesKeyGenerator implements QueryCacheKeyGenerator {
     // ------------------------------------------------------------------------
 
     @Override
-    public Serializable computeKey(final XKasperQueryCache cache, final Query query) {
-        if (0 == cache.keys().length) {
+    public Serializable computeKey(final Query query, final String... fields) {
+        if (0 == fields.length) {
             return query.hashCode();
         } else {
-            return Objects.hashCode(collectValues(query, collectFields(query.getClass(), cache.keys())));
+            return Objects.hashCode(collectValues(query, collectFields(query.getClass(), fields)));
         }
     }
 
