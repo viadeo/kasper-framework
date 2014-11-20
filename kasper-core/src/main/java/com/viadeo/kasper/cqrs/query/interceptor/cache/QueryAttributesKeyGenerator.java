@@ -6,12 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.interceptor.cache;
 
-import com.google.common.base.Function;
-import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
-import com.google.common.base.Predicate;
+import com.google.common.base.*;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Sets;
+import com.viadeo.kasper.api.ID;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.query.exposition.query.VisibilityFilter;
@@ -27,7 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class QueryAttributesKeyGenerator implements QueryCacheKeyGenerator {
+public class QueryAttributesKeyGenerator<Q extends Query> implements QueryCacheKeyGenerator<Q> {
 
     private final ConcurrentHashMap<FieldCacheKey, Set<Field>> cache = new ConcurrentHashMap<>();
 
@@ -87,11 +85,19 @@ public class QueryAttributesKeyGenerator implements QueryCacheKeyGenerator {
     // ------------------------------------------------------------------------
 
     @Override
-    public Serializable computeKey(final Query query, final String... fields) {
+    public Serializable computeKey(final Optional<ID> user, final Q query, final String... fields) {
+        final int queryHashCode;
+
         if (0 == fields.length) {
-            return query.hashCode();
+            queryHashCode = query.hashCode();
         } else {
-            return Objects.hashCode(collectValues(query, collectFields(query.getClass(), fields)));
+            queryHashCode = Objects.hashCode(collectValues(query, collectFields(query.getClass(), fields)));
+        }
+
+        if (user.isPresent()) {
+            return String.format("%s_%s_%s", query.getClass().getSimpleName(), user.get().getIdentifier(), queryHashCode);
+        } else {
+            return String.format("%s_%s", query.getClass().getSimpleName(), queryHashCode);
         }
     }
 

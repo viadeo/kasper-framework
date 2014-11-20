@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.interceptor.cache;
 
+import com.google.common.base.Optional;
+import com.viadeo.kasper.api.ID;
 import com.viadeo.kasper.cqrs.query.Query;
 
 import java.io.Serializable;
@@ -16,10 +18,11 @@ import java.io.Serializable;
 public interface QueryCacheKeyGenerator<Q extends Query> {
 
     /**
+     * @param user for which we want to compute the key
      * @param query for which we want to compute the key
      * @param fields of the given query for which we want to build the caches key.
      * @return the compute key for this entry, it will be used to store/retrieve QueryResult from the cache.
      */
-    Serializable computeKey(Q query, String... fields);
+    Serializable computeKey(Optional<ID> user, Q query, String... fields);
 
 }
