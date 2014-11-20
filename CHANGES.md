@@ -33,6 +33,7 @@ _(based on 0.6.9, the recovery from the 0.7 is in progress)_
 * [Pull 249](https://github.com/viadeo/kasper-framework/pull/249) Added header `X-KASPER-CALL-TYPE` allowing to specify the type of a command call. Expected value are 'sync'|'async'|'time(x)' with x in milliseconds
 * [Pull 251](https://github.com/viadeo/kasper-framework/pull/251) Add request duration time to MDC logs
 * [Pull 252](https://github.com/viadeo/kasper-framework/pull/252) Added possibility to declare an handler as unexposed in using `XKasperUnexposed` annotation
+* Fix the behavior of the sendCommand method in order to fire and forget a command call
 
 
 ### Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandoned_###
