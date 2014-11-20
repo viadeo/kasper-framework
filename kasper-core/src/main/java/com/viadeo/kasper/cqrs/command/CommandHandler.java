@@ -9,6 +9,7 @@ package com.viadeo.kasper.cqrs.command;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperResponse;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
@@ -119,7 +120,7 @@ public abstract class CommandHandler<C extends Command>
                 }
             }
 
-            if ( ! ret.isOK()) {
+            if ( ! (ret.getStatus() == KasperResponse.Status.ACCEPTED || ret.getStatus() == KasperResponse.Status.OK))  {
                 isError = true;
             }
 

@@ -21,7 +21,7 @@ import static org.mockito.Mockito.*;
 public class CommandHandlerUTest {
 
     private enum ResponseType {
-        OK, REFUSE, ERROR, EXCEPTION
+        OK, ACCEPT, REFUSE, ERROR, EXCEPTION
     }
 
     private static class TestCommandHandler extends CommandHandler<Command> {
@@ -38,6 +38,8 @@ public class CommandHandlerUTest {
             switch (responseType) {
                 case OK:
                     return CommandResponse.ok();
+                case ACCEPT:
+                    return CommandResponse.accepted();
                 case REFUSE:
                     return CommandResponse.refused(CoreReasonCode.UNKNOWN_REASON, "");
                 case ERROR:
@@ -62,6 +64,19 @@ public class CommandHandlerUTest {
     public void handle_withOkResponse_shouldCommit() throws Throwable {
         // Given
         final TestCommandHandler handler = new TestCommandHandler(ResponseType.OK);
+
+        // When
+        final Object response = handler.handle(createCommandMessage(), uow);
+
+        // Then
+        assertNotNull(response);
+        verifyNoMoreInteractions(uow);
+    }
+
+    @Test
+    public void handle_withAcceptedResponse_shouldCommit() throws Throwable {
+        // Given
+        final TestCommandHandler handler = new TestCommandHandler(ResponseType.ACCEPT);
 
         // When
         final Object response = handler.handle(createCommandMessage(), uow);
