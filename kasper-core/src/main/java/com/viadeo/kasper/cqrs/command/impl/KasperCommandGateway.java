@@ -133,7 +133,7 @@ public class KasperCommandGateway implements CommandGateway {
     public void sendCommand(
                 final Command command,
                 @MetaData(Context.METANAME)
-                final Context context) throws Exception {
+                final Context context) {
 
         MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
 

@@ -23,7 +23,7 @@ public interface CommandGateway {
     /**
      * Fire an forget
      */
-    void sendCommand(Command command, @MetaData(Context.METANAME) Context context) throws Exception;
+    void sendCommand(Command command, @MetaData(Context.METANAME) Context context);
 
     /**
      * Fire and get a Future

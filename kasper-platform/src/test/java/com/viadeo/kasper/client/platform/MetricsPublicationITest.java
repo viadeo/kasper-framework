@@ -49,7 +49,7 @@ public class MetricsPublicationITest {
         reset(metricRegistry);
 
         // When
-        platform.getCommandGateway().sendCommand(new MyCustomDomainBox.MyCustomCommand(), DefaultContextBuilder.get());
+        platform.getCommandGateway().sendCommandAndWaitForAResponse(new MyCustomDomainBox.MyCustomCommand(), DefaultContextBuilder.get());
 
         // Then
         verifyTimerInteraction(CommandHandler.GLOBAL_TIMER_REQUESTS_TIME_NAME, globalRequestsNameTimer);
@@ -67,7 +67,7 @@ public class MetricsPublicationITest {
 
         // When
         try {
-            platform.getCommandGateway().sendCommand(new MyCustomDomainBox.MyCustomCommand(false), DefaultContextBuilder.get());
+            platform.getCommandGateway().sendCommandAndWaitForAResponse(new MyCustomDomainBox.MyCustomCommand(false), DefaultContextBuilder.get());
         } catch (RuntimeException e) {
             // nothing
         }
@@ -87,7 +87,7 @@ public class MetricsPublicationITest {
         reset(metricRegistry);
 
         // When
-        platform.getCommandGateway().sendCommand(new MyCustomDomainBox.MyCustomCommand(), DefaultContextBuilder.get());
+        platform.getCommandGateway().sendCommandAndWaitForAResponse(new MyCustomDomainBox.MyCustomCommand(), DefaultContextBuilder.get());
 
         // Then
         verifyTimerInteraction("mycustomdomain.command.mycustomcommand.requests-time", requestsNameTimer);
@@ -106,7 +106,7 @@ public class MetricsPublicationITest {
 
         // When
         try {
-            platform.getCommandGateway().sendCommand(new MyCustomDomainBox.MyCustomCommand(false), DefaultContextBuilder.get());
+            platform.getCommandGateway().sendCommandAndWaitForAResponse(new MyCustomDomainBox.MyCustomCommand(false), DefaultContextBuilder.get());
         } catch (RuntimeException e) {
             // nothing
         }
@@ -126,7 +126,7 @@ public class MetricsPublicationITest {
         reset(metricRegistry);
 
         // When
-        platform.getCommandGateway().sendCommand(new MyCustomDomainBox.MyCustomCommand(), DefaultContextBuilder.get());
+        platform.getCommandGateway().sendCommandAndWaitForAResponse(new MyCustomDomainBox.MyCustomCommand(), DefaultContextBuilder.get());
 
         // Then
         verifyTimerInteraction("mycustomdomain.command.requests-time", domainRequestsNameTimer);
@@ -144,7 +144,7 @@ public class MetricsPublicationITest {
 
         // When
         try {
-            platform.getCommandGateway().sendCommand(new MyCustomDomainBox.MyCustomCommand(false), DefaultContextBuilder.get());
+            platform.getCommandGateway().sendCommandAndWaitForAResponse(new MyCustomDomainBox.MyCustomCommand(false), DefaultContextBuilder.get());
         } catch (RuntimeException e) {
             // nothing
         }
@@ -166,7 +166,7 @@ public class MetricsPublicationITest {
         context.setApplicationId("myconsumer");
 
         // When
-        platform.getCommandGateway().sendCommand(new MyCustomDomainBox.MyCustomCommand(), context);
+        platform.getCommandGateway().sendCommandAndWaitForAResponse(new MyCustomDomainBox.MyCustomCommand(), context);
 
         // Then
         verifyMeterInteraction("client.myconsumer.command.requests", requestMeter);
@@ -185,7 +185,7 @@ public class MetricsPublicationITest {
 
         // When
         try {
-            platform.getCommandGateway().sendCommand(new MyCustomDomainBox.MyCustomCommand(false), context);
+            platform.getCommandGateway().sendCommandAndWaitForAResponse(new MyCustomDomainBox.MyCustomCommand(false), context);
         } catch (RuntimeException e) {
             // nothing
         }
