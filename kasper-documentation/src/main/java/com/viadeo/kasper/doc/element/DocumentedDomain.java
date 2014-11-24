@@ -21,10 +21,7 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.doc.element.DocumentedCommandHandler.DocumentedCommand;
@@ -140,9 +137,20 @@ public class DocumentedDomain extends AbstractElement {
         }
 
         this.events.addAll(events.values());
+
+        final Comparator<AbstractElement> abstractElementComparator = new Comparator<AbstractElement>() {
+            @Override
+            public int compare(AbstractElement o1, AbstractElement o2) {
+                return o1.getLabel().compareTo(o2.getLabel());
+            }
+        };
+
+        Collections.sort(commands, abstractElementComparator);
+        Collections.sort(queries, abstractElementComparator);
+        Collections.sort(this.events, abstractElementComparator);
     }
 
-    public static Map<Class, DocumentedQueryHandler.DocumentedQueryResult> findOrphanQueryResult(
+    private Map<Class, DocumentedQueryHandler.DocumentedQueryResult> findOrphanQueryResult(
             final DocumentedDomain domain,
             final Map<Class, DocumentedQueryHandler.DocumentedQueryResult> resultMap
     ) {
@@ -165,7 +173,7 @@ public class DocumentedDomain extends AbstractElement {
     }
 
     @SuppressWarnings("unchecked")
-    private static Map<Class, DocumentedQueryHandler.DocumentedQueryResult> findOrphanQueryResult(
+    private Map<Class, DocumentedQueryHandler.DocumentedQueryResult> findOrphanQueryResult(
             final DocumentedDomain domain,
             final Set<Class> referencedQueryResult,
             final DocumentedQueryHandler.DocumentedQueryResult documentedQueryResult
