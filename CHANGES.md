@@ -13,7 +13,9 @@ _(based on 0.6.9, the recovery from the 0.7 is in progress)_
   - Review the navigation and particular the behavior with back and previous
   - Fix trouble with collapsible component block
   - Ensure to load query results before queries
-  - Be able to provide detail of an object in more of query result 
+  - Be able to provide detail of an object in more of query result
+  - Sort collection of commands, queries and events alphabetically
+  - Fix trouble with search component
 * [Pull 235](https://github.com/viadeo/kasper-framework/pull/235) Ensure to add only one RetryFilter on  the Kasper client in order to avoid stack overflow
 * [Pull 236](https://github.com/viadeo/kasper-framework/pull/236) Reduce log level of DomainHelper to debug
 * [Pull 238](https://github.com/viadeo/kasper-framework/pull/238) Migrated to Axon framework 2.2
@@ -34,7 +36,8 @@ _(based on 0.6.9, the recovery from the 0.7 is in progress)_
 * [Pull 251](https://github.com/viadeo/kasper-framework/pull/251) Add request duration time to MDC logs
 * [Pull 252](https://github.com/viadeo/kasper-framework/pull/252) Added possibility to declare an handler as unexposed in using `XKasperUnexposed` annotation
 * Fix the behavior of the sendCommand method in order to fire and forget a command call
-
+* Added extract context duration time to MDC logs
+* Added extract input duration time to MDC logs
 
 ### Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandoned_###
 
