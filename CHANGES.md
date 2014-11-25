@@ -38,6 +38,7 @@ _(based on 0.6.9, the recovery from the 0.7 is in progress)_
 * Fix the behavior of the sendCommand method in order to fire and forget a command call
 * Added extract context duration time to MDC logs
 * Added extract input duration time to MDC logs
+* [Pull 255](https://github.com/viadeo/kasper-framework/pull/255) Update metrics dependency in order to use the java library provided by dropwizard 
 
 ### Version 0.7 (23/07/2014) ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.7~~)) _:warning: abandoned_###
 
