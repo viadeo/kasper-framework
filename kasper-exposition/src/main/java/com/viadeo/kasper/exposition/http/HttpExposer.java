@@ -121,6 +121,10 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         final Timer.Context timer = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
         final UUID kasperCorrelationUUID = UUID.randomUUID();
 
+        MDC.put(Context.REQUEST_CID_SHORTNAME, kasperCorrelationUUID.toString());
+
+        requestLogger.info("Processing request in {} [{}]", getInputTypeName(), resourceName(httpRequest.getRequestURI()));
+
         try {
 
             /* 1) Check that we support the requested media type*/
@@ -273,18 +277,28 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final HttpServletRequest httpRequest,
             final UUID kasperCorrelationUUID
     ) throws IOException {
-        final Context context = contextDeserializer.deserialize(httpRequest, kasperCorrelationUUID);
+        final Timer.Context timer = getMetricRegistry().timer(metricNames.getExtractContextTimeName()).time();
 
-        MDC.setContextMap(context.asMap());
+        try {
 
-        enrichContextAndMDC(context, "appServer", serverName());
-        enrichContextAndMDC(context, "appVersion", meta.getVersion());
-        enrichContextAndMDC(context, "appBuildingDate", meta.getBuildingDate().toString());
-        enrichContextAndMDC(context, "appDeploymentDate", meta.getDeploymentDate().toString());
-        enrichContextAndMDC(context, "clientVersion", Objects.firstNonNull(httpRequest.getHeader(HttpContextHeaders.HEADER_CLIENT_VERSION), "undefined"));
-        enrichContextAndMDC(context, "clientId", Objects.firstNonNull(context.getApplicationId(), "undefined"));
+            final Context context = contextDeserializer.deserialize(httpRequest, kasperCorrelationUUID);
 
-        return context;
+            MDC.setContextMap(context.asMap());
+
+            enrichContextAndMDC(context, "appServer", serverName());
+            enrichContextAndMDC(context, "appVersion", meta.getVersion());
+            enrichContextAndMDC(context, "appBuildingDate", meta.getBuildingDate().toString());
+            enrichContextAndMDC(context, "appDeploymentDate", meta.getDeploymentDate().toString());
+            enrichContextAndMDC(context, "clientVersion", Objects.firstNonNull(httpRequest.getHeader(HttpContextHeaders.HEADER_CLIENT_VERSION), "undefined"));
+            enrichContextAndMDC(context, "clientId", Objects.firstNonNull(context.getApplicationId(), "undefined"));
+
+            return context;
+
+        } finally {
+            long duration = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
+            LOGGER.info("Extracted context in {} ms", duration);
+            MDC.put("durationExtractContext", String.valueOf(duration));
+        }
     }
 
     private void enrichContextAndMDC(final Context context, final String key, final String value) {
@@ -298,28 +312,37 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final HttpServletRequest httpRequest,
             final HttpServletRequestToObject httpRequestToObject
     ) throws HttpExposerException, IOException {
+        final Timer.Context timer = getMetricRegistry().timer(metricNames.getExtractInputTimeName()).time();
 
-        /* 1) Resolve the input name */
-        final String requestName = aliasRegistry.resolve(resourceName(httpRequest.getRequestURI()));
-
-        /* 2) Check that the request is manageable*/
-        if( ! isManageable(requestName)){
-            throw new HttpExposerException(
-                    CoreReasonCode.NOT_FOUND,
-                    getInputTypeName() + "[" + requestName + "] not found."
-            );
-        }
-
-        /* 3) Resolve the input class*/
-        final Class<INPUT> inputClass = getInputClass(requestName);
-
-        /* 4) Extract to a known input */
         try {
-            return httpRequestToObject.map(httpRequest, inputClass);
-        } catch (Throwable t) {
-            throw Throwables.propagate(
-                    new RuntimeException(String.format("Failed to extract input : %s", requestName), t)
-            );
+
+            /* 1) Resolve the input name */
+            final String requestName = aliasRegistry.resolve(resourceName(httpRequest.getRequestURI()));
+
+            /* 2) Check that the request is manageable*/
+            if( ! isManageable(requestName)){
+                throw new HttpExposerException(
+                        CoreReasonCode.NOT_FOUND,
+                        getInputTypeName() + "[" + requestName + "] not found."
+                );
+            }
+
+            /* 3) Resolve the input class*/
+            final Class<INPUT> inputClass = getInputClass(requestName);
+
+            /* 4) Extract to a known input */
+            try {
+                return httpRequestToObject.map(httpRequest, inputClass);
+            } catch (Throwable t) {
+                throw Throwables.propagate(
+                        new RuntimeException(String.format("Failed to extract input : %s", requestName), t)
+                );
+            }
+
+        } finally {
+            long duration = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
+            LOGGER.info("Extracted input in {} ms", duration);
+            MDC.put("durationExtractInput", String.valueOf(duration));
         }
     }
 
@@ -520,12 +543,16 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         private final String requestsName;
         private final String requestsTimeName;
         private final String requestsHandleTimeName;
+        private final String extractContextTimeName;
+        private final String extractInputTimeName;
 
         public MetricNames(final Class clazz) {
             this.errorsName =  name(clazz, "errors");
             this.requestsName = name(clazz, "requests");
             this.requestsTimeName = name(clazz, "requests-time");
             this.requestsHandleTimeName = name(clazz, "requests-handle-time");
+            this.extractContextTimeName = name(clazz, "extract-context-time");
+            this.extractInputTimeName = name(clazz, "extract-input-time");
         }
 
         public String getErrorsName() {
@@ -542,6 +569,14 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
         public String getRequestsHandleTimeName() {
             return requestsHandleTimeName;
+        }
+
+        public String getExtractContextTimeName() {
+            return extractContextTimeName;
+        }
+
+        public String getExtractInputTimeName() {
+            return extractInputTimeName;
         }
     }
 
