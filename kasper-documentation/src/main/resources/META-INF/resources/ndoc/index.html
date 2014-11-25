@@ -109,13 +109,9 @@
         var nodes = {};
         var component_urls_per_domain = {};
 
-        /** VARIOUS **/
+        var prevent_onHashChange = false;
 
-        function execute(expected, actual, f) {
-          if(expected == actual) {
-            f();
-          }
-        }
+        /** VARIOUS **/
 
         function sort_on(property) {
           return function(value1, value2) {
@@ -174,7 +170,20 @@
                 $("#search_type").val(ui.item.type);
                 $("#search_domain").val(ui.item.domain);
                 $("#search_original").val(ui.item.label);
-                return false;
+
+                var type = ui.item.type;
+                var domain = ui.item.domain;
+                var name = ui.item.label;
+
+                prevent_onHashChange = true;
+
+                if(type != "domain") {
+                    go_dyn(nodes[domain], type + "_" + name);
+                } else {
+                    go_dyn(nodes[domain]);
+                }
+
+                return true;
               }
             }).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
               /* ensure to be on the navigation bar*/
@@ -206,24 +215,6 @@
                 .append( '<a>' + prefix + item.label + suffix + '</a>' )
                 .appendTo( ul );
             };
-
-            $("#search").keyup(function (e) {
-              if (e.keyCode == 13) {
-                // Do something
-                var type = $("#search_type").get(0).value;
-                var domain = $("#search_domain").get(0).value;
-                var name = $("#search_original").get(0).value;
-
-                console.log("search", type, name, domain);
-
-                if(type != "domain") {
-                  go_dyn(nodes[domain], type + "_" + name);
-                } else {
-                  go_dyn(nodes[domain]);
-                }
-              }
-            });
-
         }
 
         /** NAVIGATION **/
@@ -256,7 +247,7 @@
         }
 
         function go_dyn(domain, hash) {
-          console.log("go dyn", domain.label);
+          console.log("go dyn", domain.label, hash);
 
           $("#contents_dyn").empty();
           $(".nav > li").removeClass("active");
@@ -383,7 +374,6 @@
                     $("#contents_home .page tbody").append(template({ node: domain }))
 
                     $("#domain-" + domain.label + "-btn").click(function(){
-                      //go_dyn(domain);
                       window.location.hash = "#" + domain.label;
                     });
 
@@ -539,12 +529,12 @@
                     if (data.list.length > 0) {
                         $("#queries-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Queries", data: data.list.sort(sort_on("label")) } ));
                     }
-                })
+                });
 
                 $.get(pc.url)
                         .done(function(data) {
                             pc.init(data);
-                            execute(pc.length, ++actualLoad, f);
+                            f();
                         })
                         .fail(function(){
                             show_message("error", "Service is temporarily not available please try again later", false)
@@ -573,28 +563,27 @@
                 event.preventDefault();
 
                 var anchor = get_anchor($(this).attr("href"));
-                
+
                 expand_panel(anchor);
                 scroll_to_anchor(anchor, OFFSET_TOP_NAV);
               } else if( $(this).hasClass("out") ) {
                 event.preventDefault();
                 go_dyn(nodes[$(this).attr("domain")], get_anchor($(this).attr("href")));
               } else {
-                scroll_to_anchor(hash, -60); 
+                scroll_to_anchor(hash, -60);
               }
             });
 
             if(hash) {
               $("#" + hash + " a").trigger("click");
               scroll_to_anchor(hash, -60);
-            } 
+            }
           };
 
           panel_contents.forEach(function(panel_content) {
             $.get(panel_content.url)
               .done(function(data) {
                 panel_content.init(data);
-                execute(panel_contents.length, ++actualLoad, f);
               })
               .fail(function(){
                 show_message("error", "Service is temporarily not available please try again later", false)
@@ -723,7 +712,10 @@
         /** END **/
 
         window.onhashchange = function(e) {
-          return_to_window_location_hash();
+          if (!prevent_onHashChange) {
+            return_to_window_location_hash();
+          }
+          prevent_onHashChange = false;
         }
 
         $(document).ready(function() {
