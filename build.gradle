@@ -1,5 +1,4 @@
-// ============================================================================
-//                 KASPER - Kasper is the treasure keeper
+// ============================================================================ //                 KASPER - Kasper is the treasure keeper
 //    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
 //            Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
@@ -10,25 +9,11 @@ ext.nexusCredentials = {
     password nexus_password
 }
 
-wrapper.gradleVersion = '2.2'
+wrapper.gradleVersion = '2.1'
 
 configure(allprojects) {
     apply plugin: 'idea'
     apply plugin: 'maven'
-
-    repositories {
-//        mavenLocal()
-
-        // Maven Central is first to be the default repository (ordering is important)
-        mavenCentral()
-
-        // Viadeo Nexus
-        // Variables must be present in the 'gradle.properties' file
-        maven {
-            url "http://${nexus_host}/content/groups/all_repositories"
-            credentials nexusCredentials
-        }
-    }
 }
 
 configure(rootProject) {
@@ -47,16 +32,13 @@ configure(rootProject) {
 
     // Sonar configuration for root project
     sonarRunner {
-        toolVersion = '2.4'
-        forkOptions {
-            maxHeapSize = '1024m'
-        }
         sonarProperties {
-            property "sonar.host.url", "http://${sonar_host}:9000/"
+            property "sonar.host.url", "http://${sonar_host}:8080/sonar/"
             property "sonar.jdbc.url", "jdbc:mysql://${sonar_host}:3306/sonar?useUnicode=true&amp;characterEncoding=utf8"
             property "sonar.jdbc.driverClassName", "com.mysql.jdbc.Driver"
             property "sonar.jdbc.username", "sonar"
             property "sonar.jdbc.password", "sonar"
+            property "sonar.dynamicAnalysis", "true"
         }
     }
 }
@@ -90,6 +72,20 @@ configure(subprojects) {
         all*.exclude module: 'slf4j-jdk14'
         all*.exclude module: 'log4j'
         deployerJars
+    }
+
+    repositories {
+//        mavenLocal()
+
+        // Maven Central is first to be the default repository (ordering is important)
+        mavenCentral()
+
+        // Viadeo Nexus
+        // Variables must be present in the 'gradle.properties' file
+        maven {
+            url "http://${nexus_host}/content/groups/all_repositories"
+            credentials nexusCredentials
+        }
     }
 
     // Adding javadoc and sources jars, it is really nice to have! --------------
@@ -160,7 +156,7 @@ configure(subprojects) {
     apply plugin: 'findbugs'
 
     findbugs {
-        toolVersion = "3.0.0"
+        toolVersion = "2.0.1"
         sourceSets = [sourceSets.main]
         ignoreFailures = false
         reportsDir = file("$project.buildDir/findbugsReports")
