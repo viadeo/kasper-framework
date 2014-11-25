@@ -34,8 +34,8 @@ ext.libraries = [
         SPRING_WEB: 'org.springframework:spring-web:3.1.4.RELEASE',
         SPRING_TEST: 'org.springframework:spring-test:3.1.4.RELEASE',
 
-        YAMMER_METRICS: 'com.codahale.metrics:metrics-core:3.1.0-VIADEO-0.1',
-        METRICS_JSON: 'com.codahale.metrics:metrics-json:3.1.0-VIADEO-0.1',
+        YAMMER_METRICS: 'io.dropwizard.metrics:metrics-core:3.1.0',
+        METRICS_JSON: 'io.dropwizard.metrics:metrics-json:3.1.0',
 
         AXON_TEST: 'org.axonframework:axon-test:2.2',
         AXON_CORE: [

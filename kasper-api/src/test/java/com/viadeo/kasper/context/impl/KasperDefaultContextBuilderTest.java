@@ -15,17 +15,17 @@ import static org.junit.Assert.assertEquals;
 
 public class KasperDefaultContextBuilderTest {
 
-	@Test
-	public void testDeterministicId() {
+    @Test
+    public void testDeterministicId() {
         // Given
-		final DefaultContextBuilder builder = new DefaultContextBuilder();
+        final DefaultContextBuilder builder = new DefaultContextBuilder();
 
         // When
-		final Context context = builder.build();
+        final Context context = builder.build();
 
         // Then
-		assertEquals(context.getUserId(), context.getUserId());
-	}
+        assertEquals(context.getUserId(), context.getUserId());
+    }
 
     @Test
     public void testChild() {
@@ -60,8 +60,8 @@ public class KasperDefaultContextBuilderTest {
         // Then
         assertEquals("en", locale.getLanguage());
         assertEquals("", locale.getVariant());
-        assertEquals("English", locale.getDisplayLanguage());
-        assertEquals("English", locale.getDisplayName());
+        assertEquals("English", locale.getDisplayLanguage(Locale.ENGLISH));
+        assertEquals("English", locale.getDisplayName(Locale.ENGLISH));
         assertEquals("", locale.getDisplayVariant());
         assertEquals("en", locale.toLanguageTag());
         assertEquals("", locale.getCountry());
@@ -80,8 +80,8 @@ public class KasperDefaultContextBuilderTest {
         // Then
         assertEquals("en", locale.getLanguage());
         assertEquals("", locale.getVariant());
-        assertEquals("English", locale.getDisplayLanguage());
-        assertEquals("English (United States)", locale.getDisplayName());
+        assertEquals("English", locale.getDisplayLanguage(Locale.ENGLISH));
+        assertEquals("English (United States)", locale.getDisplayName(Locale.ENGLISH));
         assertEquals("", locale.getDisplayVariant());
         assertEquals("en-US", locale.toLanguageTag());
         assertEquals("US", locale.getCountry());
