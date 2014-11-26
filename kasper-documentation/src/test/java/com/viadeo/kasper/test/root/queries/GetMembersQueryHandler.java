@@ -7,6 +7,7 @@
 package com.viadeo.kasper.test.root.queries;
 
 import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.annotation.XKasperAlias;
 import com.viadeo.kasper.api.ID;
 import com.viadeo.kasper.api.validation.AssertID;
 import com.viadeo.kasper.cqrs.query.Query;
@@ -22,6 +23,7 @@ import javax.validation.constraints.NotNull;
 @XKasperQueryHandler(domain=Facebook.class)
 public class GetMembersQueryHandler extends QueryHandler<GetMembersQueryHandler.GetMembersQuery, GetMembersQueryHandler.MembersResult> {
 
+    @XKasperAlias(values = "GetUsers")
 	public static class GetMembersQuery implements Query {
 		private static final long serialVersionUID = -6513893864054353478L;
 
