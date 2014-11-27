@@ -296,7 +296,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
         } finally {
             long duration = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
-            LOGGER.info("Extracted context in {} ms", duration);
             MDC.put("durationExtractContext", String.valueOf(duration));
         }
     }
@@ -341,7 +340,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
         } finally {
             long duration = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
-            LOGGER.info("Extracted input in {} ms", duration);
             MDC.put("durationExtractInput", String.valueOf(duration));
         }
     }
