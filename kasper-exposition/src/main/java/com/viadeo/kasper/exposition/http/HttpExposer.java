@@ -42,6 +42,7 @@ import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_REQUEST_CORRELATION_ID;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
@@ -121,11 +122,9 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         final Timer.Context timer = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
         final UUID kasperCorrelationUUID = UUID.randomUUID();
 
-        MDC.put(Context.REQUEST_CID_SHORTNAME, kasperCorrelationUUID.toString());
-
-        requestLogger.info("Processing request in {} [{}]", getInputTypeName(), resourceName(httpRequest.getRequestURI()));
-
         try {
+            MDC.put(Context.REQUEST_CID_SHORTNAME, extractRequestCorrelationId(httpRequest));
+            requestLogger.info("Processing request in {} [{}]", getInputTypeName(), resourceName(httpRequest.getRequestURI()));
 
             /* 1) Check that we support the requested media type*/
             checkMediaType(httpRequest);
@@ -271,6 +270,14 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         } catch (final IOException e) {
             requestLogger.warn("Error when trying to flush output buffer", e);
         }
+    }
+
+    protected String extractRequestCorrelationId(final HttpServletRequest httpRequest) {
+        String requestCorrelationId = httpRequest.getHeader(HEADER_REQUEST_CORRELATION_ID);
+        if (requestCorrelationId == null) {
+            requestCorrelationId = UUID.randomUUID().toString();
+        }
+        return requestCorrelationId;
     }
 
     protected Context extractContext(
