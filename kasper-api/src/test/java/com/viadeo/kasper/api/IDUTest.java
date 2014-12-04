@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Collection;
+import java.util.Map;
 
 import static com.viadeo.kasper.api.TestFormats.DB_ID;
 import static com.viadeo.kasper.api.TestFormats.UUID;
@@ -69,12 +70,12 @@ public class IDUTest {
 
         givenId.setIDTransformer(new IDTransformer() {
             @Override
-            public Collection<ID> to(Format format, Collection<ID> ids) {
+            public Map<ID,ID> to(Format format, Collection<ID> ids) {
                throw new UnsupportedOperationException();
             }
 
             @Override
-            public Collection<ID> to(Format format, ID firstId, ID... restIds) {
+            public Map<ID,ID> to(Format format, ID firstId, ID... restIds) {
                 throw new UnsupportedOperationException();
             }
 
