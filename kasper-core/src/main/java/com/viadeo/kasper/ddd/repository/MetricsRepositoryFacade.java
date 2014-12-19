@@ -23,15 +23,12 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  */
 class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacade<AGR> {
 
-    private static final String GLOBAL_HISTO_SAVE_TIMES_NAME = name(IRepository.class, "save-times");
     private static final String GLOBAL_METER_SAVES_NAME = name(IRepository.class, "saves");
     private static final String GLOBAL_METER_SAVE_ERRORS_NAME = name(IRepository.class, "save-errors");
 
-    private static final String GLOBAL_HISTO_LOAD_TIMES_NAME = name(IRepository.class, "load-times");
     private static final String GLOBAL_METER_LOADS_NAME = name(IRepository.class, "loads");
     private static final String GLOBAL_METER_LOAD_ERRORS_NAME = name(IRepository.class, "load-errors");
 
-    private static final String GLOBAL_HISTO_DELETE_TIMES_NAME = name(IRepository.class, "delete-times");
     private static final String GLOBAL_METER_DELETES_NAME = name(IRepository.class, "deletes");
     private static final String GLOBAL_METER_DELETE_ERRORS_NAME = name(IRepository.class, "delete-errors");
 
@@ -39,18 +36,12 @@ class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacad
 
     private final String timerSaveTimeName;
     private final String meterSaveErrorsName;
-    private final String histoSavesTimesName;
-    private final String meterSavesName;
 
     private final String timerLoadTimeName;
     private final String meterLoadErrorsName;
-    private final String histoLoadsTimesName;
-    private final String meterLoadsName;
 
     private final String timerDeleteTimeName;
     private final String meterDeleteErrorsName;
-    private final String histoDeletesTimesName;
-    private final String meterDeletesName;
 
     // ------------------------------------------------------------------------
 
@@ -60,18 +51,12 @@ class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacad
 
         this.timerSaveTimeName = name(kasperRepositoryClass, "save-time");
         this.meterSaveErrorsName = name(kasperRepositoryClass, "save-errors");
-        this.histoSavesTimesName = name(kasperRepositoryClass, "save-times");
-        this.meterSavesName = name(kasperRepositoryClass, "saves");
 
         this.timerLoadTimeName = name(kasperRepositoryClass, "load-time");
         this.meterLoadErrorsName = name(kasperRepositoryClass, "load-errors");
-        this.histoLoadsTimesName = name(kasperRepositoryClass, "load-times");
-        this.meterLoadsName = name(kasperRepositoryClass, "loads");
 
         this.timerDeleteTimeName = name(kasperRepositoryClass, "delete-time");
         this.meterDeleteErrorsName = name(kasperRepositoryClass, "delete-errors");
-        this.histoDeletesTimesName = name(kasperRepositoryClass, "delete-times");
-        this.meterDeletesName = name(kasperRepositoryClass, "deletes");
     }
 
     // ------------------------------------------------------------------------
@@ -89,12 +74,9 @@ class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacad
             throw e;
 
         } finally {
-            final long time = timer.stop();
-            getMetricRegistry().histogram(GLOBAL_HISTO_SAVE_TIMES_NAME).update(time);
-            getMetricRegistry().histogram(histoSavesTimesName).update(time);
+            timer.stop();
 
             getMetricRegistry().meter(GLOBAL_METER_SAVES_NAME).mark();
-            getMetricRegistry().meter(meterSavesName).mark();
         }
 
     }
@@ -116,12 +98,9 @@ class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacad
             throw e;
 
         } finally {
-            final long time = timer.stop();
-            getMetricRegistry().histogram(GLOBAL_HISTO_LOAD_TIMES_NAME).update(time);
-            getMetricRegistry().histogram(histoLoadsTimesName).update(time);
+            timer.stop();
 
             getMetricRegistry().meter(GLOBAL_METER_LOADS_NAME).mark();
-            getMetricRegistry().meter(meterLoadsName).mark();
         }
 
         return agr;
@@ -142,12 +121,9 @@ class MetricsRepositoryFacade<AGR extends AggregateRoot> extends RepositoryFacad
             throw e;
 
         } finally {
-            final long time = timer.stop();
-            getMetricRegistry().histogram(GLOBAL_HISTO_DELETE_TIMES_NAME).update(time);
-            getMetricRegistry().histogram(histoDeletesTimesName).update(time);
+            timer.stop();
 
             getMetricRegistry().meter(GLOBAL_METER_DELETES_NAME).mark();
-            getMetricRegistry().meter(meterDeletesName).mark();
         }
 
     }

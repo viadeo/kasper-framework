@@ -35,17 +35,13 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
      */
     public static final int EVENT_PARAMETER_POSITION = 0;
 
-    private static final String GLOBAL_HISTO_HANDLE_TIMES_NAME = name(EventListener.class, "handle-times");
     private static final String GLOBAL_METER_HANDLES_NAME = name(EventListener.class, "handles");
     private static final String GLOBAL_METER_ERRORS_NAME = name(EventListener.class, "errors");
 
 	private final Class<? extends IEvent> eventClass;
     private final String timerHandleTimeName;
     private final String meterErrorsName;
-    private final String meterHandlesName;
-    private final String histoHandleTimesName;
     private final String domainMeterErrorsName;
-    private final String domainMeterHandlesName;
     private final String domainTimerHandleTimesName;
 
     private EventBus eventBus;
@@ -69,12 +65,9 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 		}
 
         this.timerHandleTimeName = name(this.getClass(), "handle-time");
-        this.histoHandleTimesName = name(this.getClass(), "handle-times");
-        this.meterHandlesName = name(this.getClass(), "handles");
         this.meterErrorsName = name(this.getClass(), "errors");
 
         this.domainTimerHandleTimesName = name(MetricNameStyle.DOMAIN_TYPE, this.getClass(), "handle-time");
-        this.domainMeterHandlesName = name(MetricNameStyle.DOMAIN_TYPE, this.getClass(), "handles");
         this.domainMeterErrorsName = name(MetricNameStyle.DOMAIN_TYPE, this.getClass(), "errors");
 	}
 	
@@ -153,14 +146,9 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
         } finally {
             /* Stop timer and record a tick */
             domainTimer.close();
-            final long time = timer.stop();
+            timer.stop();
 
-            getMetricRegistry().histogram(GLOBAL_HISTO_HANDLE_TIMES_NAME).update(time);
             getMetricRegistry().meter(GLOBAL_METER_HANDLES_NAME).mark();
-
-            getMetricRegistry().histogram(histoHandleTimesName).update(time);
-            getMetricRegistry().meter(meterHandlesName).mark();
-            getMetricRegistry().meter(domainMeterHandlesName).mark();
         }
 	}
 	

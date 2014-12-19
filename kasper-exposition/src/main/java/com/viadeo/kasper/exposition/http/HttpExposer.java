@@ -98,22 +98,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final HttpServletRequest httpRequest,
             final HttpServletResponse httpResponse
     ) throws IOException {
-        final Timer.Context timer = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
-
-        try {
-            this.doHandleRequest(requestToObject, objectToHttpResponse, httpRequest, httpResponse);
-        } finally {
-            timer.stop();
-            getMetricRegistry().meter(metricNames.getRequestsName()).mark();
-        }
-    }
-
-    protected void doHandleRequest(
-            final HttpServletRequestToObject requestToObject,
-            final ObjectToHttpServletResponse objectToHttpResponse,
-            final HttpServletRequest httpRequest,
-            final HttpServletResponse httpResponse
-    ) throws IOException {
 
         INPUT input = null;
         RESPONSE response = null;
@@ -123,6 +107,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         final UUID kasperCorrelationUUID = UUID.randomUUID();
 
         try {
+            MDC.clear();
             MDC.put(Context.REQUEST_CID_SHORTNAME, extractRequestCorrelationId(httpRequest));
             requestLogger.info("Processing request in {} [{}]", getInputTypeName(), resourceName(httpRequest.getRequestURI()));
 
@@ -249,13 +234,11 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
     }
 
     public final RESPONSE handle(final INPUT input, final Context context) throws Exception {
-        final Timer.Context inputHandleTime = getMetricRegistry().timer(name(input.getClass(), "requests-handle-time")).time();
         final Timer.Context globalInputHandleTime = getMetricRegistry().timer(metricNames.getRequestsHandleTimeName()).time();
 
         try {
             return doHandle(input, context);
         } finally {
-            inputHandleTime.stop();
             globalInputHandleTime.stop();
         }
     }
@@ -284,7 +267,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final HttpServletRequest httpRequest,
             final UUID kasperCorrelationUUID
     ) throws IOException {
-        final Timer.Context timer = getMetricRegistry().timer(metricNames.getExtractContextTimeName()).time();
+        long startMillis = System.currentTimeMillis();
 
         try {
 
@@ -302,8 +285,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             return context;
 
         } finally {
-            long duration = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
-            MDC.put("durationExtractContext", String.valueOf(duration));
+            long durationMillis = System.currentTimeMillis() - startMillis;
+            MDC.put("durationExtractContext", String.valueOf(durationMillis));
         }
     }
 
@@ -318,7 +301,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final HttpServletRequest httpRequest,
             final HttpServletRequestToObject httpRequestToObject
     ) throws HttpExposerException, IOException {
-        final Timer.Context timer = getMetricRegistry().timer(metricNames.getExtractInputTimeName()).time();
+        long startMillis = System.currentTimeMillis();
 
         try {
 
@@ -346,8 +329,8 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             }
 
         } finally {
-            long duration = TimeUnit.MILLISECONDS.convert(timer.stop(), TimeUnit.NANOSECONDS);
-            MDC.put("durationExtractInput", String.valueOf(duration));
+            long durationMillis = System.currentTimeMillis() - startMillis;
+            MDC.put("durationExtractInput", String.valueOf(durationMillis));
         }
     }
 
@@ -545,27 +528,17 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
     public static class MetricNames {
 
         private final String errorsName;
-        private final String requestsName;
         private final String requestsTimeName;
         private final String requestsHandleTimeName;
-        private final String extractContextTimeName;
-        private final String extractInputTimeName;
 
         public MetricNames(final Class clazz) {
             this.errorsName =  name(clazz, "errors");
-            this.requestsName = name(clazz, "requests");
             this.requestsTimeName = name(clazz, "requests-time");
             this.requestsHandleTimeName = name(clazz, "requests-handle-time");
-            this.extractContextTimeName = name(clazz, "extract-context-time");
-            this.extractInputTimeName = name(clazz, "extract-input-time");
         }
 
         public String getErrorsName() {
             return errorsName;
-        }
-
-        public String getRequestsName() {
-            return requestsName;
         }
 
         public String getRequestsTimeName() {
@@ -574,14 +547,6 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
         public String getRequestsHandleTimeName() {
             return requestsHandleTimeName;
-        }
-
-        public String getExtractContextTimeName() {
-            return extractContextTimeName;
-        }
-
-        public String getExtractInputTimeName() {
-            return extractInputTimeName;
         }
     }
 
