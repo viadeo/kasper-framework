@@ -123,6 +123,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         final UUID kasperCorrelationUUID = UUID.randomUUID();
 
         try {
+            MDC.clear();
             MDC.put(Context.REQUEST_CID_SHORTNAME, extractRequestCorrelationId(httpRequest));
             requestLogger.info("Processing request in {} [{}]", getInputTypeName(), resourceName(httpRequest.getRequestURI()));
 
