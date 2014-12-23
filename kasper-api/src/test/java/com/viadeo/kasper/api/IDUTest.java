@@ -67,15 +67,14 @@ public class IDUTest {
     public void to_withIDTransformer_isKo() {
         // Given
         final ID expectedID = new ID("viadeo", "member", UUID, java.util.UUID.randomUUID());
-
-        givenId.setIDTransformer(new IDTransformer() {
+        final IDTransformer transformer = new IDTransformer() {
             @Override
-            public Map<ID,ID> to(Format format, Collection<ID> ids) {
-               throw new UnsupportedOperationException();
+            public Map<ID, ID> to(Format format, Collection<ID> ids) {
+                throw new UnsupportedOperationException();
             }
 
             @Override
-            public Map<ID,ID> to(Format format, ID firstId, ID... restIds) {
+            public Map<ID, ID> to(Format format, ID firstId, ID... restIds) {
                 throw new UnsupportedOperationException();
             }
 
@@ -84,13 +83,17 @@ public class IDUTest {
 
                 return expectedID;
             }
-        });
+        };
+
+        givenId.setIDTransformer(transformer);
 
         // When
         ID transformedID = givenId.to(UUID);
 
         // Then
         assertEquals(expectedID, transformedID);
+        assertTrue(transformedID.getTransformer().isPresent());
+        assertEquals(transformer, transformedID.getTransformer().get());
     }
 
 }

@@ -180,7 +180,7 @@ public class ID implements KasperID {
         if (null == transformer) {
             throw new UnsupportedOperationException("IDTransformer is not defined");
         }
-        return transformer.to(format, this);
+        return transformer.to(format, this).withTransformer(transformer);
     }
 
     /**
