@@ -109,7 +109,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         try {
             MDC.clear();
             MDC.put(Context.REQUEST_CID_SHORTNAME, extractRequestCorrelationId(httpRequest));
-            requestLogger.info("Processing request in {} [{}]", getInputTypeName(), resourceName(httpRequest.getRequestURI()));
+            requestLogger.debug("Processing request in {} [{}]", getInputTypeName(), resourceName(httpRequest.getRequestURI()));
 
             /* 1) Check that we support the requested media type*/
             checkMediaType(httpRequest);
@@ -229,7 +229,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             }
 
         } else {
-            requestLogger.info("Request processed in {} [{}]", getInputTypeName(), inputName);
+            requestLogger.debug("Request processed in {} [{}]", getInputTypeName(), inputName);
         }
     }
 
