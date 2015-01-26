@@ -82,4 +82,23 @@ public class IDModuleUTest {
         Assert.assertEquals(givenId.getFormat(), actualId.getFormat());
         Assert.assertEquals(givenId.getIdentifier(), actualId.getIdentifier());
     }
+
+    @Test
+    public void serialize_then_deserialize_a_relation_ID_isOk() throws IOException {
+        // Given
+        RelationID relationId = new RelationID(
+                new ID(VENDOR, "member", DB_ID, 42),
+                new ID(VENDOR, "member", DB_ID, 24)
+        );
+
+        // When
+        String content = mapper.writeValueAsString(relationId);
+        RelationID actualRelationId = mapper.readValue(content, RelationID.class);
+
+        // Then
+        assertNotNull(actualRelationId);
+        Assert.assertEquals(relationId.getSourceId(), actualRelationId.getSourceId());
+        Assert.assertEquals(relationId.getTargetId(), actualRelationId.getTargetId());
+        Assert.assertEquals(relationId.getId(), actualRelationId.getId());
+    }
 }

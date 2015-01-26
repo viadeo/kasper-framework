@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.viadeo.kasper.api.ID;
 import com.viadeo.kasper.api.IDBuilder;
+import com.viadeo.kasper.api.RelationID;
 
 import java.io.IOException;
 
@@ -22,6 +23,9 @@ public class IDModule extends SimpleModule {
         addKeySerializer(ID.class, new IDKeySerializer());
         addDeserializer(ID.class, new IDDeserializer(builder));
         addKeyDeserializer(ID.class, new IDKeyDeserializer(builder));
+
+        addSerializer(RelationID.class, new RelationIDSerializer());
+        addDeserializer(RelationID.class, new RelationIDDeserializer(builder));
     }
 
     private static class IDSerializer extends JsonSerializer<ID> {
@@ -65,6 +69,28 @@ public class IDModule extends SimpleModule {
         @Override
         public Object deserializeKey(String key, DeserializationContext ctxt) throws IOException {
             return builder.build(key);
+        }
+    }
+
+    private static class RelationIDSerializer extends JsonSerializer<RelationID> {
+        @Override
+        public void serialize(final RelationID value, final JsonGenerator jgen, final SerializerProvider provider) throws IOException {
+            jgen.writeString(value.toString());
+        }
+    }
+
+    private static class RelationIDDeserializer extends JsonDeserializer<RelationID> {
+
+        private final IDBuilder builder;
+
+        public RelationIDDeserializer(IDBuilder builder) {
+            this.builder = builder;
+        }
+
+        @Override
+        public RelationID deserialize(final JsonParser jp, final DeserializationContext ctxt) throws IOException {
+            String[] split = jp.getText().split("---");
+            return new RelationID(builder.build(split[0]), builder.build(split[1]));
         }
     }
 }
