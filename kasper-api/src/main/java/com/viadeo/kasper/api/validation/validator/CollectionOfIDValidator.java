@@ -22,21 +22,17 @@ public class CollectionOfIDValidator implements ConstraintValidator<AssertID, Co
 
     @Override
     public boolean isValid(Collection<ID> values, ConstraintValidatorContext context) {
-        if (values == null) {
+        if (values == null || values.isEmpty()) {
             return true;
         }
+        
+        for (ID value : values) {
+            if ( ! idValidator.isValid(value, context)) {
+                return false;
 
-        boolean valid = ! values.isEmpty();
-
-        if (valid) {
-            for (ID value : values) {
-                valid &= idValidator.isValid(value, context);
-                if ( ! valid) {
-                    break;
-                }
             }
         }
 
-        return valid;
+        return Boolean.TRUE;
     }
 }

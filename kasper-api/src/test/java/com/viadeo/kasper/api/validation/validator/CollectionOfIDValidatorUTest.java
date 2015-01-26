@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-public class ListOfIDValidatorUTest {
+public class CollectionOfIDValidatorUTest {
 
     private CollectionOfIDValidator validator;
     private IDBuilder builder;
@@ -86,7 +86,26 @@ public class ListOfIDValidatorUTest {
     }
 
     @Test
-    public void isValid_withEmptyListOfID_returnFalse() {
+    public void isValid_withValidID_withInvalidID_returnTrue() {
+        // Given
+        when(assertID.vendor()).thenReturn("viadeo");
+        when(assertID.type()).thenReturn(new String[]{"member"});
+        when(assertID.format()).thenReturn("uuid");
+
+        ID idA = builder.build("urn:viadeo:member:uuid:594fb387-3c18-4b99-b1e2-dc5704b8cea7");
+        ID idB = builder.build("urn:viadeo:member:db-id:42");
+
+        validator.initialize(assertID);
+
+        // When
+        boolean valid = validator.isValid(Lists.newArrayList(idA, idB), mock(ConstraintValidatorContext.class));
+
+        // Then
+        assertFalse(valid);
+    }
+
+    @Test
+    public void isValid_withEmptyListOfID_returnTrue() {
         // Given
         when(assertID.type()).thenReturn(new String[]{"member"});
 
@@ -96,7 +115,7 @@ public class ListOfIDValidatorUTest {
         boolean valid = validator.isValid(Lists.<ID>newArrayList(), mock(ConstraintValidatorContext.class));
 
         // Then
-        assertFalse(valid);
+        assertTrue(valid);
     }
 
     @Test
