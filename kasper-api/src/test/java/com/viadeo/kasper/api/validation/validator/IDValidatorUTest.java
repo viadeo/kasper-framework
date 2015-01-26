@@ -41,27 +41,6 @@ public class IDValidatorUTest {
     }
 
     @Test
-    public void assertNoNull_withNullAsId_returnFalse() {
-        // When
-        boolean valid = validator.assertNotNull(null);
-        
-        // Then
-        assertFalse(valid);
-    }
-
-    @Test
-    public void assertNoNull_withId_returnTrue() {
-        // Given
-        ID id = builder.build("urn:viadeo:member:db-id:42");
-
-        // When
-        boolean valid = validator.assertNotNull(id);
-
-        // Then
-        assertTrue(valid);
-    }
-
-    @Test
     public void assertVendor_withExpectedVendor_returnTrue() {
         // Given
         when(assertID.vendor()).thenReturn("viadeo");
@@ -239,7 +218,7 @@ public class IDValidatorUTest {
     }
 
     @Test
-    public void isValid_withNullAsID_returnFalse() {
+    public void isValid_withNullAsID_returnTrue() {
         // Given
         when(assertID.type()).thenReturn(new String[]{"member"});
 
@@ -249,6 +228,6 @@ public class IDValidatorUTest {
         boolean valid = validator.isValid(null, mock(ConstraintValidatorContext.class));
 
         // Then
-        assertFalse(valid);
+        assertTrue(valid);
     }
 }

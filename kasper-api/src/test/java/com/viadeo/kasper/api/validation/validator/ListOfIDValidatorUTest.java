@@ -100,7 +100,7 @@ public class ListOfIDValidatorUTest {
     }
 
     @Test
-    public void isValid_withNullAsListOfID_returnFalse() {
+    public void isValid_withNullAsListOfID_returnTrue() {
         // Given
         when(assertID.type()).thenReturn(new String[]{"member"});
 
@@ -110,6 +110,6 @@ public class ListOfIDValidatorUTest {
         boolean valid = validator.isValid(null, mock(ConstraintValidatorContext.class));
 
         // Then
-        assertFalse(valid);
+        assertTrue(valid);
     }
 }

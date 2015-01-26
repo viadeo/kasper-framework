@@ -24,7 +24,10 @@ public class IDValidator implements ConstraintValidator<AssertID, ID> {
 
     @Override
     public boolean isValid(final ID id, final ConstraintValidatorContext context) {
-        return assertNotNull(id) && assertVendor(id) && assertObjectType(id) && assertFormat(id);
+        if ( id == null ) {
+            return Boolean.TRUE;
+        }
+        return assertVendor(id) && assertObjectType(id) && assertFormat(id);
     }
 
     protected boolean assertNotNull(final ID id) {

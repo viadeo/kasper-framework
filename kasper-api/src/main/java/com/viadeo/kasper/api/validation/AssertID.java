@@ -19,7 +19,7 @@ import static java.lang.annotation.ElementType.FIELD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * The annotated element must be non null and must respect some additional constraints according to the specified parameters.
+ * The annotated element must respect some additional constraints according to the specified parameters.
  *
  * <p> Additional constraints are on :
  *   <ul>
