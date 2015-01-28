@@ -11,18 +11,20 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.api.ID;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.validator.CountryValidator;
+import com.viadeo.kasper.validator.ViadeoLangValidator;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
- *
  * A default {@link com.viadeo.kasper.context.Context} implementation
- * @see com.viadeo.kasper.context.Context
  *
+ * @see com.viadeo.kasper.context.Context
  */
 public class DefaultContext extends AbstractContext {
     private static final long serialVersionUID = -2357451589032314740L;
@@ -124,7 +126,10 @@ public class DefaultContext extends AbstractContext {
 
     @Override
     public Context setUserLang(final String userLang) {
-        this.userLang = checkNotNull(userLang);
+
+        checkArgument(ViadeoLangValidator.isValid(userLang), userLang + " is not a lang supported by viadeo (fr, es, en, de, pt, it, mx, ru, ar)");
+
+        this.userLang = userLang;
         return this;
     }
 
@@ -135,7 +140,10 @@ public class DefaultContext extends AbstractContext {
 
     @Override
     public Context setUserCountry(final String userCountry) {
-        this.userCountry = checkNotNull(userCountry);
+
+        checkArgument(CountryValidator.isValid(userCountry), userCountry + " is not a country code ISO 3166 (2 letters)");
+
+        this.userCountry = userCountry;
         return this;
     }
 
@@ -282,7 +290,7 @@ public class DefaultContext extends AbstractContext {
 
         final DefaultContext other = (DefaultContext) obj;
 
-        return  super.equals(obj)
+        return super.equals(obj)
                 && Objects.equal(this.sessionCorrelationId, other.sessionCorrelationId)
                 && Objects.equal(this.funnelCorrelationId, other.funnelCorrelationId)
                 && Objects.equal(this.requestCorrelationId, other.requestCorrelationId)
@@ -290,7 +298,7 @@ public class DefaultContext extends AbstractContext {
                 && Objects.equal(this.userId, other.userId)
                 && Objects.equal(this.userLang, other.userLang)
                 && Objects.equal(this.userCountry, other.userCountry)
-                && Objects.equal(this.applicationId,  other.applicationId)
+                && Objects.equal(this.applicationId, other.applicationId)
                 && Objects.equal(this.securityToken, other.securityToken)
                 && Objects.equal(this.funnelName, other.funnelName)
                 && Objects.equal(this.funnelVersion, other.funnelVersion)
@@ -300,7 +308,7 @@ public class DefaultContext extends AbstractContext {
 
     @Override
     public int hashCode() {
-        return Objects.hashCode( super.hashCode(),
+        return Objects.hashCode(super.hashCode(),
                 this.sessionCorrelationId,
                 this.funnelCorrelationId,
                 this.requestCorrelationId,
