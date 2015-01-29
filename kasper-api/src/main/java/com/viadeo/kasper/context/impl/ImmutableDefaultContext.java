@@ -47,7 +47,7 @@ public class ImmutableDefaultContext extends AbstractImmutableContext {
 
     ImmutableDefaultContext(ID userID, String userLang, String userCountry, String applicationId,
                             String requestCorrelationId, String funnelCorrelationId, String sessionCorrelationId,
-                            String securityToken, String funnelName, String funnelVersion, String ipAddress) {
+                            String securityToken, String funnelName, String funnelVersion, String ipAddress, int sequenceIncrement) {
         this.userID = userID;
         this.userLang = userLang;
         this.userCountry = userCountry;
@@ -59,6 +59,7 @@ public class ImmutableDefaultContext extends AbstractImmutableContext {
         this.funnelName = funnelName;
         this.funnelVersion = funnelVersion;
         this.ipAddress = ipAddress;
+        this.sequenceIncrement = sequenceIncrement;
     }
 
     @Override

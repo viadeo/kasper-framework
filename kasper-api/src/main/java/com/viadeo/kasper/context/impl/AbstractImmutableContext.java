@@ -21,7 +21,7 @@ public abstract class AbstractImmutableContext implements ImmutableContext {
     private KasperID kasperCorrelationId = DEFAULT_KASPERCORR_ID;
 
     /* Used to check child contexts, NOT USED IN EQUALITY CHECKS */
-    private int sequenceIncrement = INITIAL_SEQUENCE_INCREMENT;
+    int sequenceIncrement = INITIAL_SEQUENCE_INCREMENT;
 
     protected AbstractImmutableContext() {
     }

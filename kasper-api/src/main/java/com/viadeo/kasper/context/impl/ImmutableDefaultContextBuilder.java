@@ -40,7 +40,7 @@ public class ImmutableDefaultContextBuilder implements ImmutableContextBuilder<I
 
         ImmutableDefaultContext context = new ImmutableDefaultContext(userID, userLang, userCountry, applicationId,
                 requestCorrelationId, funnelCorrelationId, sessionCorrelationId,
-                securityToken, funnelName, funnelVersion, ipAddress);
+                securityToken, funnelName, funnelVersion, ipAddress, sequenceIncrement);
 
         Optional<ContextValidator<ImmutableDefaultContext>> validatorOptional = getValidator();
 
