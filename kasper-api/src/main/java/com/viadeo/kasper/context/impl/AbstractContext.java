@@ -11,6 +11,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.ImmutableContext;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.impl.DefaultKasperId;
 
@@ -27,6 +28,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Provides the Kasper correlation id
  *
  */
+@Deprecated
 public abstract class AbstractContext implements Context {
 	private static final long serialVersionUID = 1887660968377933167L;
 
@@ -137,7 +139,7 @@ public abstract class AbstractContext implements Context {
 
     @SuppressWarnings("unchecked") // must be ensured by client
     @Override
-    public <C extends Context> C child() {
+    public <C extends ImmutableContext> C child() {
         final AbstractContext newContext;
 
         try {
