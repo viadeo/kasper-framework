@@ -158,6 +158,9 @@ public class ImmutableDefaultContext extends AbstractImmutableContext {
     @Override
     public ImmutableContext child() {
 
-        return new ImmutableDefaultContextBuilder().withContext(this).build();
+        return new ImmutableDefaultContextBuilder()
+                .withContext(this)
+                .withSequenceIncrement(this.getSequenceIncrement() + 1)
+                .build();
     }
 }

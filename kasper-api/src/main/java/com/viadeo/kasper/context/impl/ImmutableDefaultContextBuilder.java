@@ -35,6 +35,10 @@ public class ImmutableDefaultContextBuilder implements ImmutableContextBuilder<I
     private int sequenceIncrement;
 
 
+    public ImmutableDefaultContextBuilder() {
+        validator = new DefaultContextValidator<>();
+    }
+
     @Override
     public ImmutableDefaultContext build() {
 
@@ -147,9 +151,8 @@ public class ImmutableDefaultContextBuilder implements ImmutableContextBuilder<I
                 .withSecurityToken(context.getSecurityToken())
                 .withSessionCorrelationId(context.getSessionCorrelationId())
                 .withUserCountry(context.getUserCountry())
-                .withUserID(context.getUserID().get())
-                .withUserLang(context.getUserLang())
-                .withSequenceIncrement(context.getSequenceIncrement() + 1);
+                .withUserID(context.getUserID().isPresent() ? context.getUserID().get() : null)
+                .withUserLang(context.getUserLang());
     }
 
     @Override
