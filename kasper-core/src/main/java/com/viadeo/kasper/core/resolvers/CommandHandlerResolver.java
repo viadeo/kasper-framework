@@ -107,14 +107,14 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
 
     @SuppressWarnings("unchecked")
     // @javax.annotation.Nullable
-    public Class<? extends CommandHandler> getHandlerClass(Class<? extends Command> commandClass) {
+    public Optional<Class<? extends CommandHandler>> getHandlerClass(Class<? extends Command> commandClass) {
         checkNotNull(commandClass);
         for (Map.Entry<Class, Class> handlerToCommand : cacheCommands.entrySet()) {
             if (commandClass.equals(handlerToCommand.getValue())) {
-                return handlerToCommand.getKey();
+                return Optional.<Class<? extends CommandHandler>>of(handlerToCommand.getKey());
             }
         }
-        return null;
+        return Optional.absent();
     }
 
     // ------------------------------------------------------------------------

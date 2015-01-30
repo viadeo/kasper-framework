@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.mockito.Mock;
 
+import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -58,6 +59,9 @@ public class DefaultDomainLocatorUTest {
         // Given
         Command command = new TestCommand();
 
+        doReturn(Optional.absent())
+                .when(commandHandlerResolver).getHandlerClass(TestCommand.class);
+
         // When
         Set<String> tags = locator.getHandlerTags(command);
 
@@ -70,7 +74,7 @@ public class DefaultDomainLocatorUTest {
         // Given
         Command command = new TestCommand();
 
-        doReturn(TestCommandHandler_WithSeveralTags.class)
+        doReturn(Optional.of(TestCommandHandler_WithSeveralTags.class))
                 .when(commandHandlerResolver).getHandlerClass(TestCommand.class);
         Set<String> expectedTags = newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2);
 

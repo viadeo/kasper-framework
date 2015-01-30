@@ -1,7 +1,8 @@
 package com.viadeo.kasper.core.resolvers;
 
-import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertSame;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.MockitoAnnotations.initMocks;
 
 import org.junit.Before;
@@ -9,6 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -49,10 +51,10 @@ public class CommandHandlerResolverUTest {
         Class<? extends Command> command = TestCommand.class;
 
         // When
-        Class<? extends CommandHandler> handlerClass = resolver.getHandlerClass(command);
+        Optional<Class<? extends CommandHandler>> handlerClass = resolver.getHandlerClass(command);
 
         // Then
-        assertNull(handlerClass);
+        assertFalse(handlerClass.isPresent());
     }
 
     @Test
@@ -64,10 +66,11 @@ public class CommandHandlerResolverUTest {
         resolver.getCommandClass(registeredHandler);
 
         // When
-        Class<? extends CommandHandler> handlerClass = resolver.getHandlerClass(command);
+        Optional<Class<? extends CommandHandler>> handlerClass = resolver.getHandlerClass(command);
 
         // Then
-        assertSame(registeredHandler, handlerClass);
+        assertTrue(handlerClass.isPresent());
+        assertSame(registeredHandler, handlerClass.get());
     }
 
     // ------------------------------------------------------------------------

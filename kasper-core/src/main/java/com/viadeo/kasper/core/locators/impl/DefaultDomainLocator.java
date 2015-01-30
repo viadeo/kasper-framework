@@ -100,12 +100,13 @@ public class DefaultDomainLocator implements DomainLocator {
         Class<? extends Command> commandClass = command.getClass();
 
         // @javax.annotation.Nullable
-        Class<? extends CommandHandler> handlerClass = commandHandlerResolver.getHandlerClass(commandClass);
+        Optional<Class<? extends CommandHandler>> resolvedHandlerClass = commandHandlerResolver.getHandlerClass(commandClass);
 
-        if (handlerClass == null) {
+        if (!resolvedHandlerClass.isPresent()) {
             return ImmutableSet.of();
         }
 
+        Class<? extends CommandHandler> handlerClass = resolvedHandlerClass.get();
         return getHandlerTags(handlerClass);
     }
 
