@@ -18,9 +18,7 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.interceptor.KasperCommandInterceptor;
-import com.viadeo.kasper.ddd.Domain;
 
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
@@ -39,7 +37,6 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.refEq;
@@ -207,9 +204,9 @@ public class KasperCommandGatewayUTest {
     public void enrichMdcAndMdcContextMap_withRegisteredCommandWithTags_shouldAddItsTagsToTheContextBeforeEnrichingTheMdcContextMap() {
         // Given
         Command command = new TestCommand();
-        when(domainLocator.getHandlerForCommandClass(command.getClass()))
-                .thenReturn(Optional.<CommandHandler>of(new TestCommandHandler_WithSeveralTags()));
-        Set<String> expectedTags = newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2);
+        Set<String> expectedTags = newHashSet("this-is-a-tag", "this-is-another-tag");
+        when(domainLocator.getHandlerTags(command))
+                .thenReturn(expectedTags);
 
         Context context = mock(Context.class);
         when(context.addTags(expectedTags))
@@ -239,144 +236,8 @@ public class KasperCommandGatewayUTest {
 
     // ------------------------------------------------------------------------
 
-    @Test
-    @SuppressWarnings("all")
-    public void getHandlerClass_withNull_shouldThrowNPE() {
-        // Given
-        Command command = null;
-
-        // Expect
-        thrown.expect(NullPointerException.class);
-
-        // When
-        commandGateway.getHandlerClass(command);
-    }
-
-    @Test
-    public void getHandlerClass_withUnregisteredCommand_shouldReturnNull() {
-        // Given
-        Command command = new TestCommand();
-        when(domainLocator.getHandlerForCommandClass(command.getClass()))
-                .thenReturn(Optional.<CommandHandler>absent());
-
-        // When
-        Class<? extends CommandHandler> handlerClass = commandGateway.getHandlerClass(command);
-
-        // Then
-        assertNull(handlerClass);
-    }
-
-    @Test
-    public void getHandlerClass_withRegisteredCommand_shouldReturnTheHandlersClass() {
-        // Given
-        Command command = new TestCommand();
-        CommandHandler registeredHandler = new TestCommandHandler_WithSeveralTags();
-        when(domainLocator.getHandlerForCommandClass(command.getClass()))
-                .thenReturn(Optional.of(registeredHandler));
-
-        // When
-        Class<? extends CommandHandler> handlerClass = commandGateway.getHandlerClass(command);
-
-        // Then
-        assertEquals(registeredHandler.getClass(), handlerClass);
-    }
-
-    // ------------------------------------------------------------------------
-
-    @Test
-    @SuppressWarnings("all")
-    public void getHandlerTags_withNull_shouldThrowNPE() {
-        // Given
-        Class<? extends CommandHandler> handlerClass = null;
-
-        // Expect
-        thrown.expect(NullPointerException.class);
-
-        // When
-        KasperCommandGateway.getHandlerTags(handlerClass);
-    }
-
-    @Test
-    @SuppressWarnings("all")
-    public void getHandlerTags_withHandlerWithNoTags_shouldReturnEmpty() {
-        // Given
-        Class<? extends CommandHandler> handlerClass = TestCommandHandler_WithNoTags.class;
-
-        // When
-        Set<String> tags = KasperCommandGateway.getHandlerTags(handlerClass);
-
-        // Then
-        assertEquals(newHashSet(), tags);
-    }
-
-    @Test
-    public void getHandlerTags_withHandlerWithOneTag_shouldReturnTheSingletonSet() {
-        // Given
-        Class<? extends CommandHandler> handlerClass = TestCommandHandler_WithOneTag.class;
-
-        // When
-        Set<String> tags = KasperCommandGateway.getHandlerTags(handlerClass);
-
-        // Then
-        assertEquals(newHashSet(TEST_COMMAND_TAG), tags);
-    }
-
-    @Test
-    public void getHandlerTags_withHandlerWithSeveralTags_shouldReturnTheSet() {
-        // Given
-        Class<? extends CommandHandler> handlerClass = TestCommandHandler_WithSeveralTags.class;
-
-        // When
-        Set<String> tags = KasperCommandGateway.getHandlerTags(handlerClass);
-
-        // Then
-        assertEquals(newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2), tags);
-    }
-
-    @Test
-    @SuppressWarnings("all")
-    public void getHandlerTags_withHandlerWithoutAnnotations_shouldReturnEmpty() {
-        // Given
-        Class<? extends CommandHandler> handlerClass = TestCommandHandler_WithoutAnnotation.class;
-
-        // When
-        Set<String> tags = KasperCommandGateway.getHandlerTags(handlerClass);
-
-        // Then
-        assertEquals(newHashSet(), tags);
-    }
-
-    // ------------------------------------------------------------------------
-
-    private static final String TEST_COMMAND_TAG = "this is a tag";
-
-    private static final String TEST_COMMAND_TAG_2 = "this is another tag";
-
-    @XKasperUnregistered
-    private static class TestDomain implements Domain {
-    }
-
     @XKasperUnregistered
     private static class TestCommand implements Command {
-    }
-
-    @XKasperUnregistered
-    @XKasperCommandHandler(domain = TestDomain.class)
-    private static class TestCommandHandler_WithNoTags extends CommandHandler<TestCommand> {
-    }
-
-    @XKasperUnregistered
-    @XKasperCommandHandler(domain = TestDomain.class, tags = TEST_COMMAND_TAG)
-    private static class TestCommandHandler_WithOneTag extends CommandHandler<TestCommand> {
-    }
-
-    @XKasperUnregistered
-    @XKasperCommandHandler(domain = TestDomain.class, tags = {TEST_COMMAND_TAG, TEST_COMMAND_TAG_2})
-    private static class TestCommandHandler_WithSeveralTags extends CommandHandler<TestCommand> {
-    }
-
-    @XKasperUnregistered
-    private static class TestCommandHandler_WithoutAnnotation extends CommandHandler<TestCommand> {
     }
 
 }

@@ -6,12 +6,15 @@
 // ============================================================================
 package com.viadeo.kasper.core.locators.impl;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.exception.KasperException;
@@ -88,6 +91,46 @@ public class DefaultDomainLocator implements DomainLocator {
             }
         }
         return Optional.absent();
+    }
+
+    @Override
+    public Set<String> getHandlerTags(Command command) {
+        // @javax.annotation.Nullable
+        Class<? extends CommandHandler> handlerClass = getHandlerClass(command);
+
+        if (handlerClass == null) {
+            return ImmutableSet.of();
+        }
+
+        return getHandlerTags(handlerClass);
+    }
+
+    @VisibleForTesting
+    // @javax.annotation.Nullable
+    protected Class<? extends CommandHandler> getHandlerClass(Command command) {
+        checkNotNull(command);
+
+        Class<? extends Command> commandClass = command.getClass();
+        Optional<CommandHandler> registeredHandler = getHandlerForCommandClass(commandClass);
+        if (!registeredHandler.isPresent()) {
+            return null;
+        }
+
+        CommandHandler handler = registeredHandler.get();
+        return handler.getClass();
+    }
+
+    @VisibleForTesting
+    protected static Set<String> getHandlerTags(Class<? extends CommandHandler> handlerClass) {
+        checkNotNull(handlerClass);
+
+        // @javax.annotation.Nullable
+        XKasperCommandHandler annotation = handlerClass.getAnnotation(XKasperCommandHandler.class);
+        if (annotation == null) {
+            return ImmutableSet.of();
+        }
+        String[] annotationTags = annotation.tags();
+        return ImmutableSet.copyOf(annotationTags);
     }
 
     /**

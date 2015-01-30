@@ -7,8 +7,6 @@
 package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
@@ -20,7 +18,6 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandHandlerInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.interceptor.KasperCommandInterceptor;
 import com.viadeo.kasper.cqrs.util.MdcUtils;
@@ -245,41 +242,9 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(command);
         checkNotNull(context);
 
-        // @javax.annotation.Nullable
-        Class<? extends CommandHandler> handlerClass = getHandlerClass(command);
-        if (handlerClass != null) {
-            Set<String> additionalTags = getHandlerTags(handlerClass);
-            context.addTags(additionalTags);
-        }
+        Set<String> additionalTags = domainLocator.getHandlerTags(command);
+        context.addTags(additionalTags);
         MdcUtils.enrichMdcContextMap(context);
-    }
-
-    @VisibleForTesting
-    // @javax.annotation.Nullable
-    protected Class<? extends CommandHandler> getHandlerClass(Command command) {
-        checkNotNull(command);
-
-        Class<? extends Command> commandClass = command.getClass();
-        Optional<CommandHandler> registeredHandler = domainLocator.getHandlerForCommandClass(commandClass);
-        if (!registeredHandler.isPresent()) {
-            return null;
-        }
-
-        CommandHandler handler = registeredHandler.get();
-        return handler.getClass();
-    }
-
-    @VisibleForTesting
-    protected static Set<String> getHandlerTags(Class<? extends CommandHandler> handlerClass) {
-        checkNotNull(handlerClass);
-
-        // @javax.annotation.Nullable
-        XKasperCommandHandler annotation = handlerClass.getAnnotation(XKasperCommandHandler.class);
-        if (annotation == null) {
-            return ImmutableSet.of();
-        }
-        String[] annotationTags = annotation.tags();
-        return ImmutableSet.copyOf(annotationTags);
     }
 
     // ------------------------------------------------------------------------
