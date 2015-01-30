@@ -280,11 +280,12 @@ public class KasperCommandGateway implements CommandGateway {
     protected static Set<String> getHandlerTags(Class<? extends CommandHandler> handlerClass) {
         checkNotNull(handlerClass);
 
+        // @javax.annotation.Nullable
         XKasperCommandHandler annotation = handlerClass.getAnnotation(XKasperCommandHandler.class);
-        String[] annotationTags = annotation.tags();
-        if (annotationTags == null) {
+        if (annotation == null) {
             return ImmutableSet.of();
         }
+        String[] annotationTags = annotation.tags();
         return ImmutableSet.copyOf(annotationTags);
     }
 

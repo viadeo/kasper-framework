@@ -265,6 +265,19 @@ public class KasperQueryGatewayUTest {
         assertEquals(newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2), tags);
     }
 
+    @Test
+    @SuppressWarnings("all")
+    public void getHandlerTags_withHandlerWithoutAnnotations_shouldReturnEmpty() {
+        // Given
+        Class<? extends QueryHandler> handlerClass = TestQueryHandler_WithoutAnnotation.class;
+
+        // When
+        Set<String> tags = KasperQueryGateway.getHandlerTags(handlerClass);
+
+        // Then
+        assertEquals(newHashSet(), tags);
+    }
+
     // ------------------------------------------------------------------------
 
     @Test(expected = NullPointerException.class)
@@ -394,6 +407,10 @@ public class KasperQueryGatewayUTest {
     @XKasperUnregistered
     @XKasperQueryHandler(domain = TestDomain.class, tags = {TEST_COMMAND_TAG, TEST_COMMAND_TAG_2})
     private static class TestQueryHandler_WithSeveralTags extends QueryHandler<TestQuery, TestQueryResult> {
+    }
+
+    @XKasperUnregistered
+    private static class TestQueryHandler_WithoutAnnotation extends QueryHandler<TestQuery, TestQueryResult> {
     }
 
 }

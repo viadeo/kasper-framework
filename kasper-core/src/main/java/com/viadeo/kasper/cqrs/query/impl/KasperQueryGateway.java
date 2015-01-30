@@ -184,11 +184,12 @@ public class KasperQueryGateway implements QueryGateway {
     protected static Set<String> getHandlerTags(Class<? extends QueryHandler> handlerClass) {
         checkNotNull(handlerClass);
 
+        // @javax.annotation.Nullable
         XKasperQueryHandler annotation = handlerClass.getAnnotation(XKasperQueryHandler.class);
-        String[] annotationTags = annotation.tags();
-        if (annotationTags == null) {
+        if (annotation == null) {
             return ImmutableSet.of();
         }
+        String[] annotationTags = annotation.tags();
         return ImmutableSet.copyOf(annotationTags);
     }
 

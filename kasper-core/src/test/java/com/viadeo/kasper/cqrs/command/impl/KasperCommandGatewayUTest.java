@@ -384,6 +384,19 @@ public class KasperCommandGatewayUTest {
         assertEquals(newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2), tags);
     }
 
+    @Test
+    @SuppressWarnings("all")
+    public void getHandlerTags_withHandlerWithoutAnnotations_shouldReturnEmpty() {
+        // Given
+        Class<? extends CommandHandler> handlerClass = TestCommandHandler_WithoutAnnotation.class;
+
+        // When
+        Set<String> tags = KasperCommandGateway.getHandlerTags(handlerClass);
+
+        // Then
+        assertEquals(newHashSet(), tags);
+    }
+
     // ------------------------------------------------------------------------
 
     private static final String TEST_COMMAND_TAG = "this is a tag";
@@ -411,6 +424,10 @@ public class KasperCommandGatewayUTest {
     @XKasperUnregistered
     @XKasperCommandHandler(domain = TestDomain.class, tags = {TEST_COMMAND_TAG, TEST_COMMAND_TAG_2})
     private static class TestCommandHandler_WithSeveralTags extends CommandHandler<TestCommand> {
+    }
+
+    @XKasperUnregistered
+    private static class TestCommandHandler_WithoutAnnotation extends CommandHandler<TestCommand> {
     }
 
 }
