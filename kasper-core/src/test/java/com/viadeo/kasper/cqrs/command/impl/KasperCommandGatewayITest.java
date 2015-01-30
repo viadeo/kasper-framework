@@ -2,6 +2,7 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.context.Tags;
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -18,6 +19,16 @@ import org.junit.Test;
 import java.util.List;
 
 public class KasperCommandGatewayITest {
+
+    static {
+        // pre-load Tags class, to initialize its fields
+        try {
+            Class.forName(Tags.class.getName());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
 
     private KasperCommandGateway commandGateway;
 
