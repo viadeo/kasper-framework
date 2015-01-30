@@ -135,7 +135,7 @@ public class KasperCommandGateway implements CommandGateway {
                 @MetaData(Context.METANAME)
                 final Context context) {
 
-        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+        addContextToMDC(context);
 
         commandGateway.sendCommand(
                 checkNotNull(command),
@@ -150,7 +150,7 @@ public class KasperCommandGateway implements CommandGateway {
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
-        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+        addContextToMDC(context);
 
         return commandGateway.sendCommandForFuture(
                 checkNotNull(command),
@@ -165,7 +165,7 @@ public class KasperCommandGateway implements CommandGateway {
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
-        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+        addContextToMDC(context);
 
         return commandGateway.sendCommandAndWaitForAResponse(
                 checkNotNull(command),
@@ -180,7 +180,7 @@ public class KasperCommandGateway implements CommandGateway {
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
-        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+        addContextToMDC(context);
 
         return commandGateway.sendCommandAndWaitForAResponseWithException(
                 checkNotNull(command),
@@ -197,7 +197,7 @@ public class KasperCommandGateway implements CommandGateway {
                 final long timeout,
                 final TimeUnit unit) throws Exception {
 
-        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+        addContextToMDC(context);
 
         commandGateway.sendCommandAndWait(
                 checkNotNull(command),
@@ -214,12 +214,16 @@ public class KasperCommandGateway implements CommandGateway {
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
-        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+        addContextToMDC(context);
 
         commandGateway.sendCommandAndWaitForever(
                 checkNotNull(command),
                 context
         );
+    }
+
+    private static void addContextToMDC(Context context) {
+        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
     }
 
     // ------------------------------------------------------------------------

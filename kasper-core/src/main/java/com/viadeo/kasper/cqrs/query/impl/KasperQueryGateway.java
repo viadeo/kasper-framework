@@ -87,7 +87,7 @@ public class KasperQueryGateway implements QueryGateway {
         final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerRequestsTimeName).time();
 
         /* Sets current thread context */
-        MDC.setContextMap(context.asMap(MDC.getCopyOfContextMap()));
+        enrichMdcContextMap(context);
         CurrentContext.set(context);
 
         // Search for associated handler --------------------------------------
@@ -138,6 +138,10 @@ public class KasperQueryGateway implements QueryGateway {
         }
 
         return ret;
+    }
+
+    private static void enrichMdcContextMap(Context context) {
+        MDC.setContextMap(context.asMap(MDC.getCopyOfContextMap()));
     }
 
     // ------------------------------------------------------------------------
