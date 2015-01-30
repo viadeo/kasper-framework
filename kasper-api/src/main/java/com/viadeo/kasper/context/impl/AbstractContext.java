@@ -8,6 +8,7 @@ package com.viadeo.kasper.context.impl;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
@@ -17,6 +18,7 @@ import com.viadeo.kasper.impl.DefaultKasperId;
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -251,6 +253,20 @@ public abstract class AbstractContext implements Context {
                 .addValue(this.sequenceIncrement)
                 .addValue(this.properties)
                 .toString();
+    }
+
+    // default implementation, so that subclasses still compile
+
+    @Deprecated
+    @Override
+    public Context setTags(Set<String> tags) {
+        return this;
+    }
+
+    @Deprecated
+    @Override
+    public Set<String> getTags() {
+        return ImmutableSet.of();
     }
 
 }
