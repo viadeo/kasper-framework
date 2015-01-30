@@ -28,6 +28,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
 
+import java.util.Map;
+
 /**
  * The Kasper gateway base implementation
  */
@@ -140,8 +142,13 @@ public class KasperQueryGateway implements QueryGateway {
         return ret;
     }
 
+    @SuppressWarnings("unchecked")
     private static void enrichMdcContextMap(Context context) {
-        MDC.setContextMap(context.asMap(MDC.getCopyOfContextMap()));
+        checkNotNull(context);
+
+        Map initialContextMap = MDC.getCopyOfContextMap();
+        Map contextMapEnrichedWithContext = context.asMap(initialContextMap);
+        MDC.setContextMap(contextMapEnrichedWithContext);
     }
 
     // ------------------------------------------------------------------------
