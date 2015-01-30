@@ -6,11 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.exposition.http;
 
-import com.google.common.base.Splitter;
-import com.google.common.collect.ImmutableSet;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.context.Tags;
 import com.viadeo.kasper.impl.DefaultKasperId;
 
 import javax.servlet.http.HttpServletRequest;
@@ -99,11 +98,7 @@ public class HttpContextDeserializer {
         }
 
         if (null != headerTags) {
-            context.setTags(ImmutableSet.copyOf(
-                    Splitter.on(Context.TAGS_SEPARATOR)
-                            .omitEmptyStrings()
-                            .split(headerTags)
-            ));
+            context.setTags(Tags.valueOf(headerTags));
         }
 
         if (null != headerCallType) {

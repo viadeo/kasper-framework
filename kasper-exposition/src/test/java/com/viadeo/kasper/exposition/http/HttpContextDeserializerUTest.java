@@ -25,51 +25,7 @@ public class HttpContextDeserializerUTest {
     }
 
     @Test
-    @SuppressWarnings("all")
-    public void deserialize_withMissingTagsHeader_shouldReturnTagEmptyComtext() {
-        // Given
-        UUID kasperCorrelationId = UUID.randomUUID();
-        HttpServletRequest req = mock(HttpServletRequest.class);
-
-        // When
-        Context context = deserializer.deserialize(req, kasperCorrelationId);
-
-        // Then
-        assertEquals(newHashSet(), context.getTags());
-    }
-
-    @Test
-    public void deserialize_withTagsHeader_shouldReturnTheTag() {
-        // Given
-        UUID kasperCorrelationId = UUID.randomUUID();
-        HttpServletRequest req = mock(HttpServletRequest.class);
-        when(req.getHeader(HEADER_TAGS))
-                .thenReturn("a-tag");
-
-        // When
-        Context context = deserializer.deserialize(req, kasperCorrelationId);
-
-        // Then
-        assertEquals(newHashSet("a-tag"), context.getTags());
-    }
-
-    @Test
-    public void deserialize_withTagsHeader_shouldSplitTheTags() {
-        // Given
-        UUID kasperCorrelationId = UUID.randomUUID();
-        HttpServletRequest req = mock(HttpServletRequest.class);
-        when(req.getHeader(HEADER_TAGS))
-                .thenReturn("a-tag,another-tag");
-
-        // When
-        Context context = deserializer.deserialize(req, kasperCorrelationId);
-
-        // Then
-        assertEquals(newHashSet("a-tag", "another-tag"), context.getTags());
-    }
-
-    @Test
-    public void deserialize_withTagsHeader_shouldOmitEmptyTags() {
+    public void deserialize_withTagsHeader_shouldSetTheContextTags() {
         // Given
         UUID kasperCorrelationId = UUID.randomUUID();
         HttpServletRequest req = mock(HttpServletRequest.class);

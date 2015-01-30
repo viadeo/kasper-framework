@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.client;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Optional;
 import com.sun.jersey.api.client.RequestBuilder;
+import com.viadeo.kasper.context.Tags;
 import com.viadeo.kasper.context.Context;
 
 import java.io.Serializable;
@@ -35,7 +35,7 @@ public class HttpContextSerializer {
         setHeader(builder, HEADER_FUNNEL_NAME, context.getFunnelName());
         setHeader(builder, HEADER_FUNNEL_VERSION, context.getFunnelVersion());
         setHeader(builder, HEADER_REQUEST_IP_ADDRESS, context.getIpAddress());
-        setHeader(builder, HEADER_TAGS, Joiner.on(Context.TAGS_SEPARATOR).join(context.getTags()));
+        setHeader(builder, HEADER_TAGS, Tags.toString(context.getTags()));
 
         final Optional<Serializable> callType = context.getProperty(Context.CALL_TYPE);
         if (callType.isPresent()) {

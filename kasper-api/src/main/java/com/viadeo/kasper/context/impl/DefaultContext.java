@@ -6,12 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.context.impl;
 
-import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.api.ID;
+import com.viadeo.kasper.context.Tags;
 import com.viadeo.kasper.context.Context;
 
 import java.util.HashMap;
@@ -228,6 +228,7 @@ public class DefaultContext extends AbstractContext {
 
     @Override
     public Context setTags(Set<String> tags) {
+        checkNotNull(tags);
         this.tags = ImmutableSet.copyOf(tags);
         return this;
     }
@@ -288,7 +289,7 @@ public class DefaultContext extends AbstractContext {
         retMap.put(FUNNEL_NAME_SHORTNAME, safeStringObject(this.funnelName));
         retMap.put(FUNNEL_VERS_SHORTNAME, safeStringObject(this.funnelVersion));
         retMap.put(IP_ADDRESS_SHORTNAME, safeStringObject(this.ipAddress));
-        retMap.put(TAGS_SHORTNAME, Joiner.on(TAGS_SEPARATOR).join(tags));
+        retMap.put(TAGS_SHORTNAME, Tags.toString(this.tags));
 
         return retMap;
     }

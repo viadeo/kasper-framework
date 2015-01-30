@@ -51,25 +51,6 @@ public class HttpContextSerializerUTest {
         RequestBuilder builder = mock(RequestBuilder.class);
 
         Context context = new DefaultContext();
-        context.setTags(newHashSet("a-tag"));
-
-        // When
-        serializer.serialize(context, builder);
-
-        // Then
-        InOrder inOrder = inOrder(builder);
-        inOrder.verify(builder)
-                .header(HEADER_TAGS, "a-tag");
-        inOrder.verify(builder, never())
-                .header(eq(HEADER_TAGS), anyString()); // once and only once
-    }
-
-    @Test
-    public void serialize_withTags_shouldJoinThem() {
-        // Given
-        RequestBuilder builder = mock(RequestBuilder.class);
-
-        Context context = new DefaultContext();
         context.setTags(newHashSet("a-tag", "another-tag"));
 
         // When

@@ -63,7 +63,6 @@ public interface Context extends Serializable  {
     String FUNNEL_VERS_SHORTNAME = "funnelVersion";
     String IP_ADDRESS_SHORTNAME = "ipAddress";
     String TAGS_SHORTNAME = "tags";
-    char TAGS_SEPARATOR = ',';
     String CALL_TYPE = "callType";
     String USER_AGENT = "userAgent";
     String REFERER = "Referer";
