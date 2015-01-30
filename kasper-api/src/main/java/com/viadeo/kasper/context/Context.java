@@ -252,6 +252,8 @@ public interface Context extends Serializable  {
      */
     Set<String> getTags();
 
+    Context addTags(Set<String> additionalTags);
+
     // ------------------------------------------------------------------------
 
     /**

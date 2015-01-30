@@ -269,4 +269,10 @@ public abstract class AbstractContext implements Context {
         return ImmutableSet.of();
     }
 
+    @Deprecated
+    @Override
+    public AbstractContext addTags(Set<String> additionalTags) {
+        return this;
+    }
+
 }

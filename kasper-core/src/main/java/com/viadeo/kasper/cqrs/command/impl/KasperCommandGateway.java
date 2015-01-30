@@ -10,7 +10,6 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
@@ -243,10 +242,14 @@ public class KasperCommandGateway implements CommandGateway {
 
     @VisibleForTesting
     protected void enrichContextAndMdcContextMap(Command command, Context context) {
+        checkNotNull(command);
+        checkNotNull(context);
+
         // @javax.annotation.Nullable
         Class<? extends CommandHandler> handlerClass = getHandlerClass(command);
         if (handlerClass != null) {
-            addHandlerTagsToContext(handlerClass, context);
+            Set<String> additionalTags = getHandlerTags(handlerClass);
+            context.addTags(additionalTags);
         }
         MdcUtils.enrichMdcContextMap(context);
     }
@@ -264,16 +267,6 @@ public class KasperCommandGateway implements CommandGateway {
 
         CommandHandler handler = registeredHandler.get();
         return handler.getClass();
-    }
-
-    @VisibleForTesting
-    protected static void addHandlerTagsToContext(Class<? extends CommandHandler> handlerClass, Context context) {
-        checkNotNull(context);
-
-        Set<String> originalTags = context.getTags();
-        Set<String> additionalTags = getHandlerTags(handlerClass);
-        Set<String> mergedTags = Sets.union(originalTags, additionalTags);
-        context.setTags(mergedTags);
     }
 
     @VisibleForTesting

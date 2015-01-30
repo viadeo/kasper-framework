@@ -10,6 +10,7 @@ import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.ID;
 import com.viadeo.kasper.context.Tags;
 import com.viadeo.kasper.context.Context;
@@ -227,6 +228,7 @@ public class DefaultContext extends AbstractContext {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Context setTags(Set<String> tags) {
         checkNotNull(tags);
         this.tags = ImmutableSet.copyOf(tags);
@@ -234,8 +236,18 @@ public class DefaultContext extends AbstractContext {
     }
 
     @Override
+    @SuppressWarnings("deprecation")
     public Set<String> getTags() {
         return tags;
+    }
+
+    @Override
+    @SuppressWarnings("deprecation")
+    public DefaultContext addTags(Set<String> additionalTags) {
+        checkNotNull(additionalTags);
+        Set<String> mergedTags = Sets.union(this.tags, additionalTags);
+        this.tags = ImmutableSet.copyOf(mergedTags);
+        return this;
     }
 
     // ------------------------------------------------------------------------

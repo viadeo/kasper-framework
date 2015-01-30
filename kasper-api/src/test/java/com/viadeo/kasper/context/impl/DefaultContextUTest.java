@@ -3,7 +3,9 @@ package com.viadeo.kasper.context.impl;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.util.Map;
 import java.util.Set;
@@ -12,6 +14,11 @@ import static com.google.common.collect.Sets.newHashSet;
 import static org.junit.Assert.*;
 
 public class DefaultContextUTest {
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
+
+    // ------------------------------------------------------------------------
 
     @Test
     public void getFirstIpAddress_withEmpty_shouldReturnAbsent() {
@@ -136,6 +143,80 @@ public class DefaultContextUTest {
         assertSame(context, newContext);
         Set<String> actualTags = context.getTags();
         assertEquals(newTags, actualTags);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Test
+    @SuppressWarnings("all")
+    public void addTags_withNull_shouldThrowNPE() {
+        // Given
+        Context context = new DefaultContext();
+        Set<String> oldTags = newHashSet("a-tag", "another-tag");
+        context.setTags(oldTags);
+
+        Set<String> newTags = null;
+
+        // Expect
+        thrown.expect(NullPointerException.class);
+
+        // When
+        context.addTags(newTags);
+    }
+
+    @Test
+    @SuppressWarnings("all")
+    public void addTags_withEmptySet_shouldDoNothing() {
+        // Given
+        Context context = new DefaultContext();
+        Set<String> oldTags = newHashSet("a-tag", "another-tag");
+        context.setTags(oldTags);
+
+        Set<String> newTags = newHashSet();
+
+        // When
+        Context newContext = context.addTags(newTags);
+
+        // Then
+        assertSame(context, newContext);
+        Set<String> actualTags = context.getTags();
+        assertEquals(oldTags, actualTags);
+    }
+
+    @Test
+    public void addTags_withExistingTags_shouldDoNothing() {
+        // Given
+        Context context = new DefaultContext();
+        Set<String> oldTags = newHashSet("a-tag", "another-tag");
+        context.setTags(oldTags);
+
+        Set<String> newTags = newHashSet("a-tag");
+
+        // When
+        Context newContext = context.addTags(newTags);
+
+        // Then
+        assertSame(context, newContext);
+        Set<String> actualTags = context.getTags();
+        assertEquals(oldTags, actualTags);
+    }
+
+    @Test
+    public void addTags_withNewTags_shouldAddThem() {
+        // Given
+        Context context = new DefaultContext();
+        Set<String> oldTags = newHashSet("a-tag", "another-tag");
+        context.setTags(oldTags);
+
+        Set<String> newTags = newHashSet("yet-another-tag");
+
+        // When
+        Context newContext = context.addTags(newTags);
+
+        // Then
+        assertSame(context, newContext);
+        Set<String> actualTags = context.getTags();
+        assertEquals(newHashSet("a-tag", "another-tag", "yet-another-tag"), actualTags);
     }
 
     // ------------------------------------------------------------------------

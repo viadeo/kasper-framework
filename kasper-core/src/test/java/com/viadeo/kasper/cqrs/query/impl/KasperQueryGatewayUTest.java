@@ -8,7 +8,6 @@ package com.viadeo.kasper.cqrs.query.impl;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Sets;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
@@ -93,11 +92,7 @@ public class KasperQueryGatewayUTest {
         Set<String> expectedTags = newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2);
 
         Context context = mock(Context.class);
-        Set<String> initialSetOfTags = Sets.newHashSet();
-        when(context.getTags())
-                .thenReturn(initialSetOfTags);
-
-        when(context.setTags(expectedTags))
+        when(context.addTags(expectedTags))
                 .thenReturn(context);
 
         Map<String, String> initialContextMap = ImmutableMap.of("foo", "bar");
@@ -114,9 +109,7 @@ public class KasperQueryGatewayUTest {
         // Then
         InOrder inOrder = inOrder(context);
         inOrder.verify(context)
-                .getTags();
-        inOrder.verify(context)
-                .setTags(expectedTags);
+                .addTags(expectedTags);
         inOrder.verify(context)
                 .asMap(initialContextMap);
         inOrder.verifyNoMoreInteractions();
@@ -167,50 +160,6 @@ public class KasperQueryGatewayUTest {
 
         // Then
         assertEquals(registeredHandler.getClass(), handlerClass);
-    }
-
-    // ------------------------------------------------------------------------
-
-    @Test
-    @SuppressWarnings("all")
-    public void addHandlerTagsToContext_withNullContext_shouldThrowNPE() {
-        // Given
-        Context context = null;
-        Class<? extends QueryHandler> handlerClass = TestQueryHandler_WithSeveralTags.class;
-
-        // Expect
-        thrown.expect(NullPointerException.class);
-
-        // When
-        KasperQueryGateway.addHandlerTagsToContext(handlerClass, context);
-    }
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void addHandlerTagsToContext_withHandlerWithSeveralTags_shouldAddThemToExistingTagsInContext() {
-        // Given
-        Context context = mock(Context.class);
-
-        Set<String> initialSetOfTags = Sets.newHashSet("preexisting tag");
-        when(context.getTags())
-                .thenReturn(initialSetOfTags);
-
-        when(context.setTags(anySet()))
-                .thenReturn(context);
-
-        Class<? extends QueryHandler> handlerClass = TestQueryHandler_WithSeveralTags.class;
-        Set<String> expectedTags = newHashSet("preexisting tag", TEST_COMMAND_TAG, TEST_COMMAND_TAG_2);
-
-        // When
-        KasperQueryGateway.addHandlerTagsToContext(handlerClass, context);
-
-        // Then
-        InOrder inOrder = inOrder(context);
-        inOrder.verify(context)
-                .getTags();
-        inOrder.verify(context)
-                .setTags(expectedTags);
-        inOrder.verifyNoMoreInteractions();
     }
 
     // ------------------------------------------------------------------------

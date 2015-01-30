@@ -10,7 +10,6 @@ import com.codahale.metrics.Timer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
@@ -147,10 +146,14 @@ public class KasperQueryGateway implements QueryGateway {
 
     @VisibleForTesting
     protected void enrichContextAndMdcContextMap(Query query, Context context) {
+        checkNotNull(query);
+        checkNotNull(context);
+
         // @javax.annotation.Nullable
         Class<? extends QueryHandler> handlerClass = getHandlerClass(query);
         if (handlerClass != null) {
-            addHandlerTagsToContext(handlerClass, context);
+            Set<String> additionalTags = getHandlerTags(handlerClass);
+            context.addTags(additionalTags);
         }
         MdcUtils.enrichMdcContextMap(context);
     }
@@ -168,16 +171,6 @@ public class KasperQueryGateway implements QueryGateway {
 
         QueryHandler handler = registeredHandler.get();
         return handler.getClass();
-    }
-
-    @VisibleForTesting
-    protected static void addHandlerTagsToContext(Class<? extends QueryHandler> handlerClass, Context context) {
-        checkNotNull(context);
-
-        Set<String> originalTags = context.getTags();
-        Set<String> additionalTags = getHandlerTags(handlerClass);
-        Set<String> mergedTags = Sets.union(originalTags, additionalTags);
-        context.setTags(mergedTags);
     }
 
     @VisibleForTesting
