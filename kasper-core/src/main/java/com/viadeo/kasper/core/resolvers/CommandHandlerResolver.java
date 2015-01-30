@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.resolvers;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -18,6 +19,7 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
+import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
@@ -100,9 +102,17 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
             throw new KasperException("Unable to find command type for handler " + clazz.getClass());
         }
 
-        cacheCommands.put(clazz, commandClazz.get());
+        putCommandClass(clazz, commandClazz);
 
         return commandClazz.get();
+    }
+
+    @VisibleForTesting
+    protected void putCommandClass(Class<? extends CommandHandler> clazz, Optional<Class<? extends Command>> commandClazz) {
+        checkNotNull(clazz);
+        checkNotNull(commandClazz);
+        checkArgument(commandClazz.isPresent());
+        cacheCommands.put(clazz, commandClazz.get());
     }
 
     @SuppressWarnings("unchecked")

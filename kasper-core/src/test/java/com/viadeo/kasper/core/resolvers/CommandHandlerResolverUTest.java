@@ -58,19 +58,20 @@ public class CommandHandlerResolverUTest {
     }
 
     @Test
+    @SuppressWarnings("unchecked")
     public void getHandlerClass_withRegisteredCommand_shouldReturnTheHandlersClass() {
         // Given
-        Class<? extends Command> command = TestCommand.class;
-        Class<? extends CommandHandler> registeredHandler = TestCommandHandler.class;
+        Class commandClass = TestCommand.class;
+        Class registeredHandlerClass = TestCommandHandler.class;
 
-        resolver.getCommandClass(registeredHandler);
+        resolver.putCommandClass(registeredHandlerClass, Optional.<Class<Command>>of(commandClass));
 
         // When
-        Optional<Class<? extends CommandHandler>> handlerClass = resolver.getHandlerClass(command);
+        Optional<Class<? extends CommandHandler>> handlerClass = resolver.getHandlerClass(commandClass);
 
         // Then
         assertTrue(handlerClass.isPresent());
-        assertSame(registeredHandler, handlerClass.get());
+        assertSame(registeredHandlerClass, handlerClass.get());
     }
 
     // ------------------------------------------------------------------------
