@@ -13,6 +13,7 @@ package com.viadeo.kasper.context;
  * @see Context
  *
  */
+@Deprecated
 public interface ContextBuilder {
 
 	/**

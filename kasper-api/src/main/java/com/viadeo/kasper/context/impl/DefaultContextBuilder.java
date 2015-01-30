@@ -15,6 +15,7 @@ import com.viadeo.kasper.context.ContextBuilder;
  * @see com.viadeo.kasper.context.ContextBuilder
  *
  */
+@Deprecated
 public class DefaultContextBuilder implements ContextBuilder {
 
 	@Override

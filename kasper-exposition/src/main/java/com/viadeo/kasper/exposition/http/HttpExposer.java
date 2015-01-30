@@ -18,6 +18,7 @@ import com.viadeo.kasper.KasperResponse;
 import com.viadeo.kasper.annotation.XKasperUnexposed;
 import com.viadeo.kasper.client.platform.Meta;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.ContextValidationException;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.exposition.alias.AliasRegistry;
@@ -152,6 +153,15 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                     CoreReasonCode.INVALID_INPUT,
                     Lists.newArrayList((null == e.getMessage()) ? "Unknown" : e.getMessage()),
                     e
+            );
+
+        } catch (ContextValidationException contextValidationException){
+
+            errorHandlingDescriptor = new ErrorHandlingDescriptor(
+                    ErrorState.REFUSED,
+                    CoreReasonCode.INVALID_INPUT,
+                    Lists.newArrayList((null == contextValidationException.getMessage()) ? "Unknown" : contextValidationException.getMessage()),
+                    contextValidationException
             );
 
         } catch (final Throwable th) {

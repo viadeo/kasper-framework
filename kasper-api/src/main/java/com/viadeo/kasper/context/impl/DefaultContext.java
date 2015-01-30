@@ -11,6 +11,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.api.ID;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.ImmutableContext;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -24,6 +25,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see com.viadeo.kasper.context.Context
  *
  */
+@Deprecated
 public class DefaultContext extends AbstractContext {
     private static final long serialVersionUID = -2357451589032314740L;
 
@@ -209,8 +211,8 @@ public class DefaultContext extends AbstractContext {
 
     @SuppressWarnings("unchecked") // must be ensured by client
     @Override
-    public <C extends Context> C child() {
-        final DefaultContext newContext = (DefaultContext) super.child();
+    public <C extends ImmutableContext> C child() {
+        final DefaultContext newContext = super.child();
 
         newContext.userID = this.userID;
         newContext.userId = this.userId;
