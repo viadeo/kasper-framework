@@ -6,7 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
@@ -17,6 +21,7 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandHandlerInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.interceptor.KasperCommandInterceptor;
 import com.viadeo.kasper.cqrs.util.MdcUtils;
@@ -28,6 +33,7 @@ import org.axonframework.common.annotation.MetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -134,11 +140,13 @@ public class KasperCommandGateway implements CommandGateway {
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) {
+        checkNotNull(command);
+        checkNotNull(context);
 
-        MdcUtils.enrichMdcContextMap(context);
+        enrichContextAndMdcContextMap(command, context);
 
         commandGateway.sendCommand(
-                checkNotNull(command),
+                command,
                 context
         );
     }
@@ -149,11 +157,13 @@ public class KasperCommandGateway implements CommandGateway {
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
+        checkNotNull(command);
+        checkNotNull(context);
 
-        MdcUtils.enrichMdcContextMap(context);
+        enrichContextAndMdcContextMap(command, context);
 
         return commandGateway.sendCommandForFuture(
-                checkNotNull(command),
+                command,
                 context
         );
     }
@@ -164,11 +174,13 @@ public class KasperCommandGateway implements CommandGateway {
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
+        checkNotNull(command);
+        checkNotNull(context);
 
-        MdcUtils.enrichMdcContextMap(context);
+        enrichContextAndMdcContextMap(command, context);
 
         return commandGateway.sendCommandAndWaitForAResponse(
-                checkNotNull(command),
+                command,
                 context
         );
     }
@@ -179,11 +191,13 @@ public class KasperCommandGateway implements CommandGateway {
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
+        checkNotNull(command);
+        checkNotNull(context);
 
-        MdcUtils.enrichMdcContextMap(context);
+        enrichContextAndMdcContextMap(command, context);
 
         return commandGateway.sendCommandAndWaitForAResponseWithException(
-                checkNotNull(command),
+                command,
                 context
         );
     }
@@ -196,14 +210,17 @@ public class KasperCommandGateway implements CommandGateway {
                 final Context context,
                 final long timeout,
                 final TimeUnit unit) throws Exception {
+        checkNotNull(command);
+        checkNotNull(context);
+        checkNotNull(unit);
 
-        MdcUtils.enrichMdcContextMap(context);
+        enrichContextAndMdcContextMap(command, context);
 
         commandGateway.sendCommandAndWait(
-                checkNotNull(command),
+                command,
                 context,
                 timeout,
-                checkNotNull(unit)
+                unit
         );
     }
 
@@ -213,13 +230,62 @@ public class KasperCommandGateway implements CommandGateway {
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
+        checkNotNull(command);
+        checkNotNull(context);
 
-        MdcUtils.enrichMdcContextMap(context);
+        enrichContextAndMdcContextMap(command, context);
 
         commandGateway.sendCommandAndWaitForever(
-                checkNotNull(command),
+                command,
                 context
         );
+    }
+
+    @VisibleForTesting
+    protected void enrichContextAndMdcContextMap(Command command, Context context) {
+        // @javax.annotation.Nullable
+        Class<? extends CommandHandler> handlerClass = getHandlerClass(command);
+        if (handlerClass != null) {
+            addHandlerTagsToContext(handlerClass, context);
+        }
+        MdcUtils.enrichMdcContextMap(context);
+    }
+
+    @VisibleForTesting
+    // @javax.annotation.Nullable
+    protected Class<? extends CommandHandler> getHandlerClass(Command command) {
+        checkNotNull(command);
+
+        Class<? extends Command> commandClass = command.getClass();
+        Optional<CommandHandler> registeredHandler = domainLocator.getHandlerForCommandClass(commandClass);
+        if (!registeredHandler.isPresent()) {
+            return null;
+        }
+
+        CommandHandler handler = registeredHandler.get();
+        return handler.getClass();
+    }
+
+    @VisibleForTesting
+    protected static void addHandlerTagsToContext(Class<? extends CommandHandler> handlerClass, Context context) {
+        checkNotNull(context);
+
+        Set<String> originalTags = context.getTags();
+        Set<String> additionalTags = getHandlerTags(handlerClass);
+        Set<String> mergedTags = Sets.union(originalTags, additionalTags);
+        context.setTags(mergedTags);
+    }
+
+    @VisibleForTesting
+    protected static Set<String> getHandlerTags(Class<? extends CommandHandler> handlerClass) {
+        checkNotNull(handlerClass);
+
+        XKasperCommandHandler annotation = handlerClass.getAnnotation(XKasperCommandHandler.class);
+        String[] annotationTags = annotation.tags();
+        if (annotationTags == null) {
+            return ImmutableSet.of();
+        }
+        return ImmutableSet.copyOf(annotationTags);
     }
 
     // ------------------------------------------------------------------------

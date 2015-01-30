@@ -32,4 +32,9 @@ public @interface XKasperCommandHandler {
      */
 	Class<? extends Domain> domain();
 
+	/**
+	 * @return tags for this handler
+	 */
+	String[] tags() default {};
+
 }
