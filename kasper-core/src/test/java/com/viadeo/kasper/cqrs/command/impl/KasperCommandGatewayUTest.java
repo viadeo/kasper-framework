@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
@@ -23,13 +22,10 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.slf4j.MDC;
 
 import java.util.ArrayList;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.refEq;
@@ -186,39 +182,6 @@ public class KasperCommandGatewayUTest {
 
         verify(interceptorChainRegistry).create(eq(commandHandler.getClass()), any(CommandInterceptorFactory.class));
         verifyNoMoreInteractions(interceptorChainRegistry);
-    }
-
-    // ------------------------------------------------------------------------
-
-    @Test
-    @SuppressWarnings("all")
-    public void enrichMdcContextMap_withNullContext_shouldThrowNPE() throws Exception {
-        // Given
-        Context context = null;
-
-        // Expect
-        thrown.expect(NullPointerException.class);
-
-        // When
-        KasperCommandGateway.enrichMdcContextMap(context);
-    }
-
-    @Test
-    public void enrichMdcContextMap_withContext_shouldEnrichMdcContextMapWithIt() throws Exception {
-        // Given
-        Map<String, String> initialContextMap = ImmutableMap.of("foo", "bar");
-        MDC.setContextMap(initialContextMap);
-
-        Context context = mock(Context.class);
-        Map<String, String> extendedContextMap = ImmutableMap.of("baz", "qux");
-        when(context.asMap(initialContextMap))
-                .thenReturn(extendedContextMap);
-
-        // When
-        KasperCommandGateway.enrichMdcContextMap(context);
-
-        // Then
-        assertEquals(extendedContextMap, MDC.getCopyOfContextMap());
     }
 
 }

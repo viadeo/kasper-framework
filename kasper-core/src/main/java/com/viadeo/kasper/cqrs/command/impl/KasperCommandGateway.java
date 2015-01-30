@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
@@ -20,6 +19,7 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandHandlerInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.interceptor.KasperCommandInterceptor;
+import com.viadeo.kasper.cqrs.util.MdcUtils;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandDispatchInterceptor;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
@@ -27,9 +27,7 @@ import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.axonframework.common.annotation.MetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
-import java.util.Map;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -137,7 +135,7 @@ public class KasperCommandGateway implements CommandGateway {
                 @MetaData(Context.METANAME)
                 final Context context) {
 
-        enrichMdcContextMap(context);
+        MdcUtils.enrichMdcContextMap(context);
 
         commandGateway.sendCommand(
                 checkNotNull(command),
@@ -152,7 +150,7 @@ public class KasperCommandGateway implements CommandGateway {
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
-        enrichMdcContextMap(context);
+        MdcUtils.enrichMdcContextMap(context);
 
         return commandGateway.sendCommandForFuture(
                 checkNotNull(command),
@@ -167,7 +165,7 @@ public class KasperCommandGateway implements CommandGateway {
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
-        enrichMdcContextMap(context);
+        MdcUtils.enrichMdcContextMap(context);
 
         return commandGateway.sendCommandAndWaitForAResponse(
                 checkNotNull(command),
@@ -182,7 +180,7 @@ public class KasperCommandGateway implements CommandGateway {
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
-        enrichMdcContextMap(context);
+        MdcUtils.enrichMdcContextMap(context);
 
         return commandGateway.sendCommandAndWaitForAResponseWithException(
                 checkNotNull(command),
@@ -199,7 +197,7 @@ public class KasperCommandGateway implements CommandGateway {
                 final long timeout,
                 final TimeUnit unit) throws Exception {
 
-        enrichMdcContextMap(context);
+        MdcUtils.enrichMdcContextMap(context);
 
         commandGateway.sendCommandAndWait(
                 checkNotNull(command),
@@ -216,21 +214,12 @@ public class KasperCommandGateway implements CommandGateway {
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
 
-        enrichMdcContextMap(context);
+        MdcUtils.enrichMdcContextMap(context);
 
         commandGateway.sendCommandAndWaitForever(
                 checkNotNull(command),
                 context
         );
-    }
-
-    @VisibleForTesting
-    @SuppressWarnings("unchecked")
-    protected static void enrichMdcContextMap(Context context) {
-        checkNotNull(context);
-        Map initialContextMap = MDC.getCopyOfContextMap();
-        Map contextMapEnrichedWithContext = context.asMap(initialContextMap);
-        MDC.setContextMap(contextMapEnrichedWithContext);
     }
 
     // ------------------------------------------------------------------------

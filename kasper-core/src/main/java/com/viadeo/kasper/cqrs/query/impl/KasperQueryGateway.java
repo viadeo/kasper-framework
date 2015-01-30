@@ -19,16 +19,14 @@ import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptorFactory;
+import com.viadeo.kasper.cqrs.util.MdcUtils;
 import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
-
-import java.util.Map;
 
 /**
  * The Kasper gateway base implementation
@@ -89,7 +87,7 @@ public class KasperQueryGateway implements QueryGateway {
         final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerRequestsTimeName).time();
 
         /* Sets current thread context */
-        enrichMdcContextMap(context);
+        MdcUtils.enrichMdcContextMap(context);
         CurrentContext.set(context);
 
         // Search for associated handler --------------------------------------
@@ -140,15 +138,6 @@ public class KasperQueryGateway implements QueryGateway {
         }
 
         return ret;
-    }
-
-    @SuppressWarnings("unchecked")
-    private static void enrichMdcContextMap(Context context) {
-        checkNotNull(context);
-
-        Map initialContextMap = MDC.getCopyOfContextMap();
-        Map contextMapEnrichedWithContext = context.asMap(initialContextMap);
-        MDC.setContextMap(contextMapEnrichedWithContext);
     }
 
     // ------------------------------------------------------------------------
