@@ -36,6 +36,11 @@ public @interface XKasperQueryHandler {
     Class<? extends Domain> domain();
 
     /**
+     * @return tags for this handler
+     */
+    String[] tags() default {};
+
+    /**
      * Whether the response of this query handler should be cached.
      * False by default.
      */

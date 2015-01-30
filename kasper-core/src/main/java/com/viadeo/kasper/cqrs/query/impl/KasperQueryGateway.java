@@ -7,7 +7,10 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.codahale.metrics.Timer;
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
@@ -27,6 +30,8 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
+
+import java.util.Set;
 
 /**
  * The Kasper gateway base implementation
@@ -87,7 +92,7 @@ public class KasperQueryGateway implements QueryGateway {
         final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerRequestsTimeName).time();
 
         /* Sets current thread context */
-        MdcUtils.enrichMdcContextMap(context);
+        enrichContextAndMdcContextMap(query, context);
         CurrentContext.set(context);
 
         // Search for associated handler --------------------------------------
@@ -138,6 +143,53 @@ public class KasperQueryGateway implements QueryGateway {
         }
 
         return ret;
+    }
+
+    @VisibleForTesting
+    protected void enrichContextAndMdcContextMap(Query query, Context context) {
+        // @javax.annotation.Nullable
+        Class<? extends QueryHandler> handlerClass = getHandlerClass(query);
+        if (handlerClass != null) {
+            addHandlerTagsToContext(handlerClass, context);
+        }
+        MdcUtils.enrichMdcContextMap(context);
+    }
+
+    @VisibleForTesting
+    // @javax.annotation.Nullable
+    protected Class<? extends QueryHandler> getHandlerClass(Query query) {
+        checkNotNull(query);
+
+        Class<? extends Query> queryClass = query.getClass();
+        Optional<QueryHandler<Query, QueryResult>> registeredHandler = queryHandlersLocator.getHandlerFromQueryClass(queryClass);
+        if (!registeredHandler.isPresent()) {
+            return null;
+        }
+
+        QueryHandler handler = registeredHandler.get();
+        return handler.getClass();
+    }
+
+    @VisibleForTesting
+    protected static void addHandlerTagsToContext(Class<? extends QueryHandler> handlerClass, Context context) {
+        checkNotNull(context);
+
+        Set<String> originalTags = context.getTags();
+        Set<String> additionalTags = getHandlerTags(handlerClass);
+        Set<String> mergedTags = Sets.union(originalTags, additionalTags);
+        context.setTags(mergedTags);
+    }
+
+    @VisibleForTesting
+    protected static Set<String> getHandlerTags(Class<? extends QueryHandler> handlerClass) {
+        checkNotNull(handlerClass);
+
+        XKasperQueryHandler annotation = handlerClass.getAnnotation(XKasperQueryHandler.class);
+        String[] annotationTags = annotation.tags();
+        if (annotationTags == null) {
+            return ImmutableSet.of();
+        }
+        return ImmutableSet.copyOf(annotationTags);
     }
 
     // ------------------------------------------------------------------------
