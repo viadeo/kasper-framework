@@ -95,29 +95,18 @@ public class DefaultDomainLocator implements DomainLocator {
 
     @Override
     public Set<String> getHandlerTags(Command command) {
+        checkNotNull(command);
+
+        Class<? extends Command> commandClass = command.getClass();
+
         // @javax.annotation.Nullable
-        Class<? extends CommandHandler> handlerClass = getHandlerClass(command);
+        Class<? extends CommandHandler> handlerClass = commandHandlerResolver.getHandlerClass(commandClass);
 
         if (handlerClass == null) {
             return ImmutableSet.of();
         }
 
         return getHandlerTags(handlerClass);
-    }
-
-    @VisibleForTesting
-    // @javax.annotation.Nullable
-    protected Class<? extends CommandHandler> getHandlerClass(Command command) {
-        checkNotNull(command);
-
-        Class<? extends Command> commandClass = command.getClass();
-        Optional<CommandHandler> registeredHandler = getHandlerForCommandClass(commandClass);
-        if (!registeredHandler.isPresent()) {
-            return null;
-        }
-
-        CommandHandler handler = registeredHandler.get();
-        return handler.getClass();
     }
 
     @VisibleForTesting

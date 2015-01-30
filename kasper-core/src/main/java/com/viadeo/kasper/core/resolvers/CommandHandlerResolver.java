@@ -15,6 +15,7 @@ import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
+import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -102,6 +103,18 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
         cacheCommands.put(clazz, commandClazz.get());
 
         return commandClazz.get();
+    }
+
+    @SuppressWarnings("unchecked")
+    // @javax.annotation.Nullable
+    public Class<? extends CommandHandler> getHandlerClass(Class<? extends Command> commandClass) {
+        checkNotNull(commandClass);
+        for (Map.Entry<Class, Class> handlerToCommand : cacheCommands.entrySet()) {
+            if (commandClass.equals(handlerToCommand.getValue())) {
+                return handlerToCommand.getKey();
+            }
+        }
+        return null;
     }
 
     // ------------------------------------------------------------------------

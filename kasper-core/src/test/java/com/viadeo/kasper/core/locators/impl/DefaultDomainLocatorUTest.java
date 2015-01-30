@@ -3,7 +3,6 @@ package com.viadeo.kasper.core.locators.impl;
 import static com.google.common.collect.Sets.newHashSet;
 import static com.viadeo.kasper.core.locators.impl.DefaultDomainLocator.getHandlerTags;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -42,7 +41,7 @@ public class DefaultDomainLocatorUTest {
 
     @Test
     @SuppressWarnings("all")
-    public void getHandlerClass_withNull_shouldThrowNPE() {
+    public void getHandlerTags_withNullCommand_shouldThrowNPE() {
         // Given
         Command command = null;
 
@@ -50,43 +49,43 @@ public class DefaultDomainLocatorUTest {
         thrown.expect(NullPointerException.class);
 
         // When
-        locator.getHandlerClass(command);
+        locator.getHandlerTags(command);
     }
 
     @Test
-    public void getHandlerClass_withUnregisteredCommand_shouldReturnNull() {
+    @SuppressWarnings("all")
+    public void getHandlerTags_withUnregisteredCommand_shouldReturnNull() {
         // Given
         Command command = new TestCommand();
 
         // When
-        Class<? extends CommandHandler> handlerClass = locator.getHandlerClass(command);
+        Set<String> tags = locator.getHandlerTags(command);
 
         // Then
-        assertNull(handlerClass);
+        assertEquals(newHashSet(), tags);
     }
 
     @Test
-    public void getHandlerClass_withRegisteredCommand_shouldReturnTheHandlersClass() {
+    public void getHandlerTags_withRegisteredCommand_shouldReturnTheTags() {
         // Given
         Command command = new TestCommand();
-        CommandHandler registeredHandler = new TestCommandHandler_WithSeveralTags();
 
-        doReturn(TestCommand.class)
-                .when(commandHandlerResolver).getCommandClass(TestCommandHandler_WithSeveralTags.class);
-        locator.registerHandler(registeredHandler);
+        doReturn(TestCommandHandler_WithSeveralTags.class)
+                .when(commandHandlerResolver).getHandlerClass(TestCommand.class);
+        Set<String> expectedTags = newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2);
 
         // When
-        Class<? extends CommandHandler> handlerClass = locator.getHandlerClass(command);
+        Set<String> tags = locator.getHandlerTags(command);
 
         // Then
-        assertEquals(registeredHandler.getClass(), handlerClass);
+        assertEquals(expectedTags, tags);
     }
 
     // ------------------------------------------------------------------------
 
     @Test
     @SuppressWarnings("all")
-    public void getHandlerTags_withNull_shouldThrowNPE() {
+    public void getHandlerTags_withNullHandlerClass_shouldThrowNPE() {
         // Given
         Class<? extends CommandHandler> handlerClass = null;
 
