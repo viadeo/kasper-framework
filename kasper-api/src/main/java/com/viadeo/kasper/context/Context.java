@@ -225,9 +225,15 @@ public interface Context extends Serializable  {
     Context setIpAddress(String ipAddress);
 
     /**
-     * @return the application request ip address
+     * @return the application request ip addresses
      */
     String getIpAddress();
+
+
+    /**
+     * @return the first application request ip address
+     */
+    Optional<String> getFirstIpAddress();
 
     // ------------------------------------------------------------------------
 
