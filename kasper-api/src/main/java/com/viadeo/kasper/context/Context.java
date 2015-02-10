@@ -62,6 +62,7 @@ public interface Context extends Serializable  {
     String FUNNEL_VERS_SHORTNAME = "funnelVersion";
     String IP_ADDRESS_SHORTNAME = "ipAddress";
     String CALL_TYPE = "callType";
+    String USER_AGENT = "userAgent";
 
     // ------------------------------------------------------------------------
 
@@ -224,9 +225,15 @@ public interface Context extends Serializable  {
     Context setIpAddress(String ipAddress);
 
     /**
-     * @return the application request ip address
+     * @return the application request ip addresses
      */
     String getIpAddress();
+
+
+    /**
+     * @return the first application request ip address
+     */
+    Optional<String> getFirstIpAddress();
 
     // ------------------------------------------------------------------------
 

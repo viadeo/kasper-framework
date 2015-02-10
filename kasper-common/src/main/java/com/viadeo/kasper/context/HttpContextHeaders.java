@@ -33,4 +33,6 @@ public final class HttpContextHeaders {
 
     public static final String HEADER_CALL_TYPE = "X-KASPER-CALL-TYPE";
 
+    public static final String HEADER_USER_AGENT = "User-Agent";
+
 }

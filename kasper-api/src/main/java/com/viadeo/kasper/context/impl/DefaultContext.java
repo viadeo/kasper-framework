@@ -200,6 +200,21 @@ public class DefaultContext extends AbstractContext {
     }
 
     @Override
+    public Optional<String> getFirstIpAddress() {
+        Optional<String> result = Optional.absent();
+        if (ipAddress.isEmpty()) {
+            return result;
+        }
+
+        final String[] ipAddressesSplit = ipAddress.split(",");
+        if(ipAddressesSplit.length > 0){
+            result = Optional.of(ipAddressesSplit[0].trim());
+        }
+
+        return result;
+    }
+
+    @Override
     public Context setIpAddress(final String ipAddress) {
         this.ipAddress = checkNotNull(ipAddress);
         return this;

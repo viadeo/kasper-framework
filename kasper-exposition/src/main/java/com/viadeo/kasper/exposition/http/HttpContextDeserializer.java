@@ -40,6 +40,7 @@ public class HttpContextDeserializer {
         final String headerFunnelVersion = req.getHeader(HEADER_FUNNEL_VERSION);
         final String headerIpAddress = req.getHeader(HEADER_REQUEST_IP_ADDRESS);
         final String headerCallType = req.getHeader(HEADER_CALL_TYPE);
+        final String headerUserAgent = req.getHeader(HEADER_USER_AGENT);
 
         // --------------------------------------------------------------------
 
@@ -95,6 +96,10 @@ public class HttpContextDeserializer {
 
         if (null != headerCallType) {
             context.setProperty(Context.CALL_TYPE, headerCallType);
+        }
+
+        if(null != headerUserAgent){
+            context.setProperty(Context.USER_AGENT, headerUserAgent);
         }
 
         return context;
