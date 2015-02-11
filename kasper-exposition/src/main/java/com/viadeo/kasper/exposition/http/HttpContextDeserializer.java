@@ -41,6 +41,7 @@ public class HttpContextDeserializer {
         final String headerIpAddress = req.getHeader(HEADER_REQUEST_IP_ADDRESS);
         final String headerCallType = req.getHeader(HEADER_CALL_TYPE);
         final String headerUserAgent = req.getHeader(HEADER_USER_AGENT);
+        final String headerReferer = req.getHeader(HEADER_REFERER);
 
         // --------------------------------------------------------------------
 
@@ -98,8 +99,12 @@ public class HttpContextDeserializer {
             context.setProperty(Context.CALL_TYPE, headerCallType);
         }
 
-        if(null != headerUserAgent){
+        if (null != headerUserAgent) {
             context.setProperty(Context.USER_AGENT, headerUserAgent);
+        }
+
+        if (null != headerReferer) {
+            context.setProperty(Context.REFERER, headerReferer);
         }
 
         return context;

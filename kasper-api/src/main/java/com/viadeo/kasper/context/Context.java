@@ -63,6 +63,7 @@ public interface Context extends Serializable  {
     String IP_ADDRESS_SHORTNAME = "ipAddress";
     String CALL_TYPE = "callType";
     String USER_AGENT = "userAgent";
+    String REFERER = "Referer";
 
     // ------------------------------------------------------------------------
 

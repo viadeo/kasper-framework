@@ -35,9 +35,19 @@ public class HttpContextSerializer {
         setHeader(builder, HEADER_FUNNEL_VERSION, context.getFunnelVersion());
         setHeader(builder, HEADER_REQUEST_IP_ADDRESS, context.getIpAddress());
 
-        final Optional<Serializable> property = context.getProperty(Context.CALL_TYPE);
-        if (property.isPresent()) {
-            setHeader(builder, HEADER_CALL_TYPE, property.get());
+        final Optional<Serializable> callType = context.getProperty(Context.CALL_TYPE);
+        if (callType.isPresent()) {
+            setHeader(builder, HEADER_CALL_TYPE, callType.get());
+        }
+
+        final Optional<Serializable> userAgent = context.getProperty(Context.USER_AGENT);
+        if (userAgent.isPresent()) {
+            setHeader(builder, HEADER_USER_AGENT, userAgent.get());
+        }
+
+        final Optional<Serializable> referer = context.getProperty(Context.REFERER);
+        if (referer.isPresent()) {
+            setHeader(builder, HEADER_REFERER, referer.get());
         }
     }
 
