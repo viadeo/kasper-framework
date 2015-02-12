@@ -13,7 +13,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class UnitOfWorkEvent extends Event {
+public class UnitOfWorkEvent implements Event {
 
     final List<String> events = Lists.newArrayList();
 

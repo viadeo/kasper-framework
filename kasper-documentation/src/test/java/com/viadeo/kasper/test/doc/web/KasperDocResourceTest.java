@@ -20,7 +20,7 @@ import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.test.applications.Applications;
 import com.viadeo.kasper.test.applications.entities.Application;
 import com.viadeo.kasper.test.applications.entities.Member_fanOf_Application;
@@ -136,7 +136,7 @@ public class KasperDocResourceTest extends JerseyTest {
                     MemberCreatedEventListener.class,
                     MemberCreatedEvent.class
                 )),
-                ImmutableList.<Class<? extends IEvent>>of(
+                ImmutableList.<Class<? extends Event>>of(
                         FacebookEvent.class,
                         FacebookMemberEvent.class,
                         MemberCreatedEvent.class,
@@ -160,7 +160,7 @@ public class KasperDocResourceTest extends JerseyTest {
                     )
                 ),
                 ImmutableList.<EventListenerDescriptor>of(),
-                ImmutableList.<Class<? extends IEvent>>of()
+                ImmutableList.<Class<? extends Event>>of()
             );
 
             final DomainDescriptor timelinesDomainDescriptor = new DomainDescriptor(
@@ -179,7 +179,7 @@ public class KasperDocResourceTest extends JerseyTest {
                     )
                 ),
                 ImmutableList.<EventListenerDescriptor>of(),
-                ImmutableList.<Class<? extends IEvent>>of()
+                ImmutableList.<Class<? extends Event>>of()
             );
 
             final DocumentedPlatform documentedPlatform = new DocumentedPlatform();

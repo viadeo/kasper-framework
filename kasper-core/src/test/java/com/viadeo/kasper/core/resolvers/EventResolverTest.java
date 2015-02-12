@@ -9,7 +9,7 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.domain.DomainEvent;
 import com.viadeo.kasper.exception.KasperException;
 import org.junit.Test;
@@ -22,7 +22,7 @@ public class EventResolverTest {
     private static class TestDomain implements Domain {}
 
     @XKasperUnregistered
-    private static class TestEvent implements IEvent { }
+    private static class TestEvent implements Event { }
 
     @XKasperUnregistered
     private static class TestDomainEvent implements DomainEvent<TestDomain> { }

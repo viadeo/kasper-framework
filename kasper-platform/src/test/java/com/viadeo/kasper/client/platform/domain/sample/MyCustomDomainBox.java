@@ -9,6 +9,7 @@ package com.viadeo.kasper.client.platform.domain.sample;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
@@ -26,6 +27,7 @@ import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.EventResponse;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.event.domain.DomainEvent;
 import org.springframework.context.annotation.Bean;
@@ -61,7 +63,12 @@ public class MyCustomDomainBox {
     }
 
     @XKasperEventListener(domain = MyCustomDomain.class)
-    public static class MyCustomEventListener extends EventListener<MyCustomEvent> { }
+    public static class MyCustomEventListener extends EventListener<MyCustomEvent> {
+        @Override
+        public EventResponse handle(Context context, MyCustomEvent event) {
+            return EventResponse.ok();
+        }
+    }
 
     @XKasperRepository()
     public static class MyCustomRepository extends Repository<MyCustomEntity> {
@@ -123,9 +130,9 @@ public class MyCustomDomainBox {
 
     public static class MyCustomQueryResult implements QueryResult { }
 
-    public static class MyCustomEvent extends Event { }
+    public static class MyCustomEvent implements Event { }
 
-    public static abstract class AbstractMyCustomEvent extends Event { }
+    public static abstract class AbstractMyCustomEvent implements Event { }
 
     public static class MyCustomDomainEvent implements DomainEvent<MyCustomDomain> { }
 

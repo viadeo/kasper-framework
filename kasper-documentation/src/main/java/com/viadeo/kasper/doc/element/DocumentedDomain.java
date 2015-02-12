@@ -15,7 +15,7 @@ import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
 import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 import com.viadeo.kasper.doc.nodes.DocumentedBean;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.lang.reflect.Field;
@@ -87,7 +87,7 @@ public class DocumentedDomain extends AbstractElement {
         final Map<Class, DocumentedEvent> events = Maps.newHashMap();
         final Map<Class, DocumentedConcept> concepts = Maps.newHashMap();
 
-        for (final Class<? extends IEvent> eventClass : domainDescriptor.getEventClasses()) {
+        for (final Class<? extends Event> eventClass : domainDescriptor.getEventClasses()) {
             DocumentedEvent documentedEvent = new DocumentedEvent(this, null, eventClass);
             events.put(eventClass, documentedEvent);
         }

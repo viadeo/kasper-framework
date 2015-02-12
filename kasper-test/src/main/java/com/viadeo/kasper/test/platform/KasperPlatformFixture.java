@@ -20,7 +20,7 @@ import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandBus;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.test.platform.fixture.KasperCommandFixture;
 import com.viadeo.kasper.test.platform.fixture.KasperEventFixture;
@@ -107,25 +107,25 @@ public class KasperPlatformFixture implements
     }
 
     @Override
-    public KasperPlatformExecutor givenEvents(final IEvent... events) {
+    public KasperPlatformExecutor givenEvents(final Event... events) {
         return this.givenEvents(DefaultContextBuilder.get(), events);
     }
 
     @Override
-    public KasperPlatformExecutor givenEvents(final List<IEvent> events) {
+    public KasperPlatformExecutor givenEvents(final List<Event> events) {
         return this.givenEvents(DefaultContextBuilder.get(), events);
     }
 
     @Override
-    public KasperPlatformExecutor givenEvents(final Context context, IEvent... events) {
+    public KasperPlatformExecutor givenEvents(final Context context, Event... events) {
         return this.givenEvents(context, Arrays.asList(events));
     }
 
     @Override
-    public KasperPlatformExecutor givenEvents(final Context context, List<IEvent> events) {
+    public KasperPlatformExecutor givenEvents(final Context context, List<Event> events) {
         initialize();
 
-        for (final IEvent event : events) {
+        for (final Event event : events) {
             try {
                 this.platform.get().getEventBus().publishEvent(context, event);
             } catch (final Exception e) {
@@ -174,7 +174,7 @@ public class KasperPlatformFixture implements
      * A recording platform for fixture
      */
     public static class RecordingPlatform {
-        public final List<IEvent> recordedEvents = Lists.newLinkedList();
+        public final List<Event> recordedEvents = Lists.newLinkedList();
         public final List<Command> recordedCommands = Lists.newLinkedList();
         public final Map<Class<? extends EventListener>, EventListener> listeners = Maps.newHashMap();
         private Platform platform;
@@ -189,9 +189,9 @@ public class KasperPlatformFixture implements
             this.platform = checkNotNull(platform);
         }
 
-        public List<IEvent> getRecordedEvents(final Class<IEvent> eventClass) {
-            final List<IEvent> events = Lists.newArrayList();
-            for (final IEvent event : this.recordedEvents) {
+        public List<Event> getRecordedEvents(final Class<Event> eventClass) {
+            final List<Event> events = Lists.newArrayList();
+            for (final Event event : this.recordedEvents) {
                 if (eventClass.isAssignableFrom(event.getClass())) {
                     events.add(event);
                 }
@@ -225,8 +225,8 @@ public class KasperPlatformFixture implements
         public void publish(final EventMessage... messages) {
             super.publish(messages);
             for (final EventMessage message : messages) {
-                if (IEvent.class.isAssignableFrom(message.getPayloadType())) {
-                    this.recordingPlatform.recordedEvents.add((IEvent) message.getPayload());
+                if (Event.class.isAssignableFrom(message.getPayloadType())) {
+                    this.recordingPlatform.recordedEvents.add((Event) message.getPayload());
                 }
             }
         }

@@ -30,6 +30,7 @@ import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.EventResponse;
 import com.viadeo.kasper.event.domain.EntityCreatedEvent;
 import com.viadeo.kasper.event.domain.EntityUpdatedEvent;
 import com.viadeo.kasper.impl.DefaultKasperId;
@@ -110,26 +111,26 @@ public class FixtureUseCase {
 
     public static class TestCreatedEventListener extends EventListener<TestCreatedEvent> {
         @Override
-        public void handle(TestCreatedEvent event) {
-            // nothing
+        public EventResponse handle(Context context, TestCreatedEvent event) {
+            return EventResponse.ok();
         }
     }
 
     public static class TestFirstNameChangedEventListener extends EventListener<TestFirstNameChangedEvent> {
         @Override
-        public void handle(TestFirstNameChangedEvent event) {
-            // nothing
+        public EventResponse handle(Context context, TestFirstNameChangedEvent event) {
+            return EventResponse.ok();
         }
     }
 
     public static class TestLastNameChangedEventListener extends EventListener<TestLastNameChangedEvent> {
         @Override
-        public void handle(TestLastNameChangedEvent event) {
-            // nothing
+        public EventResponse handle(Context context, TestLastNameChangedEvent event) {
+            return EventResponse.ok();
         }
     }
 
-    public static class DoSyncUserEvent extends Event {
+    public static class DoSyncUserEvent implements Event {
         private static final long serialVersionUID = -1686085684381486691L;
         public final String firstName;
         public final String lastName;
@@ -144,7 +145,7 @@ public class FixtureUseCase {
         private static final Logger LOGGER = LoggerFactory.getLogger(DoSyncUserEventListener.class);
 
         @Override
-        public void handle(DoSyncUserEvent event) {
+        public EventResponse handle(Context context, DoSyncUserEvent event) {
             final DefaultKasperId kasperId = DefaultKasperId.random();
 
             try {
@@ -163,6 +164,7 @@ public class FixtureUseCase {
             } catch (Exception e) {
                 LOGGER.error("Unexpected error", e);
             }
+            return EventResponse.success();
         }
     }
 

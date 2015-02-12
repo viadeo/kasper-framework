@@ -7,6 +7,7 @@
 package com.viadeo.kasper.event;
 
 import com.codahale.metrics.Timer;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
@@ -28,7 +29,7 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  *
  * @param <E> Event
  */
-public abstract class EventListener<E extends IEvent> implements org.axonframework.eventhandling.EventListener {
+public abstract class EventListener<E extends Event> implements org.axonframework.eventhandling.EventListener {
 
     /**
      * Generic parameter position for the listened event
@@ -38,7 +39,7 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
     private static final String GLOBAL_METER_HANDLES_NAME = name(EventListener.class, "handles");
     private static final String GLOBAL_METER_ERRORS_NAME = name(EventListener.class, "errors");
 
-	private final Class<? extends IEvent> eventClass;
+	private final Class<? extends Event> eventClass;
     private final String timerHandleTimeName;
     private final String meterErrorsName;
     private final String domainMeterErrorsName;
@@ -73,7 +74,7 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 	
 	// ------------------------------------------------------------------------
 	
-	public Class<? extends IEvent> getEventClass() {
+	public Class<? extends Event> getEventClass() {
 		return this.eventClass;
 	}
 
@@ -91,7 +92,7 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
      *
      * @param event The event
      */
-    public void publish(final IEvent event) {
+    public void publish(final Event event) {
         checkNotNull(event, "The specified event must be non null");
         checkState(null != eventBus, "Unable to publish the specified event : the event bus is null");
 
@@ -107,35 +108,26 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
 	 * @see org.axonframework.eventhandling.EventListener#handle(org.axonframework.domain.EventMessage)
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"}) // Safe
+    @Override
 	public void handle(final org.axonframework.domain.EventMessage eventMessage) {
-		
 		if ( ! this.getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
 			return;
 		}
+        handle(new EventMessage(eventMessage));
+    }
 
-		final com.viadeo.kasper.event.EventMessage<E> message = new EventMessage(eventMessage);
 
+    public final EventResponse handle(final EventMessage<E> message) {
         /* Start timer */
         final Timer.Context timer = getMetricRegistry().timer(timerHandleTimeName).time();
         final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerHandleTimesName).time();
 
         /* Ensure a context is set */
-        final Context messageContext = message.getContext();
-        if (null != messageContext) {
-            CurrentContext.set(messageContext);
-        } else {
-            /* Reset the current context in thread */
-            CurrentContext.set(DefaultContextBuilder.get());
-        }
+        CurrentContext.set(Objects.firstNonNull(message.getContext(), DefaultContextBuilder.get()));
 
         /* Handle event */
         try {
-
-            try {
-                this.handle(message);
-            } catch (final UnsupportedOperationException e) {
-                this.handle((E) eventMessage.getPayload());
-            }
+            return this.handle(message.getContext(), message.getEvent());
 
         } catch (final RuntimeException e) {
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
@@ -151,20 +143,10 @@ public abstract class EventListener<E extends IEvent> implements org.axonframewo
             getMetricRegistry().meter(GLOBAL_METER_HANDLES_NAME).mark();
         }
 	}
-	
-	/**
-	 * @param eventMessage the Kasper event message to handle
-	 */
-	public void handle(final com.viadeo.kasper.event.EventMessage<E> eventMessage){
-		throw new UnsupportedOperationException();
-	}
 
-	/**
-	 * @param event the Kasper event to handle
-	 */
-	public void handle(final E event) {
-		throw new UnsupportedOperationException();
-	}
+    // ------------------------------------------------------------------------
+
+    public abstract EventResponse handle(final Context context, final E event);
 
     // ------------------------------------------------------------------------
 

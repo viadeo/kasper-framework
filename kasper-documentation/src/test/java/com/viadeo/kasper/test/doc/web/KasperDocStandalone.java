@@ -16,7 +16,7 @@ import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.test.applications.Applications;
 import com.viadeo.kasper.test.root.Facebook;
 import com.viadeo.kasper.test.root.commands.AddConnectionToMemberCommand;
@@ -79,7 +79,7 @@ public class KasperDocStandalone {
                         MemberCreatedEventListener.class,
                         MemberCreatedEvent.class)
                 ),
-                ImmutableList.<Class<? extends IEvent>>of(
+                ImmutableList.<Class<? extends Event>>of(
                         FacebookEvent.class,
                         FacebookMemberEvent.class,
                         MemberCreatedEvent.class,
@@ -99,7 +99,7 @@ public class KasperDocStandalone {
                 ),
                 Lists.<RepositoryDescriptor>newArrayList(),
                 Lists.<EventListenerDescriptor>newArrayList(),
-                Lists.<Class<? extends IEvent>>newArrayList()
+                Lists.<Class<? extends Event>>newArrayList()
                 )
         );
         documentedPlatform.registerDomain(Timelines.NAME, new DomainDescriptor(
@@ -109,7 +109,7 @@ public class KasperDocStandalone {
                 Lists.<CommandHandlerDescriptor>newArrayList(),
                 Lists.<RepositoryDescriptor>newArrayList(),
                 Lists.<EventListenerDescriptor>newArrayList(),
-                Lists.<Class<? extends IEvent>>newArrayList()
+                Lists.<Class<? extends Event>>newArrayList()
         ));
         documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
 

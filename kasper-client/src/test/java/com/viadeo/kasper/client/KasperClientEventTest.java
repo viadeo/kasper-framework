@@ -58,11 +58,15 @@ public class KasperClientEventTest {
 
     // ------------------------------------------------------------------------
 
-    public static class MemberCreatedEvent extends Event {
+    public static class MemberCreatedEvent implements Event {
         private String name;
 
         public MemberCreatedEvent(final String name) {
             this.name = checkNotNull(name);
+        }
+
+        public String getName() {
+            return name;
         }
     }
 

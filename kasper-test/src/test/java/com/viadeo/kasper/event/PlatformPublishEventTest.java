@@ -12,6 +12,7 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.KasperTestIdGenerator;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
@@ -86,8 +87,9 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
     @XKasperEventListener(domain = TestDomain.class)
     public static class TestListener extends EventListener<TestEvent> {
         @Override
-        public void handle(final EventMessage<TestEvent> eventMessage) {
+        public EventResponse handle(Context context, TestEvent event) {
             received = true;
+            return EventResponse.ok();
         }
     }
 

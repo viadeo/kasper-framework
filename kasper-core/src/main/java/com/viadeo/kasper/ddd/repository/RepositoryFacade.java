@@ -7,9 +7,6 @@
 package com.viadeo.kasper.ddd.repository;
 
 import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.event.Event;
-import org.axonframework.domain.DomainEventMessage;
-import org.axonframework.domain.DomainEventStream;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -32,40 +29,12 @@ class RepositoryFacade<AGR extends AggregateRoot> {
 
     // ------------------------------------------------------------------------
 
-    private AGR enrichEvents(final AGR aggregate) {
-
-        /**
-         * Mark events persistency type
-         */
-        if (aggregate.getUncommittedEventCount() > 0) {
-            final DomainEventStream eventStream = aggregate.getUncommittedEvents();
-
-            while (eventStream.hasNext()) {
-                final DomainEventMessage message = eventStream.next();
-
-                if (Event.class.isAssignableFrom(message.getPayloadType())) {
-                    final Event event = (Event) message.getPayload();
-
-                    if (EventSourcedRepository.class.isAssignableFrom(this.kasperRepository.getClass())) {
-                        event.setPersistencyType(Event.PersistencyType.EVENT_SOURCE);
-                    } else {
-                        event.setPersistencyType(Event.PersistencyType.EVENT_INFO);
-                    }
-                }
-            }
-        }
-
-        return aggregate;
-    }
-
-    // ------------------------------------------------------------------------
-
     protected void doSave(final AGR aggregate) {
 
         /**
          * Manage with save/update differentiation for Kasper repositories
          */
-        if (null == this.enrichEvents(aggregate).getVersion()) {
+        if (null == aggregate.getVersion()) {
             this.kasperRepository.doSave(aggregate);
         } else {
             this.kasperRepository.doUpdate(aggregate);
@@ -82,7 +51,7 @@ class RepositoryFacade<AGR extends AggregateRoot> {
     // ------------------------------------------------------------------------
 
     protected void doDelete(final AGR aggregate) {
-        this.kasperRepository.doDelete(this.enrichEvents(aggregate));
+        this.kasperRepository.doDelete(aggregate);
     }
 
 }

@@ -18,8 +18,8 @@ import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.IEvent;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -63,7 +63,7 @@ public class ResolverFactory {
                     put(QueryResult.class, queryResultResolver);
                     put(QueryHandler.class, queryHandlerResolver);
                     put(Repository.class, repositoryResolver);
-                    put(IEvent.class, eventResolver);
+                    put(Event.class, eventResolver);
 
                     /* Order is important here (Concept/Relation before Entity) */
                     put(Concept.class, conceptResolver);

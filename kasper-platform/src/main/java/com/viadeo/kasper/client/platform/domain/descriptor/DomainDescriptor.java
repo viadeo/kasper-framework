@@ -8,7 +8,7 @@ package com.viadeo.kasper.client.platform.domain.descriptor;
 
 import com.google.common.collect.ImmutableList;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 
 import java.util.Collection;
 
@@ -22,7 +22,7 @@ public class DomainDescriptor implements KasperComponentDescriptor {
     private final ImmutableList<CommandHandlerDescriptor> commandHandlerDescriptors;
     private final ImmutableList<RepositoryDescriptor> repositoryDescriptor;
     private final ImmutableList<EventListenerDescriptor> eventListenerDescriptor;
-    private final ImmutableList<Class<? extends IEvent>> eventClasses;
+    private final ImmutableList<Class<? extends Event>> eventClasses;
 
     // ------------------------------------------------------------------------
 
@@ -32,7 +32,7 @@ public class DomainDescriptor implements KasperComponentDescriptor {
                             final Collection<CommandHandlerDescriptor> commandHandlerDescriptors,
                             final Collection<RepositoryDescriptor> repositoryDescriptor,
                             final Collection<EventListenerDescriptor> eventListenerDescriptor,
-                            final Collection<Class<? extends IEvent>> eventClasses
+                            final Collection<Class<? extends Event>> eventClasses
     ) {
         this.domainName = checkNotNull(domainName);
         this.domainClass = checkNotNull(domainClass);
@@ -65,7 +65,7 @@ public class DomainDescriptor implements KasperComponentDescriptor {
         return eventListenerDescriptor;
     }
 
-    public ImmutableList<Class<? extends IEvent>> getEventClasses() {
+    public ImmutableList<Class<? extends Event>> getEventClasses() {
         return eventClasses;
     }
 

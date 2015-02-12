@@ -12,7 +12,7 @@ import com.viadeo.kasper.event.domain.EntityCreatedEvent;
 import com.viadeo.kasper.test.root.Facebook;
 
 @XKasperEvent(action = "created")
-public class MemberCreatedEvent extends EntityCreatedEvent<Facebook> implements FacebookMemberEvent {
+public class MemberCreatedEvent extends EntityCreatedEvent<Facebook> {
 	private static final long serialVersionUID = -3530058587014151484L;
 
     protected MemberCreatedEvent(KasperID id) {

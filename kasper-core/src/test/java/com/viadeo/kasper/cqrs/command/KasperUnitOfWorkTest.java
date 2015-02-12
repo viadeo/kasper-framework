@@ -153,7 +153,6 @@ public class KasperUnitOfWorkTest {
         uow.publishEvents();
 
         // Then
-        verify(event).setUOWEventId(eq(eventId));
         verify(eventBus).publish(message);
     }
 
@@ -195,10 +194,6 @@ public class KasperUnitOfWorkTest {
         uow.registerForPublication(message1, eventBus, false);
         uow.registerForPublication(message2, eventBus, false);
         uow.publishEvents();
-
-        // Then UOW event is set to previous events
-        verify(event1).setUOWEventId(anyString());
-        verify(event2).setUOWEventId(anyString());
 
         // Then UOW event is registered to publication
         final ArgumentCaptor<EventMessage> argMessage = ArgumentCaptor.forClass(EventMessage.class);

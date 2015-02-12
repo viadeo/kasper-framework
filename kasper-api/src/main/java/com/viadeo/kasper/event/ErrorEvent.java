@@ -12,7 +12,7 @@ import com.viadeo.kasper.CoreReasonCode;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class ErrorEvent extends Event {
+public class ErrorEvent implements Event {
 
     private final String code;
     private final Exception exception;

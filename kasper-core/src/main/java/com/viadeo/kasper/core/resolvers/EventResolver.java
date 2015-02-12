@@ -8,7 +8,7 @@ package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.domain.DomainEvent;
 import com.viadeo.kasper.exception.KasperException;
@@ -16,7 +16,7 @@ import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class EventResolver extends AbstractResolver<IEvent> {
+public class EventResolver extends AbstractResolver<Event> {
 
     @Override
     public String getTypeName() {
@@ -27,7 +27,7 @@ public class EventResolver extends AbstractResolver<IEvent> {
 
     @Override
     @SuppressWarnings("unchecked")
-    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends IEvent> clazz) {
+    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Event> clazz) {
 
         if (DOMAINS_CACHE.containsKey(checkNotNull(clazz))) {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
@@ -61,14 +61,14 @@ public class EventResolver extends AbstractResolver<IEvent> {
     }
 
     @Override
-    public String getLabel(final Class<? extends IEvent> clazz) {
+    public String getLabel(final Class<? extends Event> clazz) {
         return checkNotNull(clazz).getSimpleName().replace("Event", "");
     }
 
     // ------------------------------------------------------------------------
 
     @Override
-    public String getDescription(final Class<? extends IEvent> eventClazz) {
+    public String getDescription(final Class<? extends Event> eventClazz) {
         final XKasperEvent annotation =
                 checkNotNull(eventClazz).getAnnotation(XKasperEvent.class);
 
@@ -87,7 +87,7 @@ public class EventResolver extends AbstractResolver<IEvent> {
 
     // ------------------------------------------------------------------------
 
-    public String getAction(final Class<? extends IEvent> eventClazz) {
+    public String getAction(final Class<? extends Event> eventClazz) {
         final XKasperEvent annotation =
                 checkNotNull(eventClazz).getAnnotation(XKasperEvent.class);
 

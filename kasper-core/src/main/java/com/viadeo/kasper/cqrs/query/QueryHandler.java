@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs.query;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
@@ -66,7 +66,7 @@ public abstract class QueryHandler<Q extends Query, RESULT extends QueryResult> 
      *
      * @param event The event
      */
-    public void publish(final IEvent event) {
+    public void publish(final Event event) {
         checkNotNull(event, "The specified event must be non null");
         checkState(eventBus != null, "Unable to publish the specified event : the event bus is null");
         final EventMessage eventMessage = GenericEventMessage.asEventMessage(event);

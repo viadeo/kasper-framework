@@ -7,10 +7,12 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.EventResponse;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.exception.KasperException;
 import org.junit.Test;
@@ -24,13 +26,23 @@ public class EventListenerResolverTest {
 
     @XKasperUnregistered
     @XKasperEventListener( domain = TestDomain.class )
-    private static class TestEventListener extends EventListener { }
+    private static class TestEventListener extends EventListener {
+        @Override
+        public EventResponse handle(Context context, Event event) {
+            return EventResponse.ok();
+        }
+    }
 
     @XKasperUnregistered
-    private static class TestEvent extends Event { }
+    private static class TestEvent implements Event { }
 
     @XKasperUnregistered
-    private static class TestEventListener2 extends EventListener<TestEvent> { }
+    private static class TestEventListener2 extends EventListener<TestEvent> {
+        @Override
+        public EventResponse handle(Context context, TestEvent event) {
+            return EventResponse.ok();
+        }
+    }
 
     // ------------------------------------------------------------------------
 
@@ -68,8 +80,7 @@ public class EventListenerResolverTest {
 
         // When
         try {
-            final Class<? extends Event> command =
-                    resolver.getEventClass(TestEventListener.class);
+            resolver.getEventClass(TestEventListener.class);
             fail();
         } catch (final KasperException e) {
             // Then exception is raised

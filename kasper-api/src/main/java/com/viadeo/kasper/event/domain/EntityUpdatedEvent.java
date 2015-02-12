@@ -7,14 +7,13 @@
 package com.viadeo.kasper.event.domain;
 
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.Event;
 
 /**
  *
  * A Kasper event related to an entity update
  *
  */
-public abstract class EntityUpdatedEvent<D extends Domain> extends Event implements EntityEvent<D> {
+public abstract class EntityUpdatedEvent<D extends Domain> implements EntityEvent<D> {
 
 }
 

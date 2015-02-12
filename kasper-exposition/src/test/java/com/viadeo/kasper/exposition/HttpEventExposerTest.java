@@ -27,6 +27,7 @@ import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.EventResponse;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.exposition.http.HttpEventExposerPlugin;
@@ -54,13 +55,13 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     private KasperEventBus eventBus;
 
     @XKasperUnregistered
-    public static class UnknownEvent extends Event {
+    public static class UnknownEvent implements Event {
         private static final long serialVersionUID = 6761261204648630883L;
         public String name;
     }
 
     @XKasperUnregistered
-    public static class AccountCreatedEvent extends Event {
+    public static class AccountCreatedEvent implements Event {
         private static final long serialVersionUID = -6112121621645049559L;
         public String name;
     }
@@ -70,24 +71,26 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
 
     @XKasperEventListener(domain = TestDomain.class)
     public static class AccountCreatedEventListener extends EventListener<AccountCreatedEvent> {
-
         @Override
-        public void handle(AccountCreatedEvent event) { }
+        public EventResponse handle(Context context, AccountCreatedEvent event) {
+            return EventResponse.ok();
+        }
     }
 
     public static final String NEED_VALIDATION_2_ALIAS = "needvalidation2";
 
     @XKasperUnregistered
     @XKasperAlias(values = {NEED_VALIDATION_2_ALIAS})
-    public static class NeedValidationEvent extends Event {
+    public static class NeedValidationEvent implements Event {
         private static final long serialVersionUID = -8918994635071831597L;
     }
 
     @XKasperEventListener(domain = TestDomain.class)
     public static class NeedValidationEventListener extends EventListener<NeedValidationEvent> {
-
         @Override
-        public void handle(NeedValidationEvent event) { }
+        public EventResponse handle(Context context, NeedValidationEvent event) {
+            return EventResponse.ok();
+        }
     }
 
     // ------------------------------------------------------------------------

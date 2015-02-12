@@ -10,10 +10,8 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Meta;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
-import com.viadeo.kasper.event.CommandEventListener;
-import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.QueryEventListener;
+import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.event.*;
 import com.viadeo.kasper.exposition.http.HttpEventExposer;
 import org.junit.Test;
 
@@ -26,13 +24,23 @@ import static org.mockito.Mockito.when;
 
 public class HttpEventExposerUTest {
 
-    public static class AEvent extends Event {
+    public static class AEvent implements Event {
         private static final long serialVersionUID = -3423712338104227083L;
     }
 
-    public static class EventListenerA extends CommandEventListener<AEvent> { }
+    public static class EventListenerA extends CommandEventListener<AEvent> {
+        @Override
+        public EventResponse handle(Context context, AEvent event) {
+            return EventResponse.ok();
+        }
+    }
 
-    public static class EventListenerB extends QueryEventListener<AEvent> { }
+    public static class EventListenerB extends QueryEventListener<AEvent> {
+        @Override
+        public EventResponse handle(Context context, AEvent event) {
+            return EventResponse.ok();
+        }
+    }
 
     @Test
     public void init_withTwoEventListeners_listeningTheSameEvent_isOk() throws Exception {

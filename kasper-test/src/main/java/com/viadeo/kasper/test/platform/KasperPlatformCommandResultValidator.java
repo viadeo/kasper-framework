@@ -10,7 +10,7 @@ import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureCommandResultValidator;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureEventResultValidator;
 import com.viadeo.kasper.test.platform.validator.base.DefaultBaseValidator;
@@ -47,7 +47,7 @@ public class KasperPlatformCommandResultValidator
 
     // ------------------------------------------------------------------------
 
-    private Iterator<IEvent> _expectSequenceOfEvents(final IEvent... expectedEvents) {
+    private Iterator<Event> _expectSequenceOfEvents(final Event... expectedEvents) {
         if (expectedEvents.length != platform().recordedEvents.size()) {
             reporter().reportWrongEvent(
                     platform().recordedEvents,
@@ -56,9 +56,9 @@ public class KasperPlatformCommandResultValidator
             );
         }
 
-        final Iterator<IEvent> iterator = platform().recordedEvents.iterator();
-        for (final IEvent expectedEvent : expectedEvents) {
-            final IEvent actualEvent = iterator.next();
+        final Iterator<Event> iterator = platform().recordedEvents.iterator();
+        for (final Event expectedEvent : expectedEvents) {
+            final Event actualEvent = iterator.next();
             if ( ! equalTo(expectedEvent).matches(actualEvent)) {
                 reporter().reportWrongEvent(
                         platform().recordedEvents,
@@ -72,14 +72,14 @@ public class KasperPlatformCommandResultValidator
     }
 
     @Override
-    public KasperPlatformCommandResultValidator expectSequenceOfEvents(final IEvent... expectedEvents) {
+    public KasperPlatformCommandResultValidator expectSequenceOfEvents(final Event... expectedEvents) {
         _expectSequenceOfEvents(expectedEvents);
         return this;
     }
 
     @Override
-    public KasperPlatformCommandResultValidator expectExactSequenceOfEvents(final IEvent... expectedEvents) {
-        final Iterator<IEvent> iterator = _expectSequenceOfEvents(expectedEvents);
+    public KasperPlatformCommandResultValidator expectExactSequenceOfEvents(final Event... expectedEvents) {
+        final Iterator<Event> iterator = _expectSequenceOfEvents(expectedEvents);
         if (iterator.hasNext()) {
             reporter().reportWrongEvent(
                     platform().recordedEvents,

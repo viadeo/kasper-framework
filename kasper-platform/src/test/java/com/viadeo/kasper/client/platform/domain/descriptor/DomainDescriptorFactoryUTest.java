@@ -9,6 +9,7 @@ package com.viadeo.kasper.client.platform.domain.descriptor;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
@@ -22,7 +23,7 @@ import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.EventResponse;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.junit.Test;
@@ -45,10 +46,15 @@ public class DomainDescriptorFactoryUTest {
     @XKasperQueryHandler(domain = TestDomain.class)
     public static class TestQueryHandler extends QueryHandler<TestQuery, TestQueryResult> { }
 
-    public static class TestEvent extends Event { }
+    public static class TestEvent implements Event { }
 
     @XKasperEventListener(domain = TestDomain.class)
-    public static class TestEventListener extends EventListener<TestEvent> { }
+    public static class TestEventListener extends EventListener<TestEvent> {
+        @Override
+        public EventResponse handle(Context context, TestEvent event) {
+            return EventResponse.ok();
+        }
+    }
 
     public static class TestConcept extends Concept {
         @EventHandler
@@ -186,7 +192,7 @@ public class DomainDescriptorFactoryUTest {
 
     @Test
     public void retrieveEventsFrom_shouldNeOk() {
-        Collection<Class<? extends IEvent>> classes = DomainDescriptorFactory.retrieveEventsFrom(MyCustomDomainBox.MyCustomDomain.class);
+        Collection<Class<? extends Event>> classes = DomainDescriptorFactory.retrieveEventsFrom(MyCustomDomainBox.MyCustomDomain.class);
         assertNotNull(classes);
         assertTrue(classes.contains(MyCustomDomainBox.MyCustomEvent.class));
         assertTrue(classes.contains(MyCustomDomainBox.MyCustomDomainEvent.class));

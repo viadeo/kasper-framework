@@ -108,8 +108,6 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
                     if ( ! context.isPresent() && message.getMetaData().containsKey(Context.METANAME)) {
                         context = Optional.of((Context) message.getMetaData().get(Context.METANAME));
                     }
-
-                    event.setUOWEventId(uowEventId);
                 }
 
                 /* Should not occur.. */
@@ -127,13 +125,6 @@ public class KasperUnitOfWork extends DefaultUnitOfWork {
 
                 this.registerForPublication(uowMessage, entry.getKey(), notifyRegistrationHandlers);
 
-            } else {
-
-                final EventMessage message = (EventMessage) entry.getValue().get(0);
-                final Event event = (Event) entry.getValue().get(0).getPayload();
-
-                /* this uniq event is itself the uowEvent */
-                event.setUOWEventId(message.getIdentifier());
             }
         }
 

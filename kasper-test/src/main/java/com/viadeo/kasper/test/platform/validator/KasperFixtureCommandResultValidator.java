@@ -7,14 +7,14 @@
 package com.viadeo.kasper.test.platform.validator;
 
 import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.test.platform.validator.base.ReturnTypeValidator;
 
 public interface KasperFixtureCommandResultValidator extends ReturnTypeValidator<KasperFixtureCommandResultValidator> {
 
-    KasperFixtureCommandResultValidator expectSequenceOfEvents(IEvent... events);
+    KasperFixtureCommandResultValidator expectSequenceOfEvents(Event... events);
 
-    KasperFixtureCommandResultValidator expectExactSequenceOfEvents(IEvent... events);
+    KasperFixtureCommandResultValidator expectExactSequenceOfEvents(Event... events);
 
     KasperFixtureCommandResultValidator expectReturnResponse(CommandResponse queryResponse);
 

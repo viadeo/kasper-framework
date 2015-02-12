@@ -6,9 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureEventResultValidator;
 import com.viadeo.kasper.test.platform.validator.base.DefaultBaseValidator;
 import com.viadeo.kasper.tools.KasperMatcher;
@@ -43,15 +44,15 @@ public class KasperPlatformListenedEventsValidator
             final EventListener eventListener = platform().listeners.get(listenerClass);
             assertNotNull("Unknown event listener : " + listenerClass.getName(), eventListener);
 
-            final ArgumentCaptor<IEvent> captor = ArgumentCaptor.forClass(IEvent.class);
-            verify(eventListener).handle(captor.capture());
+            final ArgumentCaptor<Event> captor = ArgumentCaptor.forClass(Event.class);
+            verify(eventListener).handle(any(Context.class), captor.capture());
             assertEquals(platform().getRecordedEvents(eventListener.getEventClass()), captor.getAllValues());
 
             remainingListenerClasses.remove(listenerClass);
         }
 
         for (final Class listenerClass : remainingListenerClasses) {
-            verify(platform().listeners.get(listenerClass), never()).handle(any(IEvent.class));
+            verify(platform().listeners.get(listenerClass), never()).handle(any(Context.class), any(Event.class));
         }
 
         return this;
@@ -61,7 +62,7 @@ public class KasperPlatformListenedEventsValidator
     @Override
     public KasperFixtureEventResultValidator expectZeroEventNotification() {
         for (final EventListener eventListener : platform().listeners.values()) {
-            verify(eventListener, never()).handle(any(IEvent.class));
+            verify(eventListener, never()).handle(any(Context.class), any(Event.class));
         }
         return this;
     }

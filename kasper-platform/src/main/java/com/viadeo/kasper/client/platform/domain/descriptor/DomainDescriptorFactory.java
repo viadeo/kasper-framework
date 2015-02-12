@@ -21,7 +21,6 @@ import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.IEvent;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.slf4j.Logger;
@@ -105,16 +104,16 @@ public class DomainDescriptorFactory {
 
     // ------------------------------------------------------------------------
 
-    public static Collection<Class<? extends IEvent>> retrieveEventsFrom(final Class<? extends Domain> domainClass) {
-        final List<Class<? extends IEvent>> eventClasses = Lists.newArrayList();
+    public static Collection<Class<? extends Event>> retrieveEventsFrom(final Class<? extends Domain> domainClass) {
+        final List<Class<? extends Event>> eventClasses = Lists.newArrayList();
 
         final ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
-        scanner.addIncludeFilter(new AssignableTypeFilter(IEvent.class));
+        scanner.addIncludeFilter(new AssignableTypeFilter(Event.class));
 
         for (final BeanDefinition bd : scanner.findCandidateComponents(domainClass.getPackage().getName())) {
             try {
                 @SuppressWarnings("unchecked")
-                Class<IEvent> eventClass = (Class<IEvent>) Class.forName(bd.getBeanClassName());
+                Class<Event> eventClass = (Class<Event>) Class.forName(bd.getBeanClassName());
                 if ( ! (Modifier.isAbstract(eventClass.getModifiers()) || Modifier.isInterface(eventClass.getModifiers())) ) {
                     eventClasses.add(eventClass);
                 }

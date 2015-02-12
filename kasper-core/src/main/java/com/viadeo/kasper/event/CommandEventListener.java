@@ -11,7 +11,7 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public abstract class CommandEventListener<E extends IEvent> extends EventListener<E> {
+public abstract class CommandEventListener<E extends Event> extends EventListener<E> {
 
     private CommandGateway commandGateway;
 

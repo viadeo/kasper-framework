@@ -16,7 +16,7 @@ import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.EventMessage;
+import com.viadeo.kasper.event.EventResponse;
 import org.axonframework.domain.GenericEventMessage;
 import org.junit.Before;
 import org.junit.Test;
@@ -40,7 +40,7 @@ public class KasperEventBusTest {
     ArgumentCaptor<GenericEventMessage<Event>> captor;
 
     @XKasperUnregistered
-    private static class TestEvent extends Event {
+    private static class TestEvent implements Event {
         private static final long serialVersionUID = 7266657610382378609L;
     }
 
@@ -88,7 +88,7 @@ public class KasperEventBusTest {
         }
 
         @Override
-        public void handle(final EventMessage<TestEvent> eventMessage) {
+        public EventResponse handle(Context context, TestEvent event) {
             try {
                 LOGGER.info("Begin long running process");
                 Thread.sleep(LONG_RUNNING_TIME);
@@ -137,7 +137,7 @@ public class KasperEventBusTest {
     @XKasperUnregistered
     private static class TestEventErrorListener extends EventListener<TestEvent> {
         @Override
-        public void handle(final EventMessage<TestEvent> eventMessage) {
+        public EventResponse handle(Context context, TestEvent event) {
             throw new RuntimeException("ERROR");
         }
     }

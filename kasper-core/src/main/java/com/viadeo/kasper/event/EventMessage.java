@@ -24,7 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @see com.viadeo.kasper.event.EventMessage
  * @see com.viadeo.kasper.event.Event
  */
-public class EventMessage<E extends IEvent> {
+public class EventMessage<E extends Event> {
 	private static final long serialVersionUID = -214545825521867826L;
 
 	private final org.axonframework.domain.EventMessage<E> axonMessage;

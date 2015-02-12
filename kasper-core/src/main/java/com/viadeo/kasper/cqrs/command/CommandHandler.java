@@ -14,7 +14,7 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.domain.EventMessage;
@@ -215,7 +215,7 @@ public abstract class CommandHandler<C extends Command>
      *
      * @param event The event to be scheduled for publication to the unit of work
      */
-    public void publish(final IEvent event) {
+    public void publish(final Event event) {
         final EventMessage axonMessage = GenericEventMessage.asEventMessage(event);
 
         if (CurrentUnitOfWork.isStarted()) {

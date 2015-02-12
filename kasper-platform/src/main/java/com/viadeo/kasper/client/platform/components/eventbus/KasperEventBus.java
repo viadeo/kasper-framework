@@ -13,7 +13,7 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
@@ -253,11 +253,11 @@ public class KasperEventBus extends ClusteringEventBus {
         super.publish(messages);
     }
 
-    public void publish(final IEvent event) {
+    public void publish(final Event event) {
         this.publish(GenericEventMessage.asEventMessage(event));
     }
 
-    public void publishEvent(final Context context, final IEvent event) {
+    public void publishEvent(final Context context, final Event event) {
         this.publish(
             new GenericEventMessage<>(
                 checkNotNull(event),

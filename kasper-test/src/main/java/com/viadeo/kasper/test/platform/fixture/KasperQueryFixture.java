@@ -7,7 +7,7 @@
 package com.viadeo.kasper.test.platform.fixture;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.test.platform.executor.KasperFixtureQueryExecutor;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureQueryResultValidator;
 
@@ -16,12 +16,12 @@ import java.util.List;
 public interface KasperQueryFixture<EXECUTOR extends KasperFixtureQueryExecutor, VALIDATOR extends KasperFixtureQueryResultValidator>
     extends KasperFixture<EXECUTOR> {
 
-    EXECUTOR givenEvents(final IEvent... events);
+    EXECUTOR givenEvents(final Event... events);
 
-    EXECUTOR givenEvents(final List<IEvent> events);
+    EXECUTOR givenEvents(final List<Event> events);
 
-    EXECUTOR givenEvents(final Context context, final IEvent... events);
+    EXECUTOR givenEvents(final Context context, final Event... events);
 
-    EXECUTOR givenEvents(final Context context, final List<IEvent> events);
+    EXECUTOR givenEvents(final Context context, final List<Event> events);
 
 }

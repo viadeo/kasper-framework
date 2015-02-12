@@ -9,7 +9,6 @@ package com.viadeo.kasper.event.domain;
 import com.google.common.base.Objects;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.Event;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -19,7 +18,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * @see com.viadeo.kasper.event.domain.EntityEvent
  */
-public abstract class EntityCreatedEvent<D extends Domain> extends Event implements EntityEvent<D> {
+public abstract class EntityCreatedEvent<D extends Domain> implements EntityEvent<D> {
 
 	private static final long serialVersionUID = -1948165707419476512L;
 

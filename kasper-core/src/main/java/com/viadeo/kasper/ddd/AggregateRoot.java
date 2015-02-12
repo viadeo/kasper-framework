@@ -11,7 +11,7 @@ import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
-import com.viadeo.kasper.event.IEvent;
+import com.viadeo.kasper.event.Event;
 import org.axonframework.domain.MetaData;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
@@ -84,7 +84,7 @@ public abstract class AggregateRoot<I extends KasperID>
         checkNotNull(eventPayload);
         checkNotNull(metaData);
 
-        if ( ! IEvent.class.isAssignableFrom(eventPayload.getClass())) {
+        if ( ! Event.class.isAssignableFrom(eventPayload.getClass())) {
             throw new KasperCommandException("Only apply implementations of 'IEvent'");
         }
 
