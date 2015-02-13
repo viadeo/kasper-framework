@@ -31,14 +31,14 @@ public class HttpEventExposerUTest {
     public static class EventListenerA extends CommandEventListener<AEvent> {
         @Override
         public EventResponse handle(Context context, AEvent event) {
-            return EventResponse.ok();
+            return EventResponse.success();
         }
     }
 
     public static class EventListenerB extends QueryEventListener<AEvent> {
         @Override
         public EventResponse handle(Context context, AEvent event) {
-            return EventResponse.ok();
+            return EventResponse.success();
         }
     }
 

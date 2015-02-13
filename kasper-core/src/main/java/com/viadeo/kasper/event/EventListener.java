@@ -9,6 +9,9 @@ package com.viadeo.kasper.event;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.KasperResponse;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.context.CurrentContext;
@@ -107,17 +110,21 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
 	 * 
 	 * @see org.axonframework.eventhandling.EventListener#handle(org.axonframework.domain.EventMessage)
 	 */
-	@SuppressWarnings({"unchecked", "rawtypes"}) // Safe
     @Override
-	public void handle(final org.axonframework.domain.EventMessage eventMessage) {
-		if ( ! this.getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
-			return;
-		}
-        handle(new EventMessage(eventMessage));
+	public final void handle(final org.axonframework.domain.EventMessage eventMessage) {
+        handleWithResponse(eventMessage);
     }
 
+    // ------------------------------------------------------------------------
 
-    public final EventResponse handle(final EventMessage<E> message) {
+    @SuppressWarnings({"unchecked", "rawtypes"}) // Safe
+    public final EventResponse handleWithResponse(final org.axonframework.domain.EventMessage eventMessage) {
+		if ( ! this.getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
+			return EventResponse.ignored();
+		}
+
+        final EventMessage message = new EventMessage(eventMessage);
+
         /* Start timer */
         final Timer.Context timer = getMetricRegistry().timer(timerHandleTimeName).time();
         final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerHandleTimesName).time();
@@ -127,13 +134,17 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
 
         /* Handle event */
         try {
-            return this.handle(message.getContext(), message.getEvent());
+            final EventResponse response = this.handle(message);
+            if (response.getStatus() == KasperResponse.Status.ROLLBACK) {
+                rollback(message);
+            }
+            return response;
 
         } catch (final RuntimeException e) {
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
             getMetricRegistry().meter(meterErrorsName).mark();
             getMetricRegistry().meter(domainMeterErrorsName).mark();
-            throw e;
+            return EventResponse.rejected(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e.getMessage()));
 
         } finally {
             /* Stop timer and record a tick */
@@ -146,7 +157,25 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
 
     // ------------------------------------------------------------------------
 
-    public abstract EventResponse handle(final Context context, final E event);
+    public EventResponse handle(final EventMessage<E> message) {
+        return handle(message.getContext(), message.getEvent());
+    }
+
+    // ------------------------------------------------------------------------
+
+    public EventResponse handle(final Context context, final E event) {
+        return EventResponse.ignored();
+    }
+
+    // ------------------------------------------------------------------------
+
+    public void rollback(final EventMessage<E> message) {
+        rollback(message.getContext(), message.getEvent());
+    }
+
+    // ------------------------------------------------------------------------
+
+    public void rollback(final Context context, final E event) { }
 
     // ------------------------------------------------------------------------
 

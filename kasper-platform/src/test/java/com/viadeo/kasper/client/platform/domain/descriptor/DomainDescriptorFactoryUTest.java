@@ -52,7 +52,7 @@ public class DomainDescriptorFactoryUTest {
     public static class TestEventListener extends EventListener<TestEvent> {
         @Override
         public EventResponse handle(Context context, TestEvent event) {
-            return EventResponse.ok();
+            return EventResponse.success();
         }
     }
 

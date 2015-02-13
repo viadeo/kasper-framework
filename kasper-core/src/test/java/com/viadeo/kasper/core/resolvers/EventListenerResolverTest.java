@@ -29,7 +29,7 @@ public class EventListenerResolverTest {
     private static class TestEventListener extends EventListener {
         @Override
         public EventResponse handle(Context context, Event event) {
-            return EventResponse.ok();
+            return EventResponse.success();
         }
     }
 
@@ -40,7 +40,7 @@ public class EventListenerResolverTest {
     private static class TestEventListener2 extends EventListener<TestEvent> {
         @Override
         public EventResponse handle(Context context, TestEvent event) {
-            return EventResponse.ok();
+            return EventResponse.success();
         }
     }
 

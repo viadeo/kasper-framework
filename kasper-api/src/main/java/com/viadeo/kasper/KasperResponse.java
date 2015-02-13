@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper;
 
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.annotation.Immutable;
 import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.exception.KasperException;
@@ -23,7 +24,11 @@ public class KasperResponse implements Serializable, Immutable {
         OK,         /** All is ok */
         REFUSED,    /** Refused by some intermediate validation mechanisms */
         ERROR,      /** Error in handling or domain business */
-        ACCEPTED    /** The command or the query has been accepted but answer will be made later */
+        ACCEPTED,   /** The command or the query has been accepted but answer will be made later */
+        IGNORED,
+        REJECTED,
+        ROLLBACK,
+        SUCCESS
     }
 
     /**
@@ -35,8 +40,7 @@ public class KasperResponse implements Serializable, Immutable {
     // ------------------------------------------------------------------------
 
     public KasperResponse() {
-        this.status = Status.OK;
-        this.reason = null;
+        this(Status.OK, null);
     }
 
     public KasperResponse(final KasperResponse response) {
@@ -46,11 +50,11 @@ public class KasperResponse implements Serializable, Immutable {
     public KasperResponse(final Status status, final KasperReason reason) {
         this.status = checkNotNull(status);
 
-        if (!status.equals(Status.OK) && (null == reason)) {
+        if ( ! Lists.newArrayList(Status.OK, Status.SUCCESS, Status.IGNORED).contains(status) && (null == reason)) {
             throw new IllegalStateException("Please provide a reason to the response");
         }
 
-        if (status.equals(Status.OK) && (null != reason)) {
+        if (Lists.newArrayList(Status.OK, Status.SUCCESS).contains(status) && (null != reason)) {
             throw new IllegalStateException("Invalid response OK provided with an reason");
         }
 

@@ -28,6 +28,7 @@ public final class ObjectMapperProvider {
     static final String ERROR = "error";
     static final String ERRORS = "errors";
     static final String MESSAGE = "message";
+    static final String MESSAGES = "messages";
     static final String CODE = "code";
     static final String LABEL = "label";
     static final String STATUS = "status";

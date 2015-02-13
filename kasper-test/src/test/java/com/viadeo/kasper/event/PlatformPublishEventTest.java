@@ -89,7 +89,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
         @Override
         public EventResponse handle(Context context, TestEvent event) {
             received = true;
-            return EventResponse.ok();
+            return EventResponse.success();
         }
     }
 

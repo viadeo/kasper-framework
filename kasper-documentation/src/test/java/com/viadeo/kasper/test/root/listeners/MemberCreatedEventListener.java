@@ -18,6 +18,6 @@ public class MemberCreatedEventListener extends EventListener<MemberCreatedEvent
 
     @Override
     public EventResponse handle(Context context, MemberCreatedEvent event) {
-        return EventResponse.ok();
+        return EventResponse.success();
     }
 }

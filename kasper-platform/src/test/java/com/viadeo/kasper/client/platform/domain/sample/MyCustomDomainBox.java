@@ -66,7 +66,7 @@ public class MyCustomDomainBox {
     public static class MyCustomEventListener extends EventListener<MyCustomEvent> {
         @Override
         public EventResponse handle(Context context, MyCustomEvent event) {
-            return EventResponse.ok();
+            return EventResponse.success();
         }
     }
 

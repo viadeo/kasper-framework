@@ -22,7 +22,6 @@ public final class KasperReason implements Serializable, Immutable {
     private static final long serialVersionUID = 7839349411722371919L;
 
     private final UUID id;
-
     private final String code;
     private final List<String> messages;
 

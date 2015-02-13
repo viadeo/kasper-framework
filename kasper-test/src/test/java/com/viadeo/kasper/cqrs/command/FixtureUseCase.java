@@ -112,21 +112,21 @@ public class FixtureUseCase {
     public static class TestCreatedEventListener extends EventListener<TestCreatedEvent> {
         @Override
         public EventResponse handle(Context context, TestCreatedEvent event) {
-            return EventResponse.ok();
+            return EventResponse.success();
         }
     }
 
     public static class TestFirstNameChangedEventListener extends EventListener<TestFirstNameChangedEvent> {
         @Override
         public EventResponse handle(Context context, TestFirstNameChangedEvent event) {
-            return EventResponse.ok();
+            return EventResponse.success();
         }
     }
 
     public static class TestLastNameChangedEventListener extends EventListener<TestLastNameChangedEvent> {
         @Override
         public EventResponse handle(Context context, TestLastNameChangedEvent event) {
-            return EventResponse.ok();
+            return EventResponse.success();
         }
     }
 

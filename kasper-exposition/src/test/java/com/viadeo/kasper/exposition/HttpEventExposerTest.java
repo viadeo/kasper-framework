@@ -73,7 +73,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     public static class AccountCreatedEventListener extends EventListener<AccountCreatedEvent> {
         @Override
         public EventResponse handle(Context context, AccountCreatedEvent event) {
-            return EventResponse.ok();
+            return EventResponse.success();
         }
     }
 
@@ -89,7 +89,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     public static class NeedValidationEventListener extends EventListener<NeedValidationEvent> {
         @Override
         public EventResponse handle(Context context, NeedValidationEvent event) {
-            return EventResponse.ok();
+            return EventResponse.success();
         }
     }
 
