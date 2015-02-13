@@ -9,8 +9,6 @@ package com.viadeo.kasper.event;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.KasperResponse;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
@@ -144,7 +142,7 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
             getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
             getMetricRegistry().meter(meterErrorsName).mark();
             getMetricRegistry().meter(domainMeterErrorsName).mark();
-            return EventResponse.rejected(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e.getMessage()));
+            throw e;
 
         } finally {
             /* Stop timer and record a tick */
