@@ -10,6 +10,7 @@ import com.codahale.metrics.Timer;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
@@ -26,6 +27,7 @@ import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Map;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -42,6 +44,8 @@ public class KasperQueryGateway implements QueryGateway {
     public static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryGateway.class, "requests-time");
     public static final String GLOBAL_METER_REQUESTS_NAME = name(QueryGateway.class, "requests");
     public static final String GLOBAL_METER_ERRORS_NAME = name(QueryGateway.class, "errors");
+
+    private static final Map<Class<? extends QueryHandler>, Set<String>> CACHE_TAGS = Maps.newHashMap();
 
     private final QueryHandlersLocator queryHandlersLocator;
     private final InterceptorChainRegistry<Query, QueryResponse<QueryResult>> interceptorChainRegistry;
@@ -176,14 +180,24 @@ public class KasperQueryGateway implements QueryGateway {
     protected static Set<String> getHandlerTags(final Class<? extends QueryHandler> handlerClass) {
         checkNotNull(handlerClass);
 
-        // @javax.annotation.Nullable
-        final XKasperQueryHandler annotation = handlerClass.getAnnotation(XKasperQueryHandler.class);
-        if (null == annotation) {
-            return ImmutableSet.of();
+        final Set<String> tags;
+
+        if ( ! CACHE_TAGS.containsKey(handlerClass)) {
+
+            final XKasperQueryHandler annotation = handlerClass.getAnnotation(XKasperQueryHandler.class);
+            if (null == annotation) {
+                return ImmutableSet.of();
+            }
+
+            final String[] annotationTags = annotation.tags();
+            tags = ImmutableSet.copyOf(annotationTags);
+            CACHE_TAGS.put(handlerClass, tags);
+
+        } else {
+            tags = CACHE_TAGS.get(handlerClass);
         }
 
-        final String[] annotationTags = annotation.tags();
-        return ImmutableSet.copyOf(annotationTags);
+        return tags;
     }
 
     // ------------------------------------------------------------------------
