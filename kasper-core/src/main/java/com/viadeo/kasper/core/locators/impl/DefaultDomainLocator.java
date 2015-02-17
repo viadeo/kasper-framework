@@ -40,6 +40,8 @@ public class DefaultDomainLocator implements DomainLocator {
 
     private final Map<CommandHandler, Class<? extends Command>> handlers = Maps.newHashMap();
 
+    private final Map<Class<? extends Command>, Set<String>> CACHE_TAGS = Maps.newHashMap();
+
     // ------------------------------------------------------------------------
 
     /** Domains */
@@ -97,17 +99,25 @@ public class DefaultDomainLocator implements DomainLocator {
     public Set<String> getHandlerTags(final Command command) {
         checkNotNull(command);
 
-        final Class<? extends Command> commandClass = command.getClass();
+        final Set<String> tags;
 
-        // @javax.annotation.Nullable
-        final Optional<Class<? extends CommandHandler>> resolvedHandlerClass = commandHandlerResolver.getHandlerClass(commandClass);
+        if ( ! CACHE_TAGS.containsKey(command.getClass())) {
+            final Class<? extends Command> commandClass = command.getClass();
 
-        if ( ! resolvedHandlerClass.isPresent()) {
-            return ImmutableSet.of();
+            final Optional<Class<? extends CommandHandler>> resolvedHandlerClass = commandHandlerResolver.getHandlerClass(commandClass);
+
+            if ( ! resolvedHandlerClass.isPresent()) {
+                return ImmutableSet.of();
+            }
+
+            final Class<? extends CommandHandler> handlerClass = resolvedHandlerClass.get();
+            tags = getHandlerTags(handlerClass);
+            CACHE_TAGS.put(command.getClass(), tags);
+        } else {
+            tags = CACHE_TAGS.get(command.getClass());
         }
 
-        final Class<? extends CommandHandler> handlerClass = resolvedHandlerClass.get();
-        return getHandlerTags(handlerClass);
+        return tags;
     }
 
     @VisibleForTesting
