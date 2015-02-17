@@ -6,7 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform.components.eventbus;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.eventhandling.EventListener;

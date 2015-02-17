@@ -2,6 +2,7 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.context.Tags;
 import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -11,15 +12,32 @@ import com.viadeo.kasper.cqrs.command.KasperCommandMessage;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWork;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+
 public class KasperCommandGatewayITest {
 
+    static {
+        // pre-load Tags class, to initialize its fields
+        try {
+            Class.forName(Tags.class.getName());
+        } catch (final ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     private KasperCommandGateway commandGateway;
+
+    // ------------------------------------------------------------------------
+
+    public static class TestCommand implements Command {
+    }
+
+    // ------------------------------------------------------------------------
 
     @Before
     public void setUp() throws Exception {
@@ -32,6 +50,8 @@ public class KasperCommandGatewayITest {
         KasperMetrics.setMetricRegistry(new MetricRegistry());
     }
 
+    // ------------------------------------------------------------------------
+
     final Object lock = new Object();
 
     @Test
@@ -41,7 +61,7 @@ public class KasperCommandGatewayITest {
 
         commandGateway.register(new CommandHandler<TestCommand>() {
             @Override
-            public CommandResponse handle(KasperCommandMessage message, UnitOfWork uow) throws Exception {
+            public CommandResponse handle(final KasperCommandMessage message, final UnitOfWork uow) throws Exception {
                 captor.add(message.getCommand());
                 synchronized (lock) {
                     lock.notify();
@@ -49,7 +69,8 @@ public class KasperCommandGatewayITest {
                 return CommandResponse.ok();
             }
         });
-        Command command = new TestCommand();
+
+        final Command command = new TestCommand();
 
         // When
         commandGateway.sendCommand(command, new DefaultContext());
@@ -59,8 +80,8 @@ public class KasperCommandGatewayITest {
         }
 
         // Then
-        Assert.assertEquals(1, captor.size());
-        Assert.assertEquals(command, captor.get(0));
+        assertEquals(1, captor.size());
+        assertEquals(command, captor.get(0));
     }
 
     @Test(timeout = 100)
@@ -73,7 +94,7 @@ public class KasperCommandGatewayITest {
                 return CommandResponse.ok();
             }
         });
-        Command command = new TestCommand();
+        final Command command = new TestCommand();
 
         // When
         commandGateway.sendCommand(command, new DefaultContext());
@@ -81,7 +102,4 @@ public class KasperCommandGatewayITest {
         // Then forget the call
     }
 
-    public static class TestCommand implements Command {
-
-    }
 }

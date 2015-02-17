@@ -7,6 +7,7 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Tags;
 import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.impl.DefaultKasperId;
@@ -39,6 +40,7 @@ public class HttpContextDeserializer {
         final String headerFunnelName = req.getHeader(HEADER_FUNNEL_NAME);
         final String headerFunnelVersion = req.getHeader(HEADER_FUNNEL_VERSION);
         final String headerIpAddress = req.getHeader(HEADER_REQUEST_IP_ADDRESS);
+        final String headerTags = req.getHeader(HEADER_TAGS);
         final String headerCallType = req.getHeader(HEADER_CALL_TYPE);
         final String headerUserAgent = req.getHeader(HEADER_USER_AGENT);
         final String headerReferer = req.getHeader(HEADER_REFERER);
@@ -93,6 +95,10 @@ public class HttpContextDeserializer {
 
         if (null != headerIpAddress) {
             context.setIpAddress(headerIpAddress);
+        }
+
+        if (null != headerTags) {
+            context.setTags(Tags.valueOf(headerTags));
         }
 
         if (null != headerCallType) {

@@ -82,8 +82,8 @@ public class AliasRegistry {
     }
 
     public String resolve(final String alias) {
-        String name = nameByAlias.get(checkNotNull(alias));
-        return name == null ? alias : name;
+        final String name = nameByAlias.get(checkNotNull(alias));
+        return (null == name) ? alias : name;
     }
 
     public Optional<List<String>> aliasesOf(final String name) {

@@ -41,6 +41,11 @@ public interface DomainLocator {
     Optional<CommandHandler> getHandlerForCommandClass(Class<? extends Command> commandClass);
 
 	/**
+	 * @return the set of tags corresponding to this handler
+	 */
+	Set<String> getHandlerTags(Command command);
+
+	/**
 	 * Register a new domain to the locator
 	 * 
 	 * @param domain the domain to register

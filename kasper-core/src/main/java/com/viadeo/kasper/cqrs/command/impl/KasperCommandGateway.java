@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
@@ -19,6 +20,7 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandHandlerInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.interceptor.KasperCommandInterceptor;
+import com.viadeo.kasper.cqrs.util.MDCUtils;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandDispatchInterceptor;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
@@ -26,8 +28,8 @@ import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.axonframework.common.annotation.MetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.MDC;
 
+import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -134,11 +136,13 @@ public class KasperCommandGateway implements CommandGateway {
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) {
+        checkNotNull(command);
+        checkNotNull(context);
 
-        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+        enrichContextAndMdcContextMap(command, context);
 
         commandGateway.sendCommand(
-                checkNotNull(command),
+                command,
                 context
         );
     }
@@ -149,11 +153,13 @@ public class KasperCommandGateway implements CommandGateway {
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
+        checkNotNull(command);
+        checkNotNull(context);
 
-        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+        enrichContextAndMdcContextMap(command, context);
 
         return commandGateway.sendCommandForFuture(
-                checkNotNull(command),
+                command,
                 context
         );
     }
@@ -164,11 +170,13 @@ public class KasperCommandGateway implements CommandGateway {
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
+        checkNotNull(command);
+        checkNotNull(context);
 
-        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+        enrichContextAndMdcContextMap(command, context);
 
         return commandGateway.sendCommandAndWaitForAResponse(
-                checkNotNull(command),
+                command,
                 context
         );
     }
@@ -179,11 +187,13 @@ public class KasperCommandGateway implements CommandGateway {
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
+        checkNotNull(command);
+        checkNotNull(context);
 
-        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+        enrichContextAndMdcContextMap(command, context);
 
         return commandGateway.sendCommandAndWaitForAResponseWithException(
-                checkNotNull(command),
+                command,
                 context
         );
     }
@@ -196,14 +206,17 @@ public class KasperCommandGateway implements CommandGateway {
                 final Context context,
                 final long timeout,
                 final TimeUnit unit) throws Exception {
+        checkNotNull(command);
+        checkNotNull(context);
+        checkNotNull(unit);
 
-        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+        enrichContextAndMdcContextMap(command, context);
 
         commandGateway.sendCommandAndWait(
-                checkNotNull(command),
+                command,
                 context,
                 timeout,
-                checkNotNull(unit)
+                unit
         );
     }
 
@@ -213,13 +226,25 @@ public class KasperCommandGateway implements CommandGateway {
                 final Command command,
                 @MetaData(Context.METANAME)
                 final Context context) throws Exception {
+        checkNotNull(command);
+        checkNotNull(context);
 
-        MDC.setContextMap(checkNotNull(context).asMap(MDC.getCopyOfContextMap()));
+        enrichContextAndMdcContextMap(command, context);
 
         commandGateway.sendCommandAndWaitForever(
-                checkNotNull(command),
+                command,
                 context
         );
+    }
+
+    @VisibleForTesting
+    protected void enrichContextAndMdcContextMap(final Command command, final Context context) {
+        checkNotNull(command);
+        checkNotNull(context);
+
+        final Set<String> additionalTags = domainLocator.getHandlerTags(command);
+        context.addTags(additionalTags);
+        MDCUtils.enrichMdcContextMap(context);
     }
 
     // ------------------------------------------------------------------------

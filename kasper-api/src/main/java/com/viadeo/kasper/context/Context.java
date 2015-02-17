@@ -14,6 +14,7 @@ import com.viadeo.kasper.impl.DefaultKasperId;
 import java.io.Serializable;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -61,6 +62,7 @@ public interface Context extends Serializable  {
     String FUNNEL_NAME_SHORTNAME = "funnelName";
     String FUNNEL_VERS_SHORTNAME = "funnelVersion";
     String IP_ADDRESS_SHORTNAME = "ipAddress";
+    String TAGS_SHORTNAME = "tags";
     String CALL_TYPE = "callType";
     String USER_AGENT = "userAgent";
     String REFERER = "Referer";
@@ -235,6 +237,22 @@ public interface Context extends Serializable  {
      * @return the first application request ip address
      */
     Optional<String> getFirstIpAddress();
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * Set the tags.
+     *
+     * @param tags the new tags
+     */
+    Context setTags(Set<String> tags);
+
+    /**
+     * @return the tags
+     */
+    Set<String> getTags();
+
+    Context addTags(Set<String> additionalTags);
 
     // ------------------------------------------------------------------------
 

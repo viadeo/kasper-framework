@@ -20,7 +20,10 @@ import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandMDCInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandValidationInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
-import com.viadeo.kasper.cqrs.query.interceptor.*;
+import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
+import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
+import com.viadeo.kasper.cqrs.query.interceptor.QueryMDCInterceptorFactory;
+import com.viadeo.kasper.cqrs.query.interceptor.QueryValidationInterceptorFactory;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 

@@ -6,8 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command.impl;
 
+import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -19,14 +22,24 @@ import com.viadeo.kasper.cqrs.command.interceptor.KasperCommandInterceptor;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
+import org.mockito.InOrder;
+import org.mockito.Matchers;
+import org.slf4j.MDC;
 
 import java.util.ArrayList;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import static com.google.common.collect.Sets.newHashSet;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.refEq;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.*;
 
 public class KasperCommandGatewayUTest {
@@ -36,6 +49,9 @@ public class KasperCommandGatewayUTest {
     private final DomainLocator domainLocator;
     private final CommandGateway decoratedCommandGateway;
     private final InterceptorChainRegistry<Command, CommandResponse> interceptorChainRegistry;
+
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
 
     // ------------------------------------------------------------------------
 
@@ -53,6 +69,8 @@ public class KasperCommandGatewayUTest {
     @Before
     public void setUp() {
         reset(domainLocator, decoratedCommandGateway);
+        when(domainLocator.getHandlerForCommandClass(Matchers.<Class<Command>>any()))
+                .thenReturn(Optional.<CommandHandler>absent());
     }
 
     // ------------------------------------------------------------------------
@@ -177,6 +195,49 @@ public class KasperCommandGatewayUTest {
 
         verify(interceptorChainRegistry).create(eq(commandHandler.getClass()), any(CommandInterceptorFactory.class));
         verifyNoMoreInteractions(interceptorChainRegistry);
+    }
+
+    // ------------------------------------------------------------------------
+
+    @Test
+    @SuppressWarnings("unchecked")
+    public void enrichMdcAndMdcContextMap_withRegisteredCommandWithTags_shouldAddItsTagsToTheContextBeforeEnrichingTheMdcContextMap() {
+        // Given
+        Command command = new TestCommand();
+        Set<String> expectedTags = newHashSet("this-is-a-tag", "this-is-another-tag");
+        when(domainLocator.getHandlerTags(command))
+                .thenReturn(expectedTags);
+
+        Context context = mock(Context.class);
+        when(context.addTags(expectedTags))
+                .thenReturn(context);
+
+        Map<String, String> initialContextMap = ImmutableMap.of("foo", "bar");
+        MDC.setContextMap(initialContextMap);
+
+        Map<String, String> extendedContextMap = ImmutableMap.of("baz", "qux");
+        when(context.asMap(initialContextMap))
+                .thenReturn(extendedContextMap);
+
+
+        // When
+        commandGateway.enrichContextAndMdcContextMap(command, context);
+
+        // Then
+        InOrder inOrder = inOrder(context);
+        inOrder.verify(context)
+                .addTags(expectedTags);
+        inOrder.verify(context)
+                .asMap(initialContextMap);
+        inOrder.verifyNoMoreInteractions();
+
+        assertEquals(extendedContextMap, MDC.getCopyOfContextMap());
+    }
+
+    // ------------------------------------------------------------------------
+
+    @XKasperUnregistered
+    private static class TestCommand implements Command {
     }
 
 }

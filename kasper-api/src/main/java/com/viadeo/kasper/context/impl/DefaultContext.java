@@ -8,13 +8,17 @@ package com.viadeo.kasper.context.impl;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.ID;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Tags;
 
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -47,6 +51,8 @@ public class DefaultContext extends AbstractContext {
 
     private String ipAddress;
 
+    private Set<String> tags;
+
     // ------------------------------------------------------------------------
 
     public DefaultContext() {
@@ -64,6 +70,7 @@ public class DefaultContext extends AbstractContext {
         this.funnelName = DEFAULT_FUNNEL_NAME;
         this.funnelVersion = DEFAULT_FUNNEL_VERSION;
         this.ipAddress = DEFAULT_IP_ADDRESS;
+        this.tags = ImmutableSet.of();
     }
 
     // ------------------------------------------------------------------------
@@ -220,6 +227,26 @@ public class DefaultContext extends AbstractContext {
         return this;
     }
 
+    @Override
+    public Context setTags(final Set<String> tags) {
+        checkNotNull(tags);
+        this.tags = ImmutableSet.copyOf(tags);
+        return this;
+    }
+
+    @Override
+    public Set<String> getTags() {
+        return tags;
+    }
+
+    @Override
+    public DefaultContext addTags(final Set<String> additionalTags) {
+        checkNotNull(additionalTags);
+        final Set<String> mergedTags = Sets.union(this.tags, additionalTags);
+        this.tags = ImmutableSet.copyOf(mergedTags);
+        return this;
+    }
+
     // ------------------------------------------------------------------------
 
     @SuppressWarnings("unchecked") // must be ensured by client
@@ -243,6 +270,7 @@ public class DefaultContext extends AbstractContext {
         newContext.funnelVersion = this.funnelVersion;
 
         newContext.ipAddress = this.ipAddress;
+        newContext.tags = this.tags;
 
         return (C) newContext;
     }
@@ -270,6 +298,7 @@ public class DefaultContext extends AbstractContext {
         retMap.put(FUNNEL_NAME_SHORTNAME, safeStringObject(this.funnelName));
         retMap.put(FUNNEL_VERS_SHORTNAME, safeStringObject(this.funnelVersion));
         retMap.put(IP_ADDRESS_SHORTNAME, safeStringObject(this.ipAddress));
+        retMap.put(TAGS_SHORTNAME, Tags.toString(this.tags));
 
         return retMap;
     }
@@ -310,6 +339,7 @@ public class DefaultContext extends AbstractContext {
                 && Objects.equal(this.funnelName, other.funnelName)
                 && Objects.equal(this.funnelVersion, other.funnelVersion)
                 && Objects.equal(this.ipAddress, other.ipAddress)
+                && Objects.equal(this.tags, other.tags)
                 ;
     }
 
@@ -327,7 +357,8 @@ public class DefaultContext extends AbstractContext {
                 this.userLang,
                 this.userCountry,
                 this.securityToken,
-                this.ipAddress
+                this.ipAddress,
+                this.tags
         );
     }
 
@@ -347,6 +378,7 @@ public class DefaultContext extends AbstractContext {
                 .addValue(this.funnelName)
                 .addValue(this.funnelVersion)
                 .addValue(this.ipAddress)
+                .addValue(this.tags)
                 .toString();
     }
 
