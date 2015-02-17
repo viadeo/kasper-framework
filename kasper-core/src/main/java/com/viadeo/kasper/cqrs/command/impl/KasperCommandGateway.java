@@ -20,7 +20,7 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandHandlerInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.interceptor.KasperCommandInterceptor;
-import com.viadeo.kasper.cqrs.util.MdcUtils;
+import com.viadeo.kasper.cqrs.util.MDCUtils;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandDispatchInterceptor;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
@@ -238,13 +238,13 @@ public class KasperCommandGateway implements CommandGateway {
     }
 
     @VisibleForTesting
-    protected void enrichContextAndMdcContextMap(Command command, Context context) {
+    protected void enrichContextAndMdcContextMap(final Command command, final Context context) {
         checkNotNull(command);
         checkNotNull(context);
 
-        Set<String> additionalTags = domainLocator.getHandlerTags(command);
+        final Set<String> additionalTags = domainLocator.getHandlerTags(command);
         context.addTags(additionalTags);
-        MdcUtils.enrichMdcContextMap(context);
+        MDCUtils.enrichMdcContextMap(context);
     }
 
     // ------------------------------------------------------------------------

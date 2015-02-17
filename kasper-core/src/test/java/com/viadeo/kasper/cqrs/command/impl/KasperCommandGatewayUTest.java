@@ -19,7 +19,6 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.interceptor.KasperCommandInterceptor;
-
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
 import org.junit.Before;
@@ -40,6 +39,7 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.refEq;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.*;
 
 public class KasperCommandGatewayUTest {

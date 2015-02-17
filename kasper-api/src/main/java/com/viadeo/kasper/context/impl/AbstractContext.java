@@ -162,6 +162,23 @@ public abstract class AbstractContext implements Context {
 
     // ------------------------------------------------------------------------
 
+    @Override
+    public Context setTags(final Set<String> tags) {
+        return this;
+    }
+
+    @Override
+    public Set<String> getTags() {
+        return ImmutableSet.of();
+    }
+
+    @Override
+    public AbstractContext addTags(final Set<String> additionalTags) {
+        return this;
+    }
+
+    // ------------------------------------------------------------------------
+
     protected String safeStringObject(final Serializable unsafeObject) {
         if (null == unsafeObject) {
             return "";
@@ -253,26 +270,6 @@ public abstract class AbstractContext implements Context {
                 .addValue(this.sequenceIncrement)
                 .addValue(this.properties)
                 .toString();
-    }
-
-    // default implementation, so that subclasses still compile
-
-    @Deprecated
-    @Override
-    public Context setTags(Set<String> tags) {
-        return this;
-    }
-
-    @Deprecated
-    @Override
-    public Set<String> getTags() {
-        return ImmutableSet.of();
-    }
-
-    @Deprecated
-    @Override
-    public AbstractContext addTags(Set<String> additionalTags) {
-        return this;
     }
 
 }

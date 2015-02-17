@@ -1,12 +1,12 @@
 package com.viadeo.kasper.context;
 
-import static com.google.common.collect.Sets.newHashSet;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 import java.util.Set;
 
-import org.junit.Test;
+import static com.google.common.collect.Sets.newHashSet;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class TagsUTest {
 
@@ -14,10 +14,10 @@ public class TagsUTest {
     @SuppressWarnings("all")
     public void valueOf_withEmptyString_shouldEmptyTags() {
         // Given
-        String string = "";
+        final String string = "";
 
         // When
-        Set<String> tags = Tags.valueOf(string);
+        final Set<String> tags = Tags.valueOf(string);
 
         // Then
         assertEquals(newHashSet(), tags);
@@ -26,10 +26,10 @@ public class TagsUTest {
     @Test
     public void valueOf_withATag_shouldReturnTheTag() {
         // Given
-        String string = "a-tag";
+        final String string = "a-tag";
 
         // When
-        Set<String> tags = Tags.valueOf(string);
+        final Set<String> tags = Tags.valueOf(string);
 
         // Then
         assertEquals(newHashSet("a-tag"), tags);
@@ -38,10 +38,10 @@ public class TagsUTest {
     @Test
     public void valueOf_withTags_shouldSplitTheTags() {
         // Given
-        String string = "a-tag,another-tag";
+        final String string = "a-tag,another-tag";
 
         // When
-        Set<String> tags = Tags.valueOf(string);
+        final Set<String> tags = Tags.valueOf(string);
 
         // Then
         assertEquals(newHashSet("a-tag", "another-tag"), tags);
@@ -50,10 +50,10 @@ public class TagsUTest {
     @Test
     public void valueOf_withTags_shouldOmitEmptyTags() {
         // Given
-        String string = ",,a-tag,,,,,,,,,another-tag,";
+        final String string = ",,a-tag,,,,,,,,,another-tag,";
 
         // When
-        Set<String> tags = Tags.valueOf(string);
+        final Set<String> tags = Tags.valueOf(string);
 
         // Then
         assertEquals(newHashSet("a-tag", "another-tag"), tags);
@@ -64,10 +64,10 @@ public class TagsUTest {
     @Test
     public void toString_withNoTags_shouldReturnTheEmptyString() {
         // Given
-        Set<String> tags = newHashSet();
+        final Set<String> tags = newHashSet();
 
         // When
-        String theString = Tags.toString(tags);
+        final String theString = Tags.toString(tags);
 
         // Then
         assertEquals("", theString);
@@ -76,10 +76,10 @@ public class TagsUTest {
     @Test
     public void toString_withTags_shouldReturnTheTag() {
         // Given
-        Set<String> tags = newHashSet("a-tag");
+        final Set<String> tags = newHashSet("a-tag");
 
         // When
-        String theString = Tags.toString(tags);
+        final String theString = Tags.toString(tags);
 
         // Then
         assertEquals("a-tag", theString);
@@ -88,10 +88,10 @@ public class TagsUTest {
     @Test
     public void toString_withTags_shouldJoinThem() {
         // Given
-        Set<String> tags = newHashSet("a-tag", "another-tag");
+        final Set<String> tags = newHashSet("a-tag", "another-tag");
 
         // When
-        String theString = Tags.toString(tags);
+        final String theString = Tags.toString(tags);
 
         // Then
         assertTrue(newHashSet("a-tag,another-tag", "another-tag,a-tag").contains(theString)); // order is not important
@@ -100,10 +100,10 @@ public class TagsUTest {
     @Test
     public void toString_withNullTag_shouldOmitIt() {
         // Given
-        Set<String> tags = newHashSet("a-tag", null, "another-tag");
+        final Set<String> tags = newHashSet("a-tag", null, "another-tag");
 
         // When
-        String theString = Tags.toString(tags);
+        final String theString = Tags.toString(tags);
 
         // Then
         assertTrue(newHashSet("a-tag,another-tag", "another-tag,a-tag").contains(theString)); // order is not important

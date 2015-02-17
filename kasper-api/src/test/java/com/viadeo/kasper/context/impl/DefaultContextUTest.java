@@ -83,10 +83,10 @@ public class DefaultContextUTest {
     @SuppressWarnings("all")
     public void constructor_byDefault_shouldInitializeTagsAsTheEmptySet() {
         // Given
-        Context context = new DefaultContext();
+        final Context context = new DefaultContext();
 
         // When
-        Set<String> tags = context.getTags();
+        final Set<String> tags = context.getTags();
 
         // Then
         assertEquals(newHashSet(), tags);
@@ -98,15 +98,15 @@ public class DefaultContextUTest {
     @SuppressWarnings("all")
     public void setTags_withEmptySetReplacingEmptySet_shouldDoNothing() {
         // Given
-        Context context = new DefaultContext();
-        Set<String> newTags = newHashSet();
+        final Context context = new DefaultContext();
+        final Set<String> newTags = newHashSet();
 
         // When
-        Context newContext = context.setTags(newTags);
+        final Context newContext = context.setTags(newTags);
 
         // Then
         assertSame(context, newContext);
-        Set<String> actualTags = context.getTags();
+        final Set<String> actualTags = context.getTags();
         assertEquals(newTags, actualTags);
     }
 
@@ -114,15 +114,15 @@ public class DefaultContextUTest {
     @SuppressWarnings("all")
     public void setTags_withSetReplacingEmptySet_shouldSetTags() {
         // Given
-        Context context = new DefaultContext();
-        Set<String> newTags = newHashSet("a-tag");
+        final Context context = new DefaultContext();
+        final Set<String> newTags = newHashSet("a-tag");
 
         // When
-        Context newContext = context.setTags(newTags);
+        final Context newContext = context.setTags(newTags);
 
         // Then
         assertSame(context, newContext);
-        Set<String> actualTags = context.getTags();
+        final Set<String> actualTags = context.getTags();
         assertEquals(newTags, actualTags);
     }
 
@@ -130,18 +130,18 @@ public class DefaultContextUTest {
     @SuppressWarnings("all")
     public void setTags_withSetReplacingSet_shouldReplaceExistingTags() {
         // Given
-        Context context = new DefaultContext();
-        Set<String> oldTags = newHashSet("a-tag");
-        context = context.setTags(oldTags);
+        final Context context = new DefaultContext();
+        final Set<String> oldTags = newHashSet("a-tag");
+        context.setTags(oldTags);
 
-        Set<String> newTags = newHashSet("another-tag");
+        final Set<String> newTags = newHashSet("another-tag");
 
         // When
-        Context newContext = context.setTags(newTags);
+        final Context newContext = context.setTags(newTags);
 
         // Then
         assertSame(context, newContext);
-        Set<String> actualTags = context.getTags();
+        final Set<String> actualTags = context.getTags();
         assertEquals(newTags, actualTags);
     }
 
@@ -151,11 +151,11 @@ public class DefaultContextUTest {
     @SuppressWarnings("all")
     public void addTags_withNull_shouldThrowNPE() {
         // Given
-        Context context = new DefaultContext();
+        final Context context = new DefaultContext();
         Set<String> oldTags = newHashSet("a-tag", "another-tag");
         context.setTags(oldTags);
 
-        Set<String> newTags = null;
+        final Set<String> newTags = null;
 
         // Expect
         thrown.expect(NullPointerException.class);
@@ -168,54 +168,54 @@ public class DefaultContextUTest {
     @SuppressWarnings("all")
     public void addTags_withEmptySet_shouldDoNothing() {
         // Given
-        Context context = new DefaultContext();
-        Set<String> oldTags = newHashSet("a-tag", "another-tag");
+        final Context context = new DefaultContext();
+        final Set<String> oldTags = newHashSet("a-tag", "another-tag");
         context.setTags(oldTags);
 
-        Set<String> newTags = newHashSet();
+        final Set<String> newTags = newHashSet();
 
         // When
-        Context newContext = context.addTags(newTags);
+        final Context newContext = context.addTags(newTags);
 
         // Then
         assertSame(context, newContext);
-        Set<String> actualTags = context.getTags();
+        final Set<String> actualTags = context.getTags();
         assertEquals(oldTags, actualTags);
     }
 
     @Test
     public void addTags_withExistingTags_shouldDoNothing() {
         // Given
-        Context context = new DefaultContext();
-        Set<String> oldTags = newHashSet("a-tag", "another-tag");
+        final Context context = new DefaultContext();
+        final Set<String> oldTags = newHashSet("a-tag", "another-tag");
         context.setTags(oldTags);
 
-        Set<String> newTags = newHashSet("a-tag");
+        final Set<String> newTags = newHashSet("a-tag");
 
         // When
-        Context newContext = context.addTags(newTags);
+        final Context newContext = context.addTags(newTags);
 
         // Then
         assertSame(context, newContext);
-        Set<String> actualTags = context.getTags();
+        final Set<String> actualTags = context.getTags();
         assertEquals(oldTags, actualTags);
     }
 
     @Test
     public void addTags_withNewTags_shouldAddThem() {
         // Given
-        Context context = new DefaultContext();
-        Set<String> oldTags = newHashSet("a-tag", "another-tag");
+        final Context context = new DefaultContext();
+        final Set<String> oldTags = newHashSet("a-tag", "another-tag");
         context.setTags(oldTags);
 
-        Set<String> newTags = newHashSet("yet-another-tag");
+        final Set<String> newTags = newHashSet("yet-another-tag");
 
         // When
-        Context newContext = context.addTags(newTags);
+        final Context newContext = context.addTags(newTags);
 
         // Then
         assertSame(context, newContext);
-        Set<String> actualTags = context.getTags();
+        final Set<String> actualTags = context.getTags();
         assertEquals(newHashSet("a-tag", "another-tag", "yet-another-tag"), actualTags);
     }
 
@@ -223,15 +223,15 @@ public class DefaultContextUTest {
 
     @Test
     public void asMap_withTags_shouldConcatenateThem() {
-        Context context = new DefaultContext();
-        Set<String> tags = newHashSet("a", "b");
-        context = context.setTags(tags);
+        final Context context = new DefaultContext();
+        final Set<String> tags = newHashSet("a", "b");
+        context.setTags(tags);
 
         // When
-        Map<String, String> map = context.asMap(Maps.<String, String>newHashMap());
+        final Map<String, String> map = context.asMap(Maps.<String, String>newHashMap());
 
         // Then
-        String serializedTags = map.get(Context.TAGS_SHORTNAME);
+        final String serializedTags = map.get(Context.TAGS_SHORTNAME);
         assertTrue(newHashSet("a,b", "b,a").contains(serializedTags)); // order is not important
     }
 

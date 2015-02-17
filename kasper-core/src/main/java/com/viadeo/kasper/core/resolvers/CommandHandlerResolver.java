@@ -16,11 +16,11 @@ import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
-import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
+import static java.util.Map.Entry;
 
 public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
 
@@ -108,7 +108,7 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
     }
 
     @VisibleForTesting
-    protected void putCommandClass(Class<? extends CommandHandler> clazz, Optional<Class<? extends Command>> commandClazz) {
+    protected void putCommandClass(final Class<? extends CommandHandler> clazz, final Optional<Class<? extends Command>> commandClazz) {
         checkNotNull(clazz);
         checkNotNull(commandClazz);
         checkArgument(commandClazz.isPresent());
@@ -117,9 +117,9 @@ public class CommandHandlerResolver extends AbstractResolver<CommandHandler> {
 
     @SuppressWarnings("unchecked")
     // @javax.annotation.Nullable
-    public Optional<Class<? extends CommandHandler>> getHandlerClass(Class<? extends Command> commandClass) {
+    public Optional<Class<? extends CommandHandler>> getHandlerClass(final Class<? extends Command> commandClass) {
         checkNotNull(commandClass);
-        for (Map.Entry<Class, Class> handlerToCommand : cacheCommands.entrySet()) {
+        for (final Entry<Class, Class> handlerToCommand : cacheCommands.entrySet()) {
             if (commandClass.equals(handlerToCommand.getValue())) {
                 return Optional.<Class<? extends CommandHandler>>of(handlerToCommand.getKey());
             }

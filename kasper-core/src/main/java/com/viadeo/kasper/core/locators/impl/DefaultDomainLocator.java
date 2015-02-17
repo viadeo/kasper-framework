@@ -94,32 +94,33 @@ public class DefaultDomainLocator implements DomainLocator {
     }
 
     @Override
-    public Set<String> getHandlerTags(Command command) {
+    public Set<String> getHandlerTags(final Command command) {
         checkNotNull(command);
 
-        Class<? extends Command> commandClass = command.getClass();
+        final Class<? extends Command> commandClass = command.getClass();
 
         // @javax.annotation.Nullable
-        Optional<Class<? extends CommandHandler>> resolvedHandlerClass = commandHandlerResolver.getHandlerClass(commandClass);
+        final Optional<Class<? extends CommandHandler>> resolvedHandlerClass = commandHandlerResolver.getHandlerClass(commandClass);
 
-        if (!resolvedHandlerClass.isPresent()) {
+        if ( ! resolvedHandlerClass.isPresent()) {
             return ImmutableSet.of();
         }
 
-        Class<? extends CommandHandler> handlerClass = resolvedHandlerClass.get();
+        final Class<? extends CommandHandler> handlerClass = resolvedHandlerClass.get();
         return getHandlerTags(handlerClass);
     }
 
     @VisibleForTesting
-    protected static Set<String> getHandlerTags(Class<? extends CommandHandler> handlerClass) {
+    protected static Set<String> getHandlerTags(final Class<? extends CommandHandler> handlerClass) {
         checkNotNull(handlerClass);
 
         // @javax.annotation.Nullable
-        XKasperCommandHandler annotation = handlerClass.getAnnotation(XKasperCommandHandler.class);
-        if (annotation == null) {
+        final XKasperCommandHandler annotation = handlerClass.getAnnotation(XKasperCommandHandler.class);
+        if (null == annotation) {
             return ImmutableSet.of();
         }
-        String[] annotationTags = annotation.tags();
+
+        final String[] annotationTags = annotation.tags();
         return ImmutableSet.copyOf(annotationTags);
     }
 

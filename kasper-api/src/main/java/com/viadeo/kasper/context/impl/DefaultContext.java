@@ -12,8 +12,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.ID;
-import com.viadeo.kasper.context.Tags;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Tags;
 
 import java.util.HashMap;
 import java.util.Locale;
@@ -228,24 +228,21 @@ public class DefaultContext extends AbstractContext {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public Context setTags(Set<String> tags) {
+    public Context setTags(final Set<String> tags) {
         checkNotNull(tags);
         this.tags = ImmutableSet.copyOf(tags);
         return this;
     }
 
     @Override
-    @SuppressWarnings("deprecation")
     public Set<String> getTags() {
         return tags;
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public DefaultContext addTags(Set<String> additionalTags) {
+    public DefaultContext addTags(final Set<String> additionalTags) {
         checkNotNull(additionalTags);
-        Set<String> mergedTags = Sets.union(this.tags, additionalTags);
+        final Set<String> mergedTags = Sets.union(this.tags, additionalTags);
         this.tags = ImmutableSet.copyOf(mergedTags);
         return this;
     }

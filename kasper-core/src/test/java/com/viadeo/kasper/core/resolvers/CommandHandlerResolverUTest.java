@@ -1,19 +1,16 @@
 package com.viadeo.kasper.core.resolvers;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertTrue;
-import static org.mockito.MockitoAnnotations.initMocks;
-
+import com.google.common.base.Optional;
+import com.viadeo.kasper.core.annotation.XKasperUnregistered;
+import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.cqrs.command.CommandHandler;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import com.google.common.base.Optional;
-import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandHandler;
+import static org.junit.Assert.*;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class CommandHandlerResolverUTest {
 
@@ -21,6 +18,18 @@ public class CommandHandlerResolverUTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
+    // ------------------------------------------------------------------------
+
+    @XKasperUnregistered
+    private static class TestCommand implements Command {
+    }
+
+    @XKasperUnregistered
+    private static class TestCommandHandler extends CommandHandler<TestCommand> {
+    }
+
+    // ------------------------------------------------------------------------
 
     @Before
     public void setUp() throws Exception {
@@ -35,7 +44,7 @@ public class CommandHandlerResolverUTest {
     @SuppressWarnings("all")
     public void getHandlerClass_withNullCommand_shouldThrowNPE() {
         // Given
-        Class<? extends Command> command = null;
+        final Class<? extends Command> command = null;
 
         // Expect
         thrown.expect(NullPointerException.class);
@@ -48,10 +57,10 @@ public class CommandHandlerResolverUTest {
     @SuppressWarnings("all")
     public void getHandlerClass_withUnregisteredCommand_shouldReturnNull() {
         // Given
-        Class<? extends Command> command = TestCommand.class;
+        final Class<? extends Command> command = TestCommand.class;
 
         // When
-        Optional<Class<? extends CommandHandler>> handlerClass = resolver.getHandlerClass(command);
+        final Optional<Class<? extends CommandHandler>> handlerClass = resolver.getHandlerClass(command);
 
         // Then
         assertFalse(handlerClass.isPresent());
@@ -61,27 +70,17 @@ public class CommandHandlerResolverUTest {
     @SuppressWarnings("unchecked")
     public void getHandlerClass_withRegisteredCommand_shouldReturnTheHandlersClass() {
         // Given
-        Class commandClass = TestCommand.class;
-        Class registeredHandlerClass = TestCommandHandler.class;
+        final Class commandClass = TestCommand.class;
+        final Class registeredHandlerClass = TestCommandHandler.class;
 
-        resolver.putCommandClass(registeredHandlerClass, Optional.<Class<Command>>of(commandClass));
+        resolver.putCommandClass(registeredHandlerClass, Optional.<Class<? extends Command>>of(commandClass));
 
         // When
-        Optional<Class<? extends CommandHandler>> handlerClass = resolver.getHandlerClass(commandClass);
+        final Optional<Class<? extends CommandHandler>> handlerClass = resolver.getHandlerClass(commandClass);
 
         // Then
         assertTrue(handlerClass.isPresent());
         assertSame(registeredHandlerClass, handlerClass.get());
-    }
-
-    // ------------------------------------------------------------------------
-
-    @XKasperUnregistered
-    private static class TestCommand implements Command {
-    }
-
-    @XKasperUnregistered
-    private static class TestCommandHandler extends CommandHandler<TestCommand> {
     }
 
 }

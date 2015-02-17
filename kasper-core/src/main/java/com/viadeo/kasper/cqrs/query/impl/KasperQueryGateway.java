@@ -21,16 +21,16 @@ import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptorFactory;
-import com.viadeo.kasper.cqrs.util.MdcUtils;
+import com.viadeo.kasper.cqrs.util.MDCUtils;
 import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
-
-import java.util.Set;
 
 /**
  * The Kasper gateway base implementation
@@ -145,44 +145,44 @@ public class KasperQueryGateway implements QueryGateway {
     }
 
     @VisibleForTesting
-    protected void enrichContextAndMdcContextMap(Query query, Context context) {
+    protected void enrichContextAndMdcContextMap(final Query query, final Context context) {
         checkNotNull(query);
         checkNotNull(context);
 
-        // @javax.annotation.Nullable
-        Class<? extends QueryHandler> handlerClass = getHandlerClass(query);
-        if (handlerClass != null) {
-            Set<String> additionalTags = getHandlerTags(handlerClass);
+        final Optional<Class<? extends QueryHandler>> handlerClass = getHandlerClass(query);
+        if (handlerClass.isPresent()) {
+            final Set<String> additionalTags = getHandlerTags(handlerClass.get());
             context.addTags(additionalTags);
         }
-        MdcUtils.enrichMdcContextMap(context);
+
+        MDCUtils.enrichMdcContextMap(context);
     }
 
     @VisibleForTesting
-    // @javax.annotation.Nullable
-    protected Class<? extends QueryHandler> getHandlerClass(Query query) {
+    protected Optional<Class<? extends QueryHandler>> getHandlerClass(final Query query) {
         checkNotNull(query);
 
-        Class<? extends Query> queryClass = query.getClass();
-        Optional<QueryHandler<Query, QueryResult>> registeredHandler = queryHandlersLocator.getHandlerFromQueryClass(queryClass);
-        if (!registeredHandler.isPresent()) {
-            return null;
+        final Class<? extends Query> queryClass = query.getClass();
+        final Optional<? extends QueryHandler<Query, QueryResult>> registeredHandler = queryHandlersLocator.getHandlerFromQueryClass(queryClass);
+        if ( ! registeredHandler.isPresent()) {
+            return Optional.absent();
         }
 
-        QueryHandler handler = registeredHandler.get();
-        return handler.getClass();
+        final QueryHandler handler = registeredHandler.get();
+        return Optional.<Class<? extends QueryHandler>>of(handler.getClass());
     }
 
     @VisibleForTesting
-    protected static Set<String> getHandlerTags(Class<? extends QueryHandler> handlerClass) {
+    protected static Set<String> getHandlerTags(final Class<? extends QueryHandler> handlerClass) {
         checkNotNull(handlerClass);
 
         // @javax.annotation.Nullable
-        XKasperQueryHandler annotation = handlerClass.getAnnotation(XKasperQueryHandler.class);
-        if (annotation == null) {
+        final XKasperQueryHandler annotation = handlerClass.getAnnotation(XKasperQueryHandler.class);
+        if (null == annotation) {
             return ImmutableSet.of();
         }
-        String[] annotationTags = annotation.tags();
+
+        final String[] annotationTags = annotation.tags();
         return ImmutableSet.copyOf(annotationTags);
     }
 
@@ -197,7 +197,7 @@ public class KasperQueryGateway implements QueryGateway {
      *               Otherwise the  adapter will be applied only on the component whose reference it
      */
     @Deprecated
-    public void register(final String name, final  QueryHandlerAdapter adapter, final boolean global) {
+    public void register(final String name, final QueryHandlerAdapter adapter, final boolean global) {
         queryHandlersLocator.registerAdapter(
             checkNotNull(name),
             checkNotNull(adapter),

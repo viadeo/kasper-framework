@@ -7,9 +7,9 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Tags;
 import com.viadeo.kasper.context.impl.AbstractContext;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
-import com.viadeo.kasper.context.Tags;
 import com.viadeo.kasper.impl.DefaultKasperId;
 
 import javax.servlet.http.HttpServletRequest;

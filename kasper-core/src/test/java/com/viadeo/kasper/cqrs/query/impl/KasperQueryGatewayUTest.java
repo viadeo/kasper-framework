@@ -33,13 +33,13 @@ import org.junit.rules.ExpectedException;
 import org.mockito.InOrder;
 import org.slf4j.MDC;
 
+import java.util.Map;
+import java.util.Set;
+
 import static com.google.common.collect.Sets.newHashSet;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.*;
-
-import java.util.Map;
-import java.util.Set;
 
 public class KasperQueryGatewayUTest {
 
@@ -49,6 +49,8 @@ public class KasperQueryGatewayUTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
+
+    // ------------------------------------------------------------------------
 
     @XKasperQueryHandler(domain = Domain.class)
     private static class QueryHandlerForTest extends QueryHandler<Query, QueryResult> { }
@@ -65,6 +67,43 @@ public class KasperQueryGatewayUTest {
         public QueryResponse<QueryResult> process(Query query, Context context, InterceptorChain<Query, QueryResponse<QueryResult>> chain) throws Exception {
             return chain.next(query, context);
         }
+    }
+
+    // ------------------------------------------------------------------------
+
+    private static final String TEST_COMMAND_TAG = "this-is-a-tag";
+
+    private static final String TEST_COMMAND_TAG_2 = "this-is-another-tag";
+
+    @XKasperUnregistered
+    private static class TestDomain implements Domain {
+    }
+
+    @XKasperUnregistered
+    private static class TestQuery implements Query {
+    }
+
+    @XKasperUnregistered
+    private static class TestQueryResult implements QueryResult {
+    }
+
+    @XKasperUnregistered
+    @XKasperQueryHandler(domain = TestDomain.class)
+    private static class TestQueryHandler_WithNoTags extends QueryHandler<TestQuery, TestQueryResult> {
+    }
+
+    @XKasperUnregistered
+    @XKasperQueryHandler(domain = TestDomain.class, tags = TEST_COMMAND_TAG)
+    private static class TestQueryHandler_WithOneTag extends QueryHandler<TestQuery, TestQueryResult> {
+    }
+
+    @XKasperUnregistered
+    @XKasperQueryHandler(domain = TestDomain.class, tags = {TEST_COMMAND_TAG, TEST_COMMAND_TAG_2})
+    private static class TestQueryHandler_WithSeveralTags extends QueryHandler<TestQuery, TestQueryResult> {
+    }
+
+    @XKasperUnregistered
+    private static class TestQueryHandler_WithoutAnnotation extends QueryHandler<TestQuery, TestQueryResult> {
     }
 
     // ------------------------------------------------------------------------
@@ -86,28 +125,28 @@ public class KasperQueryGatewayUTest {
     @SuppressWarnings("unchecked")
     public void enrichMdcAndMdcContextMap_withRegisteredQueryWithTags_shouldAddItsTagsToTheContextBeforeEnrichingTheMdcContextMap() {
         // Given
-        Query query = new TestQuery();
+        final Query query = new TestQuery();
         when(queryHandlersLocator.getHandlerFromQueryClass(query.getClass()))
                 .thenReturn(Optional.<QueryHandler<Query, QueryResult>>of((QueryHandler) new TestQueryHandler_WithSeveralTags()));
-        Set<String> expectedTags = newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2);
 
-        Context context = mock(Context.class);
+        final Set<String> expectedTags = newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2);
+
+        final Context context = mock(Context.class);
         when(context.addTags(expectedTags))
                 .thenReturn(context);
 
-        Map<String, String> initialContextMap = ImmutableMap.of("foo", "bar");
+        final Map<String, String> initialContextMap = ImmutableMap.of("foo", "bar");
         MDC.setContextMap(initialContextMap);
 
-        Map<String, String> extendedContextMap = ImmutableMap.of("baz", "qux");
+        final Map<String, String> extendedContextMap = ImmutableMap.of("baz", "qux");
         when(context.asMap(initialContextMap))
                 .thenReturn(extendedContextMap);
-
 
         // When
         queryGateway.enrichContextAndMdcContextMap(query, context);
 
         // Then
-        InOrder inOrder = inOrder(context);
+        final InOrder inOrder = inOrder(context);
         inOrder.verify(context)
                 .addTags(expectedTags);
         inOrder.verify(context)
@@ -123,7 +162,7 @@ public class KasperQueryGatewayUTest {
     @SuppressWarnings("all")
     public void getHandlerClass_withNull_shouldThrowNPE() {
         // Given
-        Query query = null;
+        final Query query = null;
 
         // Expect
         thrown.expect(NullPointerException.class);
@@ -135,31 +174,32 @@ public class KasperQueryGatewayUTest {
     @Test
     public void getHandlerClass_withUnregisteredQuery_shouldReturnNull() {
         // Given
-        Query query = new TestQuery();
+        final Query query = new TestQuery();
         when(queryHandlersLocator.getHandlerFromQueryClass(query.getClass()))
                 .thenReturn(Optional.<QueryHandler<Query, QueryResult>>absent());
 
         // When
-        Class<? extends QueryHandler> handlerClass = queryGateway.getHandlerClass(query);
+        final Optional<Class<? extends QueryHandler>> handlerClass = queryGateway.getHandlerClass(query);
 
         // Then
-        assertNull(handlerClass);
+        assertEquals(false, handlerClass.isPresent());
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void getHandlerClass_withRegisteredQuery_shouldReturnTheHandlersClass() {
         // Given
-        Query query = new TestQuery();
-        QueryHandler registeredHandler = new TestQueryHandler_WithSeveralTags();
+        final Query query = new TestQuery();
+        final QueryHandler registeredHandler = new TestQueryHandler_WithSeveralTags();
         when(queryHandlersLocator.getHandlerFromQueryClass(query.getClass()))
                 .thenReturn(Optional.<QueryHandler<Query, QueryResult>>of(registeredHandler));
 
         // When
-        Class<? extends QueryHandler> handlerClass = queryGateway.getHandlerClass(query);
+        final Optional<Class<? extends QueryHandler>> handlerClass = queryGateway.getHandlerClass(query);
 
         // Then
-        assertEquals(registeredHandler.getClass(), handlerClass);
+        assertEquals(true, handlerClass.isPresent());
+        assertEquals(registeredHandler.getClass(), handlerClass.get());
     }
 
     // ------------------------------------------------------------------------
@@ -168,7 +208,7 @@ public class KasperQueryGatewayUTest {
     @SuppressWarnings("all")
     public void getHandlerTags_withNull_shouldThrowNPE() {
         // Given
-        Class<? extends QueryHandler> handlerClass = null;
+        final Class<? extends QueryHandler> handlerClass = null;
 
         // Expect
         thrown.expect(NullPointerException.class);
@@ -181,10 +221,10 @@ public class KasperQueryGatewayUTest {
     @SuppressWarnings("all")
     public void getHandlerTags_withHandlerWithNoTags_shouldReturnEmpty() {
         // Given
-        Class<? extends QueryHandler> handlerClass = TestQueryHandler_WithNoTags.class;
+        final Class<? extends QueryHandler> handlerClass = TestQueryHandler_WithNoTags.class;
 
         // When
-        Set<String> tags = KasperQueryGateway.getHandlerTags(handlerClass);
+        final Set<String> tags = KasperQueryGateway.getHandlerTags(handlerClass);
 
         // Then
         assertEquals(newHashSet(), tags);
@@ -193,10 +233,10 @@ public class KasperQueryGatewayUTest {
     @Test
     public void getHandlerTags_withHandlerWithOneTag_shouldReturnTheSingletonSet() {
         // Given
-        Class<? extends QueryHandler> handlerClass = TestQueryHandler_WithOneTag.class;
+        final Class<? extends QueryHandler> handlerClass = TestQueryHandler_WithOneTag.class;
 
         // When
-        Set<String> tags = KasperQueryGateway.getHandlerTags(handlerClass);
+        final Set<String> tags = KasperQueryGateway.getHandlerTags(handlerClass);
 
         // Then
         assertEquals(newHashSet(TEST_COMMAND_TAG), tags);
@@ -205,10 +245,10 @@ public class KasperQueryGatewayUTest {
     @Test
     public void getHandlerTags_withHandlerWithSeveralTags_shouldReturnTheSet() {
         // Given
-        Class<? extends QueryHandler> handlerClass = TestQueryHandler_WithSeveralTags.class;
+        final Class<? extends QueryHandler> handlerClass = TestQueryHandler_WithSeveralTags.class;
 
         // When
-        Set<String> tags = KasperQueryGateway.getHandlerTags(handlerClass);
+        final Set<String> tags = KasperQueryGateway.getHandlerTags(handlerClass);
 
         // Then
         assertEquals(newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2), tags);
@@ -218,10 +258,10 @@ public class KasperQueryGatewayUTest {
     @SuppressWarnings("all")
     public void getHandlerTags_withHandlerWithoutAnnotations_shouldReturnEmpty() {
         // Given
-        Class<? extends QueryHandler> handlerClass = TestQueryHandler_WithoutAnnotation.class;
+        final Class<? extends QueryHandler> handlerClass = TestQueryHandler_WithoutAnnotation.class;
 
         // When
-        Set<String> tags = KasperQueryGateway.getHandlerTags(handlerClass);
+        final Set<String> tags = KasperQueryGateway.getHandlerTags(handlerClass);
 
         // Then
         assertEquals(newHashSet(), tags);
@@ -324,42 +364,6 @@ public class KasperQueryGatewayUTest {
         assertTrue(interceptorChain.isPresent());
         assertEquals(CacheInterceptor.class, interceptorChain.get().actor.get().getClass());
         assertEquals(QueryHandlerInterceptor.class, interceptorChain.get().next.get().actor.get().getClass());
-    }
-    // ------------------------------------------------------------------------
-
-    private static final String TEST_COMMAND_TAG = "this-is-a-tag";
-
-    private static final String TEST_COMMAND_TAG_2 = "this-is-another-tag";
-
-    @XKasperUnregistered
-    private static class TestDomain implements Domain {
-    }
-
-    @XKasperUnregistered
-    private static class TestQuery implements Query {
-    }
-
-    @XKasperUnregistered
-    private static class TestQueryResult implements QueryResult {
-    }
-
-    @XKasperUnregistered
-    @XKasperQueryHandler(domain = TestDomain.class)
-    private static class TestQueryHandler_WithNoTags extends QueryHandler<TestQuery, TestQueryResult> {
-    }
-
-    @XKasperUnregistered
-    @XKasperQueryHandler(domain = TestDomain.class, tags = TEST_COMMAND_TAG)
-    private static class TestQueryHandler_WithOneTag extends QueryHandler<TestQuery, TestQueryResult> {
-    }
-
-    @XKasperUnregistered
-    @XKasperQueryHandler(domain = TestDomain.class, tags = {TEST_COMMAND_TAG, TEST_COMMAND_TAG_2})
-    private static class TestQueryHandler_WithSeveralTags extends QueryHandler<TestQuery, TestQueryResult> {
-    }
-
-    @XKasperUnregistered
-    private static class TestQueryHandler_WithoutAnnotation extends QueryHandler<TestQuery, TestQueryResult> {
     }
 
 }
