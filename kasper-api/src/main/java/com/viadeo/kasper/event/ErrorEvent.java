@@ -103,8 +103,7 @@ public class ErrorEvent implements Event {
 
         final ErrorEvent other = (ErrorEvent) obj;
 
-        return super.equals(obj) &&
-                Objects.equal(this.code, other.code) &&
+        return  Objects.equal(this.code, other.code) &&
                 Objects.equal(this.exception, other.exception) &&
                 Objects.equal(this.message, other.message);
     }
