@@ -7,6 +7,7 @@
 package com.viadeo.kasper.event;
 
 import com.codahale.metrics.Timer;
+import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperResponse;
@@ -40,7 +41,7 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
     private static final String GLOBAL_METER_HANDLES_NAME = name(EventListener.class, "handles");
     private static final String GLOBAL_METER_ERRORS_NAME = name(EventListener.class, "errors");
 
-	private final Class<? extends Event> eventClass;
+	private final Class<E> eventClass;
     private final String timerHandleTimeName;
     private final String meterErrorsName;
     private final String domainMeterErrorsName;
@@ -52,8 +53,8 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
 	
 	public EventListener() {
 		@SuppressWarnings("unchecked")
-		final Optional<Class<? extends Event>> eventClassOpt =
-				(Optional<Class<? extends Event>>)
+		final Optional<Class<E>> eventClassOpt =
+				(Optional<Class<E>>)
 				ReflectionGenericsResolver.getParameterTypeFromClass(
 						this.getClass(),
                         EventListener.class,
@@ -75,7 +76,7 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
 	
 	// ------------------------------------------------------------------------
 	
-	public Class<? extends Event> getEventClass() {
+	public Class<E> getEventClass() {
 		return this.eventClass;
 	}
 
@@ -110,7 +111,30 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
 	 */
     @Override
 	public final void handle(final org.axonframework.domain.EventMessage eventMessage) {
-        handleWithResponse(eventMessage);
+        EventResponse response = handleWithResponse(eventMessage);
+        if (response.getStatus() == KasperResponse.Status.REJECTED) {
+            final Optional<Exception> optionalException = response.getReason().getException();
+            if (optionalException.isPresent()) {
+                throw new RuntimeException(
+                        String.format(
+                                "Rejected event %s, <event=%s>",
+                                eventMessage.getPayloadType(),
+                                eventMessage.getPayload()
+                        ),
+                        optionalException.get()
+                );
+            } else {
+                throw new RuntimeException(
+                        String.format(
+                                "Rejected event %s, <event=%s> <messages=%s>",
+                                eventMessage.getPayloadType(),
+                                eventMessage.getPayload(),
+                                Joiner.on(", ").skipNulls().join(response.getReason().getMessages())
+                        )
+                );
+            }
+
+        }
     }
 
     // ------------------------------------------------------------------------
