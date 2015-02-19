@@ -6,7 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.annotation.Immutable;
@@ -26,6 +28,7 @@ public final class KasperReason implements Serializable, Immutable {
     private final List<String> messages;
 
     private CoreReasonCode reasonCode = null;
+    private transient Exception exception = null;
 
     // ------------------------------------------------------------------------
 
@@ -148,6 +151,11 @@ public final class KasperReason implements Serializable, Immutable {
         this(checkNotNull(code).toString(), checkNotNull(messages));
     }
 
+    public KasperReason(CoreReasonCode code, Exception exception) {
+        this(checkNotNull(code).toString(), checkNotNull(exception).getMessage());
+        this.exception = exception;
+    }
+
     // ------------------------------------------------------------------------
 
     private String parseCode(final String rawCode) {
@@ -190,6 +198,11 @@ public final class KasperReason implements Serializable, Immutable {
     
     public boolean hasMessage(final String message) {
         return messages.contains(message);
+    }
+
+    @JsonIgnore
+    public Optional<Exception> getException() {
+        return Optional.fromNullable(exception);
     }
 
     // ------------------------------------------------------------------------

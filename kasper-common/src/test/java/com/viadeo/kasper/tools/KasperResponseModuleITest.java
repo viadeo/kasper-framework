@@ -20,7 +20,7 @@ public class KasperResponseModuleITest {
     @Test
     public void serde_withException_isOk() throws IOException {
         // Given
-        KasperReason reason = new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, "blabla", "hop");
+        KasperReason reason = new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, new RuntimeException("blabla"));
 
         // When
         String json = mapper.writeValueAsString(reason);
