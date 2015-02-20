@@ -85,22 +85,6 @@
                   </dd>
                 </dl>
               {{/if}}
-              {{#if this.roles}}
-                <dl class="block-content dl-horizontal">
-                    <dt>Roles</dt>
-                    <dd>
-                        <p><span class="glyphicon glyphicon-user"/>{{flatten this.roles "&nbsp;" "toString"}}</p>
-                    </dd>
-                </dl>
-              {{/if}}
-              {{#if this.permissions}}
-                <dl class="block-content dl-horizontal">
-                    <dt>Permissions</dt>
-                    <dd>
-                        <p><span class="glyphicon glyphicon-credit-card"/>{{flatten this.permissions "&nbsp;" "toString"}}</p>
-                    </dd>
-                </dl>
-              {{/if}}
               {{#if this.response}}
                 <dl class="block-content">
                   <dt>Response</dt>
