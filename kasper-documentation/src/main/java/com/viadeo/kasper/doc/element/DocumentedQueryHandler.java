@@ -56,16 +56,6 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
         public boolean isPublicAccess() {
             return queryHandler.isPublicAccess();
         }
-
-        @Override
-        public List<String> getRoles() {
-            return queryHandler.getRoles();
-        }
-
-        @Override
-        public List<String> getPermissions() {
-            return queryHandler.getPermissions();
-        }
     }
 
     public static class DocumentedQueryResult extends AbstractPropertyDomainElement {

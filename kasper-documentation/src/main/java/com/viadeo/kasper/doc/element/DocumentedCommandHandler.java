@@ -55,16 +55,6 @@ public class DocumentedCommandHandler extends AbstractDomainElement {
         public boolean isPublicAccess() {
             return documentedCommandHandler.isPublicAccess();
         }
-
-        @Override
-        public List<String> getRoles() {
-            return documentedCommandHandler.getRoles();
-        }
-
-        @Override
-        public List<String> getPermissions() {
-            return documentedCommandHandler.getPermissions();
-        }
     }
 
     // ------------------------------------------------------------------------
