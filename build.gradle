@@ -83,7 +83,7 @@ configure(subprojects) {
         // Viadeo Nexus
         // Variables must be present in the 'gradle.properties' file
         maven {
-            url "http://${nexus_host}/content/groups/all_repositories"
+            url "https://${nexus_host}/content/groups/all_repositories"
             credentials nexusCredentials
         }
     }
@@ -133,10 +133,10 @@ configure(subprojects) {
     uploadArchives {
         repositories.mavenDeployer {
             configuration = configurations.deployerJars
-            repository(url: "http://${nexus_host}/content/repositories/kasper-releases") {
+            repository(url: "https://${nexus_host}/content/repositories/kasper-releases") {
                 authentication(userName: nexus_username, password: nexus_password)
             }
-            snapshotRepository(url: "http://${nexus_host}/content/repositories/kasper-snapshots") {
+            snapshotRepository(url: "https://${nexus_host}/content/repositories/kasper-snapshots") {
                 authentication(userName: nexus_username, password: nexus_password)
             }
         }
