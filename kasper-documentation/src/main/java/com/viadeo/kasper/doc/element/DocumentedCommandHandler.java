@@ -57,13 +57,8 @@ public class DocumentedCommandHandler extends AbstractDomainElement {
         }
 
         @Override
-        public List<String> getRoles() {
-            return documentedCommandHandler.getRoles();
-        }
-
-        @Override
-        public List<String> getPermissions() {
-            return documentedCommandHandler.getPermissions();
+        public DocumentedAuthorization getAuthorization() {
+            return documentedCommandHandler.getAuthorization();
         }
     }
 

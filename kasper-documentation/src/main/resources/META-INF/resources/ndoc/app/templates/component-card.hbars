@@ -85,21 +85,41 @@
                   </dd>
                 </dl>
               {{/if}}
-              {{#if this.roles}}
-                <dl class="block-content dl-horizontal">
-                    <dt>Roles</dt>
-                    <dd>
-                        <p><span class="glyphicon glyphicon-user"/>{{flatten this.roles "&nbsp;" "toString"}}</p>
-                    </dd>
-                </dl>
-              {{/if}}
-              {{#if this.permissions}}
-                <dl class="block-content dl-horizontal">
-                    <dt>Permissions</dt>
-                    <dd>
-                        <p><span class="glyphicon glyphicon-credit-card"/>{{flatten this.permissions "&nbsp;" "toString"}}</p>
-                    </dd>
-                </dl>
+              {{#if this.authorization}}
+              <dl class="block-content">
+                <dt>Authorizations</dt>
+                <dd>
+                  <table class="table table-striped col-md-12">
+                    <thead>
+                      <tr>
+                          <th class="col-md-2">Name</th>
+                          <th class="col-md-4">Value</th>
+                          <th class="col-md-6">Manager</th>
+                          <th class="col-md-2">CombinesWith</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                    {{#if this.authorization.roles}}
+                    <tr>
+                        <td style="color: gray;">ROLES</td>
+                        <td>{{this.authorization.roles.value}}</td>
+                        <td>{{this.authorization.roles.manager}}</td>
+                        <td>{{this.authorization.roles.combinesWith}}</td>
+                    </tr>
+                    {{/if}}
+                    {{#if this.authorization.permissions}}
+                    <tr>
+                        <td style="color: gray;">PERMISSIONS</td>
+                        <td>{{this.authorization.permissions.value}}</td>
+                        <td>{{this.authorization.permissions.manager}}</td>
+                        <td>{{this.authorization.permissions.combinesWith}}</td>
+                    </tr>
+                    {{/if}}
+                    </tbody>
+                  </table>
+                  </dd>
+              </dl>
+              <div class="clearfix"></div>
               {{/if}}
               {{#if this.response}}
                 <dl class="block-content">
