@@ -8,6 +8,9 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.domain.GenericEventMessage;
+import org.hamcrest.BaseMatcher;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,7 +33,7 @@ public class EventListenerUTest {
     }
 
     @Test
-    public void handle_withSuccessResponse_isOk() {
+    public void handle_withSuccessAsResponse_isOk() {
         // Given
         when(listener.handle(any(Context.class), any(TestEvent.class))).thenReturn(EventResponse.success());
         GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), DefaultContextBuilder.get().asMetaDataMap());
@@ -43,16 +46,58 @@ public class EventListenerUTest {
     }
 
     @Test
-    public void handle_withIgnoredResponse_isOk() {
+    public void handle_withIncompatibleEvent_isOk() {
         // Given
-        when(listener.handle(any(Context.class), any(TestEvent.class))).thenReturn(EventResponse.ignored());
-        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), DefaultContextBuilder.get().asMetaDataMap());
+        GenericEventMessage<TestEvent2> eventMessage = new GenericEventMessage<>(new TestEvent2(), DefaultContextBuilder.get().asMetaDataMap());
 
         // When
         listener.handle(eventMessage);
 
         // Then
-        verify(listener).handle(any(Context.class), any(TestEvent.class));
+        verify(listener, never()).handle(any(Context.class), any(TestEvent.class));
+    }
+
+    @Test
+    public void handle_withErrorAsResponse_throwException() {
+        // Given
+        when(listener.handle(any(Context.class), any(TestEvent.class))).thenReturn(EventResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, "bazinga!!")));
+        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), DefaultContextBuilder.get().asMetaDataMap());
+
+        // Then
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage(equalsTo("Failed to handle event class com.viadeo.kasper.event.EventListenerUTest$TestEvent, <event=TestEvent{}> <response=EventResponse{ERROR, KasperReason{_UUID_, INTERNAL_COMPONENT_ERROR, [bazinga!!]}}>"));
+
+        // When
+        listener.handle(eventMessage);
+    }
+
+    @Test
+    public void handle_withFailureAsResponse_throwException() {
+        // Given
+        when(listener.handle(any(Context.class), any(TestEvent.class))).thenReturn(EventResponse.failure(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, "bazinga!!")));
+        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), DefaultContextBuilder.get().asMetaDataMap());
+
+        // Then
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage(equalsTo("Failed to handle event class com.viadeo.kasper.event.EventListenerUTest$TestEvent, <event=TestEvent{}> <response=EventResponse{FAILURE, KasperReason{_UUID_, INTERNAL_COMPONENT_ERROR, [bazinga!!]}}>"));
+
+        // When
+        listener.handle(eventMessage);
+    }
+
+    @Test
+    public void handle_withFailureAsResponse_containingExceptionInReason_wrapException() {
+        // Given
+        RuntimeException exception = new RuntimeException("Fake exception");
+        when(listener.handle(any(Context.class), any(TestEvent.class))).thenReturn(EventResponse.failure(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, exception)));
+        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), DefaultContextBuilder.get().asMetaDataMap());
+
+        // Then
+        expectedException.expect(RuntimeException.class);
+        expectedException.expectMessage(equalsTo("Failed to handle event class com.viadeo.kasper.event.EventListenerUTest$TestEvent, <event=TestEvent{}> <response=EventResponse{FAILURE, KasperReason{_UUID_, INTERNAL_COMPONENT_ERROR, [Fake exception]}}>"));
+
+        // When
+        listener.handle(eventMessage);
     }
 
     @Test
@@ -63,44 +108,34 @@ public class EventListenerUTest {
 
         // Then
         expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("");
+        expectedException.expectMessage(equalsTo("Failed to handle event class com.viadeo.kasper.event.EventListenerUTest$TestEvent, <event=TestEvent{}> <response=EventResponse{FAILURE, KasperReason{_UUID_, INTERNAL_COMPONENT_ERROR, [bazinga!]}}>"));
 
         // When
         listener.handle(eventMessage);
     }
 
-    @Test
-    public void handle_withRejectedResponse_throwException() {
-        // Given
-        when(listener.handle(any(Context.class), any(TestEvent.class))).thenReturn(EventResponse.rejected(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, "bazinga!!")));
-        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), DefaultContextBuilder.get().asMetaDataMap());
+    private static Matcher<String> equalsTo(final String expected) {
+        return new BaseMatcher<String>() {
+            @Override
+            public boolean matches(Object o) {
+                return o.toString().replaceAll("\\w{8}(-\\w{4}){3}-\\w{12}?", "_UUID_").equals(expected);
+            }
 
-        // Then
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Rejected event class com.viadeo.kasper.event.EventListenerUTest$TestEvent, <event=TestEvent{}> <messages=bazinga!!>");
-
-        // When
-        listener.handle(eventMessage);
-    }
-
-    @Test
-    public void handle_withRejectedResponse_containingExceptionInReason_wrapException() {
-        // Given
-        RuntimeException exception = new RuntimeException("Fake exception");
-        when(listener.handle(any(Context.class), any(TestEvent.class))).thenReturn(EventResponse.rejected(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, exception)));
-        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), DefaultContextBuilder.get().asMetaDataMap());
-
-        // Then
-        expectedException.expect(RuntimeException.class);
-        expectedException.expectMessage("Rejected event class com.viadeo.kasper.event.EventListenerUTest$TestEvent, <event=TestEvent{}>");
-
-        // When
-        listener.handle(eventMessage);
+            @Override
+            public void describeTo(Description description) { }
+        };
     }
 
     private static class TestEventListener extends EventListener<TestEvent> { }
 
     private static class TestEvent implements Event {
+        @Override
+        public String toString() {
+            return Objects.toStringHelper(this).toString();
+        }
+    }
+
+    private static class TestEvent2 implements Event {
         @Override
         public String toString() {
             return Objects.toStringHelper(this).toString();

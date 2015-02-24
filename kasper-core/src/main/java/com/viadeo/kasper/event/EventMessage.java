@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
@@ -81,4 +82,13 @@ public class EventMessage<E extends Event> {
         return this.axonMessage;
     }
 
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("event", getEvent())
+                .add("context", getContext())
+                .add("version", getVersion())
+                .toString();
+    }
 }

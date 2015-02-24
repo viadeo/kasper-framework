@@ -25,9 +25,7 @@ public class KasperResponse implements Serializable, Immutable {
         REFUSED,    /** Refused by some intermediate validation mechanisms */
         ERROR,      /** Error in handling or domain business */
         ACCEPTED,   /** The command or the query has been accepted but answer will be made later */
-        IGNORED,
-        REJECTED,
-        ROLLBACK,
+        FAILURE,
         SUCCESS
     }
 
@@ -50,7 +48,7 @@ public class KasperResponse implements Serializable, Immutable {
     public KasperResponse(final Status status, final KasperReason reason) {
         this.status = checkNotNull(status);
 
-        if ( ! Lists.newArrayList(Status.OK, Status.SUCCESS, Status.IGNORED).contains(status) && (null == reason)) {
+        if ( ! Lists.newArrayList(Status.OK, Status.SUCCESS).contains(status) && (null == reason)) {
             throw new IllegalStateException("Please provide a reason to the response");
         }
 

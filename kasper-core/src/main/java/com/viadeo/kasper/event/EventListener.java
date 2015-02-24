@@ -7,10 +7,11 @@
 package com.viadeo.kasper.event;
 
 import com.codahale.metrics.Timer;
-import com.google.common.base.Joiner;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.KasperResponse;
+import com.google.common.base.Preconditions;
+import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.context.CurrentContext;
@@ -19,6 +20,8 @@ import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
@@ -32,6 +35,8 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  * @param <E> Event
  */
 public abstract class EventListener<E extends Event> implements org.axonframework.eventhandling.EventListener {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(EventListener.class);
 
     /**
      * Generic parameter position for the listened event
@@ -111,29 +116,27 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
 	 */
     @Override
 	public final void handle(final org.axonframework.domain.EventMessage eventMessage) {
-        EventResponse response = handleWithResponse(eventMessage);
-        if (response.getStatus() == KasperResponse.Status.REJECTED) {
+        if ( ! getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
+            return;
+        }
+
+        final EventResponse response = handleWithResponse(eventMessage);
+
+        if (response.isAnError() || response.isAFailure()) {
             final Optional<Exception> optionalException = response.getReason().getException();
+            final RuntimeException exception;
+            final String message = String.format(
+                    "Failed to handle event %s, <event=%s> <response=%s>",
+                    eventMessage.getPayloadType(), eventMessage.getPayload(), response
+            );
+
             if (optionalException.isPresent()) {
-                throw new RuntimeException(
-                        String.format(
-                                "Rejected event %s, <event=%s>",
-                                eventMessage.getPayloadType(),
-                                eventMessage.getPayload()
-                        ),
-                        optionalException.get()
-                );
+                exception = new RuntimeException(message, optionalException.get());
             } else {
-                throw new RuntimeException(
-                        String.format(
-                                "Rejected event %s, <event=%s> <messages=%s>",
-                                eventMessage.getPayloadType(),
-                                eventMessage.getPayload(),
-                                Joiner.on(", ").skipNulls().join(response.getReason().getMessages())
-                        )
-                );
+                exception = new RuntimeException(message);
             }
 
+            throw exception;
         }
     }
 
@@ -141,40 +144,51 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
 
     @SuppressWarnings({"unchecked", "rawtypes"}) // Safe
     public final EventResponse handleWithResponse(final org.axonframework.domain.EventMessage eventMessage) {
-		if ( ! this.getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
-			return EventResponse.ignored();
-		}
+        Preconditions.checkNotNull(eventMessage);
 
-        final EventMessage message = new EventMessage(eventMessage);
+		if ( ! getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
+			return EventResponse.error(new KasperReason(
+                    CoreReasonCode.INVALID_INPUT,
+                    String.format("Unexpected event : '%s' is not a '%s'", eventMessage.getPayloadType(), getEventClass())
+            ));
+		}
 
         /* Start timer */
         final Timer.Context timer = getMetricRegistry().timer(timerHandleTimeName).time();
         final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerHandleTimesName).time();
 
+        final EventMessage<E> message = new EventMessage(eventMessage);
+
         /* Ensure a context is set */
         CurrentContext.set(Objects.firstNonNull(message.getContext(), DefaultContextBuilder.get()));
 
-        /* Handle event */
+        EventResponse response;
+
         try {
-            final EventResponse response = this.handle(message);
-            if (response.getStatus() == KasperResponse.Status.ROLLBACK) {
-                rollback(message);
-            }
-            return response;
-
-        } catch (final RuntimeException e) {
-            getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
-            getMetricRegistry().meter(meterErrorsName).mark();
-            getMetricRegistry().meter(domainMeterErrorsName).mark();
-            throw e;
-
-        } finally {
-            /* Stop timer and record a tick */
-            domainTimer.close();
-            timer.stop();
-
-            getMetricRegistry().meter(GLOBAL_METER_HANDLES_NAME).mark();
+            response = this.handle(message);
+        } catch (Exception e) {
+            response =  EventResponse.failure(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
         }
+
+        switch (response.getStatus()) {
+            case FAILURE:
+                getMetricRegistry().meter(GLOBAL_METER_ERRORS_NAME).mark();
+                getMetricRegistry().meter(meterErrorsName).mark();
+                getMetricRegistry().meter(domainMeterErrorsName).mark();
+            case ERROR:
+                try {
+                    rollback(message);
+                } catch (Exception e) {
+                    LOGGER.error("Failed to rollback, <message=%s> <response=%s>", message, response, e);
+                }
+                break;
+        }
+
+        domainTimer.close();
+        timer.stop();
+        getMetricRegistry().meter(GLOBAL_METER_HANDLES_NAME).mark();
+
+        return response;
 	}
 
     // ------------------------------------------------------------------------
@@ -186,7 +200,7 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
     // ------------------------------------------------------------------------
 
     public EventResponse handle(final Context context, final E event) {
-        return EventResponse.ignored();
+        return EventResponse.success();
     }
 
     // ------------------------------------------------------------------------

@@ -34,7 +34,7 @@ public class KasperResponseModuleITest {
     public void serde_withEventResponse_isOk() throws IOException {
         // Given
         KasperReason reason = new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, "blabla");
-        KasperResponse response = new EventResponse(KasperResponse.Status.REJECTED, reason);
+        KasperResponse response = new EventResponse(KasperResponse.Status.FAILURE, reason);
 
         // When
         String json = mapper.writeValueAsString(response);
@@ -48,7 +48,7 @@ public class KasperResponseModuleITest {
     public void serde_withCommandResponse_isOk() throws IOException {
         // Given
         KasperReason reason = new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, "blabla");
-        KasperResponse response = new CommandResponse(KasperResponse.Status.REJECTED, reason);
+        KasperResponse response = new CommandResponse(KasperResponse.Status.FAILURE, reason);
 
         // When
         String json = mapper.writeValueAsString(response);
@@ -62,7 +62,7 @@ public class KasperResponseModuleITest {
     public void serde_withQueryResponse_isOk() throws IOException {
         // Given
         KasperReason reason = new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, "blabla");
-        KasperResponse response = new QueryResponse(KasperResponse.Status.REJECTED, reason);
+        KasperResponse response = new QueryResponse(KasperResponse.Status.FAILURE, reason);
 
         // When
         String json = mapper.writeValueAsString(response);

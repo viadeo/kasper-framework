@@ -3,27 +3,60 @@ package com.viadeo.kasper.event;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.KasperResponse;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 public class EventResponse extends KasperResponse {
 
-    public static EventResponse rollback(final KasperReason reason) {
-        return new EventResponse(Status.ROLLBACK, checkNotNull(reason));
+    /**
+     * Get a temporarily unavailable response which is identified as a particular failure.
+     *
+     * @param reason a reason
+     * @return a temporarily unavailable response
+     */
+    public static EventResponse temporarilyUnavailable(final KasperReason reason) {
+        return failure(reason);
     }
 
-    public static EventResponse rejected(final KasperReason reason) {
-        return new EventResponse(Status.REJECTED, reason);
+    /**
+     * Get an error response which is an expected part of normal operations, are dealt with immediately and the system
+     * will continue to operate at the same capacity following an error. For example, an error discovered
+     * during input validation that will be communicated to the client as part of normal processing.
+     *
+     * @param reason a reason
+     * @return an event response
+     */
+    public static EventResponse error(final KasperReason reason) {
+        return new EventResponse(Status.ERROR, reason);
     }
 
-    public static EventResponse ignored() {
-        return new EventResponse(Status.IGNORED, null);
+    /**
+     * Get a failure response which is an unexpected and can require intervention before the system can resume at the
+     * same level of operation. This does not mean that failures are always fatal, rather that some capacity of the
+     * system will be reduced following a failure.
+     *
+     * @param reason a reason
+     * @return a failure response
+     */
+    public static EventResponse failure(final KasperReason reason) {
+        return new EventResponse(Status.FAILURE, reason);
     }
 
+    /**
+     * Get a success response.
+     *
+     * @return a success response
+     */
     public static EventResponse success() {
         return new EventResponse(Status.SUCCESS, null);
     }
 
     public EventResponse(final Status status, final KasperReason reason) {
         super(status, reason);
+    }
+
+    public boolean isAnError() {
+        return getStatus() == Status.ERROR;
+    }
+
+    public boolean isAFailure() {
+        return getStatus() == Status.FAILURE;
     }
 }
