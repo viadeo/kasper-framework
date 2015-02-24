@@ -1,6 +1,14 @@
 # Kasper Releases #
 
-### Snapshot 0.8.0-pre26 ([Nexus](http://nexus01.infra.paris.apvo/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre11~~)) 
+### Snapshot 0.8.0-pre28 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre2~~))
+
+* Added Authorization's annotations and auto-doc.
+
+### Snapshot 0.8.0-pre27 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre27~~))
+
+* Added User-Agent into context's properties.
+
+### Snapshot 0.8.0-pre26 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre26~~))
 
 _(based on 0.6.9, the recovery from the 0.7 is in progress)_
 

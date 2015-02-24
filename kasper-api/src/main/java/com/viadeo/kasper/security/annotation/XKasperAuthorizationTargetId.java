@@ -11,12 +11,22 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * Indicates the id on which the authorization holder.
+ * It has to be placed on a command or a query field
+ *
+ * <p>For example:
+ * <p/>
+ * <code>&#64;XKasperQuery<br/>
+ * public class GetExampleQuery implements Query {<br/>
+ * <code>&#64;XKasperAuthorizationTargetId<br/>
+ * private final String exampleId;
+ * <p/>
+ *
+ */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE, ElementType.METHOD})
-public @interface XKasperRequireRoles {
+@Target(ElementType.FIELD)
+public @interface XKasperAuthorizationTargetId {
 
-    /**
-     * the role name or multiple role separated by commas which be passed to the check method
-     */
-    String[] value();
+
 }

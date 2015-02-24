@@ -58,13 +58,8 @@ public class DocumentedQueryHandler extends AbstractDomainElement {
         }
 
         @Override
-        public List<String> getRoles() {
-            return queryHandler.getRoles();
-        }
-
-        @Override
-        public List<String> getPermissions() {
-            return queryHandler.getPermissions();
+        public DocumentedAuthorization getAuthorization() {
+            return queryHandler.getAuthorization();
         }
     }
 

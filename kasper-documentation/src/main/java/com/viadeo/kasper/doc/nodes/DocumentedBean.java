@@ -14,6 +14,7 @@ import com.viadeo.kasper.cqrs.query.QueryResult;
 import com.viadeo.kasper.doc.nodes.validation.DefaultPropertyValidator;
 import com.viadeo.kasper.doc.nodes.validation.PropertyValidationProcessor;
 import com.viadeo.kasper.er.LinkedConcept;
+import com.viadeo.kasper.security.annotation.XKasperAuthorizationTargetId;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -147,13 +148,21 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                             false,
                             false,
                             QueryResult.class.isAssignableFrom(field.getType()),
-                            Sets.<DocumentedConstraint>newHashSet(),
+                            getDocumentedConstraints(field),
                             field.getType(),
                             level
                     )
             );
         }
 
+    }
+
+    private static Set<DocumentedConstraint> getDocumentedConstraints(final Field field) {
+        final Set<DocumentedConstraint> constraints = Sets.<DocumentedConstraint>newHashSet();
+        if(field.isAnnotationPresent(XKasperAuthorizationTargetId.class)) {
+            constraints.add(new DocumentedConstraint("Authorization", "Authorization's targetId"));
+        }
+        return constraints;
     }
 
     // ------------------------------------------------------------------------
@@ -181,7 +190,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                             false,
                             false,
                             false,
-                            Sets.<DocumentedConstraint>newHashSet(),
+                            getDocumentedConstraints(field),
                             field.getType(),
                             level
                     )
@@ -228,7 +237,6 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
             }
 
             final XKasperField annotation = field.getAnnotation(XKasperField.class);
-
             return Optional.of(
                     new DocumentedProperty(
                             field.getName(),
@@ -238,7 +246,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                             false,
                             true,
                             QueryResult.class.isAssignableFrom(type),
-                            Sets.<DocumentedConstraint>newHashSet(),
+                            getDocumentedConstraints(field),
                             field.getType(),
                             level
                     )
@@ -263,7 +271,6 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
         @Override
         public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz, final int level) {
             final XKasperField annotation = field.getAnnotation(XKasperField.class);
-
             if (field.getGenericType() instanceof ParameterizedType) {
                 final ParameterizedType genericType = (ParameterizedType) field.getGenericType();
                 final Type paramType =  genericType.getActualTypeArguments()[0];
@@ -285,7 +292,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                                         true,
                                         true,
                                         QueryResult.class.isAssignableFrom(subParamClass),
-                                        Sets.<DocumentedConstraint>newHashSet(),
+                                        getDocumentedConstraints(field),
                                         field.getType(),
                                         level
                                 )
@@ -300,7 +307,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                                 true,
                                 false,
                                 QueryResult.class.isAssignableFrom(paramClass),
-                                Sets.<DocumentedConstraint>newHashSet(),
+                                    getDocumentedConstraints(field),
                                 paramClass,
                                 level
                             )
@@ -321,7 +328,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                                         true,
                                         false,
                                         QueryResult.class.isAssignableFrom(optType.get()),
-                                        Sets.<DocumentedConstraint>newHashSet(),
+                                        getDocumentedConstraints(field),
                                         field.getType()
                                 )
                         );
@@ -335,7 +342,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                                         true,
                                         false,
                                         false,
-                                        Sets.<DocumentedConstraint>newHashSet(),
+                                        getDocumentedConstraints(field),
                                         field.getType()
                                 )
                         );
@@ -391,7 +398,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                             true,
                             false,
                             QueryResult.class.isAssignableFrom(type),
-                            Sets.<DocumentedConstraint>newHashSet(),
+                            getDocumentedConstraints(field),
                             field.getType(),
                             level
                     )

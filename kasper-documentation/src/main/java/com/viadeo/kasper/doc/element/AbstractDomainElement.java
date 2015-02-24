@@ -8,10 +8,9 @@ package com.viadeo.kasper.doc.element;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.security.annotation.XKasperPublic;
-import com.viadeo.kasper.security.annotation.XKasperRequirePermissions;
-import com.viadeo.kasper.security.annotation.XKasperRequireRoles;
-
-import java.util.List;
+import com.viadeo.kasper.security.annotation.XKasperRequiresPermissions;
+import com.viadeo.kasper.security.annotation.XKasperRequiresRoles;
+import com.viadeo.kasper.security.authz.manager.AuthorizationManager;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -19,8 +18,7 @@ public abstract class AbstractDomainElement extends AbstractElement {
 
     private final DocumentedDomain domain;
     private final boolean publicAccess;
-    private final List<String> roles;
-    private final List<String> permissions;
+    private DocumentedAuthorization authorization = null;
 
     // ------------------------------------------------------------------------
 
@@ -31,31 +29,52 @@ public abstract class AbstractDomainElement extends AbstractElement {
         this.publicAccess = referenceClass.getAnnotation(XKasperPublic.class) != null;
 
         // @XKasperRequireRoles
-        if (null != referenceClass.getAnnotation(XKasperRequireRoles.class)) {
-            final XKasperRequireRoles requireRoles = (XKasperRequireRoles)
-                    referenceClass.getAnnotation(XKasperRequireRoles.class);
-
-            if (null != requireRoles.value()) {
-                this.roles = Lists.newArrayList(requireRoles.value());
-            } else {
-                this.roles = Lists.newArrayList();
+        if (null != referenceClass.getAnnotation(XKasperRequiresRoles.class)) {
+            if(null == this.authorization){
+                this.authorization = new DocumentedAuthorization();
             }
-        } else {
-            this.roles = Lists.newArrayList();
+
+            final XKasperRequiresRoles requireRoles = (XKasperRequiresRoles)
+                    referenceClass.getAnnotation(XKasperRequiresRoles.class);
+
+            AuthorizationElement authorizationElement = new AuthorizationElement();
+            if (null != requireRoles.value()) {
+                authorizationElement.setValue(Lists.newArrayList(requireRoles.value()));
+            }
+            if(null != requireRoles.manager() && !AuthorizationManager.class.equals(requireRoles.manager())){
+                authorizationElement.setManager(requireRoles.manager().getSimpleName());
+            } else {
+                authorizationElement.setManager("default");
+            }
+
+            if(null != requireRoles.combinesWith()){
+                authorizationElement.setCombinesWith(requireRoles.combinesWith());
+            }
+            this.authorization.setRoles(authorizationElement);
         }
 
         // @XKasperRequirePermissions
-        if (null != referenceClass.getAnnotation(XKasperRequirePermissions.class)) {
-            final XKasperRequirePermissions requirePermissions = (XKasperRequirePermissions)
-                    referenceClass.getAnnotation(XKasperRequirePermissions.class);
-
-            if (null != requirePermissions.value()) {
-                this.permissions = Lists.newArrayList(requirePermissions.value());
-            } else {
-                this.permissions = Lists.newArrayList();
+        if (null != referenceClass.getAnnotation(XKasperRequiresPermissions.class)) {
+            if(null == this.authorization){
+                this.authorization = new DocumentedAuthorization();
             }
-        } else {
-            this.permissions = Lists.newArrayList();
+
+            final XKasperRequiresPermissions requirePermissions = (XKasperRequiresPermissions)
+                    referenceClass.getAnnotation(XKasperRequiresPermissions.class);
+
+            AuthorizationElement authorizationElement = new AuthorizationElement();
+            if (null != requirePermissions.value()) {
+                authorizationElement.setValue(Lists.newArrayList(requirePermissions.value()));
+            }
+            if(null != requirePermissions.manager() && !AuthorizationManager.class.equals(requirePermissions.manager())){
+                authorizationElement.setManager(requirePermissions.manager().getSimpleName());
+            } else {
+                authorizationElement.setManager("default");
+            }
+            if(null != requirePermissions.combinesWith()){
+                authorizationElement.setCombinesWith(requirePermissions.combinesWith());
+            }
+            this.authorization.setPermissions(authorizationElement);
         }
 
     }
@@ -70,9 +89,9 @@ public abstract class AbstractDomainElement extends AbstractElement {
         return publicAccess;
     }
 
-    public List<String> getRoles() { return roles; }
-
-    public List<String> getPermissions() { return permissions; }
+    public DocumentedAuthorization getAuthorization() {
+        return authorization;
+    }
 
     @Override
     public String getURL() {
