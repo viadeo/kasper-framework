@@ -1,6 +1,6 @@
 # Kasper Releases #
 
-### Snapshot 0.8.0-pre28 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre2~~))
+### Snapshot 0.8.0-pre28 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre28~~))
 
 * Added Authorization's annotations and auto-doc.
 
