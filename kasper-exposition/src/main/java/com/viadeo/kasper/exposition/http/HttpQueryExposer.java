@@ -103,6 +103,7 @@ public class HttpQueryExposer extends HttpExposer<Query, QueryResponse> {
         handleRequest(httpRequestToObjectWithString, objectToHttpResponse, req, resp);
     }
 
+    @Override
     protected void checkMediaType(final HttpServletRequest httpRequest) throws HttpExposerException {
         if( "POST".equals(httpRequest.getMethod()) ){
             if( null == httpRequest.getContentType() || ! httpRequest.getContentType().contains(MediaType.APPLICATION_JSON_VALUE) ){

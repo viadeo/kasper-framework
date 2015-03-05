@@ -24,6 +24,7 @@ public class HttpServletRequestToObjectUTest {
 
     private HttpServletRequestToObject.JsonToObjectMapper mapper;
     private HttpServletRequest request;
+    private String payload;
 
     @Before
     public void setUp() throws Exception {
@@ -35,12 +36,13 @@ public class HttpServletRequestToObjectUTest {
                 return -1;
             }
         });
+        payload = "";
     }
 
     @Test
     public void map_withJsonToObjectMapper_withEmptyInput_forQueryWithoutParameters_isOk() throws Exception {
         // When
-        TestQuery query = mapper.map(request, TestQuery.class);
+        TestQuery query = mapper.map(request, payload, TestQuery.class);
 
         // Then
         Assert.assertNotNull(query);
@@ -48,6 +50,6 @@ public class HttpServletRequestToObjectUTest {
 
     @Test(expected = InstantiationException.class)
     public void map_withJsonToObjectMapper_withEmptyInput_forQueryWithParameters_isKo() throws Exception {
-        mapper.map(request, TestQueryWithParameters.class);
+        mapper.map(request, payload, TestQueryWithParameters.class);
     }
 }

@@ -27,4 +27,5 @@ dependencies {
     testCompile libraries.GLASSFISH_EXPR_LANG
     testCompile libraries.HIBERNATE_VALIDATOR
     testCompile libraries.TYPESAFE_CONFIG
+    testCompile libraries.SPRING_TEST
 }

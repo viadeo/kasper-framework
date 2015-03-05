@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.io.CharStreams;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperResponse;
 import com.viadeo.kasper.annotation.XKasperUnexposed;
@@ -35,6 +36,7 @@ import javax.validation.ConstraintViolation;
 import javax.ws.rs.core.Response;
 import java.beans.Introspector;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
@@ -50,6 +52,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
     private static final long serialVersionUID = 8448984922303895424L;
 
     protected static final Logger LOGGER = LoggerFactory.getLogger(HttpExposer.class);
+    protected static final int PAYLOAD_DEBUG_MAX_SIZE = 10000;
 
     private final Map<String, Class<INPUT>> exposedInputs;
     private final Map<String, Class<INPUT>> unexposedInputs;
@@ -88,7 +91,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
     // ------------------------------------------------------------------------
 
     protected void checkMediaType(final HttpServletRequest httpRequest) throws HttpExposerException {
-        // nothing
+        // nothing by default
     }
 
     public final void handleRequest(
@@ -105,6 +108,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         final Timer.Context timer = getMetricRegistry().timer(metricNames.getRequestsTimeName()).time();
         final UUID kasperCorrelationUUID = UUID.randomUUID();
 
+        final String payload = getPayloadAsString(httpRequest);
         try {
             MDC.clear();
             MDC.put(Context.REQUEST_CID_SHORTNAME, extractRequestCorrelationId(httpRequest));
@@ -117,7 +121,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final Context context = extractContext(httpRequest, kasperCorrelationUUID);
 
             /* 3) Extract the input from request */
-            input = extractInput(httpRequest, requestToObject);
+            input = extractInput(httpRequest, payload, requestToObject);
 
             enrichContextAndMDC(context, "appRoute", input.getClass().getName());
 
@@ -216,24 +220,29 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
                 sendError(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
 
+                final String truncatedPayload = payload.substring(0, Math.min(payload.length(), PAYLOAD_DEBUG_MAX_SIZE));
+
                 if (errorHandlingDescriptor.getState() == ErrorState.REFUSED) {
-                    requestLogger.warn("Refused {} [{}] : <reason={}> <input={}>",
-                            getInputTypeName(), inputName, response.getReason(), input,
+                    requestLogger.warn("Refused {} [{}] : <reason={}> <payload={}>",
+                            getInputTypeName(), inputName, response.getReason(), truncatedPayload,
                             errorHandlingDescriptor.getThrowable()
                     );
                 } else {
-                    requestLogger.error("Error in {} [{}] : <reason={}> <input={}>",
-                            getInputTypeName(), inputName, response.getReason(), input,
+                    requestLogger.error("Error in {} [{}] : <reason={}> <payload={}>",
+                            getInputTypeName(), inputName, response.getReason(), truncatedPayload,
                             errorHandlingDescriptor.getThrowable()
                     );
                 }
-
             } else {
                 requestLogger.debug("Request processed in {} [{}]", getInputTypeName(), inputName);
             }
         } finally {
             MDC.clear();
         }
+    }
+
+    protected String getPayloadAsString(HttpServletRequest httpRequest) throws IOException {
+        return CharStreams.toString(new InputStreamReader(httpRequest.getInputStream()));
     }
 
     public final RESPONSE handle(final INPUT input, final Context context) throws Exception {
@@ -302,6 +311,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
     protected INPUT extractInput(
             final HttpServletRequest httpRequest,
+            final String payload,
             final HttpServletRequestToObject httpRequestToObject
     ) throws HttpExposerException, IOException {
         long startMillis = System.currentTimeMillis();
@@ -324,11 +334,10 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
 
             /* 4) Extract to a known input */
             try {
-                return httpRequestToObject.map(httpRequest, inputClass);
+                return httpRequestToObject.map(httpRequest, payload, inputClass);
             } catch (Throwable t) {
-                throw new RuntimeException(String.format("Failed to extract input : %s (reason: %s)", requestName, t.getMessage()), t);
+                throw new RuntimeException(String.format("Failed to deserialize payload : %s (reason: %s)", requestName, t.getMessage()), t);
             }
-
         } finally {
             long durationMillis = System.currentTimeMillis() - startMillis;
             MDC.put("durationExtractInput", String.valueOf(durationMillis));
