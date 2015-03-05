@@ -11,7 +11,6 @@ import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.google.common.base.Throwables;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperResponse;
@@ -199,7 +198,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                 }
             }
 
-            final String inputName = input != null ? input.getClass().getSimpleName() : "undefined";
+            final String inputName = aliasRegistry.resolve(resourceName(httpRequest.getRequestURI()));
 
             /* 5bis) Manage and respond an error to the request */
             if (null != errorHandlingDescriptor) {
@@ -327,9 +326,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             try {
                 return httpRequestToObject.map(httpRequest, inputClass);
             } catch (Throwable t) {
-                throw Throwables.propagate(
-                        new RuntimeException(String.format("Failed to extract input : %s", requestName), t)
-                );
+                throw new RuntimeException(String.format("Failed to extract input : %s (reason: %s)", requestName, t.getMessage()), t);
             }
 
         } finally {
@@ -592,5 +589,4 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             return throwable;
         }
     }
-
 }
