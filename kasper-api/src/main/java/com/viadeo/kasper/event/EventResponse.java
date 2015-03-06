@@ -48,6 +48,15 @@ public class EventResponse extends KasperResponse {
         return new EventResponse(Status.SUCCESS, null);
     }
 
+    /**
+     * @return an ignore response
+     * @deprecated prefer to use one of other kind of response
+     */
+    @Deprecated
+    public static EventResponse ignored() {
+        return new EventResponse(Status.OK, null);
+    }
+
     public EventResponse(final Status status, final KasperReason reason) {
         super(status, reason);
     }
