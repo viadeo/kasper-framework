@@ -10,12 +10,14 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.google.common.collect.ImmutableSetMultimap;
+import com.google.common.io.CharStreams;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
 import com.viadeo.kasper.query.exposition.query.QueryParser;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Enumeration;
 
@@ -31,7 +33,7 @@ public abstract class HttpServletRequestToObject {
 
     // ------------------------------------------------------------------------
 
-    public abstract <T> T map(final HttpServletRequest request, final Class<T> clazz) throws IOException;
+    public abstract <T> T map(final HttpServletRequest request, final Class<T> clazz) throws Exception;
 
     public static class StringRequestToObjectMapper extends HttpServletRequestToObject {
 
@@ -73,8 +75,12 @@ public abstract class HttpServletRequestToObject {
             super(objectMapper);
         }
 
-        public <T> T map(final HttpServletRequest request, final Class<T> clazz) throws IOException {
-            try (final JsonParser parser = reader.getFactory().createParser(request.getInputStream())) {
+        public <T> T map(final HttpServletRequest request, final Class<T> clazz) throws Exception {
+            String json = CharStreams.toString(new InputStreamReader(request.getInputStream()));
+            if (json == null || json.trim().length() == 0) {
+                return clazz.newInstance();
+            }
+            try (final JsonParser parser = reader.getFactory().createParser(json)) {
                 return reader.readValue(parser, clazz);
             }
         }
