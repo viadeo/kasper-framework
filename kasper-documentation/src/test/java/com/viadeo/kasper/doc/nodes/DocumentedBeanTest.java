@@ -17,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -239,6 +240,32 @@ public class DocumentedBeanTest {
         assertEquals("field", prop.getName());
         assertEquals("String", prop.getType());
         assertEquals("a simple field", prop.getDescription());
+        assertFalse(prop.isList());
+        assertFalse(prop.getLinkedConcept());
+        assertFalse(prop.isQueryResult());
+    }
+
+    public class ClassWithMap {
+        @SuppressWarnings("unused")
+        @XKasperField(description = "a map")
+        public Map<String, Member> fieldMap;
+    }
+
+    @Test
+    public void init_withMap_shouldBeDetailed() {
+        // When
+        final DocumentedBean bean = new DocumentedBean(ClassWithMap.class);
+
+        // Then
+        assertNotNull(bean);
+        assertEquals(1, bean.size());
+
+        final DocumentedProperty prop = bean.get(0);
+        assertEquals("fieldMap", prop.getName());
+        assertEquals("Member", prop.getType());
+        assertEquals("String", prop.getKeyType());
+        assertEquals("a map", prop.getDescription());
+        assertTrue(prop.isMap());
         assertFalse(prop.isList());
         assertFalse(prop.getLinkedConcept());
         assertFalse(prop.isQueryResult());

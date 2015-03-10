@@ -414,6 +414,7 @@
             for (var j = 0; j < keys.length; j++) {
               var key = keys[j];
               var value = properties[i][key];
+              var keyType = properties[i]["keyType"];
 
               // Column "Values"
               if( value === null || value.length === 0 ) {
@@ -437,6 +438,8 @@
               if (key === "type") {
                   if (properties[i]["list"]) {
                       value = "List(" + value + ")";
+                  } else if (properties[i]["map"]) {
+                      value = "Map(" + keyType + "->" + value + ")";
                   } else if (properties[i]["linkedConcept"]) {
                       var linked_concept = '<a class="link in" href="#concepts_' + value + '">' + value + '</a>';
 
@@ -467,17 +470,31 @@
             // Sub row
             var level_up = level + 1;
 
-            if(properties[i]["properties"]) {
-                var sub_properties = properties[i]["properties"];
-                if($.isArray(sub_properties)) {
-                  res += get_tr(level_up, sub_properties, keys, query_results);
+            if (properties[i]["map"]) {
+                res += "<tr class=level_" + level + "><td><code><i>(key)</i></code></td><td></td><td></td><td></td><td></td></tr>";
+                var keyProperties = properties[i]["keyProperties"];
+                if($.isArray(keyProperties)) {
+                    res += get_tr(level_up + 1, keyProperties, keys, query_results);
                 }
-            } else if(properties[i]["queryResult"]) {
-              query_result_name = properties[i]["type"];
-              if (typeof query_results[query_result_name] !== 'undefined') {
-                res += get_tr(level_up, query_results[query_result_name].properties, keys, query_results);
+                res += "<tr class=level_" + level + "><td><code><i>(value)</i></code></td><td></td><td></td><td></td><td></td></tr>";
+                var valueProperties = properties[i]["properties"];
+                if($.isArray(valueProperties)) {
+                    res += get_tr(level_up + 1, valueProperties, keys, query_results);
+                }
+            } else {
+
+                if(properties[i]["properties"]) {
+                    var sub_properties = properties[i]["properties"];
+                    if($.isArray(sub_properties)) {
+                      res += get_tr(level_up, sub_properties, keys, query_results);
+                    }
+                } else if(properties[i]["queryResult"]) {
+                  query_result_name = properties[i]["type"];
+                  if (typeof query_results[query_result_name] !== 'undefined') {
+                    res += get_tr(level_up, query_results[query_result_name].properties, keys, query_results);
+                  }
+                }
               }
-            }
           }
 
           return res;

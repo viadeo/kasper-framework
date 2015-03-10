@@ -147,6 +147,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                             null,
                             false,
                             false,
+                            false,
                             QueryResult.class.isAssignableFrom(field.getType()),
                             getDocumentedConstraints(field),
                             field.getType(),
@@ -187,6 +188,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                             annotation == null ? "" : annotation.description(),
                             field.getType().getSimpleName(),
                             Arrays.asList(field.getType().getEnumConstants()).toString(),
+                            false,
                             false,
                             false,
                             false,
@@ -244,6 +246,7 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                             type == null ? "unknown" : type.getSimpleName(),
                             null,
                             false,
+                            false,
                             true,
                             QueryResult.class.isAssignableFrom(type),
                             getDocumentedConstraints(field),
@@ -289,7 +292,8 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                                         annotation == null ? "" : annotation.description(),
                                         subParamClass.getSimpleName(),
                                         null,
-                                        true,
+                                        Collection.class.isAssignableFrom(field.getType()),
+                                        Map.class.isAssignableFrom(field.getType()),
                                         true,
                                         QueryResult.class.isAssignableFrom(subParamClass),
                                         getDocumentedConstraints(field),
@@ -304,7 +308,8 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                                 annotation == null ? "" : annotation.description(),
                                 paramClass.getSimpleName(),
                                 null,
-                                true,
+                                Collection.class.isAssignableFrom(field.getType()),
+                                Map.class.isAssignableFrom(field.getType()),
                                 false,
                                 QueryResult.class.isAssignableFrom(paramClass),
                                     getDocumentedConstraints(field),
@@ -325,7 +330,8 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                                         annotation == null ? "" : annotation.description(),
                                         optType.get().getSimpleName(),
                                         null,
-                                        true,
+                                        Collection.class.isAssignableFrom(field.getType()),
+                                        Map.class.isAssignableFrom(field.getType()),
                                         false,
                                         QueryResult.class.isAssignableFrom(optType.get()),
                                         getDocumentedConstraints(field),
@@ -339,7 +345,8 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                                         annotation == null ? "" : annotation.description(),
                                         "unknown",
                                         null,
-                                        true,
+                                        Collection.class.isAssignableFrom(field.getType()),
+                                        Map.class.isAssignableFrom(field.getType()),
                                         false,
                                         false,
                                         getDocumentedConstraints(field),
@@ -370,22 +377,31 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
 
         @Override
         public  Optional<DocumentedProperty> doExtract(final Field field, final Class clazz, final int level) {
-            final Class<?> type;
+            final Class<?> valueType;
+            final Class<?> keyType;
 
             @SuppressWarnings("unchecked")
-            final Optional<Class> optType = (Optional<Class>)
+            final Optional<Class> optKeyType = (Optional<Class>)
+                    ReflectionGenericsResolver.getParameterTypeFromClass(
+                            field, clazz, Map.class, 0
+                    );
+
+            @SuppressWarnings("unchecked")
+            final Optional<Class> optValueType = (Optional<Class>)
                     ReflectionGenericsResolver.getParameterTypeFromClass(
                             field, clazz, Map.class, 1
                     );
 
-            if ( ! optType.isPresent()) {
+            if ( ! ( optKeyType.isPresent() && optValueType.isPresent())) {
                 LOGGER.warn(String.format(
                         "Unable to find map enclosed type for field %s in class %s",
                         field.getName(), clazz.getSimpleName()
                 ));
-                type = null;
+                valueType = null;
+                keyType = null;
             } else {
-                type = optType.get();
+                valueType = optValueType.get();
+                keyType = optKeyType.get();
             }
 
             final XKasperField annotation = field.getAnnotation(XKasperField.class);
@@ -393,13 +409,16 @@ public class DocumentedBean extends ArrayList<DocumentedProperty> {
                     new DocumentedProperty(
                             field.getName(),
                             annotation == null ? "" : annotation.description(),
-                            type == null ? "unknown" : type.getSimpleName(),
+                            valueType == null ? "unknown" : valueType.getSimpleName(),
+                            keyType == null ? "unknown" : keyType.getSimpleName(),
                             null,
-                            true,
+                            Collection.class.isAssignableFrom(field.getType()),
+                            Map.class.isAssignableFrom(field.getType()),
                             false,
-                            QueryResult.class.isAssignableFrom(type),
+                            QueryResult.class.isAssignableFrom(valueType),
                             getDocumentedConstraints(field),
-                            field.getType(),
+                            valueType,
+                            keyType,
                             level
                     )
             );
