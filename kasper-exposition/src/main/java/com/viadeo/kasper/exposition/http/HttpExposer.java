@@ -175,61 +175,65 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             );
         }
 
-        if (null != response) {
-            try {
+        try {
+            if (null != response) {
+                try {
 
-                /* 5) Respond to the request */
-                sendResponse(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
+                    /* 5) Respond to the request */
+                    sendResponse(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
 
-            } catch (final JsonGenerationException | JsonMappingException e) {
-                errorHandlingDescriptor = new ErrorHandlingDescriptor(
-                        ErrorState.ERROR,
-                        CoreReasonCode.UNKNOWN_REASON,
-                        Lists.newArrayList(
-                                String.format(
-                                        "Error outputting response to JSON for command [%s] and response [%s]error = %s",
-                                        input.getClass().getSimpleName(),
-                                        response,
-                                        e
-                                )
-                        ),
-                        e
-                );
+                } catch (final JsonGenerationException | JsonMappingException e) {
+                    errorHandlingDescriptor = new ErrorHandlingDescriptor(
+                            ErrorState.ERROR,
+                            CoreReasonCode.UNKNOWN_REASON,
+                            Lists.newArrayList(
+                                    String.format(
+                                            "Error outputting response to JSON for command [%s] and response [%s]error = %s",
+                                            input.getClass().getSimpleName(),
+                                            response,
+                                            e
+                                    )
+                            ),
+                            e
+                    );
+                }
             }
-        }
 
-        final String inputName = input != null ? input.getClass().getSimpleName() : "undefined";
+            final String inputName = input != null ? input.getClass().getSimpleName() : "undefined";
 
-        /* 5bis) Manage and respond an error to the request */
-        if (null != errorHandlingDescriptor) {
-            if (errorHandlingDescriptor.getState() == ErrorState.REFUSED) {
-                response = createRefusedResponse(
-                        errorHandlingDescriptor.getCode(),
-                        errorHandlingDescriptor.getMessages()
-                );
+            /* 5bis) Manage and respond an error to the request */
+            if (null != errorHandlingDescriptor) {
+                if (errorHandlingDescriptor.getState() == ErrorState.REFUSED) {
+                    response = createRefusedResponse(
+                            errorHandlingDescriptor.getCode(),
+                            errorHandlingDescriptor.getMessages()
+                    );
+                } else {
+                    response = createErrorResponse(
+                            errorHandlingDescriptor.getCode(),
+                            errorHandlingDescriptor.getMessages()
+                    );
+                }
+
+                sendError(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
+
+                if (errorHandlingDescriptor.getState() == ErrorState.REFUSED) {
+                    requestLogger.warn("Refused {} [{}] : <reason={}> <input={}>",
+                            getInputTypeName(), inputName, response.getReason(), input,
+                            errorHandlingDescriptor.getThrowable()
+                    );
+                } else {
+                    requestLogger.error("Error in {} [{}] : <reason={}> <input={}>",
+                            getInputTypeName(), inputName, response.getReason(), input,
+                            errorHandlingDescriptor.getThrowable()
+                    );
+                }
+
             } else {
-                response = createErrorResponse(
-                        errorHandlingDescriptor.getCode(),
-                        errorHandlingDescriptor.getMessages()
-                );
+                requestLogger.debug("Request processed in {} [{}]", getInputTypeName(), inputName);
             }
-
-            sendError(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
-
-            if (errorHandlingDescriptor.getState() == ErrorState.REFUSED) {
-                requestLogger.warn("Refused {} [{}] : <reason={}> <input={}>",
-                        getInputTypeName(), inputName, response.getReason(), input,
-                        errorHandlingDescriptor.getThrowable()
-                );
-            } else {
-                requestLogger.error("Error in {} [{}] : <reason={}> <input={}>",
-                        getInputTypeName(), inputName, response.getReason(), input,
-                        errorHandlingDescriptor.getThrowable()
-                );
-            }
-
-        } else {
-            requestLogger.debug("Request processed in {} [{}]", getInputTypeName(), inputName);
+        } finally {
+            MDC.clear();
         }
     }
 
