@@ -12,7 +12,7 @@ public class EventResponse extends KasperResponse {
      * @return a temporarily unavailable response
      */
     public static EventResponse temporarilyUnavailable(final KasperReason reason) {
-        return failure(reason);
+        return failure(reason).temporary();
     }
 
     /**
@@ -57,8 +57,15 @@ public class EventResponse extends KasperResponse {
         return new EventResponse(Status.OK, null);
     }
 
+    private boolean temporary;
+
     public EventResponse(final Status status, final KasperReason reason) {
         super(status, reason);
+    }
+
+    @Override
+    public boolean isOK() {
+        return getStatus().equals(Status.SUCCESS) || super.isOK();
     }
 
     public boolean isAnError() {
@@ -67,5 +74,14 @@ public class EventResponse extends KasperResponse {
 
     public boolean isAFailure() {
         return getStatus() == Status.FAILURE;
+    }
+
+    private EventResponse temporary() {
+        temporary = true;
+        return this;
+    }
+
+    public boolean isTemporary() {
+        return temporary;
     }
 }
