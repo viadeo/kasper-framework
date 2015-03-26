@@ -5,15 +5,30 @@ import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.KasperResponse;
 import com.viadeo.kasper.client.platform.Meta;
 import com.viadeo.kasper.context.Context;
+import org.eclipse.jetty.io.bio.StringEndPoint;
+import org.eclipse.jetty.server.BlockingHttpConnection;
+import org.eclipse.jetty.server.HttpInput;
+import org.eclipse.jetty.server.Server;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.mock.web.MockHttpServletRequest;
 
+import javax.servlet.*;
+import javax.servlet.http.*;
 import javax.ws.rs.core.Response;
-import java.util.List;
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+import java.security.Principal;
+import java.util.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class HttpExposerUTest {
 
@@ -136,6 +151,38 @@ public class HttpExposerUTest {
         // Then
         assertNotNull(status);
         assertEquals(Response.Status.INTERNAL_SERVER_ERROR, status);
+    }
+
+    @Test
+    public void getPayloadAsString_shouldReturnRequestBodyAsString() throws IOException {
+        // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setMethod("POST");
+        request.setContentType("application/json");
+        String body = "{\"test\":\"toto\"}";
+        request.setContent(body.getBytes());
+
+        // when
+        String objectToLogForDebug = exposer.getPayloadAsString(request);
+
+        // then
+        assertEquals(body, objectToLogForDebug);
+    }
+
+    @Test
+    public void getPayloadAsString_whenNoContent_shouldReturnEmptyString() throws IOException {
+        // given
+        MockHttpServletRequest request = new MockHttpServletRequest();
+        request.setMethod("POST");
+        request.setContentType("application/json");
+        String body = "";
+        request.setContent(body.getBytes());
+
+        // when
+        String objectToLogForDebug = exposer.getPayloadAsString(request);
+
+        // then
+        assertEquals("", objectToLogForDebug);
     }
 
     private static KasperResponse createKasperResponse(KasperResponse.Status status) {

@@ -33,7 +33,11 @@ public abstract class HttpServletRequestToObject {
 
     // ------------------------------------------------------------------------
 
-    public abstract <T> T map(final HttpServletRequest request, final Class<T> clazz) throws Exception;
+    public abstract <T> T map(
+            final HttpServletRequest request
+            , final String payload
+            , final Class<T> clazz
+    ) throws Exception;
 
     public static class StringRequestToObjectMapper extends HttpServletRequestToObject {
 
@@ -45,7 +49,7 @@ public abstract class HttpServletRequestToObject {
         }
 
         @Override
-        public <T> T map(final HttpServletRequest request, final Class<T> clazz) throws IOException {
+        public <T> T map(final HttpServletRequest request, final String payload, final Class<T> clazz) throws IOException {
             final ImmutableSetMultimap.Builder<String, String> params = new ImmutableSetMultimap.Builder<>();
             final Enumeration<String> keys = request.getParameterNames();
 
@@ -75,12 +79,11 @@ public abstract class HttpServletRequestToObject {
             super(objectMapper);
         }
 
-        public <T> T map(final HttpServletRequest request, final Class<T> clazz) throws Exception {
-            String json = CharStreams.toString(new InputStreamReader(request.getInputStream()));
-            if (json == null || json.trim().length() == 0) {
+        public <T> T map(final HttpServletRequest request, final String payload, final Class<T> clazz) throws Exception {
+            if (payload == null || payload.trim().length() == 0) {
                 return clazz.newInstance();
             }
-            try (final JsonParser parser = reader.getFactory().createParser(json)) {
+            try (final JsonParser parser = reader.getFactory().createParser(payload)) {
                 return reader.readValue(parser, clazz);
             }
         }
