@@ -192,6 +192,10 @@ public final class KasperReason implements Serializable, Immutable {
         }
     }
 
+    public CoreReasonCode getCoreReasonCode(){
+        return this.reasonCode;
+    }
+
     public Collection<String> getMessages() {
         return messages;
     }

@@ -22,6 +22,7 @@ import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.exposition.alias.AliasRegistry;
 import com.viadeo.kasper.security.annotation.XKasperPublic;
+import com.viadeo.kasper.security.exception.KasperSecurityException;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -157,6 +158,13 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
                     e
             );
 
+        } catch (final KasperSecurityException kse) {
+            errorHandlingDescriptor = new ErrorHandlingDescriptor(
+                    ErrorState.REFUSED,
+                    kse.getKasperReason().getCoreReasonCode(),
+                    Lists.newArrayList((null == kse.getMessage()) ? "Unknown" : kse.getMessage()),
+                    kse
+            );
         } catch (final Throwable th) {
             errorHandlingDescriptor = new ErrorHandlingDescriptor(
                     ErrorState.ERROR,
