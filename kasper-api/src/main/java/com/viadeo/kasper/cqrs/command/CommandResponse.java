@@ -21,6 +21,7 @@ public class CommandResponse extends KasperResponse {
     private static final long serialVersionUID = -938831661655150085L;
 
     private String securityToken;
+    private String accessToken;
 
     // ------------------------------------------------------------------------
 
@@ -81,6 +82,15 @@ public class CommandResponse extends KasperResponse {
         return Optional.fromNullable(this.securityToken);
     }
 
+    public CommandResponse withAccessToken(final String accessToken) {
+        this.accessToken = checkNotNull(accessToken);
+        return this;
+    }
+
+    public Optional<String> getAccessToken() {
+        return Optional.fromNullable(this.accessToken);
+    }
+
     // ------------------------------------------------------------------------
 
     public CommandResponse(final KasperResponse response, final String securityToken) {
@@ -97,6 +107,10 @@ public class CommandResponse extends KasperResponse {
 
         if (response.getSecurityToken().isPresent()) {
             this.securityToken = response.getSecurityToken().get();
+        }
+
+        if (response.getAccessToken().isPresent()) {
+            this.accessToken = response.getAccessToken().get();
         }
     }
 
@@ -134,6 +148,18 @@ public class CommandResponse extends KasperResponse {
             return false;
         }
 
+        if (this.getAccessToken().isPresent() != other.getAccessToken().isPresent()) {
+            return false;
+        }
+
+        if ( ! this.getAccessToken().isPresent()) {
+            return true;
+        }
+
+        if ( ! this.getAccessToken().get().equals(other.getAccessToken().get())) {
+            return false;
+        }
+
         return true;
     }
 
@@ -142,6 +168,9 @@ public class CommandResponse extends KasperResponse {
         int hashCode = super.hashCode();
         if (this.getSecurityToken().isPresent()) {
             hashCode += com.google.common.base.Objects.hashCode(this.getSecurityToken().get());
+        }
+        if (this.getAccessToken().isPresent()) {
+            hashCode += com.google.common.base.Objects.hashCode(this.getAccessToken().get());
         }
         return hashCode;
     }
@@ -152,6 +181,9 @@ public class CommandResponse extends KasperResponse {
                            .addValue(super.toString());
         if (this.getSecurityToken().isPresent()) {
             helper.addValue(this.getSecurityToken().get());
+        }
+        if (this.getAccessToken().isPresent()) {
+            helper.addValue(this.getAccessToken().get());
         }
 
         return helper.toString();

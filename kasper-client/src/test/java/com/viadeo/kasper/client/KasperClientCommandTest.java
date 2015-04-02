@@ -60,6 +60,7 @@ public class KasperClientCommandTest extends JerseyTest {
     private HttpContextSerializer contextSerializer;
 
     private static final String SECURITY_TOKEN = "42-4242-24-2424";
+    private static final String ACCESS_TOKEN = "666-666-666";
 
     // -------------------------------------------------------------------------
 
@@ -144,6 +145,7 @@ public class KasperClientCommandTest extends JerseyTest {
                     )
                     .status(200)
                     .header(HttpContextHeaders.HEADER_SECURITY_TOKEN, SECURITY_TOKEN)
+                    .header(HttpContextHeaders.HEADER_ACCESS_TOKEN, ACCESS_TOKEN)
                     .build();
         }
     }
@@ -203,6 +205,8 @@ public class KasperClientCommandTest extends JerseyTest {
         assertEquals(Status.REFUSED, response.getStatus());
         assertTrue(response.getSecurityToken().isPresent());
         assertEquals(SECURITY_TOKEN, response.getSecurityToken().get());
+        assertTrue(response.getAccessToken().isPresent());
+        assertEquals(ACCESS_TOKEN, response.getAccessToken().get());
         verify(contextSerializer).serialize(eq(context), any(AsyncWebResource.Builder.class));
     }
 

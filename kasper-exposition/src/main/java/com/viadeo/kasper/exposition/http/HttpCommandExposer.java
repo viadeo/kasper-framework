@@ -150,6 +150,9 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
         if (response.isOK() && response.getSecurityToken().isPresent()) {
             httpResponse.addHeader(HttpContextHeaders.HEADER_SECURITY_TOKEN, response.getSecurityToken().get());
         }
+        if (response.isOK() && response.getAccessToken().isPresent()) {
+            httpResponse.addHeader(HttpContextHeaders.HEADER_ACCESS_TOKEN, response.getAccessToken().get());
+        }
         super.sendResponse(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
     }
 

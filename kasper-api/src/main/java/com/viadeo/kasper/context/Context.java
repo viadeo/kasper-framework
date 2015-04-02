@@ -42,6 +42,7 @@ public interface Context extends Serializable  {
 
     String DEFAULT_APPLICATION_ID = "UNKNOWN";
     String DEFAULT_SECURITY_TOKEN = "";
+    String DEFAULT_ACCESS_TOKEN = "";
 
     String DEFAULT_FUNNEL_NAME = "";
     String DEFAULT_FUNNEL_VERSION = "";
@@ -59,6 +60,7 @@ public interface Context extends Serializable  {
     String FUNNEL_CID_SHORTNAME = "corrFunnelId";
     String SESSION_CID_SHORTNAME = "corrSessionId";
     String SECURITY_TOKEN_SHORTNAME = "authToken";
+    String ACCESS_TOKEN_SHORTNAME = "accessToken";
     String FUNNEL_NAME_SHORTNAME = "funnelName";
     String FUNNEL_VERS_SHORTNAME = "funnelVersion";
     String IP_ADDRESS_SHORTNAME = "ipAddress";
@@ -86,6 +88,19 @@ public interface Context extends Serializable  {
      * @return the current {@link Context} instance
      */
     Context setSecurityToken(String token);
+
+    // ------------------------------------------------------------------------
+
+    /**
+     * @return the access token used in current context
+     */
+    String getAccessToken();
+
+    /**
+     * @param token the access token to be used in current context
+     * @return the current {@link Context} instance
+     */
+    Context setAccessToken(String token);
 
     // ------------------------------------------------------------------------
 
