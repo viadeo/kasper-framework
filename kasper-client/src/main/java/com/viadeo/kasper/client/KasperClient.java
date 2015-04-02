@@ -49,6 +49,7 @@ import java.util.concurrent.Future;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sun.jersey.api.client.ClientResponse.Status.ACCEPTED;
+import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_ACCESS_TOKEN;
 import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_SECURITY_TOKEN;
 
 /**
@@ -353,6 +354,9 @@ public class KasperClient {
             final MultivaluedMap<String, String> headers = clientResponse.getHeaders();
             if (headers.containsKey(HEADER_SECURITY_TOKEN)) {
                 response.withSecurityToken(headers.getFirst(HEADER_SECURITY_TOKEN));
+            }
+            if (headers.containsKey(HEADER_ACCESS_TOKEN)) {
+                response.withAccessToken(headers.getFirst(HEADER_ACCESS_TOKEN));
             }
 
             return new HTTPCommandResponse(

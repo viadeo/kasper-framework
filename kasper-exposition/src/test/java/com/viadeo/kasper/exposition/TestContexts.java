@@ -23,6 +23,7 @@ public class TestContexts {
         context_full.setUserCountry("US");
         context_full.setApplicationId("TEST");
         context_full.setSecurityToken(UUID.randomUUID().toString());
+        context_full.setAccessToken(UUID.randomUUID().toString());
         context_full.setFunnelName("MyFunnel");
         context_full.setFunnelVersion("case_1");
         context_full.setIpAddress("127.0.0.1");

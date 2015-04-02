@@ -1,5 +1,13 @@
 # Kasper Releases #
 
+### Snapshot 0.8.0-pre33 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre33~~))
+
+* Added accesToken header in CommandResponse.
+
+### Snapshot 0.8.0-pre32 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre32~~))
+
+* Custom HttpExposer to return full SecurityException filled in error response.
+
 ### Snapshot 0.8.0-pre28 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre28~~))
 
 * Added Authorization's annotations and auto-doc.
