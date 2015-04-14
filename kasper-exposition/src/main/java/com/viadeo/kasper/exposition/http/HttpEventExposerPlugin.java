@@ -46,8 +46,8 @@ public class HttpEventExposerPlugin extends HttpExposerPlugin<HttpEventExposer> 
 
         final Set<ExposureDescriptor<Event,EventListener>> exposureDescriptors = Sets.newHashSet();
         for (final DomainDescriptor domainDescriptor:domainDescriptors) {
-            for (final EventListenerDescriptor eventListenerDescriptor : domainDescriptor.getEventListenerDescriptors()) {
-                exposureDescriptors.add(new ExposureDescriptor<>(eventListenerDescriptor.getEventClass(), eventListenerDescriptor.getReferenceClass()));
+            for (final Class<? extends Event> eventClazz: domainDescriptor.getEventClasses()) {
+                exposureDescriptors.add(new ExposureDescriptor<>(eventClazz, EventListener.class));
             }
         }
 

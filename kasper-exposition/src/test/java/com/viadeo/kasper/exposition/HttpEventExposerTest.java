@@ -55,9 +55,8 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     private KasperEventBus eventBus;
 
     @XKasperUnregistered
-    public static class UnknownEvent implements Event {
-        private static final long serialVersionUID = 6761261204648630883L;
-        public String name;
+    public static class AccountUpdatedEvent implements Event {
+        private static final long serialVersionUID = -6112121621645049559L;
     }
 
     @XKasperUnregistered
@@ -151,7 +150,12 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     public void testPublishWithUnknownEvent() throws Exception {
 
         // Given valid input
-        final Event event = new UnknownEvent();
+        final Event event = new Event() {
+            @Override
+            public int hashCode() {
+                return super.hashCode();
+            }
+        };
 
         // Then ;)
         exception.expect(KasperException.class);
@@ -159,6 +163,18 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
 
         // When
         client().emit(DefaultContextBuilder.get(), event);
+    }
+
+    @Test
+    public void testNonListenedEvent() throws MalformedURLException, URISyntaxException {
+        // Given
+        final Event event = new AccountUpdatedEvent();
+
+        // When
+        client().emit(DefaultContextBuilder.get(), event);
+
+        // Then
+        verify(eventBus).publishEvent(any(Context.class), refEq(event));
     }
 
     @Test
