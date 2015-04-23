@@ -73,11 +73,12 @@ public class KasperQueryGateway implements QueryGateway {
 
     @Override
     @SuppressWarnings("unchecked")
-    public <RESULT extends QueryResult> QueryResponse<RESULT> retrieve(final Query query, final Context context)
+    public <RESULT extends QueryResult> QueryResponse<RESULT> retrieve(final Query query, final Context initialContext)
             throws Exception {
 
-        checkNotNull(context);
+        checkNotNull(initialContext);
         checkNotNull(query);
+
 
         final Class<? extends Query> queryClass = query.getClass();
 
@@ -95,7 +96,7 @@ public class KasperQueryGateway implements QueryGateway {
         final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerRequestsTimeName).time();
 
         /* Sets current thread context */
-        enrichContextAndMdcContextMap(query, context);
+        Context context = enrichContextAndMdcContextMap(query, initialContext);
         CurrentContext.set(context);
 
         // Search for associated handler --------------------------------------
@@ -149,17 +150,22 @@ public class KasperQueryGateway implements QueryGateway {
     }
 
     @VisibleForTesting
-    protected void enrichContextAndMdcContextMap(final Query query, final Context context) {
+    protected Context enrichContextAndMdcContextMap(final Query query, final Context context) {
         checkNotNull(query);
         checkNotNull(context);
 
+        final Context newContext;
         final Optional<Class<? extends QueryHandler>> handlerClass = getHandlerClass(query);
         if (handlerClass.isPresent()) {
             final Set<String> additionalTags = getHandlerTags(handlerClass.get());
-            context.addTags(additionalTags);
+            newContext = new Context.Builder(context).addTags(additionalTags).build();
+        } else {
+            newContext = context;
         }
 
-        MDCUtils.enrichMdcContextMap(context);
+        MDCUtils.enrichMdcContextMap(newContext);
+
+        return newContext;
     }
 
     @VisibleForTesting

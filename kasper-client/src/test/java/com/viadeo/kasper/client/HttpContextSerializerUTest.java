@@ -9,17 +9,16 @@ package com.viadeo.kasper.client;
 import com.google.common.collect.Sets;
 import com.sun.jersey.api.client.RequestBuilder;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContext;
+import com.viadeo.kasper.context.Contexts;
+import com.viadeo.kasper.context.HttpContextHeaders;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InOrder;
 
-import static com.google.common.collect.Sets.newHashSet;
-import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_TAGS;
+import java.util.UUID;
+
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Matchers.anyString;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 public class HttpContextSerializerUTest {
@@ -32,19 +31,50 @@ public class HttpContextSerializerUTest {
     }
 
     @Test
+    public void serialize_withNotIdentifiedHeader_isOk() {
+        // Given
+        final RequestBuilder builder = mock(RequestBuilder.class);
+        final Context context = Contexts.builder().with("aKey", "aValue").build();
+
+        // When
+        serializer.serialize(context, builder);
+
+        // Then
+        verify(builder).header(eq("aKey"), eq("aValue"));
+    }
+
+    @Test
+    public void serialize_withIdentifiedHeader_isOk() {
+        // Given
+        final RequestBuilder builder = mock(RequestBuilder.class);
+        final Context.Builder contextBuilder = Contexts.builder();
+        for (HttpContextHeaders header : HttpContextHeaders.values()) {
+            contextBuilder.with(header.toPropertyKey(), UUID.randomUUID().toString());
+        }
+        final Context context = contextBuilder.build();
+
+        // When
+        serializer.serialize(context, builder);
+
+        // Then
+        for (HttpContextHeaders header : HttpContextHeaders.values()) {
+            assertTrue(context.getProperty(header.toPropertyKey()).isPresent());
+            verify(builder).header(eq(header.toHeaderName()), eq(context.getProperty(header.toPropertyKey()).get()));
+        }
+    }
+
+    @Test
     public void serialize_withNoTags_shouldNotSetHeader() {
         // Given
         final RequestBuilder builder = mock(RequestBuilder.class);
-
-        final Context context = new DefaultContext();
-        context.setTags(Sets.<String>newHashSet());
+        final Context context = Contexts.builder().withTags(Sets.<String>newHashSet()).build();
 
         // When
         serializer.serialize(context, builder);
 
         // Then
         verify(builder, never())
-                .header(eq(HEADER_TAGS), anyString());
+                .header(eq(HttpContextHeaders.HEADER_TAGS.toHeaderName()), anyString());
     }
 
     @Test
@@ -52,8 +82,7 @@ public class HttpContextSerializerUTest {
         // Given
         final RequestBuilder builder = mock(RequestBuilder.class);
 
-        final Context context = new DefaultContext();
-        context.setTags(newHashSet("a-tag", "another-tag"));
+        final Context context = Contexts.builder().addTags(Sets.newHashSet("a-tag", "another-tag")).build();
 
         // When
         serializer.serialize(context, builder);
@@ -63,12 +92,12 @@ public class HttpContextSerializerUTest {
 
         final InOrder inOrder = inOrder(builder);
         inOrder.verify(builder)
-                .header(eq(HEADER_TAGS), captor.capture());
+                .header(eq(HttpContextHeaders.HEADER_TAGS.toHeaderName()), captor.capture());
         inOrder.verify(builder, never())
-                .header(eq(HEADER_TAGS), anyString()); // once and only once
+                .header(eq(HttpContextHeaders.HEADER_TAGS.toHeaderName()), anyString()); // once and only once
 
         final String value = captor.getValue();
-        assertTrue(newHashSet("a-tag,another-tag", "another-tag,a-tag").contains(value)); // order is not important
+        assertTrue(Sets.newHashSet("a-tag,another-tag", "another-tag,a-tag").contains(value)); // order is not important
     }
 
 }

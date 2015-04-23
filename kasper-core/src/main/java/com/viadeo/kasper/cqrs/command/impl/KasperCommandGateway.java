@@ -9,6 +9,7 @@ package com.viadeo.kasper.cqrs.command.impl;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -139,11 +140,9 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(command);
         checkNotNull(context);
 
-        enrichContextAndMdcContextMap(command, context);
-
         commandGateway.sendCommand(
                 command,
-                context
+                enrichContextAndMdcContextMap(command, context)
         );
     }
 
@@ -156,11 +155,9 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(command);
         checkNotNull(context);
 
-        enrichContextAndMdcContextMap(command, context);
-
         return commandGateway.sendCommandForFuture(
                 command,
-                context
+                enrichContextAndMdcContextMap(command, context)
         );
     }
 
@@ -173,11 +170,9 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(command);
         checkNotNull(context);
 
-        enrichContextAndMdcContextMap(command, context);
-
         return commandGateway.sendCommandAndWaitForAResponse(
                 command,
-                context
+                enrichContextAndMdcContextMap(command, context)
         );
     }
 
@@ -190,11 +185,9 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(command);
         checkNotNull(context);
 
-        enrichContextAndMdcContextMap(command, context);
-
         return commandGateway.sendCommandAndWaitForAResponseWithException(
                 command,
-                context
+                enrichContextAndMdcContextMap(command, context)
         );
     }
 
@@ -238,13 +231,17 @@ public class KasperCommandGateway implements CommandGateway {
     }
 
     @VisibleForTesting
-    protected void enrichContextAndMdcContextMap(final Command command, final Context context) {
+    protected Context enrichContextAndMdcContextMap(final Command command, final Context context) {
         checkNotNull(command);
         checkNotNull(context);
 
         final Set<String> additionalTags = domainLocator.getHandlerTags(command);
-        context.addTags(additionalTags);
-        MDCUtils.enrichMdcContextMap(context);
+
+        Context newContext = Contexts.newFrom(context).addTags(additionalTags).build();
+
+        MDCUtils.enrichMdcContextMap(newContext);
+
+        return newContext;
     }
 
     // ------------------------------------------------------------------------

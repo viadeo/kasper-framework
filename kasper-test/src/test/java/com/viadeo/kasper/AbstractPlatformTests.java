@@ -13,7 +13,7 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandBus;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
@@ -43,7 +43,7 @@ public abstract class AbstractPlatformTests {
     }
 
     protected Context newContext() {
-        return new DefaultContextBuilder().build();
+        return Contexts.empty();
     }
 
     public abstract List<DomainBundle> getBundles();

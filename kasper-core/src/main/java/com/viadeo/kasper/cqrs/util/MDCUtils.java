@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.util;
 
+import com.google.common.base.Objects;
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 import org.slf4j.MDC;
 
@@ -20,9 +22,8 @@ public final class MDCUtils {
     @SuppressWarnings("unchecked")
     public static void enrichMdcContextMap(final Context context) {
         checkNotNull(context);
-
         final Map initialContextMap = MDC.getCopyOfContextMap();
-        final Map contextMapEnrichedWithContext = context.asMap(initialContextMap);
+        final Map contextMapEnrichedWithContext = context.asMap(Objects.firstNonNull(initialContextMap, Maps.newHashMap()));
         MDC.setContextMap(contextMapEnrichedWithContext);
     }
 

@@ -13,7 +13,7 @@ import com.google.common.base.Preconditions;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.exception.KasperException;
@@ -160,7 +160,7 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
         final EventMessage<E> message = new EventMessage(eventMessage);
 
         /* Ensure a context is set */
-        CurrentContext.set(Objects.firstNonNull(message.getContext(), DefaultContextBuilder.get()));
+        CurrentContext.set(Objects.firstNonNull(message.getContext(), Contexts.empty()));
 
         EventResponse response;
 

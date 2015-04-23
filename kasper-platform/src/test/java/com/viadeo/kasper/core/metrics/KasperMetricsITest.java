@@ -11,7 +11,7 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.exception.KasperException;
 import org.junit.Test;
@@ -239,8 +239,7 @@ public class KasperMetricsITest {
         // Given
         buildPlatformWith(new MetricRegistry());
 
-        final Context context = DefaultContextBuilder.get();
-        context.setApplicationId("foobar");
+        final Context context = Contexts.builder().withApplicationId("foobar").build();
 
         // When
         final String name = KasperMetrics.name(MetricNameStyle.CLIENT_TYPE, context, MyCustomDomainBox.MyCustomQuery.class, "bip");
@@ -254,7 +253,7 @@ public class KasperMetricsITest {
         // Given
         buildPlatformWith(new MetricRegistry());
 
-        final Context context = DefaultContextBuilder.get();
+        final Context context = Contexts.empty();
 
         // When
         final String name = KasperMetrics.name(MetricNameStyle.CLIENT_TYPE, context, MyCustomDomainBox.MyCustomQuery.class, "bip");
@@ -268,8 +267,7 @@ public class KasperMetricsITest {
         // Given
         buildPlatformWith(new MetricRegistry());
 
-        final Context context = DefaultContextBuilder.get();
-        context.setApplicationId("foobar");
+        final Context context = Contexts.builder().withApplicationId("foobar").build();
 
         // When
         final String name = KasperMetrics.name(MetricNameStyle.CLIENT_TYPE, context, MyCustomDomainBox.MyCustomCommand.class, "bip");
@@ -283,7 +281,7 @@ public class KasperMetricsITest {
         // Given
         buildPlatformWith(new MetricRegistry());
 
-        final Context context = DefaultContextBuilder.get();
+        final Context context = Contexts.empty();
 
         // When
         final String name = KasperMetrics.name(MetricNameStyle.CLIENT_TYPE, context, MyCustomDomainBox.MyCustomCommand.class, "bip");

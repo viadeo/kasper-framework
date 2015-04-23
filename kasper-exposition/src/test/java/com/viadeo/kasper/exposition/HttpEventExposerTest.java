@@ -15,8 +15,8 @@ import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.context.HttpContextHeaders;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
@@ -59,7 +59,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
         private static final long serialVersionUID = 6761261204648630883L;
         public String name;
     }
-
+    
     @XKasperUnregistered
     public static class AccountCreatedEvent implements Event {
         private static final long serialVersionUID = -6112121621645049559L;
@@ -141,7 +141,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
         event.name = "tutu";
 
         // When
-        client().emit(DefaultContextBuilder.get(), event);
+        client().emit(Contexts.empty(), event);
 
         // Then
         verify(eventBus).publishEvent(any(Context.class), refEq(event));
@@ -158,7 +158,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
         exception.expectMessage("Unable to send event");
 
         // When
-        client().emit(DefaultContextBuilder.get(), event);
+        client().emit(Contexts.empty(), event);
     }
 
     @Test
@@ -193,6 +193,6 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
 
         // Then
         assertEquals(Response.Status.ACCEPTED.getStatusCode(), response.getStatus());
-        assertEquals(expectedServerName, response.getHeaders().getFirst(HttpContextHeaders.HEADER_SERVER_NAME));
+        assertEquals(expectedServerName, response.getHeaders().getFirst(HttpContextHeaders.HEADER_SERVER_NAME.toHeaderName()));
     }
 }

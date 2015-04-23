@@ -8,7 +8,7 @@ package com.viadeo.kasper.core.metrics;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.resolvers.CommandResolver;
 import com.viadeo.kasper.core.resolvers.Resolver;
@@ -66,7 +66,7 @@ public class KasperMetricsTest {
 
         // When
         kasperMetrics._clearCache();
-        final String path = kasperMetrics.pathForKasperComponent(MetricNameStyle.DOMAIN_TYPE_COMPONENT, mock(Context.class), TestCommand.class);
+        final String path = kasperMetrics.pathForKasperComponent(MetricNameStyle.DOMAIN_TYPE_COMPONENT, Contexts.empty(), TestCommand.class);
 
         // Then
         assertEquals(TestCommand.class.getName().toLowerCase(), path);
@@ -92,7 +92,7 @@ public class KasperMetricsTest {
 
         // When
         kasperMetrics._clearCache();
-        final String path = kasperMetrics.pathForKasperComponent(MetricNameStyle.DOMAIN_TYPE_COMPONENT, mock(Context.class), TestCommand.class);
+        final String path = kasperMetrics.pathForKasperComponent(MetricNameStyle.DOMAIN_TYPE_COMPONENT, Contexts.empty(), TestCommand.class);
 
         // Then
         assertEquals(("Test.Command." + TestCommand.class.getSimpleName()).toLowerCase(), path);

@@ -8,10 +8,9 @@ package com.viadeo.kasper.core.metrics;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
-import com.google.common.base.Strings;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.core.resolvers.Resolver;
 import com.viadeo.kasper.core.resolvers.ResolverFactory;
 
@@ -84,7 +83,7 @@ public final class KasperMetrics {
         return prefix + MetricRegistry.name(
                 pathForKasperComponent(
                         checkNotNull(style),
-                        DefaultContextBuilder.get(),
+                        Contexts.empty(),
                         checkNotNull(clazz)
                 ),
                 checkNotNull(names)
@@ -130,12 +129,7 @@ public final class KasperMetrics {
                         path = String.format("%s.%s", domainName, type).toLowerCase();
                         break;
                     case CLIENT_TYPE:
-                        final String applicationId;
-                        if (Strings.isNullOrEmpty(context.getApplicationId())) {
-                            applicationId = "unknown";
-                        } else {
-                            applicationId = context.getApplicationId();
-                        }
+                        final String applicationId = context.getApplicationId().or("unknown");
                         path = String.format("client.%s.%s", applicationId, type).toLowerCase();
                         break;
                 }

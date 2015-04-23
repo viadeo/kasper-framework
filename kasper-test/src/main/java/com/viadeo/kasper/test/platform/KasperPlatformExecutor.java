@@ -7,7 +7,7 @@
 package com.viadeo.kasper.test.platform;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.query.Query;
@@ -37,7 +37,7 @@ public class KasperPlatformExecutor implements
 
     @Override
     public KasperPlatformCommandResultValidator when(final Command command) {
-        return this.when(command, DefaultContextBuilder.get());
+        return this.when(command, Contexts.empty());
     }
 
     @Override
@@ -55,7 +55,7 @@ public class KasperPlatformExecutor implements
 
     @Override
     public KasperPlatformQueryResultValidator when(final Query query) {
-        return this.when(query, DefaultContextBuilder.get());
+        return this.when(query, Contexts.empty());
     }
 
     @Override
@@ -73,7 +73,7 @@ public class KasperPlatformExecutor implements
 
     @Override
     public KasperPlatformListenedEventsValidator when(final Event event) {
-        return this.when(event, DefaultContextBuilder.get());
+        return this.when(event, Contexts.empty());
     }
 
     @Override

@@ -9,8 +9,7 @@ package com.viadeo.kasper.client.platform.components.eventbus;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.AbstractContext;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
@@ -63,7 +62,7 @@ public class KasperEventBusTest {
         // Given
         final KasperEventBus eventBus = spy(new KasperEventBus());
         final TestEvent dummyEvent = new TestEvent();
-        CurrentContext.set(DefaultContextBuilder.get());
+        CurrentContext.set(Contexts.empty());
 
         // When
         eventBus.publish(dummyEvent);
@@ -73,7 +72,7 @@ public class KasperEventBusTest {
         final GenericEventMessage<Event> value = captor.getValue();
         assertEquals(dummyEvent, value.getPayload());
         assertTrue(value.getMetaData().containsKey(Context.METANAME));
-        assertNotNull(((AbstractContext) value.getMetaData().get(Context.METANAME)).getKasperCorrelationId());
+        assertNotNull(((Context) value.getMetaData().get(Context.METANAME)).getKasperCorrelationId());
     }
 
     // ------------------------------------------------------------------------

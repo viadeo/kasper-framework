@@ -8,7 +8,7 @@ package com.viadeo.kasper.test.platform;
 
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandValidationInterceptor;
 import com.viadeo.kasper.test.platform.executor.KasperFixtureCommandExecutor;
@@ -38,7 +38,7 @@ public class KasperAggregateExecutor implements KasperFixtureCommandExecutor<Kas
 
     @Override
     public KasperAggregateResultValidator when(final Command command) {
-        return this.when(command, DefaultContextBuilder.get());
+        return this.when(command, Contexts.empty());
     }
 
     @Override

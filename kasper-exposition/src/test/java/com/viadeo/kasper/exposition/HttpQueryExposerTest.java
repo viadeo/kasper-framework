@@ -16,8 +16,8 @@ import com.viadeo.kasper.annotation.XKasperAlias;
 import com.viadeo.kasper.annotation.XKasperUnexposed;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.context.HttpContextHeaders;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
@@ -218,7 +218,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
         // When
         final QueryResponse<SomeResponse> response = client().query(
-                DefaultContextBuilder.get(), query, SomeResponse.class);
+                Contexts.empty(), query, SomeResponse.class);
 
         // Then
         assertEquals(query.aValue, response.getResult().query.aValue);
@@ -237,7 +237,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
         // When
         final QueryResponse<SomeResponse> actual = client().query(
-                DefaultContextBuilder.get(), query, SomeResponse.class);
+                Contexts.empty(), query, SomeResponse.class);
 
         // Then
         assertFalse(actual.isOK());
@@ -256,7 +256,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
         // When
         final QueryResponse<SomeResponse> actual = client().query(
-                DefaultContextBuilder.get(), query, SomeResponse.class);
+                Contexts.empty(), query, SomeResponse.class);
 
         // Then
         assertFalse(actual.isOK());
@@ -273,7 +273,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
         // When
         final QueryResponse<SomeCollectionResponse> response = client().query(
-                DefaultContextBuilder.get(), query, SomeCollectionResponse.class);
+                Contexts.empty(), query, SomeCollectionResponse.class);
 
         // Then
         assertTrue(response.isOK());
@@ -292,7 +292,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
         // When
         final QueryResponse<SomeCollectionResponse> actual = client().query(
-                DefaultContextBuilder.get(), query, SomeCollectionResponse.class);
+                Contexts.empty(), query, SomeCollectionResponse.class);
        
         // Then
         assertFalse(actual.isOK());
@@ -360,7 +360,7 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
 
         // Then
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        assertEquals(expectedServerName, response.getHeaders().getFirst(HttpContextHeaders.HEADER_SERVER_NAME));
+        assertEquals(expectedServerName, response.getHeaders().getFirst(HttpContextHeaders.HEADER_SERVER_NAME.toHeaderName()));
     }
 
     @Test

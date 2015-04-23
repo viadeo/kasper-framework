@@ -239,7 +239,7 @@ public class KasperClient {
         final BUILDER_OUT builderOut = builder
                 .accept(MediaType.APPLICATION_JSON_TYPE)
                 .type(MediaType.APPLICATION_JSON_TYPE)
-                .header(HttpContextHeaders.HEADER_CLIENT_VERSION, version);
+                .header(HttpContextHeaders.HEADER_CLIENT_VERSION.toHeaderName(), version);
 
         contextSerializer.serialize(context, builderOut);
 
@@ -352,11 +352,12 @@ public class KasperClient {
 
             /* Extract security token if it has been set in headers */
             final MultivaluedMap<String, String> headers = clientResponse.getHeaders();
-            if (headers.containsKey(HEADER_SECURITY_TOKEN)) {
-                response.withSecurityToken(headers.getFirst(HEADER_SECURITY_TOKEN));
+
+            if (headers.containsKey(HEADER_SECURITY_TOKEN.toHeaderName())) {
+                response.withSecurityToken(headers.getFirst(HEADER_SECURITY_TOKEN.toHeaderName()));
             }
-            if (headers.containsKey(HEADER_ACCESS_TOKEN)) {
-                response.withAccessToken(headers.getFirst(HEADER_ACCESS_TOKEN));
+            if (headers.containsKey(HEADER_ACCESS_TOKEN.toHeaderName())) {
+                response.withAccessToken(headers.getFirst(HEADER_ACCESS_TOKEN.toHeaderName()));
             }
 
             return new HTTPCommandResponse(

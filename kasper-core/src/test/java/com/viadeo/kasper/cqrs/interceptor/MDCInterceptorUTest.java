@@ -7,7 +7,7 @@
 package com.viadeo.kasper.cqrs.interceptor;
 
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContext;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import org.apache.log4j.MDC;
 import org.junit.Assert;
@@ -44,9 +44,10 @@ public class MDCInterceptorUTest {
     @Test
     public void process_withContext_setContextMapInMDC() throws Exception {
         // Given
-        Context context = new DefaultContext();
-        context.setApplicationId("myApplicationId");
-        context.setProperty("myPropertyKey", "MyPropertyValue");
+        Context context = Contexts.builder()
+                .withApplicationId("myApplicationId")
+                .with("myPropertyKey", "MyPropertyValue")
+                .build();
 
         // When
         interceptor.process(mock(Object.class), context, chain);

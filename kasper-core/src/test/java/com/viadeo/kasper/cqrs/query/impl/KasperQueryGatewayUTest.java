@@ -7,8 +7,8 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableMap;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
@@ -27,14 +27,14 @@ import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptor;
 import com.viadeo.kasper.ddd.Domain;
 import org.junit.After;
+import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.InOrder;
 import org.slf4j.MDC;
 
-import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static org.junit.Assert.*;
@@ -127,33 +127,24 @@ public class KasperQueryGatewayUTest {
         // Given
         final Query query = new TestQuery();
         when(queryHandlersLocator.getHandlerFromQueryClass(query.getClass()))
-                .thenReturn(Optional.<QueryHandler<Query, QueryResult>>of((QueryHandler) new TestQueryHandler_WithSeveralTags()));
+                .thenReturn(Optional.<QueryHandler<Query, QueryResult>>of((QueryHandler)new TestQueryHandler_WithSeveralTags()));
 
-        final Set<String> expectedTags = newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2);
+        UUID kasperCorrelationId = UUID.randomUUID();
 
-        final Context context = mock(Context.class);
-        when(context.addTags(expectedTags))
-                .thenReturn(context);
+        Context initialContext = Contexts.builder(kasperCorrelationId).with("foo", "bar").build();
+        MDC.setContextMap(initialContext.asMap());
 
-        final Map<String, String> initialContextMap = ImmutableMap.of("foo", "bar");
-        MDC.setContextMap(initialContextMap);
-
-        final Map<String, String> extendedContextMap = ImmutableMap.of("baz", "qux");
-        when(context.asMap(initialContextMap))
-                .thenReturn(extendedContextMap);
+        Context expectedContext = Contexts.newFrom(initialContext)
+                .addTags(newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2))
+                .build();
 
         // When
-        queryGateway.enrichContextAndMdcContextMap(query, context);
+        Context newContext = queryGateway.enrichContextAndMdcContextMap(query, initialContext);
 
         // Then
-        final InOrder inOrder = inOrder(context);
-        inOrder.verify(context)
-                .addTags(expectedTags);
-        inOrder.verify(context)
-                .asMap(initialContextMap);
-        inOrder.verifyNoMoreInteractions();
-
-        assertEquals(extendedContextMap, MDC.getCopyOfContextMap());
+        Assert.assertNotNull(newContext);
+        assertEquals(expectedContext, newContext);
+        assertEquals(expectedContext.asMap(), MDC.getCopyOfContextMap());
     }
 
     // ------------------------------------------------------------------------

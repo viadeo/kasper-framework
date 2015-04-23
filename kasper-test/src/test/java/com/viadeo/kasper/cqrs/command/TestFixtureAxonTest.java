@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs.command;
 import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.KasperID;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.repository.EventSourcedRepository;
@@ -81,9 +81,8 @@ public class TestFixtureAxonTest {
     }
 
     private Map<String, Object> newContext() {
-        final Context context = DefaultContextBuilder.get();
         return new HashMap<String, Object>() {{
-            this.put(Context.METANAME, context);
+            this.put(Context.METANAME, Contexts.empty());
         }};
     }
 

@@ -8,7 +8,7 @@ package com.viadeo.kasper.cqrs;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.context.impl.DefaultContext;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
@@ -119,9 +119,9 @@ public class CacheInterceptorFactoryTest {
         final DummyQuery nullFields = new DummyQuery();
 
         // When
-        final QueryResponse<QueryResult> expected = chain.next(nullFields, new DefaultContext());
-        final QueryResponse<QueryResult> actual = chain.next(nullFields, new DefaultContext());
-        final QueryResponse<QueryResult> anotherNotPresentInCache = chain.next(new DummyQuery(), new DefaultContext());
+        final QueryResponse<QueryResult> expected = chain.next(nullFields, Contexts.empty());
+        final QueryResponse<QueryResult> actual = chain.next(nullFields, Contexts.empty());
+        final QueryResponse<QueryResult> anotherNotPresentInCache = chain.next(new DummyQuery(), Contexts.empty());
 
         // Then
         assertSame(expected.getResult(), actual.getResult());
@@ -134,8 +134,8 @@ public class CacheInterceptorFactoryTest {
         final DummyQuery nullFields = new DummyQuery();
 
         // When
-        final QueryResponse<QueryResult> expected = chain.next(nullFields, new DefaultContext());
-        final QueryResponse<QueryResult> actual = chain.next(nullFields, new DefaultContext());
+        final QueryResponse<QueryResult> expected = chain.next(nullFields, Contexts.empty());
+        final QueryResponse<QueryResult> actual = chain.next(nullFields, Contexts.empty());
 
         // Wait
         synchronized (this) {
@@ -143,7 +143,7 @@ public class CacheInterceptorFactoryTest {
         }
 
         // And
-        final QueryResponse<QueryResult> shouldBeNewAsExpiredFromCache = chain.next(nullFields, new DefaultContext());
+        final QueryResponse<QueryResult> shouldBeNewAsExpiredFromCache = chain.next(nullFields, Contexts.empty());
 
         // Then
         assertSame(expected.getResult(), actual.getResult());
@@ -158,8 +158,8 @@ public class CacheInterceptorFactoryTest {
         );
 
         // When
-        final QueryResponse<QueryResult> expected = chain.next(new DummyQuery("aa", 2), new DefaultContext());
-        final QueryResponse<QueryResult> actual = chain.next(new DummyQuery("aa", 3333), new DefaultContext());
+        final QueryResponse<QueryResult> expected = chain.next(new DummyQuery("aa", 2), Contexts.empty());
+        final QueryResponse<QueryResult> actual = chain.next(new DummyQuery("aa", 3333), Contexts.empty());
 
         // Then
         assertSame(expected.getResult(), actual.getResult());

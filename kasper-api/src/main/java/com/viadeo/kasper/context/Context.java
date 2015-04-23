@@ -1,360 +1,414 @@
-// ============================================================================
-//                 KASPER - Kasper is the treasure keeper
-//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
-//
-//           Viadeo Framework for effective CQRS/DDD architecture
-// ============================================================================
 package com.viadeo.kasper.context;
 
+import com.google.common.base.Joiner;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.KasperID;
+import com.google.common.base.Splitter;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.api.ID;
-import com.viadeo.kasper.impl.DefaultKasperId;
 
 import java.io.Serializable;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
-/**
- *
- * Execution context for commands, events & queries
- *
- */
-public interface Context extends Serializable  {
+import static com.google.common.base.Preconditions.checkNotNull;
 
-    int INITIAL_SEQUENCE_INCREMENT = 1;
+public final class Context implements Serializable {
 
-    String DEFAULT_STRING_ID = "";
-    UUID DEFAULT_KASPER_UUID = UUID.fromString("00000000-0000-002a-0000-00000000002a");
-    KasperID DEFAULT_KASPER_ID = new DefaultKasperId(DEFAULT_KASPER_UUID);
+    /**
+     * The name of the context key when stored in meta data maps
+     */
+    public static final String METANAME = "context";
+    public static final String CALL_TYPE = "callType";
+    public static final String USER_AGENT = "userAgent";
+    public static final String REFERER = "Referer";
+    public static final String KASPER_CID_SHORTNAME = "kcid";
+    public static final String SEQ_INC_SHORTNAME = "seq";
+    public static final String USER_ID_SHORTNAME = "userID";
+    public static final String UID_SHORTNAME = "userId";
+    public static final String ULANG_SHORTNAME = "userLang";
+    public static final String UCOUNTRY_SHORTNAME = "userCountry";
+    public static final String APPLICATION_ID_SHORTNAME = "appId";
+    public static final String REQUEST_CID_SHORTNAME = "corrRequestId";
+    public static final String FUNNEL_CID_SHORTNAME = "corrFunnelId";
+    public static final String SESSION_CID_SHORTNAME = "corrSessionId";
+    public static final String SECURITY_TOKEN_SHORTNAME = "authToken";
+    public static final String ACCESS_TOKEN_SHORTNAME = "accessToken";
+    public static final String FUNNEL_NAME_SHORTNAME = "funnelName";
+    public static final String FUNNEL_VERS_SHORTNAME = "funnelVersion";
+    public static final String IP_ADDRESS_SHORTNAME = "ipAddress";
+    public static final String TAGS_SHORTNAME = "tags";
 
-    String DEFAULT_USER_LANG = "fr";
-    String DEFAULT_USER_COUNTRY = "FR";
+    private static final char SEPARATOR = ',';
+    private static final Splitter SPLITTER = Splitter.on(SEPARATOR).omitEmptyStrings().trimResults();
+    private static final Joiner JOINER = Joiner.on(SEPARATOR).skipNulls();
 
-    String DEFAULT_USER_ID = DEFAULT_STRING_ID;
-    String DEFAULT_REQCORR_ID = DEFAULT_STRING_ID;
-    String DEFAULT_FUNCORR_ID = DEFAULT_STRING_ID;
-    String DEFAULT_SESSCORR_ID = DEFAULT_STRING_ID;
+    private final Map<String, Serializable> properties;
 
-    KasperID DEFAULT_KASPERCORR_ID = DEFAULT_KASPER_ID;
+    private Context(final Map<String, Serializable> properties) {
+        this.properties = checkNotNull(properties);
+    }
 
-    String DEFAULT_APPLICATION_ID = "UNKNOWN";
-    String DEFAULT_SECURITY_TOKEN = "";
-    String DEFAULT_ACCESS_TOKEN = "";
+    private <T extends Serializable> Optional<T> getGenericProperty(String key) {
+        return Optional.fromNullable((T) properties.get(key));
+    }
 
-    String DEFAULT_FUNNEL_NAME = "";
-    String DEFAULT_FUNNEL_VERSION = "";
+    /**
+     * Get a property value
+     *
+     * @param key the property name
+     * @return the optional value
+     */
+    public Optional<Serializable> getProperty(String key) {
+        return getGenericProperty(key);
+    }
 
-    String DEFAULT_IP_ADDRESS = "0.0.0.0";
+    /**
+     * Checks whether context owns this property by name
+     *
+     * @param key the property name
+     * @return true if this context owns this property name
+     */
+    public boolean hasProperty(String key) {
+        return properties.containsKey(key);
+    }
 
-    // ------------------------------------------------------------------------
-
-    String USER_ID_SHORTNAME = "userID";
-    String UID_SHORTNAME = "userId";
-    String ULANG_SHORTNAME = "userLang";
-    String UCOUNTRY_SHORTNAME = "userCountry";
-    String APPLICATION_ID_SHORTNAME = "appId";
-    String REQUEST_CID_SHORTNAME = "corrRequestId";
-    String FUNNEL_CID_SHORTNAME = "corrFunnelId";
-    String SESSION_CID_SHORTNAME = "corrSessionId";
-    String SECURITY_TOKEN_SHORTNAME = "authToken";
-    String ACCESS_TOKEN_SHORTNAME = "accessToken";
-    String FUNNEL_NAME_SHORTNAME = "funnelName";
-    String FUNNEL_VERS_SHORTNAME = "funnelVersion";
-    String IP_ADDRESS_SHORTNAME = "ipAddress";
-    String TAGS_SHORTNAME = "tags";
-    String CALL_TYPE = "callType";
-    String USER_AGENT = "userAgent";
-    String REFERER = "Referer";
-
-    // ------------------------------------------------------------------------
-
-	/**
-	 * The name of the context key when stored in meta data maps
-	 */
-	String METANAME = "context";
-
-    // ------------------------------------------------------------------------
+    /**
+     * Retrieve all the context properties
+     *
+     * @return all the context properties
+     */
+    public Map<String, Serializable> getProperties() {
+        return ImmutableMap.copyOf(properties);
+    }
 
     /**
      * @return the security token used in current context
      */
-    String getSecurityToken();
-
-    /**
-     * @param token the security token to be used in current context
-     * @return the current {@link Context} instance
-     */
-    Context setSecurityToken(String token);
-
-    // ------------------------------------------------------------------------
+    public Optional<String> getSecurityToken() {
+        return getGenericProperty(SECURITY_TOKEN_SHORTNAME);
+    }
 
     /**
      * @return the access token used in current context
      */
-    String getAccessToken();
-
-    /**
-     * @param token the access token to be used in current context
-     * @return the current {@link Context} instance
-     */
-    Context setAccessToken(String token);
-
-    // ------------------------------------------------------------------------
+    public Optional<String> getAccessToken() {
+        return getGenericProperty(ACCESS_TOKEN_SHORTNAME);
+    }
 
     /**
      * @return the associated ID of the current user
      */
-    Optional<ID> getUserID();
+    public Optional<ID> getUserID() {
+        return getGenericProperty(USER_ID_SHORTNAME);
+    }
 
     /**
-     * @param id the associated ID of the current user
-     * @return the current {@link Context} instance
-     */
-    Context setUserID(ID id);
-
-	/**
-	 * @return the associated ID of the current user
+     * @return the associated id of the current user
      * @deprecated use {@link #getUserID()} instead.
-	 */
+     */
     @Deprecated
-	String getUserId();
-	
-	/**
-	 * @param userId the associated ID of the current user
-	 * @return the current {@link Context} instance
-     * @deprecated use {@link #setUserID(com.viadeo.kasper.api.ID)}()} instead.
-	 */
-    @Deprecated
-	Context setUserId(String userId);
+    public Optional<String>  getUserId() {
+        return getGenericProperty(UID_SHORTNAME);
+    }
 
-    // ------------------------------------------------------------------------
-
-	/**
-	 * @return the caller application id
-	 */
-	String getApplicationId();
-
-	/**
-	 * @param applicationId the caller application id
-	 * @return the current {@link Context} instance
-	 */
-	Context setApplicationId(String applicationId);
-
-    // ------------------------------------------------------------------------
-
-	/**
-	 * @return the user default language (preferred: ISO 639-1)
-	 */
-	String getUserLang();
+    /**
+     * @return the user default language (preferred: ISO 639-1)
+     */
+    public Optional<String> getUserLang() {
+        return getGenericProperty(ULANG_SHORTNAME);
+    }
 
     /**
      * @return the user default language as locale
      */
-    Locale getUserLangAsLocale();
-
-	/**
-	 * @param lang user default language (preferred: ISO 639-1)
-	 */
-	Context setUserLang(String lang);
-
-    // ------------------------------------------------------------------------
-
-	/**
-	 * @return the user country (ISO 3166)
-	 */
-	String getUserCountry();
-
-	/**
-	 * @param country user country (ISO 3166)
-	 */
-	Context setUserCountry(String country);
-
-    // ------------------------------------------------------------------------
+    public Optional<Locale> getUserLangAsLocale() {
+        Optional<String> userLang = getUserLang();
+        if (userLang.isPresent()) {
+            return Optional.of(Locale.forLanguageTag(userLang.get()));
+        }
+        return Optional.absent();
+    }
 
     /**
-     * Sets the correlation id associated with an application request
-     *
-     * For one application-side request, several Kasper actions can be made
-     * this correlation id can be used in order to track all Kasper actions
-     * made for one application request
-     *
-     * @param requestCorrelationId the correlation id
+     * @return the user country (ISO 3166)
      */
-    Context setRequestCorrelationId(String requestCorrelationId);
+    public Optional<String> getUserCountry() {
+        return getGenericProperty(UCOUNTRY_SHORTNAME);
+    }
+
+    /**
+     * @return the caller application id
+     */
+    public Optional<String> getApplicationId() {
+        return getGenericProperty(APPLICATION_ID_SHORTNAME);
+    }
 
     /**
      * @return the application request correlation id
      */
-    String getRequestCorrelationId();
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Sets the correlation id associated with an application functional tunnel (funnel)
-     *
-     * For one session, many functional tunnels can be used by the user
-     *
-     * @param funnelCorrelationId the correlation id
-     */
-    Context setFunnelCorrelationId(String funnelCorrelationId);
+    public Optional<String> getKasperCorrelationId() {
+        return getGenericProperty(KASPER_CID_SHORTNAME);
+    }
 
     /**
      * @return the application request correlation id
      */
-    String getFunnelCorrelationId();
-
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Sets the funnel name
-     *
-     * @param funnelName the funnel name of the context
-     */
-    Context setFunnelName(String funnelName);
+    public Optional<String> getRequestCorrelationId() {
+        return getGenericProperty(REQUEST_CID_SHORTNAME);
+    }
 
     /**
-     * Sets the funnel version (funnel declination)
-     *
-     * @param funnelVersion
+     * @return the application request correlation id
      */
-    Context setFunnelVersion(String funnelVersion);
+    public Optional<String> getFunnelCorrelationId() {
+        return getGenericProperty(FUNNEL_CID_SHORTNAME);
+    }
 
     /**
      * @return the current funnel name
      */
-    String getFunnelName();
+    public Optional<String> getFunnelName() {
+        return getGenericProperty(FUNNEL_NAME_SHORTNAME);
+    }
 
     /**
      * @return the current funnel version
      */
-    String getFunnelVersion();
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Set the ip address of the request
-     *
-     * @param ipAddress the correlation id
-     */
-    Context setIpAddress(String ipAddress);
-
-    /**
-     * @return the application request ip addresses
-     */
-    String getIpAddress();
-
-
-    /**
-     * @return the first application request ip address
-     */
-    Optional<String> getFirstIpAddress();
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Set the tags.
-     *
-     * @param tags the new tags
-     */
-    Context setTags(Set<String> tags);
-
-    /**
-     * @return the tags
-     */
-    Set<String> getTags();
-
-    Context addTags(Set<String> additionalTags);
-
-    // ------------------------------------------------------------------------
-
-    /**
-     * Sets the session correlation id
-     *
-     * For one application user session, several requests are sent, for each
-     * application request several Kasper actions can be made. This correlation id
-     * can be used in order to track all Kasper actions made during one application
-     * user session
-     *
-     * @param sessionCorrelationId
-     */
-    Context setSessionCorrelationId(String sessionCorrelationId);
+    public Optional<String> getFunnelVersion() {
+        return getGenericProperty(FUNNEL_VERS_SHORTNAME);
+    }
 
     /**
      * @return the application session correlation id
      */
-    String getSessionCorrelationId();
+    public Optional<String> getSessionCorrelationId() {
+        return getGenericProperty(SESSION_CID_SHORTNAME);
+    }
 
-    // ------------------------------------------------------------------------
-	
-	/**
-	 * Sets a new context property
-	 * 
-	 * @param key the property name
-	 * @param value the property value
-	 */
-	Context setProperty(String key, Serializable value);
-	
-	/**
-	 * Get a property value
-	 * 
-	 * @param key the property name
-	 * @return the optional value
-	 */
-	Optional<Serializable> getProperty(String key);
-	
-	/**
-	 * Checks whether context owns this property by name 
-	 * 
-	 * @param key the property name
-	 * @return true if this context owns this property name
-	 */
-	boolean hasProperty(String key);
-	
-	/**
-	 * Retrieve all the context properties
-	 * 
-	 * @return all the context properties
-	 */
-	Map<String, Serializable> getProperties();
+    /**
+     * @return the application request ip addresses
+     */
+    public Optional<String> getIpAddress() {
+        return getGenericProperty(IP_ADDRESS_SHORTNAME);
+    }
 
-    // ------------------------------------------------------------------------
+    /**
+     * @return the first application request ip address
+     */
+    public Optional<String> getFirstIpAddress() {
+        List<String> values = Lists.newArrayList(SPLITTER.split(getIpAddress().or("")));
+        if ( ! values.isEmpty()) {
+            return Optional.fromNullable(values.get(0));
+        }
+        return Optional.absent();
+    }
 
     /**
      * Return the context's sequence number
      *
      * @return the sequence number
      */
-    int getSequenceIncrement();
+    public int getSequence() {
+        Optional<Serializable> optional = getGenericProperty(SEQ_INC_SHORTNAME);
+        if (optional.isPresent()) {
+            return Integer.valueOf(String.valueOf(optional.get()));
+        }
+        return 0;
+    }
 
     /**
-     * Add 1 (one) to the sequence increment
+     * @return the tags
      */
-    void incSequence();
+    public Set<String> getTags() {
+        Optional<String> value = getGenericProperty(TAGS_SHORTNAME);
+        return Tags.valueOf(value.or(""));
+    }
 
     /**
-     * Childify this context
+     * Childify this context, the sequence will be incremented
      *
      * @return a new child context
      */
-    <C extends Context> C child();
-
-    // ------------------------------------------------------------------------
+    public Context.Builder child() {
+        return new Builder(this).incrementSequence();
+    }
 
     /**
      * @return the context as a map
      */
-    Map<String, String> asMap();
-    Map<String, String> asMap(Map<String, String> map);
+    public Map<String, String> asMap() {
+        return this.asMap(Maps.<String, String>newHashMap());
+    }
 
-    // ------------------------------------------------------------------------
+    /**
+     * @return the context as a map
+     */
+    public Map<String, String> asMap(final Map<String, String> origMap) {
+        final Map<String, String> map = Maps.newHashMap(origMap);
+        for (Map.Entry<String, Serializable> entry : properties.entrySet()) {
+            map.put(entry.getKey(), String.valueOf(entry.getValue()));
+        }
+        return map;
+    }
 
     /**
      * return as a metadata map
      */
-    Map<String, ?> asMetaDataMap();
+    public Map<String, ?> asMetaDataMap() {
+        final Context that = this;
+        return new HashMap<String, Object>() {{
+            this.put(METANAME, that);
+        }};
+    }
 
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(properties);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj == null || getClass() != obj.getClass()) {
+            return false;
+        }
+        final Context other = (Context) obj;
+        return Objects.equal(this.properties, other.properties);
+    }
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this).add("properties", properties).toString();
+    }
+
+
+    public static class Builder {
+
+        private final Map<String, Serializable> properties;
+
+        public Builder() {
+            this(UUID.randomUUID());
+        }
+
+        public Builder(UUID kasperCorrelationId) {
+            this(ImmutableMap.<String, Serializable>builder().put(KASPER_CID_SHORTNAME, kasperCorrelationId.toString())
+                    .put(SEQ_INC_SHORTNAME, 1)
+                    .build());
+        }
+
+        public Builder(Context context) {
+            this(context.properties);
+        }
+
+        private Builder(final Map<String, Serializable> properties) {
+            this.properties = Maps.newHashMap(properties);
+        }
+
+        public Builder with(final String key, final Serializable value) {
+            checkNotNull(key);
+            checkNotNull(value);
+
+            if (SEQ_INC_SHORTNAME.equals(key) || KASPER_CID_SHORTNAME.equals(key)) {
+                // this properties are not overridable
+                return this;
+            }
+
+            properties.put(key, value);
+            return this;
+        }
+
+        public Builder withSecurityToken(final String token) {
+            return with(SECURITY_TOKEN_SHORTNAME, token);
+        }
+
+        public Builder withApplicationId(final String applicationId) {
+            return with(APPLICATION_ID_SHORTNAME, applicationId);
+        }
+
+        public Builder withUserID(final ID userID) {
+            return with(USER_ID_SHORTNAME, userID);
+        }
+
+        @Deprecated
+        public Builder withUserId(final String userId) {
+            return with(UID_SHORTNAME, userId);
+        }
+
+        public Builder withUserLang(final String userLang) {
+            return with(ULANG_SHORTNAME, userLang);
+        }
+
+        public Builder withUserCountry(final String userCountry) {
+            return with(UCOUNTRY_SHORTNAME, userCountry);
+        }
+
+        public Builder withTags(final Set<String> tags) {
+            checkNotNull(tags);
+            return with(TAGS_SHORTNAME, Tags.toString(tags));
+        }
+
+        public Builder addTags(final Set<String> tags) {
+            checkNotNull(tags);
+
+            if (tags.isEmpty()) {
+                return this;
+            }
+
+            Set<String> collection = Sets.newHashSet(tags);
+            Serializable value = properties.get(TAGS_SHORTNAME);
+
+            if (value != null) {
+                collection.addAll(Tags.valueOf(String.valueOf(value)));
+            }
+
+            return with(TAGS_SHORTNAME, Tags.toString(collection));
+        }
+
+        public Builder withIpAddress(final String ipAddress) {
+            checkNotNull(ipAddress);
+            return withIpAddresses(Lists.newArrayList(SPLITTER.split(ipAddress)));
+        }
+
+        public Builder withIpAddresses(final List<String> ipAddresses) {
+            checkNotNull(ipAddresses);
+            return with(IP_ADDRESS_SHORTNAME, JOINER.join(ipAddresses));
+        }
+
+        public Builder withRequestCorrelationId(final String requestCorrelationId) {
+            return with(REQUEST_CID_SHORTNAME, requestCorrelationId);
+        }
+
+        public Builder withSessionCorrelationId(final String sessionCorrelationId) {
+            return with(SESSION_CID_SHORTNAME, sessionCorrelationId);
+        }
+
+        public Builder withFunnelCorrelationId(final String funnelCorrelationId) {
+            return with(FUNNEL_CID_SHORTNAME, funnelCorrelationId);
+        }
+
+        public Builder withFunnelVersion(final String funnelVersion) {
+            return with(FUNNEL_VERS_SHORTNAME, funnelVersion);
+        }
+
+        public Builder withFunnelName(final String funnelName) {
+            return with(FUNNEL_NAME_SHORTNAME, funnelName);
+        }
+
+        public Context build() {
+            return new Context(properties);
+        }
+
+        public Builder incrementSequence() {
+            this.properties.put(
+                    SEQ_INC_SHORTNAME,
+                    Objects.firstNonNull((Integer) this.properties.get(SEQ_INC_SHORTNAME), 1) + 1
+            );
+            return this;
+        }
+    }
 }

@@ -13,7 +13,6 @@ import com.viadeo.kasper.KasperTestIdGenerator;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -43,7 +42,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
         final Event event = new TestEvent(id);
 
         // When
-        this.getPlatform().getEventBus().publishEvent(DefaultContextBuilder.get(), event);
+        this.getPlatform().getEventBus().publishEvent(newContext(), event);
         Thread.sleep(3000);
 
         // Then
