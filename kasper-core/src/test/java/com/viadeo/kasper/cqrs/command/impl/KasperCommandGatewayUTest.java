@@ -10,7 +10,6 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.Contexts;
-import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -21,7 +20,6 @@ import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.interceptor.KasperCommandInterceptor;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -30,12 +28,8 @@ import org.mockito.Matchers;
 import org.slf4j.MDC;
 
 import java.util.ArrayList;
-import java.util.Set;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
-import static com.google.common.collect.Sets.newHashSet;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.refEq;
@@ -197,39 +191,4 @@ public class KasperCommandGatewayUTest {
         verify(interceptorChainRegistry).create(eq(commandHandler.getClass()), any(CommandInterceptorFactory.class));
         verifyNoMoreInteractions(interceptorChainRegistry);
     }
-
-    // ------------------------------------------------------------------------
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void enrichMdcAndMdcContextMap_withRegisteredCommandWithTags_shouldAddItsTagsToTheContextBeforeEnrichingTheMdcContextMap() {
-        // Given
-        UUID kasperCorrelationId = UUID.randomUUID();
-        Command command = new TestCommand();
-        Set<String> expectedTags = newHashSet("this-is-a-tag", "this-is-another-tag");
-
-        when(domainLocator.getHandlerTags(command)).thenReturn(expectedTags);
-
-        Context initialContext = Contexts.builder(kasperCorrelationId).with("foo", "bar").build();
-        MDC.setContextMap(initialContext.asMap());
-
-        Context expectedContext = Contexts.newFrom(initialContext)
-                .addTags(newHashSet("this-is-a-tag", "this-is-another-tag"))
-                .build();
-
-        // When
-        Context newContext = commandGateway.enrichContextAndMdcContextMap(command, initialContext);
-
-        // Then
-        Assert.assertNotNull(newContext);
-        assertEquals(expectedContext, newContext);
-        assertEquals(expectedContext.asMap(), MDC.getCopyOfContextMap());
-    }
-
-    // ------------------------------------------------------------------------
-
-    @XKasperUnregistered
-    private static class TestCommand implements Command {
-    }
-
 }

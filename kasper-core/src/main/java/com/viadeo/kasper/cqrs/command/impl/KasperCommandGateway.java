@@ -10,6 +10,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.Contexts;
+import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -21,6 +22,7 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandHandlerInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.interceptor.KasperCommandInterceptor;
+import com.viadeo.kasper.cqrs.interceptor.TagsInterceptor;
 import com.viadeo.kasper.cqrs.util.MDCUtils;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.commandhandling.CommandDispatchInterceptor;
@@ -30,7 +32,6 @@ import org.axonframework.common.annotation.MetaData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Set;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
@@ -140,9 +141,11 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(command);
         checkNotNull(context);
 
+        CurrentContext.set(context);
+
         commandGateway.sendCommand(
                 command,
-                enrichContextAndMdcContextMap(command, context)
+                context
         );
     }
 
@@ -155,9 +158,11 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(command);
         checkNotNull(context);
 
+        CurrentContext.set(context);
+
         return commandGateway.sendCommandForFuture(
                 command,
-                enrichContextAndMdcContextMap(command, context)
+                context
         );
     }
 
@@ -170,9 +175,11 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(command);
         checkNotNull(context);
 
+        CurrentContext.set(context);
+
         return commandGateway.sendCommandAndWaitForAResponse(
                 command,
-                enrichContextAndMdcContextMap(command, context)
+                context
         );
     }
 
@@ -185,9 +192,11 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(command);
         checkNotNull(context);
 
+        CurrentContext.set(context);
+
         return commandGateway.sendCommandAndWaitForAResponseWithException(
                 command,
-                enrichContextAndMdcContextMap(command, context)
+                context
         );
     }
 
@@ -203,7 +212,7 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(context);
         checkNotNull(unit);
 
-        enrichContextAndMdcContextMap(command, context);
+        CurrentContext.set(context);
 
         commandGateway.sendCommandAndWait(
                 command,
@@ -222,7 +231,7 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(command);
         checkNotNull(context);
 
-        enrichContextAndMdcContextMap(command, context);
+        CurrentContext.set(context);
 
         commandGateway.sendCommandAndWaitForever(
                 command,
@@ -235,9 +244,7 @@ public class KasperCommandGateway implements CommandGateway {
         checkNotNull(command);
         checkNotNull(context);
 
-        final Set<String> additionalTags = domainLocator.getHandlerTags(command);
-
-        Context newContext = Contexts.newFrom(context).addTags(additionalTags).build();
+        Context newContext = Contexts.newFrom(context).build();
 
         MDCUtils.enrichMdcContextMap(newContext);
 
