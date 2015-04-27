@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.context;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import org.slf4j.Logger;
@@ -22,7 +23,7 @@ public final class CurrentContext {
 
 	private CurrentContext() { /* singleton */ }
 	
-	private static final ThreadLocal <Context> CONTEXT = new ThreadLocal<>();
+	protected static final ThreadLocal <Context> CONTEXT = new ThreadLocal<>();
 	
 	// ------------------------------------------------------------------------
 	
@@ -36,5 +37,10 @@ public final class CurrentContext {
         LOGGER.debug("Set current thread context {}", checkNotNull(context));
 		CONTEXT.set(context);
 	}
+
+    @VisibleForTesting
+    public static void clear() {
+        CONTEXT.remove();
+    }
 	
 }

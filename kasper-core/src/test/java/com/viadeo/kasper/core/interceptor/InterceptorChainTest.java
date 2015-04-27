@@ -8,12 +8,21 @@ package com.viadeo.kasper.core.interceptor;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Contexts;
+import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResult;
+import org.junit.Before;
 import org.junit.Test;
+import org.slf4j.MDC;
+
+import java.util.UUID;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
 
 public class InterceptorChainTest {
 
@@ -25,6 +34,13 @@ public class InterceptorChainTest {
     }
 
     // ------------------------------------------------------------------------
+
+
+    @Before
+    public void setUp() throws Exception {
+        MDC.clear();
+        CurrentContext.clear();
+    }
 
     @Test
     public void testIteratorToChain() {
@@ -69,6 +85,80 @@ public class InterceptorChainTest {
         // Then
         assertTrue(optionalLastInterceptor.isPresent());
         assertEquals(optionalLastInterceptor.get(), d2);
+    }
+
+    @Test
+    public void next_withSameContext_isOk() throws Exception {
+        // Given
+        final Context context = Contexts.builder(UUID.randomUUID())
+                .withUserCountry("FR")
+                .withUserLang("fr")
+                .addTags(Sets.newHashSet("a", "b"))
+                .build();
+
+        CurrentContext.set(context);
+        MDC.setContextMap(context.asMap());
+
+        final InterceptorChain<Query, QueryResult> chain = InterceptorChain.makeChain(new DummyInterceptor());
+
+        // When
+        chain.next(mock(Query.class), context);
+
+        // Then
+        Optional<Context> optionalCurrentContext = CurrentContext.value();
+        assertTrue(optionalCurrentContext.isPresent());
+        assertEquals(context, optionalCurrentContext.get());
+        assertEquals(context.asMap(), MDC.getCopyOfContextMap());
+    }
+
+    @Test
+    public void next_withoutCurrentContext_shouldSetContextAsCurrentAndSetMDC() throws Exception {
+        // Given
+        CurrentContext.clear();
+        final Context context = Contexts.builder(UUID.randomUUID())
+                .withUserCountry("FR")
+                .withUserLang("fr")
+                .addTags(Sets.newHashSet("a", "b"))
+                .build();
+        final InterceptorChain<Query, QueryResult> chain = InterceptorChain.makeChain(new DummyInterceptor());
+
+        // When
+        chain.next(mock(Query.class), context);
+
+        // Then
+        Optional<Context> optionalCurrentContext = CurrentContext.value();
+        assertTrue(optionalCurrentContext.isPresent());
+        assertEquals(context, optionalCurrentContext.get());
+        assertEquals(context.asMap(), MDC.getCopyOfContextMap());
+    }
+
+    @Test
+    public void next_withUpdatedContext_shouldSetContextAsCurrentAndSetMDC() throws Exception {
+        // Given
+        final Context context = Contexts.builder(UUID.randomUUID())
+                .withUserCountry("FR")
+                .withUserLang("fr")
+                .addTags(Sets.newHashSet("a", "b"))
+                .build();
+
+        CurrentContext.set(context);
+
+        final Context newContext = Contexts.newFrom(context)
+                .withFunnelName("MyFunnelRocks")
+                .addTags(Sets.newHashSet("c"))
+                .with("myPropertyKey", "myPropertyValue")
+                .build();
+
+        final InterceptorChain<Query, QueryResult> chain = InterceptorChain.makeChain(new DummyInterceptor());
+
+        // When
+        chain.next(mock(Query.class), newContext);
+
+        // Then
+        Optional<Context> optionalCurrentContext = CurrentContext.value();
+        assertTrue(optionalCurrentContext.isPresent());
+        assertEquals(newContext, optionalCurrentContext.get());
+        assertEquals(newContext.asMap(), MDC.getCopyOfContextMap());
     }
 
 }
