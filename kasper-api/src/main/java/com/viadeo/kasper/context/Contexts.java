@@ -23,15 +23,10 @@ public final class Contexts {
     }
 
     public static Context.Builder builder(UUID kasperCorrelationId) {
-        return new Context.Builder(kasperCorrelationId);
+        return new Context.Builder(kasperCorrelationId, 1);
     }
 
     public static Context empty() {
-        return builder()
-                .withApplicationId("UNKNOWN")
-                .withUserLang("fr")
-                .withUserCountry("FR")
-                .withIpAddress("0.0.0.0")
-                .build();
+        return builder().build();
     }
 }

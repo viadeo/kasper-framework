@@ -289,15 +289,23 @@ public final class Context implements Serializable {
 
     public static class Builder {
 
+        private static final Map<String, Serializable> DEFAULT_VALUES = ImmutableMap.<String, Serializable>builder()
+                .put(APPLICATION_ID_SHORTNAME, "UNKNOWN")
+                .put(ULANG_SHORTNAME, "fr")
+                .put(UCOUNTRY_SHORTNAME, "FR")
+                .put(IP_ADDRESS_SHORTNAME, "0.0.0.0")
+                .build();
+
         private final Map<String, Serializable> properties;
 
         public Builder() {
-            this(UUID.randomUUID());
+            this(UUID.randomUUID(), 1);
         }
 
-        public Builder(UUID kasperCorrelationId) {
-            this(ImmutableMap.<String, Serializable>builder().put(KASPER_CID_SHORTNAME, kasperCorrelationId.toString())
-                    .put(SEQ_INC_SHORTNAME, 1)
+        public Builder(UUID kasperCorrelationId, Integer sequence) {
+            this(ImmutableMap.<String, Serializable>builder()
+                    .put(KASPER_CID_SHORTNAME, checkNotNull(kasperCorrelationId).toString())
+                    .put(SEQ_INC_SHORTNAME, checkNotNull(sequence))
                     .build());
         }
 
@@ -306,7 +314,9 @@ public final class Context implements Serializable {
         }
 
         private Builder(final Map<String, Serializable> properties) {
-            this.properties = Maps.newHashMap(properties);
+            this.properties = Maps.newHashMap(DEFAULT_VALUES);
+            this.properties.putAll(properties);
+
         }
 
         public Builder with(final String key, final Serializable value) {
@@ -328,6 +338,14 @@ public final class Context implements Serializable {
 
         public Builder withApplicationId(final String applicationId) {
             return with(APPLICATION_ID_SHORTNAME, applicationId);
+        }
+
+        public Builder resetUser() {
+            properties.remove(USER_ID_SHORTNAME);
+            properties.remove(UID_SHORTNAME);
+            properties.remove(ULANG_SHORTNAME);
+            properties.remove(UCOUNTRY_SHORTNAME);
+            return this;
         }
 
         public Builder withUserID(final ID userID) {
