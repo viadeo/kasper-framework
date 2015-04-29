@@ -171,7 +171,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
         final Event event = new AccountUpdatedEvent();
 
         // When
-        client().emit(DefaultContextBuilder.get(), event);
+        client().emit(Contexts.empty(), event);
 
         // Then
         verify(eventBus).publishEvent(any(Context.class), refEq(event));
