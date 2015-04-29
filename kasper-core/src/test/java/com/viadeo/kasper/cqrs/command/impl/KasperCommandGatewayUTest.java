@@ -7,10 +7,9 @@
 package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.core.annotation.XKasperUnregistered;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.locators.DomainLocator;
@@ -25,17 +24,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.mockito.InOrder;
 import org.mockito.Matchers;
 import org.slf4j.MDC;
 
 import java.util.ArrayList;
-import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-import static com.google.common.collect.Sets.newHashSet;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.refEq;
@@ -71,6 +65,7 @@ public class KasperCommandGatewayUTest {
         reset(domainLocator, decoratedCommandGateway);
         when(domainLocator.getHandlerForCommandClass(Matchers.<Class<Command>>any()))
                 .thenReturn(Optional.<CommandHandler>absent());
+        MDC.clear();
     }
 
     // ------------------------------------------------------------------------
@@ -79,13 +74,13 @@ public class KasperCommandGatewayUTest {
     public void sendCommand_shouldDelegateTheCall() throws Exception {
         // Given
         final Command command = mock(Command.class);
-        final Context context = mock(Context.class);
+        final Context context = Contexts.empty();
 
         // When
         commandGateway.sendCommand(command, context);
 
         // Then
-        verify(decoratedCommandGateway).sendCommand(refEq(command), refEq(context));
+        verify(decoratedCommandGateway).sendCommand(refEq(command), eq(context));
         verifyNoMoreInteractions(decoratedCommandGateway);
     }
 
@@ -93,13 +88,13 @@ public class KasperCommandGatewayUTest {
     public void sendCommandForFuture_shouldDelegateTheCall() throws Exception {
         // Given
         final Command command = mock(Command.class);
-        final Context context = mock(Context.class);
+        final Context context = Contexts.empty();
 
         // When
         commandGateway.sendCommandForFuture(command, context);
 
         // Then
-        verify(decoratedCommandGateway).sendCommandForFuture(refEq(command), refEq(context));
+        verify(decoratedCommandGateway).sendCommandForFuture(refEq(command), eq(context));
         verifyNoMoreInteractions(decoratedCommandGateway);
     }
 
@@ -107,13 +102,13 @@ public class KasperCommandGatewayUTest {
     public void sendCommandAndWaitForAResponse_shouldDelegateTheCall() throws Exception {
         // Given
         final Command command = mock(Command.class);
-        final Context context = mock(Context.class);
+        final Context context = Contexts.empty();
 
         // When
         commandGateway.sendCommandAndWaitForAResponse(command, context);
 
         // Then
-        verify(decoratedCommandGateway).sendCommandAndWaitForAResponse(refEq(command), refEq(context));
+        verify(decoratedCommandGateway).sendCommandAndWaitForAResponse(refEq(command), eq(context));
         verifyNoMoreInteractions(decoratedCommandGateway);
     }
 
@@ -121,13 +116,13 @@ public class KasperCommandGatewayUTest {
     public void sendCommandAndWaitForAResponseWithException_shouldDelegateTheCall() throws Exception {
         // Given
         final Command command = mock(Command.class);
-        final Context context = mock(Context.class);
+        final Context context = Contexts.empty();
 
         // When
         commandGateway.sendCommandAndWaitForAResponseWithException(command, context);
 
         // Then
-        verify(decoratedCommandGateway).sendCommandAndWaitForAResponseWithException(refEq(command), refEq(context));
+        verify(decoratedCommandGateway).sendCommandAndWaitForAResponseWithException(refEq(command), eq(context));
         verifyNoMoreInteractions(decoratedCommandGateway);
     }
 
@@ -135,22 +130,22 @@ public class KasperCommandGatewayUTest {
     public void sendCommandAndWait_shouldDelegateTheCall() throws Exception {
         // Given
         final Command command = mock(Command.class);
-        final Context context = mock(Context.class);
+        final Context context = Contexts.empty();
         final TimeUnit unit = mock(TimeUnit.class);
 
         // When
         commandGateway.sendCommandAndWait(command, context, 1000, unit);
 
         // Then
-        verify(decoratedCommandGateway).sendCommandAndWait(refEq(command), refEq(context), anyLong(), refEq(unit));
+        verify(decoratedCommandGateway).sendCommandAndWait(refEq(command), eq(context), anyLong(), refEq(unit));
         verifyNoMoreInteractions(decoratedCommandGateway);
     }
 
     @Test
     public void sendCommandAndWaitForever_shouldDelegateTheCall() throws Exception {
         // Given
-        final  Command command = mock(Command.class);
-        final Context context = mock(Context.class);
+        final Command command = mock(Command.class);
+        final Context context = Contexts.empty();
 
         // When
         commandGateway.sendCommandAndWaitForever(command, context);
@@ -196,48 +191,4 @@ public class KasperCommandGatewayUTest {
         verify(interceptorChainRegistry).create(eq(commandHandler.getClass()), any(CommandInterceptorFactory.class));
         verifyNoMoreInteractions(interceptorChainRegistry);
     }
-
-    // ------------------------------------------------------------------------
-
-    @Test
-    @SuppressWarnings("unchecked")
-    public void enrichMdcAndMdcContextMap_withRegisteredCommandWithTags_shouldAddItsTagsToTheContextBeforeEnrichingTheMdcContextMap() {
-        // Given
-        Command command = new TestCommand();
-        Set<String> expectedTags = newHashSet("this-is-a-tag", "this-is-another-tag");
-        when(domainLocator.getHandlerTags(command))
-                .thenReturn(expectedTags);
-
-        Context context = mock(Context.class);
-        when(context.addTags(expectedTags))
-                .thenReturn(context);
-
-        Map<String, String> initialContextMap = ImmutableMap.of("foo", "bar");
-        MDC.setContextMap(initialContextMap);
-
-        Map<String, String> extendedContextMap = ImmutableMap.of("baz", "qux");
-        when(context.asMap(initialContextMap))
-                .thenReturn(extendedContextMap);
-
-
-        // When
-        commandGateway.enrichContextAndMdcContextMap(command, context);
-
-        // Then
-        InOrder inOrder = inOrder(context);
-        inOrder.verify(context)
-                .addTags(expectedTags);
-        inOrder.verify(context)
-                .asMap(initialContextMap);
-        inOrder.verifyNoMoreInteractions();
-
-        assertEquals(extendedContextMap, MDC.getCopyOfContextMap());
-    }
-
-    // ------------------------------------------------------------------------
-
-    @XKasperUnregistered
-    private static class TestCommand implements Command {
-    }
-
 }

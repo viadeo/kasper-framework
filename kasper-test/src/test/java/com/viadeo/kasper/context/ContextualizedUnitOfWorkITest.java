@@ -163,7 +163,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
 
         public static void verify(final Context context) {
             counter++;
-            final boolean equals = context == StaticChecker.context;
+            final boolean equals = context.equals(StaticChecker.context);
             if ( ! equals) {
                 fail(context + " != " + StaticChecker.context);
             }

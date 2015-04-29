@@ -18,8 +18,8 @@ import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.context.HttpContextHeaders;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.cqrs.TransportMode;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandResponse;
@@ -144,8 +144,8 @@ public class KasperClientCommandTest extends JerseyTest {
                             )
                     )
                     .status(200)
-                    .header(HttpContextHeaders.HEADER_SECURITY_TOKEN, SECURITY_TOKEN)
-                    .header(HttpContextHeaders.HEADER_ACCESS_TOKEN, ACCESS_TOKEN)
+                    .header(HttpContextHeaders.HEADER_SECURITY_TOKEN.toHeaderName(), SECURITY_TOKEN)
+                    .header(HttpContextHeaders.HEADER_ACCESS_TOKEN.toHeaderName(), ACCESS_TOKEN)
                     .build();
         }
     }
@@ -196,7 +196,7 @@ public class KasperClientCommandTest extends JerseyTest {
 
         // Given
         final CreateMemberCommand command = new CreateMemberCommand(Status.REFUSED);
-        final Context context = DefaultContextBuilder.get();
+        final Context context = Contexts.empty();
 
         // When
         final CommandResponse response = client.send(context, command);
@@ -218,7 +218,7 @@ public class KasperClientCommandTest extends JerseyTest {
 
         // Given
         final CreateMemberCommand command = new CreateMemberCommand(Status.ERROR);
-        final Context context = DefaultContextBuilder.get();
+        final Context context = Contexts.empty();
 
         // When
         final Future<? extends CommandResponse> response = client.sendAsync(context, command);
@@ -242,7 +242,7 @@ public class KasperClientCommandTest extends JerseyTest {
             }
         });
         final ArgumentCaptor<CommandResponse> response = ArgumentCaptor.forClass(CommandResponse.class);
-        final Context context = DefaultContextBuilder.get();
+        final Context context = Contexts.empty();
 
         // When
         client.sendAsync(context, command, callback);
@@ -265,7 +265,7 @@ public class KasperClientCommandTest extends JerseyTest {
         }
 
         // When
-        final CommandResponse response = client.send(DefaultContextBuilder.get(), command);
+        final CommandResponse response = client.send(Contexts.empty(), command);
 
         // Then
         assertNotNull(response);
@@ -284,7 +284,7 @@ public class KasperClientCommandTest extends JerseyTest {
         final CreateMemberCommand command = new CreateMemberCommand(Status.ERROR);
 
         // When
-        final CommandResponse response = client.sendAsync(DefaultContextBuilder.get(), command).get();
+        final CommandResponse response = client.sendAsync(Contexts.empty(), command).get();
 
         // Then
         assertNotNull(response);

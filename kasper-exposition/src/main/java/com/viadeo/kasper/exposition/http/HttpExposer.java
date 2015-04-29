@@ -18,6 +18,7 @@ import com.viadeo.kasper.KasperResponse;
 import com.viadeo.kasper.annotation.XKasperUnexposed;
 import com.viadeo.kasper.client.platform.Meta;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.exposition.alias.AliasRegistry;
@@ -276,7 +277,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
     }
 
     protected String extractRequestCorrelationId(final HttpServletRequest httpRequest) {
-        String requestCorrelationId = httpRequest.getHeader(HEADER_REQUEST_CORRELATION_ID);
+        String requestCorrelationId = httpRequest.getHeader(HEADER_REQUEST_CORRELATION_ID.toHeaderName());
         if (requestCorrelationId == null) {
             requestCorrelationId = UUID.randomUUID().toString();
         }
@@ -290,19 +291,20 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         long startMillis = System.currentTimeMillis();
 
         try {
-
             final Context context = contextDeserializer.deserialize(httpRequest, kasperCorrelationUUID);
 
-            MDC.setContextMap(context.asMap());
+            Context richContext = Contexts.newFrom(context)
+                    .with("appServer", serverName())
+                    .with("appVersion", meta.getVersion())
+                    .with("appBuildingDate", meta.getBuildingDate().toString())
+                    .with("appDeploymentDate", meta.getDeploymentDate().toString())
+                    .with("clientVersion", Objects.firstNonNull(httpRequest.getHeader(HttpContextHeaders.HEADER_CLIENT_VERSION.toHeaderName()), "undefined"))
+                    .with("clientId", Objects.firstNonNull(context.getApplicationId(), "undefined"))
+                    .build();
 
-            enrichContextAndMDC(context, "appServer", serverName());
-            enrichContextAndMDC(context, "appVersion", meta.getVersion());
-            enrichContextAndMDC(context, "appBuildingDate", meta.getBuildingDate().toString());
-            enrichContextAndMDC(context, "appDeploymentDate", meta.getDeploymentDate().toString());
-            enrichContextAndMDC(context, "clientVersion", Objects.firstNonNull(httpRequest.getHeader(HttpContextHeaders.HEADER_CLIENT_VERSION), "undefined"));
-            enrichContextAndMDC(context, "clientId", Objects.firstNonNull(context.getApplicationId(), "undefined"));
+            MDC.setContextMap(richContext.asMap());
 
-            return context;
+            return richContext;
 
         } finally {
             long durationMillis = System.currentTimeMillis() - startMillis;
@@ -310,11 +312,9 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
         }
     }
 
-    private void enrichContextAndMDC(final Context context, final String key, final String value) {
+    private Context enrichContextAndMDC(final Context context, final String key, final String value) {
         MDC.put(key, value);
-        if(context != null) {
-            context.setProperty(key, value);
-        }
+        return context.child().with(key, value).build();
     }
 
     protected INPUT extractInput(
@@ -387,7 +387,7 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
     ) throws IOException {
         httpResponse.setContentType(MediaType.APPLICATION_JSON_VALUE + "; charset=UTF-8");
         httpResponse.addHeader("kasperCorrelationId", kasperCorrelationUUID.toString());
-        httpResponse.addHeader(HttpContextHeaders.HEADER_SERVER_NAME, serverName());
+        httpResponse.addHeader(HttpContextHeaders.HEADER_SERVER_NAME.toHeaderName(), serverName());
 
         objectToHttpResponse.map(httpResponse, response, getStatusFrom(response));
 

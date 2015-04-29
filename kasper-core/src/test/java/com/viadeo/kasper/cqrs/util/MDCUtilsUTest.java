@@ -8,6 +8,7 @@ package com.viadeo.kasper.cqrs.util;
 
 import com.google.common.collect.ImmutableMap;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Contexts;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -16,8 +17,6 @@ import org.slf4j.MDC;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.anyMap;
-import static org.mockito.Mockito.*;
 
 @SuppressWarnings("all")
 public class MDCUtilsUTest {
@@ -43,16 +42,13 @@ public class MDCUtilsUTest {
         final Map<String, String> initialContextMap = ImmutableMap.of("foo", "bar");
         MDC.setContextMap(initialContextMap);
 
-        final Context context = mock(Context.class);
-        final Map<String, String> extendedContextMap = ImmutableMap.of("baz", "qux");
-        when(context.asMap(anyMap())).thenReturn(extendedContextMap);
+        final Context context = Contexts.builder().with("baz", "qux").build();
 
         // When
         MDCUtils.enrichMdcContextMap(context);
 
         // Then
-        verify(context).asMap(initialContextMap);
-        assertEquals(extendedContextMap, MDC.getCopyOfContextMap());
+        assertEquals(context.asMap(initialContextMap), MDC.getCopyOfContextMap());
     }
 
 }

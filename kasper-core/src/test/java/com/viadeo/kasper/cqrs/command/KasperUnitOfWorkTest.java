@@ -7,6 +7,7 @@
 package com.viadeo.kasper.cqrs.command;
 
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.impl.UnitOfWorkEvent;
 import org.axonframework.domain.EventMessage;
@@ -140,7 +141,7 @@ public class KasperUnitOfWorkTest {
         final String eventId = UUID.randomUUID().toString();
         
         final MetaData metadata = MetaData.from(new HashMap<String, Object>() {{
-            this.put(Context.METANAME, mock(Context.class));
+            this.put(Context.METANAME, Contexts.empty());
         }});
 
         doReturn(eventId).when(message).getIdentifier();
@@ -173,7 +174,7 @@ public class KasperUnitOfWorkTest {
         final String eventId2 = UUID.randomUUID().toString();
 
         final MetaData metadata = MetaData.from(new HashMap<String, Object>() {{
-            this.put(Context.METANAME, mock(Context.class));
+            this.put(Context.METANAME, Contexts.empty());
         }});
 
         doReturn(eventId1).when(message1).getIdentifier();

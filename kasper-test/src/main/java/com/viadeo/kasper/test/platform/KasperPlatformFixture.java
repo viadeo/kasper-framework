@@ -15,7 +15,7 @@ import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandBus;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
@@ -108,12 +108,12 @@ public class KasperPlatformFixture implements
 
     @Override
     public KasperPlatformExecutor givenEvents(final Event... events) {
-        return this.givenEvents(DefaultContextBuilder.get(), events);
+        return this.givenEvents(Contexts.empty(), events);
     }
 
     @Override
     public KasperPlatformExecutor givenEvents(final List<Event> events) {
-        return this.givenEvents(DefaultContextBuilder.get(), events);
+        return this.givenEvents(Contexts.empty(), events);
     }
 
     @Override
@@ -138,12 +138,12 @@ public class KasperPlatformFixture implements
 
     @Override
     public KasperPlatformExecutor givenCommands(final Command... commands) {
-        return this.givenCommands(DefaultContextBuilder.get(), commands);
+        return this.givenCommands(Contexts.empty(), commands);
     }
 
     @Override
     public KasperPlatformExecutor givenCommands(final List<Command> commands) {
-        return this.givenCommands(DefaultContextBuilder.get(), commands);
+        return this.givenCommands(Contexts.empty(), commands);
     }
 
     @Override

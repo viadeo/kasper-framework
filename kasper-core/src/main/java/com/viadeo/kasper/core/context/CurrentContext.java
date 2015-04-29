@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.core.context;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.AbstractContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +23,7 @@ public final class CurrentContext {
 
 	private CurrentContext() { /* singleton */ }
 	
-	private static final ThreadLocal <Context> CONTEXT = new ThreadLocal<Context>();
+	protected static final ThreadLocal <Context> CONTEXT = new ThreadLocal<>();
 	
 	// ------------------------------------------------------------------------
 	
@@ -35,14 +35,12 @@ public final class CurrentContext {
 	
 	public static void set(final Context context) {
         LOGGER.debug("Set current thread context {}", checkNotNull(context));
-
-        // Sets the Kasper correlation id if it has not been set before -------
-        if (AbstractContext.class.isAssignableFrom(context.getClass())) {
-            final AbstractContext kasperContext = (AbstractContext) context;
-            kasperContext.setValidKasperCorrelationId();
-        }
-
 		CONTEXT.set(context);
 	}
+
+    @VisibleForTesting
+    public static void clear() {
+        CONTEXT.remove();
+    }
 	
 }

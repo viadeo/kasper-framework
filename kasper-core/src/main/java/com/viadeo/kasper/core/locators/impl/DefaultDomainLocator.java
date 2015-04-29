@@ -6,15 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.core.locators.impl;
 
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.Entity;
 import com.viadeo.kasper.exception.KasperException;
@@ -39,8 +36,6 @@ public class DefaultDomainLocator implements DomainLocator {
     }
 
     private final Map<CommandHandler, Class<? extends Command>> handlers = Maps.newHashMap();
-
-    private final Map<Class<? extends Command>, Set<String>> CACHE_TAGS = Maps.newHashMap();
 
     // ------------------------------------------------------------------------
 
@@ -93,45 +88,6 @@ public class DefaultDomainLocator implements DomainLocator {
             }
         }
         return Optional.absent();
-    }
-
-    @Override
-    public Set<String> getHandlerTags(final Command command) {
-        checkNotNull(command);
-
-        final Set<String> tags;
-
-        if ( ! CACHE_TAGS.containsKey(command.getClass())) {
-            final Class<? extends Command> commandClass = command.getClass();
-
-            final Optional<Class<? extends CommandHandler>> resolvedHandlerClass = commandHandlerResolver.getHandlerClass(commandClass);
-
-            if ( ! resolvedHandlerClass.isPresent()) {
-                return ImmutableSet.of();
-            }
-
-            final Class<? extends CommandHandler> handlerClass = resolvedHandlerClass.get();
-            tags = getHandlerTags(handlerClass);
-            CACHE_TAGS.put(command.getClass(), tags);
-        } else {
-            tags = CACHE_TAGS.get(command.getClass());
-        }
-
-        return tags;
-    }
-
-    @VisibleForTesting
-    protected static Set<String> getHandlerTags(final Class<? extends CommandHandler> handlerClass) {
-        checkNotNull(handlerClass);
-
-        // @javax.annotation.Nullable
-        final XKasperCommandHandler annotation = handlerClass.getAnnotation(XKasperCommandHandler.class);
-        if (null == annotation) {
-            return ImmutableSet.of();
-        }
-
-        final String[] annotationTags = annotation.tags();
-        return ImmutableSet.copyOf(annotationTags);
     }
 
     /**

@@ -18,8 +18,8 @@ import com.viadeo.kasper.annotation.XKasperUnexposed;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.context.HttpContextHeaders;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -184,7 +184,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         final Command unknownCommand = new Command() {};
 
         // When
-        final CommandResponse response = client().send(DefaultContextBuilder.get(), unknownCommand);
+        final CommandResponse response = client().send(Contexts.empty(), unknownCommand);
 
         // Then
         assertEquals(Status.ERROR, response.getStatus());
@@ -201,7 +201,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         command.name = "foo bar";
 
         // When
-        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
+        final CommandResponse response = client().send(Contexts.empty(), command);
 
         // Then
         assertEquals(Status.OK, response.getStatus());
@@ -218,8 +218,9 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         final CreateAccountCommand command = new CreateAccountCommand();
         command.name = "foo bar";
 
-        Context context = DefaultContextBuilder.get();
-        context.setProperty(Context.CALL_TYPE, CallTypes.SYNC.name());
+        Context context = Contexts.builder()
+                .with(Context.CALL_TYPE, CallTypes.SYNC.name())
+                .build();
 
         // When
         final CommandResponse response = client().send(context, command);
@@ -234,8 +235,9 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         final CreateAccountCommand command = new CreateAccountCommand();
         command.name = "foo bar";
 
-        Context context = DefaultContextBuilder.get();
-        context.setProperty(Context.CALL_TYPE, CallTypes.ASYNC.name());
+        Context context = Contexts.builder()
+                .with(Context.CALL_TYPE, CallTypes.ASYNC.name())
+                .build();
 
         // When
         final CommandResponse response = client().send(context, command);
@@ -250,8 +252,9 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         final CreateAccountCommand command = new CreateAccountCommand();
         command.name = "foo bar";
 
-        Context context = DefaultContextBuilder.get();
-        context.setProperty(Context.CALL_TYPE, "time(100)");
+        Context context = Contexts.builder()
+                .with(Context.CALL_TYPE, "time(100)")
+                .build();
 
         // When
         final CommandResponse response = client().send(context, command);
@@ -267,8 +270,9 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         command.name = "foo bar";
         command.delay = Optional.of(500L);
 
-        Context context = DefaultContextBuilder.get();
-        context.setProperty(Context.CALL_TYPE, "time(100)");
+        Context context = Contexts.builder()
+                .with(Context.CALL_TYPE, "time(100)")
+                .build();
 
         // When
         final CommandResponse response = client().send(context, command);
@@ -282,11 +286,12 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         // Given valid input
         final CreateAccountCommand command = new CreateAccountCommand();
         command.name = "foo bar";
-
-        Context context = DefaultContextBuilder.get();
-        context.setProperty(Context.CALL_TYPE, "time(100)");
         command.code = CoreReasonCode.CONFLICT.name();
         command.messages = ImmutableList.of("ignored");
+
+        Context context = Contexts.builder()
+                .with(Context.CALL_TYPE, "time(100)")
+                .build();
 
         // When
         final CommandResponse response = client().send(context, command);
@@ -306,7 +311,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         command.throwException = true;
 
         // When
-        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
+        final CommandResponse response = client().send(Contexts.empty(), command);
 
         // Then
         assertEquals(Status.ERROR, response.getStatus());
@@ -320,7 +325,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         command.messages = ImmutableList.of("ignored");
 
         // When
-        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
+        final CommandResponse response = client().send(Contexts.empty(), command);
 
         // Then
         assertEquals(Status.ERROR, response.getStatus());
@@ -338,7 +343,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         command.messages = ImmutableList.of("a", "aa", "aaa");
 
         // When
-        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
+        final CommandResponse response = client().send(Contexts.empty(), command);
 
         // Then
         assertEquals(Status.ERROR, response.getStatus());
@@ -360,7 +365,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         command.innerObject = new InnerObject();
 
         // When
-        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
+        final CommandResponse response = client().send(Contexts.empty(), command);
 
         // Then
         assertFalse(response.isOK());
@@ -411,7 +416,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
 
         // Then
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        assertEquals(expectedServerName, response.getHeaders().getFirst(HttpContextHeaders.HEADER_SERVER_NAME));
+        assertEquals(expectedServerName, response.getHeaders().getFirst(HttpContextHeaders.HEADER_SERVER_NAME.toHeaderName()));
     }
 
     @Test
@@ -420,7 +425,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         final UnexposedCommand command = new UnexposedCommand();
 
         // When
-        final CommandResponse response = client().send(DefaultContextBuilder.get(), command);
+        final CommandResponse response = client().send(Contexts.empty(), command);
 
         // Then
         assertEquals(Status.ERROR, response.getStatus());

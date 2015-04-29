@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
-import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.Command;
@@ -29,8 +28,6 @@ import org.junit.Test;
 import java.util.Locale;
 import java.util.UUID;
 
-import static com.viadeo.kasper.exposition.TestContexts.CONTEXT_FULL;
-import static com.viadeo.kasper.exposition.TestContexts.context_full;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
@@ -66,10 +63,10 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest {
     @Test
     public void testCommandNotFound() throws Exception {
         // Given
-        final Command command = new ContextCheckCommand(CONTEXT_FULL);
+        final Command command = new ContextCheckCommand(getContextName());
 
         // When
-        final CommandResponse response = client().send(context_full, command);
+        final CommandResponse response = client().send(getFullContext(), command);
 
         // Then
         assertTrue(response.isOK());
@@ -101,15 +98,6 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest {
     public static class ContextCheckCommandHandler extends CommandHandler<ContextCheckCommand> {
         @Override
         public CommandResponse handle(final KasperCommandMessage<ContextCheckCommand> message) throws Exception {
-            if (message.getCommand().getContextName().contentEquals(CONTEXT_FULL)) {
-
-                /* Kasper correlation id is set by the gateway or auto-expo layer */
-                final DefaultContext context = (DefaultContext) message.getContext();
-                final DefaultContext clonedContext = context.child();
-                clonedContext.setKasperCorrelationId(context.getKasperCorrelationId());
-
-                assertEquals(message.getContext(), clonedContext);
-            }
             return CommandResponse.ok().withSecurityToken(RETURNED_SECURITY_TOKEN);
         }
     }

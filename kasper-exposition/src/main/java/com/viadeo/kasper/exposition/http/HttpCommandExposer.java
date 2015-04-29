@@ -147,11 +147,13 @@ public class HttpCommandExposer extends HttpExposer<Command, CommandResponse> {
             final CommandResponse response,
             final UUID kasperCorrelationUUID
     ) throws IOException {
-        if (response.isOK() && response.getSecurityToken().isPresent()) {
-            httpResponse.addHeader(HttpContextHeaders.HEADER_SECURITY_TOKEN, response.getSecurityToken().get());
-        }
-        if (response.isOK() && response.getAccessToken().isPresent()) {
-            httpResponse.addHeader(HttpContextHeaders.HEADER_ACCESS_TOKEN, response.getAccessToken().get());
+        if (response.isOK()) {
+            if (response.getSecurityToken().isPresent()) {
+                httpResponse.addHeader(HttpContextHeaders.HEADER_SECURITY_TOKEN.toHeaderName(), response.getSecurityToken().get());
+            }
+            if (response.getAccessToken().isPresent()) {
+                httpResponse.addHeader(HttpContextHeaders.HEADER_ACCESS_TOKEN.toHeaderName(), response.getAccessToken().get());
+            }
         }
         super.sendResponse(httpResponse, objectToHttpResponse, response, kasperCorrelationUUID);
     }

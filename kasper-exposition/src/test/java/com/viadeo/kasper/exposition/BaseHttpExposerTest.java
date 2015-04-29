@@ -15,6 +15,8 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.configuration.PlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
+import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.exposition.http.HttpExposerPlugin;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.eclipse.jetty.server.Server;
@@ -24,6 +26,7 @@ import org.junit.After;
 import org.junit.Before;
 
 import java.net.URL;
+import java.util.UUID;
 
 public abstract class BaseHttpExposerTest {
 
@@ -116,4 +119,22 @@ public abstract class BaseHttpExposerTest {
 		server.stop();
 	}
 
+    protected static String getContextName() {
+        return "full";
+    }
+
+    protected static Context getFullContext() {
+        return Contexts.builder()
+                .withSessionCorrelationId(UUID.randomUUID().toString())
+                .withFunnelCorrelationId(UUID.randomUUID().toString())
+                .withFunnelName("MyFunnel")
+                .withFunnelVersion("case_1")
+                .withUserId("42")
+                .withUserLang("us")
+                .withUserCountry("US")
+                .withApplicationId("TEST")
+                .withSecurityToken(UUID.randomUUID().toString())
+                .withIpAddress("127.0.0.1")
+                .build();
+    }
 }

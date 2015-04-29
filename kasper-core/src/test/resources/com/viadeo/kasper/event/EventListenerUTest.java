@@ -5,7 +5,7 @@ import com.google.common.base.Objects;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import org.axonframework.domain.GenericEventMessage;
 import org.hamcrest.BaseMatcher;
@@ -36,7 +36,7 @@ public class EventListenerUTest {
     public void handle_withSuccessAsResponse_isOk() {
         // Given
         when(listener.handle(any(Context.class), any(TestEvent.class))).thenReturn(EventResponse.success());
-        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), DefaultContextBuilder.get().asMetaDataMap());
+        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), Contexts.empty().asMetaDataMap());
 
         // When
         listener.handle(eventMessage);
@@ -48,7 +48,7 @@ public class EventListenerUTest {
     @Test
     public void handle_withIncompatibleEvent_isOk() {
         // Given
-        GenericEventMessage<TestEvent2> eventMessage = new GenericEventMessage<>(new TestEvent2(), DefaultContextBuilder.get().asMetaDataMap());
+        GenericEventMessage<TestEvent2> eventMessage = new GenericEventMessage<>(new TestEvent2(), Contexts.empty().asMetaDataMap());
 
         // When
         listener.handle(eventMessage);
@@ -61,7 +61,7 @@ public class EventListenerUTest {
     public void handle_withErrorAsResponse_throwException() {
         // Given
         when(listener.handle(any(Context.class), any(TestEvent.class))).thenReturn(EventResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, "bazinga!!")));
-        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), DefaultContextBuilder.get().asMetaDataMap());
+        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), Contexts.empty().asMetaDataMap());
 
         // Then
         expectedException.expect(RuntimeException.class);
@@ -75,7 +75,7 @@ public class EventListenerUTest {
     public void handle_withFailureAsResponse_throwException() {
         // Given
         when(listener.handle(any(Context.class), any(TestEvent.class))).thenReturn(EventResponse.failure(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, "bazinga!!")));
-        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), DefaultContextBuilder.get().asMetaDataMap());
+        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), Contexts.empty().asMetaDataMap());
 
         // Then
         expectedException.expect(RuntimeException.class);
@@ -90,7 +90,7 @@ public class EventListenerUTest {
         // Given
         RuntimeException exception = new RuntimeException("Fake exception");
         when(listener.handle(any(Context.class), any(TestEvent.class))).thenReturn(EventResponse.failure(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, exception)));
-        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), DefaultContextBuilder.get().asMetaDataMap());
+        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), Contexts.empty().asMetaDataMap());
 
         // Then
         expectedException.expect(RuntimeException.class);
@@ -104,7 +104,7 @@ public class EventListenerUTest {
     public void handle_withUnexpectedException_propagatesException() {
         // Given
         doThrow(new RuntimeException("bazinga!")).when(listener).handle(any(Context.class), any(TestEvent.class));
-        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), DefaultContextBuilder.get().asMetaDataMap());
+        GenericEventMessage<TestEvent> eventMessage = new GenericEventMessage<>(new TestEvent(), Contexts.empty().asMetaDataMap());
 
         // Then
         expectedException.expect(RuntimeException.class);

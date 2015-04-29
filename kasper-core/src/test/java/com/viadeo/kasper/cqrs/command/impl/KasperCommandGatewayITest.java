@@ -2,8 +2,8 @@ package com.viadeo.kasper.cqrs.command.impl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.context.Tags;
-import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -73,7 +73,7 @@ public class KasperCommandGatewayITest {
         final Command command = new TestCommand();
 
         // When
-        commandGateway.sendCommand(command, new DefaultContext());
+        commandGateway.sendCommand(command, Contexts.empty());
 
         synchronized (lock) {
             lock.wait(500);
@@ -97,7 +97,7 @@ public class KasperCommandGatewayITest {
         final Command command = new TestCommand();
 
         // When
-        commandGateway.sendCommand(command, new DefaultContext());
+        commandGateway.sendCommand(command, Contexts.empty());
 
         // Then forget the call
     }

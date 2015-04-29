@@ -11,7 +11,8 @@ import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientRequest;
 import com.sun.jersey.api.client.ClientResponse;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.context.Contexts;
+import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.exception.KasperException;
 import org.junit.Assert;
@@ -35,9 +36,7 @@ import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.sun.jersey.api.client.ClientResponse.Status;
-import static com.viadeo.kasper.context.HttpContextHeaders.HEADER_USER_ID;
 import static org.junit.Assert.assertEquals;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
@@ -104,7 +103,7 @@ public class KasperClientEventTest {
         final ClientResponse response = mock(ClientResponse.class);
         doReturn(Status.ACCEPTED).when(response).getClientResponseStatus();
         doReturn(response).when(jerseyClient).handle(requestArgumentCaptor.capture());
-        final Context context = DefaultContextBuilder.get().setUserId("boo");
+        final Context context = Contexts.builder().withUserId("boo").build();
 
         // When
         client.emit(context, event);
@@ -116,7 +115,7 @@ public class KasperClientEventTest {
         final MultivaluedMap<String, Object> headers = value.getHeaders();
         assertEquals(MediaType.APPLICATION_JSON, headers.getFirst(HttpHeaders.CONTENT_TYPE).toString());
         assertEquals(MediaType.APPLICATION_JSON, headers.getFirst(HttpHeaders.ACCEPT).toString());
-        assertEquals("boo", headers.getFirst(HEADER_USER_ID).toString());
+        assertEquals("boo", headers.getFirst(HttpContextHeaders.HEADER_USER_ID.toHeaderName()).toString());
         assertEquals(event, value.getEntity());
         verify(contextSerializer).serialize(eq(context), any(AsyncWebResource.Builder.class));
     }
@@ -127,7 +126,7 @@ public class KasperClientEventTest {
 
         try {
             // When
-            client.emit(DefaultContextBuilder.get(), new MemberCreatedEvent("toto"));
+            client.emit(Contexts.empty(), new MemberCreatedEvent("toto"));
             Assert.fail("exception not raised");
 
         } catch (final KasperException e) {
@@ -156,7 +155,7 @@ public class KasperClientEventTest {
 
             try {
                 // When
-                client.emit(DefaultContextBuilder.get(), new MemberCreatedEvent("toto"));
+                client.emit(Contexts.empty(), new MemberCreatedEvent("toto"));
                 Assert.fail("exception not raised");
 
             } catch (final KasperException e) {

@@ -7,10 +7,7 @@
 package com.viadeo.kasper.cqrs.query.impl;
 
 import com.codahale.metrics.Timer;
-import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
@@ -22,13 +19,9 @@ import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptorFactory;
-import com.viadeo.kasper.cqrs.util.MDCUtils;
 import com.viadeo.kasper.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.Map;
-import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
@@ -44,8 +37,6 @@ public class KasperQueryGateway implements QueryGateway {
     public static final String GLOBAL_TIMER_REQUESTS_TIME_NAME = name(QueryGateway.class, "requests-time");
     public static final String GLOBAL_METER_REQUESTS_NAME = name(QueryGateway.class, "requests");
     public static final String GLOBAL_METER_ERRORS_NAME = name(QueryGateway.class, "errors");
-
-    private static final Map<Class<? extends QueryHandler>, Set<String>> CACHE_TAGS = Maps.newHashMap();
 
     private final QueryHandlersLocator queryHandlersLocator;
     private final InterceptorChainRegistry<Query, QueryResponse<QueryResult>> interceptorChainRegistry;
@@ -74,8 +65,8 @@ public class KasperQueryGateway implements QueryGateway {
     @Override
     @SuppressWarnings("unchecked")
     public <RESULT extends QueryResult> QueryResponse<RESULT> retrieve(final Query query, final Context context)
-            throws Exception {
-
+            throws Exception
+    {
         checkNotNull(context);
         checkNotNull(query);
 
@@ -95,7 +86,6 @@ public class KasperQueryGateway implements QueryGateway {
         final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerRequestsTimeName).time();
 
         /* Sets current thread context */
-        enrichContextAndMdcContextMap(query, context);
         CurrentContext.set(context);
 
         // Search for associated handler --------------------------------------
@@ -146,58 +136,6 @@ public class KasperQueryGateway implements QueryGateway {
         }
 
         return ret;
-    }
-
-    @VisibleForTesting
-    protected void enrichContextAndMdcContextMap(final Query query, final Context context) {
-        checkNotNull(query);
-        checkNotNull(context);
-
-        final Optional<Class<? extends QueryHandler>> handlerClass = getHandlerClass(query);
-        if (handlerClass.isPresent()) {
-            final Set<String> additionalTags = getHandlerTags(handlerClass.get());
-            context.addTags(additionalTags);
-        }
-
-        MDCUtils.enrichMdcContextMap(context);
-    }
-
-    @VisibleForTesting
-    protected Optional<Class<? extends QueryHandler>> getHandlerClass(final Query query) {
-        checkNotNull(query);
-
-        final Class<? extends Query> queryClass = query.getClass();
-        final Optional<? extends QueryHandler<Query, QueryResult>> registeredHandler = queryHandlersLocator.getHandlerFromQueryClass(queryClass);
-        if ( ! registeredHandler.isPresent()) {
-            return Optional.absent();
-        }
-
-        final QueryHandler handler = registeredHandler.get();
-        return Optional.<Class<? extends QueryHandler>>of(handler.getClass());
-    }
-
-    @VisibleForTesting
-    protected static Set<String> getHandlerTags(final Class<? extends QueryHandler> handlerClass) {
-        checkNotNull(handlerClass);
-
-        final Set<String> tags;
-
-        if ( ! CACHE_TAGS.containsKey(handlerClass)) {
-
-            final XKasperQueryHandler annotation = handlerClass.getAnnotation(XKasperQueryHandler.class);
-            if (null == annotation) {
-                return ImmutableSet.of();
-            }
-
-            final String[] annotationTags = annotation.tags();
-            tags = ImmutableSet.copyOf(annotationTags);
-            CACHE_TAGS.put(handlerClass, tags);
-
-        } else {
-            tags = CACHE_TAGS.get(handlerClass);
-        }
-
-        return tags;
     }
 
     // ------------------------------------------------------------------------

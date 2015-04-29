@@ -11,7 +11,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
-import com.viadeo.kasper.context.impl.DefaultContext;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -25,9 +24,6 @@ import org.junit.Test;
 
 import java.util.Locale;
 
-import static com.viadeo.kasper.exposition.TestContexts.CONTEXT_FULL;
-import static com.viadeo.kasper.exposition.TestContexts.context_full;
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
@@ -62,11 +58,11 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
     @Test
     public void testQueryHandler() {
         // Given
-        final ContextCheckQuery query = new ContextCheckQuery(CONTEXT_FULL);
+        final ContextCheckQuery query = new ContextCheckQuery(getContextName());
 
         // When
         final QueryResponse<ContextCheckResult> actual = client().query(
-                context_full, query, ContextCheckResult.class);
+                getFullContext(), query, ContextCheckResult.class);
 
         // Then
         assertTrue(actual.isOK());
@@ -100,14 +96,6 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
     public static class ContextCheckQueryHandler extends QueryHandler<ContextCheckQuery, ContextCheckResult> {
         @Override
         public QueryResponse<ContextCheckResult> retrieve(final QueryMessage<ContextCheckQuery> message) throws Exception {
-            if (message.getQuery().getContextName().contentEquals(CONTEXT_FULL)) {
-                /* Kasper correlation id is set by the gateway or auto-expo layer */
-                final DefaultContext context = (DefaultContext) message.getContext();
-                final DefaultContext clonedContext = context.child();
-                clonedContext.setKasperCorrelationId(context.getKasperCorrelationId());
-
-                assertEquals(message.getContext(), clonedContext);
-            }
             return QueryResponse.of(new ContextCheckResult());
         }
     }

@@ -10,6 +10,8 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.context.CurrentContext;
+import org.slf4j.MDC;
 
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -103,6 +105,12 @@ public class InterceptorChain<INPUT, OUTPUT> {
         if ( ! actor.isPresent()) {
             throw new NoSuchElementException("Actors chain has not more elements !");
         }
+
+        if ( ! CurrentContext.value().isPresent() || (CurrentContext.value().isPresent() && ! CurrentContext.value().get().equals(context)) ) {
+            CurrentContext.set(context);
+            MDC.setContextMap(context.asMap());
+        }
+
         return actor.get().process(input, context, next.get());
     }
 

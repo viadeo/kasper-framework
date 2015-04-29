@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.interceptor;
 
-import com.viadeo.kasper.context.impl.DefaultContextBuilder;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.cqrs.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryResponse;
@@ -49,7 +49,7 @@ public class ValidationInterceptorTest {
         try {
             actor.process(
                     new QueryToValidate(),
-                    new DefaultContextBuilder().build(),
+                    Contexts.empty(),
                     InterceptorChain.<QueryToValidate, QueryResponse<QueryResult>>tail()
             );
             fail();
@@ -68,7 +68,7 @@ public class ValidationInterceptorTest {
         try {
             actor.process(
                 new QueryToValidate("fr"),
-                new DefaultContextBuilder().build(),
+                    Contexts.empty(),
                 InterceptorChain.<QueryToValidate, QueryResponse<QueryResult>>tail()
             );
             fail();
