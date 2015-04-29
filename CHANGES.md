@@ -2,15 +2,16 @@
 
 ### Snapshot 0.8.0-pre33 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre33~~))
 
-* Added accesToken header in CommandResponse.
+* [Pull 271](https://github.com/viadeo/kasper-framework/pull/271) Added accesToken header in CommandResponse.
 
 ### Snapshot 0.8.0-pre32 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre32~~))
 
-* Custom HttpExposer to return full SecurityException filled in error response.
+* [Pull 270](https://github.com/viadeo/kasper-framework/pull/270) Custom HttpExposer to return full SecurityException filled in error response.
+* [Pull 269](https://github.com/viadeo/kasper-framework/pull/269) Improve log in exposition
 
 ### Snapshot 0.8.0-pre28 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre28~~))
 
-* Added Authorization's annotations and auto-doc.
+* [Pull 267](https://github.com/viadeo/kasper-framework/pull/267) Added Authorization's annotations and auto-doc.
 
 ### Snapshot 0.8.0-pre27 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre27~~))
 
