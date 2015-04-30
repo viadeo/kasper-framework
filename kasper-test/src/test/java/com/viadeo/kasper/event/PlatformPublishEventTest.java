@@ -14,6 +14,7 @@ import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -36,7 +37,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
     private static boolean received = false;
 
     @Test
-    public void testPublishEvent() throws InterruptedException {
+    public void testPublishEvent() throws InterruptedException, Exception {
         // Given
         final KasperID id = KasperTestIdGenerator.get();
         final Event event = new TestEvent(id);
@@ -59,6 +60,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
                         Lists.<EventListener>newArrayList(new TestListener()),
                         Lists.<QueryInterceptorFactory>newArrayList(),
                         Lists.<CommandInterceptorFactory>newArrayList(),
+                        Lists.<EventInterceptorFactory>newArrayList(),
                         new TestDomain(),
                         "testDomain"
                 )

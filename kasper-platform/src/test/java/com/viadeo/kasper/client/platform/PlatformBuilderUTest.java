@@ -19,6 +19,7 @@ import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.client.platform.domain.descriptor.*;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.resolvers.DomainHelper;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -146,6 +147,18 @@ public class PlatformBuilderUTest {
 
         // When
         builder.addCommandInterceptorFactory(interceptorFactory);
+
+        // Then throws exception
+    }
+
+    @Test(expected = NullPointerException.class)
+    public void addEventInterceptorFactory_withNullAsInterceptorFactory_shouldThrownException() {
+        // Given
+        final EventInterceptorFactory interceptorFactory = null;
+        final Platform.Builder builder = new Platform.Builder();
+
+        // When
+        builder.addEventInterceptorFactory(interceptorFactory);
 
         // Then throws exception
     }
@@ -385,6 +398,24 @@ public class PlatformBuilderUTest {
         // Then
         assertNotNull(platform);
         verify(commandGateway).register(refEq(commandInterceptorFactory));
+    }
+
+    @Test
+    public void build_withEventInterceptorFactory_shouldRegisterOnEventBus() {
+        // Given
+        final EventInterceptorFactory eventInterceptorFactory = mock(EventInterceptorFactory.class);
+        final KasperEventBus eventBus = mock(KasperEventBus.class);
+
+        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
+                .withEventBus(eventBus)
+                .addEventInterceptorFactory(eventInterceptorFactory);
+
+        // When
+        final Platform platform = builder.build();
+
+        // Then
+        assertNotNull(platform);
+        verify(eventBus).register(refEq(eventInterceptorFactory));
     }
 
     @Test
@@ -647,6 +678,28 @@ public class PlatformBuilderUTest {
         // Then
         assertNotNull(platform);
         verify(commandGateway).register(refEq(commandInterceptorFactory));
+    }
+
+    @Test
+    public void build_withDomainBundle_containingEventInterceptorFactory_shouldBeRegistered() {
+        // Given
+        final EventInterceptorFactory eventInterceptorFactory = mock(EventInterceptorFactory.class);
+        final DomainBundle domainBundle = new DomainBundle.Builder(new TestDomain())
+                .with(eventInterceptorFactory)
+                .build();
+
+        final KasperEventBus eventBus = mock(KasperEventBus.class);
+
+        final Platform.Builder builder = new Platform.Builder(new KasperPlatformConfiguration())
+                .withEventBus(eventBus)
+                .addDomainBundle(domainBundle);
+
+        // When
+        final Platform platform = builder.build();
+
+        // Then
+        assertNotNull(platform);
+        verify(eventBus).register(refEq(eventInterceptorFactory));
     }
 
     @Test

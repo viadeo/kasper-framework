@@ -16,6 +16,7 @@ import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.Query;
@@ -459,6 +460,7 @@ public class FixtureUseCase {
                 )
                 , Lists.<QueryInterceptorFactory>newArrayList()
                 , Lists.<CommandInterceptorFactory>newArrayList()
+                , Lists.<EventInterceptorFactory>newArrayList()
                 , new TestDomain()
                 , "TestDomain"
         );

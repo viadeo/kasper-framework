@@ -12,6 +12,7 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.configuration.TypeSafeConfigPropertyPlaceholder;
 import com.viadeo.kasper.client.platform.utils.BuilderContextHelper;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -136,6 +137,7 @@ public class SpringDomainBundle extends DefaultDomainBundle {
         this.eventListeners.addAll(applicationContext.getBeansOfType(EventListener.class).values());
         this.queryInterceptorFactories.addAll(applicationContext.getBeansOfType(QueryInterceptorFactory.class).values());
         this.commandInterceptorFactories.addAll(applicationContext.getBeansOfType(CommandInterceptorFactory.class).values());
+        this.eventInterceptorFactories.addAll(applicationContext.getBeansOfType(EventInterceptorFactory.class).values());
     }
 
     protected void configureConfigPropertyPlaceHolder(final ConfigurableListableBeanFactory beanFactory,

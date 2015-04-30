@@ -19,6 +19,7 @@ import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -36,12 +37,18 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.spy;
@@ -84,6 +91,12 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
         private static final long serialVersionUID = -8918994635071831597L;
     }
 
+    public static class NeedJSR303ValidationEvent implements Event {
+        private static final long serialVersionUID = 5118539819893435486L;
+        @NotNull
+        @Size(min = 1) public String name;
+    }
+
     @XKasperEventListener(domain = TestDomain.class)
     public static class NeedValidationEventListener extends EventListener<NeedValidationEvent> {
         @Override
@@ -114,6 +127,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
                 Lists.<EventListener>newArrayList(new AccountCreatedEventListener(), new NeedValidationEventListener()),
                 Lists.<QueryInterceptorFactory>newArrayList(),
                 Lists.<CommandInterceptorFactory>newArrayList(),
+                Lists.<EventInterceptorFactory>newArrayList(),
                 new TestDomain(),
                 "TestDomain"
         );
@@ -166,7 +180,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
     }
 
     @Test
-    public void testNonListenedEvent() throws MalformedURLException, URISyntaxException {
+    public void testNonListenedEvent() throws MalformedURLException, URISyntaxException, Exception {
         // Given
         final Event event = new AccountUpdatedEvent();
 
@@ -210,5 +224,39 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
         // Then
         assertEquals(Response.Status.ACCEPTED.getStatusCode(), response.getStatus());
         assertEquals(expectedServerName, response.getHeaders().getFirst(HttpContextHeaders.HEADER_SERVER_NAME.toHeaderName()));
+    }
+
+    @Test
+    public void testJSR303Validation_withWrongEntries_shouldReturnBadRequest() throws MalformedURLException, URISyntaxException, UnknownHostException {
+        // Given
+        final NeedJSR303ValidationEvent event = new NeedJSR303ValidationEvent();
+        event.name = "";
+
+        // When
+        final ClientResponse response = httpClient()
+                .resource(new URL(new URL(url()), event.getClass().getSimpleName().replace("Event", "")).toURI())
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .put(ClientResponse.class, event);
+
+        // Then
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testJSR303Validation_withGoodEntries_shouldReturnAccepted() throws MalformedURLException, URISyntaxException, UnknownHostException {
+        // Given
+        final NeedJSR303ValidationEvent event = new NeedJSR303ValidationEvent();
+        event.name = "name";
+
+        // When
+        final ClientResponse response = httpClient()
+                .resource(new URL(new URL(url()), event.getClass().getSimpleName().replace("Event", "")).toURI())
+                .accept(MediaType.APPLICATION_JSON_TYPE)
+                .type(MediaType.APPLICATION_JSON_TYPE)
+                .put(ClientResponse.class, event);
+
+        // Then
+        assertEquals(Response.Status.ACCEPTED.getStatusCode(), response.getStatus());
     }
 }

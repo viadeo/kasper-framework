@@ -378,4 +378,5 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         // Then
         assertEquals(Response.Status.NOT_FOUND.getStatusCode(), response.getStatus());
     }
+
 }

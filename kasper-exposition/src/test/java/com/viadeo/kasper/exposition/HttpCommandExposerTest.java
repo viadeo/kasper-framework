@@ -21,6 +21,7 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -170,6 +171,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
                 , Lists.<EventListener>newArrayList()
                 , Lists.<QueryInterceptorFactory>newArrayList()
                 , Lists.<CommandInterceptorFactory>newArrayList()
+                , Lists.<EventInterceptorFactory>newArrayList()
                 , new AccountDomain()
                 , "AccountDomain"
         );

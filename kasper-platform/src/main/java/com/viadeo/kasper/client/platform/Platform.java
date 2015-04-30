@@ -22,6 +22,7 @@ import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptorFacto
 import com.viadeo.kasper.client.platform.impl.KasperPlatform;
 import com.viadeo.kasper.client.platform.plugin.Plugin;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.*;
@@ -89,6 +90,7 @@ public interface Platform {
         private final Collection<Plugin> kasperPlugins;
         private final List<QueryInterceptorFactory> queryInterceptorFactories;
         private final List<CommandInterceptorFactory> commandInterceptorFactories;
+        private final List<EventInterceptorFactory> eventInterceptorFactories;
         private final Map<ExtraComponentKey, Object> extraComponents;
         private final DomainDescriptorFactory domainDescriptorFactory;
 
@@ -120,6 +122,7 @@ public interface Platform {
             this.extraComponents = Maps.newHashMap();
             this.queryInterceptorFactories = Lists.newArrayList();
             this.commandInterceptorFactories = Lists.newArrayList();
+            this.eventInterceptorFactories = Lists.newArrayList();
             this.domainHelper = new DomainHelper();
         }
 
@@ -134,6 +137,7 @@ public interface Platform {
             this.extraComponents.putAll(checkNotNull(platformConfiguration.extraComponents()));
             this.queryInterceptorFactories.addAll(checkNotNull(platformConfiguration.queryInterceptorFactories()));
             this.commandInterceptorFactories.addAll(checkNotNull(platformConfiguration.commandInterceptorFactories()));
+            this.eventInterceptorFactories.addAll(checkNotNull(platformConfiguration.eventInterceptorFactories()));
         }
 
         // --------------------------------------------------------------------
@@ -159,6 +163,12 @@ public interface Platform {
         public Builder addCommandInterceptorFactory(final CommandInterceptorFactory factory, final CommandInterceptorFactory... factories) {
             this.commandInterceptorFactories.add(checkNotNull(factory));
             with(this.commandInterceptorFactories, factories);
+            return this;
+        }
+
+        public Builder addEventInterceptorFactory(final EventInterceptorFactory factory, final EventInterceptorFactory... factories) {
+            this.eventInterceptorFactories.add(checkNotNull(factory));
+            with(this.eventInterceptorFactories, factories);
             return this;
         }
 
@@ -262,6 +272,7 @@ public interface Platform {
             for (final DomainBundle bundle : domainBundles) {
                 commandInterceptorFactories.addAll(bundle.getCommandInterceptorFactories());
                 queryInterceptorFactories.addAll(bundle.getQueryInterceptorFactories());
+                eventInterceptorFactories.addAll(bundle.getEventInterceptorFactories());
             }
 
             for (final QueryInterceptorFactory interceptorFactory : queryInterceptorFactories) {
@@ -272,6 +283,11 @@ public interface Platform {
             for (final CommandInterceptorFactory interceptorFactory : commandInterceptorFactories) {
                 LOGGER.debug("Registering command interceptor factory : {}", interceptorFactory.getClass().getSimpleName());
                 commandGateway.register(interceptorFactory);
+            }
+
+            for (final EventInterceptorFactory interceptorFactory : eventInterceptorFactories) {
+                LOGGER.debug("Registering event interceptor factory : {}", interceptorFactory.getClass().getSimpleName());
+                eventBus.register(interceptorFactory);
             }
         }
 
