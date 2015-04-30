@@ -50,7 +50,7 @@ public enum HttpContextHeaders {
     public static Optional<HttpContextHeaders> fromHeader(final String headerName) {
         checkNotNull(headerName);
         for (HttpContextHeaders httpContextHeader : HttpContextHeaders.values()) {
-            if (headerName.equals(httpContextHeader.headerName)) {
+            if (headerName.equalsIgnoreCase(httpContextHeader.headerName)) {
                 return Optional.of(httpContextHeader);
             }
         }
@@ -60,7 +60,7 @@ public enum HttpContextHeaders {
     public static Optional<HttpContextHeaders> fromPropertyKey(final String propertyKey) {
         checkNotNull(propertyKey);
         for (HttpContextHeaders httpContextHeader : HttpContextHeaders.values()) {
-            if (propertyKey.equals(httpContextHeader.propertyKey)) {
+            if (propertyKey.equalsIgnoreCase(httpContextHeader.propertyKey)) {
                 return Optional.of(httpContextHeader);
             }
         }
