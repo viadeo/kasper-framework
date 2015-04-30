@@ -18,7 +18,7 @@ import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.cqrs.util.MDCUtils;
+import com.viadeo.kasper.context.MDCUtils;
 
 import java.util.Map;
 import java.util.Set;

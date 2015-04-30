@@ -27,6 +27,7 @@ public final class Context implements Serializable {
      * The name of the context key when stored in meta data maps
      */
     public static final String METANAME = "context";
+    public static final String VERSION = "version";
     public static final String CALL_TYPE = "callType";
     public static final String USER_AGENT = "userAgent";
     public static final String REFERER = "Referer";
@@ -37,15 +38,23 @@ public final class Context implements Serializable {
     public static final String ULANG_SHORTNAME = "userLang";
     public static final String UCOUNTRY_SHORTNAME = "userCountry";
     public static final String APPLICATION_ID_SHORTNAME = "appId";
-    public static final String REQUEST_CID_SHORTNAME = "corrRequestId";
+    public static final String APPLICATION_VERSION_SHORTNAME = "appVersion";
+    public static final String APPLICATION_PLATFORM_SHORTNAME = "appPlatform";
     public static final String FUNNEL_CID_SHORTNAME = "corrFunnelId";
+    public static final String FUNNEL_NAME_SHORTNAME = "funnelName";
+    public static final String FUNNEL_VERS_SHORTNAME = "funnelVersion";
+    public static final String REQUEST_CID_SHORTNAME = "corrRequestId";
     public static final String SESSION_CID_SHORTNAME = "corrSessionId";
     public static final String SECURITY_TOKEN_SHORTNAME = "authToken";
     public static final String ACCESS_TOKEN_SHORTNAME = "accessToken";
-    public static final String FUNNEL_NAME_SHORTNAME = "funnelName";
-    public static final String FUNNEL_VERS_SHORTNAME = "funnelVersion";
     public static final String IP_ADDRESS_SHORTNAME = "ipAddress";
     public static final String TAGS_SHORTNAME = "tags";
+    public static final String SERVER_NAME = "serverName";
+    public static final String PLATFORM_VERSION = "platformVersion";
+    public static final String PLATFORM_BUILDING_DATE = "platformBuildingDate";
+    public static final String PLATFORM_DEPLOYMENT_DATE = "appDeploymentDate";
+    public static final String CLIENT_ID_SHORTNAME= "clientId";
+    public static final String CLIENT_VERSION_SHORTNAME = "clientVersion";
 
     private static final char SEPARATOR = ',';
     private static final Splitter SPLITTER = Splitter.on(SEPARATOR).omitEmptyStrings().trimResults();
@@ -146,10 +155,46 @@ public final class Context implements Serializable {
     }
 
     /**
-     * @return the caller application id
+     * @return the version of the context
+     */
+    public Integer getVersion() {
+        Optional<Integer> version = getGenericProperty(VERSION);
+        return version.or(0);
+    }
+
+    /**
+     * @return the application id
      */
     public Optional<String> getApplicationId() {
         return getGenericProperty(APPLICATION_ID_SHORTNAME);
+    }
+
+    /**
+     * @return the application version
+     */
+    public Optional<String> getApplicationVersion() {
+        return getGenericProperty(APPLICATION_VERSION_SHORTNAME);
+    }
+
+    /**
+     * @return the application platform
+     */
+    public Optional<String> getApplicationPlatform() {
+        return getGenericProperty(APPLICATION_PLATFORM_SHORTNAME);
+    }
+
+    /**
+     * @return the client id
+     */
+    public Optional<String> getClientId() {
+        return getGenericProperty(CLIENT_ID_SHORTNAME);
+    }
+
+    /**
+     * @return the client version
+     */
+    public Optional<String> getClientVersion() {
+        return getGenericProperty(CLIENT_VERSION_SHORTNAME);
     }
 
     /**

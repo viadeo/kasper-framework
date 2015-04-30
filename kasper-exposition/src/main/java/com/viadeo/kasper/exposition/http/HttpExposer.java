@@ -9,7 +9,6 @@ package com.viadeo.kasper.exposition.http;
 import com.codahale.metrics.Timer;
 import com.fasterxml.jackson.core.JsonGenerationException;
 import com.fasterxml.jackson.databind.JsonMappingException;
-import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
 import com.google.common.io.CharStreams;
@@ -20,6 +19,7 @@ import com.viadeo.kasper.client.platform.Meta;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.context.HttpContextHeaders;
+import com.viadeo.kasper.context.MDCUtils;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.exposition.alias.AliasRegistry;
 import com.viadeo.kasper.security.annotation.XKasperPublic;
@@ -294,15 +294,13 @@ public abstract class HttpExposer<INPUT, RESPONSE extends KasperResponse> extend
             final Context context = contextDeserializer.deserialize(httpRequest, kasperCorrelationUUID);
 
             Context richContext = Contexts.newFrom(context)
-                    .with("appServer", serverName())
-                    .with("appVersion", meta.getVersion())
-                    .with("appBuildingDate", meta.getBuildingDate().toString())
-                    .with("appDeploymentDate", meta.getDeploymentDate().toString())
-                    .with("clientVersion", Objects.firstNonNull(httpRequest.getHeader(HttpContextHeaders.HEADER_CLIENT_VERSION.toHeaderName()), "undefined"))
-                    .with("clientId", Objects.firstNonNull(context.getApplicationId(), "undefined"))
+                    .with(Context.SERVER_NAME, serverName())
+                    .with(Context.PLATFORM_VERSION, meta.getVersion())
+                    .with(Context.PLATFORM_BUILDING_DATE, meta.getBuildingDate().toString())
+                    .with(Context.PLATFORM_DEPLOYMENT_DATE, meta.getDeploymentDate().toString())
                     .build();
 
-            MDC.setContextMap(richContext.asMap());
+            MDCUtils.enrichMdcContextMap(richContext);
 
             return richContext;
 
