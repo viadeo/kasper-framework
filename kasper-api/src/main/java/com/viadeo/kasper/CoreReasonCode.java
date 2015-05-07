@@ -33,6 +33,7 @@ public enum CoreReasonCode {
     INVALID_USER(2005),
     LOCKED_USER(2006),
     DELETED_USER(2007),
+    INVALID_SECURITY_TOKEN(2008),
 
     /* Internal reasons */
     INTERNAL_COMPONENT_TIMEOUT(3001),
