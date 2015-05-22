@@ -239,7 +239,7 @@ public class KasperMetricsITest {
         // Given
         buildPlatformWith(new MetricRegistry());
 
-        final Context context = Contexts.builder().withApplicationId("foobar").build();
+        final Context context = Contexts.builder().withClientId("foobar").build();
 
         // When
         final String name = KasperMetrics.name(MetricNameStyle.CLIENT_TYPE, context, MyCustomDomainBox.MyCustomQuery.class, "bip");
@@ -267,7 +267,7 @@ public class KasperMetricsITest {
         // Given
         buildPlatformWith(new MetricRegistry());
 
-        final Context context = Contexts.builder().withApplicationId("foobar").build();
+        final Context context = Contexts.builder().withClientId("foobar").build();
 
         // When
         final String name = KasperMetrics.name(MetricNameStyle.CLIENT_TYPE, context, MyCustomDomainBox.MyCustomCommand.class, "bip");

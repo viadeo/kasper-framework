@@ -129,8 +129,8 @@ public final class KasperMetrics {
                         path = String.format("%s.%s", domainName, type).toLowerCase();
                         break;
                     case CLIENT_TYPE:
-                        final String applicationId = context.getApplicationId().or("unknown");
-                        path = String.format("client.%s.%s", applicationId, type).toLowerCase();
+                        final String clientId = context.getClientId().or("unknown");
+                        path = String.format("client.%s.%s", clientId, type).toLowerCase();
                         break;
                 }
             }

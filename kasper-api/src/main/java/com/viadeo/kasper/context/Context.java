@@ -391,6 +391,10 @@ public final class Context implements Serializable {
             return with(APPLICATION_ID_SHORTNAME, applicationId);
         }
 
+        public Builder withClientId(final String clientId) {
+            return with(CLIENT_ID_SHORTNAME, clientId);
+        }
+
         public Builder resetUser() {
             properties.remove(USER_ID_SHORTNAME);
             properties.remove(UID_SHORTNAME);

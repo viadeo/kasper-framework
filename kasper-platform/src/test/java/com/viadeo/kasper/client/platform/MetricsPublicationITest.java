@@ -162,7 +162,7 @@ public class MetricsPublicationITest {
 
         reset(metricRegistry);
 
-        final Context context = Contexts.builder().withApplicationId("myconsumer").build();
+        final Context context = Contexts.builder().withClientId("myconsumer").build();
 
         // When
         platform.getCommandGateway().sendCommandAndWaitForAResponse(new MyCustomDomainBox.MyCustomCommand(), context);
@@ -179,7 +179,7 @@ public class MetricsPublicationITest {
 
         reset(metricRegistry);
 
-        final Context context = Contexts.builder().withApplicationId("myconsumer").build();
+        final Context context = Contexts.builder().withClientId("myconsumer").build();
 
         // When
         try {
@@ -323,7 +323,7 @@ public class MetricsPublicationITest {
 
         reset(metricRegistry);
 
-        final Context context = Contexts.builder().withApplicationId("myconsumer").build();
+        final Context context = Contexts.builder().withClientId("myconsumer").build();
 
         // When
         platform.getQueryGateway().retrieve(new MyCustomDomainBox.MyCustomQuery(), context);
@@ -340,7 +340,7 @@ public class MetricsPublicationITest {
 
         reset(metricRegistry);
 
-        final Context context = Contexts.builder().withApplicationId("myconsumer").build();
+        final Context context = Contexts.builder().withClientId("myconsumer").build();
 
         // When
         try {
