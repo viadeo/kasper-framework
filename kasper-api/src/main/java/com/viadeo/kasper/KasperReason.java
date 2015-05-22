@@ -152,7 +152,7 @@ public final class KasperReason implements Serializable, Immutable {
     }
 
     public KasperReason(CoreReasonCode code, Exception exception) {
-        this(checkNotNull(code).toString(), checkNotNull(exception).getMessage());
+        this(checkNotNull(code).toString(), Objects.firstNonNull(checkNotNull(exception).getMessage(), ""));
         this.exception = exception;
     }
 
