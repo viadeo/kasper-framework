@@ -370,6 +370,11 @@ public final class Context implements Serializable {
 
         }
 
+        public Builder reset(final String key) {
+            properties.remove(checkNotNull(key));
+            return this;
+        }
+
         public Builder with(final String key, final Serializable value) {
             checkNotNull(key);
             checkNotNull(value);
