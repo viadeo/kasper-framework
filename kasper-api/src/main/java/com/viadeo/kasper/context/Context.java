@@ -341,7 +341,6 @@ public final class Context implements Serializable {
     public static class Builder {
 
         private static final Map<String, Serializable> DEFAULT_VALUES = ImmutableMap.<String, Serializable>builder()
-                .put(APPLICATION_ID_SHORTNAME, "UNKNOWN")
                 .put(ULANG_SHORTNAME, "fr")
                 .put(UCOUNTRY_SHORTNAME, "FR")
                 .put(IP_ADDRESS_SHORTNAME, "0.0.0.0")
