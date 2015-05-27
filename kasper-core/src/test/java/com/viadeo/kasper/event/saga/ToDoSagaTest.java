@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 import static com.viadeo.kasper.KasperResponse.Status;
 
 @XKasperSaga(domain = TestDomain.class)
-public class ToDoSagaTest extends KasperSaga<ToDoItemCreatedV2Event> {
+public class ToDoSagaTest extends KasperSaga {
 
     private DateTime creationDate;
     private ID todoID;

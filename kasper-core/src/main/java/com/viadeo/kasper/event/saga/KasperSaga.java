@@ -23,7 +23,7 @@ import org.slf4j.LoggerFactory;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
-public abstract class KasperSaga<E extends Event> extends org.axonframework.saga.annotation.AbstractAnnotatedSaga {
+public abstract class KasperSaga extends org.axonframework.saga.annotation.AbstractAnnotatedSaga {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperSaga.class);
 
@@ -34,9 +34,6 @@ public abstract class KasperSaga<E extends Event> extends org.axonframework.saga
 
     private transient CommandGateway commandGateway;
     private transient EventBus eventBus;
-
-    private final Class<E> eventClass;
-
     // ------------------------------------------------------------------------
 
     public void setCommandGateway(final CommandGateway commandGateway) {
@@ -90,20 +87,7 @@ public abstract class KasperSaga<E extends Event> extends org.axonframework.saga
 
     protected KasperSaga() {
 
-        @SuppressWarnings("unchecked")
-        final Optional<Class<E>> eventClassOpt =
-                (Optional<Class<E>>)
-                        ReflectionGenericsResolver.getParameterTypeFromClass(
-                                this.getClass(),
-                                KasperSaga.class,
-                                KasperSaga.PARAMETER_EVENT_POSITION
-                        );
 
-        if (eventClassOpt.isPresent()) {
-            this.eventClass = eventClassOpt.get();
-        } else {
-            throw new KasperException("Unable to identify event class for " + this.getClass());
-        }
 
     }
 }
