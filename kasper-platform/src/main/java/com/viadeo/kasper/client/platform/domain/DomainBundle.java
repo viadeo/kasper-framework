@@ -16,6 +16,7 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.saga.KasperSaga;
 
 import java.util.List;
 
@@ -78,6 +79,11 @@ public interface DomainBundle {
      * @return all command interceptor factories of this domain bundle
      */
     List<CommandInterceptorFactory> getCommandInterceptorFactories();
+
+    /**
+     * @return all sagas identified as components of this domain bundle
+     */
+    List<KasperSaga> getKasperSagas();
 
     /**
      * @return all event interceptor factories of this domain bundle

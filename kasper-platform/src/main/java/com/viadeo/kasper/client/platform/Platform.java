@@ -37,6 +37,12 @@ import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.saga.KasperSaga;
+import com.viadeo.kasper.event.saga.ToDoSaga;
+import org.axonframework.eventhandling.scheduling.EventScheduler;
+import org.axonframework.saga.SagaRepository;
+import org.axonframework.saga.annotation.AbstractAnnotatedSaga;
+import org.axonframework.saga.annotation.AnnotatedSagaManager;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -102,6 +108,10 @@ public interface Platform {
         private RepositoryManager repositoryManager;
         private MetricRegistry metricRegistry;
         private Meta meta;
+
+        private SagaRepository sagaRepository;
+        private EventScheduler eventScheduler;
+        private List<AbstractAnnotatedSaga> truc;
 
         // --------------------------------------------------------------------
 
@@ -332,6 +342,14 @@ public interface Platform {
                 }
 
                 eventBus.subscribe(eventListener);
+            }
+
+            for(final KasperSaga kasperSaga : bundle.getKasperSagas()){
+                /*// Sagas instances are managed and tracked by a SagaManager.
+                AnnotatedSagaManager sagaManager = new AnnotatedSagaManager(sagaRepository, sagaFactory, kasperSaga);
+
+                // and we need to subscribe the Saga Manager to the Event Bus
+                eventBus.subscribe(sagaManager);*/
             }
 
             final DomainDescriptor domainDescriptor = domainDescriptorFactory.createFrom(bundle);
