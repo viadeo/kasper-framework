@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.*;
@@ -48,6 +49,7 @@ public class HttpQueryExposerContextTest extends BaseHttpExposerTest {
                 , Lists.<EventListener>newArrayList()
                 , Lists.<QueryInterceptorFactory>newArrayList()
                 , Lists.<CommandInterceptorFactory>newArrayList()
+                , Lists.<EventInterceptorFactory>newArrayList()
                 , new AccountDomain()
                 , "AccountDomain"
         );

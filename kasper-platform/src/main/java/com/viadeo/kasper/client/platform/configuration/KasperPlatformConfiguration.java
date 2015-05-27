@@ -14,6 +14,7 @@ import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandBus;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
@@ -22,6 +23,7 @@ import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryValidationInterceptorFactory;
+import com.viadeo.kasper.event.interceptor.EventValidationInterceptorFactory;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 
@@ -45,6 +47,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     private final Map<Platform.ExtraComponentKey, Object> extraComponents;
     private final List<CommandInterceptorFactory> commandInterceptorFactories;
     private final List<QueryInterceptorFactory> queryInterceptorFactories;
+    private final List<EventInterceptorFactory> eventInterceptorFactories;
 
     // ------------------------------------------------------------------------
 
@@ -69,6 +72,10 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
             new CacheInterceptorFactory(),
             new QueryValidationInterceptorFactory(),
             new QueryFilterInterceptorFactory()
+        );
+
+        this.eventInterceptorFactories = Lists.<EventInterceptorFactory>newArrayList(
+            new EventValidationInterceptorFactory()
         );
     }
 
@@ -112,6 +119,11 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     @Override
     public List<QueryInterceptorFactory> queryInterceptorFactories() {
         return queryInterceptorFactories;
+    }
+
+    @Override
+    public List<EventInterceptorFactory> eventInterceptorFactories() {
+        return eventInterceptorFactories;
     }
 
 }

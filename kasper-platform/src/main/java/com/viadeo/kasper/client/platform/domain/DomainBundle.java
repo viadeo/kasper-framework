@@ -8,6 +8,7 @@ package com.viadeo.kasper.client.platform.domain;
 
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -78,6 +79,11 @@ public interface DomainBundle {
      */
     List<CommandInterceptorFactory> getCommandInterceptorFactories();
 
+    /**
+     * @return all event interceptor factories of this domain bundle
+     */
+    List<EventInterceptorFactory> getEventInterceptorFactories();
+
     // ========================================================================
 
     static class Builder {
@@ -91,6 +97,7 @@ public interface DomainBundle {
         private final List<Repository> repositories = Lists.newArrayList();
         private final List<QueryInterceptorFactory> queryInterceptorFactories = Lists.newArrayList();
         private final List<CommandInterceptorFactory> commandInterceptorFactories = Lists.newArrayList();
+        private final List<EventInterceptorFactory> eventInterceptorFactories = Lists.newArrayList();
 
         // --------------------------------------------------------------------
 
@@ -137,6 +144,12 @@ public interface DomainBundle {
             return this;
         }
 
+        public Builder with(final EventInterceptorFactory factory, final EventInterceptorFactory... factories){
+            this.eventInterceptorFactories.add(checkNotNull(factory));
+            with(this.eventInterceptorFactories, factories);
+            return this;
+        }
+
         @SafeVarargs
         private final <COMP> void with(final List<COMP> collection, final COMP... components) {
             checkNotNull(collection);
@@ -153,6 +166,7 @@ public interface DomainBundle {
                     eventListeners,
                     queryInterceptorFactories,
                     commandInterceptorFactories,
+                    eventInterceptorFactories,
                     domain,
                     domainName
             );

@@ -29,6 +29,7 @@ Using `com.viadeo.kasper.client.platform.domain.DefaultDomainBundle` as a simple
         Lists.<EventListener>newArrayList(),
         Lists.<QueryInterceptorFactory>newArrayList(),
         Lists.<CommandInterceptorFactory>newArrayList(),
+        Lists.<EventInterceptorFactory>newArrayList(),
         domain,
         "sample domain name"
     );

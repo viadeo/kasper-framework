@@ -9,6 +9,7 @@ package com.viadeo.kasper.client.platform.domain;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -29,6 +30,7 @@ public class DefaultDomainBundle implements DomainBundle {
     protected final List<EventListener> eventListeners;
     protected final List<QueryInterceptorFactory> queryInterceptorFactories;
     protected final List<CommandInterceptorFactory> commandInterceptorFactories;
+    protected final List<EventInterceptorFactory> eventInterceptorFactories;
     protected final Domain domain;
     protected final String name;
 
@@ -45,6 +47,7 @@ public class DefaultDomainBundle implements DomainBundle {
              Lists.<EventListener>newArrayList(),
              Lists.<QueryInterceptorFactory>newArrayList(),
              Lists.<CommandInterceptorFactory>newArrayList(),
+             Lists.<EventInterceptorFactory>newArrayList(),
              domain,
              name
         );
@@ -56,6 +59,7 @@ public class DefaultDomainBundle implements DomainBundle {
                                final List<EventListener> eventListeners,
                                final List<QueryInterceptorFactory> queryInterceptorFactories,
                                final List<CommandInterceptorFactory> commandInterceptorFactories,
+                               final List<EventInterceptorFactory> eventInterceptorFactories,
                                final Domain domain,
                                final String name) {
         this.commandHandlers = checkNotNull(commandHandlers);
@@ -64,6 +68,7 @@ public class DefaultDomainBundle implements DomainBundle {
         this.eventListeners = checkNotNull(eventListeners);
         this.queryInterceptorFactories = checkNotNull(queryInterceptorFactories);
         this.commandInterceptorFactories = checkNotNull(commandInterceptorFactories);
+        this.eventInterceptorFactories = checkNotNull(eventInterceptorFactories);
         this.domain = checkNotNull(domain);
         this.name = checkNotNull(name);
     }
@@ -111,6 +116,11 @@ public class DefaultDomainBundle implements DomainBundle {
     @Override
     public List<CommandInterceptorFactory> getCommandInterceptorFactories() {
         return commandInterceptorFactories;
+    }
+
+    @Override
+    public List<EventInterceptorFactory> getEventInterceptorFactories() {
+        return eventInterceptorFactories;
     }
 
 }

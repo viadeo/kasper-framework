@@ -11,6 +11,7 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.core.boot.SpringComponentsInstanceManager;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
+import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
@@ -33,6 +34,7 @@ public class DiscoveryDomainBundle extends SpringDomainBundle {
     protected final Collection<Class<Repository>> repositoryClasses;
     protected final Collection<Class<QueryInterceptorFactory>> queryInterceptorFactoryClasses;
     protected final Collection<Class<CommandInterceptorFactory>> commandInterceptorFactoryClasses;
+    protected final Collection<Class<EventInterceptorFactory>> eventInterceptorFactoryClasses;
 
     // ------------------------------------------------------------------------
 
@@ -69,6 +71,7 @@ public class DiscoveryDomainBundle extends SpringDomainBundle {
             this.repositoryClasses = findComponents(basePackage, Repository.class);
             this.queryInterceptorFactoryClasses = findComponents(basePackage, QueryInterceptorFactory.class);
             this.commandInterceptorFactoryClasses = findComponents(basePackage, CommandInterceptorFactory.class);
+            this.eventInterceptorFactoryClasses = findComponents(basePackage, EventInterceptorFactory.class);
 
         } catch (final ReflectiveOperationException e) {
             throw new KasperException(String.format(
@@ -96,6 +99,7 @@ public class DiscoveryDomainBundle extends SpringDomainBundle {
             repositories.addAll(instantiate(componentsInstanceManager, repositoryClasses));
             queryInterceptorFactories.addAll(instantiate(componentsInstanceManager, queryInterceptorFactoryClasses));
             commandInterceptorFactories.addAll(instantiate(componentsInstanceManager, commandInterceptorFactoryClasses));
+            eventInterceptorFactories.addAll(instantiate(componentsInstanceManager, eventInterceptorFactoryClasses));
 
         } catch (final ReflectiveOperationException e) {
             throw new KasperException("Unexpected error occurred while configuring the domain bundle : " + getName());

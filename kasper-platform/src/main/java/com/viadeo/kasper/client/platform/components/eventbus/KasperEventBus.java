@@ -13,7 +13,12 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
+import com.viadeo.kasper.core.interceptor.Interceptor;
+import com.viadeo.kasper.core.interceptor.InterceptorChain;
+import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
+import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.interceptor.EventHandlerInterceptorFactory;
 import com.viadeo.kasper.exception.KasperException;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
@@ -61,6 +66,8 @@ public class KasperEventBus extends ClusteringEventBus {
     private final Policy currentPolicy;
     private final Optional<KasperProcessorDownLatch> optionalProcessorDownLatch;
     private final List<PublicationHandler> publicationHandlers = Lists.newLinkedList();
+
+    private InterceptorChainRegistry<Event, Void> interceptorChainRegistry;
 
     // ------------------------------------------------------------------------
 
@@ -165,6 +172,7 @@ public class KasperEventBus extends ClusteringEventBus {
         super(checkNotNull(axonClusterSelector));
         this.currentPolicy = Policy.USER;
         this.optionalProcessorDownLatch = Optional.absent();
+        intInterceptorChainRegistry();
     }
 
     /*
@@ -174,6 +182,7 @@ public class KasperEventBus extends ClusteringEventBus {
         super(new DefaultClusterSelector(checkNotNull(cluster)));
         this.currentPolicy = Policy.USER;
         this.optionalProcessorDownLatch = Optional.absent();
+        intInterceptorChainRegistry();
     }
 
     /*
@@ -195,6 +204,7 @@ public class KasperEventBus extends ClusteringEventBus {
         super(getCluster(checkNotNull(busPolicy), checkNotNull(errorHandler), checkNotNull(processorDownLatch)));
         this.currentPolicy = busPolicy;
         this.optionalProcessorDownLatch = Optional.of(processorDownLatch);
+        intInterceptorChainRegistry();
     }
 
     // ------------------------------------------------------------------------
@@ -246,6 +256,7 @@ public class KasperEventBus extends ClusteringEventBus {
         for (final EventMessage message : newMessages) {
             this.noticePublicationHandlers(message);
         }
+
     }
 
     @VisibleForTesting
@@ -257,14 +268,49 @@ public class KasperEventBus extends ClusteringEventBus {
         this.publish(GenericEventMessage.asEventMessage(event));
     }
 
-    public void publishEvent(final Context context, final Event event) {
-        this.publish(
-            new GenericEventMessage<>(
-                checkNotNull(event),
-                new HashMap<String, Object>() {{
-                    this.put(Context.METANAME, context);
-                }}
-            )
+    public void publishEvent(final Context context, final Event event) throws Exception{
+        final Optional<InterceptorChain<Event, Void>> optionalRequestChain =
+                getInterceptorChain(event.getClass());
+        try {
+            LOGGER.info("Call actor chain for Event " + event.getClass().getSimpleName());
+            optionalRequestChain.get().next(event, context);
+        } catch (final Exception e) {
+            throw e;
+        }
+
+    }
+
+    protected Optional<InterceptorChain<Event, Void>> getInterceptorChain(
+            final Class<? extends Event> eventClass) {
+        final Optional<InterceptorChain<Event, Void>> chainOptional =
+                interceptorChainRegistry.get(eventClass);
+
+        if (chainOptional.isPresent()) {
+            return chainOptional;
+        }
+
+        final KasperEventBus thisEventBus = this;
+        return interceptorChainRegistry.create(
+                eventClass,
+                new EventHandlerInterceptorFactory() {
+                    @Override
+                    protected Interceptor<Event, Void> getEventHandlerInterceptor() {
+                        return new Interceptor<Event, Void>() {
+                            @Override
+                            public Void process(final Event event, final Context context, final InterceptorChain<Event, Void> chain) throws Exception {
+                                thisEventBus.publish(
+                                        new GenericEventMessage<>(
+                                                checkNotNull(event),
+                                                new HashMap<String, Object>() {{
+                                                    this.put(Context.METANAME, context);
+                                                }}
+                                        )
+                                );
+                                return null;
+                            }
+                        };
+                    }
+                }
         );
     }
 
@@ -289,6 +335,22 @@ public class KasperEventBus extends ClusteringEventBus {
             });
         }
         return Optional.absent();
+    }
+
+    private void intInterceptorChainRegistry(){
+        this.interceptorChainRegistry = new InterceptorChainRegistry<Event, Void>();
+    }
+
+    /**
+     * Register an interceptor factory to the gateway
+     *
+     * @param interceptorFactory the query interceptor factory to register
+     */
+    public void register(final InterceptorFactory interceptorFactory) {
+        checkNotNull(interceptorFactory);
+        LOGGER.info("Registering the query interceptor factory : " + interceptorFactory.getClass().getSimpleName());
+
+        interceptorChainRegistry.register(interceptorFactory);
     }
 
 }
