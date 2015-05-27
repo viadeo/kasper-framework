@@ -14,9 +14,9 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class ErrorEvent implements Event {
 
-    private final String code;
-    private final Exception exception;
-    private final String message;
+    private final transient String code;
+    private final transient Exception exception;
+    private final transient String message;
 
     // ------------------------------------------------------------------------
 
