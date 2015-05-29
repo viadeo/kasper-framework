@@ -21,7 +21,7 @@ dependencies {
     compile libraries.VALIDATION_API
     compile libraries.GUAVA
     compile libraries.LOG4J_OVER_SLF4J
-
+    compile libraries.JAVAX_INJECT
 
     testCompile libraries.LOGBACK
     testCompile libraries.JUNIT

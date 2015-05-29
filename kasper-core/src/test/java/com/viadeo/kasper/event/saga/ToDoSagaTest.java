@@ -7,9 +7,7 @@
 package com.viadeo.kasper.event.saga;
 
 import com.viadeo.kasper.api.ID;
-import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.annotation.*;
+import com.viadeo.kasper.event.annotation.XKasperSaga;
 import org.joda.time.DateTime;
 
 import java.util.concurrent.TimeUnit;
@@ -22,21 +20,21 @@ public class ToDoSagaTest extends KasperSaga {
     private DateTime creationDate;
     private ID todoID;
 
-    @XKasperSagaStart(getter="getTodoID")
+    @XKasperSaga.Start(getter="getTodoID")
     public void start(ToDoItemCreatedV2Event event) {
         creationDate = DateTime.now();
         todoID = event.getTodoID();
     }
 
-    @XKasperSagaSchedule(unit = TimeUnit.SECONDS, duration = 2)
-    public void onTodoDeadlineExpired() {
+    @XKasperSaga.Schedule(getter="getTodoID", unit = TimeUnit.SECONDS, delay = 2)
+    public void onTodoDeadlineExpired(ToDoItemCreatedV2Event event) {
         if ( this.isActive()) {
             // si besoin d'une commande : this.send(..Command);
             // this.publish(send Event new TodoDeadlineExpirad(...))
         }
     }
 
-    @XKasperSagaEnd(getter = "getMySuperTodoID") // Optional if the same
+    @XKasperSaga.End(getter = "getMySuperTodoID") // Optional if the same
     public Status onToDoItemCompleted(ToDoItemCompletedEvent event) {
         if (this.isActive()) {
             return Status.OK;
@@ -44,7 +42,7 @@ public class ToDoSagaTest extends KasperSaga {
         return Status.FAILURE;
     }
 
-    @XKasperSagaStep(getter = "getMySuperTodoID") // Optional if the same
+    @XKasperSaga.BasicStep(getter = "getMySuperTodoID") // Optional if the same
     public void onToDoItemCompletedV2(ToDoItemCompletedEvent event) {
         if (this.isActive()) {
             this.end();

@@ -4,12 +4,14 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.event.saga;
+package com.viadeo.kasper.event.saga.step;
 
-import com.google.common.base.Optional;
+import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.Saga;
 
-public interface SagaRepository {
-    Optional<Saga> load(Object identifier);
-    void save(Saga saga);
+public interface Step {
+    String name();
+    void invoke(Saga saga, Event event);
+    Class<? extends Event> getSupportedEvent();
+    <T> T getSagaIdentifierFrom(Event event);
 }
