@@ -7,19 +7,24 @@
 package com.viadeo.kasper.cqrs.interceptor;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Tags;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.context.MDCUtils;
 
+import org.slf4j.MDC;
+
+import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
 
@@ -46,9 +51,24 @@ public class TagsInterceptor<C> implements Interceptor<C, Object> {
                 .addTags(additionalTags)
                 .build();
 
-        MDCUtils.enrichMdcContextMap(newContext);
+        final Map originalContextMap = Objects.firstNonNull(MDC.getCopyOfContextMap(), Collections.emptyMap());
 
-        return chain.next(c, newContext);
+        MDC.setContextMap(newContextMapWithAdditionalTags(originalContextMap, additionalTags));
+        try {
+            return chain.next(c, newContext);
+        } finally {
+            MDC.setContextMap(originalContextMap);
+        }
+    }
+
+    @SuppressWarnings("unchecked")
+    private Map newContextMapWithAdditionalTags(Map initialContextMap, Set<String> additionalTags) {
+        final String initialTags = Strings.nullToEmpty((String) initialContextMap.get(Context.TAGS_SHORTNAME));
+        final Set<String> allTags = Sets.union(Tags.valueOf(initialTags), additionalTags);
+
+        final Map contextMap = Maps.newHashMap(initialContextMap);
+        contextMap.put(Context.TAGS_SHORTNAME, Tags.toString(allTags));
+        return contextMap;
     }
 
     @VisibleForTesting
