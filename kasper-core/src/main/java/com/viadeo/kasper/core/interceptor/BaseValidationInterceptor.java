@@ -19,6 +19,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class BaseValidationInterceptor<E> {
 
+    private static final String exceptionMessageStart = "One or more JSR303 constraints were violated. ";
+
     private final ValidatorFactory validatorFactory;
 
     // ------------------------------------------------------------------------
@@ -33,19 +35,19 @@ public abstract class BaseValidationInterceptor<E> {
         checkNotNull(obj);
         final Set<ConstraintViolation<Object>> violations = validatorFactory.getValidator().validate((Object) obj);
 
-        if (!violations.isEmpty()) {
-            String exceptionMessage = buildExceptionMessage(violations);
+        if ( ! violations.isEmpty()) {
+            final String exceptionMessage = buildExceptionMessage(violations);
             throw new JSR303ViolationException(exceptionMessage, violations);
         }
     }
 
-    private static String buildExceptionMessage(Set<ConstraintViolation<Object>> violations) {
-        String exceptionMessageStart = "One or more JSR303 constraints were violated. ";
-        List<String> violationMessages = new ArrayList<>();
-        for (ConstraintViolation<Object> violation : violations) {
+    private static String buildExceptionMessage(final Set<ConstraintViolation<Object>> violations) {
+        final List<String> violationMessages = new ArrayList<>();
+        for (final ConstraintViolation<Object> violation : violations) {
             violationMessages.add("Field " + violation.getPropertyPath() + " = [" + violation.getInvalidValue() + "]: " + violation.getMessage());
         }
         return exceptionMessageStart + Joiner.on(" ; ").join(violationMessages);
     }
 
 }
+

@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.core.interceptor;
 
 import com.viadeo.kasper.context.Contexts;
@@ -21,7 +27,7 @@ public class BaseValidationInterceptorUTest extends TestCase {
         @NotEmpty
         private String company;
 
-        public CommandToValidate(int size, String company) {
+        public CommandToValidate(final int size, final String company) {
             this.size = size;
             this.company = company;
         }
@@ -36,9 +42,9 @@ public class BaseValidationInterceptorUTest extends TestCase {
         // When
         try {
             actor.process(
-                    new CommandToValidate(0, ""),
-                    Contexts.empty(),
-                    InterceptorChain.<CommandToValidate, CommandResponse>tail()
+                new CommandToValidate(0, ""),
+                Contexts.empty(),
+                InterceptorChain.<CommandToValidate, CommandResponse>tail()
             );
             fail();
         } catch (final JSR303ViolationException e) {
@@ -57,9 +63,9 @@ public class BaseValidationInterceptorUTest extends TestCase {
         // When
         try {
             actor.process(
-                    new CommandToValidate(0, "companyName"),
-                    Contexts.empty(),
-                    InterceptorChain.<CommandToValidate, CommandResponse>tail()
+                new CommandToValidate(0, "companyName"),
+                Contexts.empty(),
+                InterceptorChain.<CommandToValidate, CommandResponse>tail()
             );
             fail();
         } catch (final JSR303ViolationException e) {
@@ -68,4 +74,5 @@ public class BaseValidationInterceptorUTest extends TestCase {
             assertEquals(true, e.getMessage().contains("Field size = [0]: must be greater than or equal to 10"));
         }
     }
+
 }
