@@ -17,6 +17,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
+import com.viadeo.kasper.event.annotation.XKasperEventListener;
 
 public final class TagsHolder {
 
@@ -49,6 +50,11 @@ public final class TagsHolder {
             final XKasperCommandHandler commandAnnotation = handlerClass.getAnnotation(XKasperCommandHandler.class);
             if (null != commandAnnotation) {
                 tags.addAll(ImmutableSet.copyOf(commandAnnotation.tags()));
+            }
+
+            final XKasperEventListener eventAnnotation = handlerClass.getAnnotation(XKasperEventListener.class);
+            if (null != eventAnnotation) {
+                tags.addAll(ImmutableSet.copyOf(eventAnnotation.tags()));
             }
 
             CACHE_TAGS.put(handlerClass, tags);
