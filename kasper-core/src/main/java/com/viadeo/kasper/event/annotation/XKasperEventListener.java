@@ -32,4 +32,9 @@ public @interface XKasperEventListener {
      */
     Class<? extends Domain> domain();
 
+    /**
+     * @return tags for this listener
+     */
+    String[] tags() default {};
+
 }

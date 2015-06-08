@@ -6,28 +6,21 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.interceptor;
 
-import com.google.common.base.Joiner;
-import com.google.common.base.Objects;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.context.Tags;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.ddd.Domain;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import org.mockito.Mock;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.slf4j.MDC;
@@ -35,345 +28,238 @@ import org.slf4j.MDC;
 import java.util.Map;
 import java.util.Set;
 
-import static com.google.common.collect.Maps.newHashMap;
 import static com.google.common.collect.Sets.newHashSet;
-import static org.hamcrest.CoreMatchers.containsString;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.instanceOf;
-import static org.hamcrest.CoreMatchers.not;
-import static org.junit.Assert.*;
+import static com.viadeo.kasper.context.Context.TAGS_SHORTNAME;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertSame;
+import static org.junit.Assert.fail;
 import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyObject;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Matchers.eq;
+import static org.mockito.Matchers.same;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.mockito.MockitoAnnotations.initMocks;
 
 public class TagsInterceptorUTest {
+
+    static final Context DEFAULT_CONTEXT = Contexts.empty();
+    static final Object INPUT = new Object();
+    static final Object OUTPUT = new Object();
+
+    //// setup
+
+    @Mock
+    InterceptorChain<Object, Object> chain;
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
     @Rule
-    public SaveAndRestoreMdcContextMap preserveLogs = new SaveAndRestoreMdcContextMap();
+    public ResetTagsCache resetTagsCache = new ResetTagsCache();
+
+    @Rule
+    public ResetMdcContextMap resetMdcContextMap = new ResetMdcContextMap();
+
+    @Before
+    public void setUp() throws Exception {
+        initMocks(this);
+    }
 
     //// process
 
     @Test
-    @SuppressWarnings("unchecked")
+    public void process_WithoutTagsOnTheHandlerAndWhenCallToNextSucceeds_ShouldDoNothing() throws Exception {
+        // Given
+        @XKasperUnregistered
+        @XKasperCommandHandler(domain = TestDomain.class)
+        class TestCommandHandler extends CommandHandler<TestCommand> {
+        }
+
+        when(chain.next(same(INPUT), eq(DEFAULT_CONTEXT)))
+                .thenReturn(OUTPUT);
+
+        // When
+        final TagsInterceptor<Object> tagsInterceptor = interceptor(TestCommandHandler.class);
+        final Object result = tagsInterceptor.process(INPUT, DEFAULT_CONTEXT, chain);
+
+        // Then
+        assertEquals(OUTPUT, result);
+    }
+
+    @Test
+    public void process_WithoutTagsOnTheHandlerAndWhenCallToNextThrows_ShouldDoNothing() throws Exception {
+        // Given
+        @XKasperUnregistered
+        @XKasperCommandHandler(domain = TestDomain.class)
+        class TestCommandHandler extends CommandHandler<TestCommand> {
+        }
+
+        // Expect
+        final RuntimeException exception = new RuntimeException();
+        when(chain.next(same(INPUT), eq(DEFAULT_CONTEXT)))
+                .thenThrow(exception);
+        thrown.expect(sameInstance(exception));
+
+        // When
+        final TagsInterceptor<Object> tagsInterceptor = interceptor(TestCommandHandler.class);
+        tagsInterceptor.process(INPUT, DEFAULT_CONTEXT, chain);
+    }
+
+    @Test
     public void process_WithTagsOnTheHandler_ShouldAddThemToTheContextAndMdcContextMapForTheNextHandlerInTheChain() throws Exception {
         // Given
-        @XKasperUnregistered
-        @XKasperQueryHandler(domain = TestDomain.class, tags = {TEST_COMMAND_TAG, TEST_COMMAND_TAG_2})
-        class TestQueryHandler extends QueryHandler<TestQuery, TestQueryResult> {
-        }
-        final TagsInterceptor<Object> tagsInterceptor = new TagsInterceptor<>(TypeToken.of(TestQueryHandler.class));
+        final String tagOnHandler = "this-is-a-tag";
+        final String otherTagOnHandler = "this-is-another-tag";
 
-        final Object input = new Object();
-        final InterceptorChain<Object, Object> chain = mock(InterceptorChain.class);
-        final Context context = new Context.Builder().build();
+        @XKasperUnregistered
+        @XKasperCommandHandler(domain = TestDomain.class, tags = {tagOnHandler, otherTagOnHandler})
+        class TestCommandHandler extends CommandHandler<TestCommand> {
+        }
+        final Set<String> tagsOnHandler = newHashSet(tagOnHandler, otherTagOnHandler);
 
         // Expect
-        when(chain.next(anyObject(), any(Context.class)))
-                .thenAnswer(new Answer<Object>() {
-                    @Override
-                    public Object answer(InvocationOnMock invocation) throws Throwable {
-                        final Object[] arguments = invocation.getArguments();
-                        assertSame(input, arguments[0]);
-                        assertThat(arguments[1], instanceOf(Context.class));
-                        final Context alteredContext = (Context) arguments[1];
+        when(chain.next(same(INPUT), any(Context.class))).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                final Object[] arguments = invocation.getArguments();
+                final Context alteredContext = (Context) arguments[1];
 
-                        final Set<String> tags = newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2);
-                        final String formattedTags = Tags.toString(tags);
+                final Set<String> tagsInContext = alteredContext.getTags();
+                assertEquals(tagsOnHandler, tagsInContext);
 
-                        assertThat(alteredContext.getTags(), equalTo(tags));
-                        assertThat(MDC.get(Context.TAGS_SHORTNAME), equalTo(formattedTags));
+                final Set<String> tagsInMdcContextMap = getMdcContextMap();
+                assertEquals(tagsOnHandler, tagsInMdcContextMap);
 
-                        return null;
-                    }
-                });
+                return OUTPUT;
+            }
+        });
 
         // When
-        tagsInterceptor.process(input, context, chain);
+        final TagsInterceptor<Object> tagsInterceptor = interceptor(TestCommandHandler.class);
+        final Object result = tagsInterceptor.process(INPUT, DEFAULT_CONTEXT, chain);
+
+        // Then
+        assertEquals(OUTPUT, result);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void process_WithTagsAlreadyInContext_ShouldAddHandlerTagsToTheExistingOnes() throws Exception {
         // Given
+        final String tagOnHandler = "this-is-a-tag";
+        final String otherTagOnHandler = "this-is-another-tag";
+
         @XKasperUnregistered
-        @XKasperQueryHandler(domain = TestDomain.class, tags = {TEST_COMMAND_TAG, TEST_COMMAND_TAG_2})
-        class TestQueryHandler extends QueryHandler<TestQuery, TestQueryResult> {
+        @XKasperCommandHandler(domain = TestDomain.class, tags = {tagOnHandler, otherTagOnHandler})
+        class TestCommandHandler extends CommandHandler<TestCommand> {
         }
-        final TagsInterceptor<Object> tagsInterceptor = new TagsInterceptor<>(TypeToken.of(TestQueryHandler.class));
+        final Set<String> tagsOnHandler = newHashSet(tagOnHandler, otherTagOnHandler);
 
-        final Object input = new Object();
-        final InterceptorChain<Object, Object> chain = mock(InterceptorChain.class);
+        final Set<String> tagsAlreadyInContext = newHashSet("a-tag-already-in-context");
+        final Context context = new Context.Builder().withTags(tagsAlreadyInContext).build();
 
-        final String aTagAlreadyInContext = "a-tag-already-in-context";
-        final Context context = new Context.Builder().withTags(newHashSet(aTagAlreadyInContext)).build();
-        final String aTagAlreadyInMdcContextMap = "a-tag-already-in-mdc-context-map";
-        MDC.setContextMap(ImmutableMap.of(Context.TAGS_SHORTNAME, aTagAlreadyInMdcContextMap));
+        final Set<String> tagsAlreadyInMdcContextMap = newHashSet("a-tag-already-in-mdc-context-map");
+        setMdcContextMap(tagsAlreadyInMdcContextMap);
 
         // Expect
-        when(chain.next(anyObject(), any(Context.class)))
-                .thenAnswer(new Answer<Object>() {
-                    @Override
-                    public Object answer(InvocationOnMock invocation) throws Throwable {
-                        final Object[] arguments = invocation.getArguments();
-                        final Context alteredContext = (Context) arguments[1];
+        when(chain.next(same(INPUT), any(Context.class))).thenAnswer(new Answer<Object>() {
+            @Override
+            public Object answer(InvocationOnMock invocation) throws Throwable {
+                final Object[] arguments = invocation.getArguments();
+                final Context alteredContext = (Context) arguments[1];
 
-                        final Set<String> tagsInContext = alteredContext.getTags();
-                        final Set<String> expectedTagsInContext = newHashSet(aTagAlreadyInContext, TEST_COMMAND_TAG, TEST_COMMAND_TAG_2);
-                        assertThat(tagsInContext, equalTo(expectedTagsInContext));
+                final Set<String> tagsInContext = alteredContext.getTags();
+                final Set<String> expectedTagsInContext = Sets.union(tagsAlreadyInContext, tagsOnHandler);
+                assertEquals(expectedTagsInContext, tagsInContext);
 
-                        final String tagsInMdcContextMap = MDC.get(Context.TAGS_SHORTNAME);
-                        assertThat(tagsInMdcContextMap, containsString(aTagAlreadyInMdcContextMap));
-                        assertThat(tagsInMdcContextMap, containsString(TEST_COMMAND_TAG));
-                        assertThat(tagsInMdcContextMap, containsString(TEST_COMMAND_TAG_2));
+                final Set<String> tagsInMdcContextMap = getMdcContextMap();
+                final Set<String> expectedTagsInContextMap = Sets.union(tagsAlreadyInMdcContextMap, tagsOnHandler);
+                assertEquals(expectedTagsInContextMap, tagsInMdcContextMap);
 
-                        return null;
-                    }
-                });
+                return OUTPUT;
+            }
+        });
 
         // When
-        tagsInterceptor.process(input, context, chain);
+        final TagsInterceptor<Object> tagsInterceptor = interceptor(TestCommandHandler.class);
+        final Object result = tagsInterceptor.process(INPUT, context, chain);
+
+        // Then
+        assertEquals(OUTPUT, result);
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void process_WithTagsOnTheHandler_ShouldRestoreMdcContextMapAfterExecutionOfNextHandlerInTheChain() throws Exception {
         // Given
+        final String tagOnHandler = "this-is-a-tag";
+        final String otherTagOnHandler = "this-is-another-tag";
+
         @XKasperUnregistered
-        @XKasperQueryHandler(domain = TestDomain.class, tags = {TEST_COMMAND_TAG, TEST_COMMAND_TAG_2})
-        class TestQueryHandler extends QueryHandler<TestQuery, TestQueryResult> {
+        @XKasperCommandHandler(domain = TestDomain.class, tags = {tagOnHandler, otherTagOnHandler})
+        class TestCommandHandler extends CommandHandler<TestCommand> {
         }
-        final TagsInterceptor<Object> tagsInterceptor = new TagsInterceptor<>(TypeToken.of(TestQueryHandler.class));
 
-        final Object input = new Object();
-        final InterceptorChain<Object, Object> chain = mock(InterceptorChain.class);
-
-        final String aTagAlreadyInContext = "a-tag-already-in-context";
-        final Context context = new Context.Builder().withTags(newHashSet(aTagAlreadyInContext)).build();
-        final String aTagAlreadyInMdcContextMap = "a-tag-already-in-mdc-context-map";
-        MDC.setContextMap(ImmutableMap.of(Context.TAGS_SHORTNAME, aTagAlreadyInMdcContextMap));
+        final Set<String> tagsAlreadyInMdcContextMap = newHashSet("a-tag-already-in-mdc-context-map");
+        setMdcContextMap(tagsAlreadyInMdcContextMap);
 
         // When
-        tagsInterceptor.process(input, context, chain);
+        final TagsInterceptor<Object> tagsInterceptor = interceptor(TestCommandHandler.class);
+        tagsInterceptor.process(INPUT, DEFAULT_CONTEXT, chain);
 
         // Then
-        final String tagsInMdcContextMap = MDC.get(Context.TAGS_SHORTNAME);
-        assertThat(tagsInMdcContextMap, containsString(aTagAlreadyInMdcContextMap));
-        assertThat(tagsInMdcContextMap, not(containsString(TEST_COMMAND_TAG)));
-        assertThat(tagsInMdcContextMap, not(containsString(TEST_COMMAND_TAG_2)));
+        verify(chain).next(same(INPUT), any(Context.class));
+        final Set<String> tagsInMdcContextMap = getMdcContextMap();
+        assertEquals(tagsAlreadyInMdcContextMap, tagsInMdcContextMap);
     }
 
-    //// retrieveTags
-
     @Test
-    public void retrieveTags_withNull_shouldThrowNPE() {
+    public void process_WithTagsOnTheHandler_ShouldRestoreMdcContextMapAfterExecutionOfNextHandlerInTheChainFails() throws Exception {
         // Given
-        final TagsInterceptor<Object> tagsInterceptor = new TagsInterceptor<>(TypeToken.of(Object.class));
+        final String tagOnHandler = "this-is-a-tag";
+        final String otherTagOnHandler = "this-is-another-tag";
+
+        @XKasperUnregistered
+        @XKasperCommandHandler(domain = TestDomain.class, tags = {tagOnHandler, otherTagOnHandler})
+        class TestCommandHandler extends CommandHandler<TestCommand> {
+        }
+
+        final Set<String> tagsAlreadyInMdcContextMap = newHashSet("a-tag-already-in-mdc-context-map");
+        setMdcContextMap(tagsAlreadyInMdcContextMap);
 
         // Expect
-        thrown.expect(NullPointerException.class);
+        final RuntimeException expectedException = new RuntimeException();
+        when(chain.next(same(INPUT), any(Context.class)))
+                .thenThrow(expectedException);
 
-        // When
-        tagsInterceptor.retrieveTags(null);
-    }
+        try {
+            // When
+            final TagsInterceptor<Object> tagsInterceptor = interceptor(TestCommandHandler.class);
+            tagsInterceptor.process(INPUT, DEFAULT_CONTEXT, chain);
+            fail("should have thrown at this point");
+        } catch (Exception e) {
+            // Then
+            assertSame(expectedException, e);
+            final Set<String> tagsInMdcContextMap = getMdcContextMap();
+            assertEquals(tagsAlreadyInMdcContextMap, tagsInMdcContextMap);
+        }
 
-    // --- queries
-
-    @Test
-    public void retrieveTags_fromQueryHandler_withoutTags_shouldReturnEmpty() {
-        // Given
-        final Class<?> handlerClass = TestQueryHandler_WithNoTags.class;
-        final TagsInterceptor<Object> tagsInterceptor = new TagsInterceptor<>(TypeToken.of(handlerClass));
-
-        // When
-        Set<String> tags = tagsInterceptor.retrieveTags(handlerClass);
-
-        // Then
-        assertNotNull(tags);
-        assertTrue(tags.isEmpty());
-        assertEquals(tags, TagsInterceptor.CACHE_TAGS.get(handlerClass));
-    }
-
-    @Test
-    public void retrieveTags_fromQueryHandler_withOneTag_shouldReturnTheSingletonSet() {
-        // Given
-        final Class<?> handlerClass = TestQueryHandler_WithOneTag.class;
-        final TagsInterceptor<Object> tagsInterceptor = new TagsInterceptor<>(TypeToken.of(handlerClass));
-
-        // When
-        final Set<String> tags = tagsInterceptor.retrieveTags(handlerClass);
-
-        // Then
-        final Set<String> expectedTags = newHashSet(TEST_COMMAND_TAG);
-        assertNotNull(tags);
-        assertEquals(expectedTags, tags);
-        assertEquals(expectedTags, TagsInterceptor.CACHE_TAGS.get(handlerClass));
-    }
-
-    @Test
-    public void retrieveTags_fromQueryHandler_withSeveralTags_shouldReturnTheSet() {
-        // Given
-        final Class<?> handlerClass = TestQueryHandler_WithSeveralTags.class;
-        final TagsInterceptor<Object> tagsInterceptor = new TagsInterceptor<>(TypeToken.of(handlerClass));
-
-        // When
-        final Set<String> tags = tagsInterceptor.retrieveTags(handlerClass);
-
-        // Then
-        final Set<String> expectedTags = newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2);
-        assertNotNull(tags);
-        assertEquals(expectedTags, tags);
-        assertEquals(expectedTags, TagsInterceptor.CACHE_TAGS.get(handlerClass));
-    }
-
-    @Test
-    @SuppressWarnings("all")
-    public void retrieveTags_fromQueryHandler_withoutAnnotations_shouldReturnEmpty() {
-        // Given
-        final Class<?> handlerClass = TestQueryHandler_WithoutAnnotation.class;
-        final TagsInterceptor<Object> tagsInterceptor = new TagsInterceptor<>(TypeToken.of(handlerClass));
-
-        // When
-        final Set<String> tags = tagsInterceptor.retrieveTags(handlerClass);
-
-        // Then
-        final Set<String> expectedTags = newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2);
-        assertNotNull(tags);
-        assertTrue(tags.isEmpty());
-        assertEquals(tags, TagsInterceptor.CACHE_TAGS.get(handlerClass));
-    }
-
-    // --- commands
-
-    @Test
-    public void retrieveTags_fromCommandHandler_withoutTags_shouldReturnEmpty() {
-        // Given
-        final Class<?> handlerClass = TestCommandHandler_WithNoTags.class;
-        final TagsInterceptor<Object> tagsInterceptor = new TagsInterceptor<>(TypeToken.of(handlerClass));
-
-        // When
-        Set<String> tags = tagsInterceptor.retrieveTags(handlerClass);
-
-        // Then
-        assertNotNull(tags);
-        assertTrue(tags.isEmpty());
-        assertEquals(tags, TagsInterceptor.CACHE_TAGS.get(handlerClass));
-    }
-
-    @Test
-    public void retrieveTags_fromCommandHandler_withOneTag_shouldReturnTheSingletonSet() {
-        // Given
-        final Class<?> handlerClass = TestCommandHandler_WithOneTag.class;
-        final TagsInterceptor<Object> tagsInterceptor = new TagsInterceptor<>(TypeToken.of(handlerClass));
-
-        // When
-        final Set<String> tags = tagsInterceptor.retrieveTags(handlerClass);
-
-        // Then
-        final Set<String> expectedTags = newHashSet(TEST_COMMAND_TAG);
-        assertNotNull(tags);
-        assertEquals(expectedTags, tags);
-        assertEquals(expectedTags, TagsInterceptor.CACHE_TAGS.get(handlerClass));
-    }
-
-    @Test
-    public void retrieveTags_fromCommandHandler_withSeveralTags_shouldReturnTheSet() {
-        // Given
-        final Class<?> handlerClass = TestCommandHandler_WithSeveralTags.class;
-        final TagsInterceptor<Object> tagsInterceptor = new TagsInterceptor<>(TypeToken.of(handlerClass));
-
-        // When
-        final Set<String> tags = tagsInterceptor.retrieveTags(handlerClass);
-
-        // Then
-        final Set<String> expectedTags = newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2);
-        assertNotNull(tags);
-        assertEquals(expectedTags, tags);
-        assertEquals(expectedTags, TagsInterceptor.CACHE_TAGS.get(handlerClass));
-    }
-
-    @Test
-    @SuppressWarnings("all")
-    public void retrieveTags_fromCommandHandler_withoutAnnotations_shouldReturnEmpty() {
-        // Given
-        final Class<?> handlerClass = TestCommandHandler_WithoutAnnotation.class;
-        final TagsInterceptor<Object> tagsInterceptor = new TagsInterceptor<>(TypeToken.of(handlerClass));
-
-        // When
-        final Set<String> tags = tagsInterceptor.retrieveTags(handlerClass);
-
-        // Then
-        final Set<String> expectedTags = newHashSet(TEST_COMMAND_TAG, TEST_COMMAND_TAG_2);
-        assertNotNull(tags);
-        assertTrue(tags.isEmpty());
-        assertEquals(tags, TagsInterceptor.CACHE_TAGS.get(handlerClass));
     }
 
     // ------------------------------------------------------------------------
 
-    private static final String TEST_COMMAND_TAG = "this-is-a-tag";
-
-    private static final String TEST_COMMAND_TAG_2 = "this-is-another-tag";
-
-    @XKasperUnregistered
-    private static class TestDomain implements Domain { }
-
-    @XKasperUnregistered
-    private static class TestCommand implements Command { }
-
-    @XKasperUnregistered
-    private static class TestQuery implements Query { }
-
-    @XKasperUnregistered
-    private static class TestQueryResult implements QueryResult { }
-
-    @XKasperUnregistered
-    @XKasperQueryHandler(domain = TestDomain.class)
-    private static class TestQueryHandler_WithNoTags extends QueryHandler<TestQuery, TestQueryResult> { }
-
-    @XKasperUnregistered
-    @XKasperQueryHandler(domain = TestDomain.class, tags = TEST_COMMAND_TAG)
-    private static class TestQueryHandler_WithOneTag extends QueryHandler<TestQuery, TestQueryResult> { }
-
-    @XKasperUnregistered
-    @XKasperQueryHandler(domain = TestDomain.class, tags = {TEST_COMMAND_TAG, TEST_COMMAND_TAG_2})
-    private static class TestQueryHandler_WithSeveralTags extends QueryHandler<TestQuery, TestQueryResult> { }
-
-    @XKasperUnregistered
-    private static class TestQueryHandler_WithoutAnnotation extends QueryHandler<TestQuery, TestQueryResult> { }
-
-    @XKasperUnregistered
-    @XKasperCommandHandler(domain = TestDomain.class)
-    private static class TestCommandHandler_WithNoTags extends CommandHandler<TestCommand> { }
-
-    @XKasperUnregistered
-    @XKasperCommandHandler(domain = TestDomain.class, tags = TEST_COMMAND_TAG)
-    private static class TestCommandHandler_WithOneTag extends CommandHandler<TestCommand> { }
-
-    @XKasperUnregistered
-    @XKasperCommandHandler(domain = TestDomain.class, tags = {TEST_COMMAND_TAG, TEST_COMMAND_TAG_2})
-    private static class TestCommandHandler_WithSeveralTags extends CommandHandler<TestCommand> { }
-
-    @XKasperUnregistered
-    private static class TestCommandHandler_WithoutAnnotation extends CommandHandler<TestCommand> { }
-
-    private static class SaveAndRestoreMdcContextMap implements TestRule {
-        @Override
-        public Statement apply(final Statement base, Description description) {
-            return new Statement() {
-                @Override
-                public void evaluate() throws Throwable {
-                    Map originalContextMap = Objects.firstNonNull(MDC.getCopyOfContextMap(), newHashMap());
-                    try {
-                        base.evaluate();
-                    } finally {
-                        MDC.setContextMap(originalContextMap);
-                    }
-                }
-            };
-        }
+    private static TagsInterceptor<Object> interceptor(Class<?> type) {
+        return new TagsInterceptor<>(TypeToken.of(type));
     }
+
+    private static Set<String> getMdcContextMap() {
+        final String tagsAsString = MDC.get(TAGS_SHORTNAME);
+        return Tags.valueOf(tagsAsString);
+    }
+
+    private static void setMdcContextMap(Set<String> tagsAlreadyInMdcContextMap) {
+        final String tags = Tags.toString(tagsAlreadyInMdcContextMap);
+        final Map<String, String> contextMap = ImmutableMap.of(TAGS_SHORTNAME, tags);
+        MDC.setContextMap(contextMap);
+    }
+
 }
