@@ -6,6 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga;
 
-public interface  SagaFactory {
-    public <SAGA extends Saga> SAGA create(Object identifier, Class<SAGA> sagaClass) throws SagaInstantitationException;
+public class SagaInstantitationException extends RuntimeException {
+
+    public SagaInstantitationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }
