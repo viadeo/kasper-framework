@@ -7,6 +7,7 @@
 package com.viadeo.kasper.event.saga.step;
 
 import com.google.common.base.Objects;
+import com.google.common.base.Optional;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.Saga;
 
@@ -50,16 +51,20 @@ public class BaseStep implements Step {
     }
 
     @Override
-    public void invoke(final Saga saga, final Event event) {
+    public void invoke(final Saga saga, final Event event) throws StepInvocationException {
         checkNotNull(saga);
         checkNotNull(event);
 
         try {
             sagaMethod.invoke(saga, event);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (Exception e) {
+            throw new StepInvocationException(
+                    String.format(
+                            "Error in invoking step, <step=%s> <method=%s> <payload=%s>",
+                            getClass().getSimpleName(), sagaMethod.getName(), event
+                    ),
+                    e
+            );
         }
     }
 
@@ -69,17 +74,20 @@ public class BaseStep implements Step {
     }
 
     @Override
-    public <T> T getSagaIdentifierFrom(final Event event) {
+    public <T> Optional<T> getSagaIdentifierFrom(final Event event) {
         checkNotNull(event);
 
+        Object identifier =null;
+
         try {
-            return (T) identifierMethod.invoke(event);
+            identifier = identifierMethod.invoke(event);
         } catch (IllegalAccessException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         } catch (InvocationTargetException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
-        return null;
+
+        return Optional.fromNullable((T)identifier);
     }
 
 

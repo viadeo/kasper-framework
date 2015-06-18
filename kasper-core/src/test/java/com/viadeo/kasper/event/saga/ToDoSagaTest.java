@@ -42,7 +42,7 @@ public class ToDoSagaTest extends KasperSaga {
         return Status.FAILURE;
     }
 
-    @XKasperSaga.BasicStep(getter = "getMySuperTodoID") // Optional if the same
+    @XKasperSaga.Step(getter = "getMySuperTodoID") // Optional if the same
     public void onToDoItemCompletedV2(ToDoItemCompletedEvent event) {
         if (this.isActive()) {
             this.end();

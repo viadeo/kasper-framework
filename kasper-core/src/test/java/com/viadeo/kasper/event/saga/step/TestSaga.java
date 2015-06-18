@@ -25,7 +25,7 @@ public class TestSaga implements Saga {
     @XKasperSaga.End(getter = "getId")
     public void handle2(TestEvent2 event) {}
 
-    @XKasperSaga.BasicStep(getter = "getId")
+    @XKasperSaga.Step(getter = "getId")
     public void handle3(TestEvent3 event) {}
 
     @XKasperSaga.Schedule(getter = "getId", delay = 1L, unit = TimeUnit.SECONDS)
@@ -44,6 +44,7 @@ public class TestSaga implements Saga {
         }
 
         public String getId() { return id; }
+        public String getIdThrowsException() { throw new RuntimeException("Fake exception"); }
     }
 
     public static class TestEvent2 extends TestEvent {

@@ -10,6 +10,7 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
+import com.viadeo.kasper.event.saga.exception.SagaInstantitationException;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -74,7 +75,7 @@ public class DefaultSagaFactoryUTest {
         expectedException.expectMessage("Error instantiating saga of 'com.viadeo.kasper.event.saga.DefaultSagaFactoryUTest$SagaWithParameterInConstructor'");
 
         // When
-        SagaWithParameterInConstructor instance = factory.create(UUID.randomUUID().toString(), SagaWithParameterInConstructor.class);
+        factory.create(UUID.randomUUID().toString(), SagaWithParameterInConstructor.class);
     }
 
     class TestDomain implements Domain {}

@@ -125,7 +125,7 @@ public final class Steps {
             final Set<Step> steps = Sets.newHashSet();
 
             for (Method method : sagaClass.getMethods()) {
-                XKasperSaga.BasicStep annotation = method.getAnnotation(XKasperSaga.BasicStep.class);
+                XKasperSaga.Step annotation = method.getAnnotation(XKasperSaga.Step.class);
                 if (annotation != null) {
                     steps.add(new BasicStep(method, annotation.getter()));
                 }

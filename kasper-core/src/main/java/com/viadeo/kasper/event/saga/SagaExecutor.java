@@ -10,10 +10,9 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.event.saga.step.Step;
 import com.viadeo.kasper.event.saga.step.Steps;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.Map;
 import java.util.Set;
@@ -21,8 +20,6 @@ import java.util.Set;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SagaExecutor {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(SagaExecutor.class);
 
     private final Class<? extends Saga> sagaClass;
     private final SagaFactory factory;
@@ -51,26 +48,56 @@ public class SagaExecutor {
         final Step step = steps.get(event.getClass());
 
         if (step == null) {
-            LOGGER.error("No step associate in '{}' to the specified event : {}", getSagaClass().getSimpleName(), event.getClass().getName());
-            return;
+            throw new SagaExecutionException(
+                    String.format("No step associate in '%s' to the specified event : %s", getSagaClass().getSimpleName(), event.getClass().getName())
+            );
         }
 
-        final Object sagaIdentifier = step.getSagaIdentifierFrom(event);
+        final Optional<Object> optionalSagaIdentifier = step.getSagaIdentifierFrom(event);
+
+        if ( ! optionalSagaIdentifier.isPresent()) {
+            throw new SagaExecutionException(
+                    String.format("Failed to retrieve saga identifier, <saga=%s> <event=%s>", getSagaClass().getSimpleName(), event.getClass().getName())
+            );
+        }
+
+        final Object sagaIdentifier = optionalSagaIdentifier.get();
         final Saga saga;
 
         if (step instanceof Steps.StartStep) {
+            if(repository.load(sagaIdentifier).isPresent()){
+                throw new SagaExecutionException(
+                        String.format("Only one instance can be alive for the specified identifier '%s'", sagaIdentifier)
+                );
+            }
             saga = factory.create(sagaIdentifier, sagaClass);
         } else {
             final Optional<Saga> sagaOptional = repository.load(sagaIdentifier);
+
             if ( ! sagaOptional.isPresent()) {
-                return;
+                throw new SagaExecutionException(
+                        String.format("No available saga instance for the specified identifier '%s'", sagaIdentifier)
+                );
             }
+
             saga = sagaOptional.get();
         }
 
-        step.invoke(saga, event);
+        try {
+            step.invoke(saga, event);
+        } catch (Exception e) {
+            throw new SagaExecutionException(
+                    String.format("Unexpected error in invoking step, <saga=%s> <identifier=%s>", saga.getClass().getSimpleName(), sagaIdentifier),
+                    e
+            );
+        }
 
-        // TODO save the state after invocation
+        if (step instanceof Steps.EndStep) {
+            repository.delete(sagaIdentifier);
+        } else {
+            repository.save(sagaIdentifier, saga);
+        }
+
     }
 
     public Class<? extends Saga> getSagaClass() {
@@ -85,10 +112,5 @@ public class SagaExecutor {
     @VisibleForTesting
     protected SagaRepository getSagaRepository() {
         return repository;
-    }
-
-    @VisibleForTesting
-    protected Map<Class<?>, Step> getSteps() {
-        return steps;
     }
 }

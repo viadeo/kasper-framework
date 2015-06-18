@@ -4,12 +4,15 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.event.saga;
+package com.viadeo.kasper.event.saga.step;
 
-import com.google.common.base.Optional;
+public class StepInvocationException extends RuntimeException {
 
-public interface SagaRepository {
-    Optional<Saga> load(Object identifier);
-    void save(Object identifier, Saga saga);
-    void delete(Object identifier);
+    public StepInvocationException(String message) {
+        super(message);
+    }
+
+    public StepInvocationException(String message, Throwable cause) {
+        super(message, cause);
+    }
 }

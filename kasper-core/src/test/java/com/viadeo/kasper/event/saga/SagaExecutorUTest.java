@@ -9,15 +9,21 @@ package com.viadeo.kasper.event.saga;
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.event.saga.step.Step;
 import com.viadeo.kasper.event.saga.step.Steps;
 import com.viadeo.kasper.event.saga.step.TestSaga;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import static org.mockito.Mockito.*;
 
 public class SagaExecutorUTest {
+
+    @Rule
+    public ExpectedException expectedException = ExpectedException.none();
 
     private SagaFactory factory;
     private SagaRepository repository;
@@ -41,11 +47,12 @@ public class SagaExecutorUTest {
 
     @Test
     public void execute_withUnknownEvent_isOK() {
+        // Then
+        expectedException.expect(SagaExecutionException.class);
+        expectedException.expectMessage("No step associate in 'TestSaga' to the specified event : com.viadeo.kasper.event.saga.SagaExecutorUTest$1");
+
         // When
         executor.execute(new Event() { });
-
-        // Then
-        verifyZeroInteractions(factory, repository);
     }
 
     @Test
@@ -54,13 +61,13 @@ public class SagaExecutorUTest {
         TestSaga.TestEvent event = new TestSaga.TestEvent("2015");
         TestSaga saga = new TestSaga();
         when(factory.create("2015", TestSaga.class)).thenReturn(saga);
+        when(repository.load("2015")).thenReturn(Optional.<Saga>absent());
 
         // When
         executor.execute(event);
 
         // Then
         verify(factory).create("2015", TestSaga.class);
-        verify(repository, never()).load("2015");
         verify(startStep).invoke(saga, event);
     }
 

@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
@@ -19,18 +20,18 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SagaManager {
 
-    private final SagaFactory defaultSagaFactory;
+    private final SagaFactory sagaFactory;
     private final SagaRepository repository;
     private final StepProcessor operationProcessor;
     private final Map<Class<? extends Saga>, SagaExecutor> descriptors;
 
     public SagaManager(
-            final SagaFactory defaultSagaFactory,
+            final SagaFactory sagaFactory,
             final SagaRepository repository,
             final StepProcessor operationProcessor
     ) {
         this.operationProcessor = operationProcessor;
-        this.defaultSagaFactory = checkNotNull(defaultSagaFactory);
+        this.sagaFactory = checkNotNull(sagaFactory);
         this.repository = checkNotNull(repository);
         this.descriptors = Maps.newHashMap();
     }
@@ -45,7 +46,7 @@ public class SagaManager {
                 String.format("The specified saga is already registered : %s", sagaClass.getName())
         );
 
-        final SagaFactory factory = saga.getFactory().or(defaultSagaFactory);
+        final SagaFactory factory = saga.getFactory().or(sagaFactory);
         final Set<Step> steps = operationProcessor.process(sagaClass);
         final SagaExecutor executor = new SagaExecutor(sagaClass, steps, factory, repository);
 
@@ -57,5 +58,10 @@ public class SagaManager {
     public Optional<SagaExecutor> get(final Class<? extends Saga> sagaClass) {
         checkNotNull(sagaClass);
         return Optional.fromNullable(descriptors.get(sagaClass));
+    }
+
+    @VisibleForTesting
+    public void clear() {
+        descriptors.clear();
     }
 }

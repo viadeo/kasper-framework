@@ -4,12 +4,12 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.event.saga;
+package com.viadeo.kasper.event.saga.exception;
 
-import com.google.common.base.Optional;
+public class SagaInstantitationException extends RuntimeException {
 
-public interface SagaRepository {
-    Optional<Saga> load(Object identifier);
-    void save(Object identifier, Saga saga);
-    void delete(Object identifier);
+    public SagaInstantitationException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
 }

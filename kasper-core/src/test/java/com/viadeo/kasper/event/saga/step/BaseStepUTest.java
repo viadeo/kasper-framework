@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga.step;
 
+import com.google.common.base.Optional;
 import com.viadeo.kasper.event.Event;
 import org.junit.Rule;
 import org.junit.Test;
@@ -136,10 +137,25 @@ public class BaseStepUTest {
         Event event = new TestSaga.TestEvent("42");
 
         // When
-        String identifier = step.getSagaIdentifierFrom(event);
+        Optional<String> identifier = step.getSagaIdentifierFrom(event);
 
         // Then
         assertNotNull(identifier);
-        assertEquals("42", identifier);
+        assertTrue(identifier.isPresent());
+        assertEquals("42", identifier.get());
+    }
+
+    @Test
+    public void getSagaIdentifierFrom_withUnexpectedError_returnAbsentValue() throws NoSuchMethodException {
+        // Given
+        Step step = new BaseStep(TestSaga.class.getMethod("handle", TestSaga.TestEvent.class), "getIdThrowsException");
+        Event event = new TestSaga.TestEvent("42");
+
+        // When
+        Optional<String> identifier = step.getSagaIdentifierFrom(event);
+
+        // Then
+        assertNotNull(identifier);
+        assertFalse(identifier.isPresent());
     }
 }

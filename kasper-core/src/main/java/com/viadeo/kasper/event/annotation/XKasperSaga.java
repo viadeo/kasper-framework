@@ -52,7 +52,7 @@ public @interface XKasperSaga {
 
     @Retention(RetentionPolicy.RUNTIME)
     @Target(ElementType.METHOD)
-    public @interface BasicStep {
+    public @interface Step {
 
         /**
          * @return the kasper event's identifier getter (in order to find the saga instance)
