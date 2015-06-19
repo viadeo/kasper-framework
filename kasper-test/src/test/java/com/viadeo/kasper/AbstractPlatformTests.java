@@ -6,17 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Preconditions;
-import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.Contexts;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandBus;
-import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
-import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 
 import java.util.List;
 
@@ -26,12 +21,7 @@ public abstract class AbstractPlatformTests {
 
     protected Platform getPlatform() {
         if(platform == null){
-            final Platform.Builder platformBuilder = new Platform.Builder()
-                    .withConfiguration(ConfigFactory.empty())
-                    .withEventBus(new KasperEventBus())
-                    .withCommandGateway(new KasperCommandGateway(new KasperCommandBus()))
-                    .withQueryGateway(new KasperQueryGateway())
-                    .withMetricRegistry(new MetricRegistry());
+            final Platform.Builder platformBuilder = new Platform.Builder(new KasperPlatformConfiguration());
 
             for (final DomainBundle domainBundle: Preconditions.checkNotNull(getBundles())) {
                 platformBuilder.addDomainBundle(domainBundle);

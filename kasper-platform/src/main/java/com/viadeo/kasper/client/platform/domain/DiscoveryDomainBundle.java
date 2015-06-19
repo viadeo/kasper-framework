@@ -18,6 +18,7 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.exception.KasperException;
 import org.springframework.beans.factory.BeanCreationException;
 
@@ -31,6 +32,7 @@ public class DiscoveryDomainBundle extends SpringDomainBundle {
     protected final Collection<Class<QueryHandler>> queryHandlerClasses;
     protected final Collection<Class<CommandHandler>> commandHandlerClasses;
     protected final Collection<Class<EventListener>> eventListenerClasses;
+    protected final Collection<Class<Saga>> sagaClasses;
     protected final Collection<Class<Repository>> repositoryClasses;
     protected final Collection<Class<QueryInterceptorFactory>> queryInterceptorFactoryClasses;
     protected final Collection<Class<CommandInterceptorFactory>> commandInterceptorFactoryClasses;
@@ -68,6 +70,7 @@ public class DiscoveryDomainBundle extends SpringDomainBundle {
             this.queryHandlerClasses = findComponents(basePackage, QueryHandler.class);
             this.commandHandlerClasses = findComponents(basePackage, CommandHandler.class);
             this.eventListenerClasses = findComponents(basePackage, EventListener.class);
+            this.sagaClasses = findComponents(basePackage, Saga.class);
             this.repositoryClasses = findComponents(basePackage, Repository.class);
             this.queryInterceptorFactoryClasses = findComponents(basePackage, QueryInterceptorFactory.class);
             this.commandInterceptorFactoryClasses = findComponents(basePackage, CommandInterceptorFactory.class);
@@ -96,6 +99,7 @@ public class DiscoveryDomainBundle extends SpringDomainBundle {
             commandHandlers.addAll(instantiate(componentsInstanceManager, commandHandlerClasses));
             queryHandlers.addAll(instantiate(componentsInstanceManager, queryHandlerClasses));
             eventListeners.addAll(instantiate(componentsInstanceManager, eventListenerClasses));
+            sagas.addAll(instantiate(componentsInstanceManager, sagaClasses));
             repositories.addAll(instantiate(componentsInstanceManager, repositoryClasses));
             queryInterceptorFactories.addAll(instantiate(componentsInstanceManager, queryInterceptorFactoryClasses));
             commandInterceptorFactories.addAll(instantiate(componentsInstanceManager, commandInterceptorFactoryClasses));

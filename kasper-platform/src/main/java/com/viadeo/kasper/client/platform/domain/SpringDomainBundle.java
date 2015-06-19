@@ -20,6 +20,7 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.saga.Saga;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -135,6 +136,7 @@ public class SpringDomainBundle extends DefaultDomainBundle {
         this.repositories.addAll(applicationContext.getBeansOfType(Repository.class).values());
         this.queryHandlers.addAll(applicationContext.getBeansOfType(QueryHandler.class).values());
         this.eventListeners.addAll(applicationContext.getBeansOfType(EventListener.class).values());
+        this.sagas.addAll(applicationContext.getBeansOfType(Saga.class).values());
         this.queryInterceptorFactories.addAll(applicationContext.getBeansOfType(QueryInterceptorFactory.class).values());
         this.commandInterceptorFactories.addAll(applicationContext.getBeansOfType(CommandInterceptorFactory.class).values());
         this.eventInterceptorFactories.addAll(applicationContext.getBeansOfType(EventInterceptorFactory.class).values());

@@ -38,9 +38,9 @@ import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.saga.Saga;
-import org.axonframework.eventhandling.scheduling.EventScheduler;
-import org.axonframework.saga.SagaRepository;
-import org.axonframework.saga.annotation.AbstractAnnotatedSaga;
+import com.viadeo.kasper.event.saga.SagaExecutor;
+import com.viadeo.kasper.event.saga.SagaManager;
+import com.viadeo.kasper.event.saga.SagaWrapper;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,10 +106,7 @@ public interface Platform {
         private RepositoryManager repositoryManager;
         private MetricRegistry metricRegistry;
         private Meta meta;
-
-        private SagaRepository sagaRepository;
-        private EventScheduler eventScheduler;
-        private List<AbstractAnnotatedSaga> truc;
+        private SagaManager sagaManager;
 
         // --------------------------------------------------------------------
 
@@ -142,6 +139,7 @@ public interface Platform {
             this.queryGateway = checkNotNull(platformConfiguration.queryGateway());
             this.configuration = checkNotNull(platformConfiguration.configuration());
             this.metricRegistry = checkNotNull(platformConfiguration.metricRegistry());
+            this.sagaManager = checkNotNull(platformConfiguration.sagaManager());
             this.extraComponents.putAll(checkNotNull(platformConfiguration.extraComponents()));
             this.queryInterceptorFactories.addAll(checkNotNull(platformConfiguration.queryInterceptorFactories()));
             this.commandInterceptorFactories.addAll(checkNotNull(platformConfiguration.commandInterceptorFactories()));
@@ -223,6 +221,11 @@ public interface Platform {
             return this;
         }
 
+        public Builder withSagaManager(final SagaManager sagaManager) {
+            this.sagaManager = checkNotNull(sagaManager);
+            return this;
+        }
+
         @SafeVarargs
         private final <COMP> void with(final Collection<COMP> collection, final COMP... components) {
             checkNotNull(collection);
@@ -239,13 +242,13 @@ public interface Platform {
         // --------------------------------------------------------------------
 
         public Platform build() {
-
             checkState((null != eventBus), "the event bus cannot be null");
             checkState((null != commandGateway), "the command gateway cannot be null");
             checkState((null != queryGateway), "the query gateway cannot be null");
             checkState((null != configuration), "the configuration cannot be null");
             checkState((null != repositoryManager), "the repository manager cannot be null");
             checkState((null != metricRegistry), "the metric registry cannot be null");
+            checkState((null != sagaManager), "the saga manager cannot be null");
 
             this.meta = Objects.firstNonNull(meta, new Meta("unknown", DateTime.now(), DateTime.now()));
 
@@ -343,11 +346,8 @@ public interface Platform {
             }
 
             for(final Saga saga : bundle.getSagas()){
-                /*// Sagas instances are managed and tracked by a SagaManager.
-                AnnotatedSagaManager sagaManager = new AnnotatedSagaManager(sagaRepository, sagaFactory, kasperSaga);
-
-                // and we need to subscribe the Saga Manager to the Event Bus
-                eventBus.subscribe(sagaManager);*/
+                final SagaExecutor executor = sagaManager.register(saga);
+                eventBus.subscribe(new SagaWrapper(executor));
             }
 
             final DomainDescriptor domainDescriptor = domainDescriptorFactory.createFrom(bundle);

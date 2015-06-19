@@ -35,6 +35,7 @@ import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.QueryEventListener;
+import com.viadeo.kasper.event.saga.SagaManager;
 import org.junit.Test;
 
 import java.lang.reflect.Field;
@@ -282,6 +283,7 @@ public class PlatformBuilderUTest {
                 .withQueryGateway(queryGateway)
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
+                .withSagaManager(mock(SagaManager.class))
                 .withConfiguration(mock(Config.class))
                 .withMetricRegistry(mock(MetricRegistry.class));
 
@@ -326,6 +328,7 @@ public class PlatformBuilderUTest {
                 .withQueryGateway(queryGateway)
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
+                .withSagaManager(mock(SagaManager.class))
                 .withConfiguration(configuration)
                 .withMetricRegistry(metricRegistry)
                 .addDomainBundle(domainBundle);
@@ -352,6 +355,7 @@ public class PlatformBuilderUTest {
                 .withQueryGateway(queryGateway)
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
+                .withSagaManager(mock(SagaManager.class))
                 .withConfiguration(configuration)
                 .withMetricRegistry(metricRegistry)
                 .addPlugin(plugin);
@@ -435,6 +439,7 @@ public class PlatformBuilderUTest {
                 .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
+                .withSagaManager(mock(SagaManager.class))
                 .withConfiguration(mock(Config.class))
                 .withMetricRegistry(mock(MetricRegistry.class))
                 .addDomainBundle(domainBundle);
@@ -465,6 +470,7 @@ public class PlatformBuilderUTest {
                 .withQueryGateway(queryGateway)
                 .withCommandGateway(mock(KasperCommandGateway.class))
                 .withEventBus(eventBus)
+                .withSagaManager(mock(SagaManager.class))
                 .withConfiguration(mock(Config.class))
                 .withMetricRegistry(mock(MetricRegistry.class))
                 .addDomainBundle(domainBundle);
@@ -494,6 +500,7 @@ public class PlatformBuilderUTest {
                 .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
+                .withSagaManager(mock(SagaManager.class))
                 .withConfiguration(mock(Config.class))
                 .withMetricRegistry(mock(MetricRegistry.class))
                 .addDomainBundle(domainBundle);
@@ -525,6 +532,7 @@ public class PlatformBuilderUTest {
                 .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
+                .withSagaManager(mock(SagaManager.class))
                 .withConfiguration(mock(Config.class))
                 .withMetricRegistry(mock(MetricRegistry.class))
                 .addDomainBundle(domainBundle);
@@ -557,6 +565,7 @@ public class PlatformBuilderUTest {
                 .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(mock(KasperCommandGateway.class))
                 .withEventBus(eventBus)
+                .withSagaManager(mock(SagaManager.class))
                 .withConfiguration(mock(Config.class))
                 .withMetricRegistry(mock(MetricRegistry.class))
                 .addDomainBundle(domainBundle);
@@ -589,6 +598,7 @@ public class PlatformBuilderUTest {
                 .withQueryGateway(mock(KasperQueryGateway.class))
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
+                .withSagaManager(mock(SagaManager.class))
                 .withConfiguration(mock(Config.class))
                 .withRepositoryManager(repositoryManager)
                 .withMetricRegistry(mock(MetricRegistry.class))
@@ -618,6 +628,7 @@ public class PlatformBuilderUTest {
                 .withQueryGateway(queryGateway)
                 .withCommandGateway(commandGateway)
                 .withEventBus(eventBus)
+                .withSagaManager(mock(SagaManager.class))
                 .withConfiguration(configuration)
                 .withMetricRegistry(metricRegistry)
                 .addDomainBundle(domainBundle);

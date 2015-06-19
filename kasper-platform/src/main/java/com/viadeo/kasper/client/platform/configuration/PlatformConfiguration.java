@@ -14,6 +14,7 @@ import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
+import com.viadeo.kasper.event.saga.SagaManager;
 
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,11 @@ public interface PlatformConfiguration {
      * @return the metric registry
      */
     MetricRegistry metricRegistry();
+
+    /**
+     * @return the saga manager
+     */
+    SagaManager sagaManager();
 
     /**
      * @return the configuration

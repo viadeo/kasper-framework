@@ -113,4 +113,8 @@ public class SagaExecutor {
     protected SagaRepository getSagaRepository() {
         return repository;
     }
+
+    protected Set<Class<?>> getEventClasses() {
+        return steps.keySet();
+    }
 }

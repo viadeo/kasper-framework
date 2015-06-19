@@ -30,6 +30,7 @@ import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.EventResponse;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
+import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.exposition.http.HttpEventExposerPlugin;
 import com.viadeo.kasper.exposition.http.HttpExposerPlugin;
@@ -125,6 +126,7 @@ public class HttpEventExposerTest extends BaseHttpExposerTest {
                 Lists.<QueryHandler>newArrayList(),
                 Lists.<Repository>newArrayList(),
                 Lists.<EventListener>newArrayList(new AccountCreatedEventListener(), new NeedValidationEventListener()),
+                Lists.<Saga>newArrayList(),
                 Lists.<QueryInterceptorFactory>newArrayList(),
                 Lists.<CommandInterceptorFactory>newArrayList(),
                 Lists.<EventInterceptorFactory>newArrayList(),

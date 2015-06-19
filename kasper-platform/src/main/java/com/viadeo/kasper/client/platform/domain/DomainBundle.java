@@ -100,6 +100,7 @@ public interface DomainBundle {
         private final List<CommandHandler> commandHandlers = Lists.newArrayList();
         private final List<QueryHandler> queryHandlers = Lists.newArrayList();
         private final List<EventListener> eventListeners = Lists.newArrayList();
+        private final List<Saga> sagas = Lists.newArrayList();
         private final List<Repository> repositories = Lists.newArrayList();
         private final List<QueryInterceptorFactory> queryInterceptorFactories = Lists.newArrayList();
         private final List<CommandInterceptorFactory> commandInterceptorFactories = Lists.newArrayList();
@@ -129,6 +130,12 @@ public interface DomainBundle {
         public Builder with(final EventListener eventListener, final EventListener... eventListeners){
             this.eventListeners.add(checkNotNull(eventListener));
             with(this.eventListeners, eventListeners);
+            return this;
+        }
+
+        public Builder with(final Saga saga, final Saga... sagas){
+            this.sagas.add(checkNotNull(saga));
+            with(this.sagas, sagas);
             return this;
         }
 
@@ -170,6 +177,7 @@ public interface DomainBundle {
                     queryHandlers,
                     repositories,
                     eventListeners,
+                    sagas,
                     queryInterceptorFactories,
                     commandInterceptorFactories,
                     eventInterceptorFactories,

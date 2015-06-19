@@ -24,8 +24,12 @@ import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryFilterInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryValidationInterceptorFactory;
 import com.viadeo.kasper.event.interceptor.EventValidationInterceptorFactory;
+import com.viadeo.kasper.event.saga.SagaManager;
+import com.viadeo.kasper.event.saga.spring.SagaConfiguration;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.List;
 import java.util.Map;
@@ -44,6 +48,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     private final MetricRegistry metricRegistry;
     private final Config configuration;
     private final KasperCommandGateway commandGateway;
+    private final SagaManager sagaManager;
     private final Map<Platform.ExtraComponentKey, Object> extraComponents;
     private final List<CommandInterceptorFactory> commandInterceptorFactories;
     private final List<QueryInterceptorFactory> queryInterceptorFactories;
@@ -77,6 +82,19 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         this.eventInterceptorFactories = Lists.<EventInterceptorFactory>newArrayList(
             new EventValidationInterceptorFactory()
         );
+
+        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+        applicationContext.register(SagaConfiguration.class);
+
+        ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+        beanFactory.registerSingleton("eventBus", eventBus);
+        beanFactory.registerSingleton("queryGateway", queryGateway);
+        beanFactory.registerSingleton("commandGateway", commandGateway);
+        beanFactory.registerSingleton("configuration", configuration);
+        beanFactory.registerSingleton("metricRegistry", metricRegistry);
+        applicationContext.refresh();
+
+        sagaManager = applicationContext.getBean(SagaManager.class);
     }
 
     // ------------------------------------------------------------------------
@@ -99,6 +117,11 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     @Override
     public MetricRegistry metricRegistry() {
         return metricRegistry;
+    }
+
+    @Override
+    public SagaManager sagaManager() {
+        return sagaManager;
     }
 
     @Override
