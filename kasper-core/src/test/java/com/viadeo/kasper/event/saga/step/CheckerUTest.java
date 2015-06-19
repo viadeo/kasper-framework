@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga.step;
 
+import com.viadeo.kasper.event.saga.TestFixture;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -14,17 +15,19 @@ import org.mockito.internal.util.collections.Sets;
 
 import java.util.Set;
 
+import static com.viadeo.kasper.event.saga.TestFixture.*;
+
 public class CheckerUTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
     private Steps.Checker checker;
-    private Class<TestSaga> sagaClass;
+    private Class<TestFixture.TestSagaA> sagaClass;
 
     @Before
     public void setUp() throws Exception {
         checker = new Steps.Checker();
-        sagaClass = TestSaga.class;
+        sagaClass = TestFixture.TestSagaA.class;
     }
 
     @Test
@@ -43,7 +46,7 @@ public class CheckerUTest {
 
         // Then
         thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("Should define at less two step methods (start/end) : " + TestSaga.class.getName());
+        thrown.expectMessage("Should define at less two step methods (start/end) : " + TestSagaA.class.getName());
 
         // When
         checker.check(sagaClass, steps);
@@ -53,13 +56,13 @@ public class CheckerUTest {
     public void check_withSeveralStartSteps_isKO() throws NoSuchMethodException {
         // Given
         Set<Step> steps = Sets.newSet();
-        steps.add(new Steps.StartStep(TestSaga.getMethod("handle", TestSaga.TestEvent.class), "getId"));
-        steps.add(new Steps.StartStep(TestSaga.getMethod("handle2", TestSaga.TestEvent2.class), "getId"));
-        steps.add(new Steps.EndStep(TestSaga.getMethod("handle3", TestSaga.TestEvent3.class), "getId"));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId"));
+        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle3", TestEvent3.class), "getId"));
 
         // Then
         thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("Should have one start method : " + TestSaga.class.getName());
+        thrown.expectMessage("Should have one start method : " + TestSagaA.class.getName());
 
         // When
         checker.check(sagaClass, steps);
@@ -69,11 +72,11 @@ public class CheckerUTest {
     public void check_withNoEndSteps_isKO() {
         // Given
         Set<Step> steps = Sets.newSet();
-        steps.add(new Steps.StartStep(TestSaga.getMethod("handle", TestSaga.TestEvent.class), "getId"));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
 
         // Then
         thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("Should have at less one end method : " + TestSaga.class.getName());
+        thrown.expectMessage("Should have at less one end method : " + TestFixture.TestSagaA.class.getName());
 
         // When
         checker.check(sagaClass, steps);
@@ -83,8 +86,8 @@ public class CheckerUTest {
     public void check_withOneStartStep_withOneEndStep_isOK() {
         // Given
         Set<Step> steps = Sets.newSet();
-        steps.add(new Steps.StartStep(TestSaga.getMethod("handle", TestSaga.TestEvent.class), "getId"));
-        steps.add(new Steps.EndStep(TestSaga.getMethod("handle2", TestSaga.TestEvent2.class), "getId"));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
+        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId"));
 
         // When
         checker.check(sagaClass, steps);
@@ -96,9 +99,9 @@ public class CheckerUTest {
     public void check_withOneStartStep_withSeveralEndSteps_isOK() {
         // Given
         Set<Step> steps = Sets.newSet();
-        steps.add(new Steps.StartStep(TestSaga.getMethod("handle", TestSaga.TestEvent.class), "getId"));
-        steps.add(new Steps.EndStep(TestSaga.getMethod("handle2", TestSaga.TestEvent2.class), "getId"));
-        steps.add(new Steps.EndStep(TestSaga.getMethod("handle3", TestSaga.TestEvent3.class), "getId"));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
+        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId"));
+        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle3", TestEvent3.class), "getId"));
 
         // When
         checker.check(sagaClass, steps);
@@ -110,10 +113,10 @@ public class CheckerUTest {
     public void check_withOneStartStep_withOneEndStep_withOtherKindOfSteps_isOK() {
         // Given
         Set<Step> steps = Sets.newSet();
-        steps.add(new Steps.StartStep(TestSaga.getMethod("handle", TestSaga.TestEvent.class), "getId"));
-        steps.add(new Steps.EndStep(TestSaga.getMethod("handle2", TestSaga.TestEvent2.class), "getId"));
-        steps.add(new Steps.BasicStep(TestSaga.getMethod("handle3", TestSaga.TestEvent3.class), "getId"));
-        steps.add(new Steps.ScheduleStep(TestSaga.getMethod("handle4", TestSaga.TestEvent4.class), "getId"));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
+        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId"));
+        steps.add(new Steps.BasicStep(getMethod(TestSagaA.class, "handle3", TestEvent3.class), "getId"));
+        steps.add(new Steps.ScheduleStep(getMethod(TestSagaA.class, "handle4", TestEvent4.class), "getId"));
 
         // When
         checker.check(sagaClass, steps);
@@ -125,12 +128,12 @@ public class CheckerUTest {
     public void check_withTwoStepsHandlingTheSameEvent_isKO() {
         // Given
         Set<Step> steps = Sets.newSet();
-        steps.add(new Steps.StartStep(TestSaga.getMethod("handle0", TestSaga.TestEvent.class), "getId"));
-        steps.add(new Steps.StartStep(TestSaga.getMethod("handle", TestSaga.TestEvent.class), "getId"));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle0", TestEvent.class), "getId"));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
 
         // Then
         thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("Should handle an event type per step : " + TestSaga.class.getName());
+        thrown.expectMessage("Should handle an event type per step : " + TestSagaA.class.getName());
 
         // When
         checker.check(sagaClass, steps);

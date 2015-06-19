@@ -12,12 +12,12 @@ import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.event.saga.step.Step;
 import com.viadeo.kasper.event.saga.step.Steps;
-import com.viadeo.kasper.event.saga.step.TestSaga;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static com.viadeo.kasper.event.saga.TestFixture.*;
 import static org.mockito.Mockito.*;
 
 public class SagaExecutorUTest {
@@ -35,10 +35,10 @@ public class SagaExecutorUTest {
     public void setUp() throws Exception {
         factory = mock(SagaFactory.class);
         repository = mock(SagaRepository.class);
-        startStep = spy(new Steps.StartStep(TestSaga.getMethod("handle", TestSaga.TestEvent.class), "getId"));
-        basicStep = spy(new Steps.BasicStep(TestSaga.getMethod("handle2", TestSaga.TestEvent2.class), "getId"));
+        startStep = spy(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
+        basicStep = spy(new Steps.BasicStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId"));
         executor = new SagaExecutor(
-                TestSaga.class,
+                TestSagaA.class,
                 Sets.<Step>newHashSet(startStep, basicStep),
                 factory,
                 repository
@@ -49,7 +49,7 @@ public class SagaExecutorUTest {
     public void execute_withUnknownEvent_isOK() {
         // Then
         expectedException.expect(SagaExecutionException.class);
-        expectedException.expectMessage("No step associate in 'TestSaga' to the specified event : com.viadeo.kasper.event.saga.SagaExecutorUTest$1");
+        expectedException.expectMessage("No step associate in 'TestSagaA' to the specified event");
 
         // When
         executor.execute(new Event() { });
@@ -58,31 +58,31 @@ public class SagaExecutorUTest {
     @Test
     public void execute_withAnEventAssociatedToAStartStep_createNewSaga() {
         // Given
-        TestSaga.TestEvent event = new TestSaga.TestEvent("2015");
-        TestSaga saga = new TestSaga();
-        when(factory.create("2015", TestSaga.class)).thenReturn(saga);
+        TestEvent event = new TestEvent("2015");
+        TestSagaA saga = new TestSagaA();
+        when(factory.create("2015", TestSagaA.class)).thenReturn(saga);
         when(repository.load("2015")).thenReturn(Optional.<Saga>absent());
 
         // When
         executor.execute(event);
 
         // Then
-        verify(factory).create("2015", TestSaga.class);
+        verify(factory).create("2015", TestSagaA.class);
         verify(startStep).invoke(saga, event);
     }
 
     @Test
     public void execute_withAnEventAssociatedToAStepExceptAStart_loadSaga() {
         // Given
-        TestSaga.TestEvent2 event = new TestSaga.TestEvent2("2015");
-        TestSaga saga = new TestSaga();
+        TestEvent2 event = new TestEvent2("2015");
+        TestSagaA saga = new TestSagaA();
         when(repository.load("2015")).thenReturn(Optional.<Saga>of(saga));
 
         // When
         executor.execute(event);
 
         // Then
-        verify(factory, never()).create("2015", TestSaga.class);
+        verify(factory, never()).create("2015", TestSagaA.class);
         verify(repository).load("2015");
         verify(basicStep).invoke(saga, event);
     }

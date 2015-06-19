@@ -12,6 +12,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import static com.viadeo.kasper.event.saga.TestFixture.*;
 import static org.junit.Assert.*;
 
 public class BaseStepUTest {
@@ -26,7 +27,7 @@ public class BaseStepUTest {
         thrown.expectMessage("Should specify only one and unique parameter referencing an event : ");
 
         // When
-        new BaseStep(TestSaga.class.getMethod("init"), "") {};
+        new BaseStep(TestSagaA.class.getMethod("init"), "") {};
     }
 
     @Test
@@ -36,7 +37,7 @@ public class BaseStepUTest {
         thrown.expectMessage("Should specify only one and unique parameter referencing an event : ");
 
         // When
-        new BaseStep(TestSaga.class.getMethod("init", Object.class, Object.class), "") {};
+        new BaseStep(TestSagaA.class.getMethod("init", Object.class, Object.class), "") {};
     }
 
     @Test
@@ -46,7 +47,7 @@ public class BaseStepUTest {
         thrown.expectMessage("Should specify an instance of event as parameter :");
 
         // When
-        new BaseStep(TestSaga.class.getMethod("init", Object.class), "") {};
+        new BaseStep(TestSagaA.class.getMethod("init", Object.class), "") {};
     }
 
     @Test
@@ -56,19 +57,19 @@ public class BaseStepUTest {
         thrown.expectMessage("The specified getter name 'fakeGetter' is undefined in the event");
 
         // When
-        new BaseStep(TestSaga.class.getMethod("handle", TestSaga.TestEvent.class), "fakeGetter") {};
+        new BaseStep(TestSagaA.class.getMethod("handle", TestEvent.class), "fakeGetter") {};
     }
 
     @Test
     public void init_isOK() throws NoSuchMethodException {
-        new BaseStep(TestSaga.class.getMethod("handle", TestSaga.TestEvent.class), "getId") {};
+        new BaseStep(TestSagaA.class.getMethod("handle", TestEvent.class), "getId") {};
     }
 
 
     @Test
     public void name_returnTheMethodName() throws NoSuchMethodException {
         // Given
-        Step step = new BaseStep(TestSaga.class.getMethod("handle", TestSaga.TestEvent.class), "getId");
+        Step step = new BaseStep(TestSagaA.class.getMethod("handle", TestEvent.class), "getId");
 
         // When
         String name = step.name();
@@ -81,21 +82,21 @@ public class BaseStepUTest {
     @Test
     public void getSupportedEvent_returnTheTypeParameterOfTheSpecifiedMethod() throws NoSuchMethodException {
         // Given
-        Step step = new BaseStep(TestSaga.class.getMethod("handle", TestSaga.TestEvent.class), "getId");
+        Step step = new BaseStep(TestSagaA.class.getMethod("handle", TestEvent.class), "getId");
 
         // When
         Class<? extends Event> supportedEvent = step.getSupportedEvent();
 
         // Then
         assertNotNull(supportedEvent);
-        assertEquals(TestSaga.TestEvent.class, supportedEvent);
+        assertEquals(TestEvent.class, supportedEvent);
     }
 
     @Test
     public void equals_withDifferentName_isKO() throws NoSuchMethodException {
         // Given
-        Step step1 = new BaseStep(TestSaga.class.getMethod("handle", TestSaga.TestEvent.class), "getId");
-        Step step2 = new BaseStep(TestSaga.class.getMethod("handle2", TestSaga.TestEvent2.class), "getId");
+        Step step1 = new BaseStep(TestSagaA.class.getMethod("handle", TestEvent.class), "getId");
+        Step step2 = new BaseStep(TestSagaA.class.getMethod("handle2", TestEvent2.class), "getId");
 
         // When
         boolean equality = step1.equals(step2);
@@ -107,8 +108,8 @@ public class BaseStepUTest {
     @Test
     public void equals_withDifferentSupportedEvent_isKO() throws NoSuchMethodException {
         // Given
-        Step step1 = new BaseStep(TestSaga.class.getMethod("handle", TestSaga.TestEvent.class), "getId");
-        Step step2 = new BaseStep(TestSaga.class.getMethod("handle2", TestSaga.TestEvent2.class), "getId");
+        Step step1 = new BaseStep(TestSagaA.class.getMethod("handle", TestEvent.class), "getId");
+        Step step2 = new BaseStep(TestSagaA.class.getMethod("handle2", TestEvent2.class), "getId");
 
         // When
         boolean equality = step1.equals(step2);
@@ -120,8 +121,8 @@ public class BaseStepUTest {
     @Test
     public void equals_withSameName_withSameSupportedEvent_isOK() throws NoSuchMethodException {
         // Given
-        Step step1 = new BaseStep(TestSaga.class.getMethod("handle", TestSaga.TestEvent.class), "getId");
-        Step step2 = new BaseStep(TestSaga.class.getMethod("handle", TestSaga.TestEvent.class), "getId");
+        Step step1 = new BaseStep(TestSagaA.class.getMethod("handle", TestEvent.class), "getId");
+        Step step2 = new BaseStep(TestSagaA.class.getMethod("handle", TestEvent.class), "getId");
 
         // When
         boolean equality = step1.equals(step2);
@@ -133,8 +134,8 @@ public class BaseStepUTest {
     @Test
     public void getSagaIdentifierFrom_returnTheValue() throws NoSuchMethodException {
         // Given
-        Step step = new BaseStep(TestSaga.class.getMethod("handle", TestSaga.TestEvent.class), "getId");
-        Event event = new TestSaga.TestEvent("42");
+        Step step = new BaseStep(TestSagaA.class.getMethod("handle", TestEvent.class), "getId");
+        Event event = new TestEvent("42");
 
         // When
         Optional<String> identifier = step.getSagaIdentifierFrom(event);
@@ -148,8 +149,8 @@ public class BaseStepUTest {
     @Test
     public void getSagaIdentifierFrom_withUnexpectedError_returnAbsentValue() throws NoSuchMethodException {
         // Given
-        Step step = new BaseStep(TestSaga.class.getMethod("handle", TestSaga.TestEvent.class), "getIdThrowsException");
-        Event event = new TestSaga.TestEvent("42");
+        Step step = new BaseStep(TestSagaA.class.getMethod("handle", TestEvent.class), "getIdThrowsException");
+        Event event = new TestEvent("42");
 
         // When
         Optional<String> identifier = step.getSagaIdentifierFrom(event);

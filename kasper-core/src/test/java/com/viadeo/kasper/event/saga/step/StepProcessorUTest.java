@@ -2,10 +2,12 @@ package com.viadeo.kasper.event.saga.step;
 
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.event.saga.Saga;
+import com.viadeo.kasper.event.saga.TestFixture;
 import org.junit.Test;
 
 import java.util.Set;
 
+import static com.viadeo.kasper.event.saga.TestFixture.*;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
@@ -36,14 +38,14 @@ public class StepProcessorUTest {
         StepProcessor processor = new StepProcessor();
 
         // When
-        Set<Step> steps = processor.process(TestSaga.class);
+        Set<Step> steps = processor.process(TestFixture.TestSagaA.class);
 
         // Then
         assertNotNull(steps);
         assertTrue(steps.size() == 4);
-        assertTrue(steps.contains(new Steps.StartStep(TestSaga.getMethod("handle", TestSaga.TestEvent.class), "getId")));
-        assertTrue(steps.contains(new Steps.EndStep(TestSaga.getMethod("handle2", TestSaga.TestEvent2.class), "getId")));
-        assertTrue(steps.contains(new Steps.BasicStep(TestSaga.getMethod("handle3", TestSaga.TestEvent3.class), "getId")));
-        assertTrue(steps.contains(new Steps.ScheduleStep(TestSaga.getMethod("handle4", TestSaga.TestEvent4.class), "getId")));
+        assertTrue(steps.contains(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId")));
+        assertTrue(steps.contains(new Steps.EndStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId")));
+        assertTrue(steps.contains(new Steps.BasicStep(getMethod(TestSagaA.class, "handle3", TestEvent3.class), "getId")));
+        assertTrue(steps.contains(new Steps.ScheduleStep(getMethod(TestSagaA.class, "handle4", TestEvent4.class), "getId")));
     }
 }
