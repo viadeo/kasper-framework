@@ -104,6 +104,7 @@ public class TestFixture {
 
         private final KasperCommandGateway commandGateway;
         private int count;
+        private String name;
 
         public TestSagaB(KasperCommandGateway commandGateway) {
             this.commandGateway = commandGateway;
@@ -135,8 +136,24 @@ public class TestFixture {
             return Optional.absent();
         }
 
+        public KasperCommandGateway getCommandGateway() {
+            return commandGateway;
+        }
+
         public int getCount() {
             return count;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setCount(int count) {
+            this.count = count;
+        }
+
+        public void setName(String name) {
+            this.name = name;
         }
     }
 

@@ -51,8 +51,8 @@ public class SagaConfiguration{
     }
 
     @Bean
-    public SagaRepository sagaRepository() {
-        return new InMemorySagaRepository();
+    public SagaRepository sagaRepository(SagaFactory sagaFactory) {
+        return new InMemorySagaRepository(sagaFactory);
     }
 
     @Bean

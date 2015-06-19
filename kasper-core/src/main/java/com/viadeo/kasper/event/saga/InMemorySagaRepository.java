@@ -15,23 +15,35 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class InMemorySagaRepository implements SagaRepository {
 
-    private final Map<Object, Saga> sagas;
+    private final Map<Object, Map<String,Object>> sagas;
+    private final SagaMapper sagaMapper;
 
-    public InMemorySagaRepository() {
+    public InMemorySagaRepository(SagaFactory sagaFactory) {
+        this.sagaMapper = new SagaMapper(sagaFactory);
         this.sagas = Maps.newHashMap();
     }
 
     @Override
     public Optional<Saga> load(Object identifier) {
         checkNotNull(identifier);
-        return Optional.fromNullable(sagas.get(identifier));
+
+        Map<String,Object> properties = sagas.get(identifier);
+
+        if( properties != null ) {
+            return Optional.fromNullable(sagaMapper.to(properties));
+        }
+
+        return Optional.absent();
     }
 
     @Override
     public void save(Object identifier, Saga saga) {
         checkNotNull(identifier);
         checkNotNull(saga);
-        sagas.put(identifier, saga);
+
+        Map<String, Object> properties = sagaMapper.from(identifier, saga);
+
+        sagas.put(identifier, properties);
     }
 
     @Override
