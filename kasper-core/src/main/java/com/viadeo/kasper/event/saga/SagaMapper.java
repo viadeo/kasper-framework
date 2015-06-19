@@ -49,7 +49,7 @@ public class SagaMapper {
         for (Field field : saga.getClass().getDeclaredFields()) {
             field.setAccessible(Boolean.TRUE);
 
-            if (Serializable.class.isAssignableFrom(field.getType()) || field.getType().isPrimitive()) {
+            if ( ! field.getName().startsWith("$") && (Serializable.class.isAssignableFrom(field.getType()) || field.getType().isPrimitive())) {
                 Object value = null;
                 try {
                     value = field.get(saga);

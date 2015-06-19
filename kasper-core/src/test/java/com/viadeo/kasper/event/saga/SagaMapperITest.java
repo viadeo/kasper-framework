@@ -42,7 +42,7 @@ public class SagaMapperITest {
 
         // Then
         assertNotNull(properties);
-        assertEquals(4, properties.size());
+        assertEquals("->"+properties, 4, properties.size());
         assertEquals(identifier, properties.get(SagaMapper.X_KASPER_SAGA_IDENTIFIER));
         assertEquals(saga.getClass(), properties.get(SagaMapper.X_KASPER_SAGA_CLASS));
         assertEquals(666, properties.get("count"));
