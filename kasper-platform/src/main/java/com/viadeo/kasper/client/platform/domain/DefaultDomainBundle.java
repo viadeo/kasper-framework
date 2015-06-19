@@ -17,7 +17,7 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.saga.KasperSaga;
+import com.viadeo.kasper.event.saga.Saga;
 
 import java.util.List;
 
@@ -125,7 +125,7 @@ public class DefaultDomainBundle implements DomainBundle {
     }
 
     @Override
-    public List<KasperSaga> getKasperSagas() {
+    public List<Saga> getSagas() {
         //TODO
         return Lists.newArrayList();
     }

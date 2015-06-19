@@ -37,12 +37,10 @@ import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.saga.KasperSaga;
-import com.viadeo.kasper.event.saga.ToDoSaga;
+import com.viadeo.kasper.event.saga.Saga;
 import org.axonframework.eventhandling.scheduling.EventScheduler;
 import org.axonframework.saga.SagaRepository;
 import org.axonframework.saga.annotation.AbstractAnnotatedSaga;
-import org.axonframework.saga.annotation.AnnotatedSagaManager;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -344,7 +342,7 @@ public interface Platform {
                 eventBus.subscribe(eventListener);
             }
 
-            for(final KasperSaga kasperSaga : bundle.getKasperSagas()){
+            for(final Saga saga : bundle.getSagas()){
                 /*// Sagas instances are managed and tracked by a SagaManager.
                 AnnotatedSagaManager sagaManager = new AnnotatedSagaManager(sagaRepository, sagaFactory, kasperSaga);
 
