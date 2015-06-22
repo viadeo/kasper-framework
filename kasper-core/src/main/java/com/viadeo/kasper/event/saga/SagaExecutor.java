@@ -9,6 +9,7 @@ package com.viadeo.kasper.event.saga;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.event.saga.step.Step;
@@ -42,7 +43,7 @@ public class SagaExecutor {
         }
     }
 
-    public void execute(final Event event) {
+    public void execute(final Context context, final Event event) {
         checkNotNull(event);
 
         final Step step = steps.get(event.getClass());
@@ -84,7 +85,7 @@ public class SagaExecutor {
         }
 
         try {
-            step.invoke(saga, event);
+            step.invoke(saga, context, event);
         } catch (Exception e) {
             throw new SagaExecutionException(
                     String.format("Unexpected error in invoking step, <saga=%s> <identifier=%s>", saga.getClass().getSimpleName(), sagaIdentifier),

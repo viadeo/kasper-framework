@@ -35,8 +35,7 @@ public class SagaWrapper extends AxonEventListener<Event> implements IEventListe
     @Override
     public EventResponse handle(Context context, Event event) {
         try {
-            // TODO delegate the execution of an event with the context
-            executor.execute(event);
+            executor.execute(context, event);
         } catch (Exception e) {
             return EventResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
         }

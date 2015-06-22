@@ -1,5 +1,6 @@
 package com.viadeo.kasper.event.saga;
 
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.event.saga.spring.SagaConfiguration;
@@ -60,7 +61,7 @@ public class SagaExecutorITest {
         expectedException.expectMessage("No available saga instance for the specified identifier");
 
         // When
-        sagaExecutor.execute(new EndEvent(UUID.randomUUID()));
+        sagaExecutor.execute(Contexts.empty(), new EndEvent(UUID.randomUUID()));
     }
 
     @Test
@@ -73,7 +74,7 @@ public class SagaExecutorITest {
         expectedException.expectMessage("No available saga instance for the specified identifier");
 
         // When
-        sagaExecutor.execute(new StepEvent(UUID.randomUUID()));
+        sagaExecutor.execute(Contexts.empty(), new StepEvent(UUID.randomUUID()));
     }
 
     @Test
@@ -81,14 +82,14 @@ public class SagaExecutorITest {
         // Given
         SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));
         UUID identifier = UUID.randomUUID();
-        sagaExecutor.execute(new StartEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new StartEvent(identifier));
 
         // Then
         expectedException.expect(SagaExecutionException.class);
         expectedException.expectMessage("Only one instance can be alive for the specified identifier");
 
         // When
-        sagaExecutor.execute(new StartEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new StartEvent(identifier));
     }
 
     @Test
@@ -98,7 +99,7 @@ public class SagaExecutorITest {
         UUID identifier = UUID.randomUUID();
 
         // When
-        sagaExecutor.execute(new StartEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new StartEvent(identifier));
 
         // Then
         assertTrue(sagaRepository.load(identifier).isPresent());
@@ -109,12 +110,12 @@ public class SagaExecutorITest {
         // Given
         SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));
         UUID identifier = UUID.randomUUID();
-        sagaExecutor.execute(new StartEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new StartEvent(identifier));
 
         // When
-        sagaExecutor.execute(new StepEvent(identifier));
-        sagaExecutor.execute(new StepEvent(identifier));
-        sagaExecutor.execute(new StepEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new StepEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new StepEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new StepEvent(identifier));
 
         // Then
         TestSagaB saga = (TestSagaB) sagaRepository.load(identifier).get();
@@ -126,10 +127,10 @@ public class SagaExecutorITest {
         // Given
         SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));
         UUID identifier = UUID.randomUUID();
-        sagaExecutor.execute(new StartEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new StartEvent(identifier));
 
         // When
-        sagaExecutor.execute(new EndEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new EndEvent(identifier));
 
         // Then
         assertFalse(sagaRepository.load(identifier).isPresent());
@@ -140,15 +141,15 @@ public class SagaExecutorITest {
         // Given
         SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));
         UUID identifier = UUID.randomUUID();
-        sagaExecutor.execute(new StartEvent(identifier));
-        sagaExecutor.execute(new EndEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new StartEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new EndEvent(identifier));
 
         // Then
         expectedException.expect(SagaExecutionException.class);
         expectedException.expectMessage("No available saga instance for the specified identifier");
 
         // When
-        sagaExecutor.execute(new StepEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new StepEvent(identifier));
     }
 
     @Test
@@ -156,15 +157,15 @@ public class SagaExecutorITest {
         // Given
         SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));
         UUID identifier = UUID.randomUUID();
-        sagaExecutor.execute(new StartEvent(identifier));
-        sagaExecutor.execute(new EndEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new StartEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new EndEvent(identifier));
 
         // Then
         expectedException.expect(SagaExecutionException.class);
         expectedException.expectMessage("No available saga instance for the specified identifier");
 
         // When
-        sagaExecutor.execute(new EndEvent(identifier));
+        sagaExecutor.execute(Contexts.empty(), new EndEvent(identifier));
     }
 
     @Test
@@ -172,13 +173,13 @@ public class SagaExecutorITest {
         // Given
         SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));
         UUID identifierSaga1 = UUID.randomUUID();
-        sagaExecutor.execute(new StartEvent(identifierSaga1));
+        sagaExecutor.execute(Contexts.empty(), new StartEvent(identifierSaga1));
         UUID identifierSaga2 = UUID.randomUUID();
-        sagaExecutor.execute(new StartEvent(identifierSaga2));
+        sagaExecutor.execute(Contexts.empty(), new StartEvent(identifierSaga2));
 
         // When
-        sagaExecutor.execute(new EndEvent(identifierSaga1));
-        sagaExecutor.execute(new EndEvent(identifierSaga2));
+        sagaExecutor.execute(Contexts.empty(), new EndEvent(identifierSaga1));
+        sagaExecutor.execute(Contexts.empty(), new EndEvent(identifierSaga2));
 
         // Then
         assertFalse(sagaRepository.load(identifierSaga1).isPresent());
@@ -190,14 +191,14 @@ public class SagaExecutorITest {
         // Given
         SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));
         UUID identifierSaga = UUID.randomUUID();
-        sagaExecutor.execute(new StartEvent(identifierSaga));
+        sagaExecutor.execute(Contexts.empty(), new StartEvent(identifierSaga));
 
         // Then
         expectedException.expect(SagaExecutionException.class);
         expectedException.expectMessage("Unexpected error in invoking step");
 
         // When
-        sagaExecutor.execute(new ThrowExceptionEvent(identifierSaga));
+        sagaExecutor.execute(Contexts.empty(), new ThrowExceptionEvent(identifierSaga));
     }
 
 

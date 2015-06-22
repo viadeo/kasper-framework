@@ -8,6 +8,8 @@ package com.viadeo.kasper.event.saga;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
+import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.event.saga.step.Step;
@@ -52,7 +54,7 @@ public class SagaExecutorUTest {
         expectedException.expectMessage("No step associate in 'TestSagaA' to the specified event");
 
         // When
-        executor.execute(new Event() { });
+        executor.execute(Contexts.empty(), new Event() { });
     }
 
     @Test
@@ -60,15 +62,16 @@ public class SagaExecutorUTest {
         // Given
         TestEvent event = new TestEvent("2015");
         TestSagaA saga = new TestSagaA();
+        Context context = Contexts.empty();
         when(factory.create("2015", TestSagaA.class)).thenReturn(saga);
         when(repository.load("2015")).thenReturn(Optional.<Saga>absent());
 
         // When
-        executor.execute(event);
+        executor.execute(context, event);
 
         // Then
         verify(factory).create("2015", TestSagaA.class);
-        verify(startStep).invoke(saga, event);
+        verify(startStep).invoke(saga, context, event);
     }
 
     @Test
@@ -76,14 +79,15 @@ public class SagaExecutorUTest {
         // Given
         TestEvent2 event = new TestEvent2("2015");
         TestSagaA saga = new TestSagaA();
+        Context context = Contexts.empty();
         when(repository.load("2015")).thenReturn(Optional.<Saga>of(saga));
 
         // When
-        executor.execute(event);
+        executor.execute(context, event);
 
         // Then
         verify(factory, never()).create("2015", TestSagaA.class);
         verify(repository).load("2015");
-        verify(basicStep).invoke(saga, event);
+        verify(basicStep).invoke(saga, context, event);
     }
 }

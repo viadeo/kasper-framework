@@ -133,7 +133,7 @@ public class CheckerUTest {
 
         // Then
         thrown.expect(IllegalStateException.class);
-        thrown.expectMessage("Should handle an event type per step : " + TestSagaA.class.getName());
+        thrown.expectMessage("Should handle an event type per step : <saga=" + TestSagaA.class.getName());
 
         // When
         checker.check(sagaClass, steps);

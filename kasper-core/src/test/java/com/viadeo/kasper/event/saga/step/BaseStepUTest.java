@@ -21,36 +21,6 @@ public class BaseStepUTest {
     public ExpectedException thrown = ExpectedException.none();
 
     @Test
-    public void init_withoutParametersInMethod_isKO() throws NoSuchMethodException {
-        // Then
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("Should specify only one and unique parameter referencing an event : ");
-
-        // When
-        new BaseStep(TestSagaA.class.getMethod("init"), "") {};
-    }
-
-    @Test
-    public void init_withSeveralParametersInMethod_isKO() throws NoSuchMethodException {
-        // Then
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("Should specify only one and unique parameter referencing an event : ");
-
-        // When
-        new BaseStep(TestSagaA.class.getMethod("init", Object.class, Object.class), "") {};
-    }
-
-    @Test
-    public void init_withAnObjectAsParameterInMethod_isKO() throws NoSuchMethodException {
-        // Then
-        thrown.expect(IllegalArgumentException.class);
-        thrown.expectMessage("Should specify an instance of event as parameter :");
-
-        // When
-        new BaseStep(TestSagaA.class.getMethod("init", Object.class), "") {};
-    }
-
-    @Test
     public void init_withUnknownGetterName_isKO() throws NoSuchMethodException {
         // Then
         thrown.expect(IllegalArgumentException.class);

@@ -15,6 +15,7 @@ import com.viadeo.kasper.event.annotation.XKasperSaga;
 import com.viadeo.kasper.event.saga.Saga;
 
 import java.lang.reflect.Method;
+import java.util.Collection;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -57,9 +58,10 @@ public final class Steps {
             // TODO check inheritance of events
 
             for (final Class<? extends Event> eventClass : stepsBySupportedEvent.keySet()) {
+                Collection<Step> stepCollection = stepsBySupportedEvent.get(eventClass);
                 checkState(
-                        stepsBySupportedEvent.get(eventClass).size() == 1,
-                        String.format("Should handle an event type per step : %s", sagaClass.getName())
+                        stepCollection.size() == 1,
+                        String.format("Should handle an event type per step : <saga=%s> <steps=%s>", sagaClass.getName(), stepCollection)
                 );
             }
 
@@ -157,7 +159,6 @@ public final class Steps {
         public StartStep(final Method method, final String getterName) {
             super(method, getterName);
         }
-
     }
 
     public static class EndStep extends BaseStep {

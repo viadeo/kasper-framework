@@ -7,11 +7,13 @@
 package com.viadeo.kasper.event.saga;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.EventMessage;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
 
 import java.lang.reflect.Method;
@@ -36,6 +38,8 @@ public class TestFixture {
 
         public void init() {}
 
+        public void init(Object object1, Object object2, Object object3) {}
+
         public void init(Object object1, Object object2) {}
 
         public void init(Object object) {}
@@ -53,6 +57,16 @@ public class TestFixture {
 
         @XKasperSaga.Schedule(getter = "getId", delay = 1L, unit = TimeUnit.SECONDS)
         public void handle4(TestEvent4 event) {}
+
+        public void handle5(Context context, TestEvent3 event) {}
+
+        public void handle5(TestEvent3 event, Context context) {}
+
+        public void handle6(EventMessage<TestEvent3> eventMessage) {}
+
+        public void handle7(EventMessage eventMessage) {}
+
+        public void handle8(EventMessage<?> eventMessage) {}
 
         @Override
         public Optional<SagaFactory> getFactory() {

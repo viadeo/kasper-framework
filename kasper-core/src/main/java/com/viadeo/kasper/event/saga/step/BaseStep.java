@@ -8,6 +8,7 @@ package com.viadeo.kasper.event.saga.step;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.Saga;
 
@@ -20,26 +21,22 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class BaseStep implements Step {
 
     private final Method sagaMethod;
+    private final StepArguments sagaMethodArguments;
     private final Method identifierMethod;
     private final Class<? extends Event> eventClass;
 
     public BaseStep(final Method method, final String getterName) {
         checkNotNull(getterName);
         this.sagaMethod = checkNotNull(method);
-
-        checkArgument(method.getParameterTypes().length == 1, "Should specify only one and unique parameter referencing an event : " + method);
-
-        final Class<?> eventClass = method.getParameterTypes()[0];
-        checkArgument(Event.class.isAssignableFrom(eventClass), "Should specify an instance of event as parameter : " + method);
-
-        this.eventClass = (Class<? extends Event>) eventClass;
+        this.sagaMethodArguments = new StepArguments(sagaMethod);
+        this.eventClass = this.sagaMethodArguments.getEventClass();
 
         try {
             this.identifierMethod = this.eventClass.getMethod(getterName);
             checkArgument(identifierMethod.getParameterTypes().length == 0, "Should specify a method without parameter");
         } catch (NoSuchMethodException e) {
             throw new IllegalArgumentException(
-                    String.format("The specified getter name '%s' is undefined in the event '%s'", getterName, eventClass.getName()),
+                    String.format("The specified getter name '%s' is undefined in the event '%s': %s", getterName, eventClass.getName(), method.getName()),
                     e
             );
         }
@@ -51,12 +48,13 @@ public class BaseStep implements Step {
     }
 
     @Override
-    public void invoke(final Saga saga, final Event event) throws StepInvocationException {
+    public void invoke(final Saga saga, final Context context, final Event event) throws StepInvocationException {
         checkNotNull(saga);
+        checkNotNull(context);
         checkNotNull(event);
 
         try {
-            sagaMethod.invoke(saga, event);
+            sagaMethod.invoke(saga, sagaMethodArguments.order(context, event));
         } catch (Exception e) {
             throw new StepInvocationException(
                     String.format(
@@ -90,7 +88,6 @@ public class BaseStep implements Step {
         return Optional.fromNullable((T)identifier);
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -105,5 +102,14 @@ public class BaseStep implements Step {
     @Override
     public int hashCode() {
         return Objects.hashCode(name(), eventClass);
+    }
+
+
+    @Override
+    public String toString() {
+        return Objects.toStringHelper(this)
+                .add("sagaMethod", sagaMethod)
+                .add("eventClass", eventClass)
+                .toString();
     }
 }
