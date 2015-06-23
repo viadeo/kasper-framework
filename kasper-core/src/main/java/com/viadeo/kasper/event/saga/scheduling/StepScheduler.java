@@ -11,6 +11,7 @@ import com.viadeo.kasper.event.saga.SagaManager;
 import org.axonframework.common.Assert;
 import org.axonframework.eventhandling.scheduling.SchedulingException;
 import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,7 +23,7 @@ import java.lang.reflect.Method;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.quartz.JobKey.jobKey;
 
-public class StepScheduler {
+public class StepScheduler implements SagaScheduler {
 
     private static final Logger logger = LoggerFactory.getLogger(StepScheduler.class);
     protected static final String JOB_NAME_PREFIX = "Method-call";
@@ -54,6 +55,10 @@ public class StepScheduler {
 
     public void shutdown() throws SchedulerException {
         this.scheduler.shutdown(true);
+    }
+
+    public String schedule(final Saga saga, final Method method, final String identifier, final Duration triggerDuration) {
+        return schedule(saga, method, identifier, new DateTime().plus(triggerDuration));
     }
 
     public String schedule(final Saga saga, final Method method, final String identifier, final DateTime triggerDateTime) {
