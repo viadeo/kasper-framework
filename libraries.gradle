@@ -42,6 +42,8 @@ ext.libraries = [
                 'javax.persistence:persistence-api:1.0',
                 'org.axonframework:axon-core:2.2'
         ],
+        QUARTZ_SCHEDULER: 'org.quartz-scheduler:quartz:2.2.1',
+        QUARTZ_JOBS: 'org.quartz-scheduler:quartz-jobs:2.2.1',
         JCACHE: 'javax.cache:cache-api:0.5',
         JCACHE_EHCACHE: 'net.sf.ehcache:ehcache-jcache:1.5.0-0.5',
 

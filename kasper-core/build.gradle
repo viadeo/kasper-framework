@@ -16,6 +16,8 @@ dependencies {
     compile libraries.REFLECTIONS
     compile libraries.SPRING_CONTEXT
     compile libraries.AXON_CORE
+    compile libraries.QUARTZ_SCHEDULER
+    compile libraries.QUARTZ_JOBS
     compile libraries.YAMMER_METRICS
     compile libraries.JCACHE
     compile libraries.VALIDATION_API
