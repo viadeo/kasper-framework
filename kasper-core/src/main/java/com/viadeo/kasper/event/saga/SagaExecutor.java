@@ -14,13 +14,19 @@ import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.event.saga.step.Step;
 import com.viadeo.kasper.event.saga.step.Steps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SagaExecutor {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SagaExecutor.class);
 
     private final Class<? extends Saga> sagaClass;
     private final SagaFactory factory;
@@ -40,6 +46,35 @@ public class SagaExecutor {
 
         for (final Step step : checkNotNull(steps)) {
             this.steps.put(step.getSupportedEvent(), step);
+        }
+    }
+
+    public void execute(final String sagaIdentifier, final String methodName) {
+        try {
+            Method method = sagaClass.getMethod(methodName);
+            method.setAccessible(Boolean.TRUE);
+
+            Optional<Saga> sagaOptional = repository.load(sagaIdentifier);
+
+            if ( ! sagaOptional.isPresent()) {
+                throw new SagaExecutionException(
+                        String.format("No available saga instance for the specified identifier '%s'", sagaIdentifier)
+                );
+            }
+
+            try {
+                method.invoke(sagaOptional.get());
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                LOGGER.error(
+                        "Unexpected error in executing method, <method={}> <saga={}> <identifier={}>",
+                        methodName, sagaClass.getClass().getSimpleName(), sagaIdentifier, e
+                );
+            }
+        } catch (NoSuchMethodException e) {
+            LOGGER.error(
+                    "Unexpected error in executing method : unknown method name '{}', <saga={}> <identifier={}>",
+                    methodName, sagaClass.getClass().getSimpleName(), sagaIdentifier
+            );
         }
     }
 

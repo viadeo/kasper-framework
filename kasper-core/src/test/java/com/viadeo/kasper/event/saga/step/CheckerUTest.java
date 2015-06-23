@@ -116,7 +116,6 @@ public class CheckerUTest {
         steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
         steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId"));
         steps.add(new Steps.BasicStep(getMethod(TestSagaA.class, "handle3", TestEvent3.class), "getId"));
-        steps.add(new Steps.ScheduleStep(getMethod(TestSagaA.class, "handle4", TestEvent4.class), "getId"));
 
         // When
         checker.check(sagaClass, steps);

@@ -65,13 +65,10 @@ public @interface XKasperSaga {
     @Target(ElementType.METHOD)
     public @interface Schedule {
 
-        /**
-         * @return the kasper event's identifier getter (in order to find the saga instance)
-         */
-        String getter();
-
         long delay();
 
         TimeUnit unit();
+
+        String methodName();
     }
 }

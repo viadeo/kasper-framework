@@ -42,10 +42,8 @@ public class StepProcessorUTest {
 
         // Then
         assertNotNull(steps);
-        assertTrue(steps.size() == 4);
         assertTrue(steps.contains(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId")));
         assertTrue(steps.contains(new Steps.EndStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId")));
         assertTrue(steps.contains(new Steps.BasicStep(getMethod(TestSagaA.class, "handle3", TestEvent3.class), "getId")));
-        assertTrue(steps.contains(new Steps.ScheduleStep(getMethod(TestSagaA.class, "handle4", TestEvent4.class), "getId")));
     }
 }

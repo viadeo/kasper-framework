@@ -108,8 +108,9 @@ public class BaseStep implements Step {
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
-                .add("sagaMethod", sagaMethod)
-                .add("eventClass", eventClass)
+                .add("saga", sagaMethod.getDeclaringClass())
+                .add("method", sagaMethod.getName())
+                .add("event", eventClass)
                 .toString();
     }
 }

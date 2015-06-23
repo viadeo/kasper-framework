@@ -25,7 +25,6 @@ public class StepProcessor {
                 new Steps.Checker(),
                 new Steps.StartStepResolver(),
                 new Steps.EndStepResolver(),
-                new Steps.ScheduleStepResolver(),
                 new Steps.BasicStepResolver()
         );
     }

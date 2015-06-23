@@ -55,7 +55,7 @@ public class TestFixture {
         @XKasperSaga.Step(getter = "getId")
         public void handle3(TestEvent3 event) {}
 
-        @XKasperSaga.Schedule(getter = "getId", delay = 1L, unit = TimeUnit.SECONDS)
+        @XKasperSaga.Schedule(delay = 1L, unit = TimeUnit.SECONDS, methodName = "test")
         public void handle4(TestEvent4 event) {}
 
         public void handle5(Context context, TestEvent3 event) {}
@@ -67,6 +67,13 @@ public class TestFixture {
         public void handle7(EventMessage eventMessage) {}
 
         public void handle8(EventMessage<?> eventMessage) {}
+
+        @XKasperSaga.Step(getter = "getId")
+        public void notScheduledStep(TestEvent5 event) {}
+
+        @XKasperSaga.Step(getter = "getId")
+        @XKasperSaga.Schedule(delay = 1L, unit = TimeUnit.SECONDS, methodName = "test")
+        public void scheduledStep(TestEvent6 event) {}
 
         @Override
         public Optional<SagaFactory> getFactory() {
@@ -99,6 +106,18 @@ public class TestFixture {
 
     public static class TestEvent4 extends TestEvent {
         public TestEvent4(String id) {
+            super(id);
+        }
+    }
+
+    public static class TestEvent5 extends TestEvent {
+        public TestEvent5(String id) {
+            super(id);
+        }
+    }
+
+    public static class TestEvent6 extends TestEvent {
+        public TestEvent6(String id) {
             super(id);
         }
     }

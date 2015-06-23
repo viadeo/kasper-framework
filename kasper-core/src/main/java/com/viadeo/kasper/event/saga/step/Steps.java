@@ -9,7 +9,6 @@ package com.viadeo.kasper.event.saga.step;
 import com.google.common.base.Function;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import com.google.common.collect.Sets;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
 import com.viadeo.kasper.event.saga.Saga;
@@ -18,7 +17,6 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Set;
 
-import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 // TODO adds metrics for each steps
@@ -83,75 +81,36 @@ public final class Steps {
         }
     }
 
-    public static class StartStepResolver implements StepResolver {
+    public static class StartStepResolver extends AbstractStepResolver<XKasperSaga.Start> {
+        public StartStepResolver(final FacetApplier... facetAppliers) {
+            super(XKasperSaga.Start.class, facetAppliers);
+        }
+
         @Override
-        public Set<Step> resolve(final Class<? extends Saga> sagaClass) {
-            checkNotNull(sagaClass);
-
-            final Set<Step> steps = Sets.newHashSet();
-
-            for (Method method : sagaClass.getMethods()) {
-                XKasperSaga.Start annotation = method.getAnnotation(XKasperSaga.Start.class);
-                if (annotation != null) {
-                    steps.add(new StartStep(method, annotation.getter()));
-                }
-            }
-
-            return steps;
+        public Step createStep(Method method, XKasperSaga.Start annotation) {
+            return new StartStep(method, annotation.getter());
         }
     }
 
-    public static class EndStepResolver implements StepResolver {
+    public static class EndStepResolver extends AbstractStepResolver<XKasperSaga.End> {
+        public EndStepResolver(final FacetApplier... facetAppliers) {
+            super(XKasperSaga.End.class, facetAppliers);
+        }
+
         @Override
-        public Set<Step> resolve(final Class<? extends Saga> sagaClass) {
-            checkNotNull(sagaClass);
-
-            final Set<Step> steps = Sets.newHashSet();
-
-            for (Method method : sagaClass.getMethods()) {
-                XKasperSaga.End annotation = method.getAnnotation(XKasperSaga.End.class);
-                if (annotation != null) {
-                    steps.add(new EndStep(method, annotation.getter()));
-                }
-            }
-
-            return steps;
+        public Step createStep(Method method, XKasperSaga.End annotation) {
+            return new EndStep(method, annotation.getter());
         }
     }
 
-    public static class BasicStepResolver implements StepResolver {
-        @Override
-        public Set<Step> resolve(final Class<? extends Saga> sagaClass) {
-            checkNotNull(sagaClass);
-
-            final Set<Step> steps = Sets.newHashSet();
-
-            for (Method method : sagaClass.getMethods()) {
-                XKasperSaga.Step annotation = method.getAnnotation(XKasperSaga.Step.class);
-                if (annotation != null) {
-                    steps.add(new BasicStep(method, annotation.getter()));
-                }
-            }
-
-            return steps;
+    public static class BasicStepResolver extends AbstractStepResolver<XKasperSaga.Step> {
+        public BasicStepResolver(final FacetApplier... facetAppliers) {
+            super(XKasperSaga.Step.class, facetAppliers);
         }
-    }
 
-    public static class ScheduleStepResolver implements StepResolver {
         @Override
-        public Set<Step> resolve(final Class<? extends Saga> sagaClass) {
-            checkNotNull(sagaClass);
-
-            final Set<Step> steps = Sets.newHashSet();
-
-            for (Method method : sagaClass.getMethods()) {
-                XKasperSaga.Schedule annotation = method.getAnnotation(XKasperSaga.Schedule.class);
-                if (annotation != null) {
-                    steps.add(new ScheduleStep(method, annotation.getter()));
-                }
-            }
-
-            return steps;
+        public Step createStep(Method method, XKasperSaga.Step annotation) {
+            return new BasicStep(method, annotation.getter());
         }
     }
 
@@ -169,12 +128,6 @@ public final class Steps {
 
     public static class BasicStep extends BaseStep {
         public BasicStep(final Method method, final String getterName) {
-            super(method, getterName);
-        }
-    }
-
-    public static class ScheduleStep extends BaseStep {
-        public ScheduleStep(final Method method, final String getterName) {
             super(method, getterName);
         }
     }
