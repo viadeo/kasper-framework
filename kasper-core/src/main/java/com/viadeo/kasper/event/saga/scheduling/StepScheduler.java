@@ -41,17 +41,22 @@ public class StepScheduler {
     }
 
     /**
-     * Initializes the QuartzEventScheduler. Will make the configured Event Bus available to the Quartz Scheduler
+     * Initializes the StepScheduler. Will make the configured SagaManager available to the Quartz Scheduler
      *
      * @throws SchedulerException if an error occurs preparing the Quartz Scheduler for use.
      */
     @PostConstruct
     public void initialize() throws SchedulerException {
         this.scheduler.getContext().put(InvokeScheduledStepJob.SAGA_MANAGER_KEY, applicationContext.getBean(SagaManager.class));
+        this.scheduler.start();
         initialized = true;
     }
 
-    public String schedule(final DateTime triggerDateTime, final Method method, final Saga saga, final String identifier) {
+    public void shutdown() throws SchedulerException {
+        this.scheduler.shutdown(true);
+    }
+
+    public String schedule(final Saga saga, final Method method, final String identifier, final DateTime triggerDateTime) {
         Assert.state(initialized, "Scheduler is not yet initialized");
         checkNotNull(identifier);
         checkNotNull(method);
@@ -60,7 +65,7 @@ public class StepScheduler {
 
         final String jobIdentifier = buildJobIdentifier(saga, method, identifier);
         try {
-            JobDetail jobDetail = buildJobDetail(method, saga, identifier, new JobKey(jobIdentifier, groupIdentifier));
+            JobDetail jobDetail = buildJobDetail(saga, method, identifier, jobKey(jobIdentifier, groupIdentifier));
             scheduler.scheduleJob(jobDetail, buildTrigger(triggerDateTime, jobDetail.getKey()));
         } catch (SchedulerException e) {
             throw new SchedulingException("An error occurred while setting a timer for a saga", e);
@@ -77,7 +82,7 @@ public class StepScheduler {
 
         try {
             if (!scheduler.deleteJob(jobKey(buildJobIdentifier(saga, method, identifier), groupIdentifier))) {
-                logger.warn("The job belonging to this token could not be deleted.");
+                logger.warn("The job belonging to this token could not be deleted : " + identifier);
             }
         } catch (SchedulerException e) {
             throw new SchedulingException("An error occurred while cancelling a timer for a saga", e);
@@ -93,11 +98,11 @@ public class StepScheduler {
      * <p/>
      * This method may be safely overridden to change behavior. Defaults to a JobDetail to fire a InvokeScheduledStepJob
      *
-     * @param saga  The saga to be scheduled for dispatch
+     * @param saga   The saga to be scheduled for dispatch
      * @param jobKey The key of the Job to schedule
      * @return a JobDetail describing the Job to be executed
      */
-    protected JobDetail buildJobDetail(final Method method, final Saga saga, final String identifier, final JobKey jobKey) {
+    protected JobDetail buildJobDetail(final Saga saga, final Method method, final String identifier, final JobKey jobKey) {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(InvokeScheduledStepJob.SAGA_KEY, saga.getClass().getName());
         jobDataMap.put(InvokeScheduledStepJob.METHOD_KEY, method.getName().toString());
@@ -125,7 +130,7 @@ public class StepScheduler {
     }
 
 
-    protected String buildJobIdentifier(Saga saga, Method method, String identifier) {
+    protected String buildJobIdentifier(final Saga saga, final Method method, final String identifier) {
         return JOB_NAME_PREFIX + "_" + saga.getClass().getName() + "_" + method.getName().toString() + "_" + identifier;
     }
 
@@ -134,8 +139,8 @@ public class StepScheduler {
      *
      * @param groupIdentifier the group identifier to use when scheduling jobs with Quartz
      */
-    public void setGroupIdentifier(String groupIdentifier) {
-        this.groupIdentifier = groupIdentifier;
+    public void setGroupIdentifier(final String groupIdentifier) {
+        this.groupIdentifier = checkNotNull(groupIdentifier);
     }
 
 }

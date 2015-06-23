@@ -17,8 +17,6 @@ import org.quartz.JobExecutionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.Method;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class InvokeScheduledStepJob implements Job {
@@ -45,7 +43,6 @@ public class InvokeScheduledStepJob implements Job {
      */
     public static final String IDENTIFIER_KEY = "Identifier";
 
-
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         logger.debug("Starting job to invoke scheduled saga step");
@@ -55,8 +52,10 @@ public class InvokeScheduledStepJob implements Job {
         String sagaIdentifier = (String) context.getJobDetail().getJobDataMap().get(IDENTIFIER_KEY);
         SagaManager sagaManager = (SagaManager) context.getJobDetail().getJobDataMap().get(SAGA_MANAGER_KEY);
 
-        checkNotNull(sagaClassName);
         checkNotNull(sagaMethodName);
+        checkNotNull(sagaClassName);
+        checkNotNull(sagaIdentifier);
+        checkNotNull(sagaManager);
 
         try {
             Class<Saga> sagaClass = (Class<Saga>) Class.forName(sagaClassName);
