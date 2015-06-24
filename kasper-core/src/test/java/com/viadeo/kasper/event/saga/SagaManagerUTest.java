@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga;
 
+import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.step.StepProcessor;
 import org.junit.Before;
 import org.junit.Rule;

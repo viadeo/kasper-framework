@@ -10,6 +10,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.step.Step;
 import com.viadeo.kasper.event.saga.step.StepProcessor;
 

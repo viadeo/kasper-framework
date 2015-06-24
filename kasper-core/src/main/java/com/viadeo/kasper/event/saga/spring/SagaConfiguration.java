@@ -7,6 +7,8 @@
 package com.viadeo.kasper.event.saga.spring;
 
 import com.viadeo.kasper.event.saga.*;
+import com.viadeo.kasper.event.saga.repository.InMemorySagaRepository;
+import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.step.*;
 import com.viadeo.kasper.event.saga.step.quartz.MethodInvocationScheduler;
 import org.quartz.SchedulerException;

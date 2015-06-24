@@ -12,6 +12,7 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
+import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.step.Step;
 import com.viadeo.kasper.event.saga.step.Steps;
 import org.slf4j.Logger;
