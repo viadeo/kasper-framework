@@ -71,4 +71,11 @@ public @interface XKasperSaga {
 
         String methodName();
     }
+
+    @Retention(RetentionPolicy.RUNTIME)
+    @Target(ElementType.METHOD)
+    public @interface CancelSchedule {
+
+        String methodName();
+    }
 }

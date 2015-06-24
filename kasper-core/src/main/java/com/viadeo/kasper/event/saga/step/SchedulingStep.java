@@ -19,17 +19,28 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public class SchedulingStep implements Step {
 
-    private final XKasperSaga.Schedule annotation;
+    private final SchedulingOperation operation;
     private final Step delegateStep;
-    private final Scheduler scheduler;
+
+    public SchedulingStep(
+            final Scheduler scheduler,
+            final Step delegateStep,
+            final XKasperSaga.CancelSchedule annotation
+    ) {
+        this(delegateStep, new CancelOperation(scheduler, annotation.methodName()));
+    }
 
     public SchedulingStep(
             final Scheduler scheduler,
             final Step delegateStep,
             final XKasperSaga.Schedule annotation
     ) {
-        this.scheduler = checkNotNull(scheduler);
-        this.annotation = checkNotNull(annotation);
+        this(delegateStep, new ScheduleOperation(scheduler, annotation.methodName(), new Duration(TimeUnit.MILLISECONDS.convert(annotation.delay(), annotation.unit()))));
+    }
+
+    public SchedulingStep(final Step delegateStep,
+                          final SchedulingOperation operation) {
+        this.operation = checkNotNull(operation);
         this.delegateStep = checkNotNull(delegateStep);
     }
 
@@ -45,12 +56,7 @@ public class SchedulingStep implements Step {
         Optional<Object> identifier = getSagaIdentifierFrom(event);
 
         if (identifier.isPresent()) {
-            scheduler.schedule(
-                    getSagaClass(),
-                    annotation.methodName(),
-                    identifier.get(),
-                    new Duration(TimeUnit.MILLISECONDS.convert(annotation.delay(), annotation.unit()))
-            );
+            operation.execute(getSagaClass(), identifier.get());
         }
     }
 
@@ -67,5 +73,43 @@ public class SchedulingStep implements Step {
     @Override
     public Class<? extends Saga> getSagaClass() {
         return delegateStep.getSagaClass();
+    }
+
+    protected interface SchedulingOperation {
+        void execute(Class<? extends Saga> sagaClass, Object identifier);
+    }
+
+    protected static class CancelOperation implements SchedulingOperation {
+
+        private final Scheduler scheduler;
+        private final String methodName;
+
+        public CancelOperation(final Scheduler scheduler, final String methodName) {
+            this.scheduler = checkNotNull(scheduler);
+            this.methodName = checkNotNull(methodName);
+        }
+
+        @Override
+        public void execute(final Class<? extends Saga> sagaClass, final Object identifier) {
+            scheduler.cancelSchedule(sagaClass, methodName, identifier);
+        }
+    }
+
+    protected static class ScheduleOperation implements SchedulingOperation {
+
+        private final Scheduler scheduler;
+        private final String methodName;
+        private final Duration duration;
+
+        public ScheduleOperation(final Scheduler scheduler, final String methodName, final Duration duration) {
+            this.scheduler = checkNotNull(scheduler);
+            this.methodName = checkNotNull(methodName);
+            this.duration = checkNotNull(duration);
+        }
+
+        @Override
+        public void execute(final Class<? extends Saga> sagaClass, final Object identifier) {
+            scheduler.schedule(sagaClass, methodName, identifier, duration);
+        }
     }
 }

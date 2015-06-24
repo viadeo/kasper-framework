@@ -23,9 +23,18 @@ public class SchedulingFacetApplier implements FacetApplier {
     @Override
     public Step apply(Method method, Step step) {
         XKasperSaga.Schedule scheduleAnnotation = method.getAnnotation(XKasperSaga.Schedule.class);
+        XKasperSaga.CancelSchedule cancelScheduleAnnotation = method.getAnnotation(XKasperSaga.CancelSchedule.class);
+
+        if (scheduleAnnotation != null && cancelScheduleAnnotation != null) {
+            throw new IllegalStateException(String.format("Should have one schedule annotation per step : %s", step.getSagaClass().getName()));
+        }
 
         if (scheduleAnnotation != null) {
             return new SchedulingStep(scheduler, step, scheduleAnnotation);
+        }
+
+        if (cancelScheduleAnnotation != null) {
+            return new SchedulingStep(scheduler, step, cancelScheduleAnnotation);
         }
 
         return step;

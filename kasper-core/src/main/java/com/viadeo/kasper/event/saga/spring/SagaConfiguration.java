@@ -23,7 +23,7 @@ import java.util.List;
 @Configuration
 public class SagaConfiguration{
 
-    @Bean(initMethod = "initialize")
+    @Bean(initMethod = "initialize", destroyMethod = "shutdown")
     public Scheduler stepScheduler(ApplicationContext applicationContext) throws SchedulerException {
         SchedulerFactory sf = new StdSchedulerFactory();
         return new MethodInvocationScheduler(sf.getScheduler(), applicationContext);

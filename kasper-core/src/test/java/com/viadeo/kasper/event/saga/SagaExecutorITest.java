@@ -220,11 +220,35 @@ public class SagaExecutorITest {
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
             @Override
             public Boolean call() throws Exception {
-                System.err.println("check...");
                 Optional<Saga> sagaOptional = sagaRepository.load(identifierSaga);
                 if (sagaOptional.isPresent()) {
                     TestSagaB saga = (TestSagaB) sagaOptional.get();
                     return 1 == saga.getInvokedMethodCount();
+                }
+                return Boolean.FALSE;
+            }
+        });
+    }
+
+    @Test
+    public void execute_a_cancel_scheduled_step_is_ok() throws InterruptedException {
+        // Given
+        final UUID identifierSaga = UUID.randomUUID();
+        SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));
+        sagaExecutor.execute(Contexts.empty(), new StartEvent(identifierSaga));
+
+        // When
+        sagaExecutor.execute(Contexts.empty(), new StepEvent1(identifierSaga));
+        sagaExecutor.execute(Contexts.empty(), new StepEvent2(identifierSaga));
+
+        //Then
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                Optional<Saga> sagaOptional = sagaRepository.load(identifierSaga);
+                if (sagaOptional.isPresent()) {
+                    TestSagaB saga = (TestSagaB) sagaOptional.get();
+                    return 0 == saga.getInvokedMethodCount();
                 }
                 return Boolean.FALSE;
             }
