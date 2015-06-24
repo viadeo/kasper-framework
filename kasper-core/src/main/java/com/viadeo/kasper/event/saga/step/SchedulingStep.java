@@ -11,6 +11,9 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
 import com.viadeo.kasper.event.saga.Saga;
+import org.joda.time.Duration;
+
+import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -42,8 +45,12 @@ public class SchedulingStep implements Step {
         Optional<Object> identifier = getSagaIdentifierFrom(event);
 
         if (identifier.isPresent()) {
-            // TODO
-//            scheduler.sheduleJob
+            scheduler.schedule(
+                    getSagaClass(),
+                    annotation.methodName(),
+                    String.valueOf(identifier.get()),
+                    new Duration(TimeUnit.MILLISECONDS.convert(annotation.delay(), annotation.unit()))
+            );
         }
     }
 
@@ -55,5 +62,10 @@ public class SchedulingStep implements Step {
     @Override
     public <T> Optional<T> getSagaIdentifierFrom(Event event) {
         return delegateStep.getSagaIdentifierFrom(event);
+    }
+
+    @Override
+    public Class<? extends Saga> getSagaClass() {
+        return delegateStep.getSagaClass();
     }
 }

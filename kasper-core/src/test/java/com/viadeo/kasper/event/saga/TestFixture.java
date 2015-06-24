@@ -137,6 +137,7 @@ public class TestFixture {
 
         private final KasperCommandGateway commandGateway;
         private int count;
+        private int invokedMethodCount;
         private String name;
 
         public TestSagaB(KasperCommandGateway commandGateway) {
@@ -159,6 +160,12 @@ public class TestFixture {
             throw new RuntimeException("An exception is intended !");
         }
 
+        @XKasperSaga.Step(getter = "getId")
+        @XKasperSaga.Schedule(delay = 100, unit = TimeUnit.MILLISECONDS, methodName = "invokedMethod")
+        public void scheduledStep(StepEvent1 event){
+            System.err.println("A method invocation is scheduled !");
+        }
+
         @XKasperSaga.End(getter = "getId")
         public void end(EndEvent event){
             System.err.println("Saga is ended !");
@@ -169,12 +176,21 @@ public class TestFixture {
             return Optional.absent();
         }
 
+        public void invokedMethod() {
+            System.err.println("the method is invoked !");
+            invokedMethodCount++;
+        }
+
         public KasperCommandGateway getCommandGateway() {
             return commandGateway;
         }
 
         public int getCount() {
             return count;
+        }
+
+        public int getInvokedMethodCount() {
+            return invokedMethodCount;
         }
 
         public String getName() {
@@ -198,6 +214,12 @@ public class TestFixture {
 
     public static class StepEvent extends AbstractEvent {
         public StepEvent(UUID id) {
+            super(id);
+        }
+    }
+
+    public static class StepEvent1 extends AbstractEvent {
+        public StepEvent1(UUID id) {
             super(id);
         }
     }

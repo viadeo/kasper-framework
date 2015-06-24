@@ -8,7 +8,10 @@ package com.viadeo.kasper.event.saga.spring;
 
 import com.viadeo.kasper.event.saga.*;
 import com.viadeo.kasper.event.saga.step.*;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.viadeo.kasper.event.saga.step.quartz.MethodInvocationScheduler;
+import org.quartz.SchedulerException;
+import org.quartz.SchedulerFactory;
+import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,45 +21,37 @@ import java.util.List;
 @Configuration
 public class SagaConfiguration{
 
-    @Autowired(required = false)
-    List<FacetApplier> facetAppliers;
-
-    private FacetApplier[] getOrderedFacetAppliers() {
-        final FacetApplier[] facetAppliers;
-
-        if (this.facetAppliers == null) {
-            facetAppliers = new FacetApplier[0];
-        } else {
-            facetAppliers = this.facetAppliers.toArray(new FacetApplier[this.facetAppliers.size()]);
-        }
-
-        return facetAppliers;
-    }
-
-    @Bean/*(initMethod = "initialize")*/
-    public Scheduler sagaScheduler(ApplicationContext applicationContext) {
-        //TODO
-        return new Scheduler() { };
+    @Bean(initMethod = "initialize")
+    public Scheduler stepScheduler(ApplicationContext applicationContext) throws SchedulerException {
+        SchedulerFactory sf = new StdSchedulerFactory();
+        return new MethodInvocationScheduler(sf.getScheduler(), applicationContext);
     }
 
     @Bean
-    public SchedulingFacetApplier schedulingFacetApplier(final Scheduler scheduler) {
-        return new SchedulingFacetApplier(scheduler);
+    public FacetApplierRegistry facetApplierRegistry() {
+        return new FacetApplierRegistry();
     }
 
     @Bean
-    public StepResolver startStepResolver() {
-        return new Steps.StartStepResolver(getOrderedFacetAppliers());
+    public FacetApplier schedulingFacetApplier(final FacetApplierRegistry facetApplierRegistry, final Scheduler scheduler) {
+        SchedulingFacetApplier applier = new SchedulingFacetApplier(scheduler);
+        facetApplierRegistry.register(applier);
+        return applier;
     }
 
     @Bean
-    public StepResolver basicStepResolver() {
-        return new Steps.BasicStepResolver(getOrderedFacetAppliers());
+    public StepResolver startStepResolver(final FacetApplierRegistry facetApplierRegistry) {
+        return new Steps.StartStepResolver(facetApplierRegistry);
     }
 
     @Bean
-    public StepResolver endStepResolver() {
-        return new Steps.EndStepResolver(getOrderedFacetAppliers());
+    public StepResolver basicStepResolver(final FacetApplierRegistry facetApplierRegistry) {
+        return new Steps.BasicStepResolver(facetApplierRegistry);
+    }
+
+    @Bean
+    public StepResolver endStepResolver(final FacetApplierRegistry facetApplierRegistry) {
+        return new Steps.EndStepResolver(facetApplierRegistry);
     }
 
     @Bean

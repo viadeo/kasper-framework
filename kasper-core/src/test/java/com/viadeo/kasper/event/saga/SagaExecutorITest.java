@@ -1,5 +1,7 @@
 package com.viadeo.kasper.event.saga;
 
+import com.google.common.base.Optional;
+import com.jayway.awaitility.Awaitility;
 import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
@@ -17,6 +19,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.inject.Inject;
 import java.util.UUID;
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import static com.viadeo.kasper.event.saga.TestFixture.*;
 import static org.junit.Assert.*;
@@ -201,7 +205,30 @@ public class SagaExecutorITest {
         sagaExecutor.execute(Contexts.empty(), new ThrowExceptionEvent(identifierSaga));
     }
 
+    @Test
+    public void execute_a_scheduled_step_is_ok() throws InterruptedException {
+        // Given
+        final UUID identifierSaga = UUID.randomUUID();
+        SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));
+        sagaExecutor.execute(Contexts.empty(), new StartEvent(identifierSaga));
 
+        // When
+        sagaExecutor.execute(Contexts.empty(), new StepEvent1(identifierSaga));
+        
+        //Then
+        Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
+            @Override
+            public Boolean call() throws Exception {
+                System.err.println("check...");
+                Optional<Saga> sagaOptional = sagaRepository.load(identifierSaga);
+                if (sagaOptional.isPresent()) {
+                    TestSagaB saga = (TestSagaB) sagaOptional.get();
+                    return 1 == saga.getInvokedMethodCount();
+                }
+                return Boolean.FALSE;
+            }
+        });
+    }
 
     @Configuration
     public static class TestConfiguration {

@@ -23,9 +23,9 @@ public class StepProcessor {
     public StepProcessor() {
         this(
                 new Steps.Checker(),
-                new Steps.StartStepResolver(),
-                new Steps.EndStepResolver(),
-                new Steps.BasicStepResolver()
+                new Steps.StartStepResolver(new FacetApplierRegistry()),
+                new Steps.EndStepResolver(new FacetApplierRegistry()),
+                new Steps.BasicStepResolver(new FacetApplierRegistry())
         );
     }
 

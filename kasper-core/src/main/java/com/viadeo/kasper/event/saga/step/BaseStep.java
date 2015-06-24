@@ -89,6 +89,11 @@ public class BaseStep implements Step {
     }
 
     @Override
+    public Class<? extends Saga> getSagaClass() {
+        return (Class<? extends Saga>) sagaMethod.getDeclaringClass();
+    }
+
+    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;

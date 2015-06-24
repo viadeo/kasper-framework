@@ -31,4 +31,5 @@ dependencies {
     testCompile libraries.MOCKITO
     testCompile libraries.JCACHE_EHCACHE
     testCompile libraries.HIBERNATE_VALIDATOR
+    testCompile libraries.AWAITILITY
 }

@@ -1,6 +1,5 @@
-package com.viadeo.kasper.event.saga.scheduling;
+package com.viadeo.kasper.event.saga.step.quartz;
 
-import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.event.saga.SagaManager;
 import com.viadeo.kasper.event.saga.TestFixture;
 import org.joda.time.DateTime;
@@ -14,16 +13,14 @@ import org.quartz.*;
 import org.quartz.impl.StdSchedulerFactory;
 import org.springframework.context.ApplicationContext;
 
-import java.lang.reflect.Method;
 import java.util.UUID;
 
+import static com.viadeo.kasper.event.saga.step.quartz.MethodInvocationScheduler.*;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.when;
 
 @RunWith(MockitoJUnitRunner.class)
-public class StepSchedulerUTest {
-
-    private Scheduler scheduler;
+public class MethodInvocationSchedulerUTest {
 
     @Mock
     private ApplicationContext applicationContext;
@@ -31,16 +28,16 @@ public class StepSchedulerUTest {
     @Mock
     private SagaManager sagaManager;
 
-    private StepScheduler stepScheduler;
+    private MethodInvocationScheduler stepScheduler;
 
     @Before
     public void setup() throws SchedulerException {
-        StdSchedulerFactory schedFact = new StdSchedulerFactory();
-        scheduler = schedFact.getScheduler();
+        StdSchedulerFactory schedulerFactory = new StdSchedulerFactory();
+        Scheduler scheduler = schedulerFactory.getScheduler();
 
         when(applicationContext.getBean(SagaManager.class)).thenReturn(sagaManager);
 
-        stepScheduler = new StepScheduler(scheduler, applicationContext);
+        stepScheduler = new MethodInvocationScheduler(scheduler, applicationContext);
         stepScheduler.initialize();
     }
 
@@ -52,45 +49,44 @@ public class StepSchedulerUTest {
     @Test
     public void buildJobIdentifier_withGoodEntries_shouldReturnIdentifier() throws NoSuchMethodException {
         // Given
-        Method method = this.getClass().getDeclaredMethod("buildJobIdentifier_withGoodEntries_shouldReturnIdentifier");
         String identifier = UUID.randomUUID().toString();
-        Saga saga = new TestFixture.TestSagaA();
+        Class<TestFixture.TestSagaA> sagaClass = TestFixture.TestSagaA.class;
 
         // when
-        String jobIdentifier = stepScheduler.buildJobIdentifier(saga, method, identifier);
+        String jobIdentifier = stepScheduler.buildJobIdentifier(sagaClass, "buildJobIdentifier_withGoodEntries_shouldReturnIdentifier", identifier);
 
         // Then
         assertNotNull(jobIdentifier);
-        assertTrue(jobIdentifier.startsWith(StepScheduler.JOB_NAME_PREFIX));
+        assertTrue(jobIdentifier.startsWith(JOB_NAME_PREFIX));
     }
 
     @Test
     public void buildJobDetail_withGoodEntries_shouldReturnJobDetail() throws NoSuchMethodException {
         // Given
-        Method method = this.getClass().getDeclaredMethod("buildJobDetail_withGoodEntries_shouldReturnJobDetail");
-        Saga saga = new TestFixture.TestSagaA();
+        String methodName = "buildJobDetail_withGoodEntries_shouldReturnJobDetail";
+        Class<TestFixture.TestSagaA> sagaClass = TestFixture.TestSagaA.class;
         String identifier = UUID.randomUUID().toString();
-        JobKey jobKey = new JobKey(stepScheduler.buildJobIdentifier(saga, method, identifier), StepScheduler.DEFAULT_GROUP_NAME);
+        JobKey jobKey = new JobKey(stepScheduler.buildJobIdentifier(sagaClass, methodName, identifier), DEFAULT_GROUP_NAME);
 
         // When
-        JobDetail jobDetail = stepScheduler.buildJobDetail(saga, method, identifier, jobKey);
+        JobDetail jobDetail = stepScheduler.buildJobDetail(sagaClass, methodName, identifier, jobKey);
 
         // Then
         assertNotNull(jobDetail);
         assertEquals(jobDetail.getKey(), jobKey);
-        assertEquals(jobDetail.getJobDataMap().getString(InvokeScheduledStepJob.METHOD_KEY), method.getName());
-        assertEquals(jobDetail.getJobDataMap().getString(InvokeScheduledStepJob.IDENTIFIER_KEY), identifier);
-        assertEquals(jobDetail.getJobDataMap().getString(InvokeScheduledStepJob.SAGA_KEY), saga.getClass().getName());
+        assertEquals(jobDetail.getJobDataMap().getString(METHOD_KEY), methodName);
+        assertEquals(jobDetail.getJobDataMap().getString(IDENTIFIER_KEY), identifier);
+        assertEquals(jobDetail.getJobDataMap().getString(SAGA_CLASS_KEY), sagaClass.getName());
     }
 
     @Test
     public void buildTrigger_withGoodEntries_shouldReturnTrigger() throws NoSuchMethodException {
         // Given
         DateTime dateTime = DateTime.now().plus(5000);
-        Method method = this.getClass().getDeclaredMethod("buildTrigger_withGoodEntries_shouldReturnTrigger");
-        Saga saga = new TestFixture.TestSagaA();
+        String methodName = "buildTrigger_withGoodEntries_shouldReturnTrigger";
+        Class<TestFixture.TestSagaA> sagaClass = TestFixture.TestSagaA.class;
         String identifier = UUID.randomUUID().toString();
-        JobKey jobKey = new JobKey(stepScheduler.buildJobIdentifier(saga, method, identifier), StepScheduler.DEFAULT_GROUP_NAME);
+        JobKey jobKey = new JobKey(stepScheduler.buildJobIdentifier(sagaClass, methodName, identifier), DEFAULT_GROUP_NAME);
 
         // When
         Trigger trigger = stepScheduler.buildTrigger(dateTime, jobKey);
@@ -105,12 +101,12 @@ public class StepSchedulerUTest {
     public void schedule_whitGoodEntries_shouldScheduleJob() throws NoSuchMethodException, SchedulerException {
         // Given
         DateTime dateTime = DateTime.now().plus(5000);
-        Method method = this.getClass().getDeclaredMethod("schedule_whitGoodEntries_shouldScheduleJob");
-        Saga saga = new TestFixture.TestSagaA();
+        String methodName = "schedule_whitGoodEntries_shouldScheduleJob";
+        Class<TestFixture.TestSagaA> sagaClass = TestFixture.TestSagaA.class;
         String identifier = UUID.randomUUID().toString();
 
         // When
-        String jobIdentifier = stepScheduler.schedule(saga, method, identifier, dateTime);
+        String jobIdentifier = stepScheduler.schedule(sagaClass, methodName, identifier, dateTime);
 
         // Then
         assertNotNull(jobIdentifier);
@@ -120,13 +116,13 @@ public class StepSchedulerUTest {
     public void cancelSchedule_whitGoodEntries_shouldCancelScheduledJob() throws NoSuchMethodException, SchedulerException {
         // Given
         DateTime dateTime = DateTime.now().plus(5000);
-        Method method = this.getClass().getDeclaredMethod("cancelSchedule_whitGoodEntries_shouldCancelScheduledJob");
-        Saga saga = new TestFixture.TestSagaA();
+        String methodName = "cancelSchedule_whitGoodEntries_shouldCancelScheduledJob";
+        Class<TestFixture.TestSagaA> sagaClass = TestFixture.TestSagaA.class;
         String identifier = UUID.randomUUID().toString();
-        String jobIdentifier = stepScheduler.schedule(saga, method, identifier, dateTime);
+        String jobIdentifier = stepScheduler.schedule(sagaClass, methodName, identifier, dateTime);
 
         // When
-        stepScheduler.cancelSchedule(saga, method, identifier, StepScheduler.DEFAULT_GROUP_NAME);
+        stepScheduler.cancelSchedule(sagaClass, methodName, identifier, DEFAULT_GROUP_NAME);
 
         // Then
         assertNotNull(jobIdentifier);

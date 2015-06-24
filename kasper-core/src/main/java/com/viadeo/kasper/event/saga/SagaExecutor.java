@@ -21,6 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -50,11 +51,15 @@ public class SagaExecutor {
     }
 
     public void execute(final String sagaIdentifier, final String methodName) {
+        checkNotNull(sagaIdentifier);
+
+        UUID identifier = UUID.fromString(sagaIdentifier);
+
         try {
             Method method = sagaClass.getMethod(methodName);
             method.setAccessible(Boolean.TRUE);
 
-            Optional<Saga> sagaOptional = repository.load(sagaIdentifier);
+            Optional<Saga> sagaOptional = repository.load(identifier);
 
             if ( ! sagaOptional.isPresent()) {
                 throw new SagaExecutionException(
@@ -62,8 +67,12 @@ public class SagaExecutor {
                 );
             }
 
+            final Saga saga = sagaOptional.get();
+
             try {
-                method.invoke(sagaOptional.get());
+                method.invoke(saga);
+                repository.save(identifier, saga);
+
             } catch (IllegalAccessException | InvocationTargetException e) {
                 LOGGER.error(
                         "Unexpected error in executing method, <method={}> <saga={}> <identifier={}>",
@@ -80,6 +89,7 @@ public class SagaExecutor {
 
     public void execute(final Context context, final Event event) {
         checkNotNull(event);
+        checkNotNull(context);
 
         final Step step = steps.get(event.getClass());
 
@@ -133,7 +143,6 @@ public class SagaExecutor {
         } else {
             repository.save(sagaIdentifier, saga);
         }
-
     }
 
     public Class<? extends Saga> getSagaClass() {

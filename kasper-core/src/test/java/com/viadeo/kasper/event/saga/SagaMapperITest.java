@@ -42,11 +42,12 @@ public class SagaMapperITest {
 
         // Then
         assertNotNull(properties);
-        assertEquals("->"+properties, 4, properties.size());
+        assertEquals("->"+properties, 5, properties.size());
         assertEquals(identifier, properties.get(SagaMapper.X_KASPER_SAGA_IDENTIFIER));
         assertEquals(saga.getClass(), properties.get(SagaMapper.X_KASPER_SAGA_CLASS));
         assertEquals(666, properties.get("count"));
         assertEquals("Chuck", properties.get("name"));
+        assertEquals(0, properties.get("invokedMethodCount"));
 
     }
 

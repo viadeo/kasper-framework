@@ -82,8 +82,8 @@ public final class Steps {
     }
 
     public static class StartStepResolver extends AbstractStepResolver<XKasperSaga.Start> {
-        public StartStepResolver(final FacetApplier... facetAppliers) {
-            super(XKasperSaga.Start.class, facetAppliers);
+        public StartStepResolver(final FacetApplierRegistry facetApplierRegistry) {
+            super(XKasperSaga.Start.class, facetApplierRegistry);
         }
 
         @Override
@@ -93,8 +93,8 @@ public final class Steps {
     }
 
     public static class EndStepResolver extends AbstractStepResolver<XKasperSaga.End> {
-        public EndStepResolver(final FacetApplier... facetAppliers) {
-            super(XKasperSaga.End.class, facetAppliers);
+        public EndStepResolver(final FacetApplierRegistry facetApplierRegistry) {
+            super(XKasperSaga.End.class, facetApplierRegistry);
         }
 
         @Override
@@ -104,8 +104,8 @@ public final class Steps {
     }
 
     public static class BasicStepResolver extends AbstractStepResolver<XKasperSaga.Step> {
-        public BasicStepResolver(final FacetApplier... facetAppliers) {
-            super(XKasperSaga.Step.class, facetAppliers);
+        public BasicStepResolver(final FacetApplierRegistry facetApplierRegistry) {
+            super(XKasperSaga.Step.class, facetApplierRegistry);
         }
 
         @Override

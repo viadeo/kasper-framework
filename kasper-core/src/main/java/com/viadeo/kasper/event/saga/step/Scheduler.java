@@ -6,17 +6,18 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga.step;
 
+import com.viadeo.kasper.event.saga.Saga;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
+
 public interface Scheduler {
 
-//    public Scheduler(SagaManager sagaManager) {
-//        Class<? extends Saga> sagaClass = null;
-//        String methodName = null;
-//        String identifier = null;
-//
-//        Optional<SagaExecutor> executorOptional = sagaManager.get(sagaClass);
-//
-//        if (executorOptional.isPresent()) {
-//            executorOptional.get().execute(identifier, methodName);
-//        }
-//    }
+    void initialize();
+
+    String schedule(final Class<? extends Saga> sagaClass, final String methodName, final String identifier, final Duration triggerDuration);
+
+    String schedule(final Class<? extends Saga> sagaClass, final String methodName, final String identifier, final DateTime triggerDateTime);
+
+    void cancelSchedule(final Class<? extends Saga> sagaClass, final String methodName, final String identifier);
+
 }

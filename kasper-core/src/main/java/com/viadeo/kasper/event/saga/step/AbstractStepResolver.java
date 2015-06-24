@@ -6,13 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga.step;
 
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.event.saga.Saga;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
-import java.util.List;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -20,11 +18,11 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class AbstractStepResolver<ANNO extends Annotation> implements StepResolver {
 
     private final Class<ANNO> annotationClass;
-    private final List<FacetApplier> facetAppliers;
+    private final FacetApplierRegistry facetApplierRegistry;
 
-    public AbstractStepResolver(final Class<ANNO> annotationClass, FacetApplier... facetAppliers) {
-        checkNotNull(facetAppliers);
-        this.facetAppliers = Lists.newArrayList(facetAppliers);
+    public AbstractStepResolver(final Class<ANNO> annotationClass, final FacetApplierRegistry facetApplierRegistry) {
+        checkNotNull(facetApplierRegistry);
+        this.facetApplierRegistry = facetApplierRegistry;
         this.annotationClass = checkNotNull(annotationClass);
     }
 
@@ -48,7 +46,7 @@ public abstract class AbstractStepResolver<ANNO extends Annotation> implements S
     protected Step applyFacets(Method method, Step step) {
         Step facetedStep = step;
 
-        for (final FacetApplier faceting : facetAppliers) {
+        for (final FacetApplier faceting : facetApplierRegistry.list()) {
             facetedStep = faceting.apply(method, facetedStep);
         }
 
