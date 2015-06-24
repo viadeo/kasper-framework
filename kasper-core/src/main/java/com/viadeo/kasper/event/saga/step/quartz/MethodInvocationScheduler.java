@@ -139,13 +139,6 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
         jobDataMap.put(METHOD_KEY, methodName);
         jobDataMap.put(IDENTIFIER_KEY, identifier);
 
-        // FIXME beurk
-        try {
-            jobDataMap.put(SAGA_MANAGER_KEY, scheduler.getContext().get(SAGA_MANAGER_KEY));
-        } catch (SchedulerException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-
         return JobBuilder.newJob(MethodInvocationJob.class)
                 .withDescription(sagaClass.getName())
                 .withIdentity(jobKey)
@@ -185,8 +178,8 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
             String sagaMethodName = (String) context.getJobDetail().getJobDataMap().get(METHOD_KEY);
             String sagaClassName = (String) context.getJobDetail().getJobDataMap().get(SAGA_CLASS_KEY);
             String sagaIdentifier = (String) context.getJobDetail().getJobDataMap().get(IDENTIFIER_KEY);
-            // FIXME beurk
-            SagaManager sagaManager = (SagaManager) context.getJobDetail().getJobDataMap().get(SAGA_MANAGER_KEY);
+
+            SagaManager sagaManager = getFromSchedulerContext(context, SAGA_MANAGER_KEY);
 
             checkNotNull(sagaMethodName);
             checkNotNull(sagaClassName);
@@ -215,6 +208,16 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
                         ),
                         e
                 );
+            }
+        }
+
+        private <E> E getFromSchedulerContext(final JobExecutionContext context, final String key) {
+            try {
+                return (E) context.getScheduler().getContext().get(key);
+            } catch (SchedulerException e) {
+                throw new RuntimeException(String.format("Error in executing method of a saga : a value is expected for the key '%s'", key), e);
+            } catch (ClassCastException e1) {
+                throw new RuntimeException("Error in executing method of a saga", e1);
             }
         }
     }
