@@ -6,9 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga.step;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
+import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.core.metrics.KasperMetrics;
+import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
 import com.viadeo.kasper.event.saga.Saga;
@@ -17,6 +22,7 @@ import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.Set;
 
+import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 
 // TODO adds metrics for each steps
@@ -82,28 +88,37 @@ public final class Steps {
     }
 
     public static class StartStepResolver extends AbstractStepResolver<XKasperSaga.Start> {
-        public StartStepResolver(final FacetApplierRegistry facetApplierRegistry) {
+
+        private final MetricRegistry metricRegistry;
+
+        public StartStepResolver(final MetricRegistry metricRegistry, final FacetApplierRegistry facetApplierRegistry) {
             super(XKasperSaga.Start.class, facetApplierRegistry);
+            this.metricRegistry = checkNotNull(metricRegistry);
         }
 
         @Override
-        public Step createStep(Method method, XKasperSaga.Start annotation) {
-            return new StartStep(method, annotation.getter());
+        public Step createStep(final Method method, final XKasperSaga.Start annotation) {
+            return new MeasureStep(metricRegistry, new StartStep(method, annotation.getter()));
         }
     }
 
     public static class EndStepResolver extends AbstractStepResolver<XKasperSaga.End> {
-        public EndStepResolver(final FacetApplierRegistry facetApplierRegistry) {
+
+        private final MetricRegistry metricRegistry;
+
+        public EndStepResolver(final MetricRegistry metricRegistry, final FacetApplierRegistry facetApplierRegistry) {
             super(XKasperSaga.End.class, facetApplierRegistry);
+            this.metricRegistry = checkNotNull(metricRegistry);
         }
 
         @Override
-        public Step createStep(Method method, XKasperSaga.End annotation) {
-            return new EndStep(method, annotation.getter());
+        public Step createStep(final Method method, final XKasperSaga.End annotation) {
+            return new MeasureStep(metricRegistry, new EndStep(method, annotation.getter()));
         }
     }
 
     public static class BasicStepResolver extends AbstractStepResolver<XKasperSaga.Step> {
+
         public BasicStepResolver(final FacetApplierRegistry facetApplierRegistry) {
             super(XKasperSaga.Step.class, facetApplierRegistry);
         }
@@ -123,6 +138,54 @@ public final class Steps {
     public static class EndStep extends BaseStep {
         public EndStep(final Method method, final String getterName) {
             super(method, getterName);
+        }
+    }
+
+    public static class MeasureStep implements Step {
+
+        private final MetricRegistry metricRegistry;
+        private final Step delegateStep;
+        private final String metricName;
+
+        public MeasureStep(final MetricRegistry metricRegistry, final Step delegateStep) {
+            this.delegateStep = checkNotNull(delegateStep);
+            this.metricRegistry = checkNotNull(metricRegistry);
+            this.metricName = KasperMetrics.name(
+                    MetricNameStyle.DOMAIN_TYPE_COMPONENT, delegateStep.getSagaClass(), delegateStep.getClass().getSimpleName().replace("Step", "").toLowerCase()
+            );
+        }
+
+        public String getMetricName() {
+            return metricName;
+        }
+
+        @Override
+        public String name() {
+            return delegateStep.name();
+        }
+
+        @Override
+        public void invoke(Saga saga, Context context, Event event) throws StepInvocationException {
+            try {
+                delegateStep.invoke(saga, context, event);
+            } finally {
+                metricRegistry.meter(metricName).mark();
+            }
+        }
+
+        @Override
+        public Class<? extends Event> getSupportedEvent() {
+            return delegateStep.getSupportedEvent();
+        }
+
+        @Override
+        public <T> Optional<T> getSagaIdentifierFrom(Event event) {
+            return delegateStep.getSagaIdentifierFrom(event);
+        }
+
+        @Override
+        public Class<? extends Saga> getSagaClass() {
+            return delegateStep.getSagaClass();
         }
     }
 

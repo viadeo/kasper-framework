@@ -24,9 +24,9 @@ public class TestFixture {
 
     @XKasperUnregistered
     @XKasperDomain(
-            label = "TestDomain",
+            label = "Test",
             prefix = "sec",
-            description = "The Security domain",
+            description = "a domain",
             owner = "Emmanuel Camper <ecamper@viadeoteam.com>"
     )
     public class TestDomain implements Domain { }

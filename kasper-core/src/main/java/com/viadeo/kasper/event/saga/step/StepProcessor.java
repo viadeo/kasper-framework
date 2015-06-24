@@ -20,13 +20,8 @@ public class StepProcessor {
     private final List<StepResolver> resolvers;
     private final StepChecker checker;
 
-    public StepProcessor() {
-        this(
-                new Steps.Checker(),
-                new Steps.StartStepResolver(new FacetApplierRegistry()),
-                new Steps.EndStepResolver(new FacetApplierRegistry()),
-                new Steps.BasicStepResolver(new FacetApplierRegistry())
-        );
+    public StepProcessor(final StepResolver... resolvers) {
+        this(new Steps.Checker(), resolvers);
     }
 
     public StepProcessor(final StepChecker checker, final StepResolver... resolvers) {

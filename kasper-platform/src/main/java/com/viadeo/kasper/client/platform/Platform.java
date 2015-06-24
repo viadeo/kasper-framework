@@ -401,6 +401,9 @@ public interface Platform {
             final EventResolver eventResolver = new EventResolver();
             eventResolver.setDomainResolver(domainResolver);
 
+            final SagaResolver sagaResolver = new SagaResolver();
+            sagaResolver.setDomainResolver(domainResolver);
+
             final ResolverFactory resolverFactory = new ResolverFactory();
             resolverFactory.setCommandHandlerResolver(commandHandlerResolver);
             resolverFactory.setEventListenerResolver(eventListenerResolver);
@@ -410,6 +413,7 @@ public interface Platform {
             resolverFactory.setCommandResolver(commandResolver);
             resolverFactory.setQueryResolver(queryResolver);
             resolverFactory.setQueryResultResolver(queryResultResolver);
+            resolverFactory.setSagaResolver(sagaResolver);
 
             KasperMetrics.setResolverFactory(resolverFactory);
             KasperMetrics.setMetricRegistry(metricRegistry);

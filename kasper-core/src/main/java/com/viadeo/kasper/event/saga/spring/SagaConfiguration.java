@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga.spring;
 
+import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.event.saga.*;
 import com.viadeo.kasper.event.saga.repository.InMemorySagaRepository;
 import com.viadeo.kasper.event.saga.repository.SagaRepository;
@@ -42,8 +43,8 @@ public class SagaConfiguration{
     }
 
     @Bean
-    public StepResolver startStepResolver(final FacetApplierRegistry facetApplierRegistry) {
-        return new Steps.StartStepResolver(facetApplierRegistry);
+    public StepResolver startStepResolver(final MetricRegistry metricRegistry, final FacetApplierRegistry facetApplierRegistry) {
+        return new Steps.StartStepResolver(metricRegistry, facetApplierRegistry);
     }
 
     @Bean
@@ -52,8 +53,8 @@ public class SagaConfiguration{
     }
 
     @Bean
-    public StepResolver endStepResolver(final FacetApplierRegistry facetApplierRegistry) {
-        return new Steps.EndStepResolver(facetApplierRegistry);
+    public StepResolver endStepResolver(final MetricRegistry metricRegistry, final FacetApplierRegistry facetApplierRegistry) {
+        return new Steps.EndStepResolver(metricRegistry, facetApplierRegistry);
     }
 
     @Bean
