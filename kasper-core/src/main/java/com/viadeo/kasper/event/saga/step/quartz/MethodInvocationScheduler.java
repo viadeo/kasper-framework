@@ -87,12 +87,12 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
     }
 
     @Override
-    public String schedule(final Class<? extends Saga> sagaClass, final String methodName, final String identifier, final Duration triggerDuration) {
+    public String schedule(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final Duration triggerDuration) {
         return schedule(sagaClass, methodName, identifier, new DateTime().plus(triggerDuration));
     }
 
     @Override
-    public String schedule(final Class<? extends Saga> sagaClass, final String methodName, final String identifier, final DateTime triggerDateTime) {
+    public String schedule(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final DateTime triggerDateTime) {
         Assert.state(initialized, "Scheduler is not yet initialized");
 
         checkNotNull(identifier);
@@ -112,11 +112,11 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
     }
 
     @Override
-    public void cancelSchedule(final Class<? extends Saga> sagaClass, final String methodName, final String identifier) {
+    public void cancelSchedule(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier) {
         cancelSchedule(sagaClass, methodName, identifier, groupIdentifier);
     }
 
-    public void cancelSchedule(final Class<? extends Saga> sagaClass, final String methodName, final String identifier, final String groupIdentifier) {
+    public void cancelSchedule(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final String groupIdentifier) {
         Assert.state(initialized, "Scheduler is not yet initialized");
 
         checkNotNull(identifier);
@@ -133,7 +133,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
         }
     }
 
-    protected JobDetail buildJobDetail(final Class<? extends Saga> sagaClass, final String methodName, final String identifier, final JobKey jobKey) {
+    protected JobDetail buildJobDetail(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final JobKey jobKey) {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(SAGA_CLASS_KEY, sagaClass.getName());
         jobDataMap.put(METHOD_KEY, methodName);
@@ -162,8 +162,11 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
     }
 
 
-    protected String buildJobIdentifier(final Class<? extends Saga> sagaClass, final String methodName, final String identifier) {
-        return JOB_NAME_PREFIX + "_" + sagaClass.getName() + "_" + methodName + "_" + identifier;
+    protected String buildJobIdentifier(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier) {
+        checkNotNull(sagaClass);
+        checkNotNull(methodName);
+        checkNotNull(identifier);
+        return JOB_NAME_PREFIX + "_" + sagaClass.getName() + "_" + methodName + "_" + identifier.toString();
     }
 
 
@@ -177,7 +180,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
 
             String sagaMethodName = (String) context.getJobDetail().getJobDataMap().get(METHOD_KEY);
             String sagaClassName = (String) context.getJobDetail().getJobDataMap().get(SAGA_CLASS_KEY);
-            String sagaIdentifier = (String) context.getJobDetail().getJobDataMap().get(IDENTIFIER_KEY);
+            Object sagaIdentifier = context.getJobDetail().getJobDataMap().get(IDENTIFIER_KEY);
 
             SagaManager sagaManager = getFromSchedulerContext(context, SAGA_MANAGER_KEY);
 

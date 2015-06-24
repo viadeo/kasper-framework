@@ -48,7 +48,7 @@ public class SchedulingStep implements Step {
             scheduler.schedule(
                     getSagaClass(),
                     annotation.methodName(),
-                    String.valueOf(identifier.get()),
+                    identifier.get(),
                     new Duration(TimeUnit.MILLISECONDS.convert(annotation.delay(), annotation.unit()))
             );
         }

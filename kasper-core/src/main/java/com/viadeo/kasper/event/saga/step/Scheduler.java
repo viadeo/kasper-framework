@@ -14,10 +14,10 @@ public interface Scheduler {
 
     void initialize();
 
-    String schedule(final Class<? extends Saga> sagaClass, final String methodName, final String identifier, final Duration triggerDuration);
+    String schedule(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final Duration triggerDuration);
 
-    String schedule(final Class<? extends Saga> sagaClass, final String methodName, final String identifier, final DateTime triggerDateTime);
+    String schedule(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final DateTime triggerDateTime);
 
-    void cancelSchedule(final Class<? extends Saga> sagaClass, final String methodName, final String identifier);
+    void cancelSchedule(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier);
 
 }

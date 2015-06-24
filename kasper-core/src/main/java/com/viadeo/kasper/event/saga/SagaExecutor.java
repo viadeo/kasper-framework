@@ -22,7 +22,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Set;
-import java.util.UUID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -51,16 +50,14 @@ public class SagaExecutor {
         }
     }
 
-    public void execute(final String sagaIdentifier, final String methodName) {
+    public void execute(final Object sagaIdentifier, final String methodName) {
         checkNotNull(sagaIdentifier);
-
-        UUID identifier = UUID.fromString(sagaIdentifier);
 
         try {
             Method method = sagaClass.getMethod(methodName);
             method.setAccessible(Boolean.TRUE);
 
-            Optional<Saga> sagaOptional = repository.load(identifier);
+            Optional<Saga> sagaOptional = repository.load(sagaIdentifier);
 
             if ( ! sagaOptional.isPresent()) {
                 throw new SagaExecutionException(
@@ -72,7 +69,7 @@ public class SagaExecutor {
 
             try {
                 method.invoke(saga);
-                repository.save(identifier, saga);
+                repository.save(sagaIdentifier, saga);
 
             } catch (IllegalAccessException | InvocationTargetException e) {
                 LOGGER.error(
