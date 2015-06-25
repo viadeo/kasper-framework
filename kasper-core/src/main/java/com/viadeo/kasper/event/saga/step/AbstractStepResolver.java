@@ -22,9 +22,10 @@ public abstract class AbstractStepResolver<ANNO extends Annotation> implements S
     private final Class<ANNO> annotationClass;
     private final FacetApplierRegistry facetApplierRegistry;
 
+    // ------------------------------------------------------------------------
+
     public AbstractStepResolver(final Class<ANNO> annotationClass, final FacetApplierRegistry facetApplierRegistry) {
-        checkNotNull(facetApplierRegistry);
-        this.facetApplierRegistry = facetApplierRegistry;
+        this.facetApplierRegistry = checkNotNull(facetApplierRegistry);
         this.annotationClass = checkNotNull(annotationClass);
     }
 
@@ -34,10 +35,9 @@ public abstract class AbstractStepResolver<ANNO extends Annotation> implements S
 
         final Set<Step> steps = Sets.newHashSet();
 
-        for (Method method : sagaClass.getMethods()) {
+        for (final Method method : sagaClass.getMethods()) {
             final ANNO annotation = method.getAnnotation(annotationClass);
-
-            if (annotation != null) {
+            if (null != annotation) {
                 steps.add(applyFacets(method, createStep(method, annotation)));
             }
         }
@@ -45,9 +45,9 @@ public abstract class AbstractStepResolver<ANNO extends Annotation> implements S
         return steps;
     }
 
-    protected Step applyFacets(Method method, Step step) {
-        Step facetedStep = step;
+    protected Step applyFacets(final Method method, final Step step) {
 
+        Step facetedStep = step;
         for (final FacetApplier faceting : facetApplierRegistry.list()) {
             facetedStep = faceting.apply(method, facetedStep);
         }
@@ -55,5 +55,8 @@ public abstract class AbstractStepResolver<ANNO extends Annotation> implements S
         return facetedStep;
     }
 
-    public abstract Step createStep(final Method method, final ANNO annotation);
+    // ------------------------------------------------------------------------
+
+    public abstract Step createStep(Method method, ANNO annotation);
+
 }

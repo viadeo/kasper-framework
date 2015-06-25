@@ -6,8 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga;
 
-import com.viadeo.kasper.event.saga.exception.SagaInstantitationException;
+import com.viadeo.kasper.event.saga.exception.SagaInstantiationException;
 
 public interface  SagaFactory {
-    public <SAGA extends Saga> SAGA create(Object identifier, Class<SAGA> sagaClass) throws SagaInstantitationException;
+
+    <SAGA extends Saga> SAGA create(Object identifier, Class<SAGA> sagaClass) throws SagaInstantiationException;
+
 }

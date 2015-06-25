@@ -43,13 +43,9 @@ import javax.validation.constraints.Size;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.net.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.refEq;
 import static org.mockito.Mockito.spy;

@@ -20,26 +20,29 @@ public class StepProcessor {
     private final List<StepResolver> resolvers;
     private final StepChecker checker;
 
+    // ------------------------------------------------------------------------
+
     public StepProcessor(final StepResolver... resolvers) {
         this(new Steps.Checker(), resolvers);
     }
+
+    // ------------------------------------------------------------------------
 
     public StepProcessor(final StepChecker checker, final StepResolver... resolvers) {
         this.checker = checkNotNull(checker);
         this.resolvers = Arrays.asList(checkNotNull(resolvers));
     }
 
-    public Set<Step> process(Class<? extends Saga> sagaClass) {
+    public Set<Step> process(final Class<? extends Saga> sagaClass) {
         checkNotNull(sagaClass);
 
         final Set<Step> steps = Sets.newHashSet();
-
-        for (StepResolver resolver : resolvers) {
+        for (final StepResolver resolver : resolvers) {
             steps.addAll(resolver.resolve(sagaClass));
         }
 
         checker.check(sagaClass, steps);
-
         return steps;
     }
+
 }

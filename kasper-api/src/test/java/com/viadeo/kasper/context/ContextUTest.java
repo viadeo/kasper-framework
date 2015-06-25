@@ -18,7 +18,6 @@ import java.util.Set;
 
 import static com.google.common.collect.Sets.newHashSet;
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 
 public class ContextUTest {
 

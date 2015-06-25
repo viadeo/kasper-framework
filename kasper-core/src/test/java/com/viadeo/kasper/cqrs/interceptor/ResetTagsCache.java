@@ -6,14 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.interceptor;
 
-import static com.google.common.collect.Maps.newHashMap;
+import org.junit.rules.TestRule;
+import org.junit.runner.Description;
+import org.junit.runners.model.Statement;
 
 import java.util.Map;
 import java.util.Set;
 
-import org.junit.rules.TestRule;
-import org.junit.runner.Description;
-import org.junit.runners.model.Statement;
+import static com.google.common.collect.Maps.newHashMap;
 
 public class ResetTagsCache implements TestRule {
     @Override

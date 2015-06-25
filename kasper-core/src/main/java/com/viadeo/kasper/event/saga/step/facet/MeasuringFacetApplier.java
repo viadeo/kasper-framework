@@ -12,16 +12,22 @@ import com.viadeo.kasper.event.saga.step.Step;
 
 import java.lang.reflect.Method;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 public class MeasuringFacetApplier implements FacetApplier {
 
     private final MetricRegistry metricRegistry;
 
-    public MeasuringFacetApplier(MetricRegistry metricRegistry) {
-        this.metricRegistry = metricRegistry;
+    // ------------------------------------------------------------------------
+
+    public MeasuringFacetApplier(final MetricRegistry metricRegistry) {
+        this.metricRegistry = checkNotNull(metricRegistry);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public Step apply(Method method, Step step) {
+    public Step apply(final Method method, final Step step) {
         final Class<? extends Step> stepClass;
 
         if (step instanceof DecorateStep) {
@@ -41,4 +47,5 @@ public class MeasuringFacetApplier implements FacetApplier {
     public int getPhase() {
         return Integer.MAX_VALUE;
     }
+
 }

@@ -7,7 +7,9 @@
 package com.viadeo.kasper.event.saga.spring;
 
 import com.codahale.metrics.MetricRegistry;
-import com.viadeo.kasper.event.saga.*;
+import com.viadeo.kasper.event.saga.DefaultSagaFactory;
+import com.viadeo.kasper.event.saga.SagaFactory;
+import com.viadeo.kasper.event.saga.SagaManager;
 import com.viadeo.kasper.event.saga.repository.InMemorySagaRepository;
 import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.step.*;
@@ -26,11 +28,11 @@ import org.springframework.context.annotation.Configuration;
 import java.util.List;
 
 @Configuration
-public class SagaConfiguration{
+public class SagaConfiguration {
 
     @Bean(initMethod = "initialize", destroyMethod = "shutdown")
-    public Scheduler stepScheduler(ApplicationContext applicationContext) throws SchedulerException {
-        SchedulerFactory sf = new StdSchedulerFactory();
+    public Scheduler stepScheduler(final ApplicationContext applicationContext) throws SchedulerException {
+        final SchedulerFactory sf = new StdSchedulerFactory();
         return new MethodInvocationScheduler(sf.getScheduler(), applicationContext);
     }
 
@@ -41,14 +43,14 @@ public class SagaConfiguration{
 
     @Bean
     public FacetApplier schedulingFacetApplier(final FacetApplierRegistry facetApplierRegistry, final Scheduler scheduler) {
-        SchedulingFacetApplier applier = new SchedulingFacetApplier(scheduler);
+        final SchedulingFacetApplier applier = new SchedulingFacetApplier(scheduler);
         facetApplierRegistry.register(applier);
         return applier;
     }
 
     @Bean
     public FacetApplier measuringFacetApplier(final FacetApplierRegistry facetApplierRegistry, final MetricRegistry metricRegistry) {
-        MeasuringFacetApplier applier = new MeasuringFacetApplier(metricRegistry);
+        final MeasuringFacetApplier applier = new MeasuringFacetApplier(metricRegistry);
         facetApplierRegistry.register(applier);
         return applier;
     }
@@ -92,4 +94,5 @@ public class SagaConfiguration{
     public SagaManager sagaManager(final SagaFactory sagaFactory, final SagaRepository repository, final StepProcessor operationProcessor) {
         return new SagaManager(sagaFactory, repository, operationProcessor);
     }
+
 }

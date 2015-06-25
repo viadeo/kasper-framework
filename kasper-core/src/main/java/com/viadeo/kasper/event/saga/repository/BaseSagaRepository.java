@@ -18,17 +18,20 @@ public abstract class BaseSagaRepository implements SagaRepository {
 
     private final SagaMapper sagaMapper;
 
-    public BaseSagaRepository(SagaMapper sagaMapper) {
+    // ------------------------------------------------------------------------
+
+    public BaseSagaRepository(final SagaMapper sagaMapper) {
         this.sagaMapper = checkNotNull(sagaMapper);
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public final Optional<Saga> load(Object identifier) {
         checkNotNull(identifier);
 
         final Map<String,Object> properties = doLoad(identifier);
-
-        if( properties != null ) {
+        if ( null != properties ) {
             return Optional.fromNullable(sagaMapper.to(properties));
         }
 
@@ -36,15 +39,19 @@ public abstract class BaseSagaRepository implements SagaRepository {
     }
 
     @Override
-    public final void save(Object identifier, Saga saga) {
+    public final void save(final Object identifier, final Saga saga) {
         checkNotNull(identifier);
         checkNotNull(saga);
 
-        Map<String, Object> properties = sagaMapper.from(identifier, saga);
+        final Map<String, Object> properties = sagaMapper.from(identifier, saga);
 
         doSave(identifier, properties);
     }
 
+    // ------------------------------------------------------------------------
+
     public abstract Map<String, Object> doLoad(Object identifier);
+
     public abstract void doSave(Object identifier, Map<String, Object> sagaProperties);
+
 }

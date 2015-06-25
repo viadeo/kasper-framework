@@ -21,7 +21,6 @@ import org.slf4j.MDC;
 import java.util.UUID;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 
 public class InterceptorChainTest {

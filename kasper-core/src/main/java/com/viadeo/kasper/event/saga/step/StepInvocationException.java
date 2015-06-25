@@ -8,11 +8,12 @@ package com.viadeo.kasper.event.saga.step;
 
 public class StepInvocationException extends RuntimeException {
 
-    public StepInvocationException(String message) {
+    public StepInvocationException(final String message) {
         super(message);
     }
 
-    public StepInvocationException(String message, Throwable cause) {
+    public StepInvocationException(final String message, final Throwable cause) {
         super(message, cause);
     }
+
 }

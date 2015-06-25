@@ -23,11 +23,13 @@ public class MeasureStep extends DecorateStep {
     private final MetricRegistry metricRegistry;
     private final String metricName;
 
+    // ------------------------------------------------------------------------
+
     public MeasureStep(final MetricRegistry metricRegistry, final Step delegateStep) {
         super(delegateStep);
         this.metricRegistry = checkNotNull(metricRegistry);
         this.metricName = KasperMetrics.name(
-                MetricNameStyle.DOMAIN_TYPE_COMPONENT, delegateStep.getSagaClass(), delegateStep.getClass().getSimpleName().replace("Step", "").toLowerCase()
+            MetricNameStyle.DOMAIN_TYPE_COMPONENT, delegateStep.getSagaClass(), delegateStep.getClass().getSimpleName().replace("Step", "").toLowerCase()
         );
     }
 
@@ -37,11 +39,12 @@ public class MeasureStep extends DecorateStep {
     }
 
     @Override
-    public void invoke(Saga saga, Context context, Event event) throws StepInvocationException {
+    public void invoke(final Saga saga, final Context context, final Event event) throws StepInvocationException {
         try {
             getDelegateStep().invoke(saga, context, event);
         } finally {
             metricRegistry.meter(metricName).mark();
         }
     }
+
 }

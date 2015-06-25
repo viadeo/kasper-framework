@@ -83,18 +83,18 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
             new EventValidationInterceptorFactory()
         );
 
-        AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
+        final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
         applicationContext.register(SagaConfiguration.class);
 
-        ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
+        this.sagaManager = applicationContext.getBean(SagaManager.class);
+
+        final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
         beanFactory.registerSingleton("eventBus", eventBus);
         beanFactory.registerSingleton("queryGateway", queryGateway);
         beanFactory.registerSingleton("commandGateway", commandGateway);
         beanFactory.registerSingleton("configuration", configuration);
         beanFactory.registerSingleton("metricRegistry", metricRegistry);
         applicationContext.refresh();
-
-        sagaManager = applicationContext.getBean(SagaManager.class);
     }
 
     // ------------------------------------------------------------------------

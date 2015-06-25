@@ -6,17 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.interceptor;
 
-import static com.google.common.collect.Sets.newHashSet;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
-
-import java.util.Set;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
@@ -24,6 +13,14 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.ExpectedException;
+
+import java.util.Set;
+
+import static com.google.common.collect.Sets.newHashSet;
+import static org.junit.Assert.*;
 
 public class TagsHolderUTest {
 

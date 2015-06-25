@@ -11,7 +11,11 @@ import com.viadeo.kasper.context.Context;
 import java.util.Set;
 
 public interface IEventListener<EVENT extends Event> {
-    EventResponse handle(final EventMessage<EVENT> message);
-    EventResponse handle(final Context context, final EVENT event);
+
+    EventResponse handle(EventMessage<EVENT> message);
+
+    EventResponse handle(Context context, EVENT event);
+
     Set<Class<?>> getEventClasses();
+
 }

@@ -6,11 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.interceptor;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
-import java.util.Map;
-import java.util.Set;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
@@ -18,6 +13,11 @@ import com.google.common.collect.Sets;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
+
+import java.util.Map;
+import java.util.Set;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class TagsHolder {
 

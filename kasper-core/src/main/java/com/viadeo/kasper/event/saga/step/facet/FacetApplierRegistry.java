@@ -17,17 +17,21 @@ public class FacetApplierRegistry {
     private static final Comparator<FacetApplier> APPLIER_COMPARATOR = new Comparator<FacetApplier>() {
         @Override
         public int compare(FacetApplier o1, FacetApplier o2) {
-            return o1.getPhase() - o2.getPhase();
+        return o1.getPhase() - o2.getPhase();
         }
     };
 
     private final List<FacetApplier> appliers;
 
+    // ------------------------------------------------------------------------
+
     public FacetApplierRegistry() {
         this.appliers = Lists.newArrayList();
     }
 
-    public void register(FacetApplier applier) {
+    // ------------------------------------------------------------------------
+
+    public void register(final FacetApplier applier) {
         appliers.add(applier);
         Collections.sort(appliers, APPLIER_COMPARATOR);
     }
@@ -35,4 +39,5 @@ public class FacetApplierRegistry {
     public List<FacetApplier> list() {
         return Lists.newArrayList(appliers);
     }
+
 }

@@ -6,15 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.interceptor;
 
-import java.util.Collections;
-import java.util.Map;
-
+import com.google.common.base.Objects;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 import org.slf4j.MDC;
 
-import com.google.common.base.Objects;
+import java.util.Collections;
+import java.util.Map;
 
 public class ResetMdcContextMap implements TestRule {
     @Override

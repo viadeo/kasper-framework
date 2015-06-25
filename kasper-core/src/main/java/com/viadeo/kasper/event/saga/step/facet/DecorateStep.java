@@ -7,18 +7,23 @@
 package com.viadeo.kasper.event.saga.step.facet;
 
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.event.saga.step.Step;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class DecorateStep implements Step {
 
     private final Step delegateStep;
 
-    public DecorateStep(Step delegateStep) {
-        this.delegateStep = Preconditions.checkNotNull(delegateStep);
+    // ------------------------------------------------------------------------
+
+    public DecorateStep(final Step delegateStep) {
+        this.delegateStep = checkNotNull(delegateStep);
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public String name() {
@@ -31,7 +36,7 @@ public abstract class DecorateStep implements Step {
     }
 
     @Override
-    public <T> Optional<T> getSagaIdentifierFrom(Event event) {
+    public <T> Optional<T> getSagaIdentifierFrom(final Event event) {
         return delegateStep.getSagaIdentifierFrom(event);
     }
 
@@ -44,4 +49,5 @@ public abstract class DecorateStep implements Step {
     public Step getDelegateStep() {
         return delegateStep;
     }
+
 }

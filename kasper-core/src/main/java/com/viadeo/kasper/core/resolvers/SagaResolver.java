@@ -21,7 +21,7 @@ public class SagaResolver extends AbstractResolver<Saga> {
     }
 
     @Override
-    public Optional<Class<? extends Domain>> getDomainClass(Class<? extends Saga> clazz) {
+    public Optional<Class<? extends Domain>> getDomainClass(final Class<? extends Saga> clazz) {
         if (DOMAINS_CACHE.containsKey(checkNotNull(clazz))) {
             return Optional.<Class<? extends Domain>>of(DOMAINS_CACHE.get(clazz));
         }
@@ -38,12 +38,12 @@ public class SagaResolver extends AbstractResolver<Saga> {
     }
 
     @Override
-    public String getLabel(Class<? extends Saga> clazz) {
+    public String getLabel(final Class<? extends Saga> clazz) {
         return checkNotNull(clazz).getSimpleName().replace("Saga", "");
     }
 
     @Override
-    public String getDescription(Class<? extends Saga> clazz) {
+    public String getDescription(final Class<? extends Saga> clazz) {
         final XKasperSaga annotation =
                 checkNotNull(clazz).getAnnotation(XKasperSaga.class);
 
@@ -59,4 +59,5 @@ public class SagaResolver extends AbstractResolver<Saga> {
 
         return description;
     }
+
 }

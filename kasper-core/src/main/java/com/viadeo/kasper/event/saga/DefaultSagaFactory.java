@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga;
 
-import com.viadeo.kasper.event.saga.exception.SagaInstantitationException;
+import com.viadeo.kasper.event.saga.exception.SagaInstantiationException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -15,16 +15,17 @@ public class DefaultSagaFactory implements SagaFactory {
 
     private final AutowireCapableBeanFactory beanFactory;
 
-    public DefaultSagaFactory(ApplicationContext applicationContext) {
+    public DefaultSagaFactory(final ApplicationContext applicationContext) {
         beanFactory = applicationContext.getAutowireCapableBeanFactory();
     }
 
     @Override
-    public <SAGA extends Saga> SAGA create(Object identifier, Class<SAGA> sagaClass) {
+    public <SAGA extends Saga> SAGA create(final Object identifier, final Class<SAGA> sagaClass) {
         try {
             return (SAGA) beanFactory.autowire(sagaClass, AutowireCapableBeanFactory.AUTOWIRE_CONSTRUCTOR, Boolean.TRUE);
-        } catch (UnsatisfiedDependencyException e) {
-            throw new SagaInstantitationException(String.format("Error instantiating saga of '%s'", sagaClass.getName()), e);
+        } catch (final UnsatisfiedDependencyException e) {
+            throw new SagaInstantiationException(String.format("Error instantiating saga of '%s'", sagaClass.getName()), e);
         }
     }
+
 }

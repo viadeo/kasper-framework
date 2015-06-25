@@ -11,6 +11,9 @@ import com.viadeo.kasper.event.saga.step.Step;
 import java.lang.reflect.Method;
 
 public interface FacetApplier {
+
     Step apply(Method method, Step step);
+
     int getPhase();
+
 }

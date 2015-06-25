@@ -10,7 +10,11 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.event.saga.Saga;
 
 public interface SagaRepository {
+
     Optional<Saga> load(Object identifier);
+
     void save(Object identifier, Saga saga);
+
     void delete(Object identifier);
+
 }

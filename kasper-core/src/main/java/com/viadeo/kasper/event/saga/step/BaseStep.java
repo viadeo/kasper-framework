@@ -25,8 +25,11 @@ public class BaseStep implements Step {
     private final Method identifierMethod;
     private final Class<? extends Event> eventClass;
 
+    // ------------------------------------------------------------------------
+
     public BaseStep(final Method method, final String getterName) {
         checkNotNull(getterName);
+
         this.sagaMethod = checkNotNull(method);
         this.sagaMethodArguments = new StepArguments(sagaMethod);
         this.eventClass = this.sagaMethodArguments.getEventClass();
@@ -34,13 +37,15 @@ public class BaseStep implements Step {
         try {
             this.identifierMethod = this.eventClass.getMethod(getterName);
             checkArgument(identifierMethod.getParameterTypes().length == 0, "Should specify a method without parameter");
-        } catch (NoSuchMethodException e) {
+        } catch (final NoSuchMethodException e) {
             throw new IllegalArgumentException(
-                    String.format("The specified getter name '%s' is undefined in the event '%s': %s", getterName, eventClass.getName(), method.getName()),
-                    e
+                String.format("The specified getter name '%s' is undefined in the event '%s': %s", getterName, eventClass.getName(), method.getName()),
+                e
             );
         }
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public String name() {
@@ -55,13 +60,13 @@ public class BaseStep implements Step {
 
         try {
             sagaMethod.invoke(saga, sagaMethodArguments.order(context, event));
-        } catch (Exception e) {
+        } catch (final Exception e) {
             throw new StepInvocationException(
-                    String.format(
-                            "Error in invoking step, <step=%s> <method=%s> <payload=%s>",
-                            getClass().getSimpleName(), sagaMethod.getName(), event
-                    ),
-                    e
+                String.format(
+                    "Error in invoking step, <step=%s> <method=%s> <payload=%s>",
+                    getClass().getSimpleName(), sagaMethod.getName(), event
+                ),
+                e
             );
         }
     }
@@ -79,9 +84,9 @@ public class BaseStep implements Step {
 
         try {
             identifier = identifierMethod.invoke(event);
-        } catch (IllegalAccessException e) {
+        } catch (final IllegalAccessException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (InvocationTargetException e) {
+        } catch (final InvocationTargetException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
 
@@ -93,15 +98,19 @@ public class BaseStep implements Step {
         return (Class<? extends Saga>) sagaMethod.getDeclaringClass();
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
+    // ------------------------------------------------------------------------
 
-        BaseStep that = (BaseStep) o;
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) return true;
+        if (null == o || getClass() != o.getClass()) {
+            return false;
+        }
+
+        final BaseStep that = (BaseStep) o;
 
         return Objects.equal(this.name(), that.name()) &&
-                Objects.equal(this.eventClass, that.eventClass);
+               Objects.equal(this.eventClass, that.eventClass);
     }
 
     @Override
@@ -117,4 +126,5 @@ public class BaseStep implements Step {
                 .add("event", eventClass)
                 .toString();
     }
+
 }

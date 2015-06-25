@@ -9,10 +9,7 @@ package com.viadeo.kasper.event.saga;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.event.AxonEventListener;
-import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.EventResponse;
-import com.viadeo.kasper.event.IEventListener;
+import com.viadeo.kasper.event.*;
 
 import java.util.Set;
 
@@ -22,21 +19,25 @@ public class SagaWrapper extends AxonEventListener<Event> implements IEventListe
 
     private final SagaExecutor executor;
 
-    public SagaWrapper(SagaExecutor executor) {
+    // ------------------------------------------------------------------------
+
+    public SagaWrapper(final SagaExecutor executor) {
         this.executor = checkNotNull(executor);
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public EventResponse handle(com.viadeo.kasper.event.EventMessage message) {
+    public EventResponse handle(final EventMessage message) {
         checkNotNull(message);
         return handle(message.getContext(), message.getEvent());
     }
 
     @Override
-    public EventResponse handle(Context context, Event event) {
+    public EventResponse handle(final Context context, final Event event) {
         try {
             executor.execute(context, event);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             return EventResponse.error(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
         }
         return EventResponse.success();
@@ -46,4 +47,5 @@ public class SagaWrapper extends AxonEventListener<Event> implements IEventListe
     public Set<Class<?>> getEventClasses() {
         return executor.getEventClasses();
     }
+
 }

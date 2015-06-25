@@ -9,5 +9,7 @@ package com.viadeo.kasper.event.saga;
 import com.google.common.base.Optional;
 
 public interface Saga {
+
     Optional<SagaFactory> getFactory();
+
 }

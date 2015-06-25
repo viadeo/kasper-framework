@@ -22,20 +22,22 @@ public class SchedulingFacetApplier implements FacetApplier {
         this.scheduler = checkNotNull(scheduler);
     }
 
-    @Override
-    public Step apply(Method method, Step step) {
-        XKasperSaga.Schedule scheduleAnnotation = method.getAnnotation(XKasperSaga.Schedule.class);
-        XKasperSaga.CancelSchedule cancelScheduleAnnotation = method.getAnnotation(XKasperSaga.CancelSchedule.class);
+    // ------------------------------------------------------------------------
 
-        if (scheduleAnnotation != null && cancelScheduleAnnotation != null) {
+    @Override
+    public Step apply(final Method method, final Step step) {
+        final XKasperSaga.Schedule scheduleAnnotation = method.getAnnotation(XKasperSaga.Schedule.class);
+        final XKasperSaga.CancelSchedule cancelScheduleAnnotation = method.getAnnotation(XKasperSaga.CancelSchedule.class);
+
+        if ((null != scheduleAnnotation) && (null != cancelScheduleAnnotation)) {
             throw new IllegalStateException(String.format("Should have one schedule annotation per step : %s", step.getSagaClass().getName()));
         }
 
-        if (scheduleAnnotation != null) {
+        if (null != scheduleAnnotation) {
             return new SchedulingStep(scheduler, step, scheduleAnnotation);
         }
 
-        if (cancelScheduleAnnotation != null) {
+        if (null != cancelScheduleAnnotation) {
             return new SchedulingStep(scheduler, step, cancelScheduleAnnotation);
         }
 
@@ -46,4 +48,5 @@ public class SchedulingFacetApplier implements FacetApplier {
     public int getPhase() {
         return Integer.MAX_VALUE - 1;
     }
+
 }

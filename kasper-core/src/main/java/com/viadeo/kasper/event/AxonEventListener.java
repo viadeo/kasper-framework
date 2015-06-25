@@ -27,8 +27,8 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
             final Optional<Exception> optionalException = response.getReason().getException();
             final RuntimeException exception;
             final String message = String.format(
-                    "Failed to handle event %s, <event=%s> <response=%s>",
-                    eventMessage.getPayloadType(), eventMessage.getPayload(), response
+                "Failed to handle event %s, <event=%s> <response=%s>",
+                eventMessage.getPayloadType(), eventMessage.getPayload(), response
             );
 
             if (optionalException.isPresent()) {
@@ -61,7 +61,10 @@ public abstract class AxonEventListener<EVENT extends Event> implements org.axon
         return Boolean.FALSE;
     }
 
-    public abstract EventResponse handle(final com.viadeo.kasper.event.EventMessage<EVENT> message);
+    // ------------------------------------------------------------------------
+
+    public abstract EventResponse handle(com.viadeo.kasper.event.EventMessage<EVENT> message);
 
     public abstract Set<Class<?>> getEventClasses();
+
 }

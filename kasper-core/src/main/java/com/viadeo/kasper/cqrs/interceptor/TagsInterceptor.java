@@ -17,7 +17,6 @@ import com.viadeo.kasper.context.Tags;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
-
 import org.slf4j.MDC;
 
 import java.util.Collections;

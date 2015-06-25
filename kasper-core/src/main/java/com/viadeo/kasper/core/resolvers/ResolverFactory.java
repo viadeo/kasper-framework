@@ -231,8 +231,8 @@ public class ResolverFactory {
         return sagaResolver;
     }
 
-    public void setSagaResolver(SagaResolver sagaResolver) {
-        this.sagaResolver = sagaResolver;
+    public void setSagaResolver(final SagaResolver sagaResolver) {
+        this.sagaResolver = checkNotNull(sagaResolver);
     }
 
     // ------------------------------------------------------------------------

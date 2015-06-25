@@ -8,7 +8,6 @@ package com.viadeo.kasper.event.saga;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.step.Step;
@@ -18,6 +17,7 @@ import java.util.Map;
 import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 public class SagaManager {
 
@@ -26,25 +26,29 @@ public class SagaManager {
     private final StepProcessor operationProcessor;
     private final Map<Class<? extends Saga>, SagaExecutor> descriptors;
 
+    // ------------------------------------------------------------------------
+
     public SagaManager(
             final SagaFactory sagaFactory,
             final SagaRepository repository,
             final StepProcessor operationProcessor
     ) {
-        this.operationProcessor = operationProcessor;
+        this.operationProcessor = checkNotNull(operationProcessor);
         this.sagaFactory = checkNotNull(sagaFactory);
         this.repository = checkNotNull(repository);
         this.descriptors = Maps.newHashMap();
     }
+
+    // ------------------------------------------------------------------------
 
     public SagaExecutor register(final Saga saga) {
         checkNotNull(saga);
 
         final Class<? extends Saga> sagaClass = saga.getClass();
 
-        Preconditions.checkState(
-                ! descriptors.containsKey(sagaClass),
-                String.format("The specified saga is already registered : %s", sagaClass.getName())
+        checkState(
+            !descriptors.containsKey(sagaClass),
+            String.format("The specified saga is already registered : %s", sagaClass.getName())
         );
 
         final SagaFactory factory = saga.getFactory().or(sagaFactory);
@@ -65,4 +69,5 @@ public class SagaManager {
     public void clear() {
         descriptors.clear();
     }
+
 }

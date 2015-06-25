@@ -7,7 +7,6 @@
 package com.viadeo.kasper.core.interceptor;
 
 import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.EventResponse;
 
 public abstract class EventInterceptorFactory implements InterceptorFactory<Event, Void> {
 

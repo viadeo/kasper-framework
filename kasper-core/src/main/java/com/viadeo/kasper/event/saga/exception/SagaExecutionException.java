@@ -8,11 +8,11 @@ package com.viadeo.kasper.event.saga.exception;
 
 public class SagaExecutionException extends RuntimeException {
 
-    public SagaExecutionException(String message) {
+    public SagaExecutionException(final String message) {
         super(message);
     }
 
-    public SagaExecutionException(String message, Throwable cause) {
+    public SagaExecutionException(final String message, final Throwable cause) {
         super(message, cause);
     }
 

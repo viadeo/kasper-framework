@@ -16,23 +16,28 @@ public class InMemorySagaRepository extends BaseSagaRepository {
 
     private final Map<Object, Map<String,Object>> sagas;
 
-    public InMemorySagaRepository(SagaFactory sagaFactory) {
+    // ------------------------------------------------------------------------
+
+    public InMemorySagaRepository(final SagaFactory sagaFactory) {
         super(new SagaMapper(sagaFactory));
         this.sagas = Maps.newHashMap();
     }
 
+    // ------------------------------------------------------------------------
+
     @Override
-    public Map<String, Object> doLoad(Object identifier) {
+    public Map<String, Object> doLoad(final Object identifier) {
         return sagas.get(identifier);
     }
 
     @Override
-    public void doSave(Object identifier, Map<String, Object> sagaProperties) {
+    public void doSave(final Object identifier, final Map<String, Object> sagaProperties) {
         sagas.put(identifier, sagaProperties);
     }
 
     @Override
-    public void delete(Object identifier) {
+    public void delete(final Object identifier) {
         sagas.remove(identifier);
     }
+
 }
