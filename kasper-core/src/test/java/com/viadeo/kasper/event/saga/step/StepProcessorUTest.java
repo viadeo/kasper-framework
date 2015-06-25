@@ -51,12 +51,12 @@ public class StepProcessorUTest {
         );
 
         // When
-        Set<Step> steps = processor.process(TestFixture.TestSagaA.class);
+        Set<Step> steps = processor.process(TestFixture.TestSagaB.class);
 
         // Then
         assertNotNull(steps);
-        assertTrue(steps.contains(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId")));
-        assertTrue(steps.contains(new Steps.EndStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId")));
-        assertTrue(steps.contains(new Steps.BasicStep(getMethod(TestSagaA.class, "handle3", TestEvent3.class), "getId")));
+        assertTrue(steps.contains(new Steps.StartStep(getMethod(TestSagaB.class, "start", StartEvent.class), "getId")));
+        assertTrue(steps.contains(new Steps.EndStep(getMethod(TestSagaB.class, "end", EndEvent.class), "getId")));
+        assertTrue(steps.contains(new Steps.BasicStep(getMethod(TestSagaB.class, "step", StepEvent.class), "getId")));
     }
 }
