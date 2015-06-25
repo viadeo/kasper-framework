@@ -4,10 +4,13 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.event.saga.step;
+package com.viadeo.kasper.event.saga.step.facet;
+
+import com.viadeo.kasper.event.saga.step.Step;
 
 import java.lang.reflect.Method;
 
-public interface FacetApplier extends Comparable<FacetApplier> {
+public interface FacetApplier {
     Step apply(Method method, Step step);
+    int getPhase();
 }

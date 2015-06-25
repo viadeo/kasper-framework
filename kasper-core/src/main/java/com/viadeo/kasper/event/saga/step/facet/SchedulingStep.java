@@ -4,23 +4,25 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.event.saga.step;
+package com.viadeo.kasper.event.saga.step.facet;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
 import com.viadeo.kasper.event.saga.Saga;
+import com.viadeo.kasper.event.saga.step.Scheduler;
+import com.viadeo.kasper.event.saga.step.Step;
+import com.viadeo.kasper.event.saga.step.StepInvocationException;
 import org.joda.time.Duration;
 
 import java.util.concurrent.TimeUnit;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class SchedulingStep implements Step {
+public class SchedulingStep extends DecorateStep {
 
     private final SchedulingOperation operation;
-    private final Step delegateStep;
 
     public SchedulingStep(
             final Scheduler scheduler,
@@ -40,39 +42,19 @@ public class SchedulingStep implements Step {
 
     public SchedulingStep(final Step delegateStep,
                           final SchedulingOperation operation) {
+        super(delegateStep);
         this.operation = checkNotNull(operation);
-        this.delegateStep = checkNotNull(delegateStep);
-    }
-
-    @Override
-    public String name() {
-        return delegateStep.name();
     }
 
     @Override
     public void invoke(Saga saga, Context context, Event event) throws StepInvocationException {
-        delegateStep.invoke(saga, context, event);
+        getDelegateStep().invoke(saga, context, event);
 
         Optional<Object> identifier = getSagaIdentifierFrom(event);
 
         if (identifier.isPresent()) {
             operation.execute(getSagaClass(), identifier.get());
         }
-    }
-
-    @Override
-    public Class<? extends Event> getSupportedEvent() {
-        return delegateStep.getSupportedEvent();
-    }
-
-    @Override
-    public <T> Optional<T> getSagaIdentifierFrom(Event event) {
-        return delegateStep.getSagaIdentifierFrom(event);
-    }
-
-    @Override
-    public Class<? extends Saga> getSagaClass() {
-        return delegateStep.getSagaClass();
     }
 
     protected interface SchedulingOperation {

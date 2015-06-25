@@ -11,6 +11,10 @@ import com.viadeo.kasper.event.saga.*;
 import com.viadeo.kasper.event.saga.repository.InMemorySagaRepository;
 import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.step.*;
+import com.viadeo.kasper.event.saga.step.facet.FacetApplier;
+import com.viadeo.kasper.event.saga.step.facet.FacetApplierRegistry;
+import com.viadeo.kasper.event.saga.step.facet.MeasuringFacetApplier;
+import com.viadeo.kasper.event.saga.step.facet.SchedulingFacetApplier;
 import com.viadeo.kasper.event.saga.step.quartz.MethodInvocationScheduler;
 import org.quartz.SchedulerException;
 import org.quartz.SchedulerFactory;
@@ -43,8 +47,15 @@ public class SagaConfiguration{
     }
 
     @Bean
-    public StepResolver startStepResolver(final MetricRegistry metricRegistry, final FacetApplierRegistry facetApplierRegistry) {
-        return new Steps.StartStepResolver(metricRegistry, facetApplierRegistry);
+    public FacetApplier measuringFacetApplier(final FacetApplierRegistry facetApplierRegistry, final MetricRegistry metricRegistry) {
+        MeasuringFacetApplier applier = new MeasuringFacetApplier(metricRegistry);
+        facetApplierRegistry.register(applier);
+        return applier;
+    }
+
+    @Bean
+    public StepResolver startStepResolver(final FacetApplierRegistry facetApplierRegistry) {
+        return new Steps.StartStepResolver(facetApplierRegistry);
     }
 
     @Bean
@@ -53,8 +64,8 @@ public class SagaConfiguration{
     }
 
     @Bean
-    public StepResolver endStepResolver(final MetricRegistry metricRegistry, final FacetApplierRegistry facetApplierRegistry) {
-        return new Steps.EndStepResolver(metricRegistry, facetApplierRegistry);
+    public StepResolver endStepResolver(final FacetApplierRegistry facetApplierRegistry) {
+        return new Steps.EndStepResolver(facetApplierRegistry);
     }
 
     @Bean

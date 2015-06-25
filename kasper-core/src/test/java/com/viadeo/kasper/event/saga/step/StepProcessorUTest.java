@@ -6,10 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga.step;
 
-import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.event.saga.TestFixture;
+import com.viadeo.kasper.event.saga.step.facet.FacetApplierRegistry;
 import org.junit.Test;
 
 import java.util.Set;
@@ -43,11 +43,10 @@ public class StepProcessorUTest {
     @Test
     public void process_withTestSaga_isOK() {
         // Given
-        MetricRegistry metricRegistry = new MetricRegistry();
         FacetApplierRegistry facetApplierRegistry = new FacetApplierRegistry();
         StepProcessor processor = new StepProcessor(
-                new Steps.StartStepResolver(metricRegistry, facetApplierRegistry),
-                new Steps.EndStepResolver(metricRegistry, facetApplierRegistry),
+                new Steps.StartStepResolver(facetApplierRegistry),
+                new Steps.EndStepResolver(facetApplierRegistry),
                 new Steps.BasicStepResolver(facetApplierRegistry)
         );
 

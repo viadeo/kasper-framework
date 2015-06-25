@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga;
 
+import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
 import com.jayway.awaitility.Awaitility;
 import com.viadeo.kasper.context.Contexts;
@@ -37,7 +38,8 @@ import static org.mockito.Mockito.mock;
 @ContextConfiguration(
         classes =  {
                 SagaConfiguration.class,
-                SagaExecutorITest.TestConfiguration.class
+                SagaExecutorITest.TestConfiguration.class,
+                MetricRegistry.class
         }
 )
 public class SagaExecutorITest {

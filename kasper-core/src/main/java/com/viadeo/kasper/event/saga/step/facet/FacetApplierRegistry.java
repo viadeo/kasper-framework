@@ -4,13 +4,22 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.event.saga.step;
+package com.viadeo.kasper.event.saga.step.facet;
 
 import com.google.common.collect.Lists;
 
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 public class FacetApplierRegistry {
+
+    private static final Comparator<FacetApplier> APPLIER_COMPARATOR = new Comparator<FacetApplier>() {
+        @Override
+        public int compare(FacetApplier o1, FacetApplier o2) {
+            return o1.getPhase() - o2.getPhase();
+        }
+    };
 
     private final List<FacetApplier> appliers;
 
@@ -20,6 +29,7 @@ public class FacetApplierRegistry {
 
     public void register(FacetApplier applier) {
         appliers.add(applier);
+        Collections.sort(appliers, APPLIER_COMPARATOR);
     }
 
     public List<FacetApplier> list() {

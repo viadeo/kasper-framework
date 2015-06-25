@@ -4,9 +4,11 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.event.saga.step;
+package com.viadeo.kasper.event.saga.step.facet;
 
 import com.viadeo.kasper.event.annotation.XKasperSaga;
+import com.viadeo.kasper.event.saga.step.Scheduler;
+import com.viadeo.kasper.event.saga.step.Step;
 
 import java.lang.reflect.Method;
 
@@ -41,7 +43,7 @@ public class SchedulingFacetApplier implements FacetApplier {
     }
 
     @Override
-    public int compareTo(FacetApplier o) {
-        return 0;
+    public int getPhase() {
+        return Integer.MAX_VALUE - 1;
     }
 }

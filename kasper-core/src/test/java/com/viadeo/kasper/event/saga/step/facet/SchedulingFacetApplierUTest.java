@@ -4,9 +4,11 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.event.saga.step;
+package com.viadeo.kasper.event.saga.step.facet;
 
 import com.viadeo.kasper.event.saga.TestFixture;
+import com.viadeo.kasper.event.saga.step.Scheduler;
+import com.viadeo.kasper.event.saga.step.Step;
 import org.junit.Before;
 import org.junit.Test;
 

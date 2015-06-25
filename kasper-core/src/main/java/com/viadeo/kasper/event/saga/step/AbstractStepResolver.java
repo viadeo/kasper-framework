@@ -8,6 +8,8 @@ package com.viadeo.kasper.event.saga.step;
 
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.event.saga.Saga;
+import com.viadeo.kasper.event.saga.step.facet.FacetApplier;
+import com.viadeo.kasper.event.saga.step.facet.FacetApplierRegistry;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

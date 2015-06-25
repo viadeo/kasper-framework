@@ -109,7 +109,6 @@ public class BaseStep implements Step {
         return Objects.hashCode(name(), eventClass);
     }
 
-
     @Override
     public String toString() {
         return Objects.toStringHelper(this)
