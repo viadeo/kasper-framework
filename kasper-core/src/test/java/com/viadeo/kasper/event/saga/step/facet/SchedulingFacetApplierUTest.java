@@ -9,8 +9,11 @@ package com.viadeo.kasper.event.saga.step.facet;
 import com.viadeo.kasper.event.saga.TestFixture;
 import com.viadeo.kasper.event.saga.step.Scheduler;
 import com.viadeo.kasper.event.saga.step.Step;
+import com.viadeo.kasper.event.saga.step.Steps;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.ExpectedException;
 
 import java.lang.reflect.Method;
 
@@ -19,6 +22,8 @@ import static org.mockito.Mockito.mock;
 
 public class SchedulingFacetApplierUTest {
 
+    @Rule
+    public ExpectedException thrown = ExpectedException.none();
     private SchedulingFacetApplier facetApplier;
 
     @Before
@@ -52,5 +57,18 @@ public class SchedulingFacetApplierUTest {
         assertNotNull(actualStep);
         assertNotEquals(step, actualStep);
         assertTrue(actualStep instanceof SchedulingStep);
+    }
+
+    @Test
+    public void apply_on_method_with_schedule_and_cancel_annotation_return_throw_exception() {
+        Step step = new Steps.BasicStep(TestFixture.getMethod(TestFixture.TestSagaA.class, "scheduledAndCancelStep", TestFixture.TestEvent6.class), "getId");
+        Method method = TestFixture.getMethod(TestFixture.TestSagaA.class, "scheduledAndCancelStep", TestFixture.TestEvent6.class);
+
+        // Then
+        thrown.expect(IllegalStateException.class);
+        thrown.expectMessage("Should have one schedule annotation per step : " + TestFixture.TestSagaA.class.getName());
+
+        // When
+        facetApplier.apply(method, step);
     }
 }

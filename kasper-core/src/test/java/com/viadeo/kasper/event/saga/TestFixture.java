@@ -75,6 +75,11 @@ public class TestFixture {
         @XKasperSaga.Schedule(delay = 1L, unit = TimeUnit.SECONDS, methodName = "test")
         public void scheduledStep(TestEvent6 event) {}
 
+        @XKasperSaga.Step(getter = "getId")
+        @XKasperSaga.Schedule(delay = 1L, unit = TimeUnit.SECONDS, methodName = "test")
+        @XKasperSaga.CancelSchedule(methodName = "test")
+        public void scheduledAndCancelStep(TestEvent6 event) {}
+
         @Override
         public Optional<SagaFactory> getFactory() {
             return Optional.absent();
