@@ -86,8 +86,6 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         final AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
         applicationContext.register(SagaConfiguration.class);
 
-        this.sagaManager = applicationContext.getBean(SagaManager.class);
-
         final ConfigurableListableBeanFactory beanFactory = applicationContext.getBeanFactory();
         beanFactory.registerSingleton("eventBus", eventBus);
         beanFactory.registerSingleton("queryGateway", queryGateway);
@@ -95,6 +93,8 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         beanFactory.registerSingleton("configuration", configuration);
         beanFactory.registerSingleton("metricRegistry", metricRegistry);
         applicationContext.refresh();
+
+        this.sagaManager = applicationContext.getBean(SagaManager.class);
     }
 
     // ------------------------------------------------------------------------
