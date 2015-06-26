@@ -44,6 +44,13 @@
         return options.inverse(this);
       });
 
+      Handlebars.registerHelper('ifContains', function (value1, value2, options) {
+          if(value1.includes(value2)) {
+              return options.fn(this);
+          }
+          return options.inverse(this);
+      });
+
       Handlebars.registerHelper('mail_to', function (value) {
         if (value !== "unknown") {
           return new Handlebars.SafeString('<a href="mailto:' + value + '">' + value + '</a>');
@@ -87,8 +94,11 @@
         if( title == "Queries" ) {
           h3_title = '<h3 id="queries" class="section-heading"><span class="glyphicon glyphicon-log-out"/>' + title + '</h3>';
         }
-        if( title == "Events" ) {
-          h3_title = '<h3 id="events" class="section-heading"><span class="glyphicon glyphicon-new-window"/>' + title + '</h3>';
+        if( title == "Declared Events" ) {
+          h3_title = '<h3 id="declaredEvents" class="section-heading"><span class="glyphicon glyphicon-new-window"/>' + title + '</h3>';
+        }
+        if( title == "Referenced Events" ) {
+          h3_title = '<h3 id="referencedEvents" class="section-heading"><span class="glyphicon glyphicon-new-window"/>' + title + '</h3>';
         }
         if( title == "Sagas" ) {
           h3_title = '<h3 id="sagas" class="section-heading"><span class="glyphicon glyphicon-new-window"/>' + title + '</h3>';
@@ -514,7 +524,8 @@
           $("#wrapper_contents_dyn").append('<div id="commands-container" class="row"></div>');
           $("#wrapper_contents_dyn").append('<div id="queries-container" class="row"></div>');
           $("#wrapper_contents_dyn").append('<div id="sagas-container" class="row"></div>');
-          $("#wrapper_contents_dyn").append('<div id="events-container" class="row"></div>');
+          $("#wrapper_contents_dyn").append('<div id="declared-events-container" class="row"></div>');
+          $("#wrapper_contents_dyn").append('<div id="referenced-events-container" class="row"></div>');
           $("#wrapper_contents_dyn").append('<div id="domain-container" class="row"></div>');
           
           function PanelContent(url, init) {
@@ -564,9 +575,14 @@
                 );
 
             }),
-            new PanelContent("/kasper/doc/domain/" + domain.label + "/events", function(data) {
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/declaredEvents", function(data) {
               if (data.list.length > 0) {
-                $("#events-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Events", data: data.list.sort(sort_on("label"))} ));
+                $("#declared-events-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Declared Events", data: data.list.sort(sort_on("label"))} ));
+              }
+            }),
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/referencedEvents", function(data) {
+              if (data.list.length > 0) {
+                $("#referenced-events-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Referenced Events", data: data.list.sort(sort_on("label"))} ));
               }
             }),
             new PanelContent("/kasper/doc/domain/" + domain.label + "/concepts", function(data) {

@@ -18,6 +18,7 @@ import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.test.applications.Applications;
+import com.viadeo.kasper.test.applications.events.MemberHasDeclaredToBeFanOfAnApplicationEvent;
 import com.viadeo.kasper.test.root.Facebook;
 import com.viadeo.kasper.test.root.commands.AddConnectionToMemberCommand;
 import com.viadeo.kasper.test.root.entities.Member;
@@ -28,6 +29,7 @@ import com.viadeo.kasper.test.root.events.MemberCreatedEvent;
 import com.viadeo.kasper.test.root.events.NewMemberConnectionEvent;
 import com.viadeo.kasper.test.root.handlers.AddConnectionToMemberHandler;
 import com.viadeo.kasper.test.root.listeners.MemberCreatedEventListener;
+import com.viadeo.kasper.test.root.listeners.NewFanOfAnApplicationEventListener;
 import com.viadeo.kasper.test.root.queries.GetAllMemberQueryHandler;
 import com.viadeo.kasper.test.root.queries.GetMemberQueryHandler;
 import com.viadeo.kasper.test.root.queries.GetMembersQueryHandler;
@@ -76,9 +78,9 @@ public class KasperDocStandalone {
                                 DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class)
                         )
                 ),
-                ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(
-                        MemberCreatedEventListener.class,
-                        MemberCreatedEvent.class)
+                ImmutableList.<EventListenerDescriptor>of(
+                        new EventListenerDescriptor(MemberCreatedEventListener.class,MemberCreatedEvent.class),
+                        new EventListenerDescriptor(NewFanOfAnApplicationEventListener.class,MemberHasDeclaredToBeFanOfAnApplicationEvent.class)
                 ),
                 Lists.<SagaDescriptor>newArrayList(
                         new SagaDescriptor(ConfirmEmailSaga.class)

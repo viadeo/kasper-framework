@@ -1,9 +1,11 @@
 {{#each data}}
+
   {{#ifCond this.deprecated true}}
     <div class="panel panel-warning alert-warning">
   {{else}}
     <div class="panel panel-default">
-  {{/ifCond}}    
+  {{/ifCond}}
+
     <div class="panel-heading">
       <h4 class="panel-title" id="{{this.typePlural}}_{{this.name}}">
         <a data-toggle="collapse" data-parent="#accordion-domain" href="#component-{{this.type}}-{{this.name}}-collapse" class="collapsed">
@@ -18,6 +20,7 @@
     </p>
     <div id="component-{{this.type}}-{{this.name}}-collapse" class="panel-collapse collapse">
       <div class="panel-body">
+
         {{#if this.properties}}
           <dl class="block-content">
             <dt>Fields</dt>
@@ -40,16 +43,19 @@
           </dl>
           <div class="clearfix"></div>
         {{/if}}
+
         {{#if this.type}}
           <dl class="block-content dl-horizontal">
             <dt>Type</dt>
             <dd>{{this.type}}</dd>
           </dl>
         {{/if}}
+
         <dl class="block-content dl-horizontal">
           <dt>Repository</dt>
           <dd>{{#if this.repository}}{{this.repository.name}}{{else}}-{{/if}}</dd>
         </dl>
+
         {{#if this.sourceEvents}}
           <dl class="block-content dl-horizontal">
             <dt>Source events</dt>
@@ -64,6 +70,7 @@
             </dd>
           </dl>
         {{/if}}
+
         {{#if this.sourceRelations}}
           <dl class="block-content dl-horizontal">
             <dt>Source relations</dt>
@@ -74,6 +81,7 @@
             </dd>
           </dl>
         {{/if}}
+
         {{#if this.targetRelations}}
           <dl class="block-content dl-horizontal">
             <dt>Target relations</dt>
@@ -84,6 +92,7 @@
             </dd>
           </dl>
         {{/if}}
+
         {{#if this.sourceConcept}}
           <dl class="block-content dl-horizontal">
             <dt>Source</dt>
@@ -92,6 +101,7 @@
             </dd>
           </dl>
         {{/if}}
+
         {{#if this.targetConcept}}
           <dl class="block-content dl-horizontal">
             <dt>Target</dt>
@@ -100,6 +110,7 @@
             </dd>
           </dl>
         {{/if}}
+
       </div>
     </div>
   </div>  

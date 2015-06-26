@@ -43,6 +43,8 @@ public class DocumentedDomain extends AbstractElement {
     private final List<DocumentedConcept> avatarConcepts;
     private final List<DocumentedRelation> relations;
     private final List<DocumentedEvent> events;
+    private final List<DocumentedEvent> declaredEvents;
+    private final List<DocumentedEvent> referencedEvents;
     private final List<DocumentedCommand> commands;
 
     private String prefix;
@@ -63,11 +65,14 @@ public class DocumentedDomain extends AbstractElement {
         queryResults  = Maps.newHashMap();
         commands = Lists.newArrayList();
         events = Lists.newArrayList();
+        declaredEvents = Lists.newArrayList();
+        referencedEvents = Lists.newArrayList();
         relations = Lists.newArrayList();
         concepts = Lists.newArrayList();
         avatarConcepts = Lists.newArrayList();
         documentedSagas = Lists.newArrayList();
 
+        // QUERY
         for (final QueryHandlerDescriptor descriptor : domainDescriptor.getQueryHandlerDescriptors()) {
             final DocumentedQueryHandler documentedQueryHandler = new DocumentedQueryHandler(this, descriptor);
             documentedQueryHandlers.add(documentedQueryHandler);
@@ -80,20 +85,25 @@ public class DocumentedDomain extends AbstractElement {
         // orphan query results; ie without use directly by an handler
         queryResults.putAll(findOrphanQueryResult(this, queryResults));
 
+        // COMMAND
         for (final CommandHandlerDescriptor descriptor : domainDescriptor.getCommandHandlerDescriptors()) {
             final DocumentedCommandHandler documentedCommandHandler = new DocumentedCommandHandler(this, descriptor);
             documentedCommandHandlers.add(documentedCommandHandler);
             commands.add(documentedCommandHandler.getCommand().getFullDocumentedElement());
         }
 
-        final Map<Class, DocumentedEvent> events = Maps.newHashMap();
+
+        final Map<Class, DocumentedEvent> declaredEvents = Maps.newHashMap();
+        final Map<Class, DocumentedEvent> referencedEvents = Maps.newHashMap();
         final Map<Class, DocumentedConcept> concepts = Maps.newHashMap();
 
+        // EVENT
         for (final Class<? extends Event> eventClass : domainDescriptor.getEventClasses()) {
             DocumentedEvent documentedEvent = new DocumentedEvent(this, null, eventClass);
-            events.put(eventClass, documentedEvent);
+            declaredEvents.put(eventClass, documentedEvent);
         }
 
+        // REPOSITORY
         for (final RepositoryDescriptor descriptor : domainDescriptor.getRepositoryDescriptors()) {
             final DocumentedRepository documentedRepository = new DocumentedRepository(this, descriptor);
             documentedRepositories.add(documentedRepository);
@@ -108,10 +118,14 @@ public class DocumentedDomain extends AbstractElement {
 
             for(LightDocumentedElement<DocumentedEvent> lightDocumentedEvent : aggregate.getSourceEvents()){
                 DocumentedEvent documentedEvent = lightDocumentedEvent.getFullDocumentedElement();
-                events.put(documentedEvent.getReferenceClass(), documentedEvent);
+
+                if ( ! declaredEvents.containsKey(documentedEvent.getReferenceClass())) {
+                    referencedEvents.put(documentedEvent.getReferenceClass(), documentedEvent);
+                }
             }
         }
 
+        // RELATION
         for (final DocumentedRelation documentedRelation:relations) {
             final Class sourceReferenceClass = documentedRelation.getSourceConcept().getReferenceClass();
             if ( ! concepts.containsKey(sourceReferenceClass)) {
@@ -130,19 +144,31 @@ public class DocumentedDomain extends AbstractElement {
 
         this.concepts.addAll(concepts.values());
 
+        // LISTENER
         for (final EventListenerDescriptor descriptor : domainDescriptor.getEventListenerDescriptors()) {
             final DocumentedEventListener documentedEventListener = new DocumentedEventListener(this, descriptor);
             documentedEventListeners.add(documentedEventListener);
 
             final DocumentedEvent documentedEvent = documentedEventListener.getEvent().getFullDocumentedElement();
-            events.put(documentedEvent.getReferenceClass(), documentedEvent);
+
+            if ( ! declaredEvents.containsKey(documentedEvent.getReferenceClass())) {
+                referencedEvents.put(documentedEvent.getReferenceClass(), documentedEvent);
+            }
         }
 
+        // SAGA
         for (final SagaDescriptor descriptor : domainDescriptor.getSagaDescriptors()) {
             documentedSagas.add(new DocumentedSaga(this, descriptor));
+             // TODO
         }
 
+        final Map<Class, DocumentedEvent> events = Maps.newHashMap();
+        events.putAll(referencedEvents);
+        events.putAll(declaredEvents);
+
         this.events.addAll(events.values());
+        this.declaredEvents.addAll(declaredEvents.values());
+        this.referencedEvents.addAll(referencedEvents.values());
 
         final Comparator<AbstractElement> abstractElementComparator = new Comparator<AbstractElement>() {
             @Override
@@ -154,6 +180,8 @@ public class DocumentedDomain extends AbstractElement {
         Collections.sort(commands, abstractElementComparator);
         Collections.sort(queries, abstractElementComparator);
         Collections.sort(this.events, abstractElementComparator);
+        Collections.sort(this.declaredEvents, abstractElementComparator);
+        Collections.sort(this.referencedEvents, abstractElementComparator);
         Collections.sort(documentedSagas, abstractElementComparator);
     }
 
@@ -317,6 +345,14 @@ public class DocumentedDomain extends AbstractElement {
 
     public Collection<DocumentedEvent> getEvents() {
         return events;
+    }
+
+    public List<DocumentedEvent> getDeclaredEvents() {
+        return declaredEvents;
+    }
+
+    public List<DocumentedEvent> getReferencedEvents() {
+        return referencedEvents;
     }
 
     public Collection<DocumentedConcept> getConcepts() {

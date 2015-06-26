@@ -21,6 +21,8 @@ public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDoma
     private final Collection<LightDocumentedElement> queryResults;
     private final Collection<LightDocumentedElement> queryHandlers;
     private final Collection<LightDocumentedElement> events;
+    private final Collection<LightDocumentedElement> declaredEvents;
+    private final Collection<LightDocumentedElement> referencedEvents;
     private final Collection<LightDocumentedElement> eventListeners;
     private final Collection<LightDocumentedElement> concepts;
     private final Collection<LightDocumentedElement> relations;
@@ -45,6 +47,8 @@ public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDoma
         this.queryResults = Collections2.transform(documentedDomain.getQueryResults(), LIGHTER);
         this.queryHandlers = Collections2.transform(documentedDomain.getQueryHandlers(), LIGHTER);
         this.events = Collections2.transform(documentedDomain.getEvents(), LIGHTER);
+        this.declaredEvents = Collections2.transform(documentedDomain.getDeclaredEvents(), LIGHTER);
+        this.referencedEvents = Collections2.transform(documentedDomain.getReferencedEvents(), LIGHTER);
         this.eventListeners = Collections2.transform(documentedDomain.getEventListeners(), LIGHTER);
         this.concepts = Collections2.transform(documentedDomain.getConcepts(), LIGHTER);
         this.relations = Collections2.transform(documentedDomain.getRelations(), LIGHTER);
@@ -84,6 +88,14 @@ public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDoma
 
     public Collection<LightDocumentedElement> getEvents() {
         return events;
+    }
+
+    public Collection<LightDocumentedElement> getDeclaredEvents() {
+        return declaredEvents;
+    }
+
+    public Collection<LightDocumentedElement> getReferencedEvents() {
+        return referencedEvents;
     }
 
     public Collection<LightDocumentedElement> getConcepts() {

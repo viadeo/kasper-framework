@@ -3,11 +3,13 @@
   <div class="section-body">
     <div class="panel-group">
       {{#each data}}
+
         {{#ifCond this.deprecated true}}
           <div class="panel panel-warning alert-warning">
         {{else}}
           <div class="panel panel-default">
-        {{/ifCond}}        
+        {{/ifCond}}
+
           <div class="panel-heading">
             <h4 class="panel-title" id="{{this.typePlural}}_{{this.label}}">
               <a data-toggle="collapse" href="#component-{{this.type}}-{{this.label}}-collapse" class="collapsed">
@@ -23,6 +25,7 @@
           </p>
           <div id="component-{{this.type}}-{{this.label}}-collapse" class="panel-collapse collapse">
             <div class="panel-body">
+
               {{#if this.properties}}
                 <dl class="block-content">
                   <dt>Fields</dt>
@@ -45,6 +48,7 @@
                 </dl>
                 <div class="clearfix"></div>
               {{/if}}
+
               {{#if this.queryHandler}}
                 <dl class="block-content dl-horizontal">
                   <dt>Handler</dt>
@@ -53,6 +57,7 @@
                   </dd>
                 </dl>
               {{/if}}
+
               {{#if this.commandHandler}}
                 <dl class="block-content dl-horizontal">
                   <dt>Handler</dt>
@@ -61,6 +66,7 @@
                   </dd>
                 </dl>
               {{/if}}
+
               {{#if this.eventListeners}}
                 <dl class="block-content dl-horizontal">
                   <dt>Handlers</dt>
@@ -69,6 +75,7 @@
                   </dd>
                 </dl>
               {{/if}}
+
               {{#if this.action}}
                 <dl class="block-content dl-horizontal">
                   <dt>Action</dt>
@@ -77,6 +84,7 @@
                   </dd>
                 </dl>
               {{/if}}
+
               {{#if this.aliases}}
                 <dl class="block-content dl-horizontal">
                   <dt>Alias</dt>
@@ -85,6 +93,7 @@
                   </dd>
                 </dl>
               {{/if}}
+
               {{#if this.authorization}}
               <dl class="block-content">
                 <dt>Authorizations</dt>
@@ -121,6 +130,9 @@
               </dl>
               <div class="clearfix"></div>
               {{/if}}
+
+              {{#ifContains ../title 'Events'}}
+              {{else}}
               {{#if this.response}}
                 <dl class="block-content">
                   <dt>Response</dt>
@@ -142,6 +154,8 @@
                 </dl>
                 <div class="clearfix"></div>
               {{/if}}
+              {{/ifContains}}
+
             </div>
           </div>
         </div>
