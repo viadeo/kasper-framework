@@ -36,6 +36,7 @@ public class DocumentedDomain extends AbstractElement {
     private final List<DocumentedCommandHandler> documentedCommandHandlers;
     private final List<DocumentedEventListener> documentedEventListeners;
     private final List<DocumentedRepository> documentedRepositories;
+    private final List<DocumentedSaga> documentedSagas;
     private final List<DocumentedQuery> queries;
     private final Map<Class, DocumentedQueryResult> queryResults;
     private final List<DocumentedConcept> concepts;
@@ -65,6 +66,7 @@ public class DocumentedDomain extends AbstractElement {
         relations = Lists.newArrayList();
         concepts = Lists.newArrayList();
         avatarConcepts = Lists.newArrayList();
+        documentedSagas = Lists.newArrayList();
 
         for (final QueryHandlerDescriptor descriptor : domainDescriptor.getQueryHandlerDescriptors()) {
             final DocumentedQueryHandler documentedQueryHandler = new DocumentedQueryHandler(this, descriptor);
@@ -136,6 +138,10 @@ public class DocumentedDomain extends AbstractElement {
             events.put(documentedEvent.getReferenceClass(), documentedEvent);
         }
 
+        for (final SagaDescriptor descriptor : domainDescriptor.getSagaDescriptors()) {
+            documentedSagas.add(new DocumentedSaga(this, descriptor));
+        }
+
         this.events.addAll(events.values());
 
         final Comparator<AbstractElement> abstractElementComparator = new Comparator<AbstractElement>() {
@@ -148,6 +154,7 @@ public class DocumentedDomain extends AbstractElement {
         Collections.sort(commands, abstractElementComparator);
         Collections.sort(queries, abstractElementComparator);
         Collections.sort(this.events, abstractElementComparator);
+        Collections.sort(documentedSagas, abstractElementComparator);
     }
 
     private Map<Class, DocumentedQueryHandler.DocumentedQueryResult> findOrphanQueryResult(
@@ -261,6 +268,7 @@ public class DocumentedDomain extends AbstractElement {
         documentedElements.addAll(documentedEventListeners);
         documentedElements.addAll(documentedRepositories);
         documentedElements.addAll(avatarConcepts);
+        documentedElements.addAll(documentedSagas);
 
         for (final AbstractElement documentedElement : documentedElements) {
             documentedElement.accept(visitor);
@@ -317,6 +325,10 @@ public class DocumentedDomain extends AbstractElement {
 
     public Collection<DocumentedRelation> getRelations() {
         return relations;
+    }
+
+    public List<DocumentedSaga> getSagas() {
+        return documentedSagas;
     }
 
     public String getPrefix() {

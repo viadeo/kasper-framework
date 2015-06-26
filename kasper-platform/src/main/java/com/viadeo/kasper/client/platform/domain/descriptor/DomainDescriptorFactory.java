@@ -21,6 +21,7 @@ import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.slf4j.Logger;
@@ -69,6 +70,13 @@ public class DomainDescriptorFactory {
         }
     };
 
+    private static final Function<Saga, SagaDescriptor> TO_SAGA_DESCRIPTOR_FUNCTION = new Function<Saga, SagaDescriptor>() {
+        @Override
+        public SagaDescriptor apply(final Saga saga) {
+            return toSagaDescriptor(checkNotNull(saga));
+        }
+    };
+
     // ------------------------------------------------------------------------
 
     public DomainDescriptor createFrom(final DomainBundle domainBundle) {
@@ -79,6 +87,7 @@ public class DomainDescriptorFactory {
             Collections2.transform(domainBundle.getCommandHandlers(), TO_COMMAND_HANDLER_DESCRIPTOR_FUNCTION),
             Collections2.transform(domainBundle.getRepositories(), TO_REPOSITORY_DESCRIPTOR_FUNCTION),
             Collections2.transform(domainBundle.getEventListeners(), TO_EVENT_LISTENER_DESCRIPTOR_FUNCTION),
+            Collections2.transform(domainBundle.getSagas(), TO_SAGA_DESCRIPTOR_FUNCTION),
             retrieveEventsFrom(domainBundle.getDomain().getClass())
         );
     }
@@ -89,7 +98,8 @@ public class DomainDescriptorFactory {
             final Collection<QueryHandler> queryHandlers,
             final Collection<CommandHandler> commandHandlers,
             final Collection<Repository> repositories,
-            final Collection<EventListener> eventListeners
+            final Collection<EventListener> eventListeners,
+            final Collection<Saga> sagas
     ) {
         return new DomainDescriptor(
             checkNotNull(domainName),
@@ -98,6 +108,7 @@ public class DomainDescriptorFactory {
             Collections2.transform(checkNotNull(commandHandlers), TO_COMMAND_HANDLER_DESCRIPTOR_FUNCTION),
             Collections2.transform(checkNotNull(repositories), TO_REPOSITORY_DESCRIPTOR_FUNCTION),
             Collections2.transform(checkNotNull(eventListeners), TO_EVENT_LISTENER_DESCRIPTOR_FUNCTION),
+            Collections2.transform(checkNotNull(sagas), TO_SAGA_DESCRIPTOR_FUNCTION),
             retrieveEventsFrom(domainClass)
         );
     }
@@ -162,6 +173,11 @@ public class DomainDescriptorFactory {
             EventListener.EVENT_PARAMETER_POSITION
         );
         return new EventListenerDescriptor(eventListenerClass, eventClass.get());
+    }
+
+    @SuppressWarnings("unchecked")
+    public static SagaDescriptor toSagaDescriptor(final Saga saga) {
+        return new SagaDescriptor(saga.getClass());
     }
 
     @SuppressWarnings("unchecked")

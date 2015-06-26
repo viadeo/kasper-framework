@@ -40,6 +40,19 @@
         </li>
         {{/if}}
 
+        {{#if node.sagas}}
+        <li class="component-category">
+            <a href="#sagas">Sagas</a>
+            <ul class="nav subnav">
+                {{#each node.sagas}}
+                <li class="component-item">
+                    <a href="#sagas_{{this.label}}">{{this.label}}</a>
+                </li>
+                {{/each}}
+            </ul>
+        </li>
+        {{/if}}
+
         <li class="component-category">
             <a href="#domain">Domain</a>
             <ul class="nav">

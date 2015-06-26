@@ -33,6 +33,7 @@ import com.viadeo.kasper.test.root.queries.GetMemberQueryHandler;
 import com.viadeo.kasper.test.root.queries.GetMembersQueryHandler;
 import com.viadeo.kasper.test.root.repositories.MemberConnectionsRepository;
 import com.viadeo.kasper.test.root.repositories.MemberRepository;
+import com.viadeo.kasper.test.root.sagas.ConfirmEmailSaga;
 import com.viadeo.kasper.test.timelines.Timelines;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
@@ -79,6 +80,9 @@ public class KasperDocStandalone {
                         MemberCreatedEventListener.class,
                         MemberCreatedEvent.class)
                 ),
+                Lists.<SagaDescriptor>newArrayList(
+                        new SagaDescriptor(ConfirmEmailSaga.class)
+                ),
                 ImmutableList.<Class<? extends Event>>of(
                         FacebookEvent.class,
                         FacebookMemberEvent.class,
@@ -99,6 +103,7 @@ public class KasperDocStandalone {
                 ),
                 Lists.<RepositoryDescriptor>newArrayList(),
                 Lists.<EventListenerDescriptor>newArrayList(),
+                Lists.<SagaDescriptor>newArrayList(),
                 Lists.<Class<? extends Event>>newArrayList()
                 )
         );
@@ -109,6 +114,7 @@ public class KasperDocStandalone {
                 Lists.<CommandHandlerDescriptor>newArrayList(),
                 Lists.<RepositoryDescriptor>newArrayList(),
                 Lists.<EventListenerDescriptor>newArrayList(),
+                Lists.<SagaDescriptor>newArrayList(),
                 Lists.<Class<? extends Event>>newArrayList()
         ));
         documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
@@ -126,7 +132,7 @@ public class KasperDocStandalone {
         server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("src/main/resources/META-INF/resources/doc/"),"/doc");
         server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("src/main/resources/META-INF/resources/ndoc/"),"/ndoc");
 
-        System.out.println(String.format("Try out %skasper/doc/domains \nAccess UI at %sdoc/index.htm", baseUri, baseUri));
+        System.out.println(String.format("Try out %skasper/doc/domains \nAccess UI at %sndoc/index.html", baseUri, baseUri));
 
         System.in.read();
 

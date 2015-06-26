@@ -172,6 +172,8 @@ public class KasperDocResource {
                 return Lists.<AbstractDomainElement>newArrayList(documentedDomain.getRelations());
             case REPOSITORY:
                 return Lists.<AbstractDomainElement>newArrayList(documentedDomain.getRepositories());
+            case SAGA:
+                return Lists.<AbstractDomainElement>newArrayList(documentedDomain.getSagas());
             case DOMAIN:
                 break;
         }

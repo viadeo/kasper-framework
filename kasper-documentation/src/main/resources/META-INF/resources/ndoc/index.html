@@ -90,6 +90,9 @@
         if( title == "Events" ) {
           h3_title = '<h3 id="events" class="section-heading"><span class="glyphicon glyphicon-new-window"/>' + title + '</h3>';
         }
+        if( title == "Sagas" ) {
+          h3_title = '<h3 id="sagas" class="section-heading"><span class="glyphicon glyphicon-new-window"/>' + title + '</h3>';
+        }
         if( title == "Domain" ) {
           h3_title = '<h3 id="domain" class="section-heading"><span class="glyphicon glyphicon-th"/>' + title + '</h3>';
         }
@@ -510,6 +513,7 @@
           $("#wrapper_contents_dyn").append(cache_templates[DOMAIN_TEMPLATE_KEY]({ node: domain }));
           $("#wrapper_contents_dyn").append('<div id="commands-container" class="row"></div>');
           $("#wrapper_contents_dyn").append('<div id="queries-container" class="row"></div>');
+          $("#wrapper_contents_dyn").append('<div id="sagas-container" class="row"></div>');
           $("#wrapper_contents_dyn").append('<div id="events-container" class="row"></div>');
           $("#wrapper_contents_dyn").append('<div id="domain-container" class="row"></div>');
           
@@ -570,6 +574,11 @@
             }),
             new PanelContent("/kasper/doc/domain/" + domain.label + "/relations", function(data) {
               append_domain_component(data);
+            }),
+            new PanelContent("/kasper/doc/domain/" + domain.label + "/sagas", function(data) {
+              if (data.list.length > 0) {
+                $("#sagas-container").append(cache_templates[COMPONENT_TEMPLATE_KEY]( { title: "Sagas", data: data.list.sort(sort_on("label"))} ));
+              }
             })
           ];
 
@@ -705,6 +714,10 @@
             data.push(get_search_raw("relations", relation.name, domain.label));
           });
 
+          $.each(domain.sagas, function(n, saga) {
+            data.push(get_search_raw("sagas", saga.name, domain.label));
+          });
+
           return data;
         }
 
@@ -721,6 +734,10 @@
 
           $.each(domain.events, function(n, event) {
             url_per_components[event.name] = event.url;
+          });
+
+          $.each(domain.sagas, function(n, saga) {
+            url_per_components[saga.name] = saga.url;
           });
 
           return url_per_components;

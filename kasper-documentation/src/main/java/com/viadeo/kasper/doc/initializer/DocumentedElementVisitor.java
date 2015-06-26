@@ -29,6 +29,8 @@ public interface DocumentedElementVisitor {
     void visit(DocumentedEvent event);
     void visit(DocumentedEventListener eventListener);
 
+    void visit(DocumentedSaga saga);
+
     void visit(DocumentedRepository repository);
     void visit(DocumentedConcept concept);
     void visit(DocumentedRelation relation);

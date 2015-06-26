@@ -25,6 +25,7 @@ public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDoma
     private final Collection<LightDocumentedElement> concepts;
     private final Collection<LightDocumentedElement> relations;
     private final Collection<LightDocumentedElement> repositories;
+    private final Collection<LightDocumentedElement> sagas;
 
     private static final Function<AbstractElement, LightDocumentedElement> LIGHTER =
             new Function<AbstractElement, LightDocumentedElement>() {
@@ -48,6 +49,7 @@ public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDoma
         this.concepts = Collections2.transform(documentedDomain.getConcepts(), LIGHTER);
         this.relations = Collections2.transform(documentedDomain.getRelations(), LIGHTER);
         this.repositories = Collections2.transform(documentedDomain.getRepositories(), LIGHTER);
+        this.sagas = Collections2.transform(documentedDomain.getSagas(), LIGHTER);
     }
 
     // ------------------------------------------------------------------------
@@ -90,6 +92,10 @@ public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDoma
 
     public Collection<LightDocumentedElement> getRelations() {
         return relations;
+    }
+
+    public Collection<LightDocumentedElement> getSagas() {
+        return sagas;
     }
 
     public String getPrefix() {

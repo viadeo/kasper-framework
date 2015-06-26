@@ -22,6 +22,7 @@ public class DomainDescriptor implements KasperComponentDescriptor {
     private final ImmutableList<CommandHandlerDescriptor> commandHandlerDescriptors;
     private final ImmutableList<RepositoryDescriptor> repositoryDescriptor;
     private final ImmutableList<EventListenerDescriptor> eventListenerDescriptor;
+    private final ImmutableList<SagaDescriptor> sagaDescriptor;
     private final ImmutableList<Class<? extends Event>> eventClasses;
 
     // ------------------------------------------------------------------------
@@ -32,6 +33,7 @@ public class DomainDescriptor implements KasperComponentDescriptor {
                             final Collection<CommandHandlerDescriptor> commandHandlerDescriptors,
                             final Collection<RepositoryDescriptor> repositoryDescriptor,
                             final Collection<EventListenerDescriptor> eventListenerDescriptor,
+                            final Collection<SagaDescriptor> sagaDescriptor,
                             final Collection<Class<? extends Event>> eventClasses
     ) {
         this.domainName = checkNotNull(domainName);
@@ -40,6 +42,7 @@ public class DomainDescriptor implements KasperComponentDescriptor {
         this.commandHandlerDescriptors = ImmutableList.copyOf(checkNotNull(commandHandlerDescriptors));
         this.repositoryDescriptor = ImmutableList.copyOf(checkNotNull(repositoryDescriptor));
         this.eventListenerDescriptor = ImmutableList.copyOf(checkNotNull(eventListenerDescriptor));
+        this.sagaDescriptor = ImmutableList.copyOf(checkNotNull(sagaDescriptor));
         this.eventClasses = ImmutableList.copyOf(checkNotNull(eventClasses));
     }
 
@@ -63,6 +66,10 @@ public class DomainDescriptor implements KasperComponentDescriptor {
 
     public Collection<EventListenerDescriptor> getEventListenerDescriptors() {
         return eventListenerDescriptor;
+    }
+
+    public ImmutableList<SagaDescriptor> getSagaDescriptors() {
+        return sagaDescriptor;
     }
 
     public ImmutableList<Class<? extends Event>> getEventClasses() {

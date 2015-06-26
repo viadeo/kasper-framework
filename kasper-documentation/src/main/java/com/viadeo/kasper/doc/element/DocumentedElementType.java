@@ -20,7 +20,8 @@ public enum DocumentedElementType {
     EVENT_LISTENER("eventListener", "eventListeners"),
     REPOSITORY("repository", "repositories"),
     CONCEPT("concept", "concepts"),
-    RELATION("relation", "relations");
+    RELATION("relation", "relations"),
+    SAGA("saga", "sagas");
 
     protected final String type;
     protected final String pluralType;

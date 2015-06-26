@@ -743,6 +743,7 @@ public class PlatformBuilderUTest {
                     Lists.<CommandHandlerDescriptor>newArrayList(),
                     Lists.<RepositoryDescriptor>newArrayList(),
                     Lists.<EventListenerDescriptor>newArrayList(),
+                    Lists.<SagaDescriptor>newArrayList(),
                     Lists.<Class<? extends Event>>newArrayList()
                 )
         );

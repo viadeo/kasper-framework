@@ -22,6 +22,7 @@ import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.saga.Saga;
 
 import java.util.List;
 
@@ -207,4 +208,12 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
         relation.setVerb(resolver.getVerb(referenceClass));
     }
 
+    @Override
+    public void visit(final DocumentedSaga saga) {
+        final SagaResolver resolver = new SagaResolver();
+        final Class<? extends Saga> referenceClass = saga.getReferenceClass();
+
+        saga.setLabel(resolver.getLabel(referenceClass));
+        saga.setDescription(resolver.getDescription(referenceClass));
+    }
 }
