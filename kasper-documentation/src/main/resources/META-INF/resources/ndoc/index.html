@@ -716,9 +716,9 @@
           });
 
           $.each(domain.events, function(n, c_event) {
-            data.push(get_search_raw("events", c_event.label, domain.label));
+            data.push(get_search_raw("declaredEvents", c_event.label, domain.label));
             $.each(c_event.aliases, function(n, alias) {
-              data.push(get_search_alias_raw("events", c_event.label, domain.label, alias));
+              data.push(get_search_alias_raw("declaredEvents", c_event.label, domain.label, alias));
             });
           });
 
