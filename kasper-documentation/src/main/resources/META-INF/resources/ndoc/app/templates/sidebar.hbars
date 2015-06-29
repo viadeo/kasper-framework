@@ -59,7 +59,7 @@
             <ul class="nav subnav">
                 {{#each node.sagas}}
                 <li class="component-item">
-                    <a href="#sagas_{{this.label}}">{{this.label}}</a>
+                    <a href="#sagas_{{this.name}}">{{this.name}}</a>
                 </li>
                 {{/each}}
             </ul>

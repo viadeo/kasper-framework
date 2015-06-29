@@ -8,7 +8,7 @@
 
     <div class="panel-heading">
       <h4 class="panel-title" id="{{this.typePlural}}_{{this.name}}">
-        <a data-toggle="collapse" data-parent="#accordion-domain" href="#component-{{this.type}}-{{this.name}}-collapse" class="collapsed">
+        <a data-toggle="collapse" data-parent="#accordion-domain" href="#component-{{this.type}}-{{this.label}}-collapse" class="collapsed">
             <span class="glyphicon glyphicon-stop"/>
             <b>{{this.name}}</b>
         </a>
@@ -18,7 +18,7 @@
     <p class="panel-description text-justify">
       {{#ifCond this.deprecated true}}<span class="glyphicon glyphicon-warning-sign"/><strong>Deprecated.</strong>&nbsp;{{/ifCond}}{{this.description}}
     </p>
-    <div id="component-{{this.type}}-{{this.name}}-collapse" class="panel-collapse collapse">
+    <div id="component-{{this.type}}-{{this.label}}-collapse" class="panel-collapse collapse">
       <div class="panel-body">
 
         {{#if this.properties}}
@@ -62,9 +62,9 @@
             <dd>
               {{#each this.sourceEvents}}
                 {{#ifCond ../domain.name this.domainName}}
-                  <a class="link in" href="#events_{{this.label}}">{{this.label}}</a>,&nbsp;
+                  <a class="link in" href="#events_{{this.name}}">{{this.label}}</a>,&nbsp;
                 {{else}}
-                  <a class="link out" domain="{{this.domainName}}" href="#events_{{this.label}}">{{this.label}}</a>,&nbsp;
+                  <a class="link out" domain="{{this.domainName}}" href="#events_{{this.name}}">{{this.label}}</a>,&nbsp;
                 {{/ifCond}}
               {{/each}}
             </dd>
