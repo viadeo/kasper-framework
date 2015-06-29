@@ -13,6 +13,7 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
+import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptorFactory;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
@@ -26,6 +27,7 @@ import com.viadeo.kasper.cqrs.query.interceptor.QueryValidationInterceptorFactor
 import com.viadeo.kasper.event.interceptor.EventValidationInterceptorFactory;
 import com.viadeo.kasper.event.saga.SagaManager;
 import com.viadeo.kasper.event.saga.spring.SagaConfiguration;
+import com.viadeo.kasper.event.saga.step.StepProcessor;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -53,6 +55,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
     private final List<CommandInterceptorFactory> commandInterceptorFactories;
     private final List<QueryInterceptorFactory> queryInterceptorFactories;
     private final List<EventInterceptorFactory> eventInterceptorFactories;
+    private final DomainDescriptorFactory domainDescriptorFactory;
 
     // ------------------------------------------------------------------------
 
@@ -95,6 +98,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         applicationContext.refresh();
 
         this.sagaManager = applicationContext.getBean(SagaManager.class);
+        this.domainDescriptorFactory = new DomainDescriptorFactory(applicationContext.getBean(StepProcessor.class));
     }
 
     // ------------------------------------------------------------------------
@@ -149,4 +153,8 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         return eventInterceptorFactories;
     }
 
+    @Override
+    public DomainDescriptorFactory domainDescriptorFactory() {
+        return domainDescriptorFactory;
+    }
 }

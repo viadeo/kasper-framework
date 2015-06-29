@@ -8,12 +8,15 @@ package com.viadeo.kasper.event.saga.step;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.Saga;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -24,10 +27,11 @@ public class BaseStep implements Step {
     private final StepArguments sagaMethodArguments;
     private final Method identifierMethod;
     private final Class<? extends Event> eventClass;
+    private final ArrayList<String> actions;
 
     // ------------------------------------------------------------------------
 
-    public BaseStep(final Method method, final String getterName) {
+    public BaseStep(final Method method, final String type, final String getterName) {
         checkNotNull(getterName);
 
         this.sagaMethod = checkNotNull(method);
@@ -43,9 +47,19 @@ public class BaseStep implements Step {
                 e
             );
         }
+
+        this.actions = Lists.newArrayList(
+                String.format("%s(getter=%s)", type, getterName)
+        );
     }
 
     // ------------------------------------------------------------------------
+
+
+    @Override
+    public List<String> getActions() {
+        return actions;
+    }
 
     @Override
     public String name() {

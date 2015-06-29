@@ -11,6 +11,8 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.Saga;
 
+import java.util.List;
+
 public interface Step {
 
     String name();
@@ -23,4 +25,5 @@ public interface Step {
 
     Class<? extends Saga> getSagaClass();
 
+    List<String> getActions();
 }

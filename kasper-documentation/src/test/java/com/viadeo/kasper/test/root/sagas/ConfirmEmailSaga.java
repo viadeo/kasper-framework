@@ -19,11 +19,11 @@ import java.util.concurrent.TimeUnit;
 @XKasperSaga(domain = Facebook.class, description = "Confirm an email for a given expiration time")
 public class ConfirmEmailSaga implements Saga {
 
-    @XKasperSaga.Start(getter = "entityId")
+    @XKasperSaga.Start(getter = "getEntityId")
     @XKasperSaga.Schedule(delay = 1, unit = TimeUnit.DAYS, methodName = "notConfirmed")
     public void onMemberCreated(final MemberCreatedEvent event) { }
 
-    @XKasperSaga.End(getter = "entityId")
+    @XKasperSaga.End(getter = "getId")
     public void onConfirmedEvent(final MemberHasConfirmedEmailEvent event) { }
 
     public void notConfirmed() { }

@@ -26,6 +26,45 @@
           <div id="component-{{this.type}}-{{this.label}}-collapse" class="panel-collapse collapse">
             <div class="panel-body">
 
+              {{#if this.steps}}
+                <dl class="block-content">
+                    <dt>Steps</dt>
+                    <table class="table table-striped col-md-12">
+                      <thead>
+                        <th class="col-md-2">Name</th>
+                        <th class="col-md-3">Event</th>
+                        <th class="col-md-3">Actions</th>
+                      </thead>
+                      <tbody>
+                      {{#each this.steps}}
+                        <tr>
+                          <td><code>{{this.name}}<code></td>
+                          <td>
+                            {{#ifCond this.event.domain.label "Unknown"}}
+                              {{this.event.label}}
+                            {{else}}
+                              {{#ifCond ../../domain/name this.event.domain.name}}
+                                <a class="link in" href="#events_{{this.event.name}}">{{this.event.label}}</a>
+                              {{else}}
+                                <a class="link out" domain="{{this.event.domain.name}}" href="#events_{{this.event.name}}">{{this.event.label}}</a>
+                              {{/ifCond}}
+                            {{/ifCond}}
+                          </td>
+                          <td>
+                          <ul>
+                            {{#each this.actions}}
+                              <li>{{this}}</li>
+                            {{/each}}
+                          </ul>
+                          </td>
+                        </tr>
+                      {{/each}}
+                      </tbody>
+                    </table>
+                </dl>
+                <div class="clearfix"></div>
+              {{/if}}
+
               {{#if this.properties}}
                 <dl class="block-content">
                   <dt>Fields</dt>

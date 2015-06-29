@@ -56,6 +56,11 @@ public class FacetApplierRegistryUTest {
                         public void invoke(Saga saga, Context context, Event event) throws StepInvocationException {
                             step.invoke(saga, context, event);
                         }
+
+                        @Override
+                        protected String getAction() {
+                            return "FakeFacet";
+                        }
                     };
                 }
 

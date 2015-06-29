@@ -24,16 +24,19 @@ public class SchedulingStep extends DecorateStep {
 
     protected interface SchedulingOperation {
         void execute(Class<? extends Saga> sagaClass, Object identifier);
+        String getAction();
     }
 
-    protected static class CancelOperation implements SchedulingOperation {
+    public static class CancelOperation implements SchedulingOperation {
 
         private final Scheduler scheduler;
         private final String methodName;
+        private String action;
 
         public CancelOperation(final Scheduler scheduler, final String methodName) {
             this.scheduler = checkNotNull(scheduler);
             this.methodName = checkNotNull(methodName);
+            this.action = String.format("Cancel(methodName=%s)", methodName);
         }
 
         @Override
@@ -41,18 +44,26 @@ public class SchedulingStep extends DecorateStep {
             scheduler.cancelSchedule(sagaClass, methodName, identifier);
         }
 
+        @Override
+        public String getAction() {
+            return action;
+        }
     }
 
-    protected static class ScheduleOperation implements SchedulingOperation {
+    public static class ScheduleOperation implements SchedulingOperation {
 
         private final Scheduler scheduler;
         private final String methodName;
         private final Duration duration;
+        private String action;
 
-        public ScheduleOperation(final Scheduler scheduler, final String methodName, final Duration duration) {
+        public ScheduleOperation(final Scheduler scheduler, final String methodName, final Long delay, final TimeUnit unit) {
+            checkNotNull(delay);
+            checkNotNull(unit);
             this.scheduler = checkNotNull(scheduler);
             this.methodName = checkNotNull(methodName);
-            this.duration = checkNotNull(duration);
+            this.duration = new Duration(TimeUnit.MILLISECONDS.convert(delay, unit));
+            this.action = String.format("Schedule(delay=%s, unit=%s, methodName=%s)", delay, unit, methodName);
         }
 
         @Override
@@ -60,6 +71,10 @@ public class SchedulingStep extends DecorateStep {
             scheduler.schedule(sagaClass, methodName, identifier, duration);
         }
 
+        @Override
+        public String getAction() {
+            return action;
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -81,7 +96,7 @@ public class SchedulingStep extends DecorateStep {
             final Step delegateStep,
             final XKasperSaga.Schedule annotation
     ) {
-        this(delegateStep, new ScheduleOperation(scheduler, annotation.methodName(), new Duration(TimeUnit.MILLISECONDS.convert(annotation.delay(), annotation.unit()))));
+        this(delegateStep, new ScheduleOperation(scheduler, annotation.methodName(), annotation.delay(), annotation.unit()));
     }
 
     public SchedulingStep(final Step delegateStep,
@@ -100,6 +115,11 @@ public class SchedulingStep extends DecorateStep {
         if (identifier.isPresent()) {
             operation.execute(getSagaClass(), identifier.get());
         }
+    }
+
+    @Override
+    protected String getAction() {
+        return operation.getAction();
     }
 
 }

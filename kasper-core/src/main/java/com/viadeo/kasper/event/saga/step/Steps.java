@@ -128,19 +128,19 @@ public final class Steps {
 
     public static class StartStep extends BaseStep {
         public StartStep(final Method method, final String getterName) {
-            super(method, getterName);
+            super(method, "Start", getterName);
         }
     }
 
     public static class EndStep extends BaseStep {
         public EndStep(final Method method, final String getterName) {
-            super(method, getterName);
+            super(method, "End", getterName);
         }
     }
 
     public static class BasicStep extends BaseStep {
         public BasicStep(final Method method, final String getterName) {
-            super(method, getterName);
+            super(method, "Step", getterName);
         }
     }
 

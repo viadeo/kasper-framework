@@ -73,7 +73,6 @@ public class DocumentationPluginUTest {
         // Then
         assertTrue(documentationPlugin.isInitialized());
         verify(documentedPlatform).accept(any(DocumentedElementVisitor.class));
-        verifyNoMoreInteractions(documentedPlatform);
     }
 
     @Test

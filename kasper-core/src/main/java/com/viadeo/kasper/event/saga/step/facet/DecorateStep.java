@@ -7,9 +7,12 @@
 package com.viadeo.kasper.event.saga.step.facet;
 
 import com.google.common.base.Optional;
+import com.google.common.collect.Lists;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.event.saga.step.Step;
+
+import java.util.List;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -50,4 +53,12 @@ public abstract class DecorateStep implements Step {
         return delegateStep;
     }
 
+    @Override
+    public List<String> getActions() {
+        List<String> actions = Lists.newArrayList(delegateStep.getActions());
+        actions.add(getAction());
+        return actions;
+    }
+
+    protected abstract String getAction();
 }

@@ -27,12 +27,12 @@ public class DocumentedEventListener extends AbstractDomainElement {
         private String action;
         private final DocumentedBean response;
 
-        public DocumentedEvent(final DocumentedEventListener documentedEventListener, final Class eventClass) {
+        public DocumentedEvent(final AbstractDomainElement documentedEventListener, final Class eventClass) {
             this(DocumentedDomain.UNKNOWN_DOMAIN, documentedEventListener, eventClass);
         }
 
         public DocumentedEvent(final DocumentedDomain documentedDomain,
-                               final DocumentedEventListener documentedEventListener,
+                               final AbstractDomainElement documentedEventListener,
                                final Class eventClass) {
             super(documentedDomain, DocumentedElementType.EVENT, eventClass);
 

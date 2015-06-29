@@ -47,4 +47,8 @@ public class MeasureStep extends DecorateStep {
         }
     }
 
+    @Override
+    protected String getAction() {
+        return "Measure";
+    }
 }

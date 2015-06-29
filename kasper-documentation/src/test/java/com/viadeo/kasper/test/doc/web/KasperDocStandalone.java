@@ -17,6 +17,9 @@ import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.saga.step.Scheduler;
+import com.viadeo.kasper.event.saga.step.Steps;
+import com.viadeo.kasper.event.saga.step.facet.SchedulingStep;
 import com.viadeo.kasper.test.applications.Applications;
 import com.viadeo.kasper.test.applications.events.ApplicationCreatedEvent;
 import com.viadeo.kasper.test.applications.events.MemberHasDeclaredToBeFanOfAnApplicationEvent;
@@ -25,10 +28,7 @@ import com.viadeo.kasper.test.root.Facebook;
 import com.viadeo.kasper.test.root.commands.AddConnectionToMemberCommand;
 import com.viadeo.kasper.test.root.entities.Member;
 import com.viadeo.kasper.test.root.entities.Member_connectedTo_Member;
-import com.viadeo.kasper.test.root.events.FacebookEvent;
-import com.viadeo.kasper.test.root.events.FacebookMemberEvent;
-import com.viadeo.kasper.test.root.events.MemberCreatedEvent;
-import com.viadeo.kasper.test.root.events.NewMemberConnectionEvent;
+import com.viadeo.kasper.test.root.events.*;
 import com.viadeo.kasper.test.root.handlers.AddConnectionToMemberHandler;
 import com.viadeo.kasper.test.root.listeners.MemberCreatedEventListener;
 import com.viadeo.kasper.test.root.listeners.NewFanOfAnApplicationEventListener;
@@ -43,10 +43,13 @@ import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import static org.mockito.Mockito.mock;
 
 public class KasperDocStandalone {
 
-    public static void main(final String [] args) throws IOException, InterruptedException {
+    public static void main(final String [] args) throws IOException, InterruptedException, NoSuchMethodException {
         final String baseUri = "http://localhost:9988/";
 
         final DomainDescriptor domainDescriptor = new DomainDescriptor(
@@ -87,7 +90,21 @@ public class KasperDocStandalone {
                         new EventListenerDescriptor(ApplicationCreatedEventListener.class,ApplicationCreatedEvent.class)
                 ),
                 Lists.<SagaDescriptor>newArrayList(
-                        new SagaDescriptor(ConfirmEmailSaga.class)
+                        new SagaDescriptor(ConfirmEmailSaga.class, Lists.newArrayList(
+                                new SagaDescriptor.StepDescriptor(
+                                        "onMemberCreated",
+                                        MemberCreatedEvent.class,
+                                        new SchedulingStep(
+                                                new Steps.StartStep(ConfirmEmailSaga.class.getMethod("onMemberCreated", MemberCreatedEvent.class), "getEntityId"),
+                                                new SchedulingStep.ScheduleOperation(mock(Scheduler.class), "notConfirmed", 60L, TimeUnit.MINUTES)
+                                        ).getActions()
+                                ),
+                                new SagaDescriptor.StepDescriptor(
+                                        "onConfirmedEvent",
+                                        MemberHasConfirmedEmailEvent.class,
+                                        new Steps.EndStep(ConfirmEmailSaga.class.getMethod("onConfirmedEvent", MemberHasConfirmedEmailEvent.class), "getId").getActions()
+                                )
+                        ))
                 ),
                 ImmutableList.<Class<? extends Event>>of(
                         FacebookEvent.class,
@@ -112,9 +129,8 @@ public class KasperDocStandalone {
                         new EventListenerDescriptor(MemberCreatedEventListener.class,MemberCreatedEvent.class)
                 ),
                 Lists.<SagaDescriptor>newArrayList(),
-                Lists.<Class<? extends Event>>newArrayList(ApplicationCreatedEvent.class)
-                )
-        );
+                ImmutableList.<Class<? extends Event>>of(ApplicationCreatedEvent.class)
+        ));
         documentedPlatform.registerDomain(Timelines.NAME, new DomainDescriptor(
                 Timelines.NAME,
                 Timelines.class,

@@ -96,8 +96,8 @@ public interface Platform {
         private final List<CommandInterceptorFactory> commandInterceptorFactories;
         private final List<EventInterceptorFactory> eventInterceptorFactories;
         private final Map<ExtraComponentKey, Object> extraComponents;
-        private final DomainDescriptorFactory domainDescriptorFactory;
 
+        private DomainDescriptorFactory domainDescriptorFactory;
         private DomainHelper domainHelper;
         private KasperEventBus eventBus;
         private KasperCommandGateway commandGateway;
@@ -144,6 +144,7 @@ public interface Platform {
             this.queryInterceptorFactories.addAll(checkNotNull(platformConfiguration.queryInterceptorFactories()));
             this.commandInterceptorFactories.addAll(checkNotNull(platformConfiguration.commandInterceptorFactories()));
             this.eventInterceptorFactories.addAll(checkNotNull(platformConfiguration.eventInterceptorFactories()));
+            this.domainDescriptorFactory = checkNotNull(platformConfiguration.domainDescriptorFactory());
         }
 
         // --------------------------------------------------------------------

@@ -22,6 +22,8 @@ import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.saga.Saga;
+import com.viadeo.kasper.event.saga.step.Step;
+import com.viadeo.kasper.event.saga.step.StepProcessor;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.slf4j.Logger;
@@ -35,6 +37,7 @@ import java.lang.reflect.Modifier;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -70,12 +73,17 @@ public class DomainDescriptorFactory {
         }
     };
 
-    private static final Function<Saga, SagaDescriptor> TO_SAGA_DESCRIPTOR_FUNCTION = new Function<Saga, SagaDescriptor>() {
-        @Override
-        public SagaDescriptor apply(final Saga saga) {
-            return toSagaDescriptor(checkNotNull(saga));
-        }
-    };
+    // ------------------------------------------------------------------------
+
+    public final Optional<StepProcessor> stepProcessor;
+
+    public DomainDescriptorFactory() {
+        this(null);
+    }
+
+    public DomainDescriptorFactory(StepProcessor stepProcessor) {
+        this.stepProcessor = Optional.fromNullable(stepProcessor);
+    }
 
     // ------------------------------------------------------------------------
 
@@ -87,7 +95,7 @@ public class DomainDescriptorFactory {
             Collections2.transform(domainBundle.getCommandHandlers(), TO_COMMAND_HANDLER_DESCRIPTOR_FUNCTION),
             Collections2.transform(domainBundle.getRepositories(), TO_REPOSITORY_DESCRIPTOR_FUNCTION),
             Collections2.transform(domainBundle.getEventListeners(), TO_EVENT_LISTENER_DESCRIPTOR_FUNCTION),
-            Collections2.transform(domainBundle.getSagas(), TO_SAGA_DESCRIPTOR_FUNCTION),
+            getSagaDescriptor(domainBundle.getSagas()),
             retrieveEventsFrom(domainBundle.getDomain().getClass())
         );
     }
@@ -108,11 +116,35 @@ public class DomainDescriptorFactory {
             Collections2.transform(checkNotNull(commandHandlers), TO_COMMAND_HANDLER_DESCRIPTOR_FUNCTION),
             Collections2.transform(checkNotNull(repositories), TO_REPOSITORY_DESCRIPTOR_FUNCTION),
             Collections2.transform(checkNotNull(eventListeners), TO_EVENT_LISTENER_DESCRIPTOR_FUNCTION),
-            Collections2.transform(checkNotNull(sagas), TO_SAGA_DESCRIPTOR_FUNCTION),
+            getSagaDescriptor(checkNotNull(sagas)),
             retrieveEventsFrom(domainClass)
         );
     }
 
+    private List<SagaDescriptor> getSagaDescriptor(Collection<Saga> sagas) {
+        final List<SagaDescriptor> sagaDescriptors = Lists.newArrayList();
+
+        for (Saga saga : sagas) {
+            List<SagaDescriptor.StepDescriptor> stepDescriptors = Lists.newArrayList();
+
+            if (stepProcessor.isPresent()) {
+                Set<Step> steps = stepProcessor.get().process(saga.getClass());
+                for (Step step : steps) {
+                    stepDescriptors.add(
+                            new SagaDescriptor.StepDescriptor(
+                                    step.name(),
+                                    step.getSupportedEvent(),
+                                    step.getActions()
+                            )
+                    );
+                }
+            }
+
+            sagaDescriptors.add(new SagaDescriptor(saga.getClass(), stepDescriptors));
+        }
+
+        return sagaDescriptors;
+    }
     // ------------------------------------------------------------------------
 
     public static Collection<Class<? extends Event>> retrieveEventsFrom(final Class<? extends Domain> domainClass) {
@@ -173,11 +205,6 @@ public class DomainDescriptorFactory {
             EventListener.EVENT_PARAMETER_POSITION
         );
         return new EventListenerDescriptor(eventListenerClass, eventClass.get());
-    }
-
-    @SuppressWarnings("unchecked")
-    public static SagaDescriptor toSagaDescriptor(final Saga saga) {
-        return new SagaDescriptor(saga.getClass());
     }
 
     @SuppressWarnings("unchecked")
