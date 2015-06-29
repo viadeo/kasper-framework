@@ -16,8 +16,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class AbstractDomainElement extends AbstractElement {
 
-    private final DocumentedDomain domain;
     private final boolean publicAccess;
+    protected DocumentedDomain domain;
     private DocumentedAuthorization authorization = null;
 
     // ------------------------------------------------------------------------

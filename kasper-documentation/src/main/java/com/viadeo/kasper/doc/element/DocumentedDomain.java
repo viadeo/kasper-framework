@@ -32,6 +32,10 @@ import static com.viadeo.kasper.doc.element.DocumentedRepository.*;
 
 public class DocumentedDomain extends AbstractElement {
 
+    public static final DocumentedDomain UNKNOWN_DOMAIN = new DocumentedDomain(Object.class) {{
+        setLabel("Unknown");
+    }};
+
     private final List<DocumentedQueryHandler> documentedQueryHandlers;
     private final List<DocumentedCommandHandler> documentedCommandHandlers;
     private final List<DocumentedEventListener> documentedEventListeners;
@@ -53,8 +57,8 @@ public class DocumentedDomain extends AbstractElement {
 
     // ------------------------------------------------------------------------
 
-    public DocumentedDomain(DomainDescriptor domainDescriptor) {
-        super(DocumentedElementType.DOMAIN, domainDescriptor.getDomainClass());
+    private DocumentedDomain(Class domainClass) {
+        super(DocumentedElementType.DOMAIN, domainClass);
         this.parent = Optional.absent();
 
         documentedQueryHandlers = Lists.newArrayList();
@@ -71,6 +75,10 @@ public class DocumentedDomain extends AbstractElement {
         concepts = Lists.newArrayList();
         avatarConcepts = Lists.newArrayList();
         documentedSagas = Lists.newArrayList();
+    }
+
+    public DocumentedDomain(DomainDescriptor domainDescriptor) {
+        this(domainDescriptor.getDomainClass());
 
         // QUERY
         for (final QueryHandlerDescriptor descriptor : domainDescriptor.getQueryHandlerDescriptors()) {

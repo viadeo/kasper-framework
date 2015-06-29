@@ -58,6 +58,24 @@
                 </dl>
               {{/if}}
 
+              {{#ifCond ../title "Referenced Events"}}
+                <dl class="block-content dl-horizontal">
+                  <dt>Domain</dt>
+                  <dd>
+                  {{#ifCond this.type "event"}}
+                    <p>
+                    {{#ifCond this.domain.label "Unknown"}}
+                        {{this.domain.label}}
+                    {{else}}
+                        <a href="#{{this.domain.label}}">{{this.domain.label}}</a>
+                    {{/ifCond}}
+                    </p>
+                  {{/ifCond}}
+                  </dd>
+                </dl>
+              {{/ifCond}}
+
+
               {{#if this.commandHandler}}
                 <dl class="block-content dl-horizontal">
                   <dt>Handler</dt>
@@ -71,7 +89,11 @@
                 <dl class="block-content dl-horizontal">
                   <dt>Handlers</dt>
                   <dd>
-                    <p>{{flatten this.eventListeners "&nbsp;" "name"}}</p>
+                    <ul>
+                    {{#each this.eventListeners}}
+                    <li>{{this.name}} <i>(<a href="#{{this.domainName}}">{{this.domainName}}</a>)</i></li>
+                    {{/each}}
+                    </ul>
                   </dd>
                 </dl>
               {{/if}}

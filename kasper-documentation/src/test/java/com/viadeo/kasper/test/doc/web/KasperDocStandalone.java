@@ -18,7 +18,9 @@ import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.test.applications.Applications;
+import com.viadeo.kasper.test.applications.events.ApplicationCreatedEvent;
 import com.viadeo.kasper.test.applications.events.MemberHasDeclaredToBeFanOfAnApplicationEvent;
+import com.viadeo.kasper.test.applications.listeners.ApplicationCreatedEventListener;
 import com.viadeo.kasper.test.root.Facebook;
 import com.viadeo.kasper.test.root.commands.AddConnectionToMemberCommand;
 import com.viadeo.kasper.test.root.entities.Member;
@@ -80,7 +82,9 @@ public class KasperDocStandalone {
                 ),
                 ImmutableList.<EventListenerDescriptor>of(
                         new EventListenerDescriptor(MemberCreatedEventListener.class,MemberCreatedEvent.class),
-                        new EventListenerDescriptor(NewFanOfAnApplicationEventListener.class,MemberHasDeclaredToBeFanOfAnApplicationEvent.class)
+                        new EventListenerDescriptor(MemberCreatedEventListener.class,MemberCreatedEvent.class),
+                        new EventListenerDescriptor(NewFanOfAnApplicationEventListener.class,MemberHasDeclaredToBeFanOfAnApplicationEvent.class),
+                        new EventListenerDescriptor(ApplicationCreatedEventListener.class,ApplicationCreatedEvent.class)
                 ),
                 Lists.<SagaDescriptor>newArrayList(
                         new SagaDescriptor(ConfirmEmailSaga.class)
@@ -104,9 +108,11 @@ public class KasperDocStandalone {
                         AddConnectionToMemberCommand.class)
                 ),
                 Lists.<RepositoryDescriptor>newArrayList(),
-                Lists.<EventListenerDescriptor>newArrayList(),
+                Lists.<EventListenerDescriptor>newArrayList(
+                        new EventListenerDescriptor(MemberCreatedEventListener.class,MemberCreatedEvent.class)
+                ),
                 Lists.<SagaDescriptor>newArrayList(),
-                Lists.<Class<? extends Event>>newArrayList()
+                Lists.<Class<? extends Event>>newArrayList(ApplicationCreatedEvent.class)
                 )
         );
         documentedPlatform.registerDomain(Timelines.NAME, new DomainDescriptor(

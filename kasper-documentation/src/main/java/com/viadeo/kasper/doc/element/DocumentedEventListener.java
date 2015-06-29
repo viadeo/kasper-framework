@@ -27,6 +27,10 @@ public class DocumentedEventListener extends AbstractDomainElement {
         private String action;
         private final DocumentedBean response;
 
+        public DocumentedEvent(final DocumentedEventListener documentedEventListener, final Class eventClass) {
+            this(DocumentedDomain.UNKNOWN_DOMAIN, documentedEventListener, eventClass);
+        }
+
         public DocumentedEvent(final DocumentedDomain documentedDomain,
                                final DocumentedEventListener documentedEventListener,
                                final Class eventClass) {
@@ -44,6 +48,10 @@ public class DocumentedEventListener extends AbstractDomainElement {
 
         public void setAction(final String action) {
             this.action = action;
+        }
+
+        public void setDomain(final DocumentedDomain domain) {
+            this.domain = checkNotNull(domain);
         }
 
         public List<LightDocumentedElement> getEventListeners() {
@@ -75,10 +83,7 @@ public class DocumentedEventListener extends AbstractDomainElement {
                 DocumentedElementType.EVENT_LISTENER,
                 checkNotNull(eventListenerDescriptor).getReferenceClass()
         );
-        documentedEvent = new DocumentedEvent(
-                documentedDomain, this,
-                eventListenerDescriptor.getEventClass()
-        );
+        documentedEvent = new DocumentedEvent(this, eventListenerDescriptor.getEventClass());
     }
 
     // ------------------------------------------------------------------------
