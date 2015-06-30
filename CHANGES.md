@@ -1,5 +1,29 @@
 # Kasper Releases #
 
+### Snapshot 0.8.0-pre38 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre38~~))
+
+* [Pull 281](https://github.com/viadeo/kasper-framework/pull/281) Added tags on Event listeners
+* [Pull 280](https://github.com/viadeo/kasper-framework/pull/280) Improved jsr303 violation listing
+* [Pull 279](https://github.com/viadeo/kasper-framework/pull/279) Restore MDC context after tags interceptor
+
+### Snapshot 0.8.0-pre37 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre37~~))
+
+* [Pull 275](https://github.com/viadeo/kasper-framework/pull/275) Added EventValidationInterceptor based on JSR303
+
+### Snapshot 0.8.0-pre36 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre36~~))
+
+* Context refactoring
+
+### Snapshot 0.8.0-pre35 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre35~~))
+
+* Bugfix http header should be case insensitive
+
+### Snapshot 0.8.0-pre34 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre34~~))
+
+* expose all events
+* make context immutable
+* updated mdc in interceptors
+
 ### Snapshot 0.8.0-pre33 ([Nexus](https://nexus.viadeobackoffice.com/index.html#nexus-search;gav~com.viadeo.kasper~~0.8.0-pre33~~))
 
 * [Pull 271](https://github.com/viadeo/kasper-framework/pull/271) Added accesToken header in CommandResponse.
