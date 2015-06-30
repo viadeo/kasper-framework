@@ -12,6 +12,8 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.Saga;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -22,6 +24,8 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class BaseStep implements Step {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(BaseStep.class);
 
     private final Method sagaMethod;
     private final StepArguments sagaMethodArguments;
@@ -94,14 +98,12 @@ public class BaseStep implements Step {
     public <T> Optional<T> getSagaIdentifierFrom(final Event event) {
         checkNotNull(event);
 
-        Object identifier =null;
+        Object identifier = null;
 
         try {
             identifier = identifierMethod.invoke(event);
-        } catch (final IllegalAccessException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        } catch (final InvocationTargetException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        } catch (IllegalAccessException | InvocationTargetException e) {
+            LOGGER.warn("Failed to retrieve saga identifier from the given event, <getter={}> <event={}>", identifierMethod.getName(), event.getClass().getName(), e);
         }
 
         return Optional.fromNullable((T)identifier);

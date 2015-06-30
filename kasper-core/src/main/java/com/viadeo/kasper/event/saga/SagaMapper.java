@@ -7,6 +7,8 @@
 package com.viadeo.kasper.event.saga;
 
 import com.google.common.collect.Maps;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -16,6 +18,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Map.Entry;
 
 public class SagaMapper {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SagaMapper.class);
 
     public static final String X_KASPER_SAGA_CLASS = "X-KASPER-SAGA-CLASS";
     public static final String X_KASPER_SAGA_IDENTIFIER = "X-KASPER-SAGA-IDENTIFIER";
@@ -43,8 +47,8 @@ public class SagaMapper {
                 field.setAccessible(Boolean.TRUE);
                 field.set(saga, entry.getValue());
             } catch (final IllegalAccessException | NoSuchFieldException e) {
-                e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                // FIXME TODO
+                LOGGER.error("Failed to restore property '{}' to a saga instance, <saga={}> <identifier={}> <propertyValue={}>",
+                        entry.getKey(), saga.getClass(), identifier, entry.getValue(), e);
             }
         }
 
@@ -66,8 +70,8 @@ public class SagaMapper {
                 try {
                     value = field.get(saga);
                 } catch (final IllegalAccessException e) {
-                    e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-                    // FIXME TODO
+                    LOGGER.error("Failed to extract property '{}' from a saga, <saga={}> <identifier={}>",
+                            field.getName(), saga.getClass(), identifier, e);
                 }
 
                 if (null != value) {
