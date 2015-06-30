@@ -23,6 +23,9 @@ import org.springframework.context.ApplicationContext;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static org.quartz.JobKey.jobKey;
 
+/**
+ * MethodInvocationScheduler implementation that delegates scheduling and triggering to a Quartz Scheduler.
+ */
 public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.step.Scheduler {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(MethodInvocationScheduler.class);

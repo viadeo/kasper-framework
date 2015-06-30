@@ -10,6 +10,9 @@ import com.viadeo.kasper.event.saga.Saga;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 
+/**
+ * Interface describing the scheduler Step of a Saga
+ */
 public interface Scheduler {
 
     void initialize();

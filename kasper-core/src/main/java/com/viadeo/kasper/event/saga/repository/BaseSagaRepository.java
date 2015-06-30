@@ -14,6 +14,9 @@ import java.util.Map;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Base sagaRepository implementation that uses {@link com.viadeo.kasper.event.saga.SagaMapper}
+ */
 public abstract class BaseSagaRepository implements SagaRepository {
 
     private final SagaMapper sagaMapper;

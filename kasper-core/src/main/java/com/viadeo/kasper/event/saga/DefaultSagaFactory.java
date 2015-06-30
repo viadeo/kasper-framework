@@ -11,6 +11,9 @@ import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;
 import org.springframework.context.ApplicationContext;
 
+/**
+ * Default implementation of a SagaFactory using @link org.springframework.context.ApplicationContext
+ */
 public class DefaultSagaFactory implements SagaFactory {
 
     private final AutowireCapableBeanFactory beanFactory;

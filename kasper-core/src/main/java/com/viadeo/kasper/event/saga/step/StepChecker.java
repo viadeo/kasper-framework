@@ -10,6 +10,9 @@ import com.viadeo.kasper.event.saga.Saga;
 
 import java.util.Set;
 
+/**
+ * Interface describing the control of saga's steps
+ */
 public interface StepChecker {
 
     void check(Class<? extends Saga> sagaClass, Set<Step> steps);

@@ -10,6 +10,9 @@ import com.viadeo.kasper.event.saga.Saga;
 
 import java.util.Set;
 
+/**
+ * Interface describing the extraction of Steps present in a Saga
+ */
 public interface StepResolver {
 
     Set<Step> resolve(Class<? extends Saga> sagaClass);

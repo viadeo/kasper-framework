@@ -6,6 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga.exception;
 
+/**
+ * Exception indicating that an error has occurred while instantiating a Saga.
+ */
 public class SagaInstantiationException extends RuntimeException {
 
     public SagaInstantiationException(final String message, final Throwable cause) {

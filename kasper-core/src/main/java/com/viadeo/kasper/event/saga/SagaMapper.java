@@ -17,6 +17,9 @@ import java.util.Map;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static java.util.Map.Entry;
 
+/**
+ * Mapper which converts Saga into Map and conversely.
+ */
 public class SagaMapper {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaMapper.class);

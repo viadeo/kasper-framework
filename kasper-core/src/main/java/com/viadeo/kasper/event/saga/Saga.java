@@ -8,6 +8,10 @@ package com.viadeo.kasper.event.saga;
 
 import com.google.common.base.Optional;
 
+/**
+ * Interface describing an implementation of a Saga. Sagas are instances that handle events and may possibly produce
+ * new commands or have other side effects. Typically, Sagas are used to manage long running business transactions.
+ */
 public interface Saga {
 
     Optional<SagaFactory> getFactory();

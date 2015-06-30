@@ -25,6 +25,11 @@ import java.util.Set;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+/**
+ * Manage the execution of saga's steps or methods. It is responsible
+ * for redirecting published Events to the correct Saga instances. It will also manage the life cycle of
+ * the Saga, based on these Events.
+ */
 public class SagaExecutor {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(SagaExecutor.class);

@@ -12,6 +12,9 @@ import com.viadeo.kasper.event.saga.SagaMapper;
 
 import java.util.Map;
 
+/**
+ * SagaRepository implementation that stores all Saga instances in memory.
+ */
 public class InMemorySagaRepository extends BaseSagaRepository {
 
     private final Map<Object, Map<String,Object>> sagas;
