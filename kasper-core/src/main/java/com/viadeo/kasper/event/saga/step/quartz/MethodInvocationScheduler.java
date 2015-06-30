@@ -146,6 +146,20 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
 
     // ------------------------------------------------------------------------
 
+    public boolean isScheduled(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier) {
+        try {
+            return scheduler.checkExists(jobKey(buildJobIdentifier(sagaClass, methodName, identifier), groupIdentifier));
+        } catch (SchedulerException e) {
+            LOGGER.error(
+                    "Failed to known if a job is scheduled, <saga={}> <identifier={}> <methodInvocationName={}>",
+                    sagaClass.getName(), identifier, methodName
+            );
+        }
+        return Boolean.FALSE;
+    }
+
+    // ------------------------------------------------------------------------
+
     protected JobDetail buildJobDetail(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final JobKey jobKey) {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(SAGA_CLASS_KEY, sagaClass.getName());

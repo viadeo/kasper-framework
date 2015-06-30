@@ -177,6 +177,12 @@ public class TestFixture {
             System.err.println("A scheduled method invocation is canceled !");
         }
 
+        @XKasperSaga.Step(getter = "getId")
+        @XKasperSaga.Schedule(delay = 1, unit = TimeUnit.SECONDS, methodName = "invokedMethod")
+        public void sleepOneSec(StepEvent3 event){
+            System.err.println("A method invocation is scheduled !");
+        }
+
         @XKasperSaga.End(getter = "getId")
         public void end(EndEvent event){
             System.err.println("Saga is ended !");
@@ -237,6 +243,12 @@ public class TestFixture {
 
     public static class StepEvent2 extends AbstractEvent {
         public StepEvent2(UUID id) {
+            super(id);
+        }
+    }
+
+    public static class StepEvent3 extends AbstractEvent {
+        public StepEvent3(UUID id) {
             super(id);
         }
     }

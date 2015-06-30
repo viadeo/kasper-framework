@@ -48,16 +48,18 @@ public abstract class DecorateStep implements Step {
         return delegateStep.getSagaClass();
     }
 
-
-    public Step getDelegateStep() {
-        return delegateStep;
-    }
-
     @Override
     public List<String> getActions() {
         List<String> actions = Lists.newArrayList(delegateStep.getActions());
         actions.add(getAction());
         return actions;
+    }
+
+    @Override
+    public void clean(Object identifier) { }
+
+    public Step getDelegateStep() {
+        return delegateStep;
     }
 
     protected abstract String getAction();

@@ -14,6 +14,7 @@ import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.spring.SagaConfiguration;
+import com.viadeo.kasper.event.saga.step.Scheduler;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
@@ -52,6 +53,9 @@ public class SagaExecutorITest {
 
     @Inject
     public SagaRepository sagaRepository;
+
+    @Inject
+    public Scheduler scheduler;
 
     @Mock
     public KasperCommandGateway commandGateway;
@@ -261,6 +265,22 @@ public class SagaExecutorITest {
                 return Boolean.FALSE;
             }
         });
+    }
+
+    @Test
+    public void execute_end_step_on_saga_instance_for_which_we_have_some_scheduled_invocation() throws InterruptedException {
+        // Given
+        final UUID identifierSaga = UUID.randomUUID();
+        SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));
+        sagaExecutor.execute(Contexts.empty(), new StartEvent(identifierSaga));
+        sagaExecutor.execute(Contexts.empty(), new StepEvent3(identifierSaga));
+
+        // When
+        sagaExecutor.execute(Contexts.empty(), new EndEvent(identifierSaga));
+
+        //Then
+        assertFalse(sagaRepository.load(identifierSaga).isPresent());
+        assertFalse(scheduler.isScheduled(TestSagaB.class, "invokedMethod", identifierSaga));
     }
 
     @Configuration

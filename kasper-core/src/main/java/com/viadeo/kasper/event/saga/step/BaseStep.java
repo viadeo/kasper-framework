@@ -90,6 +90,9 @@ public class BaseStep implements Step {
     }
 
     @Override
+    public void clean(Object identifier) { }
+
+    @Override
     public Class<? extends Event> getSupportedEvent() {
         return eventClass;
     }

@@ -23,4 +23,6 @@ public interface Scheduler {
 
     void cancelSchedule(Class<? extends Saga> sagaClass, String methodName, Object identifier);
 
+    boolean isScheduled(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier);
+
 }

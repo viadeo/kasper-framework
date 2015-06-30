@@ -145,6 +145,11 @@ public class SagaExecutor {
 
         if (step instanceof Steps.EndStep) {
             repository.delete(sagaIdentifier);
+
+            for (final Step aStep : steps.values()) {
+                aStep.clean(sagaIdentifier);
+            }
+
         } else {
             repository.save(sagaIdentifier, saga);
         }

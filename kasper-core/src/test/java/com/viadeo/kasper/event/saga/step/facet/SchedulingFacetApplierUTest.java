@@ -47,8 +47,9 @@ public class SchedulingFacetApplierUTest {
 
     @Test
     public void apply_on_method_with_schedule_annotation_return_a_scheduling_step() {
-        Step step = mock(Step.class);
+        // Given
         Method method = TestFixture.getMethod(TestFixture.TestSagaA.class, "scheduledStep", TestFixture.TestEvent6.class);
+        Steps.BasicStep step = new Steps.BasicStep(method, "getId");
 
         // When
         Step actualStep = facetApplier.apply(method, step);

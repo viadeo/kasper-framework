@@ -19,6 +19,8 @@ public interface Step {
 
     void invoke(Saga saga, Context context, Event event) throws StepInvocationException;
 
+    void clean(Object identifier);
+
     Class<? extends Event> getSupportedEvent();
 
     <T> Optional<T> getSagaIdentifierFrom(Event event);
