@@ -26,6 +26,7 @@ import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
 import com.viadeo.kasper.event.domain.EntityCreatedEvent;
+import com.viadeo.kasper.event.saga.Saga;
 import org.junit.Test;
 
 import java.util.List;
@@ -58,6 +59,7 @@ public class PlatformPublishEventTest extends AbstractPlatformTests {
                         Lists.<QueryHandler>newArrayList(),
                         Lists.<Repository>newArrayList(),
                         Lists.<EventListener>newArrayList(new TestListener()),
+                        Lists.<Saga>newArrayList(),
                         Lists.<QueryInterceptorFactory>newArrayList(),
                         Lists.<CommandInterceptorFactory>newArrayList(),
                         Lists.<EventInterceptorFactory>newArrayList(),

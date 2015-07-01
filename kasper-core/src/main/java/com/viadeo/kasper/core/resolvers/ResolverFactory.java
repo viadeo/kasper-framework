@@ -20,6 +20,7 @@ import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.saga.Saga;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -46,6 +47,7 @@ public class ResolverFactory {
     private ConceptResolver conceptResolver;
     private RelationResolver relationResolver;
     private EventResolver eventResolver;
+    private SagaResolver sagaResolver;
 
     private Map<Class, Resolver> resolvers;
 
@@ -64,6 +66,7 @@ public class ResolverFactory {
                     put(QueryHandler.class, queryHandlerResolver);
                     put(Repository.class, repositoryResolver);
                     put(Event.class, eventResolver);
+                    put(Saga.class, sagaResolver);
 
                     /* Order is important here (Concept/Relation before Entity) */
                     put(Concept.class, conceptResolver);
@@ -220,6 +223,16 @@ public class ResolverFactory {
 
     public void setCommandHandlerResolver(final CommandHandlerResolver commandHandlerResolver) {
         this.commandHandlerResolver = checkNotNull(commandHandlerResolver);
+    }
+
+    // ------------------------------------------------------------------------
+
+    public SagaResolver getSagaResolver() {
+        return sagaResolver;
+    }
+
+    public void setSagaResolver(final SagaResolver sagaResolver) {
+        this.sagaResolver = checkNotNull(sagaResolver);
     }
 
     // ------------------------------------------------------------------------

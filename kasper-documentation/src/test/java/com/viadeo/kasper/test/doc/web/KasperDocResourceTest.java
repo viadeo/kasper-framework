@@ -136,6 +136,7 @@ public class KasperDocResourceTest extends JerseyTest {
                     MemberCreatedEventListener.class,
                     MemberCreatedEvent.class
                 )),
+                ImmutableList.<SagaDescriptor>of(),
                 ImmutableList.<Class<? extends Event>>of(
                         FacebookEvent.class,
                         FacebookMemberEvent.class,
@@ -160,6 +161,7 @@ public class KasperDocResourceTest extends JerseyTest {
                     )
                 ),
                 ImmutableList.<EventListenerDescriptor>of(),
+                ImmutableList.<SagaDescriptor>of(),
                 ImmutableList.<Class<? extends Event>>of()
             );
 
@@ -179,6 +181,7 @@ public class KasperDocResourceTest extends JerseyTest {
                     )
                 ),
                 ImmutableList.<EventListenerDescriptor>of(),
+                ImmutableList.<SagaDescriptor>of(),
                 ImmutableList.<Class<? extends Event>>of()
             );
 

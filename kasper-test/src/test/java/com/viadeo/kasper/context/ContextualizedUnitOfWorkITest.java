@@ -31,6 +31,7 @@ import com.viadeo.kasper.er.annotation.XKasperConcept;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.annotation.XKasperEvent;
 import com.viadeo.kasper.event.domain.EntityCreatedEvent;
+import com.viadeo.kasper.event.saga.Saga;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.repository.AggregateNotFoundException;
 import org.junit.Test;
@@ -127,6 +128,7 @@ public class ContextualizedUnitOfWorkITest extends AbstractPlatformTests {
                         Lists.<QueryHandler>newArrayList(),
                         Lists.<Repository>newArrayList(new ContextTestRepository()),
                         Lists.<EventListener>newArrayList(),
+                        Lists.<Saga>newArrayList(),
                         Lists.<QueryInterceptorFactory>newArrayList(),
                         Lists.<CommandInterceptorFactory>newArrayList(),
                         Lists.<EventInterceptorFactory>newArrayList(),

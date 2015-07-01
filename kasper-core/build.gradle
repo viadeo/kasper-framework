@@ -16,16 +16,20 @@ dependencies {
     compile libraries.REFLECTIONS
     compile libraries.SPRING_CONTEXT
     compile libraries.AXON_CORE
+    compile libraries.QUARTZ_SCHEDULER
+    compile libraries.QUARTZ_JOBS
     compile libraries.YAMMER_METRICS
     compile libraries.JCACHE
     compile libraries.VALIDATION_API
     compile libraries.GUAVA
     compile libraries.LOG4J_OVER_SLF4J
+    compile libraries.JAVAX_INJECT
 
-
+    testCompile libraries.SPRING_TEST
     testCompile libraries.LOGBACK
     testCompile libraries.JUNIT
     testCompile libraries.MOCKITO
     testCompile libraries.JCACHE_EHCACHE
     testCompile libraries.HIBERNATE_VALIDATOR
+    testCompile libraries.AWAITILITY
 }

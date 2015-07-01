@@ -17,31 +17,39 @@ import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.saga.step.Scheduler;
+import com.viadeo.kasper.event.saga.step.Steps;
+import com.viadeo.kasper.event.saga.step.facet.SchedulingStep;
 import com.viadeo.kasper.test.applications.Applications;
+import com.viadeo.kasper.test.applications.events.ApplicationCreatedEvent;
+import com.viadeo.kasper.test.applications.events.MemberHasDeclaredToBeFanOfAnApplicationEvent;
+import com.viadeo.kasper.test.applications.listeners.ApplicationCreatedEventListener;
 import com.viadeo.kasper.test.root.Facebook;
 import com.viadeo.kasper.test.root.commands.AddConnectionToMemberCommand;
 import com.viadeo.kasper.test.root.entities.Member;
 import com.viadeo.kasper.test.root.entities.Member_connectedTo_Member;
-import com.viadeo.kasper.test.root.events.FacebookEvent;
-import com.viadeo.kasper.test.root.events.FacebookMemberEvent;
-import com.viadeo.kasper.test.root.events.MemberCreatedEvent;
-import com.viadeo.kasper.test.root.events.NewMemberConnectionEvent;
+import com.viadeo.kasper.test.root.events.*;
 import com.viadeo.kasper.test.root.handlers.AddConnectionToMemberHandler;
 import com.viadeo.kasper.test.root.listeners.MemberCreatedEventListener;
+import com.viadeo.kasper.test.root.listeners.NewFanOfAnApplicationEventListener;
 import com.viadeo.kasper.test.root.queries.GetAllMemberQueryHandler;
 import com.viadeo.kasper.test.root.queries.GetMemberQueryHandler;
 import com.viadeo.kasper.test.root.queries.GetMembersQueryHandler;
 import com.viadeo.kasper.test.root.repositories.MemberConnectionsRepository;
 import com.viadeo.kasper.test.root.repositories.MemberRepository;
+import com.viadeo.kasper.test.root.sagas.ConfirmEmailSaga;
 import com.viadeo.kasper.test.timelines.Timelines;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 
 import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+import static org.mockito.Mockito.mock;
 
 public class KasperDocStandalone {
 
-    public static void main(final String [] args) throws IOException, InterruptedException {
+    public static void main(final String [] args) throws IOException, InterruptedException, NoSuchMethodException {
         final String baseUri = "http://localhost:9988/";
 
         final DomainDescriptor domainDescriptor = new DomainDescriptor(
@@ -75,9 +83,28 @@ public class KasperDocStandalone {
                                 DomainDescriptorFactory.toAggregateDescriptor(Member_connectedTo_Member.class)
                         )
                 ),
-                ImmutableList.<EventListenerDescriptor>of(new EventListenerDescriptor(
-                        MemberCreatedEventListener.class,
-                        MemberCreatedEvent.class)
+                ImmutableList.<EventListenerDescriptor>of(
+                        new EventListenerDescriptor(MemberCreatedEventListener.class,MemberCreatedEvent.class),
+                        new EventListenerDescriptor(MemberCreatedEventListener.class,MemberCreatedEvent.class),
+                        new EventListenerDescriptor(NewFanOfAnApplicationEventListener.class,MemberHasDeclaredToBeFanOfAnApplicationEvent.class),
+                        new EventListenerDescriptor(ApplicationCreatedEventListener.class,ApplicationCreatedEvent.class)
+                ),
+                Lists.<SagaDescriptor>newArrayList(
+                        new SagaDescriptor(ConfirmEmailSaga.class, Lists.newArrayList(
+                                new SagaDescriptor.StepDescriptor(
+                                        "onMemberCreated",
+                                        MemberCreatedEvent.class,
+                                        new SchedulingStep(
+                                                new Steps.StartStep(ConfirmEmailSaga.class.getMethod("onMemberCreated", MemberCreatedEvent.class), "getEntityId"),
+                                                new SchedulingStep.ScheduleOperation(mock(Scheduler.class), ConfirmEmailSaga.class, "notConfirmed", 60L, TimeUnit.MINUTES)
+                                        ).getActions()
+                                ),
+                                new SagaDescriptor.StepDescriptor(
+                                        "onConfirmedEvent",
+                                        MemberHasConfirmedEmailEvent.class,
+                                        new Steps.EndStep(ConfirmEmailSaga.class.getMethod("onConfirmedEvent", MemberHasConfirmedEmailEvent.class), "getId").getActions()
+                                )
+                        ))
                 ),
                 ImmutableList.<Class<? extends Event>>of(
                         FacebookEvent.class,
@@ -98,10 +125,12 @@ public class KasperDocStandalone {
                         AddConnectionToMemberCommand.class)
                 ),
                 Lists.<RepositoryDescriptor>newArrayList(),
-                Lists.<EventListenerDescriptor>newArrayList(),
-                Lists.<Class<? extends Event>>newArrayList()
-                )
-        );
+                Lists.<EventListenerDescriptor>newArrayList(
+                        new EventListenerDescriptor(MemberCreatedEventListener.class,MemberCreatedEvent.class)
+                ),
+                Lists.<SagaDescriptor>newArrayList(),
+                ImmutableList.<Class<? extends Event>>of(ApplicationCreatedEvent.class)
+        ));
         documentedPlatform.registerDomain(Timelines.NAME, new DomainDescriptor(
                 Timelines.NAME,
                 Timelines.class,
@@ -109,6 +138,7 @@ public class KasperDocStandalone {
                 Lists.<CommandHandlerDescriptor>newArrayList(),
                 Lists.<RepositoryDescriptor>newArrayList(),
                 Lists.<EventListenerDescriptor>newArrayList(),
+                Lists.<SagaDescriptor>newArrayList(),
                 Lists.<Class<? extends Event>>newArrayList()
         ));
         documentedPlatform.accept(new DefaultDocumentedElementInitializer(documentedPlatform));
@@ -126,7 +156,7 @@ public class KasperDocStandalone {
         server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("src/main/resources/META-INF/resources/doc/"),"/doc");
         server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("src/main/resources/META-INF/resources/ndoc/"),"/ndoc");
 
-        System.out.println(String.format("Try out %skasper/doc/domains \nAccess UI at %sdoc/index.htm", baseUri, baseUri));
+        System.out.println(String.format("Try out %skasper/doc/domains \nAccess UI at %sndoc/index.html", baseUri, baseUri));
 
         System.in.read();
 

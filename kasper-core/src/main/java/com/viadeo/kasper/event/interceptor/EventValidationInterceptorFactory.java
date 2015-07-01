@@ -12,7 +12,6 @@ import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.EventResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -17,10 +17,13 @@ public enum DocumentedElementType {
     QUERY_RESULT("queryResult", "queryResults"),
     QUERY_HANDLER("queryHandler", "queryHandlers"),
     EVENT("event", "events"),
+    DECLARED_EVENT("declaredEvent", "declaredEvents"),
+    REFERENCED_EVENT("referencedEvent", "referencedEvents"),
     EVENT_LISTENER("eventListener", "eventListeners"),
     REPOSITORY("repository", "repositories"),
     CONCEPT("concept", "concepts"),
-    RELATION("relation", "relations");
+    RELATION("relation", "relations"),
+    SAGA("saga", "sagas");
 
     protected final String type;
     protected final String pluralType;

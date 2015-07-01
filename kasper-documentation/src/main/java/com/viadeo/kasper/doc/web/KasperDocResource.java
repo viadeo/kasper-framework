@@ -164,6 +164,10 @@ public class KasperDocResource {
                 return Lists.<AbstractDomainElement>newArrayList(documentedDomain.getQueryHandlers());
             case EVENT:
                 return Lists.<AbstractDomainElement>newArrayList(documentedDomain.getEvents());
+            case DECLARED_EVENT:
+                return Lists.<AbstractDomainElement>newArrayList(documentedDomain.getDeclaredEvents());
+            case REFERENCED_EVENT:
+                return Lists.<AbstractDomainElement>newArrayList(documentedDomain.getReferencedEvents());
             case EVENT_LISTENER:
                 return Lists.<AbstractDomainElement>newArrayList(documentedDomain.getEventListeners());
             case CONCEPT:
@@ -172,6 +176,8 @@ public class KasperDocResource {
                 return Lists.<AbstractDomainElement>newArrayList(documentedDomain.getRelations());
             case REPOSITORY:
                 return Lists.<AbstractDomainElement>newArrayList(documentedDomain.getRepositories());
+            case SAGA:
+                return Lists.<AbstractDomainElement>newArrayList(documentedDomain.getSagas());
             case DOMAIN:
                 break;
         }

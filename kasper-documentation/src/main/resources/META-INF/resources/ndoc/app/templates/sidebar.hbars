@@ -27,13 +27,39 @@
         </li>
         {{/if}}
 
-        {{#if node.events}}
+        {{#if node.declaredEvents}}
         <li class="component-category">
-            <a href="#events">Events</a>
+            <a href="#declaredEvents">Declared Events</a>
             <ul class="nav subnav">
-                {{#each node.events}}
+                {{#each node.declaredEvents}}
                 <li class="component-item">
                     <a href="#events_{{this.label}}">{{this.label}}</a>
+                </li>
+                {{/each}}
+            </ul>
+        </li>
+        {{/if}}
+
+        {{#if node.referencedEvents}}
+        <li class="component-category">
+            <a href="#referencedEvents">Referenced Events</a>
+            <ul class="nav subnav">
+                {{#each node.referencedEvents}}
+                <li class="component-item">
+                    <a href="#events_{{this.label}}">{{this.label}}</a>
+                </li>
+                {{/each}}
+            </ul>
+        </li>
+        {{/if}}
+
+        {{#if node.sagas}}
+        <li class="component-category">
+            <a href="#sagas">Sagas</a>
+            <ul class="nav subnav">
+                {{#each node.sagas}}
+                <li class="component-item">
+                    <a href="#sagas_{{this.label}}">{{this.label}}</a>
                 </li>
                 {{/each}}
             </ul>

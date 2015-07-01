@@ -30,6 +30,7 @@ import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.exposition.http.CallTypes;
 import com.viadeo.kasper.exposition.http.HttpCommandExposerPlugin;
@@ -169,6 +170,7 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
                 , Lists.<QueryHandler>newArrayList()
                 , Lists.<Repository>newArrayList()
                 , Lists.<EventListener>newArrayList()
+                , Lists.<Saga>newArrayList()
                 , Lists.<QueryInterceptorFactory>newArrayList()
                 , Lists.<CommandInterceptorFactory>newArrayList()
                 , Lists.<EventInterceptorFactory>newArrayList()

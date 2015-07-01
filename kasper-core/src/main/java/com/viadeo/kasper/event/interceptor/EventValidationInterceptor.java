@@ -11,7 +11,6 @@ import com.viadeo.kasper.core.interceptor.BaseValidationInterceptor;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.EventResponse;
 
 import javax.validation.ValidatorFactory;
 

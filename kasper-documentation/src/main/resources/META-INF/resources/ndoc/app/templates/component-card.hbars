@@ -3,11 +3,13 @@
   <div class="section-body">
     <div class="panel-group">
       {{#each data}}
+
         {{#ifCond this.deprecated true}}
           <div class="panel panel-warning alert-warning">
         {{else}}
           <div class="panel panel-default">
-        {{/ifCond}}        
+        {{/ifCond}}
+
           <div class="panel-heading">
             <h4 class="panel-title" id="{{this.typePlural}}_{{this.label}}">
               <a data-toggle="collapse" href="#component-{{this.type}}-{{this.label}}-collapse" class="collapsed">
@@ -23,6 +25,46 @@
           </p>
           <div id="component-{{this.type}}-{{this.label}}-collapse" class="panel-collapse collapse">
             <div class="panel-body">
+
+              {{#if this.steps}}
+                <dl class="block-content">
+                    <dt>Steps</dt>
+                    <table class="table table-striped col-md-12">
+                      <thead>
+                        <th class="col-md-2">Name</th>
+                        <th class="col-md-3">Event</th>
+                        <th class="col-md-3">Actions</th>
+                      </thead>
+                      <tbody>
+                      {{#each this.steps}}
+                        <tr>
+                          <td><code>{{this.name}}<code></td>
+                          <td>
+                            {{#ifCond this.event.domain.label "Unknown"}}
+                              {{this.event.label}}
+                            {{else}}
+                              {{#ifCond ../../domain/name this.event.domain.name}}
+                                <a class="link in" href="#events_{{this.event.name}}">{{this.event.label}}</a>
+                              {{else}}
+                                <a class="link out" domain="{{this.event.domain.name}}" href="#events_{{this.event.name}}">{{this.event.label}}</a>
+                              {{/ifCond}}
+                            {{/ifCond}}
+                          </td>
+                          <td>
+                          <ul>
+                            {{#each this.actions}}
+                              <li>{{this}}</li>
+                            {{/each}}
+                          </ul>
+                          </td>
+                        </tr>
+                      {{/each}}
+                      </tbody>
+                    </table>
+                </dl>
+                <div class="clearfix"></div>
+              {{/if}}
+
               {{#if this.properties}}
                 <dl class="block-content">
                   <dt>Fields</dt>
@@ -45,6 +87,7 @@
                 </dl>
                 <div class="clearfix"></div>
               {{/if}}
+
               {{#if this.queryHandler}}
                 <dl class="block-content dl-horizontal">
                   <dt>Handler</dt>
@@ -53,6 +96,25 @@
                   </dd>
                 </dl>
               {{/if}}
+
+              {{#ifCond ../title "Referenced Events"}}
+                <dl class="block-content dl-horizontal">
+                  <dt>Domain</dt>
+                  <dd>
+                  {{#ifCond this.type "event"}}
+                    <p>
+                    {{#ifCond this.domain.label "Unknown"}}
+                        {{this.domain.label}}
+                    {{else}}
+                        <a href="#{{this.domain.label}}">{{this.domain.label}}</a>
+                    {{/ifCond}}
+                    </p>
+                  {{/ifCond}}
+                  </dd>
+                </dl>
+              {{/ifCond}}
+
+
               {{#if this.commandHandler}}
                 <dl class="block-content dl-horizontal">
                   <dt>Handler</dt>
@@ -61,14 +123,20 @@
                   </dd>
                 </dl>
               {{/if}}
+
               {{#if this.eventListeners}}
                 <dl class="block-content dl-horizontal">
                   <dt>Handlers</dt>
                   <dd>
-                    <p>{{flatten this.eventListeners "&nbsp;" "name"}}</p>
+                    <ul>
+                    {{#each this.eventListeners}}
+                    <li>{{this.name}} <i>(<a href="#{{this.domainName}}">{{this.domainName}}</a>)</i></li>
+                    {{/each}}
+                    </ul>
                   </dd>
                 </dl>
               {{/if}}
+
               {{#if this.action}}
                 <dl class="block-content dl-horizontal">
                   <dt>Action</dt>
@@ -77,6 +145,7 @@
                   </dd>
                 </dl>
               {{/if}}
+
               {{#if this.aliases}}
                 <dl class="block-content dl-horizontal">
                   <dt>Alias</dt>
@@ -85,6 +154,7 @@
                   </dd>
                 </dl>
               {{/if}}
+
               {{#if this.authorization}}
               <dl class="block-content">
                 <dt>Authorizations</dt>
@@ -121,6 +191,9 @@
               </dl>
               <div class="clearfix"></div>
               {{/if}}
+
+              {{#ifContains ../title 'Events'}}
+              {{else}}
               {{#if this.response}}
                 <dl class="block-content">
                   <dt>Response</dt>
@@ -142,6 +215,8 @@
                 </dl>
                 <div class="clearfix"></div>
               {{/if}}
+              {{/ifContains}}
+
             </div>
           </div>
         </div>

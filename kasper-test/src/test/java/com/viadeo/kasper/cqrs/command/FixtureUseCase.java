@@ -34,6 +34,7 @@ import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.EventResponse;
 import com.viadeo.kasper.event.domain.EntityCreatedEvent;
 import com.viadeo.kasper.event.domain.EntityUpdatedEvent;
+import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.impl.DefaultKasperId;
 import org.axonframework.eventhandling.annotation.EventHandler;
 import org.axonframework.eventstore.EventStore;
@@ -458,6 +459,7 @@ public class FixtureUseCase {
                         new TestLastNameChangedEventListener(),
                         new DoSyncUserEventListener()
                 )
+                , Lists.<Saga>newArrayList()
                 , Lists.<QueryInterceptorFactory>newArrayList()
                 , Lists.<CommandInterceptorFactory>newArrayList()
                 , Lists.<EventInterceptorFactory>newArrayList()

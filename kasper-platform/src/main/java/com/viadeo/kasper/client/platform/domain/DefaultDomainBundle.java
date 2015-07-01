@@ -17,6 +17,7 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.saga.Saga;
 
 import java.util.List;
 
@@ -28,6 +29,7 @@ public class DefaultDomainBundle implements DomainBundle {
     protected final List<QueryHandler> queryHandlers;
     protected final List<Repository> repositories;
     protected final List<EventListener> eventListeners;
+    protected final List<Saga> sagas;
     protected final List<QueryInterceptorFactory> queryInterceptorFactories;
     protected final List<CommandInterceptorFactory> commandInterceptorFactories;
     protected final List<EventInterceptorFactory> eventInterceptorFactories;
@@ -45,6 +47,7 @@ public class DefaultDomainBundle implements DomainBundle {
              Lists.<QueryHandler>newArrayList(),
              Lists.<Repository>newArrayList(),
              Lists.<EventListener>newArrayList(),
+             Lists.<Saga>newArrayList(),
              Lists.<QueryInterceptorFactory>newArrayList(),
              Lists.<CommandInterceptorFactory>newArrayList(),
              Lists.<EventInterceptorFactory>newArrayList(),
@@ -57,6 +60,7 @@ public class DefaultDomainBundle implements DomainBundle {
                                final List<QueryHandler> queryHandlers,
                                final List<Repository> repositories,
                                final List<EventListener> eventListeners,
+                               final List<Saga> sagas,
                                final List<QueryInterceptorFactory> queryInterceptorFactories,
                                final List<CommandInterceptorFactory> commandInterceptorFactories,
                                final List<EventInterceptorFactory> eventInterceptorFactories,
@@ -66,6 +70,7 @@ public class DefaultDomainBundle implements DomainBundle {
         this.queryHandlers = checkNotNull(queryHandlers);
         this.repositories = checkNotNull(repositories);
         this.eventListeners = checkNotNull(eventListeners);
+        this.sagas = checkNotNull(sagas);
         this.queryInterceptorFactories = checkNotNull(queryInterceptorFactories);
         this.commandInterceptorFactories = checkNotNull(commandInterceptorFactories);
         this.eventInterceptorFactories = checkNotNull(eventInterceptorFactories);
@@ -121,6 +126,11 @@ public class DefaultDomainBundle implements DomainBundle {
     @Override
     public List<EventInterceptorFactory> getEventInterceptorFactories() {
         return eventInterceptorFactories;
+    }
+
+    @Override
+    public List<Saga> getSagas() {
+        return sagas;
     }
 
 }

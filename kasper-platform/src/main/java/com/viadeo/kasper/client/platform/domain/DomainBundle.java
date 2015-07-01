@@ -16,6 +16,7 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.saga.Saga;
 
 import java.util.List;
 
@@ -80,6 +81,11 @@ public interface DomainBundle {
     List<CommandInterceptorFactory> getCommandInterceptorFactories();
 
     /**
+     * @return all sagas identified as components of this domain bundle
+     */
+    List<Saga> getSagas();
+
+    /**
      * @return all event interceptor factories of this domain bundle
      */
     List<EventInterceptorFactory> getEventInterceptorFactories();
@@ -94,6 +100,7 @@ public interface DomainBundle {
         private final List<CommandHandler> commandHandlers = Lists.newArrayList();
         private final List<QueryHandler> queryHandlers = Lists.newArrayList();
         private final List<EventListener> eventListeners = Lists.newArrayList();
+        private final List<Saga> sagas = Lists.newArrayList();
         private final List<Repository> repositories = Lists.newArrayList();
         private final List<QueryInterceptorFactory> queryInterceptorFactories = Lists.newArrayList();
         private final List<CommandInterceptorFactory> commandInterceptorFactories = Lists.newArrayList();
@@ -123,6 +130,12 @@ public interface DomainBundle {
         public Builder with(final EventListener eventListener, final EventListener... eventListeners){
             this.eventListeners.add(checkNotNull(eventListener));
             with(this.eventListeners, eventListeners);
+            return this;
+        }
+
+        public Builder with(final Saga saga, final Saga... sagas){
+            this.sagas.add(checkNotNull(saga));
+            with(this.sagas, sagas);
             return this;
         }
 
@@ -164,6 +177,7 @@ public interface DomainBundle {
                     queryHandlers,
                     repositories,
                     eventListeners,
+                    sagas,
                     queryInterceptorFactories,
                     commandInterceptorFactories,
                     eventInterceptorFactories,

@@ -10,6 +10,7 @@ import com.codahale.metrics.Timer;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.Sets;
 import com.viadeo.kasper.CoreReasonCode;
 import com.viadeo.kasper.KasperReason;
 import com.viadeo.kasper.context.Context;
@@ -23,6 +24,8 @@ import org.axonframework.eventhandling.EventBus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.base.Preconditions.checkState;
 import static com.viadeo.kasper.core.metrics.KasperMetrics.getMetricRegistry;
@@ -34,7 +37,8 @@ import static com.viadeo.kasper.core.metrics.KasperMetrics.name;
  *
  * @param <E> Event
  */
-public abstract class EventListener<E extends Event> implements org.axonframework.eventhandling.EventListener {
+public abstract class EventListener<E extends Event>
+    extends AxonEventListener<E> implements IEventListener<E> {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EventListener.class);
 
@@ -80,10 +84,19 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
 	}
 	
 	// ------------------------------------------------------------------------
-	
+
+    @Override
+    public Set<Class<?>> getEventClasses() {
+        return Sets.<Class<?>>newHashSet(this.eventClass);
+    }
+
+    // ------------------------------------------------------------------------
+
 	public Class<E> getEventClass() {
 		return this.eventClass;
 	}
+
+    // ------------------------------------------------------------------------
 
     public Context getContext() {
         if (CurrentContext.value().isPresent()) {
@@ -108,56 +121,15 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
     }
 
     // ------------------------------------------------------------------------
-	
-	/**
-	 * Wrapper for Axon event messages
-	 * 
-	 * @see org.axonframework.eventhandling.EventListener#handle(org.axonframework.domain.EventMessage)
-	 */
-    @Override
-	public final void handle(final org.axonframework.domain.EventMessage eventMessage) {
-        if ( ! getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
-            return;
-        }
-
-        final EventResponse response = handleWithResponse(eventMessage);
-
-        if (response.isAnError() || response.isAFailure()) {
-            final Optional<Exception> optionalException = response.getReason().getException();
-            final RuntimeException exception;
-            final String message = String.format(
-                    "Failed to handle event %s, <event=%s> <response=%s>",
-                    eventMessage.getPayloadType(), eventMessage.getPayload(), response
-            );
-
-            if (optionalException.isPresent()) {
-                exception = new RuntimeException(message, optionalException.get());
-            } else {
-                exception = new RuntimeException(message);
-            }
-
-            throw exception;
-        }
-    }
-
-    // ------------------------------------------------------------------------
 
     @SuppressWarnings({"unchecked", "rawtypes"}) // Safe
-    public final EventResponse handleWithResponse(final org.axonframework.domain.EventMessage eventMessage) {
-        Preconditions.checkNotNull(eventMessage);
-
-		if ( ! getEventClass().isAssignableFrom(eventMessage.getPayloadType())) {
-			return EventResponse.error(new KasperReason(
-                    CoreReasonCode.INVALID_INPUT,
-                    String.format("Unexpected event : '%s' is not a '%s'", eventMessage.getPayloadType(), getEventClass())
-            ));
-		}
+    @Override
+    public EventResponse handle(final EventMessage<E> message) {
+        Preconditions.checkNotNull(message);
 
         /* Start timer */
         final Timer.Context timer = getMetricRegistry().timer(timerHandleTimeName).time();
         final Timer.Context domainTimer = getMetricRegistry().timer(domainTimerHandleTimesName).time();
-
-        final EventMessage<E> message = new EventMessage(eventMessage);
 
         /* Ensure a context is set */
         CurrentContext.set(Objects.firstNonNull(message.getContext(), Contexts.empty()));
@@ -165,7 +137,7 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
         EventResponse response;
 
         try {
-            response = this.handle(message);
+            response = this.handle(message.getContext(), message.getEvent());
         } catch (Exception e) {
             response =  EventResponse.failure(new KasperReason(CoreReasonCode.INTERNAL_COMPONENT_ERROR, e));
         }
@@ -193,12 +165,7 @@ public abstract class EventListener<E extends Event> implements org.axonframewor
 
     // ------------------------------------------------------------------------
 
-    public EventResponse handle(final EventMessage<E> message) {
-        return handle(message.getContext(), message.getEvent());
-    }
-
-    // ------------------------------------------------------------------------
-
+    @Override
     public EventResponse handle(final Context context, final E event) {
         return EventResponse.success();
     }

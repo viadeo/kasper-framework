@@ -21,10 +21,13 @@ public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDoma
     private final Collection<LightDocumentedElement> queryResults;
     private final Collection<LightDocumentedElement> queryHandlers;
     private final Collection<LightDocumentedElement> events;
+    private final Collection<LightDocumentedElement> declaredEvents;
+    private final Collection<LightDocumentedElement> referencedEvents;
     private final Collection<LightDocumentedElement> eventListeners;
     private final Collection<LightDocumentedElement> concepts;
     private final Collection<LightDocumentedElement> relations;
     private final Collection<LightDocumentedElement> repositories;
+    private final Collection<LightDocumentedElement> sagas;
 
     private static final Function<AbstractElement, LightDocumentedElement> LIGHTER =
             new Function<AbstractElement, LightDocumentedElement>() {
@@ -44,10 +47,13 @@ public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDoma
         this.queryResults = Collections2.transform(documentedDomain.getQueryResults(), LIGHTER);
         this.queryHandlers = Collections2.transform(documentedDomain.getQueryHandlers(), LIGHTER);
         this.events = Collections2.transform(documentedDomain.getEvents(), LIGHTER);
+        this.declaredEvents = Collections2.transform(documentedDomain.getDeclaredEvents(), LIGHTER);
+        this.referencedEvents = Collections2.transform(documentedDomain.getReferencedEvents(), LIGHTER);
         this.eventListeners = Collections2.transform(documentedDomain.getEventListeners(), LIGHTER);
         this.concepts = Collections2.transform(documentedDomain.getConcepts(), LIGHTER);
         this.relations = Collections2.transform(documentedDomain.getRelations(), LIGHTER);
         this.repositories = Collections2.transform(documentedDomain.getRepositories(), LIGHTER);
+        this.sagas = Collections2.transform(documentedDomain.getSagas(), LIGHTER);
     }
 
     // ------------------------------------------------------------------------
@@ -84,12 +90,24 @@ public class LightDocumentedDomain extends LightDocumentedElement<DocumentedDoma
         return events;
     }
 
+    public Collection<LightDocumentedElement> getDeclaredEvents() {
+        return declaredEvents;
+    }
+
+    public Collection<LightDocumentedElement> getReferencedEvents() {
+        return referencedEvents;
+    }
+
     public Collection<LightDocumentedElement> getConcepts() {
         return concepts;
     }
 
     public Collection<LightDocumentedElement> getRelations() {
         return relations;
+    }
+
+    public Collection<LightDocumentedElement> getSagas() {
+        return sagas;
     }
 
     public String getPrefix() {

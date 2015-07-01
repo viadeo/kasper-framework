@@ -23,6 +23,7 @@ import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.exposition.http.HttpCommandExposerPlugin;
 import org.junit.Test;
 
@@ -52,6 +53,7 @@ public class HttpCommandExposerContextTest extends BaseHttpExposerTest {
                 , Lists.<QueryHandler>newArrayList()
                 , Lists.<Repository>newArrayList()
                 , Lists.<EventListener>newArrayList()
+                , Lists.<Saga>newArrayList()
                 , Lists.<QueryInterceptorFactory>newArrayList()
                 , Lists.<CommandInterceptorFactory>newArrayList()
                 , Lists.<EventInterceptorFactory>newArrayList()

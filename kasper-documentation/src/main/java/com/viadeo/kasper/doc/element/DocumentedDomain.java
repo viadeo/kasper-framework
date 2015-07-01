@@ -32,16 +32,23 @@ import static com.viadeo.kasper.doc.element.DocumentedRepository.*;
 
 public class DocumentedDomain extends AbstractElement {
 
+    public static final DocumentedDomain UNKNOWN_DOMAIN = new DocumentedDomain(Object.class) {{
+        setLabel("Unknown");
+    }};
+
     private final List<DocumentedQueryHandler> documentedQueryHandlers;
     private final List<DocumentedCommandHandler> documentedCommandHandlers;
     private final List<DocumentedEventListener> documentedEventListeners;
     private final List<DocumentedRepository> documentedRepositories;
+    private final List<DocumentedSaga> documentedSagas;
     private final List<DocumentedQuery> queries;
     private final Map<Class, DocumentedQueryResult> queryResults;
     private final List<DocumentedConcept> concepts;
     private final List<DocumentedConcept> avatarConcepts;
     private final List<DocumentedRelation> relations;
     private final List<DocumentedEvent> events;
+    private final List<DocumentedEvent> declaredEvents;
+    private final List<DocumentedEvent> referencedEvents;
     private final List<DocumentedCommand> commands;
 
     private String prefix;
@@ -50,8 +57,8 @@ public class DocumentedDomain extends AbstractElement {
 
     // ------------------------------------------------------------------------
 
-    public DocumentedDomain(DomainDescriptor domainDescriptor) {
-        super(DocumentedElementType.DOMAIN, domainDescriptor.getDomainClass());
+    private DocumentedDomain(Class domainClass) {
+        super(DocumentedElementType.DOMAIN, domainClass);
         this.parent = Optional.absent();
 
         documentedQueryHandlers = Lists.newArrayList();
@@ -62,10 +69,18 @@ public class DocumentedDomain extends AbstractElement {
         queryResults  = Maps.newHashMap();
         commands = Lists.newArrayList();
         events = Lists.newArrayList();
+        declaredEvents = Lists.newArrayList();
+        referencedEvents = Lists.newArrayList();
         relations = Lists.newArrayList();
         concepts = Lists.newArrayList();
         avatarConcepts = Lists.newArrayList();
+        documentedSagas = Lists.newArrayList();
+    }
 
+    public DocumentedDomain(DomainDescriptor domainDescriptor) {
+        this(domainDescriptor.getDomainClass());
+
+        // QUERY
         for (final QueryHandlerDescriptor descriptor : domainDescriptor.getQueryHandlerDescriptors()) {
             final DocumentedQueryHandler documentedQueryHandler = new DocumentedQueryHandler(this, descriptor);
             documentedQueryHandlers.add(documentedQueryHandler);
@@ -78,20 +93,25 @@ public class DocumentedDomain extends AbstractElement {
         // orphan query results; ie without use directly by an handler
         queryResults.putAll(findOrphanQueryResult(this, queryResults));
 
+        // COMMAND
         for (final CommandHandlerDescriptor descriptor : domainDescriptor.getCommandHandlerDescriptors()) {
             final DocumentedCommandHandler documentedCommandHandler = new DocumentedCommandHandler(this, descriptor);
             documentedCommandHandlers.add(documentedCommandHandler);
             commands.add(documentedCommandHandler.getCommand().getFullDocumentedElement());
         }
 
-        final Map<Class, DocumentedEvent> events = Maps.newHashMap();
+
+        final Map<Class, DocumentedEvent> declaredEvents = Maps.newHashMap();
+        final Map<Class, DocumentedEvent> referencedEvents = Maps.newHashMap();
         final Map<Class, DocumentedConcept> concepts = Maps.newHashMap();
 
+        // EVENT
         for (final Class<? extends Event> eventClass : domainDescriptor.getEventClasses()) {
             DocumentedEvent documentedEvent = new DocumentedEvent(this, null, eventClass);
-            events.put(eventClass, documentedEvent);
+            declaredEvents.put(eventClass, documentedEvent);
         }
 
+        // REPOSITORY
         for (final RepositoryDescriptor descriptor : domainDescriptor.getRepositoryDescriptors()) {
             final DocumentedRepository documentedRepository = new DocumentedRepository(this, descriptor);
             documentedRepositories.add(documentedRepository);
@@ -106,10 +126,14 @@ public class DocumentedDomain extends AbstractElement {
 
             for(LightDocumentedElement<DocumentedEvent> lightDocumentedEvent : aggregate.getSourceEvents()){
                 DocumentedEvent documentedEvent = lightDocumentedEvent.getFullDocumentedElement();
-                events.put(documentedEvent.getReferenceClass(), documentedEvent);
+
+                if ( ! declaredEvents.containsKey(documentedEvent.getReferenceClass())) {
+                    referencedEvents.put(documentedEvent.getReferenceClass(), documentedEvent);
+                }
             }
         }
 
+        // RELATION
         for (final DocumentedRelation documentedRelation:relations) {
             final Class sourceReferenceClass = documentedRelation.getSourceConcept().getReferenceClass();
             if ( ! concepts.containsKey(sourceReferenceClass)) {
@@ -128,15 +152,31 @@ public class DocumentedDomain extends AbstractElement {
 
         this.concepts.addAll(concepts.values());
 
+        // LISTENER
         for (final EventListenerDescriptor descriptor : domainDescriptor.getEventListenerDescriptors()) {
             final DocumentedEventListener documentedEventListener = new DocumentedEventListener(this, descriptor);
             documentedEventListeners.add(documentedEventListener);
 
             final DocumentedEvent documentedEvent = documentedEventListener.getEvent().getFullDocumentedElement();
-            events.put(documentedEvent.getReferenceClass(), documentedEvent);
+
+            if ( ! declaredEvents.containsKey(documentedEvent.getReferenceClass())) {
+                referencedEvents.put(documentedEvent.getReferenceClass(), documentedEvent);
+            }
         }
 
+        // SAGA
+        for (final SagaDescriptor descriptor : domainDescriptor.getSagaDescriptors()) {
+            documentedSagas.add(new DocumentedSaga(this, descriptor));
+             // TODO
+        }
+
+        final Map<Class, DocumentedEvent> events = Maps.newHashMap();
+        events.putAll(referencedEvents);
+        events.putAll(declaredEvents);
+
         this.events.addAll(events.values());
+        this.declaredEvents.addAll(declaredEvents.values());
+        this.referencedEvents.addAll(referencedEvents.values());
 
         final Comparator<AbstractElement> abstractElementComparator = new Comparator<AbstractElement>() {
             @Override
@@ -148,6 +188,9 @@ public class DocumentedDomain extends AbstractElement {
         Collections.sort(commands, abstractElementComparator);
         Collections.sort(queries, abstractElementComparator);
         Collections.sort(this.events, abstractElementComparator);
+        Collections.sort(this.declaredEvents, abstractElementComparator);
+        Collections.sort(this.referencedEvents, abstractElementComparator);
+        Collections.sort(documentedSagas, abstractElementComparator);
     }
 
     private Map<Class, DocumentedQueryHandler.DocumentedQueryResult> findOrphanQueryResult(
@@ -261,6 +304,7 @@ public class DocumentedDomain extends AbstractElement {
         documentedElements.addAll(documentedEventListeners);
         documentedElements.addAll(documentedRepositories);
         documentedElements.addAll(avatarConcepts);
+        documentedElements.addAll(documentedSagas);
 
         for (final AbstractElement documentedElement : documentedElements) {
             documentedElement.accept(visitor);
@@ -311,12 +355,24 @@ public class DocumentedDomain extends AbstractElement {
         return events;
     }
 
+    public List<DocumentedEvent> getDeclaredEvents() {
+        return declaredEvents;
+    }
+
+    public List<DocumentedEvent> getReferencedEvents() {
+        return referencedEvents;
+    }
+
     public Collection<DocumentedConcept> getConcepts() {
         return concepts;
     }
 
     public Collection<DocumentedRelation> getRelations() {
         return relations;
+    }
+
+    public List<DocumentedSaga> getSagas() {
+        return documentedSagas;
     }
 
     public String getPrefix() {

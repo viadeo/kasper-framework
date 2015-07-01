@@ -8,6 +8,7 @@ package com.viadeo.kasper.doc.initializer;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.resolvers.*;
 import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
@@ -22,8 +23,10 @@ import com.viadeo.kasper.er.Concept;
 import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.saga.Saga;
 
 import java.util.List;
+import java.util.Map;
 
 import static com.viadeo.kasper.doc.element.DocumentedCommandHandler.DocumentedCommand;
 import static com.viadeo.kasper.doc.element.DocumentedEventListener.DocumentedEvent;
@@ -35,11 +38,19 @@ import static com.viadeo.kasper.doc.element.DocumentedRepository.DocumentedRelat
 public class DefaultDocumentedElementInitializer implements DocumentedElementVisitor {
 
     private final DocumentedPlatform documentedPlatform;
+    private final Map<Class, DocumentedDomain> documentedDomainByDeclaredEvent;
 
     // ------------------------------------------------------------------------
 
     public DefaultDocumentedElementInitializer(final DocumentedPlatform documentedPlatform) {
         this.documentedPlatform = documentedPlatform;
+        this.documentedDomainByDeclaredEvent = Maps.newHashMap();
+
+        for (DocumentedDomain domain : documentedPlatform.getDomains()) {
+            for (DocumentedEvent event : domain.getDeclaredEvents()) {
+                documentedDomainByDeclaredEvent.put(event.getReferenceClass(), domain);
+            }
+        }
     }
 
     // ------------------------------------------------------------------------
@@ -49,16 +60,20 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
         final DomainResolver resolver = new DomainResolver();
         final Class<? extends Domain> referenceClass = domain.getReferenceClass();
 
-        domain.setPrefix(resolver.getPrefix(referenceClass));
-        domain.setLabel(resolver.getDomainLabel(referenceClass));
-        domain.setDescription(resolver.getDescription(referenceClass));
-        domain.setOwner(resolver.getDomainOwner(referenceClass));
+        if (domain == DocumentedDomain.UNKNOWN_DOMAIN) {
+            domain.setLabel("unknown");
+        } else {
+            domain.setPrefix(resolver.getPrefix(referenceClass));
+            domain.setLabel(resolver.getDomainLabel(referenceClass));
+            domain.setDescription(resolver.getDescription(referenceClass));
+            domain.setOwner(resolver.getDomainOwner(referenceClass));
 
-        final Class parentClass = domain.getReferenceClass().getSuperclass();
-        final Optional<DocumentedDomain> parentDomain = documentedPlatform.getDomain(parentClass);
+            final Class parentClass = domain.getReferenceClass().getSuperclass();
+            final Optional<DocumentedDomain> parentDomain = documentedPlatform.getDomain(parentClass);
 
-        if (parentDomain.isPresent()) {
-            domain.setParent(parentDomain);
+            if (parentDomain.isPresent()) {
+                domain.setParent(parentDomain);
+            }
         }
     }
 
@@ -135,6 +150,11 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
         event.setLabel(resolver.getLabel(referenceClass));
         event.setDescription(resolver.getDescription(referenceClass));
         event.setAction(resolver.getAction(referenceClass));
+
+        DocumentedDomain referencedDomain = documentedDomainByDeclaredEvent.get(referenceClass);
+        if (referencedDomain != null) {
+            event.setDomain(referencedDomain);
+        }
     }
 
     @Override
@@ -153,7 +173,6 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
 
         repository.setLabel(resolver.getLabel(referenceClass));
         repository.setDescription(resolver.getDescription(referenceClass));
-
     }
 
     @Override
@@ -207,4 +226,12 @@ public class DefaultDocumentedElementInitializer implements DocumentedElementVis
         relation.setVerb(resolver.getVerb(referenceClass));
     }
 
+    @Override
+    public void visit(final DocumentedSaga saga) {
+        final SagaResolver resolver = new SagaResolver();
+        final Class<? extends Saga> referenceClass = saga.getReferenceClass();
+
+        saga.setLabel(resolver.getLabel(referenceClass));
+        saga.setDescription(resolver.getDescription(referenceClass));
+    }
 }

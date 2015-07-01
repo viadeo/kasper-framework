@@ -37,6 +37,10 @@ import com.viadeo.kasper.cqrs.query.impl.KasperQueryGateway;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.CommandEventListener;
 import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.event.saga.Saga;
+import com.viadeo.kasper.event.saga.SagaExecutor;
+import com.viadeo.kasper.event.saga.SagaManager;
+import com.viadeo.kasper.event.saga.SagaWrapper;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -92,8 +96,8 @@ public interface Platform {
         private final List<CommandInterceptorFactory> commandInterceptorFactories;
         private final List<EventInterceptorFactory> eventInterceptorFactories;
         private final Map<ExtraComponentKey, Object> extraComponents;
-        private final DomainDescriptorFactory domainDescriptorFactory;
 
+        private DomainDescriptorFactory domainDescriptorFactory;
         private DomainHelper domainHelper;
         private KasperEventBus eventBus;
         private KasperCommandGateway commandGateway;
@@ -102,6 +106,7 @@ public interface Platform {
         private RepositoryManager repositoryManager;
         private MetricRegistry metricRegistry;
         private Meta meta;
+        private SagaManager sagaManager;
 
         // --------------------------------------------------------------------
 
@@ -134,10 +139,12 @@ public interface Platform {
             this.queryGateway = checkNotNull(platformConfiguration.queryGateway());
             this.configuration = checkNotNull(platformConfiguration.configuration());
             this.metricRegistry = checkNotNull(platformConfiguration.metricRegistry());
+            this.sagaManager = checkNotNull(platformConfiguration.sagaManager());
             this.extraComponents.putAll(checkNotNull(platformConfiguration.extraComponents()));
             this.queryInterceptorFactories.addAll(checkNotNull(platformConfiguration.queryInterceptorFactories()));
             this.commandInterceptorFactories.addAll(checkNotNull(platformConfiguration.commandInterceptorFactories()));
             this.eventInterceptorFactories.addAll(checkNotNull(platformConfiguration.eventInterceptorFactories()));
+            this.domainDescriptorFactory = checkNotNull(platformConfiguration.domainDescriptorFactory());
         }
 
         // --------------------------------------------------------------------
@@ -215,6 +222,11 @@ public interface Platform {
             return this;
         }
 
+        public Builder withSagaManager(final SagaManager sagaManager) {
+            this.sagaManager = checkNotNull(sagaManager);
+            return this;
+        }
+
         @SafeVarargs
         private final <COMP> void with(final Collection<COMP> collection, final COMP... components) {
             checkNotNull(collection);
@@ -231,13 +243,13 @@ public interface Platform {
         // --------------------------------------------------------------------
 
         public Platform build() {
-
             checkState((null != eventBus), "the event bus cannot be null");
             checkState((null != commandGateway), "the command gateway cannot be null");
             checkState((null != queryGateway), "the query gateway cannot be null");
             checkState((null != configuration), "the configuration cannot be null");
             checkState((null != repositoryManager), "the repository manager cannot be null");
             checkState((null != metricRegistry), "the metric registry cannot be null");
+            checkState((null != sagaManager), "the saga manager cannot be null");
 
             this.meta = Objects.firstNonNull(meta, new Meta("unknown", DateTime.now(), DateTime.now()));
 
@@ -334,6 +346,11 @@ public interface Platform {
                 eventBus.subscribe(eventListener);
             }
 
+            for(final Saga saga : bundle.getSagas()){
+                final SagaExecutor executor = sagaManager.register(saga);
+                eventBus.subscribe(new SagaWrapper(executor));
+            }
+
             final DomainDescriptor domainDescriptor = domainDescriptorFactory.createFrom(bundle);
             domainHelper.add(DomainDescriptorFactory.mapToDomainClassByComponentClass(domainDescriptor));
 
@@ -385,6 +402,9 @@ public interface Platform {
             final EventResolver eventResolver = new EventResolver();
             eventResolver.setDomainResolver(domainResolver);
 
+            final SagaResolver sagaResolver = new SagaResolver();
+            sagaResolver.setDomainResolver(domainResolver);
+
             final ResolverFactory resolverFactory = new ResolverFactory();
             resolverFactory.setCommandHandlerResolver(commandHandlerResolver);
             resolverFactory.setEventListenerResolver(eventListenerResolver);
@@ -394,6 +414,7 @@ public interface Platform {
             resolverFactory.setCommandResolver(commandResolver);
             resolverFactory.setQueryResolver(queryResolver);
             resolverFactory.setQueryResultResolver(queryResultResolver);
+            resolverFactory.setSagaResolver(sagaResolver);
 
             KasperMetrics.setResolverFactory(resolverFactory);
             KasperMetrics.setMetricRegistry(metricRegistry);

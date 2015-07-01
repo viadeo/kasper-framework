@@ -11,8 +11,6 @@ import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
 import com.viadeo.kasper.doc.nodes.DocumentedBean;
 
-import java.util.List;
-
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public class DocumentedCommandHandler extends AbstractDomainElement {
