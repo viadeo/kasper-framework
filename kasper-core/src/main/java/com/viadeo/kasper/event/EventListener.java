@@ -53,8 +53,10 @@ public abstract class EventListener<E extends Event>
 	private final Class<E> eventClass;
     private final String timerHandleTimeName;
     private final String meterErrorsName;
+    private final String meterHandlesName;
     private final String domainMeterErrorsName;
     private final String domainTimerHandleTimesName;
+    private final String domainMeterHandlesName;
 
     private EventBus eventBus;
 
@@ -78,9 +80,11 @@ public abstract class EventListener<E extends Event>
 
         this.timerHandleTimeName = name(this.getClass(), "handle-time");
         this.meterErrorsName = name(this.getClass(), "errors");
+        this.meterHandlesName = name(this.getClass(), "handles");
 
         this.domainTimerHandleTimesName = name(MetricNameStyle.DOMAIN_TYPE, this.getClass(), "handle-time");
         this.domainMeterErrorsName = name(MetricNameStyle.DOMAIN_TYPE, this.getClass(), "errors");
+        this.domainMeterHandlesName = name(MetricNameStyle.DOMAIN_TYPE, this.getClass(), "handles");
 	}
 	
 	// ------------------------------------------------------------------------
@@ -159,6 +163,8 @@ public abstract class EventListener<E extends Event>
         domainTimer.close();
         timer.stop();
         getMetricRegistry().meter(GLOBAL_METER_HANDLES_NAME).mark();
+        getMetricRegistry().meter(meterHandlesName).mark();
+        getMetricRegistry().meter(domainMeterHandlesName).mark();
 
         return response;
 	}
