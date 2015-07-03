@@ -16,7 +16,8 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 public class SagaMapperITest {
@@ -44,16 +45,16 @@ public class SagaMapperITest {
         saga.setName("Chuck");
 
         // When
-        Map<String,Object> properties = sagaMapper.from(identifier, saga);
+        Map<String,String> properties = sagaMapper.from(identifier, saga);
 
         // Then
         assertNotNull(properties);
-        assertEquals("->"+properties, 5, properties.size());
-        assertEquals(identifier, properties.get(SagaMapper.X_KASPER_SAGA_IDENTIFIER));
-        assertEquals(saga.getClass(), properties.get(SagaMapper.X_KASPER_SAGA_CLASS));
-        assertEquals(666, properties.get("count"));
-        assertEquals("Chuck", properties.get("name"));
-        assertEquals(0, properties.get("invokedMethodCount"));
+        assertEquals("->" + properties, 5, properties.size());
+        assertEquals("\"" + identifier + "\"", properties.get(SagaMapper.X_KASPER_SAGA_IDENTIFIER));
+        assertEquals(saga.getClass().getName(), properties.get(SagaMapper.X_KASPER_SAGA_CLASS));
+        assertEquals("666", properties.get("count"));
+        assertEquals("\"Chuck\"", properties.get("name"));
+        assertEquals("0", properties.get("invokedMethodCount"));
 
     }
 
@@ -61,25 +62,21 @@ public class SagaMapperITest {
     public void to() throws Exception {
         // Given
         UUID identifier = UUID.randomUUID();
+        Class<TestFixture.TestSagaB> sagaClass = TestFixture.TestSagaB.class;
 
-        Map<String,Object> properties = Maps.newHashMap();
-        properties.put(SagaMapper.X_KASPER_SAGA_IDENTIFIER, identifier);
-        properties.put(SagaMapper.X_KASPER_SAGA_CLASS, TestFixture.TestSagaB.class);
-        properties.put("count", 666);
-        properties.put("name", "Chuck");
+        Map<String,String> properties = Maps.newHashMap();
+        properties.put(SagaMapper.X_KASPER_SAGA_CLASS, sagaClass.getName());
+        properties.put("count", "666");
+        properties.put("name", "\"Chuck\"");
 
         // When
-        Saga saga = sagaMapper.to(properties);
+        TestFixture.TestSagaB saga = sagaMapper.to(sagaClass, identifier, properties);
 
         // Then
         assertNotNull(saga);
-        assertTrue(saga instanceof TestFixture.TestSagaB);
-
-        TestFixture.TestSagaB testSagaB = (TestFixture.TestSagaB) saga;
-
-        assertEquals("Chuck", testSagaB.getName());
-        assertEquals(666, testSagaB.getCount());
-        assertNotNull(testSagaB.getCommandGateway());
+        assertEquals("Chuck", saga.getName());
+        assertEquals(666, saga.getCount());
+        assertNotNull(saga.getCommandGateway());
 
     }
 }

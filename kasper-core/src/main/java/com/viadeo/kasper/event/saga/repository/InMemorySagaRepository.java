@@ -17,7 +17,7 @@ import java.util.Map;
  */
 public class InMemorySagaRepository extends BaseSagaRepository {
 
-    private final Map<Object, Map<String,Object>> sagas;
+    private final Map<Object, Map<String,String>> sagas;
 
     // ------------------------------------------------------------------------
 
@@ -29,12 +29,12 @@ public class InMemorySagaRepository extends BaseSagaRepository {
     // ------------------------------------------------------------------------
 
     @Override
-    public Map<String, Object> doLoad(final Object identifier) {
+    public Map<String, String> doLoad(final Object identifier) {
         return sagas.get(identifier);
     }
 
     @Override
-    public void doSave(final Object identifier, final Map<String, Object> sagaProperties) {
+    public void doSave(final Object identifier, final Map<String, String> sagaProperties) {
         sagas.put(identifier, sagaProperties);
     }
 

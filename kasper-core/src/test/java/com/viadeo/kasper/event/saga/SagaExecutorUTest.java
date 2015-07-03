@@ -12,6 +12,7 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
+import com.viadeo.kasper.event.saga.exception.SagaPersistenceException;
 import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.step.Step;
 import com.viadeo.kasper.event.saga.step.Steps;
@@ -52,14 +53,14 @@ public class SagaExecutorUTest {
     public void execute_withUnknownEvent_isOK() {
         // Then
         expectedException.expect(SagaExecutionException.class);
-        expectedException.expectMessage("No step associate in 'TestSagaA' to the specified event");
+        expectedException.expectMessage("No step defined in the saga 'TestSagaA' to the specified event");
 
         // When
         executor.execute(Contexts.empty(), new Event() { });
     }
 
     @Test
-    public void execute_withAnEventAssociatedToAStartStep_createNewSaga() {
+    public void execute_withAnEventAssociatedToAStartStep_createNewSaga() throws SagaPersistenceException {
         // Given
         TestEvent event = new TestEvent("2015");
         TestSagaA saga = new TestSagaA();
@@ -76,7 +77,7 @@ public class SagaExecutorUTest {
     }
 
     @Test
-    public void execute_withAnEventAssociatedToAStepExceptAStart_loadSaga() {
+    public void execute_withAnEventAssociatedToAStepExceptAStart_loadSaga() throws SagaPersistenceException {
         // Given
         TestEvent2 event = new TestEvent2("2015");
         TestSagaA saga = new TestSagaA();

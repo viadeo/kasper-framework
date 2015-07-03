@@ -12,6 +12,7 @@ import com.jayway.awaitility.Awaitility;
 import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
+import com.viadeo.kasper.event.saga.exception.SagaPersistenceException;
 import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.spring.SagaConfiguration;
 import com.viadeo.kasper.event.saga.step.Scheduler;
@@ -75,7 +76,7 @@ public class SagaExecutorITest {
 
         // Then
         expectedException.expect(SagaExecutionException.class);
-        expectedException.expectMessage("No available saga instance for the specified identifier");
+        expectedException.expectMessage("Error in loading saga : no available saga instance");
 
         // When
         sagaExecutor.execute(Contexts.empty(), new EndEvent(UUID.randomUUID()));
@@ -88,7 +89,7 @@ public class SagaExecutorITest {
 
         // Then
         expectedException.expect(SagaExecutionException.class);
-        expectedException.expectMessage("No available saga instance for the specified identifier");
+        expectedException.expectMessage("Error in loading saga : no available saga instance");
 
         // When
         sagaExecutor.execute(Contexts.empty(), new StepEvent(UUID.randomUUID()));
@@ -103,14 +104,14 @@ public class SagaExecutorITest {
 
         // Then
         expectedException.expect(SagaExecutionException.class);
-        expectedException.expectMessage("Only one instance can be alive for the specified identifier");
+        expectedException.expectMessage("Error in creating a saga : only one instance can be alive for a given identifier");
 
         // When
         sagaExecutor.execute(Contexts.empty(), new StartEvent(identifier));
     }
 
     @Test
-    public void execute_start_step_on_no_available_saga_instance_should_create_it() {
+    public void execute_start_step_on_no_available_saga_instance_should_create_it() throws SagaPersistenceException {
         // Given
         SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));
         UUID identifier = UUID.randomUUID();
@@ -123,7 +124,7 @@ public class SagaExecutorITest {
     }
 
     @Test
-    public void execute_step_on_available_saga_instance_should_update_it() {
+    public void execute_step_on_available_saga_instance_should_update_it() throws SagaPersistenceException {
         // Given
         SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));
         UUID identifier = UUID.randomUUID();
@@ -140,7 +141,7 @@ public class SagaExecutorITest {
     }
 
     @Test
-    public void execute_end_step_on_available_saga_instance_should_terminate_it() {
+    public void execute_end_step_on_available_saga_instance_should_terminate_it() throws SagaPersistenceException {
         // Given
         SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));
         UUID identifier = UUID.randomUUID();
@@ -163,7 +164,7 @@ public class SagaExecutorITest {
 
         // Then
         expectedException.expect(SagaExecutionException.class);
-        expectedException.expectMessage("No available saga instance for the specified identifier");
+        expectedException.expectMessage("Error in loading saga : no available saga instance");
 
         // When
         sagaExecutor.execute(Contexts.empty(), new StepEvent(identifier));
@@ -179,14 +180,14 @@ public class SagaExecutorITest {
 
         // Then
         expectedException.expect(SagaExecutionException.class);
-        expectedException.expectMessage("No available saga instance for the specified identifier");
+        expectedException.expectMessage("Error in loading saga : no available saga instance");
 
         // When
         sagaExecutor.execute(Contexts.empty(), new EndEvent(identifier));
     }
 
     @Test
-    public void execute_multiple_end_step_on_available_saga_instance_should_terminate_them() {
+    public void execute_multiple_end_step_on_available_saga_instance_should_terminate_them() throws SagaPersistenceException {
         // Given
         SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));
         UUID identifierSaga1 = UUID.randomUUID();
@@ -268,7 +269,7 @@ public class SagaExecutorITest {
     }
 
     @Test
-    public void execute_end_step_on_saga_instance_for_which_we_have_some_scheduled_invocation() throws InterruptedException {
+    public void execute_end_step_on_saga_instance_for_which_we_have_some_scheduled_invocation() throws InterruptedException, SagaPersistenceException {
         // Given
         final UUID identifierSaga = UUID.randomUUID();
         SagaExecutor sagaExecutor = sagaManager.register(new TestSagaB(commandGateway));

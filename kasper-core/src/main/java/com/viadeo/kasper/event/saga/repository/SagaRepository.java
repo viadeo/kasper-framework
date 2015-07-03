@@ -8,16 +8,17 @@ package com.viadeo.kasper.event.saga.repository;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.event.saga.Saga;
+import com.viadeo.kasper.event.saga.exception.SagaPersistenceException;
 
 /**
  * Interface to implement in order to store sagas instances.
  */
 public interface SagaRepository {
 
-    Optional<Saga> load(Object identifier);
+    Optional<Saga> load(Object identifier) throws SagaPersistenceException;
 
-    void save(Object identifier, Saga saga);
+    void save(Object identifier, Saga saga) throws SagaPersistenceException;
 
-    void delete(Object identifier);
+    void delete(Object identifier) throws SagaPersistenceException;
 
 }
