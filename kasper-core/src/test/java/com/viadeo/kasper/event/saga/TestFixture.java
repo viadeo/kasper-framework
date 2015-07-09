@@ -15,7 +15,6 @@ import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventMessage;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
-import com.viadeo.kasper.event.saga.factory.SagaFactory;
 
 import java.lang.reflect.Method;
 import java.util.UUID;
@@ -80,11 +79,6 @@ public class TestFixture {
         @XKasperSaga.Schedule(delay = 1L, unit = TimeUnit.SECONDS, methodName = "test")
         @XKasperSaga.CancelSchedule(methodName = "test")
         public void scheduledAndCancelStep(TestEvent6 event) {}
-
-        @Override
-        public Optional<SagaFactory> getFactory() {
-            return Optional.absent();
-        }
 
         @Override
         public Optional<SagaIdReconciler> getIdReconciler() {
@@ -192,11 +186,6 @@ public class TestFixture {
         @XKasperSaga.End(getter = "getId")
         public void end(EndEvent event){
             System.err.println("Saga is ended !");
-        }
-
-        @Override
-        public Optional<SagaFactory> getFactory() {
-            return Optional.absent();
         }
 
         @Override

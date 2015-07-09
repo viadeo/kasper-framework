@@ -12,7 +12,6 @@ import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
 import com.viadeo.kasper.event.saga.exception.SagaInstantiationException;
 import com.viadeo.kasper.event.saga.factory.DefaultSagaFactory;
-import com.viadeo.kasper.event.saga.factory.SagaFactory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -83,11 +82,6 @@ public class DefaultSagaFactoryUTest {
     class TestDomain implements Domain {}
 
     static abstract class AbstractSaga implements Saga {
-        @Override
-        public Optional<SagaFactory> getFactory() {
-            return Optional.absent();
-        }
-
         @Override
         public Optional<SagaIdReconciler> getIdReconciler() {
             return Optional.absent();

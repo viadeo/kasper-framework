@@ -53,7 +53,7 @@ public class SagaManager {
             String.format("The specified saga is already registered : %s", sagaClass.getName())
         );
 
-        final SagaFactory factory = checkNotNull(saga.getFactory().or(sagaFactoryProvider.getOrCreate(saga)));
+        final SagaFactory factory = checkNotNull(sagaFactoryProvider.getOrCreate(saga));
         final SagaIdReconciler reconciler = saga.getIdReconciler().or(SagaIdReconciler.NONE);
         final Set<Step> steps = operationProcessor.process(sagaClass, reconciler);
         final SagaExecutor executor = new SagaExecutor(sagaClass, steps, factory, repository);

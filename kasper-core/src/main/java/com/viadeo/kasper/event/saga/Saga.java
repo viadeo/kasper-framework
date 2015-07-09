@@ -15,8 +15,6 @@ import com.viadeo.kasper.event.saga.factory.SagaFactory;
  */
 public interface Saga {
 
-    Optional<SagaFactory> getFactory();
-
     Optional<SagaIdReconciler> getIdReconciler();
 
 }
