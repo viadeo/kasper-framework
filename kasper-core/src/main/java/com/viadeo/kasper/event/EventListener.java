@@ -199,4 +199,8 @@ public abstract class EventListener<E extends Event>
         this.eventBus = checkNotNull(eventBus);
     }
 
+    @Override
+    public String toString() {
+        return getName();
+    }
 }
