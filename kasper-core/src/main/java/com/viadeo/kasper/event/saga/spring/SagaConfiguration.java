@@ -7,9 +7,9 @@
 package com.viadeo.kasper.event.saga.spring;
 
 import com.codahale.metrics.MetricRegistry;
-import com.viadeo.kasper.event.saga.DefaultSagaFactory;
-import com.viadeo.kasper.event.saga.SagaFactory;
 import com.viadeo.kasper.event.saga.SagaManager;
+import com.viadeo.kasper.event.saga.factory.DefaultSagaFactoryProvider;
+import com.viadeo.kasper.event.saga.factory.SagaFactoryProvider;
 import com.viadeo.kasper.event.saga.repository.InMemorySagaRepository;
 import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.step.*;
@@ -81,18 +81,18 @@ public class SagaConfiguration {
     }
 
     @Bean
-    public SagaFactory sagaFactory(final ApplicationContext applicationContext) {
-        return new DefaultSagaFactory(applicationContext);
+    public SagaFactoryProvider sagaFactoryProvider(final ApplicationContext applicationContext) {
+        return new DefaultSagaFactoryProvider(applicationContext);
     }
 
     @Bean
-    public SagaRepository sagaRepository(final SagaFactory sagaFactory) {
-        return new InMemorySagaRepository(sagaFactory);
+    public SagaRepository sagaRepository(final SagaFactoryProvider sagaFactoryProvider) {
+        return new InMemorySagaRepository(sagaFactoryProvider);
     }
 
     @Bean
-    public SagaManager sagaManager(final SagaFactory sagaFactory, final SagaRepository repository, final StepProcessor operationProcessor) {
-        return new SagaManager(sagaFactory, repository, operationProcessor);
+    public SagaManager sagaManager(final SagaFactoryProvider sagaFactoryProvider, final SagaRepository repository, final StepProcessor operationProcessor) {
+        return new SagaManager(sagaFactoryProvider, repository, operationProcessor);
     }
 
 }

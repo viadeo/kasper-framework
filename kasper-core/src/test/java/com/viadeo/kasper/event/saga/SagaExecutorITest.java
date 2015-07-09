@@ -13,10 +13,12 @@ import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
 import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.event.saga.exception.SagaPersistenceException;
+import com.viadeo.kasper.event.saga.factory.DefaultSagaFactoryProvider;
 import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.spring.SagaConfiguration;
 import com.viadeo.kasper.event.saga.step.Scheduler;
 import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
@@ -39,9 +41,9 @@ import static org.mockito.Mockito.mock;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(
         classes =  {
-                SagaConfiguration.class,
                 SagaExecutorITest.TestConfiguration.class,
-                MetricRegistry.class
+                MetricRegistry.class,
+                SagaConfiguration.class
         }
 )
 public class SagaExecutorITest {
@@ -62,6 +64,11 @@ public class SagaExecutorITest {
     public KasperCommandGateway commandGateway;
 
     public UUID identifier = UUID.randomUUID();
+
+    @Before
+    public void setUp() throws Exception {
+        DefaultSagaFactoryProvider.clearCache();
+    }
 
     @After
     public void tearDown() throws Exception {
@@ -228,7 +235,7 @@ public class SagaExecutorITest {
 
         // When
         sagaExecutor.execute(Contexts.empty(), new StepEvent1(identifierSaga));
-        
+
         //Then
         Awaitility.await().atMost(5, TimeUnit.SECONDS).pollInterval(100, TimeUnit.MILLISECONDS).until(new Callable<Boolean>() {
             @Override

@@ -15,6 +15,7 @@ import com.viadeo.kasper.ddd.annotation.XKasperDomain;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventMessage;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
+import com.viadeo.kasper.event.saga.factory.SagaFactory;
 
 import java.lang.reflect.Method;
 import java.util.UUID;

@@ -9,7 +9,7 @@ package com.viadeo.kasper.test.root.sagas;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
 import com.viadeo.kasper.event.saga.Saga;
-import com.viadeo.kasper.event.saga.SagaFactory;
+import com.viadeo.kasper.event.saga.factory.SagaFactory;
 import com.viadeo.kasper.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.test.root.Facebook;
 import com.viadeo.kasper.test.root.events.MemberCreatedEvent;

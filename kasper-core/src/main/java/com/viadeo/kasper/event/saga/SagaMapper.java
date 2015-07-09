@@ -8,7 +8,11 @@ package com.viadeo.kasper.event.saga;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.event.saga.exception.SagaInstantiationException;
+import com.viadeo.kasper.event.saga.factory.SagaFactory;
+import com.viadeo.kasper.event.saga.factory.SagaFactoryProvider;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,17 +36,17 @@ public class SagaMapper {
     public static final String X_KASPER_SAGA_IDENTIFIER = "X-KASPER-SAGA-IDENTIFIER";
 
     private final ObjectMapper mapper;
-    private final SagaFactory sagaFactory;
+    private final SagaFactoryProvider sagaFactoryProvider;
 
     // ------------------------------------------------------------------------
 
-    public SagaMapper(final SagaFactory sagaFactory) {
-        this(sagaFactory, ObjectMapperProvider.INSTANCE.mapper());
+    public SagaMapper(final SagaFactoryProvider sagaFactoryProvider) {
+        this(sagaFactoryProvider, ObjectMapperProvider.INSTANCE.mapper());
     }
 
-    public SagaMapper(final SagaFactory sagaFactory, final ObjectMapper mapper) {
+    public SagaMapper(final SagaFactoryProvider sagaFactoryProvider, final ObjectMapper mapper) {
         this.mapper = checkNotNull(mapper);
-        this.sagaFactory = checkNotNull(sagaFactory);
+        this.sagaFactoryProvider = checkNotNull(sagaFactoryProvider);
     }
 
     // ------------------------------------------------------------------------
@@ -52,7 +56,13 @@ public class SagaMapper {
         properties.remove(X_KASPER_SAGA_CLASS);
         properties.remove(X_KASPER_SAGA_IDENTIFIER);
 
-        final SAGA saga = sagaFactory.create(identifier, sagaClass);
+        final Optional<SagaFactory> optionalSagaFactory = sagaFactoryProvider.get(sagaClass);
+
+        if ( ! optionalSagaFactory.isPresent()) {
+            throw new SagaInstantiationException(String.format("No related saga factory : %s", sagaClass.getName()));
+        }
+
+        final SAGA saga = optionalSagaFactory.get().create(identifier, sagaClass);
 
         for (final Entry<String, String> entry : properties.entrySet()) {
             try {

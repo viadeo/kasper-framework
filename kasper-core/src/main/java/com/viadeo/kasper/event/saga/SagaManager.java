@@ -9,6 +9,8 @@ package com.viadeo.kasper.event.saga;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.event.saga.factory.SagaFactory;
+import com.viadeo.kasper.event.saga.factory.SagaFactoryProvider;
 import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.step.Step;
 import com.viadeo.kasper.event.saga.step.StepProcessor;
@@ -21,7 +23,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 public class SagaManager {
 
-    private final SagaFactory sagaFactory;
+    private final SagaFactoryProvider sagaFactoryProvider;
     private final SagaRepository repository;
     private final StepProcessor operationProcessor;
     private final Map<Class<? extends Saga>, SagaExecutor> descriptors;
@@ -29,12 +31,12 @@ public class SagaManager {
     // ------------------------------------------------------------------------
 
     public SagaManager(
-            final SagaFactory sagaFactory,
+            final SagaFactoryProvider sagaFactoryProvider,
             final SagaRepository repository,
             final StepProcessor operationProcessor
     ) {
         this.operationProcessor = checkNotNull(operationProcessor);
-        this.sagaFactory = checkNotNull(sagaFactory);
+        this.sagaFactoryProvider = checkNotNull(sagaFactoryProvider);
         this.repository = checkNotNull(repository);
         this.descriptors = Maps.newHashMap();
     }
@@ -51,7 +53,7 @@ public class SagaManager {
             String.format("The specified saga is already registered : %s", sagaClass.getName())
         );
 
-        final SagaFactory factory = saga.getFactory().or(sagaFactory);
+        final SagaFactory factory = checkNotNull(saga.getFactory().or(sagaFactoryProvider.getOrCreate(saga)));
         final SagaIdReconciler reconciler = saga.getIdReconciler().or(SagaIdReconciler.NONE);
         final Set<Step> steps = operationProcessor.process(sagaClass, reconciler);
         final SagaExecutor executor = new SagaExecutor(sagaClass, steps, factory, repository);

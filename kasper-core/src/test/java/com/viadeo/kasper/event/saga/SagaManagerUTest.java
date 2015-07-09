@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga;
 
+import com.viadeo.kasper.event.saga.factory.SagaFactory;
+import com.viadeo.kasper.event.saga.factory.SagaFactoryProvider;
 import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.step.StepProcessor;
 import org.junit.Before;
@@ -17,27 +19,33 @@ import static com.viadeo.kasper.event.saga.TestFixture.TestSagaA;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SagaManagerUTest {
 
     @Rule
     public ExpectedException thrown = ExpectedException.none();
 
-    private SagaFactory sagaFactory;
     private SagaRepository sagaRepository;
     private SagaManager sagaManager;
+    private SagaFactoryProvider sagaFactoryProvider;
 
     @Before
     public void setUp() throws Exception {
-        sagaFactory = mock(SagaFactory.class);
+        sagaFactoryProvider = mock(SagaFactoryProvider.class);
         sagaRepository = mock(SagaRepository.class);
-        sagaManager = new SagaManager(sagaFactory, sagaRepository, mock(StepProcessor.class));
+        sagaManager = new SagaManager(sagaFactoryProvider, sagaRepository, mock(StepProcessor.class));
     }
 
     @Test
     public void register_withSaga_returnRelatedExecutor() {
+        // Given
+        TestSagaA saga = new TestSagaA();
+        SagaFactory sagaFactory = mock(SagaFactory.class);
+        when(sagaFactoryProvider.getOrCreate(saga)).thenReturn(sagaFactory);
+
         // When
-        SagaExecutor sagaExecutor = sagaManager.register(new TestSagaA());
+        SagaExecutor sagaExecutor = sagaManager.register(saga);
 
         // Then
         assertNotNull(sagaExecutor);
@@ -48,14 +56,17 @@ public class SagaManagerUTest {
 
     @Test
     public void register_withAlreadyRegisteredSaga_isKO() {
-        //Given
-        sagaManager.register(new TestSagaA());
+        // Given
+        TestSagaA saga = new TestSagaA();
+        SagaFactory sagaFactory = mock(SagaFactory.class);
+        when(sagaFactoryProvider.getOrCreate(saga)).thenReturn(sagaFactory);
+        sagaManager.register(saga);
 
         // Then
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("The specified saga is already registered");
 
         // When
-        sagaManager.register(new TestSagaA());
+        sagaManager.register(saga);
     }
 }

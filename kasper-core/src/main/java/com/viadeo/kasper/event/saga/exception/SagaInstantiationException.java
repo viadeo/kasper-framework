@@ -11,6 +11,10 @@ package com.viadeo.kasper.event.saga.exception;
  */
 public class SagaInstantiationException extends RuntimeException {
 
+    public SagaInstantiationException(final String message) {
+        super(message);
+    }
+
     public SagaInstantiationException(final String message, final Throwable cause) {
         super(message, cause);
     }

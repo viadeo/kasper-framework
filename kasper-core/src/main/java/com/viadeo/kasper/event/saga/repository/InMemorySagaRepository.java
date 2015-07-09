@@ -7,8 +7,8 @@
 package com.viadeo.kasper.event.saga.repository;
 
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.event.saga.SagaFactory;
 import com.viadeo.kasper.event.saga.SagaMapper;
+import com.viadeo.kasper.event.saga.factory.SagaFactoryProvider;
 
 import java.util.Map;
 
@@ -21,8 +21,8 @@ public class InMemorySagaRepository extends BaseSagaRepository {
 
     // ------------------------------------------------------------------------
 
-    public InMemorySagaRepository(final SagaFactory sagaFactory) {
-        super(new SagaMapper(sagaFactory));
+    public InMemorySagaRepository(final SagaFactoryProvider sagaFactoryProvider) {
+        super(new SagaMapper(sagaFactoryProvider));
         this.sagas = Maps.newHashMap();
     }
 

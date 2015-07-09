@@ -4,8 +4,9 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.event.saga;
+package com.viadeo.kasper.event.saga.factory;
 
+import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.event.saga.exception.SagaInstantiationException;
 import org.springframework.beans.factory.UnsatisfiedDependencyException;
 import org.springframework.beans.factory.config.AutowireCapableBeanFactory;

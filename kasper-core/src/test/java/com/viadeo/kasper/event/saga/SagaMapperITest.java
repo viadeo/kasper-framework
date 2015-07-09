@@ -6,8 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga;
 
+import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
+import com.viadeo.kasper.event.saga.factory.DefaultSagaFactory;
+import com.viadeo.kasper.event.saga.factory.SagaFactory;
+import com.viadeo.kasper.event.saga.factory.SagaFactoryProvider;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -18,7 +22,9 @@ import java.util.UUID;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Matchers.any;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 public class SagaMapperITest {
 
@@ -32,7 +38,13 @@ public class SagaMapperITest {
         beanFactory.registerSingleton("commandGateway", mock(KasperCommandGateway.class));
 
         sagaFactory = new DefaultSagaFactory(applicationContext);
-        sagaMapper = new SagaMapper(sagaFactory);
+
+        SagaFactoryProvider sagaFactoryProvider = mock(SagaFactoryProvider.class);
+        when(sagaFactoryProvider.get(any(Class.class))).thenReturn(Optional.<SagaFactory>of(sagaFactory));
+        when(sagaFactoryProvider.getOrCreate(any(Saga.class))).thenReturn(sagaFactory);
+
+
+        sagaMapper = new SagaMapper(sagaFactoryProvider);
     }
 
     @Test

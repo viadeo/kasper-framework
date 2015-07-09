@@ -11,6 +11,8 @@ import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.ddd.Domain;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
 import com.viadeo.kasper.event.saga.exception.SagaInstantiationException;
+import com.viadeo.kasper.event.saga.factory.DefaultSagaFactory;
+import com.viadeo.kasper.event.saga.factory.SagaFactory;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;

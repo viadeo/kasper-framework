@@ -4,15 +4,12 @@
 //
 //           Viadeo Framework for effective CQRS/DDD architecture
 // ============================================================================
-package com.viadeo.kasper.event.saga;
+package com.viadeo.kasper.event.saga.factory;
 
-import com.viadeo.kasper.event.saga.exception.SagaInstantiationException;
+import com.google.common.base.Optional;
+import com.viadeo.kasper.event.saga.Saga;
 
-/**
- * Interface describing a mechanism that creates implementations of a Saga.
- */
-public interface  SagaFactory {
-
-    <SAGA extends Saga> SAGA create(Object identifier, Class<SAGA> sagaClass) throws SagaInstantiationException;
-
+public interface SagaFactoryProvider {
+    SagaFactory getOrCreate(final Saga saga);
+    Optional<SagaFactory> get(final Class<? extends Saga> sagaClass);
 }
