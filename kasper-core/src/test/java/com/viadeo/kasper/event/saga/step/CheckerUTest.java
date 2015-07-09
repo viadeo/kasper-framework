@@ -8,6 +8,7 @@ package com.viadeo.kasper.event.saga.step;
 
 import com.viadeo.kasper.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.event.saga.TestFixture;
+import com.viadeo.kasper.event.saga.step.facet.SchedulingStep;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -15,6 +16,7 @@ import org.junit.rules.ExpectedException;
 import org.mockito.internal.util.collections.Sets;
 
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 import static com.viadeo.kasper.event.saga.TestFixture.*;
 import static org.mockito.Mockito.mock;
@@ -49,6 +51,22 @@ public class CheckerUTest {
         // Then
         thrown.expect(IllegalStateException.class);
         thrown.expectMessage("Should define at less two step methods (start/end) : " + TestSagaA.class.getName());
+
+        // When
+        checker.check(sagaClass, steps);
+    }
+
+    @Test
+    public void check_withOneDecorateStartStep_isOK() throws NoSuchMethodException {
+        // Given
+        Set<Step> steps = Sets.newSet();
+        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle3", TestEvent3.class), "getId", mock(SagaIdReconciler.class)));
+        steps.add(
+                new SchedulingStep(
+                        new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId", mock(SagaIdReconciler.class)),
+                        new SchedulingStep.ScheduleOperation(mock(Scheduler.class), TestSagaA.class, "init", 4L, TimeUnit.MILLISECONDS)
+                )
+        );
 
         // When
         checker.check(sagaClass, steps);

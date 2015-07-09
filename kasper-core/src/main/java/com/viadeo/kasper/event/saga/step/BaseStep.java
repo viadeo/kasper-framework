@@ -122,6 +122,11 @@ public class BaseStep implements Step {
         return (Class<? extends Saga>) sagaMethod.getDeclaringClass();
     }
 
+    @Override
+    public Class<? extends Step> getStepClass() {
+        return getClass();
+    }
+
     // ------------------------------------------------------------------------
 
     @Override

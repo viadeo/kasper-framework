@@ -27,5 +27,7 @@ public interface Step {
 
     Class<? extends Saga> getSagaClass();
 
+    Class<? extends Step> getStepClass();
+
     List<String> getActions();
 }

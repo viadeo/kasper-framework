@@ -49,6 +49,11 @@ public abstract class DecorateStep implements Step {
     }
 
     @Override
+    public Class<? extends Step> getStepClass() {
+        return delegateStep.getStepClass();
+    }
+
+    @Override
     public List<String> getActions() {
         List<String> actions = Lists.newArrayList(delegateStep.getActions());
         actions.add(getAction());

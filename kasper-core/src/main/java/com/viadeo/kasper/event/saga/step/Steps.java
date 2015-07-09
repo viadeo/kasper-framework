@@ -70,7 +70,7 @@ public final class Steps {
             final Multimap<Class<? extends Step>,Step> stepsByTypes = Multimaps.index(steps, new Function<Step, Class<? extends Step>>() {
                 @Override
                 public Class<? extends Step> apply(Step input) {
-                return input.getClass();
+                return input.getStepClass();
                 }
             });
 
