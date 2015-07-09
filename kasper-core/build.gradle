@@ -24,6 +24,7 @@ dependencies {
     compile libraries.GUAVA
     compile libraries.LOG4J_OVER_SLF4J
     compile libraries.JAVAX_INJECT
+    compile libraries.TYPESAFE_CONFIG
 
     testCompile libraries.SPRING_TEST
     testCompile libraries.LOGBACK
