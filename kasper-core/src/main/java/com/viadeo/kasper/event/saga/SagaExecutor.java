@@ -138,7 +138,7 @@ public class SagaExecutor {
 
     protected Saga getOrCreateSaga(final Step step, final Object sagaIdentifier) {
 
-        if (step instanceof Steps.StartStep) {
+        if (Steps.StartStep.class.isAssignableFrom(step.getStepClass())) {
             try {
                 if (repository.load(sagaIdentifier).isPresent()){
                     throw new SagaExecutionException(
