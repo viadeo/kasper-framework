@@ -5,8 +5,8 @@
 ext.gradleDir = "${rootProject.rootDir}/gradle"
 
 ext.nexusCredentials = {
-    username nexus_username
-    password nexus_password
+    username ultron_nexus_username
+    password ultron_nexus_password
 }
 
 wrapper.gradleVersion = '2.1'
@@ -48,7 +48,7 @@ configure(subprojects) {
     apply from: "${rootProject.rootDir}/libraries.gradle"
 
     group = 'com.viadeo.kasper'
-    version = '0.8.0-pre41'
+    version = '1.0.0-SNAPSHOT'
 
     if (project.name =~ /kasper-api|kasper-client|kasper-common/) {
         sourceCompatibility = 1.6
