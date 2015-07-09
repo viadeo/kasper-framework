@@ -5,8 +5,8 @@
 ext.gradleDir = "${rootProject.rootDir}/gradle"
 
 ext.nexusCredentials = {
-    username nexus_username
-    password nexus_password
+    username ultron_nexus_username
+    password ultron_nexus_password
 }
 
 wrapper.gradleVersion = '2.1'
@@ -48,7 +48,7 @@ configure(subprojects) {
     apply from: "${rootProject.rootDir}/libraries.gradle"
 
     group = 'com.viadeo.kasper'
-    version = '0.8.0-pre39'
+    version = '1.0.0-SNAPSHOT'
 
     if (project.name =~ /kasper-api|kasper-client|kasper-common/) {
         sourceCompatibility = 1.6
@@ -133,11 +133,11 @@ configure(subprojects) {
     uploadArchives {
         repositories.mavenDeployer {
             configuration = configurations.deployerJars
-            repository(url: "https://${nexus_host}/content/repositories/kasper-releases") {
-                authentication(userName: nexus_username, password: nexus_password)
+            repository(url: "http://nexus-ultron.rhcloud.com/nexus/content/repositories/ultron-releases") {
+                authentication(userName: ultron_nexus_username, password: ultron_nexus_password)
             }
-            snapshotRepository(url: "https://${nexus_host}/content/repositories/kasper-snapshots") {
-                authentication(userName: nexus_username, password: nexus_password)
+            snapshotRepository(url: "http://nexus-ultron.rhcloud.com/nexus/content/repositories/ultron-snapshots") {
+                authentication(userName: ultron_nexus_username, password: ultron_nexus_password)
             }
         }
     }
@@ -179,3 +179,4 @@ task alljavadoc(type: Javadoc) {
     classpath = files(rootProject.subprojects.collect { project -> project.sourceSets.main.compileClasspath })
     destinationDir = file('build/javadoc')
 }
+
