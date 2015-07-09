@@ -44,6 +44,11 @@ public class SagaWrapper extends AxonEventListener<Event> implements IEventListe
     }
 
     @Override
+    public String getName() {
+        return executor.getSagaClass().getName();
+    }
+
+    @Override
     public Set<Class<?>> getEventClasses() {
         return executor.getEventClasses();
     }

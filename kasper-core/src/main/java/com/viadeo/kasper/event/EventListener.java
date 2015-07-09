@@ -86,8 +86,15 @@ public abstract class EventListener<E extends Event>
         this.domainMeterErrorsName = name(MetricNameStyle.DOMAIN_TYPE, this.getClass(), "errors");
         this.domainMeterHandlesName = name(MetricNameStyle.DOMAIN_TYPE, this.getClass(), "handles");
 	}
-	
-	// ------------------------------------------------------------------------
+
+    // ------------------------------------------------------------------------
+
+    @Override
+    public String getName() {
+        return getClass().getName();
+    }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public Set<Class<?>> getEventClasses() {

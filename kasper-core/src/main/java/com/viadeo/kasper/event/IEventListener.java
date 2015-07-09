@@ -16,6 +16,8 @@ public interface IEventListener<EVENT extends Event> {
 
     EventResponse handle(Context context, EVENT event);
 
+    String getName();
+
     Set<Class<?>> getEventClasses();
 
 }
