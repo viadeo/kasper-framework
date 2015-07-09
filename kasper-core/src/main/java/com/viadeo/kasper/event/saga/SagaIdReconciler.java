@@ -6,16 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga;
 
-import com.google.common.base.Optional;
+public interface SagaIdReconciler {
 
-/**
- * Interface describing an implementation of a Saga. Sagas are instances that handle events and may possibly produce
- * new commands or have other side effects. Typically, Sagas are used to manage long running business transactions.
- */
-public interface Saga {
+    static final SagaIdReconciler NONE = new SagaIdReconciler() {
+        @Override
+        public Object reconcile(Object identifier) {
+            return identifier;
+        }
+    };
 
-    Optional<SagaFactory> getFactory();
-
-    Optional<SagaIdReconciler> getIdReconciler();
-
+    Object reconcile(Object identifier);
 }

@@ -10,6 +10,7 @@ import com.google.common.base.Optional;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
 import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.event.saga.SagaFactory;
+import com.viadeo.kasper.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.test.root.Facebook;
 import com.viadeo.kasper.test.root.events.MemberCreatedEvent;
 import com.viadeo.kasper.test.root.events.MemberHasConfirmedEmailEvent;
@@ -30,6 +31,11 @@ public class ConfirmEmailSaga implements Saga {
 
     @Override
     public Optional<SagaFactory> getFactory() {
+        return Optional.absent();
+    }
+
+    @Override
+    public Optional<SagaIdReconciler> getIdReconciler() {
         return Optional.absent();
     }
 }

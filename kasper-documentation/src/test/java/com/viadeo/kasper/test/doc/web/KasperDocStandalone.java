@@ -17,6 +17,7 @@ import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
 import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.event.saga.step.Scheduler;
 import com.viadeo.kasper.event.saga.step.Steps;
 import com.viadeo.kasper.event.saga.step.facet.SchedulingStep;
@@ -95,14 +96,14 @@ public class KasperDocStandalone {
                                         "onMemberCreated",
                                         MemberCreatedEvent.class,
                                         new SchedulingStep(
-                                                new Steps.StartStep(ConfirmEmailSaga.class.getMethod("onMemberCreated", MemberCreatedEvent.class), "getEntityId"),
+                                                new Steps.StartStep(ConfirmEmailSaga.class.getMethod("onMemberCreated", MemberCreatedEvent.class), "getEntityId", mock(SagaIdReconciler.class)),
                                                 new SchedulingStep.ScheduleOperation(mock(Scheduler.class), ConfirmEmailSaga.class, "notConfirmed", 60L, TimeUnit.MINUTES)
                                         ).getActions()
                                 ),
                                 new SagaDescriptor.StepDescriptor(
                                         "onConfirmedEvent",
                                         MemberHasConfirmedEmailEvent.class,
-                                        new Steps.EndStep(ConfirmEmailSaga.class.getMethod("onConfirmedEvent", MemberHasConfirmedEmailEvent.class), "getId").getActions()
+                                        new Steps.EndStep(ConfirmEmailSaga.class.getMethod("onConfirmedEvent", MemberHasConfirmedEmailEvent.class), "getId", mock(SagaIdReconciler.class)).getActions()
                                 )
                         ))
                 ),

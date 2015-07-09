@@ -37,10 +37,11 @@ public class SagaExecutorUTest {
 
     @Before
     public void setUp() throws Exception {
+        SagaIdReconciler idReconciler = SagaIdReconciler.NONE;
         factory = mock(SagaFactory.class);
         repository = mock(SagaRepository.class);
-        startStep = spy(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
-        basicStep = spy(new Steps.BasicStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId"));
+        startStep = spy(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId", idReconciler));
+        basicStep = spy(new Steps.BasicStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId", idReconciler));
         executor = new SagaExecutor(
                 TestSagaA.class,
                 Sets.<Step>newHashSet(startStep, basicStep),

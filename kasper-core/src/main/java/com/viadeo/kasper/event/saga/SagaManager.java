@@ -52,7 +52,8 @@ public class SagaManager {
         );
 
         final SagaFactory factory = saga.getFactory().or(sagaFactory);
-        final Set<Step> steps = operationProcessor.process(sagaClass);
+        final SagaIdReconciler reconciler = saga.getIdReconciler().or(SagaIdReconciler.NONE);
+        final Set<Step> steps = operationProcessor.process(sagaClass, reconciler);
         final SagaExecutor executor = new SagaExecutor(sagaClass, steps, factory, repository);
 
         descriptors.put(sagaClass, executor);

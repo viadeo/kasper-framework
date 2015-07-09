@@ -12,6 +12,7 @@ import com.google.common.collect.Multimaps;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
 import com.viadeo.kasper.event.saga.Saga;
+import com.viadeo.kasper.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.event.saga.step.facet.FacetApplierRegistry;
 
 import java.lang.reflect.Method;
@@ -93,10 +94,12 @@ public final class Steps {
         }
 
         @Override
-        public Step createStep(final Method method, final XKasperSaga.Start annotation) {
-            return new StartStep(method, annotation.getter());
+        public Step createStep(final Method method, final XKasperSaga.Start annotation, final SagaIdReconciler idReconciler) {
+            return new StartStep(method, annotation.getter(), idReconciler);
         }
     }
+
+    // ------------------------------------------------------------------------
 
     public static class EndStepResolver extends AbstractStepResolver<XKasperSaga.End> {
 
@@ -105,8 +108,8 @@ public final class Steps {
         }
 
         @Override
-        public Step createStep(final Method method, final XKasperSaga.End annotation) {
-            return new EndStep(method, annotation.getter());
+        public Step createStep(final Method method, final XKasperSaga.End annotation, final SagaIdReconciler idReconciler) {
+            return new EndStep(method, annotation.getter(), idReconciler);
         }
     }
 
@@ -119,28 +122,28 @@ public final class Steps {
         }
 
         @Override
-        public Step createStep(final Method method, final XKasperSaga.Step annotation) {
-            return new BasicStep(method, annotation.getter());
+        public Step createStep(final Method method, final XKasperSaga.Step annotation, final SagaIdReconciler idReconciler) {
+            return new BasicStep(method, annotation.getter(), idReconciler);
         }
     }
 
     // ------------------------------------------------------------------------
 
     public static class StartStep extends BaseStep {
-        public StartStep(final Method method, final String getterName) {
-            super(method, "Start", getterName);
+        public StartStep(final Method method, final String getterName, final SagaIdReconciler idReconciler) {
+            super(method, "Start", getterName, idReconciler);
         }
     }
 
     public static class EndStep extends BaseStep {
-        public EndStep(final Method method, final String getterName) {
-            super(method, "End", getterName);
+        public EndStep(final Method method, final String getterName, final SagaIdReconciler idReconciler) {
+            super(method, "End", getterName, idReconciler);
         }
     }
 
     public static class BasicStep extends BaseStep {
-        public BasicStep(final Method method, final String getterName) {
-            super(method, "Step", getterName);
+        public BasicStep(final Method method, final String getterName, final SagaIdReconciler idReconciler) {
+            super(method, "Step", getterName, idReconciler);
         }
     }
 

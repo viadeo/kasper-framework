@@ -8,6 +8,7 @@ package com.viadeo.kasper.event.saga.step;
 
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.event.saga.Saga;
+import com.viadeo.kasper.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.event.saga.step.facet.FacetApplier;
 import com.viadeo.kasper.event.saga.step.facet.FacetApplierRegistry;
 
@@ -30,7 +31,7 @@ public abstract class AbstractStepResolver<ANNO extends Annotation> implements S
     }
 
     @Override
-    public Set<Step> resolve(final Class<? extends Saga> sagaClass) {
+    public Set<Step> resolve(final Class<? extends Saga> sagaClass, final SagaIdReconciler idReconciler) {
         checkNotNull(sagaClass);
 
         final Set<Step> steps = Sets.newHashSet();
@@ -38,7 +39,7 @@ public abstract class AbstractStepResolver<ANNO extends Annotation> implements S
         for (final Method method : sagaClass.getMethods()) {
             final ANNO annotation = method.getAnnotation(annotationClass);
             if (null != annotation) {
-                steps.add(applyFacets(method, createStep(method, annotation)));
+                steps.add(applyFacets(method, createStep(method, annotation, idReconciler)));
             }
         }
 
@@ -57,6 +58,6 @@ public abstract class AbstractStepResolver<ANNO extends Annotation> implements S
 
     // ------------------------------------------------------------------------
 
-    public abstract Step createStep(Method method, ANNO annotation);
+    public abstract Step createStep(Method method, ANNO annotation, SagaIdReconciler idReconciler);
 
 }

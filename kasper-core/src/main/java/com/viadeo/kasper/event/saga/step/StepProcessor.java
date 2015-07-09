@@ -8,6 +8,7 @@ package com.viadeo.kasper.event.saga.step;
 
 import com.google.common.collect.Sets;
 import com.viadeo.kasper.event.saga.Saga;
+import com.viadeo.kasper.event.saga.SagaIdReconciler;
 
 import java.util.Arrays;
 import java.util.List;
@@ -33,12 +34,12 @@ public class StepProcessor {
         this.resolvers = Arrays.asList(checkNotNull(resolvers));
     }
 
-    public Set<Step> process(final Class<? extends Saga> sagaClass) {
+    public Set<Step> process(final Class<? extends Saga> sagaClass, final SagaIdReconciler sagaIdReconciler) {
         checkNotNull(sagaClass);
 
         final Set<Step> steps = Sets.newHashSet();
         for (final StepResolver resolver : resolvers) {
-            steps.addAll(resolver.resolve(sagaClass));
+            steps.addAll(resolver.resolve(sagaClass, sagaIdReconciler));
         }
 
         checker.check(sagaClass, steps);

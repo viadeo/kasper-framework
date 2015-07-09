@@ -12,6 +12,7 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.saga.Saga;
+import com.viadeo.kasper.event.saga.SagaIdReconciler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,12 +33,14 @@ public class BaseStep implements Step {
     private final Method identifierMethod;
     private final Class<? extends Event> eventClass;
     private final ArrayList<String> actions;
+    private final SagaIdReconciler reconciler;
 
     // ------------------------------------------------------------------------
 
-    public BaseStep(final Method method, final String type, final String getterName) {
+    public BaseStep(final Method method, final String type, final String getterName, final SagaIdReconciler reconciler) {
         checkNotNull(getterName);
 
+        this.reconciler = checkNotNull(reconciler);
         this.sagaMethod = checkNotNull(method);
         this.sagaMethodArguments = new StepArguments(sagaMethod);
         this.eventClass = this.sagaMethodArguments.getEventClass();
@@ -109,7 +112,9 @@ public class BaseStep implements Step {
             LOGGER.warn("Failed to retrieve saga identifier from the given event, <getter={}> <event={}>", identifierMethod.getName(), event.getClass().getName(), e);
         }
 
-        return Optional.fromNullable((T)identifier);
+        final Object reconciledIdentifier = reconciler.reconcile(identifier);
+
+        return Optional.fromNullable((T) reconciledIdentifier);
     }
 
     @Override

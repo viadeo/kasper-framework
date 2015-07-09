@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga.step;
 
+import com.viadeo.kasper.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.event.saga.TestFixture;
 import org.junit.Before;
 import org.junit.Rule;
@@ -16,6 +17,7 @@ import org.mockito.internal.util.collections.Sets;
 import java.util.Set;
 
 import static com.viadeo.kasper.event.saga.TestFixture.*;
+import static org.mockito.Mockito.mock;
 
 public class CheckerUTest {
 
@@ -56,9 +58,9 @@ public class CheckerUTest {
     public void check_withSeveralStartSteps_isKO() throws NoSuchMethodException {
         // Given
         Set<Step> steps = Sets.newSet();
-        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
-        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId"));
-        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle3", TestEvent3.class), "getId"));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId", mock(SagaIdReconciler.class)));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId", mock(SagaIdReconciler.class)));
+        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle3", TestEvent3.class), "getId", mock(SagaIdReconciler.class)));
 
         // Then
         thrown.expect(IllegalStateException.class);
@@ -72,7 +74,7 @@ public class CheckerUTest {
     public void check_withNoEndSteps_isKO() {
         // Given
         Set<Step> steps = Sets.newSet();
-        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId", mock(SagaIdReconciler.class)));
 
         // Then
         thrown.expect(IllegalStateException.class);
@@ -86,8 +88,8 @@ public class CheckerUTest {
     public void check_withOneStartStep_withOneEndStep_isOK() {
         // Given
         Set<Step> steps = Sets.newSet();
-        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
-        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId"));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId", mock(SagaIdReconciler.class)));
+        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId", mock(SagaIdReconciler.class)));
 
         // When
         checker.check(sagaClass, steps);
@@ -99,9 +101,9 @@ public class CheckerUTest {
     public void check_withOneStartStep_withSeveralEndSteps_isOK() {
         // Given
         Set<Step> steps = Sets.newSet();
-        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
-        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId"));
-        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle3", TestEvent3.class), "getId"));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId", mock(SagaIdReconciler.class)));
+        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId", mock(SagaIdReconciler.class)));
+        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle3", TestEvent3.class), "getId", mock(SagaIdReconciler.class)));
 
         // When
         checker.check(sagaClass, steps);
@@ -113,9 +115,9 @@ public class CheckerUTest {
     public void check_withOneStartStep_withOneEndStep_withOtherKindOfSteps_isOK() {
         // Given
         Set<Step> steps = Sets.newSet();
-        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
-        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId"));
-        steps.add(new Steps.BasicStep(getMethod(TestSagaA.class, "handle3", TestEvent3.class), "getId"));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId", mock(SagaIdReconciler.class)));
+        steps.add(new Steps.EndStep(getMethod(TestSagaA.class, "handle2", TestEvent2.class), "getId", mock(SagaIdReconciler.class)));
+        steps.add(new Steps.BasicStep(getMethod(TestSagaA.class, "handle3", TestEvent3.class), "getId", mock(SagaIdReconciler.class)));
 
         // When
         checker.check(sagaClass, steps);
@@ -127,8 +129,8 @@ public class CheckerUTest {
     public void check_withTwoStepsHandlingTheSameEvent_isKO() {
         // Given
         Set<Step> steps = Sets.newSet();
-        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle0", TestEvent.class), "getId"));
-        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId"));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle0", TestEvent.class), "getId", mock(SagaIdReconciler.class)));
+        steps.add(new Steps.StartStep(getMethod(TestSagaA.class, "handle", TestEvent.class), "getId", mock(SagaIdReconciler.class)));
 
         // Then
         thrown.expect(IllegalStateException.class);

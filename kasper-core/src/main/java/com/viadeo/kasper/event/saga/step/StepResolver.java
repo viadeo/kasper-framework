@@ -7,6 +7,7 @@
 package com.viadeo.kasper.event.saga.step;
 
 import com.viadeo.kasper.event.saga.Saga;
+import com.viadeo.kasper.event.saga.SagaIdReconciler;
 
 import java.util.Set;
 
@@ -15,6 +16,6 @@ import java.util.Set;
  */
 public interface StepResolver {
 
-    Set<Step> resolve(Class<? extends Saga> sagaClass);
+    Set<Step> resolve(Class<? extends Saga> sagaClass, SagaIdReconciler idReconciler);
 
 }

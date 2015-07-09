@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga.step.facet;
 
+import com.viadeo.kasper.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.event.saga.TestFixture;
 import com.viadeo.kasper.event.saga.step.Scheduler;
 import com.viadeo.kasper.event.saga.step.Step;
@@ -49,7 +50,7 @@ public class SchedulingFacetApplierUTest {
     public void apply_on_method_with_schedule_annotation_return_a_scheduling_step() {
         // Given
         Method method = TestFixture.getMethod(TestFixture.TestSagaA.class, "scheduledStep", TestFixture.TestEvent6.class);
-        Steps.BasicStep step = new Steps.BasicStep(method, "getId");
+        Steps.BasicStep step = new Steps.BasicStep(method, "getId", mock(SagaIdReconciler.class));
 
         // When
         Step actualStep = facetApplier.apply(method, step);
@@ -62,7 +63,7 @@ public class SchedulingFacetApplierUTest {
 
     @Test
     public void apply_on_method_with_schedule_and_cancel_annotation_return_throw_exception() {
-        Step step = new Steps.BasicStep(TestFixture.getMethod(TestFixture.TestSagaA.class, "scheduledAndCancelStep", TestFixture.TestEvent6.class), "getId");
+        Step step = new Steps.BasicStep(TestFixture.getMethod(TestFixture.TestSagaA.class, "scheduledAndCancelStep", TestFixture.TestEvent6.class), "getId", mock(SagaIdReconciler.class));
         Method method = TestFixture.getMethod(TestFixture.TestSagaA.class, "scheduledAndCancelStep", TestFixture.TestEvent6.class);
 
         // Then

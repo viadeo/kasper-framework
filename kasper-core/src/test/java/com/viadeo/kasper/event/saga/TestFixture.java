@@ -84,6 +84,11 @@ public class TestFixture {
         public Optional<SagaFactory> getFactory() {
             return Optional.absent();
         }
+
+        @Override
+        public Optional<SagaIdReconciler> getIdReconciler() {
+            return Optional.absent();
+        }
     }
 
     public static class TestEvent implements Event {
@@ -190,6 +195,11 @@ public class TestFixture {
 
         @Override
         public Optional<SagaFactory> getFactory() {
+            return Optional.absent();
+        }
+
+        @Override
+        public Optional<SagaIdReconciler> getIdReconciler() {
             return Optional.absent();
         }
 

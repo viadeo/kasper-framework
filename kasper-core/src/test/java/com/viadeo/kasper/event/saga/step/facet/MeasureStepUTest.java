@@ -11,6 +11,7 @@ import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.core.resolvers.ResolverFactory;
 import com.viadeo.kasper.core.resolvers.SagaResolver;
+import com.viadeo.kasper.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.event.saga.TestFixture;
 import com.viadeo.kasper.event.saga.step.Steps;
 import org.junit.Before;
@@ -19,6 +20,7 @@ import org.junit.Test;
 import static com.viadeo.kasper.event.saga.TestFixture.getMethod;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.Mockito.mock;
 
 public class MeasureStepUTest {
 
@@ -37,7 +39,7 @@ public class MeasureStepUTest {
     public void getMetricName_fromMeasurableStartStep_isOk() throws Exception {
         // Given
         MetricRegistry metricRegistry = new MetricRegistry();
-        Steps.StartStep startStep = new Steps.StartStep(getMethod(TestFixture.TestSagaA.class, "handle", TestFixture.TestEvent.class), "getId");
+        Steps.StartStep startStep = new Steps.StartStep(getMethod(TestFixture.TestSagaA.class, "handle", TestFixture.TestEvent.class), "getId", mock(SagaIdReconciler.class));
         MeasureStep step = new MeasureStep(metricRegistry, startStep);
 
         // When

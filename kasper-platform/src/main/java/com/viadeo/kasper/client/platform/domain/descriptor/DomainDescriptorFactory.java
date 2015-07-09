@@ -22,6 +22,7 @@ import com.viadeo.kasper.er.Relation;
 import com.viadeo.kasper.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.saga.Saga;
+import com.viadeo.kasper.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.event.saga.step.Step;
 import com.viadeo.kasper.event.saga.step.StepProcessor;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
@@ -128,7 +129,7 @@ public class DomainDescriptorFactory {
             List<SagaDescriptor.StepDescriptor> stepDescriptors = Lists.newArrayList();
 
             if (stepProcessor.isPresent()) {
-                Set<Step> steps = stepProcessor.get().process(saga.getClass());
+                Set<Step> steps = stepProcessor.get().process(saga.getClass(), SagaIdReconciler.NONE);
                 for (Step step : steps) {
                     stepDescriptors.add(
                             new SagaDescriptor.StepDescriptor(

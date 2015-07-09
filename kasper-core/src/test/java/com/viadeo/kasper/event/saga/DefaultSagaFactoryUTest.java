@@ -85,6 +85,11 @@ public class DefaultSagaFactoryUTest {
         public Optional<SagaFactory> getFactory() {
             return Optional.absent();
         }
+
+        @Override
+        public Optional<SagaIdReconciler> getIdReconciler() {
+            return Optional.absent();
+        }
     }
 
     @XKasperSaga(domain = TestDomain.class)
