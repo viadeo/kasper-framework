@@ -15,13 +15,13 @@ import java.lang.annotation.Target;
  * Indicates the id on which the authorization holder.
  * It has to be placed on a command or a query field
  *
- * <p>For example:
- * <p/>
- * <code>&#64;XKasperQuery<br/>
- * public class GetExampleQuery implements Query {<br/>
- * <code>&#64;XKasperAuthorizationTargetId<br/>
- * private final String exampleId;
- * <p/>
+ * For example:
+ *
+ * # @XKasperQuery
+ * # public class GetExampleQuery implements Query {
+ * #     @XKasperAuthorizationTargetId
+ * #     private final String exampleId;
+ *
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
