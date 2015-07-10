@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.spring.starters;
 
 import com.fasterxml.jackson.databind.Module;
@@ -21,8 +27,8 @@ public class KasperObjectMapperConfiguration {
 
     @Bean
     @SuppressWarnings("unused")
-    public Module metaDataModule(ContextHelper contextHelper) {
-        SimpleModule module = new SimpleModule();
+    public Module metaDataModule(final ContextHelper contextHelper) {
+        final SimpleModule module = new SimpleModule();
         module.addDeserializer(MetaData.class, new MetaDataDeserializer(contextHelper));
         return module;
     }
@@ -30,7 +36,7 @@ public class KasperObjectMapperConfiguration {
     @Bean
     @SuppressWarnings("unused")
     public Module sanitizeModule() {
-        SimpleModule module = new SimpleModule();
+        final SimpleModule module = new SimpleModule();
         module.addDeserializer(String.class, new TrimDeserializer(new StringDeserializer()));
 
         return module;
@@ -38,7 +44,7 @@ public class KasperObjectMapperConfiguration {
 
 
     @Bean
-    public Module idModule(IDBuilder idBuilder) {
+    public Module idModule(final IDBuilder idBuilder) {
         return new IDModule(idBuilder);
     }
 
@@ -48,8 +54,8 @@ public class KasperObjectMapperConfiguration {
      * @return object mapper
      */
     @Bean
-    public ObjectMapper objectMapper(List<Module> modules) {
-        ObjectMapper objectMapper = ObjectMapperProvider.INSTANCE.mapper();
+    public ObjectMapper objectMapper(final List<Module> modules) {
+        final ObjectMapper objectMapper = ObjectMapperProvider.INSTANCE.mapper();
         objectMapper.registerModules(modules);
 
         return objectMapper;

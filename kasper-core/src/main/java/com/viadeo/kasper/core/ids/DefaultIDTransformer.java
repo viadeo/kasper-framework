@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.core.ids;
 
 import com.google.common.base.Function;
@@ -41,11 +47,11 @@ public class DefaultIDTransformer implements com.viadeo.kasper.api.IDTransformer
     }
 
     @Override
-    public Map<ID,ID> to(Format format, Collection<ID> givenIds) {
+    public Map<ID,ID> to(final Format format, final Collection<ID> givenIds) {
         checkNotNull(format);
         checkNotNull(givenIds);
 
-        Set<ID> ids = Sets.newHashSet(givenIds);
+        final Set<ID> ids = Sets.newHashSet(givenIds);
 
         checkArgument(Iterables.all(ids, Predicates.notNull()), "Each specified ids must be not null");
         checkArgument(hasSameValue(ids, GET_FORMAT_FUNCTION), "Each specified ids must have the same format");
@@ -55,18 +61,18 @@ public class DefaultIDTransformer implements com.viadeo.kasper.api.IDTransformer
             return doNothing(ids);
         }
 
-        ID firstElement = ids.iterator().next();
+        final ID firstElement = ids.iterator().next();
 
         if (format == ids.iterator().next().getFormat()) {
             return doNothing(ids);
         }
 
-        Format currentFormat = firstElement.getFormat();
-        String currentVendor = firstElement.getVendor();
+        final Format currentFormat = firstElement.getFormat();
+        final String currentVendor = firstElement.getVendor();
 
-        Collection<Converter> converters = kasperIDsConverterRegistry.getConverters(currentVendor, format);
+        final Collection<Converter> converters = kasperIDsConverterRegistry.getConverters(currentVendor, format);
 
-        for (Converter converter : converters) {
+        for (final Converter converter : converters) {
             if (accept(converter, currentVendor, currentFormat, format)) {
                 try {
                     return converter.convert(ids);
@@ -86,7 +92,7 @@ public class DefaultIDTransformer implements com.viadeo.kasper.api.IDTransformer
     }
 
     @Override
-    public Map<ID,ID> to(Format format, ID firstId,  ID... restIds) {
+    public Map<ID,ID> to(final Format format, final ID firstId,  final ID... restIds) {
         checkNotNull(format);
         checkNotNull(firstId);
         checkNotNull(restIds);
@@ -95,7 +101,7 @@ public class DefaultIDTransformer implements com.viadeo.kasper.api.IDTransformer
     }
 
     @Override
-    public ID to(Format format, ID id) {
+    public ID to(final Format format, final ID id) {
         checkNotNull(format);
         checkNotNull(id);
 
@@ -104,7 +110,7 @@ public class DefaultIDTransformer implements com.viadeo.kasper.api.IDTransformer
         return transformedIds.get(id);
     }
 
-    private Map<ID, ID> doNothing(Collection<ID> ids) {
+    private Map<ID, ID> doNothing(final Collection<ID> ids) {
         return Maps.uniqueIndex(ids, new Function<ID, ID>() {
             @Override
             public ID apply(ID input) {
@@ -113,17 +119,17 @@ public class DefaultIDTransformer implements com.viadeo.kasper.api.IDTransformer
         });
     }
 
-    protected boolean accept(Converter converter, String vendor, Format sourceFormat, Format targetFormat) {
+    protected boolean accept(final Converter converter, final String vendor, final Format sourceFormat, final Format targetFormat) {
         return  converter.getSource() == sourceFormat &&
                 converter.getTarget() == targetFormat &&
                 converter.getVendor().equals(vendor);
     }
 
-    protected <T> boolean hasSameValue(Collection<ID> ids, Function<ID, T> function) {
+    protected <T> boolean hasSameValue(final Collection<ID> ids, final Function<ID, T> function) {
         return ids.isEmpty() || Sets.newHashSet(Iterables.transform(ids, function)).size() == 1;
     }
 
-    public <T> List<T> parseIdentifiers(List<ID> ids) {
+    public <T> List<T> parseIdentifiers(final List<ID> ids) {
         return Lists.transform(ids, new Function<ID, T>() {
             @Override
             public T apply(ID input) {
@@ -132,7 +138,8 @@ public class DefaultIDTransformer implements com.viadeo.kasper.api.IDTransformer
         });
     }
 
-    public List<ID> toList(Format format, Collection<ID> ids) {
+    public List<ID> toList(final Format format, final Collection<ID> ids) {
         return newArrayList(to(format, ids).values());
     }
+
 }

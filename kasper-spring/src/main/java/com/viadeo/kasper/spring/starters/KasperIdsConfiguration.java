@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.spring.starters;
 
 import com.viadeo.kasper.api.IDBuilder;
@@ -19,7 +25,7 @@ public class KasperIdsConfiguration {
     }
 
     @Bean
-    public IDTransformer idTransformer(KasperIDsConverterRegistry kasperIDsConverterRegistry) {
+    public IDTransformer idTransformer(final KasperIDsConverterRegistry kasperIDsConverterRegistry) {
         return new DefaultIDTransformer(kasperIDsConverterRegistry);
     }
 
@@ -29,10 +35,10 @@ public class KasperIdsConfiguration {
     }
 
     @Bean
-    public IDBuilder idBuilder(IDTransformer idTransformer, UUIDFormat uuidformat) {
+    public IDBuilder idBuilder(final IDTransformer idTransformer, final UUIDFormat uuidformat) {
         return new TransformableIDBuilder(
-                idTransformer,
-                uuidformat
+            idTransformer,
+            uuidformat
         );
     }
 

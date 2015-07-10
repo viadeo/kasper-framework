@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.kasper.com - mobile.kasper.com - api.kasper.com - dev.kasper.com
+//
+//           Kasper Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.exposition.http.jetty;
 
 import com.codahale.metrics.Clock;
@@ -12,7 +18,6 @@ import com.codahale.metrics.servlets.MetricsServlet;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
 import com.google.common.io.Resources;
 import com.sun.jersey.spi.container.servlet.ServletContainer;
 import com.viadeo.kasper.exposition.http.HttpCommandExposer;
@@ -47,6 +52,8 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.management.ManagementFactory;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 
 public class JettyServerBuilder {
     public static final Logger LOGGER = LoggerFactory.getLogger(JettyServerBuilder.class);
@@ -64,62 +71,64 @@ public class JettyServerBuilder {
     private HealthCheckRegistry healthCheckRegistry;
     private MetricRegistry metricRegistry;
 
-    public JettyServerBuilder(JettyConfiguration config) {
-        this.config = config;
+    // ------------------------------------------------------------------------
+
+    public JettyServerBuilder(final JettyConfiguration config) {
+        this.config = checkNotNull(config);
     }
 
-    public JettyServerBuilder withQueryExposer(HttpQueryExposer exposer) {
-        this.queryExposer = exposer;
+    public JettyServerBuilder withQueryExposer(final HttpQueryExposer exposer) {
+        this.queryExposer = checkNotNull(exposer);
         return this;
     }
 
-    public JettyServerBuilder withCommandExposer(HttpCommandExposer exposer) {
-        this.commandExposer = exposer;
+    public JettyServerBuilder withCommandExposer(final HttpCommandExposer exposer) {
+        this.commandExposer = checkNotNull(exposer);
         return this;
     }
 
-    public JettyServerBuilder withEventExposer(HttpEventExposer exposer) {
-        this.eventExposer = exposer;
+    public JettyServerBuilder withEventExposer(final HttpEventExposer exposer) {
+        this.eventExposer = checkNotNull(exposer);
         return this;
     }
 
-    public JettyServerBuilder withJaxRs(Application application) {
-        this.application = application;
+    public JettyServerBuilder withJaxRs(final Application application) {
+        this.application = checkNotNull(application);
         return this;
     }
 
-    public JettyServerBuilder withHealthCheckRegistry(HealthCheckRegistry registry) {
-        Preconditions.checkNotNull(registry);
-        this.healthCheckRegistry = registry;
+    public JettyServerBuilder withHealthCheckRegistry(final HealthCheckRegistry registry) {
+        this.healthCheckRegistry = checkNotNull(registry);
         return this;
     }
 
-    public JettyServerBuilder withMetricRegistry(MetricRegistry registry) {
-        Preconditions.checkNotNull(registry);
-        this.metricRegistry = registry;
+    public JettyServerBuilder withMetricRegistry(final MetricRegistry registry) {
+        this.metricRegistry = checkNotNull(registry);
         return this;
     }
+
+    // ------------------------------------------------------------------------
 
     public Server build() {
-        Server server = new Server();
+        final Server server = new Server();
 
         server.addConnector(createMainConnector());
         server.addConnector(createAdminConnector());
 
-        HandlerCollection handlerCollection = new HandlerCollection();
+        final HandlerCollection handlerCollection = new HandlerCollection();
 
         /*
          * /!\ ONLY FOR TEST PURPOSE: WILL BE REMOVED SOON
          */
 
-        String viadeoEnv = System.getenv("viadeo_env");
+        final String kasperEnv = System.getenv("kasper_env");
 
-        if (viadeoEnv != null && (viadeoEnv.equals("preprod") || viadeoEnv.equals("local"))) {
-            LOGGER.warn("/!\\ ViadeoRequestLog is enabled, be sure you are not in production!");
+        if ((null != kasperEnv) && (kasperEnv.equals("preprod") || kasperEnv.equals("local"))) {
+            LOGGER.warn("/!\\ KasperRequestLog is enabled, be sure you are not in production!");
             RequestLogHandler logHandler = new RequestLogHandler();
 
-            JettyRequestLog requestLog = new JettyRequestLog();
-            requestLog.setFilename("/tmp/jetty_viadeo_platform");
+            final JettyRequestLog requestLog = new JettyRequestLog();
+            requestLog.setFilename("/tmp/jetty_kasper_platform");
             requestLog.setLogLatency(true);
             requestLog.setExtended(true);
             requestLog.setAppend(false);
@@ -127,7 +136,7 @@ public class JettyServerBuilder {
             logHandler.setRequestLog(requestLog);
             handlerCollection.addHandler(logHandler);
 
-            Handler myLogHandler = new JettyRequestLogHandler();
+            final Handler myLogHandler = new JettyRequestLogHandler();
             handlerCollection.addHandler(myLogHandler);
         }
 
@@ -153,16 +162,18 @@ public class JettyServerBuilder {
         return server;
     }
 
-    private Handler createStaticDocHandler(String path) {
+    // ------------------------------------------------------------------------
+
+    private Handler createStaticDocHandler(final String path) {
         /* FIXME
         The static documentation should not be hosted by the main application. It would be better to have it on an other
         dedicated server.
          */
-        ResourceHandler resourceHandler = new ResourceHandler();
+        final ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setResourceBase(Resources.getResource("META-INF/resources/ndoc").toExternalForm());
         resourceHandler.setWelcomeFiles(new String[]{"index.html"});
 
-        ContextHandler handler = new ContextHandler(path);
+        final ContextHandler handler = new ContextHandler(path);
         handler.setHandler(resourceHandler);
         handler.setConnectorNames(new String[]{MAIN_CONNECTOR_NAME});
 
@@ -170,25 +181,25 @@ public class JettyServerBuilder {
     }
 
     private Handler createMainHandler() {
-        ServletContextHandler servletHandler = new ServletContextHandler();
+        final ServletContextHandler servletHandler = new ServletContextHandler();
 
-        if (this.queryExposer != null) {
+        if (null != this.queryExposer) {
             servletHandler.addServlet(new ServletHolder(queryExposer), config.getQueryPath());
         }
-        if (this.commandExposer != null) {
+        if (null != this.commandExposer) {
             servletHandler.addServlet(new ServletHolder(commandExposer), config.getCommandPath());
         }
-        if (this.eventExposer != null) {
+        if (null != this.eventExposer) {
             servletHandler.addServlet(new ServletHolder(eventExposer), config.getEventPath());
         }
-        if (this.application != null) {
+        if (null != this.application) {
             servletHandler.addServlet(new ServletHolder(new ServletContainer(application)), "/*"); // FIXME root path should be configurable
         }
 
         servletHandler.setConnectorNames(new String[]{MAIN_CONNECTOR_NAME});
 
         Handler handler = servletHandler;
-        if (this.metricRegistry != null) {
+        if (null != this.metricRegistry) {
             handler = new InstrumentedHandler(this.metricRegistry, handler);
         }
 
@@ -196,15 +207,15 @@ public class JettyServerBuilder {
     }
 
     private Handler createAdminHandler() {
-        ServletContextHandler handler = new ServletContextHandler();
+        final ServletContextHandler handler = new ServletContextHandler();
 
         handler.setAttribute(
-                HealthCheckServlet.HEALTH_CHECK_REGISTRY,
-                Objects.firstNonNull(healthCheckRegistry, new HealthCheckRegistry())
+            HealthCheckServlet.HEALTH_CHECK_REGISTRY,
+            Objects.firstNonNull(healthCheckRegistry, new HealthCheckRegistry())
         );
         handler.setAttribute(
-                MetricsServlet.METRICS_REGISTRY,
-                Objects.firstNonNull(metricRegistry, new MetricRegistry())
+            MetricsServlet.METRICS_REGISTRY,
+            Objects.firstNonNull(metricRegistry, new MetricRegistry())
         );
 
         handler.addServlet(new ServletHolder(new AdminServlet()), "/*");
@@ -217,8 +228,8 @@ public class JettyServerBuilder {
 
     @VisibleForTesting
     protected ThreadPool createServerThreadPool() {
-        QueuedThreadPool pool;
-        if (this.metricRegistry == null) {
+        final QueuedThreadPool pool;
+        if (null == this.metricRegistry) {
             pool = new QueuedThreadPool();
         } else {
             pool = new InstrumentedQueuedThreadPool(this.metricRegistry);
@@ -230,15 +241,16 @@ public class JettyServerBuilder {
 
     @VisibleForTesting
     protected AbstractConnector createMainConnector() {
-        BlockingChannelConnector connector;
-        if (this.metricRegistry == null) {
+
+        final BlockingChannelConnector connector;
+        if (null == this.metricRegistry) {
             connector = new BlockingChannelConnector();
             connector.setPort(config.getPort());
         } else {
             connector = new InstrumentedBlockingChannelConnector(
-                    metricRegistry,
-                    config.getPort(),
-                    Clock.defaultClock()
+                metricRegistry,
+                config.getPort(),
+                Clock.defaultClock()
             );
         }
 
@@ -260,7 +272,7 @@ public class JettyServerBuilder {
     }
 
     private Connector createAdminConnector() {
-        SocketConnector connector = new SocketConnector();
+        final SocketConnector connector = new SocketConnector();
 
         connector.setHost(config.getHost());
         connector.setPort(config.getAdminPort());
@@ -270,11 +282,11 @@ public class JettyServerBuilder {
         return connector;
     }
 
-    public static int getPort(Server server) {
-        Preconditions.checkNotNull(server);
-        Preconditions.checkState(server.isStarted(), "Server must be started to return its main port.");
+    public static int getPort(final Server server) {
+        checkNotNull(server);
+        checkState(server.isStarted(), "Server must be started to return its main port.");
 
-        Optional<Connector> connector = getConnectorByName(MAIN_CONNECTOR_NAME, server);
+        final Optional<Connector> connector = getConnectorByName(MAIN_CONNECTOR_NAME, server);
         if (connector.isPresent()) {
             return connector.get().getLocalPort();
         } else {
@@ -282,11 +294,11 @@ public class JettyServerBuilder {
         }
     }
 
-    public static int getAdminPort(Server server) {
-        Preconditions.checkNotNull(server);
-        Preconditions.checkState(server.isStarted(), "Server must be started to return its admin port.");
+    public static int getAdminPort(final Server server) {
+        checkNotNull(server);
+        checkState(server.isStarted(), "Server must be started to return its admin port.");
 
-        Optional<Connector> connector = getConnectorByName(ADMIN_CONNECTOR_NAME, server);
+        final Optional<Connector> connector = getConnectorByName(ADMIN_CONNECTOR_NAME, server);
         if (connector.isPresent()) {
             return connector.get().getLocalPort();
         } else {
@@ -294,11 +306,13 @@ public class JettyServerBuilder {
         }
     }
 
-    public static Optional<Connector> getConnectorByName(String name, Server server) {
-        Preconditions.checkNotNull(name);
-        Connector[] connectors = Objects.firstNonNull(server.getConnectors(), EMPTY_CONNECTORS);
+    public static Optional<Connector> getConnectorByName(final String name, final Server server) {
+        checkNotNull(name);
+
+        final Connector[] connectors = Objects.firstNonNull(server.getConnectors(), EMPTY_CONNECTORS);
+
         Optional<Connector> result = Optional.absent();
-        for (Connector connector : connectors) {
+        for (final Connector connector : connectors) {
             if (name.equals(connector.getName())) {
                 if (result.isPresent()) {
                     throw new IllegalStateException("Multiple connectors have the same name '" + name + "'");
@@ -306,6 +320,7 @@ public class JettyServerBuilder {
                 result = Optional.of(connector);
             }
         }
+
         return result;
     }
 
@@ -317,12 +332,12 @@ public class JettyServerBuilder {
         private static final String CONTENT = "Jetty is in da place!";
 
         @Override
-        protected void doGet(HttpServletRequest req,
-                             HttpServletResponse resp) throws ServletException, IOException {
+        protected void doGet(final HttpServletRequest req,
+                             final HttpServletResponse resp) throws ServletException, IOException {
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.setHeader("Cache-Control", "must-revalidate,no-cache,no-store");
             resp.setContentType(CONTENT_TYPE);
-            try (PrintWriter writer = resp.getWriter()) {
+            try (final PrintWriter writer = resp.getWriter()) {
                 writer.println(CONTENT);
             }
         }
@@ -333,13 +348,13 @@ public class JettyServerBuilder {
         private static final String CONTENT = "OK!";
 
         @Override
-        protected void doGet(HttpServletRequest req,
-                             HttpServletResponse resp) throws ServletException, IOException {
+        protected void doGet(final HttpServletRequest req,
+                             final HttpServletResponse resp) throws ServletException, IOException {
             int durationInMs = Integer.valueOf(req.getParameter("sleepMs"));
 
             try {
                 Thread.sleep(durationInMs);
-            } catch (InterruptedException e) {
+            } catch (final InterruptedException e) {
                 // whoops
                 throw new RuntimeException(e);
             }
@@ -347,7 +362,7 @@ public class JettyServerBuilder {
             resp.setStatus(HttpServletResponse.SC_OK);
             resp.setHeader("Cache-Control", "must-revalidate,no-cache,no-store");
             resp.setContentType(CONTENT_TYPE);
-            try (PrintWriter writer = resp.getWriter()) {
+            try (final PrintWriter writer = resp.getWriter()) {
                 writer.println(CONTENT);
             }
         }

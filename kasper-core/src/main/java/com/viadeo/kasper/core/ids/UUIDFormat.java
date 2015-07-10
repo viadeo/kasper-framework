@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.core.ids;
 
 import com.viadeo.kasper.api.FormatAdapter;
@@ -11,7 +17,7 @@ public class UUIDFormat extends FormatAdapter {
     }
 
     @Override
-    public <E> E parseIdentifier(String identifier) {
+    public <E> E parseIdentifier(final String identifier) {
         return (E) java.util.UUID.fromString(identifier);
     }
 

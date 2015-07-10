@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.core.ids;
 
 import com.google.common.base.Function;
@@ -14,15 +20,18 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 public abstract class AbstractByTypeConverter extends AbstractConverter {
 
-    public AbstractByTypeConverter(String vendor, Format source, Format target) {
+    public AbstractByTypeConverter(final String vendor, final Format source, final Format target) {
         super(vendor, source, target);
     }
 
-    public abstract Map<ID, ID> doConvert(String type, Collection<ID> ids);
+    // ------------------------------------------------------------------------
+
+    public abstract Map<ID, ID> doConvert(final String type, final Collection<ID> ids);
 
     @Override
-    public Map<ID,ID> convert(Collection<ID> ids) {
-        ListMultimap<String, ID> idsByType = Multimaps.index(ids, new Function<ID, String>() {
+    public Map<ID,ID> convert(final Collection<ID> ids) {
+
+        final ListMultimap<String, ID> idsByType = Multimaps.index(ids, new Function<ID, String>() {
             @Override
             public java.lang.String apply(com.viadeo.kasper.api.ID input) {
                 return checkNotNull(input).getType();
@@ -31,10 +40,11 @@ public abstract class AbstractByTypeConverter extends AbstractConverter {
 
         final Map<ID,ID> convertResults = Maps.newHashMapWithExpectedSize(ids.size());
 
-        for (String type : idsByType.keySet()) {
+        for (final String type : idsByType.keySet()) {
             convertResults.putAll(doConvert(type, idsByType.get(type)));
         }
 
         return convertResults;
     }
+
 }
