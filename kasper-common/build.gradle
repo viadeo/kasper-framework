@@ -24,6 +24,7 @@ dependencies {
     compile libraries.JACKSON_PARANAMER
     compile libraries.PARANAMER
     compile libraries.HAMCREST
+    compile libraries.AXON_CORE
 
     testCompile libraries.JUNIT
 //    tools "com.googlecode.jarjar:jarjar:1.3"

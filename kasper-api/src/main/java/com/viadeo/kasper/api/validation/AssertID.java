@@ -21,7 +21,8 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * The annotated element must respect some additional constraints according to the specified parameters.
  *
- * <p> Additional constraints are on :
+ * <p>
+ *   Additional constraints are on :
  *   <ul>
  *       <li>vendor</li>
  *       <li>type</li>
