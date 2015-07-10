@@ -5,11 +5,13 @@
 ext.gradleDir = "${rootProject.rootDir}/gradle"
 
 ext.nexusCredentials = {
-    username nexus_username
-    password nexus_password
+    username ultron_nexus_username
+    password ultron_nexus_password
 }
 
-wrapper.gradleVersion = '2.1'
+task wrapper(type: Wrapper) {
+    gradleVersion = '2.5'
+}
 
 configure(allprojects) {
     apply plugin: 'idea'
@@ -18,7 +20,7 @@ configure(allprojects) {
 
 configure(rootProject) {
     idea.project {
-        languageLevel = '1.7'
+        languageLevel = '1.8'
         ipr {
             withXml { provider ->
                 def mapping = provider.node.component.find { it.@name == 'VcsDirectoryMappings' }.mapping
@@ -48,18 +50,18 @@ configure(subprojects) {
     apply from: "${rootProject.rootDir}/libraries.gradle"
 
     group = 'com.viadeo.kasper'
-    version = '0.8.0-pre39'
+    version = '1.0.0-SNAPSHOT'
 
     if (project.name =~ /kasper-api|kasper-client|kasper-common/) {
         sourceCompatibility = 1.6
         targetCompatibility = 1.6
     } else {
-        sourceCompatibility = 1.7
-        targetCompatibility = 1.7
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
     }
 
     idea.module.iml.withXml {
-        it.node.component.find { it.@name == 'NewModuleRootManager' }.@LANGUAGE_LEVEL = '1.7'
+        it.node.component.find { it.@name == 'NewModuleRootManager' }.@LANGUAGE_LEVEL = '1.8'
     }
 
     configure([compileJava, compileTestJava]) {
@@ -133,11 +135,11 @@ configure(subprojects) {
     uploadArchives {
         repositories.mavenDeployer {
             configuration = configurations.deployerJars
-            repository(url: "https://${nexus_host}/content/repositories/kasper-releases") {
-                authentication(userName: nexus_username, password: nexus_password)
+            repository(url: "http://nexus-ultron.rhcloud.com/nexus/content/repositories/ultron-releases") {
+                authentication(userName: ultron_nexus_username, password: ultron_nexus_password)
             }
-            snapshotRepository(url: "https://${nexus_host}/content/repositories/kasper-snapshots") {
-                authentication(userName: nexus_username, password: nexus_password)
+            snapshotRepository(url: "http://nexus-ultron.rhcloud.com/nexus/content/repositories/ultron-snapshots") {
+                authentication(userName: ultron_nexus_username, password: ultron_nexus_password)
             }
         }
     }
@@ -156,7 +158,7 @@ configure(subprojects) {
     apply plugin: 'findbugs'
 
     findbugs {
-        toolVersion = "2.0.1"
+        toolVersion = "3.0.0"
         sourceSets = [sourceSets.main]
         ignoreFailures = false
         reportsDir = file("$project.buildDir/findbugsReports")
@@ -179,3 +181,4 @@ task alljavadoc(type: Javadoc) {
     classpath = files(rootProject.subprojects.collect { project -> project.sourceSets.main.compileClasspath })
     destinationDir = file('build/javadoc')
 }
+
