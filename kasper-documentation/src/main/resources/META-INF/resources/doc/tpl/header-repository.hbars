@@ -1,5 +1,0 @@
-  {{#if node.aggregate}}
-  	<div class="well well-small">
-  		<h2><small>Aggregate :</small> <a class="klink" href="#{{node.aggregate.name}}">{{node.aggregate.label}}</a></h2>
-  	</div>
-  {{/if}}
