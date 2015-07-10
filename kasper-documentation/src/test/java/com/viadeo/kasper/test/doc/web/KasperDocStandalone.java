@@ -155,7 +155,6 @@ public class KasperDocStandalone {
         final HttpServer server = GrizzlyServerFactory.createHttpServer(baseUri, rc);
 
         server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("src/main/resources/META-INF/resources/doc/"),"/doc");
-        server.getServerConfiguration().addHttpHandler(new StaticHttpHandler("src/main/resources/META-INF/resources/ndoc/"),"/ndoc");
 
         System.out.println(String.format("Try out %skasper/doc/domains \nAccess UI at %sndoc/index.html", baseUri, baseUri));
 
