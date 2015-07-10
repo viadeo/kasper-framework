@@ -7,7 +7,10 @@
 package com.viadeo.kasper.cqrs.query.interceptor;
 
 import com.codahale.metrics.Timer;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.domain.query.Query;
+import com.viadeo.kasper.api.domain.query.QueryResult;
+import com.viadeo.kasper.api.domain.query.QueryResponse;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.QueryInterceptor;
 import com.viadeo.kasper.cqrs.query.*;

@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.ids;
 
-import com.viadeo.kasper.api.FormatAdapter;
+import com.viadeo.kasper.api.id.FormatAdapter;
 
 import java.util.UUID;
 

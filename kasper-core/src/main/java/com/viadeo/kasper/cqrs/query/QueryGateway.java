@@ -6,7 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.domain.query.Query;
+import com.viadeo.kasper.api.domain.query.QueryResult;
+import com.viadeo.kasper.api.domain.query.QueryResponse;
+import com.viadeo.kasper.api.context.Context;
 
 /** The Kasper query gateway, used to result queries from the kasper platform */
 public interface QueryGateway {

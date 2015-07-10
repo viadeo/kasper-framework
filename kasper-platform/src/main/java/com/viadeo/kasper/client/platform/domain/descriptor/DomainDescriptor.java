@@ -7,8 +7,8 @@
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
 import com.google.common.collect.ImmutableList;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.domain.Domain;
+import com.viadeo.kasper.api.domain.event.Event;
 
 import java.util.Collection;
 

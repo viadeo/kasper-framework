@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.applications;
 
-import com.viadeo.kasper.ddd.annotation.XKasperDomain;
+import com.viadeo.kasper.api.documentation.XKasperDomain;
 import com.viadeo.kasper.test.root.Facebook;
 
 @XKasperDomain(prefix=Applications.PREFIX, label=Applications.NAME, description=Applications.DESCRIPTION)

@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.core.interceptor;
 
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.domain.query.Query;
+import com.viadeo.kasper.api.domain.query.QueryResponse;
+import com.viadeo.kasper.api.domain.query.QueryResult;
 
 public interface QueryInterceptor<Q extends Query, P extends QueryResult> extends Interceptor<Q, QueryResponse<P>> { }

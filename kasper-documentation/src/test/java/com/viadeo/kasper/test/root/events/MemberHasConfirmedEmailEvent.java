@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.test.root.events;
 
-import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.api.domain.event.Event;
 
 public class MemberHasConfirmedEmailEvent implements Event {
 

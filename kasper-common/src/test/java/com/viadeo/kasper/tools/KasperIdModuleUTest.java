@@ -7,7 +7,7 @@
 package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.viadeo.kasper.impl.*;
+import com.viadeo.kasper.api.id.*;
 import org.junit.Before;
 import org.junit.Test;
 

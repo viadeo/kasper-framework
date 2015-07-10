@@ -7,7 +7,8 @@
 package com.viadeo.kasper.cqrs.command;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
+import com.viadeo.kasper.api.domain.command.Command;
+import com.viadeo.kasper.api.domain.exception.KasperCommandException;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.repository.ClientRepository;

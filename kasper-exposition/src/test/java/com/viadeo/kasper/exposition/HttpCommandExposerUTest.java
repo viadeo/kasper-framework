@@ -7,10 +7,10 @@
 package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.annotation.XKasperUnexposed;
+import com.viadeo.kasper.api.domain.annotation.XKasperUnexposed;
 import com.viadeo.kasper.client.platform.Meta;
 import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.api.domain.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.exposition.http.HttpCommandExposer;

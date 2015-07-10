@@ -9,11 +9,11 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
-import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
+import com.viadeo.kasper.api.domain.query.CollectionQueryResult;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.domain.query.QueryResult;
+import com.viadeo.kasper.api.domain.Domain;
+import com.viadeo.kasper.api.domain.exception.KasperException;
 import org.junit.Before;
 import org.junit.Test;
 

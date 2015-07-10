@@ -6,6 +6,6 @@
 // ============================================================================
 package com.viadeo.kasper.test.applications.events;
 
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.domain.event.Event;
 
 public class ApplicationCreatedEvent implements Event { }

@@ -10,7 +10,7 @@ import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.domain.Domain;
 import org.axonframework.eventhandling.EventBus;
 import org.junit.Test;
 import org.junit.runner.RunWith;

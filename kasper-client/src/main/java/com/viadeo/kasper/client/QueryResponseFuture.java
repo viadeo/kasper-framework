@@ -8,8 +8,8 @@ package com.viadeo.kasper.client;
 
 import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.ClientResponse;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.domain.query.QueryResponse;
+import com.viadeo.kasper.api.domain.query.QueryResult;
 
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;

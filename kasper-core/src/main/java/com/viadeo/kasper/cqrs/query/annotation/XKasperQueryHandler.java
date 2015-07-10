@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.annotation;
 
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.domain.Domain;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

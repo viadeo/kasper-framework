@@ -8,7 +8,7 @@ package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
+import com.viadeo.kasper.api.domain.query.QueryResponse;
 
 import java.io.IOException;
 

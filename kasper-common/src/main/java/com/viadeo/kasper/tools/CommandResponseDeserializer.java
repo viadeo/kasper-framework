@@ -10,9 +10,9 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.KasperResponse;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.api.domain.response.KasperReason;
+import com.viadeo.kasper.api.domain.response.KasperResponse;
+import com.viadeo.kasper.api.domain.command.CommandResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.viadeo.kasper.KasperResponse.Status;
+import static com.viadeo.kasper.api.domain.response.KasperResponse.Status;
 
 public final class CommandResponseDeserializer extends KasperResponseDeserializer<CommandResponse> {
     static final Logger LOGGER = LoggerFactory.getLogger(CommandResponseDeserializer.class);

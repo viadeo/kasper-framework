@@ -7,7 +7,7 @@
 package com.viadeo.kasper.event.saga.step;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.domain.event.Event;
 import com.viadeo.kasper.event.saga.SagaIdReconciler;
 import org.junit.Before;
 import org.junit.Rule;

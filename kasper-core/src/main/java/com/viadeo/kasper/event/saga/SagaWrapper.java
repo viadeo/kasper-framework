@@ -6,9 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga;
 
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.domain.response.CoreReasonCode;
+import com.viadeo.kasper.api.domain.response.KasperReason;
+import com.viadeo.kasper.api.domain.event.Event;
+import com.viadeo.kasper.api.domain.event.EventResponse;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.event.*;
 
 import java.util.Set;

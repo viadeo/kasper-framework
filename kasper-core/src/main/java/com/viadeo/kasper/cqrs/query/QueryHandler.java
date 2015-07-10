@@ -6,10 +6,13 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.domain.query.Query;
+import com.viadeo.kasper.api.domain.query.QueryResult;
+import com.viadeo.kasper.api.domain.query.QueryResponse;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.domain.exception.KasperQueryException;
+import com.viadeo.kasper.api.domain.event.Event;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;

@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.domain.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.domain.query.QueryResult;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

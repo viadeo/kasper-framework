@@ -8,10 +8,10 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
-import com.viadeo.kasper.annotation.XKasperField;
-import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.documentation.XKasperField;
+import com.viadeo.kasper.api.domain.query.CollectionQueryResult;
+import com.viadeo.kasper.api.domain.query.QueryResponse;
+import com.viadeo.kasper.api.domain.query.QueryResult;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;

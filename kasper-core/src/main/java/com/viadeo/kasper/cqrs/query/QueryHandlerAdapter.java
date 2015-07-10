@@ -9,7 +9,7 @@ package com.viadeo.kasper.cqrs.query;
 /**
  * A Kasper query adapter
  *
- * @see com.viadeo.kasper.cqrs.query.Query
+ * @see com.viadeo.kasper.api.domain.query.Query
  */
 public interface QueryHandlerAdapter {
 

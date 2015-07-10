@@ -6,7 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.event;
 
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.domain.event.Event;
+import com.viadeo.kasper.api.domain.event.EventResponse;
+import com.viadeo.kasper.api.context.Context;
 
 import java.util.Set;
 

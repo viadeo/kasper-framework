@@ -11,12 +11,12 @@ import com.google.common.collect.*;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.core.resolvers.DomainResolver;
 import com.viadeo.kasper.core.resolvers.QueryHandlerResolver;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.domain.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandlerAdapter;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.domain.query.QueryResult;
+import com.viadeo.kasper.api.domain.exception.KasperQueryException;
+import com.viadeo.kasper.api.domain.Domain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

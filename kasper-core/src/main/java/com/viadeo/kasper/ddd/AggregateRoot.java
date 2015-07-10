@@ -7,11 +7,11 @@
 package com.viadeo.kasper.ddd;
 
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
-import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.domain.exception.KasperCommandException;
+import com.viadeo.kasper.api.domain.event.Event;
 import org.axonframework.domain.MetaData;
 import org.axonframework.eventsourcing.annotation.AbstractAnnotatedAggregateRoot;
 import org.axonframework.eventsourcing.annotation.AggregateIdentifier;
@@ -25,7 +25,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Base AGR implementation
  *
  * @see com.viadeo.kasper.ddd.AggregateRoot
- * @see com.viadeo.kasper.ddd.Domain
+ * @see com.viadeo.kasper.api.domain.Domain
  */
 public abstract class AggregateRoot<I extends KasperID>
 		extends AbstractAnnotatedAggregateRoot<KasperID>

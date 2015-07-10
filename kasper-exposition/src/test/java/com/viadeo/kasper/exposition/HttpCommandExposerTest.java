@@ -10,28 +10,29 @@ import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.ClientResponse;
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.KasperResponse.Status;
-import com.viadeo.kasper.annotation.XKasperAlias;
-import com.viadeo.kasper.annotation.XKasperUnexposed;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.domain.annotation.XKasperAlias;
+import com.viadeo.kasper.api.domain.annotation.XKasperUnexposed;
+import com.viadeo.kasper.api.domain.exception.KasperException;
+import com.viadeo.kasper.api.domain.command.Command;
+import com.viadeo.kasper.api.domain.command.CommandResponse;
+import com.viadeo.kasper.api.domain.response.CoreReasonCode;
+import com.viadeo.kasper.api.domain.response.KasperReason;
+import com.viadeo.kasper.api.domain.response.KasperResponse.Status;
+import com.viadeo.kasper.client.HTTPCommandResponse;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.cqrs.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.saga.Saga;
-import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.exposition.http.CallTypes;
 import com.viadeo.kasper.exposition.http.HttpCommandExposerPlugin;
 import org.junit.Test;
@@ -334,7 +335,8 @@ public class HttpCommandExposerTest extends BaseHttpExposerTest {
         // Then
         assertEquals(Status.ERROR, response.getStatus());
         assertEquals(command.getCode(), response.getReason().getCode());
-        assertEquals(Response.Status.CONFLICT, response.asHttp().getHTTPStatus());
+        assertTrue(response instanceof HTTPCommandResponse);
+        assertEquals(Response.Status.CONFLICT, ((HTTPCommandResponse) response).getHTTPStatus());
     }
 
     // ------------------------------------------------------------------------

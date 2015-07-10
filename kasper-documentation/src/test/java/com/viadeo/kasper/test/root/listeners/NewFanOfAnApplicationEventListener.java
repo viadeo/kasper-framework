@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.test.root.listeners;
 
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.EventResponse;
+import com.viadeo.kasper.api.domain.event.EventResponse;
 import com.viadeo.kasper.test.applications.events.MemberHasDeclaredToBeFanOfAnApplicationEvent;
 
 public class NewFanOfAnApplicationEventListener extends EventListener<MemberHasDeclaredToBeFanOfAnApplicationEvent> {

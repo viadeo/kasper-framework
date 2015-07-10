@@ -7,7 +7,7 @@
 package com.viadeo.kasper.ddd.repository;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
 import org.axonframework.repository.AggregateNotFoundException;

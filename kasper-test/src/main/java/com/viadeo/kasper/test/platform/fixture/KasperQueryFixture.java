@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform.fixture;
 
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.domain.event.Event;
 import com.viadeo.kasper.test.platform.executor.KasperFixtureQueryExecutor;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureQueryResultValidator;
 

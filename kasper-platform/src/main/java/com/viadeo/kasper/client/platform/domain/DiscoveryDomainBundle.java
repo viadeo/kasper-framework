@@ -15,11 +15,11 @@ import com.viadeo.kasper.core.interceptor.EventInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.domain.Domain;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.event.saga.Saga;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.domain.exception.KasperException;
 import org.springframework.beans.factory.BeanCreationException;
 
 import java.util.Collection;

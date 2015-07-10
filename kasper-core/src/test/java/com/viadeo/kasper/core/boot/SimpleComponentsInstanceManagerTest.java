@@ -7,7 +7,7 @@
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.domain.exception.KasperException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

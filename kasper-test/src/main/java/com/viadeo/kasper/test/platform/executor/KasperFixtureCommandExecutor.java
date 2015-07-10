@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform.executor;
 
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.domain.command.Command;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureCommandResultValidator;
 
 public interface KasperFixtureCommandExecutor<VALIDATOR extends KasperFixtureCommandResultValidator> extends KasperFixtureExecutor {

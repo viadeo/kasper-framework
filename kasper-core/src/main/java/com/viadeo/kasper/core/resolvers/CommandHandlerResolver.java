@@ -9,11 +9,11 @@ package com.viadeo.kasper.core.resolvers;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.api.domain.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.domain.Domain;
+import com.viadeo.kasper.api.domain.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import java.util.concurrent.ConcurrentMap;

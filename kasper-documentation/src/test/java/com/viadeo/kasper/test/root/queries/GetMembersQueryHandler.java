@@ -6,15 +6,15 @@
 // ============================================================================
 package com.viadeo.kasper.test.root.queries;
 
-import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.annotation.XKasperAlias;
-import com.viadeo.kasper.api.ID;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.api.domain.annotation.XKasperAlias;
+import com.viadeo.kasper.api.id.ID;
 import com.viadeo.kasper.api.validation.AssertID;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.domain.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.domain.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryResult;
+import com.viadeo.kasper.api.documentation.XKasperQueryResult;
 import com.viadeo.kasper.test.root.Facebook;
 
 import javax.validation.constraints.Min;

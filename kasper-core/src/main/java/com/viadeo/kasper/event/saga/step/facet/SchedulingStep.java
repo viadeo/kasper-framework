@@ -7,8 +7,8 @@
 package com.viadeo.kasper.event.saga.step.facet;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.domain.event.Event;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
 import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.event.saga.step.Scheduler;

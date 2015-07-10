@@ -7,8 +7,10 @@
 package com.viadeo.kasper.event;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.api.domain.response.CoreReasonCode;
+import com.viadeo.kasper.api.domain.response.KasperReason;
+import com.viadeo.kasper.api.domain.event.Event;
+import com.viadeo.kasper.api.domain.event.EventResponse;
 import org.axonframework.domain.EventMessage;
 
 import java.util.Set;

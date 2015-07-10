@@ -7,7 +7,7 @@
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.domain.event.Event;
 import com.viadeo.kasper.event.saga.Saga;
 
 import java.util.List;

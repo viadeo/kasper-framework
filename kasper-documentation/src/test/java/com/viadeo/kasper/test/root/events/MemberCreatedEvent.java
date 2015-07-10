@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.test.root.events;
 
-import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.event.annotation.XKasperEvent;
-import com.viadeo.kasper.event.domain.EntityCreatedEvent;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.api.documentation.XKasperEvent;
+import com.viadeo.kasper.api.domain.event.EntityCreatedEvent;
 import com.viadeo.kasper.test.root.Facebook;
 
 @XKasperEvent(action = "created")

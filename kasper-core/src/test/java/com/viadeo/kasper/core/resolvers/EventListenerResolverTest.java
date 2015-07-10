@@ -7,14 +7,14 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.domain.Domain;
+import com.viadeo.kasper.api.domain.event.Event;
 import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.event.EventResponse;
+import com.viadeo.kasper.api.domain.event.EventResponse;
 import com.viadeo.kasper.event.annotation.XKasperEventListener;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.domain.exception.KasperException;
 import org.junit.Test;
 
 import static org.junit.Assert.*;

@@ -8,11 +8,10 @@ package com.viadeo.kasper.cqrs.command;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
-import com.viadeo.kasper.cqrs.command.exceptions.KasperCommandException;
-import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.impl.UnitOfWorkEvent;
+import com.viadeo.kasper.api.domain.exception.KasperCommandException;
+import com.viadeo.kasper.api.domain.event.Event;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;

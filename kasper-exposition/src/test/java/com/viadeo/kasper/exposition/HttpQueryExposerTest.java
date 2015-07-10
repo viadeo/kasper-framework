@@ -10,17 +10,23 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.google.common.collect.Lists;
 import com.sun.jersey.api.client.ClientResponse;
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.annotation.XKasperAlias;
-import com.viadeo.kasper.annotation.XKasperUnexposed;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.domain.annotation.XKasperAlias;
+import com.viadeo.kasper.api.domain.annotation.XKasperUnexposed;
+import com.viadeo.kasper.api.domain.exception.KasperQueryException;
+import com.viadeo.kasper.api.domain.query.CollectionQueryResult;
+import com.viadeo.kasper.api.domain.query.Query;
+import com.viadeo.kasper.api.domain.query.QueryResponse;
+import com.viadeo.kasper.api.domain.query.QueryResult;
+import com.viadeo.kasper.api.domain.response.CoreReasonCode;
+import com.viadeo.kasper.api.domain.response.KasperReason;
+import com.viadeo.kasper.client.HTTPQueryResponse;
 import com.viadeo.kasper.client.KasperClientBuilder;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
-import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.context.HttpContextHeaders;
-import com.viadeo.kasper.cqrs.query.*;
+import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.cqrs.query.QueryMessage;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.cqrs.query.exceptions.KasperQueryException;
 import com.viadeo.kasper.exposition.http.HttpQueryExposerPlugin;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.junit.Test;
@@ -242,7 +248,8 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         // Then
         assertFalse(actual.isOK());
         assertEquals(query.aValue, actual.getReason().getLabel());
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR, actual.asHttp().getHTTPStatus());
+        assertTrue(actual instanceof HTTPQueryResponse);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR, ((HTTPQueryResponse) actual).getHTTPStatus());
     }
 
     // ------------------------------------------------------------------------
@@ -261,7 +268,8 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         // Then
         assertFalse(actual.isOK());
         assertEquals(query.aValue, actual.getReason().getLabel());
-        assertEquals(Response.Status.NOT_FOUND, actual.asHttp().getHTTPStatus());
+        assertTrue(actual instanceof HTTPQueryResponse);
+        assertEquals(Response.Status.NOT_FOUND, ((HTTPQueryResponse)actual).getHTTPStatus());
     }
 
     // ------------------------------------------------------------------------
@@ -297,7 +305,8 @@ public class HttpQueryExposerTest extends BaseHttpExposerTest {
         // Then
         assertFalse(actual.isOK());
         assertEquals(query.getAValue(), actual.getReason().getCode());
-        assertEquals(Response.Status.INTERNAL_SERVER_ERROR, actual.asHttp().getHTTPStatus());
+        assertTrue(actual instanceof HTTPQueryResponse);
+        assertEquals(Response.Status.INTERNAL_SERVER_ERROR, ((HTTPQueryResponse)actual).getHTTPStatus());
 
         Collection<String> messages = actual.getReason().getMessages();
         final String[] actualMessages = messages.toArray(new String[messages.size()]);

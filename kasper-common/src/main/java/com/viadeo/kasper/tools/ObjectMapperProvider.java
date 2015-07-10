@@ -12,7 +12,7 @@ import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.fasterxml.jackson.datatype.guava.GuavaModule;
 import com.fasterxml.jackson.datatype.joda.JodaModule;
-import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.api.domain.response.KasperReason;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

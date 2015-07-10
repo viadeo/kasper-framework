@@ -7,12 +7,12 @@
 package com.viadeo.kasper.cqrs.command.interceptor;
 
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.domain.command.Command;
+import com.viadeo.kasper.api.domain.command.CommandResponse;
+import com.viadeo.kasper.api.domain.exception.KasperException;
 import org.axonframework.commandhandling.GenericCommandMessage;
 
 import java.util.Map;

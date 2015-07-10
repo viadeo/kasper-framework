@@ -7,15 +7,15 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.api.domain.response.CoreReasonCode;
+import com.viadeo.kasper.api.domain.response.KasperReason;
 import com.viadeo.kasper.client.platform.Meta;
 import com.viadeo.kasper.client.platform.Platform;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.domain.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
+import com.viadeo.kasper.api.domain.query.QueryResponse;
 import com.viadeo.kasper.exposition.ExposureDescriptor;
 import com.viadeo.kasper.query.exposition.query.QueryFactory;
 import com.viadeo.kasper.query.exposition.query.QueryFactoryBuilder;

@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.test.root.commands;
 
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
+import com.viadeo.kasper.api.domain.command.Command;
+import com.viadeo.kasper.api.documentation.XKasperCommand;
 
 import javax.validation.constraints.NotNull;
 

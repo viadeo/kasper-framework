@@ -10,10 +10,10 @@ import com.codahale.metrics.MetricRegistry;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.configuration.KasperPlatformConfiguration;
 import com.viadeo.kasper.client.platform.domain.sample.MyCustomDomainBox;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.event.EventListener;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.domain.exception.KasperException;
 import org.junit.Test;
 
 import java.util.concurrent.ExecutorService;

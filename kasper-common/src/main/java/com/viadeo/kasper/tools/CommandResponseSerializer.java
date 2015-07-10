@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.tools;
 
-import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.api.domain.command.CommandResponse;
 
 public class CommandResponseSerializer extends KasperResponseSerializer<CommandResponse> {
 

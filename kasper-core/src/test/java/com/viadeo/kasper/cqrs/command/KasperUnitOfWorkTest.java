@@ -6,10 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
-import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.impl.UnitOfWorkEvent;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.domain.event.Event;
 import org.axonframework.domain.EventMessage;
 import org.axonframework.domain.MetaData;
 import org.axonframework.eventhandling.EventBus;

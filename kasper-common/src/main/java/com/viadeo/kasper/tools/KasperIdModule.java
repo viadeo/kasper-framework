@@ -13,8 +13,8 @@ import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.viadeo.kasper.impl.DefaultKasperId;
-import com.viadeo.kasper.impl.DefaultKasperRelationId;
+import com.viadeo.kasper.api.id.DefaultKasperId;
+import com.viadeo.kasper.api.id.DefaultKasperRelationId;
 
 import java.io.IOException;
 

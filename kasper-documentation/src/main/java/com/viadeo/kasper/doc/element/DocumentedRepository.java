@@ -10,7 +10,7 @@ import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.domain.descriptor.AggregateDescriptor;
 import com.viadeo.kasper.client.platform.domain.descriptor.RepositoryDescriptor;
 import com.viadeo.kasper.doc.initializer.DocumentedElementVisitor;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.domain.event.Event;
 
 import java.util.Collection;
 import java.util.List;

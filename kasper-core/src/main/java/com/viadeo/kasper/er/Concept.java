@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.er;
 
-import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.api.id.KasperID;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.Entity;
 

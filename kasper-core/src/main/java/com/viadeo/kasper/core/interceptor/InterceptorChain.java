@@ -9,7 +9,7 @@ package com.viadeo.kasper.core.interceptor;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import org.slf4j.MDC;
 

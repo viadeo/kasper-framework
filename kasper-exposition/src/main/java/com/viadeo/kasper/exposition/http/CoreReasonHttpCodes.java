@@ -7,7 +7,7 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.CoreReasonCode;
+import com.viadeo.kasper.api.domain.response.CoreReasonCode;
 
 import java.util.Map;
 

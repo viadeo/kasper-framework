@@ -8,7 +8,7 @@ package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.collect.Sets;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.domain.exception.KasperException;
 import org.axonframework.eventhandling.async.EventProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

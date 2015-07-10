@@ -8,8 +8,8 @@ package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleDeserializers;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
+import com.viadeo.kasper.api.domain.command.CommandResponse;
+import com.viadeo.kasper.api.domain.query.QueryResponse;
 
 class CommandQueryResponseDeserializerAdapter extends SimpleDeserializers {
     private static final long serialVersionUID = 1995270375280248186L;

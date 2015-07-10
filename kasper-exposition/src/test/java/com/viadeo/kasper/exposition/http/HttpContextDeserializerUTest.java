@@ -7,7 +7,7 @@
 package com.viadeo.kasper.exposition.http;
 
 import com.google.common.collect.ImmutableMap;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import org.junit.Before;
 import org.junit.Test;

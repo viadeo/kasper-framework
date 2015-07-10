@@ -7,7 +7,7 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.domain.Domain;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

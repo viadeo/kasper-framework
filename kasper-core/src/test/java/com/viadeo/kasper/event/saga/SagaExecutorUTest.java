@@ -8,9 +8,9 @@ package com.viadeo.kasper.event.saga;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.Sets;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.domain.event.Event;
 import com.viadeo.kasper.event.saga.exception.SagaExecutionException;
 import com.viadeo.kasper.event.saga.exception.SagaPersistenceException;
 import com.viadeo.kasper.event.saga.factory.SagaFactory;

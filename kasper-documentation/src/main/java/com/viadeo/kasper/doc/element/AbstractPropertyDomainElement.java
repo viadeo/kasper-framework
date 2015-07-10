@@ -7,7 +7,7 @@
 package com.viadeo.kasper.doc.element;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.annotation.XKasperAlias;
+import com.viadeo.kasper.api.domain.annotation.XKasperAlias;
 import com.viadeo.kasper.doc.nodes.DocumentedBean;
 
 import java.util.List;

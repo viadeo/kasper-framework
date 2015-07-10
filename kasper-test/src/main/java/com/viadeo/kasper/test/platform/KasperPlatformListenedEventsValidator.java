@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform;
 
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.domain.command.Command;
+import com.viadeo.kasper.api.domain.event.Event;
 import com.viadeo.kasper.event.EventListener;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureEventResultValidator;
 import com.viadeo.kasper.test.platform.validator.base.DefaultBaseValidator;

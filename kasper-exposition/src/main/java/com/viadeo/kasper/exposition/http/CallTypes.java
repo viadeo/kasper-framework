@@ -2,10 +2,10 @@ package com.viadeo.kasper.exposition.http;
 
 import com.google.common.base.Optional;
 import com.google.common.base.Throwables;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.domain.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.api.domain.command.CommandResponse;
 
 import java.io.Serializable;
 import java.util.concurrent.*;

@@ -8,7 +8,7 @@ package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.MutableClassToInstanceMap;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.domain.exception.KasperException;
 
 /**
  * Base implementation for a components instance manager based on a simple map

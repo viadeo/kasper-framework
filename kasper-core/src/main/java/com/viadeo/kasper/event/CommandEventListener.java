@@ -7,6 +7,7 @@
 package com.viadeo.kasper.event;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.api.domain.event.Event;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 
 import static com.google.common.base.Preconditions.checkNotNull;

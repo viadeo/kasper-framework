@@ -8,10 +8,10 @@ package com.viadeo.kasper.doc.nodes;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.KasperResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.api.domain.response.KasperReason;
+import com.viadeo.kasper.api.domain.response.KasperResponse;
+import com.viadeo.kasper.api.domain.query.QueryResult;
 import org.joda.time.ReadableInstant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

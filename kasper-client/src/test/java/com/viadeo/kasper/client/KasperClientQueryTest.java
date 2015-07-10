@@ -14,13 +14,12 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
-import com.viadeo.kasper.cqrs.TransportMode;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.domain.query.Query;
+import com.viadeo.kasper.api.domain.response.CoreReasonCode;
+import com.viadeo.kasper.api.domain.query.QueryResponse;
+import com.viadeo.kasper.api.domain.query.QueryResult;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -29,7 +28,6 @@ import org.mockito.ArgumentCaptor;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
@@ -290,9 +288,7 @@ public class KasperClientQueryTest extends JerseyTest {
                 Contexts.empty(), query, MemberResult.class);
 
         // Then
-        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
-        Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
-        Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
     }
 
     @Test public void queryAsync_withResultNot200_shouldFillErrorsInResponse() throws MalformedURLException, InterruptedException, ExecutionException {
@@ -307,9 +303,7 @@ public class KasperClientQueryTest extends JerseyTest {
                 Contexts.empty(), query, MemberResult.class).get();
 
         // Then
-        Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
-        Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
-        Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
+        assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
     }
 
 }

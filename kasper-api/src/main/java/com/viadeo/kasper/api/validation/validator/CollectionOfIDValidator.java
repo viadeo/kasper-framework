@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.api.validation.validator;
 
-import com.viadeo.kasper.api.ID;
+import com.viadeo.kasper.api.id.ID;
 import com.viadeo.kasper.api.validation.AssertID;
 
 import javax.validation.ConstraintValidator;

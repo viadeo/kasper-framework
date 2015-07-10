@@ -7,9 +7,9 @@
 package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
+import com.viadeo.kasper.api.domain.response.KasperReason;
+import com.viadeo.kasper.api.domain.command.CommandResponse;
+import com.viadeo.kasper.api.domain.query.QueryResponse;
 
 public class KasperResponseModule extends SimpleModule {
 

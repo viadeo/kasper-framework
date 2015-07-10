@@ -13,7 +13,7 @@ import com.google.common.collect.ObjectArrays;
 import com.google.common.collect.Sets;
 import com.google.common.reflect.TypeToken;
 import com.thoughtworks.paranamer.*;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.domain.query.Query;
 import com.viadeo.kasper.query.exposition.Feature;
 import com.viadeo.kasper.query.exposition.FeatureConfiguration;
 import com.viadeo.kasper.query.exposition.TypeAdapter;

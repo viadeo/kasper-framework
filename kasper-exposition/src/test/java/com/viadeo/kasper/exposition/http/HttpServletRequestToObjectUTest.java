@@ -1,6 +1,6 @@
 package com.viadeo.kasper.exposition.http;
 
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.domain.query.Query;
 import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.junit.Assert;
 import org.junit.Before;

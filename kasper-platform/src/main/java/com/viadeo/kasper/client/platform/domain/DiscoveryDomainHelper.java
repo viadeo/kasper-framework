@@ -7,8 +7,8 @@
 package com.viadeo.kasper.client.platform.domain;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.domain.Domain;
+import com.viadeo.kasper.api.domain.exception.KasperException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;

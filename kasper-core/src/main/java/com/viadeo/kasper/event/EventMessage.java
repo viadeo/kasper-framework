@@ -8,8 +8,9 @@ package com.viadeo.kasper.event;
 
 import com.google.common.base.Objects;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.api.domain.event.Event;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.ddd.AggregateRoot;
 import org.axonframework.domain.DomainEventMessage;
 import org.joda.time.DateTime;
@@ -23,7 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * @param <E> Encapsulated Kasper event class
  * 
  * @see com.viadeo.kasper.event.EventMessage
- * @see com.viadeo.kasper.event.Event
+ * @see com.viadeo.kasper.api.domain.event.Event
  */
 public class EventMessage<E extends Event> {
 	private static final long serialVersionUID = -214545825521867826L;

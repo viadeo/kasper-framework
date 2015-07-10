@@ -7,11 +7,11 @@
 package com.viadeo.kasper.tools;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
-import com.viadeo.kasper.cqrs.query.IndexedEntity;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.impl.DefaultKasperId;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.api.domain.query.CollectionQueryResult;
+import com.viadeo.kasper.api.domain.query.IndexedEntity;
+import com.viadeo.kasper.api.domain.query.QueryResult;
+import com.viadeo.kasper.api.id.DefaultKasperId;
 import org.hamcrest.Matcher;
 import org.hamcrest.StringDescription;
 import org.joda.time.DateTime;

@@ -6,7 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.command;
 
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.domain.command.Command;
+import com.viadeo.kasper.api.domain.command.CommandResponse;
+import com.viadeo.kasper.api.context.Context;
 import org.axonframework.commandhandling.gateway.Timeout;
 import org.axonframework.common.annotation.MetaData;
 

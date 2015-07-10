@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.core.interceptor;
 
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 
 public interface Interceptor<INPUT, OUTPUT> {
 
