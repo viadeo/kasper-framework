@@ -21,14 +21,10 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 /**
  * The annotated element must respect some additional constraints according to the specified parameters.
  *
- * <p>
  *   Additional constraints are on :
- *   <ul>
- *       <li>vendor</li>
- *       <li>type</li>
- *       <li>format</li>
- *   </ul>
- * </p>
+ *      - vendor
+ *      - type
+ *      - format
  */
 @Target({ FIELD })
 @Retention(RUNTIME)

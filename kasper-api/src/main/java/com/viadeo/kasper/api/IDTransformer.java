@@ -13,7 +13,7 @@ public interface IDTransformer {
      *
      * @param format the targeted format
      * @param ids the list of initial ids
-     * @return a map of old => transformed
+     * @return a map of old vs transformed
      */
     Map<ID,ID> to(Format format, Collection<ID> ids);
 
@@ -23,7 +23,7 @@ public interface IDTransformer {
      * @param format the targeted format
      * @param firstId the first id
      * @param restIds the rest of ids
-     * @return a map of old => transformed
+     * @return a map of old vs transformed
      */
     Map<ID,ID> to(Format format, ID firstId,  ID... restIds);
 
