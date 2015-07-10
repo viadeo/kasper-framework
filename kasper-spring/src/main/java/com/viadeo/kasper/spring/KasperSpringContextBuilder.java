@@ -119,7 +119,9 @@ public class KasperSpringContextBuilder {
             }
 
             AnnotationConfigApplicationContext context = contextWithConfig(config);
-            context.register(parent);
+            if (parent.length > 0) {
+                context.register(parent);
+            }
             context.register(bundles.toArray(new Class<?>[bundles.size()]));
             context.registerShutdownHook();
             context.refresh();

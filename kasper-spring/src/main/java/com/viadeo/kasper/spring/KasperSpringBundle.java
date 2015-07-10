@@ -103,7 +103,9 @@ public class KasperSpringBundle extends DefaultDomainBundle {
         queryScanner.addIncludeFilter(new AnnotationAndPathFilter(Configuration.class, makePaths("query.spring", "common.spring")));
         total += queryScanner.scan(getClass().getPackage().getName());
 
-        Preconditions.checkState(total > 0, "Bundle %s registered nothing in context, this is probably an error in the package layout", getClass().getName());
+        if (total == 0) {
+            LOGGER.warn(String.format("Bundle %s registered nothing in context, this is probably an error in the package layout",getClass().getName()));
+        }
 
         initTimeInMillis = System.currentTimeMillis() - startInitTimeInMillis;
     }
