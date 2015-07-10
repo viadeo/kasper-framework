@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.spring.starters;
 
 import com.codahale.metrics.MetricRegistry;
@@ -15,8 +21,8 @@ import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptor;
 import com.viadeo.kasper.client.platform.domain.descriptor.DomainDescriptorFactory;
 import com.viadeo.kasper.context.ContextHelper;
 import com.viadeo.kasper.context.Version;
-import com.viadeo.kasper.core.context.ContextVersion;
 import com.viadeo.kasper.core.context.DefaultContextHelper;
+import com.viadeo.kasper.core.context.DefaultVersion;
 import com.viadeo.kasper.core.interceptor.CommandInterceptorFactory;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
 import com.viadeo.kasper.core.resolvers.DomainHelper;
@@ -82,7 +88,7 @@ public class KasperPlatformConfiguration {
             LOGGER.warn("runtime.context.client.version not set in configuration");
         }
 
-        return new ContextVersion(currentApplicationVersion, currentClientVersion);
+        return new DefaultVersion(currentApplicationVersion, currentClientVersion);
     }
 
     @Bean
@@ -104,10 +110,10 @@ public class KasperPlatformConfiguration {
      * @return domain descriptors instance
      */
     @Bean
-    public Platform.BuilderContext platformBuilderContext(MetricRegistry metricRegistry,
-                                                          KasperEventBus evenBus,
-                                                          KasperCommandGateway commandGateway,
-                                                          KasperQueryGateway queryGateway
+    public Platform.BuilderContext platformBuilderContext(final MetricRegistry metricRegistry,
+                                                          final KasperEventBus evenBus,
+                                                          final KasperCommandGateway commandGateway,
+                                                          final KasperQueryGateway queryGateway
 
     ) {
 
@@ -132,18 +138,18 @@ public class KasperPlatformConfiguration {
      */
     @Bean
     public DescriptorRegistry descriptorRegistry(
-            DomainHelper domainHelper,
-            List<DomainBundle> bundles,
-            KasperEventBus evenBus,
-            KasperCommandGateway commandGateway,
-            KasperQueryGateway queryGateway,
-            Platform.BuilderContext context
+            final DomainHelper domainHelper,
+            final List<DomainBundle> bundles,
+            final KasperEventBus evenBus,
+            final KasperCommandGateway commandGateway,
+            final KasperQueryGateway queryGateway,
+            final Platform.BuilderContext context
     ) {
 
-        List<DomainDescriptor> descriptors = Lists.newArrayList();
-        DomainDescriptorFactory domainDescriptorFactory = new DomainDescriptorFactory();
+        final List<DomainDescriptor> descriptors = Lists.newArrayList();
+        final DomainDescriptorFactory domainDescriptorFactory = new DomainDescriptorFactory();
 
-        RepositoryManager repositoryManager = new DefaultRepositoryManager();
+        final RepositoryManager repositoryManager = new DefaultRepositoryManager();
         for (final DomainBundle bundle : bundles) {
 
             LOGGER.debug("Configuring bundle : {}", bundle.getName());
@@ -182,11 +188,11 @@ public class KasperPlatformConfiguration {
             descriptors.add(domainDescriptor);
         }
 
-        for (DomainBundle bundle : bundles) {
-            for (CommandInterceptorFactory factory : bundle.getCommandInterceptorFactories()) {
+        for (final DomainBundle bundle : bundles) {
+            for (final CommandInterceptorFactory factory : bundle.getCommandInterceptorFactories()) {
                 commandGateway.register(factory);
             }
-            for (QueryInterceptorFactory factory : bundle.getQueryInterceptorFactories()) {
+            for (final QueryInterceptorFactory factory : bundle.getQueryInterceptorFactories()) {
                 queryGateway.register(factory);
             }
         }

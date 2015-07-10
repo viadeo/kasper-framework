@@ -1,15 +1,22 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.exposition.http.jetty;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 
 public class JettyConfiguration {
+
     static final int DEFAULT_ACCEPTORS = Math.max(1, Runtime.getRuntime().availableProcessors() / 2);
     static final int DEFAULT_MIN_THREADS = DEFAULT_ACCEPTORS * 2;
 
     private final Config config;
 
-    public JettyConfiguration(Config config) {
+    public JettyConfiguration(final Config config) {
         this.config = config;
     }
 
@@ -101,11 +108,11 @@ public class JettyConfiguration {
         return getBoolean(this.config, "jmx.enabled");
     }
 
-    private int getIntOrDefault(Config config, String key, int defaultValue) {
+    private int getIntOrDefault(final Config config, final String key, final int defaultValue) {
         try {
             return getInt(config, key);
-        } catch (ConfigException.WrongType e) {
-            String value = getString(config, key);
+        } catch (final ConfigException.WrongType e) {
+            final String value = getString(config, key);
             if ("auto".equals(value)) {
                 return defaultValue;
             } else {
@@ -114,7 +121,7 @@ public class JettyConfiguration {
         }
     }
 
-    private int getInt(Config config, String key) {
+    private int getInt(final Config config, final String key) {
         // FIXME this method should not exist https://github.com/typesafehub/config/issues/92
         try {
             return config.getInt(key);
@@ -123,7 +130,7 @@ public class JettyConfiguration {
         }
     }
 
-    private String getString(Config config, String key) {
+    private String getString(final Config config, final String key) {
         // FIXME this method should not exist https://github.com/typesafehub/config/issues/92
         try {
             return config.getString(key);
@@ -132,7 +139,7 @@ public class JettyConfiguration {
         }
     }
 
-    private boolean getBoolean(Config config, String key) {
+    private boolean getBoolean(final Config config, final String key) {
         // FIXME this method should not exist https://github.com/typesafehub/config/issues/92
         try {
             return config.getBoolean(key);
@@ -141,7 +148,7 @@ public class JettyConfiguration {
         }
     }
 
-    private Long getBytes(Config config, String key) {
+    private Long getBytes(final Config config, final String key) {
         // FIXME this method should not exist https://github.com/typesafehub/config/issues/92
         try {
             return config.getBytes(key);
@@ -150,7 +157,7 @@ public class JettyConfiguration {
         }
     }
 
-    private Long getMilliseconds(Config config, String key) {
+    private Long getMilliseconds(final Config config, final String key) {
         // FIXME this method should not exist https://github.com/typesafehub/config/issues/92
         try {
             return config.getMilliseconds(key);
@@ -158,4 +165,5 @@ public class JettyConfiguration {
             throw new IllegalArgumentException(e.getMessage());
         }
     }
+
 }

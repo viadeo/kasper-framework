@@ -1,7 +1,12 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.spring;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.domain.DefaultDomainBundle;
@@ -41,6 +46,7 @@ public class KasperSpringBundle extends DefaultDomainBundle {
 
     private final long initTimeInMillis;
 
+    // ------------------------------------------------------------------------
 
     /**
      * A custom type scanner that check both path and annotation
@@ -50,19 +56,19 @@ public class KasperSpringBundle extends DefaultDomainBundle {
         private final Class<? extends Annotation> annotation;
         private final List<String> paths;
 
-        public AnnotationAndPathFilter(Class<? extends Annotation> annotation, List<String> paths) {
+        public AnnotationAndPathFilter(final Class<? extends Annotation> annotation, final List<String> paths) {
             this.annotation = annotation;
             this.paths = paths;
         }
 
         @Override
-        public boolean match(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory) throws IOException {
+        public boolean match(final MetadataReader metadataReader, final MetadataReaderFactory metadataReaderFactory) throws IOException {
 
-            if (! metadataReader.getAnnotationMetadata().isAnnotated(annotation.getName())) {
+            if ( ! metadataReader.getAnnotationMetadata().isAnnotated(annotation.getName())) {
                 return false;
             }
 
-            for (String path : paths) {
+            for (final String path : paths) {
                 if (metadataReader.getClassMetadata().getClassName().startsWith(path)) {
                     return true;
                 }
@@ -71,6 +77,8 @@ public class KasperSpringBundle extends DefaultDomainBundle {
             return false;
         }
     }
+
+    // ------------------------------------------------------------------------
 
     /**
      * Spring domain bundle allow you to manage platform stereotypes
@@ -82,14 +90,15 @@ public class KasperSpringBundle extends DefaultDomainBundle {
      * @param domain             domain name
      * @param applicationContext parent application context
      */
-    public KasperSpringBundle(final Domain domain, ApplicationContext applicationContext) {
+    public KasperSpringBundle(final Domain domain, final ApplicationContext applicationContext) {
         super(domain);
 
-        long startInitTimeInMillis = System.currentTimeMillis();
+        final long startInitTimeInMillis = System.currentTimeMillis();
 
         int total = 0;
+
         commandContext = createChildContext(applicationContext);
-        ClassPathBeanDefinitionScanner commandScanner = new ClassPathBeanDefinitionScanner(commandContext, false);
+        final ClassPathBeanDefinitionScanner commandScanner = new ClassPathBeanDefinitionScanner(commandContext, false);
         commandScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperCommandHandler.class, makePaths("command")));
         commandScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperRepository.class, makePaths("command")));
         commandScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperEventListener.class, makePaths("command")));
@@ -97,7 +106,7 @@ public class KasperSpringBundle extends DefaultDomainBundle {
         total += commandScanner.scan(getClass().getPackage().getName());
 
         queryContext = createChildContext(applicationContext);
-        ClassPathBeanDefinitionScanner queryScanner = new ClassPathBeanDefinitionScanner(queryContext, false);
+        final ClassPathBeanDefinitionScanner queryScanner = new ClassPathBeanDefinitionScanner(queryContext, false);
         queryScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperQueryHandler.class, makePaths("query")));
         queryScanner.addIncludeFilter(new AnnotationAndPathFilter(XKasperEventListener.class, makePaths("query")));
         queryScanner.addIncludeFilter(new AnnotationAndPathFilter(Configuration.class, makePaths("query.spring", "common.spring")));
@@ -116,10 +125,10 @@ public class KasperSpringBundle extends DefaultDomainBundle {
      * @param paths the path to append (ex stereotype package)
      * @return a list of path to filter on
      */
-    private List<String> makePaths(String... paths) {
+    private List<String> makePaths(final String... paths) {
 
-        List<String> out = Lists.newArrayList();
-        for (String path : paths) {
+        final List<String> out = Lists.newArrayList();
+        for (final String path : paths) {
             out.add(String.format("%s.%s", getClass().getPackage().getName(), path));
         }
 
@@ -132,11 +141,12 @@ public class KasperSpringBundle extends DefaultDomainBundle {
      * @param parent infrastructure application context
      * @return child application context
      */
-    private AnnotationConfigApplicationContext createChildContext(ApplicationContext parent) {
-        AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
+    private AnnotationConfigApplicationContext createChildContext(final ApplicationContext parent) {
+        final AnnotationConfigApplicationContext child = new AnnotationConfigApplicationContext();
         child.setParent(parent);
         child.getEnvironment().setActiveProfiles(parent.getEnvironment().getActiveProfiles());
-        PropertySourcesPlaceholderConfigurer singletonObject = new PropertySourcesPlaceholderConfigurer();
+
+        final PropertySourcesPlaceholderConfigurer singletonObject = new PropertySourcesPlaceholderConfigurer();
         singletonObject.setEnvironment(parent.getEnvironment());
         child.getBeanFactory().registerSingleton("bundlePropertySourcePlaceholderConfigurer", singletonObject);
 
@@ -150,7 +160,7 @@ public class KasperSpringBundle extends DefaultDomainBundle {
      * @param context platform context
      */
     @Override
-    public void configure(Platform.BuilderContext context) {
+    public void configure(final Platform.BuilderContext context) {
         long startRefreshTimeInMillis = System.currentTimeMillis();
 
         commandContext.refresh();
@@ -164,7 +174,7 @@ public class KasperSpringBundle extends DefaultDomainBundle {
         queryHandlers.addAll(queryContext.getBeansOfType(QueryHandler.class).values());
         queryInterceptorFactories.addAll(queryContext.getBeansOfType(QueryInterceptorFactory.class).values());
 
-        long refreshTimeInMillis = System.currentTimeMillis() - startRefreshTimeInMillis;
+        final long refreshTimeInMillis = System.currentTimeMillis() - startRefreshTimeInMillis;
 
         LOGGER.info("{} loaded in {} ms", getName(), (initTimeInMillis + refreshTimeInMillis));
     }
@@ -178,4 +188,5 @@ public class KasperSpringBundle extends DefaultDomainBundle {
     public ApplicationContext getQueryContext() {
         return queryContext;
     }
+
 }

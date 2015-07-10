@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.spring.starters;
 
 import com.codahale.metrics.MetricRegistry;
@@ -25,13 +31,13 @@ public class KasperMetricsConfiguration {
     @Profile({ "demo", "preprod", "prod" })
     public GraphiteReporter reporter(MetricRegistry metricRegistry, Config config) throws IOException {
 
-        String host = config.getString("infrastructure.graphite.host");
-        Integer port = config.getInt("infrastructure.graphite.port");
+        final String host = config.getString("infrastructure.graphite.host");
+        final Integer port = config.getInt("infrastructure.graphite.port");
 
-        Graphite graphite = new Graphite(new InetSocketAddress(host, port));
-        String prefix = "servers." + getFQDN() + ".kasper";
+        final Graphite graphite = new Graphite(new InetSocketAddress(host, port));
+        final String prefix = "servers." + getFQDN() + ".kasper";
 
-        GraphiteReporter reporter = GraphiteReporter.forRegistry(metricRegistry)
+        final GraphiteReporter reporter = GraphiteReporter.forRegistry(metricRegistry)
                 .prefixedWith(prefix)
                 .convertRatesTo(TimeUnit.SECONDS)
                 .convertDurationsTo(TimeUnit.MILLISECONDS)
@@ -68,7 +74,7 @@ public class KasperMetricsConfiguration {
      * @return metric registry
      */
     @Bean
-    public ResolverFactory resolverFactory(MetricRegistry metricRegistry, DomainHelper domainHelper) {
+    public ResolverFactory resolverFactory(final MetricRegistry metricRegistry, final DomainHelper domainHelper) {
 
         // FIXME here we declare resolver allowing to defined the name of metrics
         final ConceptResolver conceptResolver = new ConceptResolver();
@@ -129,4 +135,5 @@ public class KasperMetricsConfiguration {
     protected String getFQDN() throws UnknownHostException {
         return InetAddress.getLocalHost().getCanonicalHostName().replace(".", "_");
     }
+
 }
