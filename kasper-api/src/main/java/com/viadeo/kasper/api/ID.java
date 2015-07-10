@@ -23,8 +23,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * <p> An <code>ID</code> can be transformed to an another <code>Format</code> by transformation thanks to
  * <code>IDTransformer</code>
  *
- *
- * <h4> How to instantiate an <code>ID</code> </h4>
+ * <h1> How to instantiate an <code>ID</code> </h1>
  *
  * <p>The typical instantiation sequences are thus
  *
@@ -35,7 +34,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * </pre></blockquote>
  *
  *
- * <h4> The URN layout </h4>
+ * <h1> The URN layout </h1>
  *
  * <tt>urn:[vendor]:[type]:[format]:[identifier]</tt>
  *
@@ -47,7 +46,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * </ul>
  *
  *
- * <h4> Example of URNs </h4>
+ * <h1> Example of URNs </h1>
  *
  * <ul>
  *     <li><i>urn:viadeo:member:db-id:42</i> the database id of a member</li>

@@ -13,12 +13,16 @@ import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.core.resolvers.Resolver;
 import com.viadeo.kasper.core.resolvers.ResolverFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.ConcurrentMap;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class KasperMetrics {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(KasperMetrics.class);
 
     private static KasperMetrics instance;
 
@@ -56,7 +60,8 @@ public final class KasperMetrics {
 
     public MetricRegistry getRegistry() {
         if(null == metricRegistry) {
-            throw new IllegalStateException("The metric registry is not initialized.");
+            LOGGER.warn("The metric registry is not initialized.");
+            this.metricRegistry = new MetricRegistry();
         }
         return metricRegistry;
     }
