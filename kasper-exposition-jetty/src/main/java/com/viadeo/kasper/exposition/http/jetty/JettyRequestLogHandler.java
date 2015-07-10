@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.exposition.http.jetty;
 
 import com.google.common.base.Objects;
@@ -17,23 +23,28 @@ public class JettyRequestLogHandler extends HandlerWrapper {
     public static final Logger LOGGER = LoggerFactory.getLogger(JettyRequestLogHandler.class);
 
     @Override
-    public void handle(String target, Request baseRequest, HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
+    public void handle(
+            final String target,
+            final Request baseRequest,
+            final HttpServletRequest request,
+            final HttpServletResponse response) throws IOException, ServletException {
 
-        String correlationId = Objects.firstNonNull(baseRequest.getHeader("X-KASPER-REQUEST-CID"), "-");
-        String path = baseRequest.getRequestURI();
-        long timestamp = baseRequest.getTimeStamp();
-        DateTime time = new DateTime(timestamp);
-
-        String message = String.format("%s %s %s", time.toString(), path, correlationId);
+        final String correlationId = Objects.firstNonNull(baseRequest.getHeader("X-KASPER-REQUEST-CID"), "-");
+        final String path = baseRequest.getRequestURI();
+        final long timestamp = baseRequest.getTimeStamp();
+        final DateTime time = new DateTime(timestamp);
+        final String message = String.format("%s %s %s", time.toString(), path, correlationId);
 
         LOGGER.debug("BEFORE HANDLE: {}", message);
-        long tic = System.currentTimeMillis();
+        final long tic = System.currentTimeMillis();
 
         try {
             super.handle(target, baseRequest, request, response);
         } finally {
-            long handleDuration = System.currentTimeMillis() - tic;
+            final long handleDuration = System.currentTimeMillis() - tic;
             LOGGER.debug("AFTER HANDLE ({} ms): {}", handleDuration, message);
         }
+
     }
+
 }

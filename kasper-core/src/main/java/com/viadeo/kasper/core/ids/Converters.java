@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.core.ids;
 
 import com.google.common.base.Function;
@@ -13,13 +19,18 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 public final class Converters {
-    private Converters() {
-    }
 
-    public static Converter chain(Converter firstConverter, Converter nextConverter) {
+    private Converters() { /* utility class */ }
+
+    // ------------------------------------------------------------------------
+
+    public static Converter chain(final Converter firstConverter, final Converter nextConverter) {
         checkNotNull(firstConverter);
         checkNotNull(nextConverter);
-        checkArgument(firstConverter.getVendor().equals(nextConverter.getVendor()), "firstConverter and nextConverter must share the same vendor");
+        checkArgument(
+                firstConverter.getVendor().equals(nextConverter.getVendor()),
+                "firstConverter and nextConverter must share the same vendor"
+        );
 
         if (firstConverter.getSource().equals(nextConverter.getTarget())) {
             return newIdentityConverter(firstConverter.getVendor(), firstConverter.getSource());
@@ -28,13 +39,15 @@ public final class Converters {
         return new ChainedConverter(firstConverter, nextConverter);
     }
 
+    // ------------------------------------------------------------------------
+
     private static class ChainedConverter
             extends AbstractConverter {
 
         private final Converter firstConverter;
         private final Converter nextConverter;
 
-        public ChainedConverter(Converter firstConverter, Converter nextConverter) {
+        public ChainedConverter(final Converter firstConverter, final Converter nextConverter) {
             super(firstConverter.getVendor(), firstConverter.getSource(), nextConverter.getTarget());
             checkArgument(firstConverter.getVendor().equals(nextConverter.getVendor()), "firstConverter and nextConverter must share the same vendor");
             checkArgument(firstConverter.getTarget().equals(nextConverter.getSource()), "the source format for nextConverter must be the target format for firstConverter");
@@ -43,18 +56,18 @@ public final class Converters {
         }
 
         @Override
-        public Map<ID,ID> convert(Collection<ID> ids) {
+        public Map<ID,ID> convert(final Collection<ID> ids) {
             // givenId -> firstConversionId
             final Map<ID,ID> firstConversion = firstConverter.convert(ids);
 
             // firstConversionId -> nextConversionId
             final Map<ID, ID> nextConversion = nextConverter.convert(firstConversion.values());
 
-            Map<ID, ID> result = Maps.newHashMap();
+            final Map<ID, ID> result = Maps.newHashMap();
 
-            for (ID id : ids) {
-                ID firstConvertedId = firstConversion.get(id);
-                if (firstConvertedId != null) {
+            for (final ID id : ids) {
+                final ID firstConvertedId = firstConversion.get(id);
+                if (null != firstConvertedId) {
                     result.put(id, nextConversion.get(firstConvertedId));
                 }
             }
@@ -67,14 +80,14 @@ public final class Converters {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             if (this == obj) {
                 return true;
             }
-            if (obj == null || getClass() != obj.getClass()) {
+            if ((null == obj) || (getClass() != obj.getClass())) {
                 return false;
             }
-            ChainedConverter other = (ChainedConverter) obj;
+            final ChainedConverter other = (ChainedConverter) obj;
             return Objects.equal(this.firstConverter, other.firstConverter) && Objects.equal(this.nextConverter, other.nextConverter);
         }
 
@@ -87,7 +100,9 @@ public final class Converters {
         }
     }
 
-    public static Converter newIdentityConverter(String vendor, Format format) {
+    // ------------------------------------------------------------------------
+
+    public static Converter newIdentityConverter(final String vendor, final Format format) {
         return new IdentityConverter(vendor, format);
     }
 
@@ -97,7 +112,7 @@ public final class Converters {
         private final String vendor;
         private final Format format;
 
-        public IdentityConverter(String vendor, Format format) {
+        public IdentityConverter(final String vendor, final Format format) {
             this.vendor = checkNotNull(vendor);
             this.format = checkNotNull(format);
         }
@@ -117,7 +132,7 @@ public final class Converters {
         }
 
         @Override
-        public Map<ID,ID> convert(Collection<ID> ids) {
+        public Map<ID,ID> convert(final Collection<ID> ids) {
             return Maps.uniqueIndex(ids, new Function<ID, ID>() {
                 @Override
                 public ID apply(ID input) {
@@ -132,14 +147,14 @@ public final class Converters {
         }
 
         @Override
-        public boolean equals(Object obj) {
+        public boolean equals(final Object obj) {
             if (this == obj) {
                 return true;
             }
-            if (obj == null || getClass() != obj.getClass()) {
+            if ((null == obj) || (getClass() != obj.getClass())) {
                 return false;
             }
-            IdentityConverter other = (IdentityConverter) obj;
+            final IdentityConverter other = (IdentityConverter) obj;
             return Objects.equal(this.vendor, other.vendor) && Objects.equal(this.format, other.format);
         }
 
@@ -151,4 +166,5 @@ public final class Converters {
                     .toString();
         }
     }
+
 }

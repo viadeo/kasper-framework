@@ -1,3 +1,9 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.exposition.http.jetty.spring;
 
 import com.codahale.metrics.health.HealthCheck;
@@ -68,7 +74,12 @@ public class KasperJettyConfiguration {
      * @return the http server
      */
     @Bean
-    public JettyHttpServer httpServer(HttpQueryExposer queryExposer, HttpEventExposer eventExposer, HttpCommandExposer commandExposer, ResourceConfig resourceConfig, HealthCheckRegistry healthCheckRegistry) {
+    public JettyHttpServer httpServer(
+            final HttpQueryExposer queryExposer,
+            final HttpEventExposer eventExposer,
+            final HttpCommandExposer commandExposer,
+            final ResourceConfig resourceConfig,
+            final HealthCheckRegistry healthCheckRegistry) {
         return new JettyHttpServer(
                 new JettyConfiguration(config.getConfig("runtime.http"))
                 , queryExposer
@@ -94,7 +105,11 @@ public class KasperJettyConfiguration {
      * @return http event exposer
      */
     @Bean
-    public HttpEventExposer httpEventExposer(HttpContextDeserializer httpContextDeserializer, DescriptorRegistry descriptors, KasperEventBus eventBus, Meta meta) {
+    public HttpEventExposer httpEventExposer(
+            final HttpContextDeserializer httpContextDeserializer,
+            final DescriptorRegistry descriptors,
+            final KasperEventBus eventBus,
+            final Meta meta) {
 
         final List<ExposureDescriptor<Event, EventListener>> exposureDescriptors = Lists.newArrayList();
         for (final DomainDescriptor domainDescriptor : descriptors) {
@@ -116,13 +131,17 @@ public class KasperJettyConfiguration {
      * @return http command exposer
      */
     @Bean
-    public HttpCommandExposer httpCommandExposer(HttpContextDeserializer httpContextDeserializer, DescriptorRegistry descriptors, KasperCommandGateway commandGateway, Meta meta) {
+    public HttpCommandExposer httpCommandExposer(
+            final HttpContextDeserializer httpContextDeserializer,
+            final DescriptorRegistry descriptors,
+            final KasperCommandGateway commandGateway,
+            final Meta meta) {
 
         final List<ExposureDescriptor<Command, CommandHandler>> exposureDescriptors = Lists.newArrayList();
 
         for (final DomainDescriptor domainDescriptor : descriptors) {
-            Collection<CommandHandlerDescriptor> commandHandlerDescriptors = domainDescriptor.getCommandHandlerDescriptors();
-            for (CommandHandlerDescriptor descriptor : commandHandlerDescriptors) {
+            final Collection<CommandHandlerDescriptor> commandHandlerDescriptors = domainDescriptor.getCommandHandlerDescriptors();
+            for (final CommandHandlerDescriptor descriptor : commandHandlerDescriptors) {
                 exposureDescriptors.add(new ExposureDescriptor<>(descriptor.getCommandClass(), descriptor.getReferenceClass()));
             }
         }
@@ -130,11 +149,11 @@ public class KasperJettyConfiguration {
         LOGGER.info("Exposing {} command handlers", exposureDescriptors.size());
 
         return new HttpCommandExposer(
-                commandGateway,
-                meta,
-                exposureDescriptors,
-                httpContextDeserializer,
-                objectMapper
+            commandGateway,
+            meta,
+            exposureDescriptors,
+            httpContextDeserializer,
+            objectMapper
         );
     }
 
@@ -147,11 +166,15 @@ public class KasperJettyConfiguration {
      * @return http query exposer
      */
     @Bean
-    public HttpQueryExposer httpQueryExposer(HttpContextDeserializer httpContextDeserializer, DescriptorRegistry descriptors, KasperQueryGateway queryGateway, Meta meta) {
+    public HttpQueryExposer httpQueryExposer(
+            final HttpContextDeserializer httpContextDeserializer,
+            final DescriptorRegistry descriptors,
+            final KasperQueryGateway queryGateway,
+            final Meta meta) {
 
         final List<ExposureDescriptor<Query, QueryHandler>> exposureDescriptors = Lists.newArrayList();
         for (final DomainDescriptor domainDescriptor : descriptors) {
-            for (QueryHandlerDescriptor descriptor : domainDescriptor.getQueryHandlerDescriptors()) {
+            for (final QueryHandlerDescriptor descriptor : domainDescriptor.getQueryHandlerDescriptors()) {
                 exposureDescriptors.add(new ExposureDescriptor<>(descriptor.getQueryClass(), descriptor.getReferenceClass()));
             }
         }
@@ -168,10 +191,10 @@ public class KasperJettyConfiguration {
      * @return the documented platform
      */
     @Bean
-    public DocumentedPlatform documentedPlatform(DescriptorRegistry descriptors) {
+    public DocumentedPlatform documentedPlatform(final DescriptorRegistry descriptors) {
         long start = System.currentTimeMillis();
 
-        DocumentedPlatform documentedPlatform = new DocumentedPlatform();
+        final DocumentedPlatform documentedPlatform = new DocumentedPlatform();
         for (final DomainDescriptor domainDescriptor : descriptors) {
             documentedPlatform.registerDomain(domainDescriptor.getName(), domainDescriptor);
         }
@@ -193,11 +216,11 @@ public class KasperJettyConfiguration {
      * @return resource config
      */
     @Bean
-    ResourceConfig resourceConfig(DocumentedPlatform documentedPlatform) {
+    ResourceConfig resourceConfig(final DocumentedPlatform documentedPlatform) {
 
-        ArrayList<Object> resources = Lists.newArrayList(
-                  new KasperDocResource(documentedPlatform)
-                , new ArtifactResource()
+        final ArrayList<Object> resources = Lists.newArrayList(
+              new KasperDocResource(documentedPlatform)
+            , new ArtifactResource()
         );
 
         if (config.hasPath("infrastructure.acv.check.filePath")) {
@@ -217,10 +240,10 @@ public class KasperJettyConfiguration {
     }
 
     @Bean
-    HealthCheckRegistry healthCheckRegistry(Map<String, HealthCheck> healthChecks) {
+    HealthCheckRegistry healthCheckRegistry(final Map<String, HealthCheck> healthChecks) {
 
         // Add health checks to a new registry
-        HealthCheckRegistry healthCheckRegistry = new HealthCheckRegistry();
+        final HealthCheckRegistry healthCheckRegistry = new HealthCheckRegistry();
         healthCheckRegistry.register("deadlocks", new ThreadDeadlockHealthCheck());
 
 
@@ -247,7 +270,7 @@ public class KasperJettyConfiguration {
     }
 
     @Bean
-    public Meta meta(Build.Info info) {
+    public Meta meta(final Build.Info info) {
         return new Meta(
                 info.getRevision(),
                 info.getTime(),

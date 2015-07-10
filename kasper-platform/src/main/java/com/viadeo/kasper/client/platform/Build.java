@@ -1,5 +1,10 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.client.platform;
-
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.io.Resources;
@@ -12,7 +17,7 @@ public class Build {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Build.class);
 
-    public static Info info(ObjectMapper objectMapper) {
+    public static Info info(final ObjectMapper objectMapper) {
         try {
             return objectMapper.readValue(Resources.getResource("buildInfo.json"), Info.class);
         } catch (Throwable e) {
@@ -24,6 +29,8 @@ public class Build {
 
     public static final Info unknownInfo = new Info("nc", "nc", "nc", "nc", "nc", 0L, DateTime.now());
 
+    // ------------------------------------------------------------------------
+
     public static class Info implements QueryResult {
 
         private final String builder;
@@ -34,7 +41,14 @@ public class Build {
         private final Long timestamp;
         private final DateTime time;
 
-        public Info(String builder, String host, String revision, String comment, String platform, Long timestamp, DateTime time) {
+        public Info(
+                final String builder,
+                final String host,
+                final String revision,
+                final String comment,
+                final String platform,
+                final Long timestamp,
+                final DateTime time) {
             this.builder = builder;
             this.host = host;
             this.revision = revision;

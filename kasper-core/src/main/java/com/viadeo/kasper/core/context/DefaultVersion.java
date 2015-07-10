@@ -1,19 +1,30 @@
+// ============================================================================
+//                 KASPER - Kasper is the treasure keeper
+//    www.viadeo.com - mobile.viadeo.com - api.viadeo.com - dev.viadeo.com
+//
+//           Viadeo Framework for effective CQRS/DDD architecture
+// ============================================================================
 package com.viadeo.kasper.core.context;
 
 import com.viadeo.kasper.context.Context;
 import com.viadeo.kasper.context.Contexts;
 import com.viadeo.kasper.context.Version;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
-public class ContextVersion implements Version {
+public class DefaultVersion implements Version {
 
     private final String currentAppVersion;
     private final String currentClientVersion;
 
-    public ContextVersion(final Integer currentAppVersion, final Integer currentClientVersion) {
+    // ------------------------------------------------------------------------
+
+    public DefaultVersion(final Integer currentAppVersion, final Integer currentClientVersion) {
         this.currentAppVersion = checkNotNull(currentAppVersion).toString();
         this.currentClientVersion = checkNotNull(currentClientVersion).toString();
     }
+
+    // ------------------------------------------------------------------------
 
     @Override
     public Context apply(final Context context) {
@@ -21,17 +32,18 @@ public class ContextVersion implements Version {
 
         final Context.Builder builder = Contexts.newFrom(context);
 
-
-        if (context.getApplicationId().isPresent() && ! context.getApplicationVersion().isPresent() &&
-                ! context.getClientId().isPresent() &&
-                ( ! context.getClientVersion().isPresent() || "nc".equals(context.getClientVersion().get())) ) {
+        if (context.getApplicationId().isPresent()
+                && (! context.getApplicationVersion().isPresent())
+                && (! context.getClientId().isPresent())
+                && (! context.getClientVersion().isPresent() || "nc".equals(context.getClientVersion().get()))
+        ) {
             builder
                     .reset(Context.APPLICATION_ID_SHORTNAME)
                     .withClientId(context.getApplicationId().get())
                     .with(Context.CLIENT_VERSION_SHORTNAME, currentClientVersion);
         }
 
-        if ( !  builder.build().getClientId().isPresent()) {
+        if ( ! builder.build().getClientId().isPresent()) {
             builder.withClientId("UNKOWN");
         }
 
@@ -45,4 +57,5 @@ public class ContextVersion implements Version {
     public String getCurrentClientVersion() {
         return currentClientVersion;
     }
+
 }

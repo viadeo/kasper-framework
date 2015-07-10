@@ -34,9 +34,13 @@ public class KasperSpringPlatformBuilder {
     private List<Class<?>> bundles;
     private List<Class<?>> parents = Lists.newArrayList();
 
+    // ------------------------------------------------------------------------
+
     public KasperSpringPlatformBuilder() {
         this.bundles = Lists.newArrayList();
     }
+
+    // ------------------------------------------------------------------------
 
     /**
      * Transform a FQN string to a class instance
@@ -45,14 +49,14 @@ public class KasperSpringPlatformBuilder {
      * @return a list of class instances
      */
     private static List<Class<?>> transformToClasses(List<String> fqnList) {
-        if (fqnList == null || fqnList.isEmpty()) {
+        if ((null == fqnList) || fqnList.isEmpty()) {
             return ImmutableList.of();
         }
-        ArrayList<Class<?>> objects = Lists.newArrayList();
-        for (String className : fqnList) {
+        final ArrayList<Class<?>> objects = Lists.newArrayList();
+        for (final String className : fqnList) {
             try {
                 objects.add(Class.forName(className));
-            } catch (ClassNotFoundException e) {
+            } catch (final ClassNotFoundException e) {
                 throw new KasperException("Unable to found ", e);
             }
         }
@@ -66,7 +70,7 @@ public class KasperSpringPlatformBuilder {
      * @param bundle bundle
      * @return platform builder
      */
-    public KasperSpringPlatformBuilder addBundle(Class<? extends DomainBundle> bundle) {
+    public KasperSpringPlatformBuilder addBundle(final Class<? extends DomainBundle> bundle) {
         this.bundles.add(bundle);
         return this;
     }
@@ -102,7 +106,7 @@ public class KasperSpringPlatformBuilder {
      * @param config type safe config
      * @return platform builder
      */
-    public KasperSpringPlatformBuilder withConfig(Config config) {
+    public KasperSpringPlatformBuilder withConfig(final Config config) {
         this.config = config;
         return this;
     }
@@ -113,8 +117,8 @@ public class KasperSpringPlatformBuilder {
      * @param configurations a list of spring factory beans
      * @return platform builder
      */
-    public KasperSpringPlatformBuilder withSpringConf(Class<?>... configurations) {
-        for (Class<?> configuration : configurations) {
+    public KasperSpringPlatformBuilder withSpringConf(final Class<?>... configurations) {
+        for (final Class<?> configuration : configurations) {
            this.parents.add(configuration);
         }
         return this;
@@ -133,6 +137,7 @@ public class KasperSpringPlatformBuilder {
     public AnnotationConfigApplicationContext build() {
 
         try {
+
             if (null == this.config) {
                 this.config = KasperSpringConfiguration.configuration();
             }
@@ -141,18 +146,20 @@ public class KasperSpringPlatformBuilder {
                 this.bundles = transformToClasses(config.getStringList("runtime.spring.domains"));
             }
 
-            AnnotationConfigApplicationContext context = contextWithConfig(config);
+            final AnnotationConfigApplicationContext context = contextWithConfig(config);
             if (parents.size() > 0) {
                 Class<?>[] parentConfigs = new Class<?>[parents.size()];
                 parents.toArray(parentConfigs);
                 context.register(parentConfigs);
             }
+
             context.register(bundles.toArray(new Class<?>[bundles.size()]));
             context.registerShutdownHook();
             context.refresh();
 
             return context;
-        } catch (Exception e) {
+
+        } catch (final Exception e) {
             LOGGER.error("failed to start application", e);
             throw Throwables.propagate(e);
         }
@@ -165,28 +172,30 @@ public class KasperSpringPlatformBuilder {
      * @param config type safe config
      * @return context ready to go
      */
-    private AnnotationConfigApplicationContext contextWithConfig(Config config) {
+    private AnnotationConfigApplicationContext contextWithConfig(final Config config) {
 
-        AnnotationConfigApplicationContext platform = new AnnotationConfigApplicationContext();
-        ConfigurableEnvironment environment = platform.getEnvironment();
+        final AnnotationConfigApplicationContext platform = new AnnotationConfigApplicationContext();
+        final ConfigurableEnvironment environment = platform.getEnvironment();
         environment.getPropertySources().addLast(new KasperSpringConfigPropertySource(config, "config"));
 
         try {
-            for (String activeProfile : config.getStringList("runtime.spring.profiles.actives")) {
+            for (final String activeProfile : config.getStringList("runtime.spring.profiles.actives")) {
                 environment.addActiveProfile(activeProfile);
             }
-        } catch (ConfigException.Missing | ConfigException.WrongType e ) {
+        } catch (final ConfigException.Missing | ConfigException.WrongType e ) {
             LOGGER.error("Failed to load property 'runtime.spring.profiles.actives'", e);
         }
 
         LOGGER.info("active profiles are : {}", Joiner.on(", ").join(environment.getActiveProfiles()));
 
-        ConfigurableListableBeanFactory beanFactory = platform.getBeanFactory();
+        final ConfigurableListableBeanFactory beanFactory = platform.getBeanFactory();
         beanFactory.registerSingleton("configuration", config);
-        PropertySourcesPlaceholderConfigurer placeholderConfigurer = new PropertySourcesPlaceholderConfigurer();
+
+        final PropertySourcesPlaceholderConfigurer placeholderConfigurer = new PropertySourcesPlaceholderConfigurer();
         placeholderConfigurer.setEnvironment(environment);
         beanFactory.registerSingleton("propertySourcesPlaceholderConfigurer", placeholderConfigurer);
 
         return platform;
     }
+
 }
