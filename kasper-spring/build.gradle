@@ -23,6 +23,12 @@ dependencies {
     compile libraries.JACKSON_ANNOTATIONS
     compile libraries.JACKSON_CORE
     compile libraries.JACKSON_DATABIND
+    compile libraries.JAVAX_INJECT
+    compile libraries.GUAVA
+    compile libraries.SPRING_CORE
+    compile libraries.SPRING_JDBC
+    compile libraries.SPRING_TX
+    compile libraries.SPRING_CONTEXT
 
     // Test dependencies
     testCompile libraries.JUNIT
