@@ -18,12 +18,13 @@ dependencies {
     compile libraries.AXON_CORE
     compile libraries.QUARTZ_SCHEDULER
     compile libraries.QUARTZ_JOBS
-    compile libraries.YAMMER_METRICS
+    compile libraries.METRICS_CORE
     compile libraries.JCACHE
     compile libraries.VALIDATION_API
     compile libraries.GUAVA
     compile libraries.LOG4J_OVER_SLF4J
     compile libraries.JAVAX_INJECT
+    compile libraries.TYPESAFE_CONFIG
 
     testCompile libraries.SPRING_TEST
     testCompile libraries.LOGBACK

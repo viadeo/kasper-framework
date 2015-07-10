@@ -19,11 +19,10 @@ import java.lang.annotation.Target;
  * Manager specifies the {@link com.viadeo.kasper.security.authz.manager.AuthorizationManager} to use in order to check given authorizations.
  * CombinesWith indicates the operation to do between authorizations.
  *
- * <p>For example:
- * <p/>
- * <code>&#64;XKasperRequiresRoles( value = "admin",  manager = DefaultAuthorizationSecurityManager.class , combinesWith = CombinesWith.OR )<br/>
- * public class GetExampleQueryHandler extends QueryHandler</code>
- * <p/>
+ * For example:
+ *
+ * # @XKasperRequiresRoles( value = "admin",  manager = DefaultAuthorizationSecurityManager.class , combinesWith = CombinesWith.OR )
+ * # public class GetExampleQueryHandler extends QueryHandler {
  *
  */
 @Retention(RetentionPolicy.RUNTIME)
