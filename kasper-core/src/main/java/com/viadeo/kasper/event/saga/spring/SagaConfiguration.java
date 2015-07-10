@@ -7,6 +7,7 @@
 package com.viadeo.kasper.event.saga.spring;
 
 import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.viadeo.kasper.event.saga.SagaManager;
 import com.viadeo.kasper.event.saga.factory.DefaultSagaFactoryProvider;
 import com.viadeo.kasper.event.saga.factory.SagaFactoryProvider;
@@ -31,9 +32,9 @@ import java.util.List;
 public class SagaConfiguration {
 
     @Bean(initMethod = "initialize", destroyMethod = "shutdown")
-    public Scheduler stepScheduler(final ApplicationContext applicationContext) throws SchedulerException {
+    public Scheduler stepScheduler(final ObjectMapper objectMapper, final ApplicationContext applicationContext) throws SchedulerException {
         final SchedulerFactory sf = new StdSchedulerFactory();
-        return new MethodInvocationScheduler(sf.getScheduler(), applicationContext);
+        return new MethodInvocationScheduler(objectMapper, sf.getScheduler(), applicationContext);
     }
 
     @Bean

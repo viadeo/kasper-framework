@@ -7,6 +7,7 @@
 package com.viadeo.kasper.event.saga;
 
 import com.codahale.metrics.MetricRegistry;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.jayway.awaitility.Awaitility;
 import com.viadeo.kasper.context.Contexts;
@@ -17,6 +18,7 @@ import com.viadeo.kasper.event.saga.factory.DefaultSagaFactoryProvider;
 import com.viadeo.kasper.event.saga.repository.SagaRepository;
 import com.viadeo.kasper.event.saga.spring.SagaConfiguration;
 import com.viadeo.kasper.event.saga.step.Scheduler;
+import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -296,6 +298,10 @@ public class SagaExecutorITest {
         @Bean
         public KasperCommandGateway commandGateway() {
             return mock(KasperCommandGateway.class);
+        }
+        @Bean
+        public ObjectMapper objectMapper() {
+            return ObjectMapperProvider.INSTANCE.mapper();
         }
     }
 

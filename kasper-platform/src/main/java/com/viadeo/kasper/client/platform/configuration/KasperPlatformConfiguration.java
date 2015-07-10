@@ -28,6 +28,7 @@ import com.viadeo.kasper.event.interceptor.EventValidationInterceptorFactory;
 import com.viadeo.kasper.event.saga.SagaManager;
 import com.viadeo.kasper.event.saga.spring.SagaConfiguration;
 import com.viadeo.kasper.event.saga.step.StepProcessor;
+import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.axonframework.unitofwork.DefaultUnitOfWorkFactory;
 import org.axonframework.unitofwork.UnitOfWorkFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -95,6 +96,7 @@ public class KasperPlatformConfiguration implements PlatformConfiguration {
         beanFactory.registerSingleton("commandGateway", commandGateway);
         beanFactory.registerSingleton("configuration", configuration);
         beanFactory.registerSingleton("metricRegistry", metricRegistry);
+        beanFactory.registerSingleton("objectMapper", ObjectMapperProvider.INSTANCE.mapper());
         applicationContext.refresh();
 
         this.sagaManager = applicationContext.getBean(SagaManager.class);

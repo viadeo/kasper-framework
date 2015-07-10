@@ -6,8 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga.step.quartz;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.viadeo.kasper.event.saga.SagaManager;
 import com.viadeo.kasper.event.saga.TestFixture;
+import com.viadeo.kasper.tools.ObjectMapperProvider;
 import org.joda.time.DateTime;
 import org.junit.After;
 import org.junit.Before;
@@ -43,7 +45,7 @@ public class MethodInvocationSchedulerUTest {
 
         when(applicationContext.getBean(SagaManager.class)).thenReturn(sagaManager);
 
-        stepScheduler = new MethodInvocationScheduler(scheduler, applicationContext);
+        stepScheduler = new MethodInvocationScheduler(ObjectMapperProvider.INSTANCE.mapper(), scheduler, applicationContext);
         stepScheduler.initialize();
     }
 
@@ -67,7 +69,7 @@ public class MethodInvocationSchedulerUTest {
     }
 
     @Test
-    public void buildJobDetail_withGoodEntries_shouldReturnJobDetail() throws NoSuchMethodException {
+    public void buildJobDetail_withGoodEntries_shouldReturnJobDetail() throws NoSuchMethodException, JsonProcessingException {
         // Given
         String methodName = "buildJobDetail_withGoodEntries_shouldReturnJobDetail";
         Class<TestFixture.TestSagaA> sagaClass = TestFixture.TestSagaA.class;
@@ -79,10 +81,10 @@ public class MethodInvocationSchedulerUTest {
 
         // Then
         assertNotNull(jobDetail);
-        assertEquals(jobDetail.getKey(), jobKey);
-        assertEquals(jobDetail.getJobDataMap().getString(METHOD_KEY), methodName);
-        assertEquals(jobDetail.getJobDataMap().getString(IDENTIFIER_KEY), identifier);
-        assertEquals(jobDetail.getJobDataMap().getString(SAGA_CLASS_KEY), sagaClass.getName());
+        assertEquals(jobKey, jobDetail.getKey());
+        assertEquals(methodName, jobDetail.getJobDataMap().getString(METHOD_KEY));
+        assertEquals("\"" + identifier + "\"", jobDetail.getJobDataMap().getString(IDENTIFIER_KEY));
+        assertEquals(sagaClass.getName(), jobDetail.getJobDataMap().getString(SAGA_CLASS_KEY), sagaClass.getName());
     }
 
     @Test

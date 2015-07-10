@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.event.saga.step.quartz;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Optional;
 import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.event.saga.SagaExecutor;
@@ -21,6 +23,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 
 import static com.google.common.base.Preconditions.checkNotNull;
+import static com.google.common.base.Preconditions.checkState;
 import static org.quartz.JobKey.jobKey;
 
 /**
@@ -45,6 +48,8 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
      */
     public static final String SAGA_MANAGER_KEY = "SagaManager";
 
+    public static final String OBJECT_MAPPER_KEY = "ObjectMapper";
+
     /**
      * The key used to locate the method invoked in the JobExecutionContext.
      */
@@ -55,8 +60,11 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
      */
     public static final String IDENTIFIER_KEY = "Identifier";
 
+    public static final String IDENTIFIER_CLASS_KEY = "Identifier_class";
+
     public static final String DEFAULT_GROUP_NAME = "Kasper-Scheduled-Saga";
 
+    private final ObjectMapper mapper;
     private final Scheduler scheduler;
     private final ApplicationContext applicationContext;
     private final String groupIdentifier;
@@ -65,11 +73,12 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
 
     // ------------------------------------------------------------------------
 
-    public MethodInvocationScheduler(final Scheduler scheduler, final ApplicationContext applicationContext) {
-        this(scheduler, applicationContext, DEFAULT_GROUP_NAME);
+    public MethodInvocationScheduler(final ObjectMapper mapper, final Scheduler scheduler, final ApplicationContext applicationContext) {
+        this(mapper, scheduler, applicationContext, DEFAULT_GROUP_NAME);
     }
 
-    public MethodInvocationScheduler(final Scheduler scheduler, final ApplicationContext applicationContext, String groupIdentifier) {
+    public MethodInvocationScheduler(final ObjectMapper mapper, final Scheduler scheduler, final ApplicationContext applicationContext, final String groupIdentifier) {
+        this.mapper = mapper;
         this.scheduler = checkNotNull(scheduler);
         this.applicationContext = checkNotNull(applicationContext);
         this.groupIdentifier = checkNotNull(groupIdentifier);
@@ -80,6 +89,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
     @Override
     public void initialize() {
         try {
+            this.scheduler.getContext().put(OBJECT_MAPPER_KEY, mapper);
             this.scheduler.getContext().put(SAGA_MANAGER_KEY, applicationContext.getBean(SagaManager.class));
             this.scheduler.start();
             initialized = true;
@@ -101,7 +111,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
 
     @Override
     public String schedule(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final DateTime triggerDateTime) {
-        Assert.state(initialized, "Scheduler is not yet initialized");
+        checkState(initialized, "Scheduler is not yet initialized");
 
         checkNotNull(identifier);
         checkNotNull(methodName);
@@ -115,6 +125,10 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
             scheduler.scheduleJob(jobDetail, buildTrigger(triggerDateTime, jobDetail.getKey()));
         } catch (final SchedulerException e) {
             throw new SchedulingException("An error occurred while setting a timer for a saga", e);
+        } catch (final JsonProcessingException e) {
+            throw new SchedulingException("An error occurred while building the job detail for a saga", e);
+        } catch (final Exception e) {
+            throw new SchedulingException("An unexpected error occurred while setting a timer for a saga", e);
         }
 
         return jobIdentifier;
@@ -141,6 +155,8 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
             }
         } catch (SchedulerException e) {
             throw new SchedulingException("An error occurred while cancelling a timer for a saga", e);
+        } catch (final Exception e) {
+            throw new SchedulingException("An unexpected error occurred while cancelling a timer for a saga", e);
         }
     }
 
@@ -160,11 +176,12 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
 
     // ------------------------------------------------------------------------
 
-    protected JobDetail buildJobDetail(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final JobKey jobKey) {
+    protected JobDetail buildJobDetail(final Class<? extends Saga> sagaClass, final String methodName, final Object identifier, final JobKey jobKey) throws JsonProcessingException {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(SAGA_CLASS_KEY, sagaClass.getName());
         jobDataMap.put(METHOD_KEY, methodName);
-        jobDataMap.put(IDENTIFIER_KEY, identifier);
+        jobDataMap.put(IDENTIFIER_KEY, mapper.writeValueAsString(identifier));
+        jobDataMap.put(IDENTIFIER_CLASS_KEY, identifier.getClass().getName());
 
         return JobBuilder.newJob(MethodInvocationJob.class)
                 .withDescription(sagaClass.getName())
@@ -206,27 +223,45 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
         public void execute(final JobExecutionContext context) throws JobExecutionException {
             logger.debug("Starting job to invoke scheduled saga step");
 
-            final String sagaMethodName = (String) context.getJobDetail().getJobDataMap().get(METHOD_KEY);
-            final String sagaClassName = (String) context.getJobDetail().getJobDataMap().get(SAGA_CLASS_KEY);
-            final Object sagaIdentifier = context.getJobDetail().getJobDataMap().get(IDENTIFIER_KEY);
             final SagaManager sagaManager = getFromSchedulerContext(context, SAGA_MANAGER_KEY);
+            final ObjectMapper mapper =  getFromSchedulerContext(context, OBJECT_MAPPER_KEY);
 
-            checkNotNull(sagaMethodName);
-            checkNotNull(sagaClassName);
-            checkNotNull(sagaIdentifier);
             checkNotNull(sagaManager);
+            checkNotNull(mapper);
+
+            final JobDataMap dataMap = context.getJobDetail().getJobDataMap();
+
+            final String sagaMethodName = (String) checkNotNull(dataMap.get(METHOD_KEY));
+            final String sagaClassName = (String) checkNotNull(dataMap.get(SAGA_CLASS_KEY));
+            final String sagaIdentifier = (String) checkNotNull(dataMap.get(IDENTIFIER_KEY));
+            final String sagaIdentifierClassName = (String) checkNotNull(dataMap.get(IDENTIFIER_CLASS_KEY));
+
+            final Object identifier;
+
+            try {
+                final Class<Saga> sagaIdentifierClass = (Class<Saga>) Class.forName(sagaIdentifierClassName);
+                identifier = mapper.readValue(sagaIdentifier, sagaIdentifierClass);
+
+            } catch (final Exception e) {
+                throw new StepInvocationException(
+                        String.format(
+                                "Error in invoking scheduled saga method: failed de deserialize identifier, <saga=%s> <method=%s> <identifier=%s>",
+                                sagaClassName, sagaMethodName, sagaIdentifier
+                        )
+                );
+            }
 
             try {
                 final Class<Saga> sagaClass = (Class<Saga>) Class.forName(sagaClassName);
                 final Optional<SagaExecutor> sagaExecutor = sagaManager.get(sagaClass);
 
                 if (sagaExecutor.isPresent()){
-                    sagaExecutor.get().execute(sagaIdentifier, sagaMethodName);
+                    sagaExecutor.get().execute(identifier, sagaMethodName);
                 } else {
                     throw new StepInvocationException(
                         String.format(
                             "Error in invoking scheduled saga method: no saga executor, <saga=%s> <method=%s> <identifier=%s>",
-                            sagaClassName, sagaMethodName, sagaIdentifier
+                            sagaClassName, sagaMethodName, identifier
                         )
                     );
                 }
@@ -235,7 +270,7 @@ public class MethodInvocationScheduler implements com.viadeo.kasper.event.saga.s
                 throw new StepInvocationException(
                         String.format(
                                 "Error in invoking scheduled saga method, <saga=%s> <method=%s> <identifier=%s>",
-                                sagaClassName, sagaMethodName, sagaIdentifier
+                                sagaClassName, sagaMethodName, identifier
                         ),
                         e
                 );
