@@ -39,8 +39,19 @@ ext.libraries = [
             exclude group: 'org.springframework'
         },
 
-        YAMMER_METRICS: 'io.dropwizard.metrics:metrics-core:3.1.0',
         METRICS_JSON: 'io.dropwizard.metrics:metrics-json:3.1.0',
+        METRICS_CORE             : 'io.dropwizard.metrics:metrics-core:3.1.0',
+        METRICS_HEALTHCHECK      : 'io.dropwizard.metrics:metrics-healthchecks:3.1.0',
+        METRICS_JETTY            : 'io.dropwizard.metrics:metrics-jetty8:3.1.0',
+        METRICS_GRAPHITE         : 'io.dropwizard.metrics:metrics-graphite:3.1.0',
+        METRICS_SERVLET          : 'io.dropwizard.metrics:metrics-servlets:3.1.0',
+
+        JETTY_MANAGEMENT         : 'org.eclipse.jetty:jetty-jmx:8.1.8.v20121106',
+        JETTY                    : [
+                'org.eclipse.jetty:jetty-http:8.1.10.v20130312',
+                'org.eclipse.jetty:jetty-server:8.1.10.v20130312',
+                'org.eclipse.jetty:jetty-servlet:8.1.10.v20130312'
+        ],
 
         AXON_TEST: 'org.axonframework:axon-test:2.2',
         AXON_CORE: [

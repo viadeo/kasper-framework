@@ -16,6 +16,7 @@ import com.viadeo.kasper.client.platform.domain.DomainBundle;
 import com.viadeo.kasper.exception.KasperException;
 import com.viadeo.kasper.spring.config.KasperSpringConfigPropertySource;
 import com.viadeo.kasper.spring.config.KasperSpringConfiguration;
+import com.viadeo.kasper.spring.starters.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -26,14 +27,14 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import java.util.ArrayList;
 import java.util.List;
 
-public class KasperSpringContextBuilder {
-    private static final Logger LOGGER = LoggerFactory.getLogger(KasperSpringContextBuilder.class);
+public class KasperSpringPlatformBuilder {
+    private static final Logger LOGGER = LoggerFactory.getLogger(KasperSpringPlatformBuilder.class);
 
     private Config config;
     private List<Class<?>> bundles;
-    private Class<?>[] parent;
+    private List<Class<?>> parents = Lists.newArrayList();
 
-    public KasperSpringContextBuilder() {
+    public KasperSpringPlatformBuilder() {
         this.bundles = Lists.newArrayList();
     }
 
@@ -65,8 +66,32 @@ public class KasperSpringContextBuilder {
      * @param bundle bundle
      * @return platform builder
      */
-    public KasperSpringContextBuilder addBundle(Class<? extends DomainBundle> bundle) {
+    public KasperSpringPlatformBuilder addBundle(Class<? extends DomainBundle> bundle) {
         this.bundles.add(bundle);
+        return this;
+    }
+
+    /**
+     * Constructs a default platform from default Spring configuration
+     *
+     * @return platform builder
+     */
+    public KasperSpringPlatformBuilder defaultCore() {
+        this.parents.add(KasperPlatformConfiguration.class);
+        this.parents.add(KasperObjectMapperConfiguration.class);
+        this.parents.add(KasperMetricsConfiguration.class);
+        this.parents.add(KasperIdsConfiguration.class);
+        this.parents.add(KasperSimpleComponentsConfiguration.class);
+        return this;
+    }
+
+    /**
+     * Add the simple Kasper components to the builded platform
+     *
+     * @return platform builder
+     */
+    public KasperSpringPlatformBuilder simpleComponents() {
+        this.parents.add(KasperSimpleComponentsConfiguration.class);
         return this;
     }
 
@@ -77,7 +102,7 @@ public class KasperSpringContextBuilder {
      * @param config type safe config
      * @return platform builder
      */
-    public KasperSpringContextBuilder withConfig(Config config) {
+    public KasperSpringPlatformBuilder withConfig(Config config) {
         this.config = config;
         return this;
     }
@@ -88,8 +113,10 @@ public class KasperSpringContextBuilder {
      * @param configurations a list of spring factory beans
      * @return platform builder
      */
-    public KasperSpringContextBuilder withParent(Class<?>... configurations) {
-        this.parent = configurations;
+    public KasperSpringPlatformBuilder withSpringConf(Class<?>... configurations) {
+        for (Class<?> configuration : configurations) {
+           this.parents.add(configuration);
+        }
         return this;
     }
 
@@ -114,13 +141,11 @@ public class KasperSpringContextBuilder {
                 this.bundles = transformToClasses(config.getStringList("runtime.spring.domains"));
             }
 
-            if (null == this.parent) {
-                this.parent = new Class<?>[]{};
-            }
-
             AnnotationConfigApplicationContext context = contextWithConfig(config);
-            if (parent.length > 0) {
-                context.register(parent);
+            if (parents.size() > 0) {
+                Class<?>[] parentConfigs = new Class<?>[parents.size()];
+                parents.toArray(parentConfigs);
+                context.register(parentConfigs);
             }
             context.register(bundles.toArray(new Class<?>[bundles.size()]));
             context.registerShutdownHook();
