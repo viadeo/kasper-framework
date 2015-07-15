@@ -5,8 +5,8 @@
 ext.gradleDir = "${rootProject.rootDir}/gradle"
 
 ext.nexusCredentials = {
-    username ultron_nexus_username
-    password ultron_nexus_password
+    username nexus_username
+    password nexus_password
 }
 
 task wrapper(type: Wrapper) {
