@@ -5,8 +5,8 @@
 ext.gradleDir = "${rootProject.rootDir}/gradle"
 
 ext.nexusCredentials = {
-    username ultron_nexus_username
-    password ultron_nexus_password
+    username nexus_username
+    password nexus_password
 }
 
 task wrapper(type: Wrapper) {
@@ -135,11 +135,11 @@ configure(subprojects) {
     uploadArchives {
         repositories.mavenDeployer {
             configuration = configurations.deployerJars
-            repository(url: "http://nexus-ultron.rhcloud.com/nexus/content/repositories/ultron-releases") {
-                authentication(userName: ultron_nexus_username, password: ultron_nexus_password)
+            repository(url: "https://${nexus_host}/content/repositories/kasper-releases") {
+                authentication(userName: nexus_username, password: nexus_password)
             }
-            snapshotRepository(url: "http://nexus-ultron.rhcloud.com/nexus/content/repositories/ultron-snapshots") {
-                authentication(userName: ultron_nexus_username, password: ultron_nexus_password)
+            snapshotRepository(url: "https://${nexus_host}/content/repositories/kasper-snapshots") {
+                authentication(userName: nexus_username, password: nexus_password)
             }
         }
     }
