@@ -100,7 +100,7 @@ public class KasperPlatformConfiguration {
      * Provide the domain descriptors instances
      * Domain descriptors are responsible both for wiring common object (TODO should be remove for proper DI)
      * And maintaining an explicit list of components exposed by the domains
-     * <p/>
+     *
      * TODO Remove the builder context, redundant with DI
      *
      * @param metricRegistry the metric registry
@@ -123,7 +123,7 @@ public class KasperPlatformConfiguration {
         return new Platform.BuilderContext(config, evenBus, commandGateway, queryGateway, metricRegistry, extraComponents);
     }
 
-    /*KasperDescriptorRegistry*
+    /** KasperDescriptorRegistry*
      * Initialize domain descriptors, with an additional nice side effect on domain helper.
      * This is the main glue code between the framework mess and the platform.
      * **Touch with caution**.

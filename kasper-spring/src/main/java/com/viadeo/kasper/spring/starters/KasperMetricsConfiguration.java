@@ -66,10 +66,11 @@ public class KasperMetricsConfiguration {
 
 
     /**
-     * Instanciate the central metric registry
-     * <p/>
+     * Instantiate the central metric registry
+     *
      * TODO : Why there is so much work to do in order to instanciate a metric registry ?
      *
+     * @param metricRegistry a metric registry
      * @param domainHelper (?)
      * @return metric registry
      */
@@ -130,7 +131,7 @@ public class KasperMetricsConfiguration {
      * Get the host fqdn
      *
      * @return FQDN with dot replaced by underscore
-     * @throws java.net.UnknownHostException
+     * @throws java.net.UnknownHostException if we are not able to retrieve the local host
      */
     protected String getFQDN() throws UnknownHostException {
         return InetAddress.getLocalHost().getCanonicalHostName().replace(".", "_");

@@ -27,15 +27,18 @@ public interface DomainLocator {
 
     /**
      * Register a new commandHandler
+     * @param commandHandler a command handler
      */
     void registerHandler(CommandHandler commandHandler);
 
     /**
      * Get all registered command handlers
+     * @return all registered command handlers
      */
     Collection<CommandHandler> getHandlers();
 
     /**
+     * @param commandClass a class of a <code>Command</code>
      * @return an optional handler for the specified command class
      */
     Optional<CommandHandler> getHandlerForCommandClass(Class<? extends Command> commandClass);
@@ -69,6 +72,7 @@ public interface DomainLocator {
 	 * Search for a domain by name
 	 * 
 	 * @param name the name of the domain to be searched
+     * @param <D> the domain
 	 * @return the (optional) domain
 	 */
 	<D extends Domain> Optional<D> getDomainByName(String name);
@@ -77,6 +81,7 @@ public interface DomainLocator {
 	 * Search for a domain by prefix
 	 * 
 	 * @param prefix the prefix of the domain to be searched
+     * @param <D> the domain
 	 * @return the (optional) domain
 	 */
 	<D extends Domain> Optional<D> getDomainByPrefix(String prefix);
@@ -89,7 +94,8 @@ public interface DomainLocator {
 	/**
 	 * Return the domain related to the specified entity
 	 * 
-	 * @param entity the entitiy to search for domain
+	 * @param entity the entity to search for domain
+     * @param <D> the domain
 	 * @return the domain of the entity
 	 */
 	<D extends Domain> Optional<D> getEntityDomain(Entity entity);
@@ -98,6 +104,7 @@ public interface DomainLocator {
 	 * Return a set with all the entities of the specified domain
 	 * 
 	 * @param domain the domain
+     * @param <D> the domain
 	 * @return a set with all entities related to this domain
 	 */
 	<D extends Domain> Set<? extends Entity> getDomainEntities(D domain);
@@ -106,6 +113,7 @@ public interface DomainLocator {
 	 * Return a set with all the entities of the specified domain class
 	 * 
 	 * @param domain the domain class
+     * @param <D> the domain
 	 * @return a set with all entities related to this domain class
 	 */
 	<D extends Domain> Set<? extends Entity> getDomainEntities(Class<D> domain);

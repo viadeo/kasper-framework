@@ -99,6 +99,7 @@ public class KasperJettyConfiguration {
     /**
      * Expose event to the wild
      *
+     * @param httpContextDeserializer a context deserializer
      * @param descriptors domain descriptors
      * @param eventBus    the event bus (in which events are put after de-serialization)
      * @param meta        meta
@@ -126,6 +127,8 @@ public class KasperJettyConfiguration {
     /**
      * Expose command to the wild
      *
+     * @param httpContextDeserializer a context deserializer
+     * @param descriptors domain descriptors
      * @param commandGateway command gateway
      * @param meta           meta
      * @return http command exposer
@@ -160,6 +163,7 @@ public class KasperJettyConfiguration {
     /**
      * Expose query to the wild
      *
+     * @param httpContextDeserializer a context deserializer
      * @param descriptors  domain descriptors
      * @param queryGateway query gateway
      * @param meta the meta information

@@ -27,6 +27,7 @@ public interface RepositoryManager {
      * Get the repository for an entity class
      *
      * @param entityClass the entity class
+     * @param <E> the aggregate type
      * @return the repository responsible for storing this class of entities
      */
     <E extends AggregateRoot> Optional<ClientRepository<E>> getEntityRepository(Class<E> entityClass);

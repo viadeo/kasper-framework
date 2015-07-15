@@ -18,7 +18,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 /**
  * A Kasper event sourced repository based on AxonEventSourcedRepository
  *
- * @param <AGR>
+ * @param <AGR> the aggregate class
  */
 public abstract class EventSourcedRepository<AGR extends AggregateRoot> extends Repository<AGR> {
 

@@ -61,11 +61,13 @@ public class PlatformRunner extends BlockJUnit4ClassRunner {
     public @interface InfrastructureContext {
         /**
          * The annotated classes to use for loading an ApplicationContext
+         * @return an array of configurations classes
          */
         Class[] configurations() default {};
 
         /**
          * The bean definition profiles to activate.
+         * @return an array of active profiles
          */
         String[] activeProfiles() default {};
     }

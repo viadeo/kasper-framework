@@ -31,6 +31,7 @@ public @interface XKasperRequiresPermissions {
 
     /**
      * the permissions which be passed to the check method.
+     * @return an array of permissions
      */
     String[] value() default {};
 

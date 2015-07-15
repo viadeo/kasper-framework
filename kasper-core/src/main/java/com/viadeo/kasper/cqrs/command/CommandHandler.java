@@ -78,7 +78,12 @@ public abstract class CommandHandler<C extends Command>
 
     /**
      * Wrapper for Axon command handling
-     * 
+     *
+     * @param message a command message
+     * @param uow a unit of work in which the command message will be executed
+     * @return a response
+     * @throws Throwable an exception
+     *
      * @see org.axonframework.commandhandling.CommandHandler#handle(org.axonframework.commandhandling.CommandMessage,
      * org.axonframework.unitofwork.UnitOfWork)
      */
@@ -185,7 +190,7 @@ public abstract class CommandHandler<C extends Command>
      * @param message the command handler encapsulating message
      * @param uow Axon unit of work
      * @return the command response
-     * @throws Exception
+     * @throws Exception an exception
      */
     public CommandResponse handle(final KasperCommandMessage<C> message, final UnitOfWork uow) throws Exception {
         throw new UnsupportedOperationException();
@@ -194,7 +199,7 @@ public abstract class CommandHandler<C extends Command>
     /**
      * @param message the command handler encapsulating message
      * @return the command response
-     * @throws Exception
+     * @throws Exception an exception
      */
     public CommandResponse handle(final KasperCommandMessage<C> message) throws Exception {
         throw new UnsupportedOperationException();
@@ -202,7 +207,8 @@ public abstract class CommandHandler<C extends Command>
 
     /**
      * @param command The command to handle
-     * @throws Exception
+     * @return the command response
+     * @throws Exception an exception
      */
     public CommandResponse handle(final C command) throws Exception {
         throw new UnsupportedOperationException();

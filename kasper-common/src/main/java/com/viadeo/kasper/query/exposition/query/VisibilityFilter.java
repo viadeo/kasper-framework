@@ -84,6 +84,8 @@ public final class VisibilityFilter {
     
     /**
      * Checks whether this member is visible or not according to this filter.
+     * @param member a <code>Member</code>
+     * @return true if the member is visible, false otherwise
      */
     public boolean isVisible(final Member member) {
         return ((member.getModifiers() & filter) == 0);

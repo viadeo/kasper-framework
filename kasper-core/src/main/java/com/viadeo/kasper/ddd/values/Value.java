@@ -37,7 +37,7 @@ public interface Value extends Serializable {
 	String toString();
 	
 	/**
-	 * @param otherValue
+	 * @param otherValue an other value
 	 * @return true if two objects or results are equal
 	 *
 	 * can be used to compare an IValue with a result for instance

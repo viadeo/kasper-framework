@@ -38,12 +38,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * WARNING:
- * <p/>
+ * <p>
  * Domain events exposing is an anti-pattern of the platform's spirit in itself
  * this endpoint is provided as a migration helper when dealing with a
  * legacy platform allowing a smooth decoupling : the legacy platform can
  * then send domain events in place of the not-yet-implemented platform's
  * domain to come
+ * </p>
  */
 public class HttpEventExposer extends HttpExposer<Event, KasperResponse> {
 

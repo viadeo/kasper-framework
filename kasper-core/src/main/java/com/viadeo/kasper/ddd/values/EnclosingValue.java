@@ -12,7 +12,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  *
- * A base value used to enclose a classical type, ex : PersonName extends KasperEnclosingValue<String
+ * A base value used to enclose a classical type, ex : PersonName extends KasperEnclosingValue&lt;String&gt;
  *
  * @param <RESULT> The enclosed type
  */

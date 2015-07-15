@@ -16,8 +16,8 @@ import com.viadeo.kasper.query.exposition.query.QueryParser;
  * Then you can just implement a custom TypeAdapter:
  *
  * <pre>
- * class ListOfUUIDTypeAdapter implements TypeAdapter&lt;List&lt;UUID>> {
- *       public void adapt(List&lt;UUID> listOfUUID, QueryBuilder builder) {
+ * class ListOfUUIDTypeAdapter implements TypeAdapter&lt;List&lt;UUID&gt;&gt; {
+ *       public void adapt(List&lt;UUID&gt; listOfUUID, QueryBuilder builder) {
  *           // first lets give
  *           builder.begin("list_of_uuid");
  *           for (UUID uuid : listOfUUID)

@@ -9,10 +9,15 @@ package com.viadeo.kasper.cqrs.query;
 /** A paginated Kasper query */
 public interface PaginatedQuery extends Query {
 
-	/** The requested number of elements. */
+    /**
+     * @return requested number of elements.
+     */
 	int getCount();
 
-	/** The requested index of the first element in the page. Starts at {@code 0}. */
+	/**
+     * The requested index of the first element in the page. Starts at {@code 0}.
+     * @return The requested index of the first element in the page;
+     */
 	int getStartIndex();
 
 }

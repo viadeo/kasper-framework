@@ -17,7 +17,7 @@ import java.util.*;
 /**
  *
  * Utility class used to retrieve types of parameterized classes
- * @author Mglcel <ldiasdasilva@viadeoteam.com>
+ * @author Mglcel &lt;ldiasdasilva@viadeoteam.com&gt;
  *
  */
 public final class ReflectionGenericsResolver {
@@ -32,13 +32,13 @@ public final class ReflectionGenericsResolver {
 	 * @return the (optional) type of the resolved parameter at specific position
 	 * 
 	 * ex:
-	 * targetClass implements targetType<Integer, String>
-	 * getParameterTypeFromClass(targetClass, targetType, 1) ==> String
+	 * targetClass implements targetType&lt;Integer, String&gt;
+	 * getParameterTypeFromClass(targetClass, targetType, 1) ==&gt; String
 	 *
 	 * ex:
-	 * targetClass extends temporary<Integer, String>
-	 * temporary<R, B> implements targetType<A,G>
-	 * getParameterTypeFromClass(targetClass, targetType, 0) ==> Integer
+	 * targetClass extends temporary&lt;Integer, String&gt;
+	 * temporary&lt;R, B&gt; implements targetType&lt;A,G&gt;
+	 * getParameterTypeFromClass(targetClass, targetType, 0) ==&gt; Integer
 	 * 
 	 */
 	@SuppressWarnings("rawtypes")

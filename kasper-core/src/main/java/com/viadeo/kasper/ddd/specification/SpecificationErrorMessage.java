@@ -21,6 +21,7 @@ public class SpecificationErrorMessage {
 	// ------------------------------------------------------------------------
 	
 	/**
+     * @return an optional message
 	 * @see com.viadeo.kasper.ddd.specification.SpecificationErrorMessage#getMessage()
 	 */
 	public Optional<String> getMessage() {
@@ -30,6 +31,7 @@ public class SpecificationErrorMessage {
 	// ------------------------------------------------------------------------
 	
 	/**
+     * @param message a message
 	 * @see com.viadeo.kasper.ddd.specification.SpecificationErrorMessage#setMessage(java.lang.String)
 	 */
 	public void setMessage(final String message) {

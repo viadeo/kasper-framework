@@ -66,6 +66,7 @@ public final class Context implements Serializable {
         this.properties = checkNotNull(properties);
     }
 
+    @SuppressWarnings("unchecked")
     private <T extends Serializable> Optional<T> getGenericProperty(String key) {
         return Optional.fromNullable((T) properties.get(key));
     }
@@ -295,6 +296,7 @@ public final class Context implements Serializable {
     }
 
     /**
+     * @param origMap an original map that will be used as base
      * @return the context as a map
      */
     public Map<String, String> asMap(final Map<String, String> origMap) {
@@ -306,7 +308,7 @@ public final class Context implements Serializable {
     }
 
     /**
-     * return as a metadata map
+     * @return as a metadata map
      */
     public Map<String, ?> asMetaDataMap() {
         final Context that = this;

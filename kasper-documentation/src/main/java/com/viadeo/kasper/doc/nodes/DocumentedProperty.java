@@ -39,7 +39,7 @@ public class DocumentedProperty {
     private List<DocumentedProperty> keyProperties;
 
     private String elemType;
-    private Boolean mandatory = false; /** javax.validation.constraints.NotNull */
+    private Boolean mandatory = false;
 	
     // ------------------------------------------------------------------------
 
