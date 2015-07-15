@@ -18,18 +18,18 @@ import com.viadeo.kasper.query.exposition.query.QueryFactory;
  *
  * For example consider you want to always give the same name to all lists of DateTime:
  * <pre>
- * class MyTypeAdapterFactory implements TypeAdapterFactory&lt;MyPojo> {
+ * class MyTypeAdapterFactory implements TypeAdapterFactory&lt;MyPojo&gt; {
  * 
- *      Optional<TypeAdapter<MyPojo>> create(TypeToken&lt;MyPojo> typeToken, IQueryFactory adapterFactory) {
+ *      Optional&lt;TypeAdapter&lt;MyPojo&gt;&gt; create(TypeToken&lt;MyPojo&gt; typeToken, IQueryFactory adapterFactory) {
  *              return Optional.fromNullable();
  *      }
  * }
  * 
  * // Define your custom TypeAdapter
- * class MyPojoTypeAdapter extends TypeAdapter&lt;MyPojo> {
- *      private final TypeAdapte&lt;DateTime> dateTimeAdapter;
+ * class MyPojoTypeAdapter extends TypeAdapter&lt;MyPojo&gt; {
+ *      private final TypeAdapte&lt;DateTime&gt; dateTimeAdapter;
  *      
- *      public ListOfUUIDTypeAdapter(TypeAdapte&lt;DateTime> dateTimeAdapter) {
+ *      public ListOfUUIDTypeAdapter(TypeAdapte&lt;DateTime&gt; dateTimeAdapter) {
  *              this.dateTimeAdapter = dateTimeAdapter;
  *      }
  * 

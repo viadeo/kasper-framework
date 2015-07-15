@@ -89,6 +89,7 @@ public abstract class EntityCommandHandler<C extends Command, AGR extends Aggreg
     // ------------------------------------------------------------------------
 
     /**
+     * @param repository the repository related to the aggregate handled by this instance
      * @see EntityCommandHandler#setRepository(com.viadeo.kasper.ddd.IRepository)
      */
     public void setRepository(final IRepository<AGR> repository) {
@@ -128,6 +129,9 @@ public abstract class EntityCommandHandler<C extends Command, AGR extends Aggreg
 
     /**
      * Get the related repository of the specified entity class
+     *
+     * @param entityClass the class of the entity
+     * @param <E> the type of the entity
      * @return the entity repository
      */
     public <E extends AggregateRoot> Optional<ClientRepository<E>> getRepositoryOf(final Class<E> entityClass) {

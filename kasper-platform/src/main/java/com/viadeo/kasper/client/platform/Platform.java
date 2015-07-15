@@ -54,10 +54,11 @@ import static com.google.common.base.Preconditions.checkState;
 
 /**
  * The Kasper platform
- * <p/>
+ * <p>
  * This interface represent the main entry point to your platform front components,
  * the Command and Query gateways from which your can then send commands and queries,
  * or even send Events.
+ * </p>
  */
 public interface Platform {
 

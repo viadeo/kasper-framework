@@ -70,6 +70,8 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
     /**
      * Initialize the repository
+     *
+     * @param force true to force initialization
      */
 	public void init(final boolean force) {
 		if ( ! initialized || force) {
@@ -99,6 +101,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
     }
 
     /**
+     * @param entityType the entity <code>Class</code>
      * @return the default instance of the decorated repository
      */
     protected DecoratedAxonRepository<AGR> getDecoratedRepository(final Class<AGR> entityType) {
@@ -115,6 +118,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 
     /**
      * Lazy set the Axon repository
+     * @param eventBus an event bus
      */
 	public void setEventBus(final EventBus eventBus) {
         if (null != this.axonRepository) {
@@ -147,6 +151,8 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	// ========================================================================
 	
 	/**
+     * @param aggregateIdentifier the identifier of the aggregate
+     * @param expectedVersion the expected version
 	 * @see org.axonframework.repository.Repository#load(java.lang.Object, java.lang.Long)
 	 */
 	@Override
@@ -156,6 +162,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	}
 
 	/**
+     * @param aggregateIdentifier the identifier of the aggregate
 	 * @see org.axonframework.repository.Repository#load(java.lang.Object)
 	 */
 	@Override
@@ -165,6 +172,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
 	}
 
  	/**
+     * @param aggregate the aggregate
 	 * @see org.axonframework.repository.Repository#add(Object)
 	 */
 	@Override
@@ -198,7 +206,7 @@ public abstract class Repository<AGR extends AggregateRoot> implements IReposito
     /**
      * Get an aggregate without planning further save on UOW commit
      *
-     * @param aggregateIdentifier
+     * @param aggregateIdentifier the aggregate identifier to fetch
      * @return the fetched aggregate if any
      */
     @Override

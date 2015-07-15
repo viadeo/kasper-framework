@@ -30,7 +30,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * This builder must be used if you want to change KasperClient configuration. By default all queries will be sent to
- * {@value #DEFAULT_QUERY_URL} url and commands to {@value #DEFAULT_COMMAND_URL}. <br/>
+ * {@value #DEFAULT_QUERY_URL} url and commands to {@value #DEFAULT_COMMAND_URL}.
+ *
  * Queries can have attributes of primitive types, arrays, collections and some date types (including jodatime). If some
  * type is missing just open an issue and it will be added.
  */
@@ -101,6 +102,8 @@ public class KasperClientBuilder {
     }
 
     /**
+     * @param factory a factory
+     * @return a reference to this builder.
      * @see #use(com.viadeo.kasper.query.exposition.TypeAdapter)
      */
     public KasperClientBuilder use(final TypeAdapterFactory factory) {
@@ -134,7 +137,7 @@ public class KasperClientBuilder {
     /**
      * @param url of the base path to use for query submission.
      * @return a reference to this builder.
-     * @throws KasperException
+     * @throws KasperException a kasper exception
      */
     public KasperClientBuilder queryBaseLocation(final String url) {
         return queryBaseLocation(createURL(getCanonicalUrl(checkNotNull(url))));
@@ -143,7 +146,7 @@ public class KasperClientBuilder {
     /**
      * @param url of the base path to use for commands submission.
      * @return a reference to this builder.
-     * @throws KasperException
+     * @throws KasperException a kasper exception
      */
     public KasperClientBuilder commandBaseLocation(final String url) {
         return commandBaseLocation(createURL(getCanonicalUrl(checkNotNull(url))));
@@ -152,7 +155,7 @@ public class KasperClientBuilder {
     /**
      * @param url of the base path to use for event submission.
      * @return a reference to this builder.
-     * @throws KasperException
+     * @throws KasperException a kasper exception
      */
     public KasperClientBuilder eventBaseLocation(final String url) {
         return eventBaseLocation(createURL(getCanonicalUrl(checkNotNull(url))));
@@ -162,7 +165,7 @@ public class KasperClientBuilder {
      * Add a trailing "/" at the end of the base URL.
      * Also check url is not null as a precondition
      * In case of URL without trailing "/", the last part of it is removed by java.net.URL constructor otherwise
-     * @param url
+     * @param url the base URL
      * @return url plus trailing "/"
      */
     private String getCanonicalUrl(final String url) {

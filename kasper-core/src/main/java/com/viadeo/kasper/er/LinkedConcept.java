@@ -16,8 +16,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *
  * public class Message extends Concept {
  *
- *     private LinkedConcept<Member> sender;
- *     private LinkedConcept<Member> recipient;
+ *     private LinkedConcept&lt;Member&gt; sender;
+ *     private LinkedConcept&lt;Member&gt; recipient;
  *
  * }
  *

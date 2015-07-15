@@ -40,7 +40,7 @@ public interface IRepository<AGR extends AggregateRoot> extends org.axonframewor
     /**
      * Checks if an aggregate if exists
      *
-     * @param id
+     * @param id the identifier
      * @return true if an aggregate exists with this id
      */
     boolean has(KasperID id);
@@ -55,7 +55,7 @@ public interface IRepository<AGR extends AggregateRoot> extends org.axonframewor
      * @param expectedVersion the aggregate expected version to fetch
      * @return the fetched aggregate if any
      */
-    AGR get(KasperID aggregateIdentifier, final Long expectedVersion);
+    AGR get(KasperID aggregateIdentifier, Long expectedVersion);
 
     /**
      * Get an aggregate without planning further save on UOW commit
@@ -63,7 +63,7 @@ public interface IRepository<AGR extends AggregateRoot> extends org.axonframewor
      * Deprecated design : aggregates should only be loaded, with idea of change,
      * other data must be obtained from a query and passed to the command
      *
-     * @param aggregateIdentifier
+     * @param aggregateIdentifier the aggregate identifier
      * @return the fetched aggregate if any
      */
     AGR get(KasperID aggregateIdentifier);

@@ -83,7 +83,7 @@ public class KasperSpringBundle extends DefaultDomainBundle {
     /**
      * Spring domain bundle allow you to manage platform stereotypes
      * without the need to create boiler plate injection code.
-     * <p/>
+     *
      * It comes with the price of coupling to the jsr 330, which
      * is not really high and risky
      *

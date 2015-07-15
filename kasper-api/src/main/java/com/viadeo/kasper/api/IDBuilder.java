@@ -12,6 +12,8 @@ package com.viadeo.kasper.api;
 public interface IDBuilder {
 
     /**
+     *
+     * @param urn a chain of chars representing an URN
      * @return a corresponding id from the specified URN
      */
     ID build(String urn);

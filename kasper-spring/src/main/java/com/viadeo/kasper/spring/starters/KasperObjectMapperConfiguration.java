@@ -51,6 +51,7 @@ public class KasperObjectMapperConfiguration {
     /**
      * The object mapper instance used for global ser-de
      *
+     * @param modules list of modules
      * @return object mapper
      */
     @Bean

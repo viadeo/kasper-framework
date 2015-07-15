@@ -14,7 +14,7 @@ import com.google.common.base.Optional;
  * Two strategies can be implemented :
  *
  * - you are a factory and creates missing instances on request (cached)
- *     -> in this case you can also decide to register instances that you will
+ *     -&gt; in this case you can also decide to register instances that you will
  *        be provided with, or just refuse to register multiple instances of the same class
  * - you are just a registry and do not create missing instances
  *
@@ -29,6 +29,7 @@ public interface ComponentsInstanceManager {
      * acting as a factory but a simple registry
      *
      * @param clazz the class for which you have to provide an instance
+     * @param <E> type of the instance
      * @return an option instance of this class
      */
     <E> Optional<E> getInstanceFromClass(Class<? extends E> clazz);

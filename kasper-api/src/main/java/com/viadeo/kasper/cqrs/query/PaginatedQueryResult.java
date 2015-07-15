@@ -9,13 +9,19 @@ package com.viadeo.kasper.cqrs.query;
 /** A paginated Kasper query */
 public interface PaginatedQueryResult extends QueryResult {
 
-    /** The total number of elements. */
+    /**
+     * @return The total number of elements.
+     */
     int getTotal();
 
-	/** The requested number of elements. */
+	/**
+     * @return The requested number of elements.
+     */
 	int getCount();
 
-	/** The requested index of the first element in the page. Starts at {@code 0}. */
+	/**
+     * @return The requested index of the first element in the page. Starts at {@code 0}.
+     */
 	int getStartIndex();
 
 }

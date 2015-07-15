@@ -67,7 +67,7 @@ public class KasperSpringPlatformBuilder {
     /**
      * A list of bundleConfigs to run
      *
-     * @param bundle bundle
+     * @param bundle the bundle class
      * @return platform builder
      */
     public KasperSpringPlatformBuilder addBundle(final Class<? extends DomainBundle> bundle) {
@@ -127,12 +127,13 @@ public class KasperSpringPlatformBuilder {
 
     /**
      * Main entry point for the platform
-     * <p/>
+     *
      * Setup two context :
      * - parent contains infrastructure and glue code
      * - bundles contains isolated contexts inheriting from parent
-     * <p/>
+     *
      * Domains are
+     * @return an application context
      */
     public AnnotationConfigApplicationContext build() {
 

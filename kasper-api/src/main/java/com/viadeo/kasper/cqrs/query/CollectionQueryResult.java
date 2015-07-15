@@ -80,6 +80,9 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
     }
 
     /**
+     * @param list a list of resources
+     * @param <P> the inferred type of <code>CollectionQueryResult</code>
+     * @return the mutated <code>CollectionQueryResult</code> instance
      * @deprecated in order to keep retro-compatibility before to be deleted.
      * @see #setList(java.util.Collection)
      */
@@ -91,6 +94,9 @@ public abstract class CollectionQueryResult<RES extends QueryResult> implements 
     }
 
     /**
+     * @param iterator an iterator of resources
+     * @param <P> the inferred type of <code>CollectionQueryResult</code>
+     * @return the mutated <code>CollectionQueryResult</code> instance
      * @deprecated in order to keep retro-compatibility before to be deleted.
      * @see #setListAsIterator(java.util.Iterator)
      */

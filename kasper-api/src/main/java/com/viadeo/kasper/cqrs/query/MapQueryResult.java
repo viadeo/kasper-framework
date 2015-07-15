@@ -64,6 +64,9 @@ public abstract class MapQueryResult<T extends QueryResult> implements Iterable<
     }
 
     /**
+     * @param map the map to be set
+     * @param <P> the inferred type of <code>MapQueryResult</code>
+     * @return the mutated <code>MapQueryResult</code> instance
      * @deprecated deprecated in order to keep retro-compatibility before to be deleted
      * @see #setMap(java.util.Map)
      */
