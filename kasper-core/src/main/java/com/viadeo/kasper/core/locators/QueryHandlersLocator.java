@@ -18,7 +18,11 @@ import java.util.Collection;
 /** The Kasper query handlers locator */
 public interface QueryHandlersLocator {
 
-	/** @param handler the handler to be registered */
+    /**
+     * @param name the name
+     * @param handler the handler to be registered
+     * @param domainClass the related domain class
+     */
 	void registerHandler(String name, QueryHandler handler, Class<? extends Domain> domainClass);
 
     /**

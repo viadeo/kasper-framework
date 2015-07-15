@@ -23,8 +23,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
  * Low level class allowing to build a query. Suppose you want to have the following parameters into a query : name =
  * foo nicknames = bar, foo bar, toto It would be done using the QueryBuilder like that:
  *
- * <p/>
- * 
  * <pre>
  *      QueryBuilder builder = new QueryBuilder();
  * 
@@ -33,20 +31,14 @@ import static com.google.common.base.Preconditions.checkNotNull;
  *        .end()
  *        .addSingle(&quot;name&quot;, &quot;foo&quot;);
  * </pre>
- * 
- * <p/>
- * 
+ *
  * The builder can then be used to create a query string and combine it with an URI pointing to some resource.
  *
- * <p/>
- * 
  * <pre>
  *      // will equal to http://www.google.com/somepath?bar=foo%20bar&amp;bar=too&amp;name=foo
  *      URI resourceWithQueryString = builder.build(new URI(&quot;http://www.google.com/somepath&quot;));
  * </pre>
- * 
- * <p/>
- * 
+ *
  * It will also make sure that the query is consistent by forbidding you to overwrite a pair of key/value(s) that has
  * been written. The query builder also keeps the order the key/values have been added to.
  */
@@ -61,7 +53,9 @@ public class QueryBuilder {
     /**
      * Start writing values for a new name. It does not matter if you then write only one, multiple or no value at all.
      * If you want to write only a single value then just use {@link #addSingle(String, String)}
-     * 
+     *
+     * @param name a name
+     * @return the query builder
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder begin(final String name) {
@@ -78,7 +72,8 @@ public class QueryBuilder {
 
     /**
      * Finishes writing the values linked to the name of the previous call to begin(name).
-     * 
+     *
+     * @return the query builder
      * @throws IllegalStateException if begin was not called before end.
      */
     public QueryBuilder end() {
@@ -97,7 +92,10 @@ public class QueryBuilder {
 
     /**
      * Writes a single pair name/value.
-     * 
+     *
+     * @param name the name
+     * @param value the value as a <code>String</code>
+     * @return the query builder
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder addSingle(final String name, final String value) {
@@ -114,7 +112,10 @@ public class QueryBuilder {
 
     /**
      * Writes a single pair name/value.
-     * 
+     *
+     * @param name the name
+     * @param value the value as a <code>Number</code>
+     * @return the query builder
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder addSingle(final String name, final Number value) {
@@ -137,7 +138,10 @@ public class QueryBuilder {
 
     /**
      * Writes a single pair name/value.
-     * 
+     *
+     * @param name the name
+     * @param value the value as a <code>Boolean</code>
+     * @return the query builder
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder addSingle(final String name, final Boolean value) {
@@ -156,7 +160,9 @@ public class QueryBuilder {
 
     /**
      * Writes a single pair name/value.
-     * 
+     *
+     * @param value a value
+     * @return the query builder
      * @throws IllegalStateException if this name already exists.
      */
     public QueryBuilder add(final Number value) {
@@ -165,7 +171,9 @@ public class QueryBuilder {
 
     /**
      * Add a value for current key.
-     * 
+     *
+     * @param value a value
+     * @return the query builder
      * @throws IllegalStateException if begin(name) was not called.
      */
     public QueryBuilder add(final Boolean value) {
@@ -174,6 +182,9 @@ public class QueryBuilder {
 
     /**
      * Add a list of values for current key.
+     *
+     * @param values a values
+     * @return the query builder
      * 
      * @throws IllegalStateException if begin(name) was not called.
      */
@@ -200,6 +211,7 @@ public class QueryBuilder {
     // ------------------------------------------------------------------------
 
     /**
+     * @param name a name
      * @return true if at least one value is linked to this name.
      */
     public boolean has(final String name) {
@@ -207,6 +219,7 @@ public class QueryBuilder {
     }
 
     /**
+     * @param name a name
      * @return true if exactly one value is linked to this name.
      */
     public boolean hasSingle(final String name) {
@@ -214,6 +227,7 @@ public class QueryBuilder {
     }
 
     /**
+     * @param name a name
      * @return the first value linked to this name.
      * @throws NoSuchElementException if there is no value mapped to this key.
      */
@@ -225,6 +239,7 @@ public class QueryBuilder {
     }
 
     /**
+     * @param name a name
      * @return all the values linked to this name.
      * @throws NoSuchElementException if there is no value mapped to this key.
      */

@@ -37,6 +37,8 @@ public @interface XKasperQueryHandlerAdapter {
      * Optional sticky domain for this handler (in case of global adapter)
      *
      * The adapter will only be applied on handlers of this domain
+     *
+     * @return the domain
      */
     Class<? extends Domain> domain() default NullDomain.class;
 

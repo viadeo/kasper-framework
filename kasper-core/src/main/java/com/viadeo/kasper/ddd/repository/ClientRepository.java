@@ -22,7 +22,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public final class ClientRepository<AGR extends AggregateRoot> {
 
     /**
-     * The decored repository
+     * The decorated repository
      */
     private final IRepository<AGR> repository;
 
@@ -37,6 +37,9 @@ public final class ClientRepository<AGR extends AggregateRoot> {
     /**
      * Return the original (unwrapped) aggregate
      * to be used for business indexes methods access
+     *
+     * @param <I> an implementation of <code>IRepository</code>
+     * @return the business repository
      */
     @SuppressWarnings("unchecked")
     public <I extends IRepository<AGR>> I business() {

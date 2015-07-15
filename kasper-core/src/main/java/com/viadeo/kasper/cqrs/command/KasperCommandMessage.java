@@ -44,6 +44,7 @@ public class KasperCommandMessage<C extends Command> implements Serializable {
 	/**
 	 * Extract context from Axon command message metadata
 	 * If no context has been provided during command sending, an empty context then be used
+     * @return the context embedded in this message instance
 	 */
 	public Context getContext() {
 		return Objects.firstNonNull(

@@ -100,11 +100,11 @@ public class ID implements KasperID {
 
     /**
      * Parse the identifier
+     * @param <E> the inferred type of the identifier
      * @return the object value represented by the <code>Format</code> of this <code>ID</code>.
      * @exception ClassCastException the inferred type is incompatible with the <code>Format</code>
      * @exception IllegalArgumentException the identifier is incompatible with the <code>Format</code>
      */
-    @SuppressWarnings("unchecked")
     public <E> E parseIdentifier() {
         return format.parseIdentifier(identifier);
     }
@@ -130,7 +130,8 @@ public class ID implements KasperID {
     /**
      * Ensures that this instance of <code>ID</code> match the vendor specified as a parameter.
      *
-     * @param expectedVendor the expected vendor for which this instance should match
+     * @param expectedVendor the expected vendor for which this instance should matc
+     * @return the reference of the <code>ID</code>
      * @exception IllegalStateException if the specified vendor doesn't match the vendor of this instance of <code>ID</code>
      */
     public ID checkVendor(final String expectedVendor) {
@@ -145,6 +146,7 @@ public class ID implements KasperID {
      * Ensures that this instance of <code>ID</code> match the object type specified as a parameter.
      *
      * @param expectedType the expected object type for which this instance should match
+     * @return the reference of the <code>ID</code>
      * @exception IllegalStateException if the specified vendor doesn't match the type of this instance of <code>ID</code>
      */
     public ID checkType(final String expectedType) {
@@ -159,6 +161,7 @@ public class ID implements KasperID {
      * Ensures that this instance of <code>ID</code> match the format specified as a parameter.
      *
      * @param expectedFormat the expected object type for which this instance should match
+     * @return the reference of the <code>ID</code>
      * @exception IllegalStateException if the specified format doesn't match the format of this instance of <code>ID</code>
      */
     public ID checkFormat(final Format expectedFormat) {

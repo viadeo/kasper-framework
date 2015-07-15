@@ -43,6 +43,7 @@ public @interface XKasperQueryHandler {
     /**
      * Whether the response of this query handler should be cached.
      * False by default.
+     * @return the cache rules
      */
     XKasperQueryCache cache() default @XKasperQueryCache(enabled = false);
 

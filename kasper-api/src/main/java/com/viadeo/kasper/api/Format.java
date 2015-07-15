@@ -27,6 +27,7 @@ public interface Format {
     /**
      * Returns the parsed identifier.
      *
+     * @param identifier the identifier
      * @param <E> the type of the identifier
      * @return the parsed value according to the <code>Format</code> of the specified identifier.
      */
