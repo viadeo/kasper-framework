@@ -24,7 +24,7 @@ test:
 
 deployment:
   nexus:
-    branch: develop
+    branch: [develop, prepare_1.0.0]
     owner: viadeo
     commands:
       - ./gradlew build uploadArchives --parallel-threads=2
