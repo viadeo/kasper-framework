@@ -8,8 +8,8 @@ package com.viadeo.kasper.client;
 
 import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.WebResource;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.adapters.NullSafeTypeAdapter;
 import com.viadeo.kasper.query.exposition.query.QueryBuilder;

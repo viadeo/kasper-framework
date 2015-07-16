@@ -6,7 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query;
 
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResult;
 import org.axonframework.domain.GenericEventMessage;
 import org.axonframework.eventhandling.EventBus;
 import org.junit.Test;

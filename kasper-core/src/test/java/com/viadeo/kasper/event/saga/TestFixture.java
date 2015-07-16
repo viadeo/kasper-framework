@@ -7,12 +7,12 @@
 package com.viadeo.kasper.event.saga;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandGateway;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.ddd.annotation.XKasperDomain;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.annotation.XKasperDomain;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.event.EventMessage;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
 

@@ -16,7 +16,7 @@ import com.viadeo.kasper.cqrs.command.CommandHandler;
 import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.ddd.annotation.XKasperRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
 import com.viadeo.kasper.event.EventListener;

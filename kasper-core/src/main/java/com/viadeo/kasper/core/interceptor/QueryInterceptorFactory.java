@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.core.interceptor;
 
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.query.QueryResult;
 
 public abstract class QueryInterceptorFactory implements InterceptorFactory<Query, QueryResponse<QueryResult>> {
 

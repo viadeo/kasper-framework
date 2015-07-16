@@ -8,7 +8,10 @@ package com.viadeo.kasper.cqrs.query.impl;
 
 import com.codahale.metrics.Timer;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
@@ -19,7 +22,7 @@ import com.viadeo.kasper.core.metrics.MetricNameStyle;
 import com.viadeo.kasper.cqrs.query.*;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptorFactory;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

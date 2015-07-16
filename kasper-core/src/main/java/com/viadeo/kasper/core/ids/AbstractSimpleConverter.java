@@ -7,8 +7,8 @@
 package com.viadeo.kasper.core.ids;
 
 import com.google.common.collect.Maps;
-import com.viadeo.kasper.api.Format;
-import com.viadeo.kasper.api.ID;
+import com.viadeo.kasper.api.id.Format;
+import com.viadeo.kasper.api.id.ID;
 
 import java.util.Collection;
 import java.util.Map;

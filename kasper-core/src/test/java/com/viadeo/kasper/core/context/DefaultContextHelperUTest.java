@@ -7,12 +7,12 @@
 package com.viadeo.kasper.core.context;
 
 import com.google.common.collect.ImmutableMap;
-import com.viadeo.kasper.api.Format;
-import com.viadeo.kasper.api.FormatAdapter;
-import com.viadeo.kasper.api.ID;
-import com.viadeo.kasper.api.SimpleIDBuilder;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
+import com.viadeo.kasper.api.id.Format;
+import com.viadeo.kasper.api.id.FormatAdapter;
+import com.viadeo.kasper.api.id.ID;
+import com.viadeo.kasper.api.id.SimpleIDBuilder;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

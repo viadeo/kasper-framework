@@ -8,12 +8,12 @@ package com.viadeo.kasper.core.metrics;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.context.Contexts;
+import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.resolvers.CommandResolver;
 import com.viadeo.kasper.core.resolvers.Resolver;
 import com.viadeo.kasper.core.resolvers.ResolverFactory;
-import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.api.component.command.Command;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;

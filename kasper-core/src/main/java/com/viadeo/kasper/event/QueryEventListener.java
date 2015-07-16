@@ -6,6 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.event;
 
+import com.viadeo.kasper.api.component.event.Event;
+
 public abstract class QueryEventListener<E extends Event> extends EventListener<E> {
 
 }

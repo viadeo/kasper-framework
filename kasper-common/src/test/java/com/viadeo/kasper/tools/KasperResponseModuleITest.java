@@ -1,12 +1,12 @@
 package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.KasperResponse;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.event.EventResponse;
+import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.api.response.KasperReason;
+import com.viadeo.kasper.api.response.KasperResponse;
+import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.event.EventResponse;
 import org.junit.Test;
 
 import java.io.IOException;

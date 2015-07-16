@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform.validator.base;
 
-import com.viadeo.kasper.KasperReason;
+import com.viadeo.kasper.api.response.KasperReason;
 
 public interface ReturnTypeValidator<VALIDATOR extends ReturnTypeValidator> {
 

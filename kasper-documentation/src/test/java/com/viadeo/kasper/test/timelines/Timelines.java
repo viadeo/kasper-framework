@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.timelines;
 
-import com.viadeo.kasper.ddd.annotation.XKasperDomain;
+import com.viadeo.kasper.api.annotation.XKasperDomain;
 import com.viadeo.kasper.test.root.Facebook;
 
 @XKasperDomain(prefix=Timelines.PREFIX, label=Timelines.NAME)

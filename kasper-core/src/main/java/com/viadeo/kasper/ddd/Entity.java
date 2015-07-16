@@ -20,9 +20,8 @@ import java.io.Serializable;
  * the same. In this context, a seat is actually a value object.
  * 
  ******
- * 
- * @see UbiquitousLanguageElement
+ *
  */
-public interface Entity extends Serializable, UbiquitousLanguageElement {
+public interface Entity extends Serializable {
 
 }

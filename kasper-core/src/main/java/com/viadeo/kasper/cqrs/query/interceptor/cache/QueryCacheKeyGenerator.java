@@ -7,8 +7,8 @@
 package com.viadeo.kasper.cqrs.query.interceptor.cache;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.api.ID;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.id.ID;
+import com.viadeo.kasper.api.component.query.Query;
 
 import java.io.Serializable;
 

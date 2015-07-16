@@ -6,6 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper;
 
+import com.viadeo.kasper.api.id.KasperID;
 import org.axonframework.domain.IdentifierFactory;
 
 public final class KasperTestIdGenerator {

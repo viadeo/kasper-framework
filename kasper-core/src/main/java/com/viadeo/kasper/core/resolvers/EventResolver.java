@@ -7,11 +7,11 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.event.annotation.XKasperEvent;
-import com.viadeo.kasper.event.domain.DomainEvent;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.annotation.XKasperEvent;
+import com.viadeo.kasper.api.component.event.DomainEvent;
+import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.tools.ReflectionGenericsResolver;
 
 import static com.google.common.base.Preconditions.checkNotNull;

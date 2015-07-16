@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.root.events;
 
-import com.viadeo.kasper.event.domain.DomainEvent;
+import com.viadeo.kasper.api.component.event.DomainEvent;
 import com.viadeo.kasper.test.root.Facebook;
 
 public class FacebookEvent implements DomainEvent<Facebook> {

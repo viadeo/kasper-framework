@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.tools;
 
-import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.impl.StringKasperId;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.api.id.StringKasperId;
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
 import org.hamcrest.Factory;

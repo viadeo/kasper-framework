@@ -8,10 +8,10 @@ package com.viadeo.kasper.event.saga.step.facet;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.annotations.VisibleForTesting;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
 import com.viadeo.kasper.core.metrics.MetricNameStyle;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.event.saga.step.Step;
 import com.viadeo.kasper.event.saga.step.StepInvocationException;

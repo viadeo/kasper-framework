@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.test.root.queries;
 
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.test.root.Facebook;

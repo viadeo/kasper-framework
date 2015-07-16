@@ -14,7 +14,7 @@ import com.viadeo.kasper.ddd.values.Value;
  *
  * @param <V> Value
  * 
- * @see com.viadeo.kasper.ddd.Domain
+ * @see com.viadeo.kasper.api.component.Domain
  * @see com.viadeo.kasper.ddd.values.Value
  */
 public abstract class ValueSpecification<V extends Value> extends Specification<V> {

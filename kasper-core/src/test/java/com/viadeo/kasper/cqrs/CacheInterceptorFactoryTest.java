@@ -8,20 +8,20 @@ package com.viadeo.kasper.cqrs;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.reflect.TypeToken;
-import com.viadeo.kasper.context.Contexts;
+import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.metrics.KasperMetrics;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
 import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptor;
 import com.viadeo.kasper.cqrs.query.interceptor.CacheInterceptorFactory;
 import com.viadeo.kasper.cqrs.query.interceptor.QueryHandlerInterceptor;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.component.Domain;
 import org.junit.Before;
 import org.junit.Test;
 

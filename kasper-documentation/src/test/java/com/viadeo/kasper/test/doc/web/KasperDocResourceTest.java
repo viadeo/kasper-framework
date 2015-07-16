@@ -20,7 +20,7 @@ import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.test.applications.Applications;
 import com.viadeo.kasper.test.applications.entities.Application;
 import com.viadeo.kasper.test.applications.entities.Member_fanOf_Application;

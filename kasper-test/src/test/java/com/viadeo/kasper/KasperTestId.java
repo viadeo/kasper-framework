@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper;
 
-import com.viadeo.kasper.impl.AbstractKasperID;
+import com.viadeo.kasper.api.id.AbstractKasperID;
 
 public class KasperTestId extends AbstractKasperID<String> {
 	private static final long serialVersionUID = 5764335949388759401L;

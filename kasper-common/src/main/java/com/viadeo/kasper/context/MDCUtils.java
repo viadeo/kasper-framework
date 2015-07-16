@@ -8,6 +8,7 @@ package com.viadeo.kasper.context;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
+import com.viadeo.kasper.api.context.Context;
 import org.slf4j.MDC;
 
 import java.util.Map;

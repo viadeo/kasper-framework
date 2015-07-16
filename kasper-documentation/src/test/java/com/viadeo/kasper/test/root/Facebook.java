@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.test.root;
 
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.ddd.annotation.XKasperDomain;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.annotation.XKasperDomain;
 
 @XKasperDomain(
         prefix=Facebook.PREFIX,

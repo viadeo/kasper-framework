@@ -8,8 +8,8 @@ package com.viadeo.kasper.client;
 
 import com.google.common.collect.Sets;
 import com.sun.jersey.api.client.RequestBuilder;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.context.HttpContextHeaders;
 import org.junit.Before;
 import org.junit.Test;

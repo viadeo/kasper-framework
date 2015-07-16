@@ -8,7 +8,7 @@ package com.viadeo.kasper.event.saga;
 
 import com.google.common.base.Optional;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
 import com.viadeo.kasper.event.saga.exception.SagaInstantiationException;
 import com.viadeo.kasper.event.saga.factory.DefaultSagaFactory;

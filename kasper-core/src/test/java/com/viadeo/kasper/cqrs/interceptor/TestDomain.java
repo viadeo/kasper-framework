@@ -7,11 +7,11 @@
 package com.viadeo.kasper.cqrs.interceptor;
 
 import com.viadeo.kasper.core.annotation.XKasperUnregistered;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.ddd.Domain;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.component.Domain;
+import com.viadeo.kasper.api.component.event.Event;
 
 @XKasperUnregistered
 class TestDomain implements Domain {

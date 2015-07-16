@@ -6,10 +6,10 @@
 // ============================================================================
 package com.viadeo.kasper.test.root.commands;
 
-import com.viadeo.kasper.annotation.XKasperAlias;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.annotation.XKasperCommand;
-import com.viadeo.kasper.security.annotation.XKasperPublic;
+import com.viadeo.kasper.api.annotation.XKasperAlias;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.annotation.XKasperCommand;
+import com.viadeo.kasper.api.annotation.XKasperPublic;
 
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
