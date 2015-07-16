@@ -10,7 +10,7 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.locators.QueryHandlersLocator;
 import com.viadeo.kasper.api.component.query.CollectionQueryResult;
-import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.api.annotation.XKasperQueryResult;
 import com.viadeo.kasper.api.component.Domain;

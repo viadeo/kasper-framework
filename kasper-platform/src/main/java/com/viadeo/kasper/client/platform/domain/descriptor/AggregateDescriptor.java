@@ -7,8 +7,8 @@
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.ddd.AggregateRoot;
-import com.viadeo.kasper.er.Concept;
+import com.viadeo.kasper.core.component.command.aggregate.ddd.AggregateRoot;
+import com.viadeo.kasper.core.component.command.aggregate.Concept;
 import com.viadeo.kasper.api.component.event.Event;
 
 import java.util.Collection;

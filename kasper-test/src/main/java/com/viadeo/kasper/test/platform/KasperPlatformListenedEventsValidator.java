@@ -9,7 +9,7 @@ package com.viadeo.kasper.test.platform;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.event.Event;
-import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.core.component.event.EventListener;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureEventResultValidator;
 import com.viadeo.kasper.test.platform.validator.base.DefaultBaseValidator;
 import com.viadeo.kasper.tools.KasperMatcher;

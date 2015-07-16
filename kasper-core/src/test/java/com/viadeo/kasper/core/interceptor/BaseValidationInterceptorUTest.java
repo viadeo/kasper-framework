@@ -9,7 +9,7 @@ package com.viadeo.kasper.core.interceptor;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.api.component.command.CommandResponse;
-import com.viadeo.kasper.cqrs.command.interceptor.CommandValidationInterceptor;
+import com.viadeo.kasper.core.component.command.interceptor.CommandValidationInterceptor;
 import junit.framework.TestCase;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.hibernate.validator.constraints.NotEmpty;

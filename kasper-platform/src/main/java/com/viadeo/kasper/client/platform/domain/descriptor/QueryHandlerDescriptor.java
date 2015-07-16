@@ -7,7 +7,7 @@
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
 import com.viadeo.kasper.api.component.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryHandler;
+import com.viadeo.kasper.core.component.query.QueryHandler;
 import com.viadeo.kasper.api.component.query.QueryResult;
 
 import static com.google.common.base.Preconditions.checkNotNull;

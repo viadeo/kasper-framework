@@ -7,7 +7,7 @@
 package com.viadeo.kasper.test.root.listeners;
 
 import com.viadeo.kasper.api.context.Context;
-import com.viadeo.kasper.event.EventListener;
+import com.viadeo.kasper.core.component.event.EventListener;
 import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.test.applications.events.MemberHasDeclaredToBeFanOfAnApplicationEvent;
 
