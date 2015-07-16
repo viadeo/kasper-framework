@@ -7,7 +7,7 @@
 package com.viadeo.kasper.doc.nodes;
 
 import com.viadeo.kasper.api.annotation.XKasperField;
-import com.viadeo.kasper.er.LinkedConcept;
+import com.viadeo.kasper.core.component.command.aggregate.LinkedConcept;
 import com.viadeo.kasper.test.root.entities.Member;
 import com.viadeo.kasper.test.root.queries.GetAllMembersQueryHandler;
 import org.junit.Test;

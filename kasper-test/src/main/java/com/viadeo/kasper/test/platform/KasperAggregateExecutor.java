@@ -10,7 +10,7 @@ import com.google.common.collect.Maps;
 import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.cqrs.command.interceptor.CommandValidationInterceptor;
+import com.viadeo.kasper.core.component.command.interceptor.CommandValidationInterceptor;
 import com.viadeo.kasper.test.platform.executor.KasperFixtureCommandExecutor;
 import org.axonframework.commandhandling.interceptors.JSR303ViolationException;
 import org.axonframework.test.TestExecutor;

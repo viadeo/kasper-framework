@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.test.applications.entities;
 
-import com.viadeo.kasper.er.Concept;
-import com.viadeo.kasper.er.LinkedConcept;
-import com.viadeo.kasper.er.annotation.XKasperConcept;
+import com.viadeo.kasper.core.component.command.aggregate.Concept;
+import com.viadeo.kasper.core.component.command.aggregate.LinkedConcept;
+import com.viadeo.kasper.core.component.command.aggregate.annotation.XKasperConcept;
 import com.viadeo.kasper.test.applications.Applications;
 import com.viadeo.kasper.test.root.entities.Member;
 

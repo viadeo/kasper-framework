@@ -9,9 +9,9 @@ package com.viadeo.kasper.spring.starters;
 import com.viadeo.kasper.api.id.IDBuilder;
 import com.viadeo.kasper.api.id.IDTransformer;
 import com.viadeo.kasper.api.id.TransformableIDBuilder;
-import com.viadeo.kasper.core.ids.DefaultIDTransformer;
-import com.viadeo.kasper.core.ids.KasperIDsConverterRegistry;
-import com.viadeo.kasper.core.ids.UUIDFormat;
+import com.viadeo.kasper.core.id.DefaultIDTransformer;
+import com.viadeo.kasper.core.id.KasperIDsConverterRegistry;
+import com.viadeo.kasper.core.id.UUIDFormat;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 

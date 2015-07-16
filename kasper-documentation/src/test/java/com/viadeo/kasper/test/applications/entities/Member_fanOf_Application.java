@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.test.applications.entities;
 
-import com.viadeo.kasper.er.Relation;
-import com.viadeo.kasper.er.annotation.XKasperRelation;
+import com.viadeo.kasper.core.component.command.aggregate.Relation;
+import com.viadeo.kasper.core.component.command.aggregate.annotation.XKasperRelation;
 import com.viadeo.kasper.test.applications.Applications;
 import com.viadeo.kasper.test.root.entities.Member;
 

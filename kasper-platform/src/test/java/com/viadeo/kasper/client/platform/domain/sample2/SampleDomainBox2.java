@@ -7,8 +7,8 @@
 package com.viadeo.kasper.client.platform.domain.sample2;
 
 import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.command.annotation.XKasperCommandHandler;
+import com.viadeo.kasper.core.component.command.CommandHandler;
+import com.viadeo.kasper.core.component.annotation.XKasperCommandHandler;
 import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.api.annotation.XKasperDomain;
 

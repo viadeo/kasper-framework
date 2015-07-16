@@ -7,9 +7,9 @@
 package com.viadeo.kasper.core.resolvers;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.core.annotation.XKasperUnregistered;
+import com.viadeo.kasper.core.component.annotation.XKasperUnregistered;
 import com.viadeo.kasper.api.component.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandHandler;
+import com.viadeo.kasper.core.component.command.CommandHandler;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
