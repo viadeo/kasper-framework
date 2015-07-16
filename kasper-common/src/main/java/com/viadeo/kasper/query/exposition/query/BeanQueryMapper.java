@@ -7,7 +7,7 @@
 package com.viadeo.kasper.query.exposition.query;
 
 import com.google.common.collect.ImmutableSet;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 
 import java.util.*;

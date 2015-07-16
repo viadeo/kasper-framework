@@ -4,8 +4,8 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.google.common.base.Preconditions;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.ContextHelper;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.ContextHelper;
 import org.axonframework.domain.MetaData;
 
 import java.io.IOException;

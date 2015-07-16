@@ -2,8 +2,8 @@ package com.viadeo.kasper.api.validation.validator;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import com.viadeo.kasper.api.ID;
-import com.viadeo.kasper.api.TestFormats;
+import com.viadeo.kasper.api.id.ID;
+import com.viadeo.kasper.api.id.TestFormats;
 import com.viadeo.kasper.api.validation.AssertID;
 import org.junit.Before;
 import org.junit.Test;

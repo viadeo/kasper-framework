@@ -6,11 +6,11 @@
 // ============================================================================
 package com.viadeo.kasper.event.interceptor;
 
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.interceptor.BaseValidationInterceptor;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.component.event.Event;
 
 import javax.validation.ValidatorFactory;
 

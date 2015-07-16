@@ -11,9 +11,9 @@ import com.google.common.reflect.TypeToken;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.QueryInterceptorFactory;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.query.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

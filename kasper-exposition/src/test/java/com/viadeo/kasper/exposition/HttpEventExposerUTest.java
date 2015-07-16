@@ -7,10 +7,12 @@
 package com.viadeo.kasper.exposition;
 
 import com.google.common.collect.Lists;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.component.event.EventResponse;
 import com.viadeo.kasper.client.platform.Meta;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.event.*;
 import com.viadeo.kasper.exposition.http.HttpEventExposer;
 import org.junit.Test;

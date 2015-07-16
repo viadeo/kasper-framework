@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.client.platform.domain.descriptor;
 
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.event.EventListener;
 
 import static com.google.common.base.Preconditions.checkNotNull;

@@ -16,7 +16,7 @@ import com.viadeo.kasper.doc.element.DocumentedPlatform;
 import com.viadeo.kasper.doc.initializer.DefaultDocumentedElementInitializer;
 import com.viadeo.kasper.doc.web.KasperDocResource;
 import com.viadeo.kasper.doc.web.ObjectMapperKasperResolver;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.event.saga.SagaIdReconciler;
 import com.viadeo.kasper.event.saga.step.Scheduler;
 import com.viadeo.kasper.event.saga.step.Steps;

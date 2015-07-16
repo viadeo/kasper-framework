@@ -8,7 +8,7 @@ package com.viadeo.kasper.core.context;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Optional;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

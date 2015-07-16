@@ -9,7 +9,7 @@ package com.viadeo.kasper.event.saga.step;
 import com.google.common.base.Function;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.Multimaps;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.event.annotation.XKasperSaga;
 import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.event.saga.SagaIdReconciler;

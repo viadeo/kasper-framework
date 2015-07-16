@@ -7,7 +7,7 @@
 package com.viadeo.kasper.client.platform.components.eventbus;
 
 import com.google.common.collect.Sets;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.exception.KasperException;
 import org.axonframework.eventhandling.EventListener;
 import org.axonframework.eventhandling.MultiplexingEventProcessingMonitor;
 import org.axonframework.eventhandling.async.ErrorHandler;

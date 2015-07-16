@@ -8,14 +8,14 @@ package com.viadeo.kasper.tools;
 
 import com.fasterxml.jackson.databind.JsonDeserializer;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.KasperResponse;
+import com.viadeo.kasper.api.response.KasperReason;
+import com.viadeo.kasper.api.response.KasperResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-import static com.viadeo.kasper.KasperResponse.Status;
+import static com.viadeo.kasper.api.response.KasperResponse.Status;
 
 public abstract class KasperResponseDeserializer<R extends KasperResponse> extends JsonDeserializer<R> {
     private static final Logger LOGGER = LoggerFactory.getLogger(KasperResponseDeserializer.class);

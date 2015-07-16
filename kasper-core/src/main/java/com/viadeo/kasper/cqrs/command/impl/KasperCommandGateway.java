@@ -7,20 +7,20 @@
 package com.viadeo.kasper.cqrs.command.impl;
 
 import com.google.common.collect.Lists;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.context.CurrentContext;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
 import com.viadeo.kasper.core.interceptor.InterceptorFactory;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.locators.impl.DefaultDomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
-import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.interceptor.CommandHandlerInterceptorFactory;
 import com.viadeo.kasper.cqrs.command.interceptor.KasperCommandInterceptor;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.exception.KasperException;
 import org.axonframework.commandhandling.CommandDispatchInterceptor;
 import org.axonframework.commandhandling.CommandHandlerInterceptor;
 import org.axonframework.commandhandling.gateway.CommandGatewayFactoryBean;

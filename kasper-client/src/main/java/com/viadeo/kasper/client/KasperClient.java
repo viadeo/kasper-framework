@@ -16,19 +16,17 @@ import com.google.common.reflect.TypeToken;
 import com.sun.jersey.api.client.*;
 import com.sun.jersey.api.client.async.TypeListener;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.api.response.KasperReason;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.context.HttpContextHeaders;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
-import com.viadeo.kasper.cqrs.command.http.HTTPCommandResponse;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
-import com.viadeo.kasper.cqrs.query.http.HTTPQueryResponse;
-import com.viadeo.kasper.event.Event;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.query.QueryResult;
+import com.viadeo.kasper.api.component.event.Event;
+import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.query.exposition.TypeAdapter;
 import com.viadeo.kasper.query.exposition.exception.KasperQueryAdapterException;
 import com.viadeo.kasper.query.exposition.query.QueryBuilder;
@@ -509,8 +507,8 @@ public class KasperClient {
      * @param <P> the type of the <code>QueryResult</code>
      * @return a future of the Response for this query.
      *
-     * @see KasperClient#query(Context, com.viadeo.kasper.cqrs.query.Query, Class)
-     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command)
+     * @see KasperClient#query(Context, com.viadeo.kasper.api.component.query.Query, Class)
+     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.api.component.command.Command)
      */
     public <P extends QueryResult> Future<QueryResponse<P>> queryAsync(
             final Context context, final Query query, final TypeToken<P> mapTo) {
@@ -545,8 +543,8 @@ public class KasperClient {
      * @param callback a callback
      * @param <P> the type of the <code>QueryResult</code>
      *
-     * @see KasperClient#query(Context, com.viadeo.kasper.cqrs.query.Query, Class)
-     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command, Callback)
+     * @see KasperClient#query(Context, com.viadeo.kasper.api.component.query.Query, Class)
+     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.api.component.command.Command, Callback)
      */
     public <P extends QueryResult> void queryAsync(
             final Context context,
@@ -563,8 +561,8 @@ public class KasperClient {
      * @param callback a callback
      * @param <P> the type of the <code>QueryResult</code>
      *
-     * @see KasperClient#query(Context, com.viadeo.kasper.cqrs.query.Query, Class)
-     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.cqrs.command.Command,
+     * @see KasperClient#query(Context, com.viadeo.kasper.api.component.query.Query, Class)
+     * @see KasperClient#sendAsync(Context, com.viadeo.kasper.api.component.command.Command,
      *      Callback)
      */
     public <P extends QueryResult> void queryAsync(

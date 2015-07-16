@@ -12,8 +12,9 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
-import com.viadeo.kasper.api.Format;
-import com.viadeo.kasper.api.ID;
+import com.viadeo.kasper.api.id.Format;
+import com.viadeo.kasper.api.id.ID;
+import com.viadeo.kasper.api.id.IDTransformer;
 
 import java.util.Collection;
 import java.util.List;
@@ -24,18 +25,18 @@ import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 import static com.google.common.collect.Lists.newArrayList;
 
-public class DefaultIDTransformer implements com.viadeo.kasper.api.IDTransformer{
+public class DefaultIDTransformer implements IDTransformer {
 
     private static final Function<ID, String> GET_VENDOR_FUNCTION = new Function<ID, String>() {
         @Override
-        public java.lang.String apply(com.viadeo.kasper.api.ID id) {
+        public java.lang.String apply(ID id) {
             return checkNotNull(id).getVendor();
         }
     };
 
     private static final Function<ID, Format> GET_FORMAT_FUNCTION = new Function<ID, Format>() {
         @Override
-        public com.viadeo.kasper.api.Format apply(com.viadeo.kasper.api.ID id) {
+        public Format apply(ID id) {
             return checkNotNull(id).getFormat();
         }
     };

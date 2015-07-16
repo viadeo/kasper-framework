@@ -13,7 +13,7 @@ import com.google.common.collect.Lists;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigException;
 import com.viadeo.kasper.client.platform.domain.DomainBundle;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.exception.KasperException;
 import com.viadeo.kasper.spring.config.KasperSpringConfigPropertySource;
 import com.viadeo.kasper.spring.config.KasperSpringConfiguration;
 import com.viadeo.kasper.spring.starters.*;

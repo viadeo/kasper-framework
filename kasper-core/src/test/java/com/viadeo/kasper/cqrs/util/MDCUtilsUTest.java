@@ -7,8 +7,8 @@
 package com.viadeo.kasper.cqrs.util;
 
 import com.google.common.collect.ImmutableMap;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
 import com.viadeo.kasper.context.MDCUtils;
 import org.junit.Rule;
 import org.junit.Test;

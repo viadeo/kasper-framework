@@ -7,6 +7,7 @@
 package com.viadeo.kasper.context;
 
 import com.google.common.base.Optional;
+import com.viadeo.kasper.api.context.Context;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

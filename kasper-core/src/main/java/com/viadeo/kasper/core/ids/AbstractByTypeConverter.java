@@ -10,8 +10,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimaps;
-import com.viadeo.kasper.api.Format;
-import com.viadeo.kasper.api.ID;
+import com.viadeo.kasper.api.id.Format;
+import com.viadeo.kasper.api.id.ID;
 
 import java.util.Collection;
 import java.util.Map;
@@ -33,7 +33,7 @@ public abstract class AbstractByTypeConverter extends AbstractConverter {
 
         final ListMultimap<String, ID> idsByType = Multimaps.index(ids, new Function<ID, String>() {
             @Override
-            public java.lang.String apply(com.viadeo.kasper.api.ID input) {
+            public java.lang.String apply(ID input) {
                 return checkNotNull(input).getType();
             }
         });

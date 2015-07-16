@@ -7,8 +7,9 @@
 package com.viadeo.kasper.cqrs.command;
 
 import com.google.common.base.Objects;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
 import org.axonframework.commandhandling.CommandMessage;
 
 import java.io.Serializable;

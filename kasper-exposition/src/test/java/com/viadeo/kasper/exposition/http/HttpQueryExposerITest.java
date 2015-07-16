@@ -5,7 +5,7 @@ import com.viadeo.kasper.client.platform.Meta;
 import com.viadeo.kasper.client.platform.Platform;
 import com.viadeo.kasper.client.platform.components.eventbus.KasperEventBus;
 import com.viadeo.kasper.cqrs.command.CommandGateway;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryGateway;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
 import com.viadeo.kasper.exposition.ExposureDescriptor;

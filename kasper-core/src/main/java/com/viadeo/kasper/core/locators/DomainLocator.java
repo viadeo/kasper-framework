@@ -7,9 +7,9 @@
 package com.viadeo.kasper.core.locators;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.ddd.Entity;
 
 import java.util.Collection;

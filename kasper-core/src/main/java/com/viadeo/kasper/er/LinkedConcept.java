@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.er;
 
-import com.viadeo.kasper.KasperID;
+import com.viadeo.kasper.api.id.KasperID;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

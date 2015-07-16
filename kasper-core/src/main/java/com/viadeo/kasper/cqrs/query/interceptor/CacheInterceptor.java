@@ -6,12 +6,12 @@
 // ============================================================================
 package com.viadeo.kasper.cqrs.query.interceptor;
 
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.interceptor.Interceptor;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
-import com.viadeo.kasper.cqrs.query.Query;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.component.query.Query;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryCache;
 import com.viadeo.kasper.cqrs.query.interceptor.cache.QueryCacheKeyGenerator;
 

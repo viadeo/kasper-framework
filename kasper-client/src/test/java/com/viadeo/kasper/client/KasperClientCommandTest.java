@@ -15,14 +15,13 @@ import com.sun.jersey.test.framework.JerseyTest;
 import com.sun.jersey.test.framework.LowLevelAppDescriptor;
 import com.sun.jersey.test.framework.spi.container.TestContainerFactory;
 import com.sun.jersey.test.framework.spi.container.http.HTTPContainerFactory;
-import com.viadeo.kasper.CoreReasonCode;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.context.Contexts;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.context.Contexts;
+import com.viadeo.kasper.api.response.CoreReasonCode;
+import com.viadeo.kasper.api.response.KasperReason;
 import com.viadeo.kasper.context.HttpContextHeaders;
-import com.viadeo.kasper.cqrs.TransportMode;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -46,7 +45,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 
-import static com.viadeo.kasper.KasperResponse.Status;
+import static com.viadeo.kasper.api.response.KasperResponse.Status;
 import static org.junit.Assert.*;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -271,8 +270,10 @@ public class KasperClientCommandTest extends JerseyTest {
         assertNotNull(response);
         assertNotNull(response.getReason());
         Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
-        Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
-        Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
+        Assert.assertTrue(response instanceof HTTPCommandResponse);
+
+        HTTPCommandResponse httpResponse = (HTTPCommandResponse) response;
+        Assert.assertEquals(Response.Status.NOT_FOUND, httpResponse.getHTTPStatus());
     }
 
     @Test
@@ -290,8 +291,10 @@ public class KasperClientCommandTest extends JerseyTest {
         assertNotNull(response);
         assertNotNull(response.getReason());
         Assert.assertEquals(CoreReasonCode.UNKNOWN_REASON.name(), response.getReason().getCode());
-        Assert.assertEquals(Response.Status.NOT_FOUND, response.asHttp().getHTTPStatus());
-        Assert.assertEquals(TransportMode.HTTP, response.getTransportMode());
+        Assert.assertTrue(response instanceof HTTPCommandResponse);
+
+        HTTPCommandResponse httpResponse = (HTTPCommandResponse) response;
+        Assert.assertEquals(Response.Status.NOT_FOUND, httpResponse.getHTTPStatus());
     }
 
 }

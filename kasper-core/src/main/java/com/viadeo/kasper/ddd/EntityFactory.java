@@ -6,7 +6,7 @@
 // ============================================================================
 package com.viadeo.kasper.ddd;
 
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 
 /**
  * A proposal marker interface for entity factories
@@ -14,11 +14,10 @@ import com.viadeo.kasper.context.Context;
  *
  * @param <E> Entity to be built
  *
- * @see com.viadeo.kasper.ddd.UbiquitousLanguageElement
- * @see com.viadeo.kasper.ddd.Domain
+ * @see com.viadeo.kasper.api.component.Domain
  * @see com.viadeo.kasper.ddd.Entity
  */
-public interface EntityFactory<E extends Entity> extends UbiquitousLanguageElement {
+public interface EntityFactory<E extends Entity> {
 
 	/**
 	 * Generic parameter position of the Entity

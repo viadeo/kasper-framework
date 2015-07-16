@@ -9,8 +9,8 @@ package com.viadeo.kasper.tools;
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.KasperResponse;
+import com.viadeo.kasper.api.response.KasperReason;
+import com.viadeo.kasper.api.response.KasperResponse;
 
 import java.io.IOException;
 

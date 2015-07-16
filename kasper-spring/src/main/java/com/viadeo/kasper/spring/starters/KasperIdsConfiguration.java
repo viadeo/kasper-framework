@@ -6,9 +6,9 @@
 // ============================================================================
 package com.viadeo.kasper.spring.starters;
 
-import com.viadeo.kasper.api.IDBuilder;
-import com.viadeo.kasper.api.IDTransformer;
-import com.viadeo.kasper.api.TransformableIDBuilder;
+import com.viadeo.kasper.api.id.IDBuilder;
+import com.viadeo.kasper.api.id.IDTransformer;
+import com.viadeo.kasper.api.id.TransformableIDBuilder;
 import com.viadeo.kasper.core.ids.DefaultIDTransformer;
 import com.viadeo.kasper.core.ids.KasperIDsConverterRegistry;
 import com.viadeo.kasper.core.ids.UUIDFormat;

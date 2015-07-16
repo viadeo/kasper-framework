@@ -7,7 +7,7 @@
 package com.viadeo.kasper.core.boot;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.exception.KasperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;

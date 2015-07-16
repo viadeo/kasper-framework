@@ -13,7 +13,7 @@ import com.viadeo.kasper.ddd.AggregateRoot;
 import com.viadeo.kasper.ddd.IRepository;
 import com.viadeo.kasper.ddd.repository.ClientRepository;
 import com.viadeo.kasper.ddd.repository.Repository;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.exception.KasperException;
 
 import java.util.Map;
 

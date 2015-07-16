@@ -7,11 +7,11 @@
 package com.viadeo.kasper.cqrs.command.interceptor;
 
 import com.google.common.base.Optional;
-import com.viadeo.kasper.context.Context;
+import com.viadeo.kasper.api.context.Context;
 import com.viadeo.kasper.core.interceptor.InterceptorChain;
 import com.viadeo.kasper.core.interceptor.InterceptorChainRegistry;
-import com.viadeo.kasper.cqrs.command.Command;
-import com.viadeo.kasper.cqrs.command.CommandResponse;
+import com.viadeo.kasper.api.component.command.Command;
+import com.viadeo.kasper.api.component.command.CommandResponse;
 import com.viadeo.kasper.cqrs.command.impl.KasperCommandBus;
 import org.axonframework.commandhandling.CommandMessage;
 import org.axonframework.unitofwork.UnitOfWork;

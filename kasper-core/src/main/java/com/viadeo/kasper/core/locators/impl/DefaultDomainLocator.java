@@ -10,11 +10,11 @@ import com.google.common.base.Optional;
 import com.google.common.collect.Maps;
 import com.viadeo.kasper.core.locators.DomainLocator;
 import com.viadeo.kasper.core.resolvers.CommandHandlerResolver;
-import com.viadeo.kasper.cqrs.command.Command;
+import com.viadeo.kasper.api.component.command.Command;
 import com.viadeo.kasper.cqrs.command.CommandHandler;
-import com.viadeo.kasper.ddd.Domain;
+import com.viadeo.kasper.api.component.Domain;
 import com.viadeo.kasper.ddd.Entity;
-import com.viadeo.kasper.exception.KasperException;
+import com.viadeo.kasper.api.exception.KasperException;
 
 import java.util.*;
 
@@ -91,7 +91,7 @@ public class DefaultDomainLocator implements DomainLocator {
     }
 
     /**
-     * @see com.viadeo.kasper.core.locators.DomainLocator#getDomainEntities(com.viadeo.kasper.ddd.Domain)
+     * @see com.viadeo.kasper.core.locators.DomainLocator#getDomainEntities(com.viadeo.kasper.api.component.Domain)
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -171,7 +171,7 @@ public class DefaultDomainLocator implements DomainLocator {
     // ------------------------------------------------------------------------
 
     /**
-     * @see com.viadeo.kasper.core.locators.DomainLocator#getDomainPrefix(com.viadeo.kasper.ddd.Domain)
+     * @see com.viadeo.kasper.core.locators.DomainLocator#getDomainPrefix(com.viadeo.kasper.api.component.Domain)
      */
     @Override
     public String getDomainPrefix(final Domain domain) {
@@ -185,7 +185,7 @@ public class DefaultDomainLocator implements DomainLocator {
     }
 
     /**
-     * @see com.viadeo.kasper.core.locators.DomainLocator#getDomainName(com.viadeo.kasper.ddd.Domain)
+     * @see com.viadeo.kasper.core.locators.DomainLocator#getDomainName(com.viadeo.kasper.api.component.Domain)
      */
     @Override
     public String getDomainName(final Domain domain) {

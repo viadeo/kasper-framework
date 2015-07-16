@@ -7,8 +7,8 @@
 package com.viadeo.kasper.event.saga.step.facet;
 
 import com.codahale.metrics.MetricRegistry;
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.event.saga.Saga;
 import com.viadeo.kasper.event.saga.step.Scheduler;
 import com.viadeo.kasper.event.saga.step.Step;

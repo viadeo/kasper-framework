@@ -12,10 +12,10 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import com.viadeo.kasper.KasperReason;
-import com.viadeo.kasper.KasperResponse;
-import com.viadeo.kasper.cqrs.query.QueryResponse;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.response.KasperReason;
+import com.viadeo.kasper.api.response.KasperResponse;
+import com.viadeo.kasper.api.component.query.QueryResponse;
+import com.viadeo.kasper.api.component.query.QueryResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-import static com.viadeo.kasper.KasperResponse.Status;
+import static com.viadeo.kasper.api.response.KasperResponse.Status;
 
 public class QueryResponseDeserializer extends KasperResponseDeserializer<QueryResponse> {
     private static final Logger LOGGER = LoggerFactory.getLogger(ObjectMapperProvider.class); 

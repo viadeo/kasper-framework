@@ -10,9 +10,9 @@ import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.*;
 import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.viadeo.kasper.api.ID;
-import com.viadeo.kasper.api.IDBuilder;
-import com.viadeo.kasper.api.RelationID;
+import com.viadeo.kasper.api.id.ID;
+import com.viadeo.kasper.api.id.IDBuilder;
+import com.viadeo.kasper.api.id.RelationID;
 
 import java.io.IOException;
 

@@ -6,14 +6,14 @@
 // ============================================================================
 package com.viadeo.kasper.test.root.queries;
 
-import com.viadeo.kasper.KasperID;
-import com.viadeo.kasper.annotation.XKasperField;
-import com.viadeo.kasper.cqrs.query.CollectionQueryResult;
-import com.viadeo.kasper.cqrs.query.Query;
+import com.viadeo.kasper.api.id.KasperID;
+import com.viadeo.kasper.api.annotation.XKasperField;
+import com.viadeo.kasper.api.component.query.CollectionQueryResult;
+import com.viadeo.kasper.api.component.query.Query;
 import com.viadeo.kasper.cqrs.query.QueryHandler;
-import com.viadeo.kasper.cqrs.query.QueryResult;
+import com.viadeo.kasper.api.component.query.QueryResult;
 import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryHandler;
-import com.viadeo.kasper.cqrs.query.annotation.XKasperQueryResult;
+import com.viadeo.kasper.api.annotation.XKasperQueryResult;
 import com.viadeo.kasper.test.root.Facebook;
 
 @XKasperQueryHandler(domain=Facebook.class)

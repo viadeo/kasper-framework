@@ -6,8 +6,8 @@
 // ============================================================================
 package com.viadeo.kasper.test.platform.executor;
 
-import com.viadeo.kasper.context.Context;
-import com.viadeo.kasper.event.Event;
+import com.viadeo.kasper.api.context.Context;
+import com.viadeo.kasper.api.component.event.Event;
 import com.viadeo.kasper.test.platform.validator.KasperFixtureEventResultValidator;
 
 public interface KasperFixtureEventExecutor<VALIDATOR extends KasperFixtureEventResultValidator> extends KasperFixtureExecutor {
